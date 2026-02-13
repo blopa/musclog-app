@@ -6,13 +6,14 @@ import { AvatarIcon } from '../../types/AvatarIcon';
 
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
+export type FitnessGoal = 'hypertrophy' | 'strength' | 'endurance' | 'weight_loss' | 'general';
 
 export interface UserProfileUpdate {
   fullName?: string;
   email?: string | null;
   dateOfBirth?: number;
   gender?: Gender;
-  fitnessGoal?: string;
+  fitnessGoal?: FitnessGoal;
   activityLevel?: number;
   liftingExperience?: LiftingExperience;
   avatarIcon?: AvatarIcon | null;
@@ -28,7 +29,7 @@ export default class User extends Model {
   @field('email') email?: string;
   @field('date_of_birth') dateOfBirth!: number;
   @field('gender') gender!: Gender;
-  @field('fitness_goal') fitnessGoal!: string;
+  @field('fitness_goal') fitnessGoal!: FitnessGoal;
   @field('activity_level') activityLevel!: number;
   @field('lifting_experience') liftingExperience!: LiftingExperience;
   @field('avatar_icon') avatarIcon?: AvatarIcon;

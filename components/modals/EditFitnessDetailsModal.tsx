@@ -2,6 +2,7 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FitnessGoal } from '../../database/models/User';
 import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -17,7 +18,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
-  fitnessGoal: string;
+  fitnessGoal: FitnessGoal;
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
 };

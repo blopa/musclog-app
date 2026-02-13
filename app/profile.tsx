@@ -271,7 +271,10 @@ export default function ProfileScreen() {
           </Text>
           {dbUser?.fitnessGoal ? (
             <Text className="text-base text-text-primary">
-              {t('profile.goal')}: {dbUser.fitnessGoal}
+              {t('profile.goal')}:{' '}
+              {t(
+                `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
+              )}
             </Text>
           ) : null}
         </View>

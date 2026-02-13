@@ -183,7 +183,7 @@ describe('UserService', () => {
       fullName: 'New User',
       dateOfBirth: Date.now() - 25 * 365 * 24 * 60 * 60 * 1000,
       gender: 'male' as const,
-      fitnessGoal: 'build_muscle',
+      fitnessGoal: 'hypertrophy' as const,
       activityLevel: 3,
       liftingExperience: 'beginner' as const,
       email: 'newuser@example.com',

@@ -821,7 +821,30 @@
     "planDescription": "Here's a personalized nutrition plan based on your goals. You can accept it or adjust it manually.",
     "acceptAndContinue": "Accept and Continue",
     "adjustGoalsManually": "Adjust Goals Manually",
-    "continue": "Continue"
+    "continue": "Continue",
+    "results": {
+      "aiCalculationComplete": "AI Calculation Complete",
+      "your": "Your",
+      "nutritionPlan": "Nutrition Plan",
+      "aiDescription": "Based on your body metrics and activity levels, our AI has optimized your daily targets.",
+      "manualDescription": "Here are the nutrition goals you set. You can continue or go back to adjust them.",
+      "dailyCalorieTarget": "Daily Calorie Target",
+      "kcal": "KCAL",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fats": "Fats",
+      "estimatedWeightLoss": "Estimated Weight Loss",
+      "estimatedWeightGain": "Estimated Weight Gain",
+      "projectionTitle": "{{days}}-Day Projection",
+      "projectionDescription": "By tracking these goals, you are projected to reach {{weight}} kg in {{days}} days.",
+      "goalLabels": {
+        "moderateWeightLoss": "Moderate Weight Loss Strategy",
+        "enduranceTraining": "Endurance Training",
+        "generalFitness": "General Fitness",
+        "leanBulk": "Lean Bulk Strategy",
+        "strengthSurplus": "Strength Surplus Strategy"
+      }
+    }
   },
   "goalsManagement": {
     "title": "Goals Management",
@@ -922,7 +945,8 @@
       "dynamicAdjustments": "Dynamic Adjustments",
       "calculateForMe": "Calculate for Me",
       "setThemMyself": "I'll Set Them Myself",
-      "aiEngineDisclaimer": "Musclogs AI engine uses verified metabolic formulas to ensure your safety and progress efficiency."
+      "aiEngineDisclaimer": "Musclogs AI engine uses verified metabolic formulas to ensure your safety and progress efficiency.",
+      "missingData": "Please complete your fitness details first so we can calculate your plan."
     }
   },
   "settings": {

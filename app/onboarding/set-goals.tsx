@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { Q } from '@nozbe/watermelondb';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -13,6 +14,18 @@ import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
+import { database } from '../../database';
+import UserMetric from '../../database/models/UserMetric';
+import { UserService } from '../../database/services';
+import { useSettings } from '../../hooks/useSettings';
+import {
+  calculateNutritionPlan,
+  inchesToCm,
+  lbsToKg,
+  normalizeFitnessGoal,
+  type NutritionCalculatorInput,
+} from '../../utils/nutritionCalculator';
+import { showSnackbar } from '../../utils/snackbarService';
 
 const ILLUSTRATION_VIEWBOX = 400;
 
@@ -269,6 +282,77 @@ export default function SetGoals() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { units } = useSettings();
+  const [isCalculating, setIsCalculating] = useState(false);
+
+  const handleCalculateForMe = useCallback(async () => {
+    setIsCalculating(true);
+    try {
+      const user = await UserService.getCurrentUser();
+      if (!user) {
+        showSnackbar('error', t('onboarding.setGoals.missingData'));
+        return;
+      }
+
+      // Fetch latest weight metric
+      const weightMetrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(
+          Q.where('type', 'weight'),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc)
+        )
+        .fetch();
+
+      // Fetch latest height metric
+      const heightMetrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(
+          Q.where('type', 'height'),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc)
+        )
+        .fetch();
+
+      const rawWeight = weightMetrics.length > 0 ? weightMetrics[0].value : 0;
+      const rawHeight = heightMetrics.length > 0 ? heightMetrics[0].value : 0;
+
+      if (rawWeight <= 0 || rawHeight <= 0) {
+        showSnackbar('error', t('onboarding.setGoals.missingData'));
+        return;
+      }
+
+      // Convert to metric if stored in imperial
+      const weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
+      const heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
+      const age = user.getAge();
+
+      const input: NutritionCalculatorInput = {
+        gender: user.gender,
+        weightKg,
+        heightCm,
+        age: age > 0 ? age : 25, // fallback if DOB is placeholder
+        activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
+        fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
+        liftingExperience: user.liftingExperience || 'intermediate',
+      };
+
+      const plan = calculateNutritionPlan(input);
+
+      router.push({
+        pathname: '/onboarding/nutrition-goals-results',
+        params: {
+          aiGenerated: 'true',
+          plan: JSON.stringify(plan),
+        },
+      });
+    } catch (error) {
+      console.error('Error calculating nutrition plan:', error);
+      showSnackbar('error', t('onboarding.setGoals.missingData'));
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [units, router, t]);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -368,12 +452,9 @@ export default function SetGoals() {
           icon={() => (
             <MaterialIcons name="auto-awesome" size={20} color={theme.colors.text.white} />
           )}
-          onPress={() => {
-            router.push({
-              pathname: '/onboarding/nutrition-goals-results',
-              params: { aiGenerated: 'true' },
-            });
-          }}
+          onPress={handleCalculateForMe}
+          loading={isCalculating}
+          disabled={isCalculating}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
 

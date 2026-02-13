@@ -53,7 +53,7 @@ export function createMockUser(overrides: Partial<any> = {}) {
     email: 'test@example.com',
     dateOfBirth: Date.now() - 30 * 365 * 24 * 60 * 60 * 1000, // 30 years ago
     gender: 'male' as const,
-    fitnessGoal: 'build_muscle',
+    fitnessGoal: 'hypertrophy',
     activityLevel: 3,
     liftingExperience: 'intermediate' as const,
     syncId: 'sync-123',

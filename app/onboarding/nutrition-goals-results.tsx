@@ -2,35 +2,177 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { LineChart } from '../../components/LineChart';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
+import { NutritionGoalService } from '../../database/services';
+import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import type { NutritionPlan } from '../../utils/nutritionCalculator';
+import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ aiGenerated?: string }>();
+  const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Projection data for the 90-day chart (simple linear projection from current to target weight)
-  const projectionLength = 10;
-  const startWeight = 83;
-  const targetWeight = 78.5;
-  const projectionData = Array.from({ length: projectionLength }).map((_, i) => {
-    const t = i / (projectionLength - 1);
-    const weight = startWeight + (targetWeight - startWeight) * t;
-    return {
-      marker: `${weight.toFixed(1)} kg`,
-      x: i,
-      y: parseFloat(weight.toFixed(1)),
-    };
+  // Parse the plan from route params (AI-generated) or fall back to DB (manual)
+  const parsedPlan = useMemo<NutritionPlan | null>(() => {
+    if (params.plan) {
+      try {
+        return JSON.parse(params.plan) as NutritionPlan;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }, [params.plan]);
+
+  // For manual entry, load saved goal from DB
+  const { goal: savedGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
+    mode: 'current',
   });
+
+  // Resolve display data: prefer parsedPlan (AI), fall back to savedGoal (manual)
+  const displayData = useMemo(() => {
+    if (parsedPlan) {
+      return {
+        targetCalories: parsedPlan.targetCalories,
+        protein: parsedPlan.protein,
+        carbs: parsedPlan.carbs,
+        fats: parsedPlan.fats,
+        proteinPct: parsedPlan.proteinPct,
+        carbsPct: parsedPlan.carbsPct,
+        fatsPct: parsedPlan.fatsPct,
+        goalLabel: parsedPlan.goalLabel,
+        startWeight: parsedPlan.currentWeightKg,
+        projectedWeight: parsedPlan.projectedWeightKg,
+        weightChange: parseFloat(
+          (parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg).toFixed(1)
+        ),
+        projectionDays: parsedPlan.projectionDays,
+        hasProjection: true,
+      };
+    }
+
+    if (savedGoal) {
+      const totalMacroCals = savedGoal.protein * 4 + savedGoal.carbs * 4 + savedGoal.fats * 9;
+      const effectiveTotal = totalMacroCals > 0 ? totalMacroCals : savedGoal.totalCalories || 1;
+
+      return {
+        targetCalories: savedGoal.totalCalories,
+        protein: savedGoal.protein,
+        carbs: savedGoal.carbs,
+        fats: savedGoal.fats,
+        proteinPct: Math.round((savedGoal.protein * 4 * 100) / effectiveTotal),
+        carbsPct: Math.round((savedGoal.carbs * 4 * 100) / effectiveTotal),
+        fatsPct: Math.round((savedGoal.fats * 9 * 100) / effectiveTotal),
+        goalLabel: null,
+        startWeight: 0,
+        projectedWeight: 0,
+        weightChange: 0,
+        projectionDays: 0,
+        hasProjection: false,
+      };
+    }
+
+    return null;
+  }, [parsedPlan, savedGoal]);
+
+  // Build projection chart data
+  const projectionLength = 10;
+  const projectionData = useMemo(() => {
+    if (!displayData?.hasProjection) return [];
+
+    const { startWeight, projectedWeight } = displayData;
+    return Array.from({ length: projectionLength }).map((_, i) => {
+      const progress = i / (projectionLength - 1);
+      const weight = startWeight + (projectedWeight - startWeight) * progress;
+      return {
+        marker: `${weight.toFixed(1)} kg`,
+        x: i,
+        y: parseFloat(weight.toFixed(1)),
+      };
+    });
+  }, [displayData]);
+
+  // Determine eating phase from the calorie delta
+  const eatingPhase = useMemo(() => {
+    if (!parsedPlan) {
+      return savedGoal?.eatingPhase ?? 'maintain';
+    }
+    if (parsedPlan.targetCalories < parsedPlan.tdee) return 'cut';
+    if (parsedPlan.targetCalories > parsedPlan.tdee) return 'bulk';
+    return 'maintain';
+  }, [parsedPlan, savedGoal]);
+
+  const handleAccept = async () => {
+    if (!displayData) return;
+
+    setIsSaving(true);
+    try {
+      // Only save if this is an AI-generated plan (manual already saved in nutrition-goals screen)
+      if (aiGenerated && parsedPlan) {
+        await NutritionGoalService.saveGoals({
+          totalCalories: parsedPlan.targetCalories,
+          protein: parsedPlan.protein,
+          carbs: parsedPlan.carbs,
+          fats: parsedPlan.fats,
+          fiber: 30, // default fiber recommendation
+          eatingPhase: eatingPhase as 'cut' | 'maintain' | 'bulk',
+          targetWeight: parsedPlan.projectedWeightKg,
+          targetBodyFat: 0,
+          targetBMI: 0,
+          targetFFMI: 0,
+          targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
+        });
+      }
+
+      router.push('/onboarding/personal-info');
+    } catch (error) {
+      console.error('Error saving nutrition goals:', error);
+      showSnackbar('error', t('nutritionGoals.errorSaving'));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Loading state for manual flow
+  if (!aiGenerated && isLoadingGoal) {
+    return (
+      <MasterLayout showNavigationMenu={false}>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      </MasterLayout>
+    );
+  }
+
+  // Format calorie number with comma separator
+  const formattedCalories = displayData ? displayData.targetCalories.toLocaleString() : '0';
+
+  // Trending icon based on weight change direction
+  const trendingIcon =
+    displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
+
+  // Weight change label
+  const weightChangeLabel =
+    displayData && displayData.weightChange > 0
+      ? t('nutritionGoals.results.estimatedWeightGain')
+      : t('nutritionGoals.results.estimatedWeightLoss');
+
+  // Formatted weight change with sign
+  const formattedWeightChange = displayData
+    ? `${displayData.weightChange > 0 ? '+' : ''}${displayData.weightChange.toFixed(1)}`
+    : '0';
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -43,22 +185,24 @@ export default function NutritionGoalsResults() {
         <View className="flex-col items-center px-6 pb-8">
           {/* Header */}
           <View className="mb-8 items-center text-center">
-            <View
-              className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
-              style={{ backgroundColor: theme.colors.accent.primary10 }}
-            >
-              <MaterialIcons name="auto-awesome" size={14} color={theme.colors.accent.primary} />
-              <Text
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{
-                  color: theme.colors.accent.primary,
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                }}
+            {aiGenerated ? (
+              <View
+                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
+                style={{ backgroundColor: theme.colors.accent.primary10 }}
               >
-                {aiGenerated ? t('nutritionGoals.aiCalculationComplete') : t('nutritionGoals.calculationComplete')}
-              </Text>
-            </View>
+                <MaterialIcons name="auto-awesome" size={14} color={theme.colors.accent.primary} />
+                <Text
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{
+                    color: theme.colors.accent.primary,
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.bold,
+                  }}
+                >
+                  {t('nutritionGoals.results.aiCalculationComplete')}
+                </Text>
+              </View>
+            ) : null}
 
             <Text
               className="mb-2 text-center text-[32px] font-bold leading-[1.1]"
@@ -68,7 +212,7 @@ export default function NutritionGoalsResults() {
                 fontWeight: theme.typography.fontWeight.black,
               }}
             >
-              Your{' '}
+              {t('nutritionGoals.results.your')}{' '}
               <Text
                 style={{
                   color: theme.colors.status.indigoLight,
@@ -76,7 +220,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.black,
                 }}
               >
-                Nutrition Plan
+                {t('nutritionGoals.results.nutritionPlan')}
               </Text>
             </Text>
 
@@ -88,7 +232,9 @@ export default function NutritionGoalsResults() {
                 fontWeight: theme.typography.fontWeight.normal,
               }}
             >
-              {t('nutritionGoals.planDescription')}
+              {aiGenerated
+                ? t('nutritionGoals.results.aiDescription')
+                : t('nutritionGoals.results.manualDescription')}
             </Text>
           </View>
 
@@ -135,7 +281,7 @@ export default function NutritionGoalsResults() {
                   letterSpacing: 2,
                 }}
               >
-                Daily Calorie Target
+                {t('nutritionGoals.results.dailyCalorieTarget')}
               </Text>
 
               <View className="flex-row items-baseline gap-2">
@@ -147,7 +293,7 @@ export default function NutritionGoalsResults() {
                     fontWeight: theme.typography.fontWeight.black,
                   }}
                 >
-                  2,150
+                  {formattedCalories}
                 </Text>
                 <Text
                   className="text-xl font-bold text-white/90"
@@ -157,49 +303,51 @@ export default function NutritionGoalsResults() {
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
                 >
-                  KCAL
+                  {t('nutritionGoals.results.kcal')}
                 </Text>
               </View>
 
-              <View
-                className="mt-4 flex-row items-center justify-between border-t pt-4"
-                style={{
-                  borderTopColor: `${theme.colors.text.white}1A`,
-                  borderTopWidth: 1,
-                  marginTop: theme.spacing.margin.md,
-                  paddingTop: theme.spacing.padding.md,
-                }}
-              >
-                <Text
-                  className="text-xs font-medium text-white/70"
-                  style={{
-                    color: `${theme.colors.text.white}B3`,
-                    fontSize: theme.typography.fontSize.xxs,
-                    fontWeight: theme.typography.fontWeight.medium,
-                  }}
-                >
-                  Moderate Weight Loss Strategy
-                </Text>
+              {displayData?.goalLabel ? (
                 <View
-                  className="h-1.5 w-12 overflow-hidden rounded-full bg-white/30"
+                  className="mt-4 flex-row items-center justify-between border-t pt-4"
                   style={{
-                    height: 6,
-                    width: 48,
-                    backgroundColor: `${theme.colors.text.white}4D`,
-                    borderRadius: theme.borderRadius.full,
+                    borderTopColor: `${theme.colors.text.white}1A`,
+                    borderTopWidth: 1,
+                    marginTop: theme.spacing.margin.md,
+                    paddingTop: theme.spacing.padding.md,
                   }}
                 >
-                  <View
-                    className="h-full bg-white"
+                  <Text
+                    className="text-xs font-medium text-white/70"
                     style={{
-                      height: '100%',
-                      width: '66%',
-                      backgroundColor: theme.colors.text.white,
+                      color: `${theme.colors.text.white}B3`,
+                      fontSize: theme.typography.fontSize.xxs,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    {t(`nutritionGoals.results.goalLabels.${displayData.goalLabel}`)}
+                  </Text>
+                  <View
+                    className="h-1.5 w-12 overflow-hidden rounded-full bg-white/30"
+                    style={{
+                      height: 6,
+                      width: 48,
+                      backgroundColor: `${theme.colors.text.white}4D`,
                       borderRadius: theme.borderRadius.full,
                     }}
-                  />
+                  >
+                    <View
+                      className="h-full bg-white"
+                      style={{
+                        height: '100%',
+                        width: '66%',
+                        backgroundColor: theme.colors.text.white,
+                        borderRadius: theme.borderRadius.full,
+                      }}
+                    />
+                  </View>
                 </View>
-              </View>
+              ) : null}
             </View>
           </View>
 
@@ -225,7 +373,7 @@ export default function NutritionGoalsResults() {
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
-                Protein
+                {t('nutritionGoals.results.protein')}
               </Text>
               <Text
                 className="text-center text-lg font-bold leading-tight text-white"
@@ -235,7 +383,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                161g
+                {displayData?.protein ?? 0}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -245,7 +393,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                30%
+                {displayData?.proteinPct ?? 0}%
               </Text>
             </GenericCard>
 
@@ -269,7 +417,7 @@ export default function NutritionGoalsResults() {
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
-                Carbs
+                {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
                 className="text-center text-lg font-bold leading-tight text-white"
@@ -279,7 +427,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                215g
+                {displayData?.carbs ?? 0}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -289,7 +437,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                40%
+                {displayData?.carbsPct ?? 0}%
               </Text>
             </GenericCard>
 
@@ -313,7 +461,7 @@ export default function NutritionGoalsResults() {
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
-                Fats
+                {t('nutritionGoals.results.fats')}
               </Text>
               <Text
                 className="text-center text-lg font-bold leading-tight text-white"
@@ -323,7 +471,7 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                72g
+                {displayData?.fats ?? 0}g
               </Text>
               <Text
                 className="text-center text-[11px] font-medium text-slate-500"
@@ -333,116 +481,119 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
-                30%
+                {displayData?.fatsPct ?? 0}%
               </Text>
             </GenericCard>
           </View>
 
-          {/* 90-Day Projection Card */}
-          <GenericCard
-            variant="default"
-            containerStyle={{
-              width: '100%',
-              borderWidth: 1,
-              borderColor: `${theme.colors.accent.primary}33`,
-              padding: theme.spacing.padding.sm,
-            }}
-          >
-            <View className="mb-2 flex-row items-center gap-2">
-              <MaterialIcons name="trending-down" size={18} color={theme.colors.accent.primary} />
-              <Text
-                className="text-sm font-bold text-white"
-                style={{
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.bold,
-                }}
-              >
-                90-Day Projection
-              </Text>
-            </View>
-
-            <View className="flex-col items-center justify-center py-1">
-              <Text
-                className="mb-1 text-xs font-medium text-slate-400"
-                style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  marginBottom: theme.spacing.margin.xs,
-                }}
-              >
-                Estimated Weight Loss
-              </Text>
-              <View className="flex-row items-baseline">
+          {/* 90-Day Projection Card (only for AI-generated plans) */}
+          {displayData?.hasProjection ? (
+            <GenericCard
+              variant="default"
+              containerStyle={{
+                width: '100%',
+                borderWidth: 1,
+                borderColor: `${theme.colors.accent.primary}33`,
+                padding: theme.spacing.padding.sm,
+              }}
+            >
+              <View className="mb-2 flex-row items-center gap-2">
+                <MaterialIcons
+                  name={trendingIcon as 'trending-down' | 'trending-up'}
+                  size={18}
+                  color={theme.colors.accent.primary}
+                />
                 <Text
-                  className="mr-2 text-4xl font-black tracking-tight text-white"
+                  className="text-sm font-bold text-white"
                   style={{
                     color: theme.colors.text.primary,
-                    fontSize: theme.typography.fontSize['4xl'],
-                    fontWeight: theme.typography.fontWeight.black,
-                    letterSpacing: -0.5,
-                  }}
-                >
-                  -4.5
-                </Text>
-                <Text
-                  className="text-primary text-xl font-bold"
-                  style={{
-                    color: theme.colors.accent.primary,
-                    fontSize: theme.typography.fontSize.xl,
+                    fontSize: theme.typography.fontSize.sm,
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
                 >
-                  kg
+                  {t('nutritionGoals.results.projectionTitle', {
+                    days: displayData.projectionDays,
+                  })}
                 </Text>
               </View>
-              <Text
-                className="max-w-[200px] text-center text-[11px] text-slate-500"
-                style={{
-                  color: theme.colors.text.tertiary,
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  textAlign: 'center',
-                  maxWidth: 200,
-                }}
-              >
-                By tracking these goals, you are projected to hit{' '}
+
+              <View className="flex-col items-center justify-center py-1">
                 <Text
+                  className="mb-1 text-xs font-medium text-slate-400"
                   style={{
-                    color: theme.colors.text.primary,
-                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.xxs,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    marginBottom: theme.spacing.margin.xs,
                   }}
                 >
-                  78.5 kg
-                </Text>{' '}
-                by November.
-              </Text>
-            </View>
+                  {weightChangeLabel}
+                </Text>
+                <View className="flex-row items-baseline">
+                  <Text
+                    className="mr-2 text-4xl font-black tracking-tight text-white"
+                    style={{
+                      color: theme.colors.text.primary,
+                      fontSize: theme.typography.fontSize['4xl'],
+                      fontWeight: theme.typography.fontWeight.black,
+                      letterSpacing: -0.5,
+                    }}
+                  >
+                    {formattedWeightChange}
+                  </Text>
+                  <Text
+                    className="text-primary text-xl font-bold"
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontSize: theme.typography.fontSize.xl,
+                      fontWeight: theme.typography.fontWeight.bold,
+                    }}
+                  >
+                    kg
+                  </Text>
+                </View>
+                <Text
+                  className="max-w-[200px] text-center text-[11px] text-slate-500"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.xxs,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    textAlign: 'center',
+                    maxWidth: 200,
+                  }}
+                >
+                  {t('nutritionGoals.results.projectionDescription', {
+                    weight: displayData.projectedWeight.toFixed(1),
+                    days: displayData.projectionDays,
+                  })}
+                </Text>
+              </View>
 
-            {/* Use LineChart instead of bars */}
-            <View className="relative mt-0 w-full">
-              <LineChart
-                data={projectionData.map(({ x, y }) => ({ x, y }))}
-                height={96}
-                chartHeight={72}
-                // pull the chart up slightly to remove gap above
-                marginTop={-12}
-                lineColor={theme.colors.accent.primary}
-                areaColor={theme.colors.accent.primary30}
-                lineWidth={3}
-                showLastPoint={true}
-                lastPointSize={6}
-                lastPointStrokeColor={theme.colors.background.card}
-                xDomain={[0, projectionLength - 1]}
-                yDomain={[
-                  Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
-                  Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
-                ]}
-                marginBottom={4}
-              />
-            </View>
-          </GenericCard>
+              {/* Projection line chart */}
+              {projectionData.length > 0 ? (
+                <View className="relative mt-0 w-full">
+                  <LineChart
+                    data={projectionData.map(({ x, y }) => ({ x, y }))}
+                    height={96}
+                    chartHeight={72}
+                    marginTop={-12}
+                    lineColor={theme.colors.accent.primary}
+                    areaColor={theme.colors.accent.primary30}
+                    lineWidth={3}
+                    showLastPoint={true}
+                    lastPointSize={6}
+                    lastPointStrokeColor={theme.colors.background.card}
+                    xDomain={[0, projectionLength - 1]}
+                    yDomain={[
+                      Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
+                      Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
+                    ]}
+                    marginBottom={4}
+                  />
+                </View>
+              ) : null}
+            </GenericCard>
+          ) : null}
         </View>
       </ScrollView>
 
@@ -457,9 +608,9 @@ export default function NutritionGoalsResults() {
             <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.white} />
           )}
           iconPosition="right"
-          onPress={() => {
-            router.push('/onboarding/personal-info');
-          }}
+          onPress={handleAccept}
+          loading={isSaving}
+          disabled={isSaving}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
 

@@ -4,7 +4,7 @@ import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
-import User, { UserProfileUpdate } from '../models/User';
+import User, { FitnessGoal, UserProfileUpdate } from '../models/User';
 
 export class UserService {
   /**
@@ -44,7 +44,7 @@ export class UserService {
     fullName: string;
     dateOfBirth: number;
     gender: 'male' | 'female' | 'other';
-    fitnessGoal: string;
+    fitnessGoal: FitnessGoal;
     activityLevel: number;
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
     email?: string;

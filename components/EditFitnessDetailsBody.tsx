@@ -1,6 +1,5 @@
 import {
   Activity,
-  CheckCircle2,
   Coffee,
   Dumbbell,
   Flame,
@@ -17,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { FitnessGoal } from '../database/models/User';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -42,7 +42,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
-  fitnessGoal: string;
+  fitnessGoal: FitnessGoal;
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
 };
@@ -62,7 +62,9 @@ export function EditFitnessDetailsBody({
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
   const [height, setHeight] = useState(initialData?.height ?? '0');
-  const [fitnessGoal, setFitnessGoal] = useState(initialData?.fitnessGoal ?? '');
+  const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>(
+    initialData?.fitnessGoal ?? 'general'
+  );
   const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 3);
   const [experience, setExperience] = useState<'beginner' | 'intermediate' | 'advanced'>(
     initialData?.experience ?? 'intermediate'
@@ -143,8 +145,16 @@ export function EditFitnessDetailsBody({
   const currentActivityLabel =
     activityLevelOptions.find((opt) => opt.level === activityLevel)?.title || '';
 
-  const fitnessGoalOptions = [
+  const fitnessGoalOptions: {
+    value: FitnessGoal;
+    title: string;
+    description: string;
+    icon: typeof Activity;
+    iconColor: string;
+    iconBgColor: string;
+  }[] = [
     {
+      value: 'hypertrophy',
       title: t('editFitnessDetails.fitnessGoalLabels.hypertrophy'),
       description: t('editFitnessDetails.fitnessGoalDescriptions.hypertrophy'),
       icon: Activity,
@@ -152,6 +162,7 @@ export function EditFitnessDetailsBody({
       iconBgColor: theme.colors.accent.primary10,
     },
     {
+      value: 'strength',
       title: t('editFitnessDetails.fitnessGoalLabels.strength'),
       description: t('editFitnessDetails.fitnessGoalDescriptions.strength'),
       icon: Zap,
@@ -159,6 +170,7 @@ export function EditFitnessDetailsBody({
       iconBgColor: theme.colors.status.warning10,
     },
     {
+      value: 'endurance',
       title: t('editFitnessDetails.fitnessGoalLabels.endurance'),
       description: t('editFitnessDetails.fitnessGoalDescriptions.endurance'),
       icon: Timer,
@@ -166,6 +178,7 @@ export function EditFitnessDetailsBody({
       iconBgColor: theme.colors.status.info10,
     },
     {
+      value: 'weight_loss',
       title: t('editFitnessDetails.fitnessGoalLabels.weightLoss'),
       description: t('editFitnessDetails.fitnessGoalDescriptions.weightLoss'),
       icon: Target,
@@ -173,6 +186,7 @@ export function EditFitnessDetailsBody({
       iconBgColor: theme.colors.rose.brand10,
     },
     {
+      value: 'general',
       title: t('editFitnessDetails.fitnessGoalLabels.general'),
       description: t('editFitnessDetails.fitnessGoalDescriptions.general'),
       icon: Heart,
@@ -213,7 +227,7 @@ export function EditFitnessDetailsBody({
   const SelectedActivityIcon = selectedActivityOption.icon;
 
   const selectedGoalOption =
-    fitnessGoalOptions.find((opt) => opt.title === fitnessGoal) || fitnessGoalOptions[0];
+    fitnessGoalOptions.find((opt) => opt.value === fitnessGoal) || fitnessGoalOptions[0];
   const SelectedGoalIcon = selectedGoalOption.icon;
 
   return (
@@ -287,7 +301,7 @@ export function EditFitnessDetailsBody({
               {t('editFitnessDetails.fitnessGoal')}
             </Text>
             <PickerButton
-              label={fitnessGoal}
+              label={selectedGoalOption.title}
               icon={
                 <SelectedGoalIcon
                   size={theme.iconSize.lg}
@@ -361,7 +375,7 @@ export function EditFitnessDetailsBody({
         items={fitnessGoalOptions.map((option) => ({
           ...option,
           onPress: () => {
-            setFitnessGoal(option.title);
+            setFitnessGoal(option.value);
             setIsGoalPickerVisible(false);
           },
         }))}

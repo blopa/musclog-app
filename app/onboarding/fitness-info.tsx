@@ -71,7 +71,7 @@ export default function FitnessInfo() {
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
-            fitnessGoal: '',
+            fitnessGoal: 'general',
             activityLevel: 3,
             experience: 'intermediate',
           });
@@ -82,7 +82,7 @@ export default function FitnessInfo() {
           units: 'metric',
           weight: '0.0',
           height: '0',
-          fitnessGoal: '',
+          fitnessGoal: 'general',
           activityLevel: 3,
           experience: 'intermediate',
         });
