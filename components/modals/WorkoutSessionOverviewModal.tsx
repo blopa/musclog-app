@@ -109,6 +109,8 @@ function ExerciseCard({
   onPress?: () => void;
 }) {
   const theme = useTheme();
+  const { t } = useTranslation();
+
   const isCompleted = status === 'completed';
   const isSkipped = status === 'skipped';
   const isInProgress = status === 'in-progress';
@@ -142,7 +144,9 @@ function ExerciseCard({
                 <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
                 {isSkipped ? (
                   <View className="rounded bg-bg-secondary px-2 py-1">
-                    <Text className="text-[10px] font-bold text-text-muted">SKIPPED</Text>
+                    <Text className="text-[10px] font-bold text-text-muted">
+                      {t('workout.skipped')}
+                    </Text>
                   </View>
                 ) : null}
               </View>
@@ -300,8 +304,8 @@ export default function WorkoutSessionOverviewModal({
       icon: XCircle,
       iconColor: theme.colors.status.error,
       iconBgColor: theme.colors.status.error8,
-      title: 'Cancel Workout',
-      description: 'Discard this workout and return to workouts list',
+      title: t('workoutOptions.cancelWorkout'),
+      description: t('workoutOptions.cancelWorkoutDesc'),
       onPress: () => {
         setIsMenuVisible(false);
         onCancelWorkout?.();
@@ -311,8 +315,8 @@ export default function WorkoutSessionOverviewModal({
       icon: CheckSquare,
       iconColor: theme.colors.status.success,
       iconBgColor: theme.colors.status.success20,
-      title: 'Finish Workout',
-      description: 'Complete this workout and view summary',
+      title: t('workoutOptions.finishWorkout'),
+      description: t('workoutOptions.finishWorkoutDesc'),
       onPress: () => {
         setIsMenuVisible(false);
         onFinishWorkout?.();
@@ -369,7 +373,7 @@ export default function WorkoutSessionOverviewModal({
         <BottomPopUpMenu
           visible={isMenuVisible}
           onClose={() => setIsMenuVisible(false)}
-          title="Workout Options"
+          title={t('workoutOptions.title')}
           items={menuItems}
         />
         <ScrollView

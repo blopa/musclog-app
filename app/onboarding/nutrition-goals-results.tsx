@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
@@ -10,6 +11,7 @@ import { Button } from '../../components/theme/Button';
 
 export default function NutritionGoalsResults() {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   // Projection data for the 90-day chart (simple linear projection from current to target weight)
   const projectionLength = 10;
@@ -443,7 +445,7 @@ export default function NutritionGoalsResults() {
       {/* Bottom Actions */}
       <BottomButtonWrapper>
         <Button
-          label="Accept and Continue"
+          label={t('nutritionGoals.acceptAndContinue')}
           variant="gradientCta"
           width="full"
           size="md"
@@ -460,7 +462,7 @@ export default function NutritionGoalsResults() {
         <View style={{ height: theme.spacing.margin.md }} />
 
         <Button
-          label="Adjust Goals Manually"
+          label={t('nutritionGoals.adjustGoalsManually')}
           variant="outline"
           width="full"
           size="md"

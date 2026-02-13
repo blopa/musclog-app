@@ -474,12 +474,12 @@ export function FoodDetailsModal({
             nutritionalData.salt > 0 ? (
               <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
                 <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
-                  Additional Nutrition
+                  {t('food.foodDetails.additionalNutrition')}
                 </Text>
                 <View className="gap-2">
                   {nutritionalData.fiber > 0 ? (
                     <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">Fiber</Text>
+                      <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
                       <Text className="text-sm font-medium text-text-primary">
                         {Math.round(nutritionalData.fiber * (servingSize / 100) * 10) / 10}g
                       </Text>
@@ -487,7 +487,9 @@ export function FoodDetailsModal({
                   ) : null}
                   {nutritionalData.sugars > 0 ? (
                     <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">Sugars</Text>
+                      <Text className="text-sm text-text-secondary">
+                        {t('food.foodDetails.sugars')}
+                      </Text>
                       <Text className="text-sm font-medium text-text-primary">
                         {Math.round(nutritionalData.sugars * (servingSize / 100) * 10) / 10}g
                       </Text>
@@ -495,7 +497,9 @@ export function FoodDetailsModal({
                   ) : null}
                   {nutritionalData.saturatedFat > 0 ? (
                     <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">Saturated Fat</Text>
+                      <Text className="text-sm text-text-secondary">
+                        {t('food.foodDetails.saturatedFat')}
+                      </Text>
                       <Text className="text-sm font-medium text-text-primary">
                         {Math.round(nutritionalData.saturatedFat * (servingSize / 100) * 10) / 10}g
                       </Text>
@@ -503,7 +507,9 @@ export function FoodDetailsModal({
                   ) : null}
                   {nutritionalData.salt > 0 ? (
                     <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">Salt</Text>
+                      <Text className="text-sm text-text-secondary">
+                        {t('food.foodDetails.salt')}
+                      </Text>
                       <Text className="text-sm font-medium text-text-primary">
                         {Math.round(nutritionalData.salt * (servingSize / 100) * 1000) / 1000}g
                       </Text>

@@ -221,7 +221,7 @@ export default function EditPastWorkoutDataModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('workoutDetail.editSetsTitle') || 'Edit Sets'}
+      title={t('workoutDetail.editSetsTitle')}
       subtitle={''}
       scrollable={false}
       headerRight={headerRight}

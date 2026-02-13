@@ -217,7 +217,7 @@ export default function RestTimerScreen() {
       <MasterLayout showNavigationMenu={false}>
         <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-text-primary">{error || 'Failed to load data'}</Text>
+          <Text className="text-text-primary">{error || t('errors.failedToLoadData')}</Text>
         </View>
       </MasterLayout>
     );

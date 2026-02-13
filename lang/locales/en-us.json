@@ -131,6 +131,10 @@
       "today": "Today",
       "addFood": "Add Food",
       "macro": "MACRO",
+      "additionalNutrition": "Additional Nutrition",
+      "sugars": "Sugars",
+      "saturatedFat": "Saturated Fat",
+      "salt": "Salt",
       "successMessage": "Food tracked successfully!",
       "errorMessage": "Failed to track food. Please try again."
     },
@@ -258,6 +262,16 @@
     "settings": "Settings",
     "progress": "Progress",
     "debugPage": "Debug Page"
+  },
+  "workout": {
+    "sessionOverview": "Session Overview",
+    "startWorkout": "Start Workout",
+    "resumeSession": "Resume Session",
+    "workout": "Workout",
+    "inProgress": "In Progress",
+    "exercises": "{{count}} Exercises",
+    "workoutSequence": "Workout Sequence",
+    "skipped": "SKIPPED"
   },
   "workoutSession": {
     "totalTime": "TOTAL TIME",
@@ -390,6 +404,10 @@
   },
   "workoutOptions": {
     "title": "Workout Options",
+    "cancelWorkout": "Cancel Workout",
+    "cancelWorkoutDesc": "Discard this workout and return to workouts list",
+    "finishWorkout": "Finish Workout",
+    "finishWorkoutDesc": "Complete this workout and view summary",
     "previewWorkout": "Preview Full Workout",
     "previewWorkoutDesc": "See all exercises in this plan",
     "workoutSettings": "Workout Settings",
@@ -627,7 +645,8 @@
       "title": "Connection Timeout",
       "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
       "tryAgain": "Try Again"
-    }
+    },
+    "failedToLoadData": "Failed to load data"
   },
   "snackbar": {
     "view": "VIEW",
@@ -801,7 +820,9 @@
       "targetBodyFat": "% percentage",
       "targetBMI": "Body Mass Index",
       "targetFFMI": "Fat-Free Mass Index"
-    }
+    },
+    "acceptAndContinue": "Accept and Continue",
+    "adjustGoalsManually": "Adjust Goals Manually"
   },
   "goalsManagement": {
     "title": "Goals Management",
