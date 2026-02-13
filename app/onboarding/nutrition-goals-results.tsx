@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -13,6 +14,8 @@ import { Button } from '../../components/theme/Button';
 export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const params = useLocalSearchParams<{ aiGenerated?: string }>();
+  const aiGenerated = params.aiGenerated === 'true';
 
   // Projection data for the 90-day chart (simple linear projection from current to target weight)
   const projectionLength = 10;
@@ -446,6 +449,7 @@ export default function NutritionGoalsResults() {
       {/* Bottom Actions */}
       <BottomButtonWrapper>
         <Button
+           // TODO: if aiGenerated is false, label should say "Continue" and not "Accept and Continue"
           label={t('nutritionGoals.acceptAndContinue')}
           variant="gradientCta"
           width="full"
@@ -462,13 +466,14 @@ export default function NutritionGoalsResults() {
 
         <View style={{ height: theme.spacing.margin.md }} />
 
+        {/* TODO: hide button if aiGenerated is false */}
         <Button
           label={t('nutritionGoals.adjustGoalsManually')}
           variant="outline"
           width="full"
           size="md"
           onPress={() => {
-            // Handle manual adjustment
+            // TODO: Navigate to nutrition-goals
           }}
         />
       </BottomButtonWrapper>
