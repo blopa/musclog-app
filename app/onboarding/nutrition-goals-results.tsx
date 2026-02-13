@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -14,6 +14,7 @@ import { Button } from '../../components/theme/Button';
 export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const params = useLocalSearchParams<{ aiGenerated?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
 
@@ -449,8 +450,7 @@ export default function NutritionGoalsResults() {
       {/* Bottom Actions */}
       <BottomButtonWrapper>
         <Button
-           // TODO: if aiGenerated is false, label should say "Continue" and not "Accept and Continue"
-          label={t('nutritionGoals.acceptAndContinue')}
+          label={aiGenerated ? t('nutritionGoals.acceptAndContinue') : t('nutritionGoals.continue')}
           variant="gradientCta"
           width="full"
           size="md"
@@ -459,23 +459,25 @@ export default function NutritionGoalsResults() {
           )}
           iconPosition="right"
           onPress={() => {
-            // TODO: Navigate to personal-info
+            router.push('/onboarding/personal-info');
           }}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
 
-        <View style={{ height: theme.spacing.margin.md }} />
-
-        {/* TODO: hide button if aiGenerated is false */}
-        <Button
-          label={t('nutritionGoals.adjustGoalsManually')}
-          variant="outline"
-          width="full"
-          size="md"
-          onPress={() => {
-            // TODO: Navigate to nutrition-goals
-          }}
-        />
+        {aiGenerated ? (
+          <>
+            <View style={{ height: theme.spacing.margin.md }} />
+            <Button
+              label={t('nutritionGoals.adjustGoalsManually')}
+              variant="outline"
+              width="full"
+              size="md"
+              onPress={() => {
+                router.push('/onboarding/nutrition-goals');
+              }}
+            />
+          </>
+        ) : null}
       </BottomButtonWrapper>
     </MasterLayout>
   );

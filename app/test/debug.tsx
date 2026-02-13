@@ -27,7 +27,13 @@ const APP_SCREENS = [
   { name: 'Onboarding', route: '/onboarding/onboarding', category: 'Onboarding' },
   { name: 'Personal Info', route: '/onboarding/personal-info', category: 'Onboarding' },
   { name: 'Fitness Info', route: '/onboarding/fitness-info', category: 'Onboarding' },
+  { name: 'Set Goals', route: '/onboarding/set-goals', category: 'Onboarding' },
   { name: 'Nutrition Goals', route: '/onboarding/nutrition-goals', category: 'Onboarding' },
+  {
+    name: 'Nutrition Goals Results',
+    route: '/onboarding/nutrition-goals-results',
+    category: 'Onboarding',
+  },
   { name: 'Health Connect', route: '/onboarding/health-connect', category: 'Onboarding' },
   { name: 'Connect with Google', route: '/onboarding/connect-with-google', category: 'Onboarding' },
   { name: 'Test: Buttons', route: '/test/buttons', category: 'Test' },

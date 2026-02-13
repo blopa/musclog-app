@@ -822,7 +822,8 @@
       "targetFFMI": "Fat-Free Mass Index"
     },
     "acceptAndContinue": "Accept and Continue",
-    "adjustGoalsManually": "Adjust Goals Manually"
+    "adjustGoalsManually": "Adjust Goals Manually",
+    "continue": "Continue"
   },
   "goalsManagement": {
     "title": "Goals Management",

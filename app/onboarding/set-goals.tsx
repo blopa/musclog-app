@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +11,8 @@ import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'reac
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
-import { Button } from '../../components/theme/Button';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { Button } from '../../components/theme/Button';
 
 const ILLUSTRATION_VIEWBOX = 400;
 
@@ -267,6 +268,7 @@ function OrbitalIllustration() {
 export default function SetGoals() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -367,7 +369,10 @@ export default function SetGoals() {
             <MaterialIcons name="auto-awesome" size={20} color={theme.colors.text.white} />
           )}
           onPress={() => {
-            // TODO: Navigate to nutrition-goals-results
+            router.push({
+              pathname: '/onboarding/nutrition-goals-results',
+              params: { aiGenerated: 'true' },
+            });
           }}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
@@ -381,13 +386,13 @@ export default function SetGoals() {
           width="full"
           size="md"
           onPress={() => {
-            // TODO: Navigate to nutrition-goals
+            router.push('/onboarding/nutrition-goals');
           }}
         />
 
         <MaybeLaterButton
           onPress={() => {
-            // TODO: Navigate to personal-info
+            router.push('/onboarding/personal-info');
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />

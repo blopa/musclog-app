@@ -55,7 +55,10 @@ export default function NutritionGoalsScreen() {
         targetDate: goals.targetDate ?? null,
       });
 
-      // TODO: Navigate to nutrition-goals-results
+      router.push({
+        pathname: '/onboarding/nutrition-goals-results',
+        params: { aiGenerated: 'false' },
+      });
     } catch (e) {
       showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);

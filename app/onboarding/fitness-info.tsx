@@ -218,8 +218,8 @@ export default function FitnessInfo() {
       // Persist units setting via SettingsService
       await SettingsService.setUnits(data.units);
 
-      // TODO: navigate to set-goals instead
-      router.push('/onboarding/personal-info');
+      // Navigate to next step (set-goals)
+      router.push('/onboarding/set-goals');
     } catch (error) {
       console.error('Error saving fitness info:', error);
       showSnackbar('error', t('onboarding.fitnessInfo.errorSaving'));
@@ -229,8 +229,8 @@ export default function FitnessInfo() {
   };
 
   const handleSkip = useCallback(async () => {
-    // TODO: navigate to set-goals instead
-    router.push('/onboarding/personal-info');
+    // Navigate to set-goals even when skipping
+    router.push('/onboarding/set-goals');
   }, [router]);
 
   const handleFloatingSave = async () => {
