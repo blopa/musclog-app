@@ -56,7 +56,8 @@ export default function NutritionGoalsResults() {
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
-                AI Calculation Complete
+                {/* TODO: move this to translation */}
+                {aiGenerated ? 'AI Calculation Complete' : 'Calculation Complete'}
               </Text>
             </View>
 
@@ -88,8 +89,10 @@ export default function NutritionGoalsResults() {
                 fontWeight: theme.typography.fontWeight.normal,
               }}
             >
-              Based on your body metrics and activity levels, our AI has optimized your daily
-              targets.
+              {/* TODO: move this to translation */}
+              {
+                'Based on your body metrics and activity levels, our AI has optimized your daily targets.'
+              }
             </Text>
           </View>
 
