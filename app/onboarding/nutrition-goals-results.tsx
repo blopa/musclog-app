@@ -459,7 +459,7 @@ export default function NutritionGoalsResults() {
           )}
           iconPosition="right"
           onPress={() => {
-            // Handle accept action
+            // TODO: Navigate to personal-info
           }}
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
