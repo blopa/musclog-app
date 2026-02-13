@@ -1,18 +1,47 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'hooks/useTheme';
-import { ScrollView, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'react-native-svg';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { Button } from '../../components/theme/Button';
 
-// Orbital Illustration Component
+const ILLUSTRATION_VIEWBOX = 400;
+
+// Orbital Illustration Component – matches design: glass nodes, dashed gradient lines, orbit paths
 function OrbitalIllustration() {
   const theme = useTheme();
+  const [layoutSize, setLayoutSize] = useState(0);
+
+  const onLayout = useCallback(
+    (e: { nativeEvent: { layout: { width: number; height: number } } }) => {
+      const { width, height } = e.nativeEvent.layout;
+      const size = Math.min(width, height);
+      if (size > 0) setLayoutSize(size);
+    },
+    []
+  );
+
+  const glassNodeStyle = {
+    backgroundColor: `${theme.colors.text.white}0D` as const,
+    borderColor: `${theme.colors.text.white}1A` as const,
+    borderWidth: 1,
+    shadowColor: theme.colors.text.black,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 32,
+    elevation: 5,
+  };
 
   return (
-    <View className="relative mb-2 mt-2 aspect-square w-full items-center justify-center">
-      {/* Background Blurs with larger blur radius */}
+    <View
+      className="relative mb-2 mt-2 aspect-square w-full items-center justify-center"
+      onLayout={onLayout}
+    >
+      {/* Background blurs (blur-[100px] equivalent) */}
       <View
         className="absolute h-64 w-64 rounded-full"
         style={{
@@ -20,7 +49,6 @@ function OrbitalIllustration() {
           width: 256,
           height: 256,
           borderRadius: 128,
-          // blur-[100px] equivalent
           shadowColor: theme.colors.status.indigo,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.6,
@@ -34,9 +62,8 @@ function OrbitalIllustration() {
           backgroundColor: `${theme.colors.accent.primary}33`,
           width: 256,
           height: 256,
-          transform: [{ translateX: 48 }], // translate-x-12 = 48px
+          transform: [{ translateX: 48 }],
           borderRadius: 128,
-          // blur-[100px] equivalent
           shadowColor: theme.colors.accent.primary,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.6,
@@ -45,13 +72,13 @@ function OrbitalIllustration() {
         }}
       />
 
-      {/* Orbit Paths with border-white/5 */}
+      {/* Orbit paths – border-white/5 */}
       <View
         className="absolute rounded-full border"
         style={{
           width: 280,
           height: 280,
-          borderColor: `${theme.colors.text.white}0D`, // border-white/5
+          borderColor: `${theme.colors.text.white}0D`,
           transform: [{ rotate: '-15deg' }],
         }}
       />
@@ -60,31 +87,29 @@ function OrbitalIllustration() {
         style={{
           width: 220,
           height: 220,
-          borderColor: `${theme.colors.text.white}0D`, // border-white/5
+          borderColor: `${theme.colors.text.white}0D`,
           transform: [{ rotate: '10deg' }],
         }}
       />
 
-      {/* Central Icon with decorative elements */}
+      {/* Central icon – brand gradient, auto_awesome, decorative dots */}
       <View className="relative z-20 h-32 w-32 items-center justify-center">
         <View
           className="absolute inset-0 rounded-full"
           style={{
-            // brand-gradient opacity-20 blur-2xl
             backgroundColor: `${theme.colors.status.indigo}33`,
             opacity: 0.2,
             borderRadius: 64,
             shadowColor: theme.colors.status.indigo,
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.8,
-            shadowRadius: 80, // blur-2xl equivalent
+            shadowRadius: 80,
             elevation: 0,
           }}
         />
         <View
           className="relative h-24 w-24 items-center justify-center rounded-3xl"
           style={{
-            // brand-gradient shadow-[0_0_40px_rgba(99,102,241,0.4)]
             borderRadius: theme.borderRadius['3xl'],
             shadowColor: theme.colors.status.indigo,
             shadowOffset: { width: 0, height: 0 },
@@ -112,9 +137,8 @@ function OrbitalIllustration() {
             color={theme.colors.text.white}
             style={{ position: 'relative', zIndex: 1 }}
           />
-          {/* Decorative dots */}
           <View
-            className="absolute -top-1 -right-1 h-3 w-3 rounded-full"
+            className="absolute -right-1 -top-1 h-3 w-3 rounded-full"
             style={{
               backgroundColor: theme.colors.text.white,
               width: 12,
@@ -126,7 +150,7 @@ function OrbitalIllustration() {
           <View
             className="absolute -bottom-2 left-4 h-2 w-2 rounded-full"
             style={{
-              backgroundColor: `${theme.colors.accent.primary}80`, // bg-primary/50
+              backgroundColor: `${theme.colors.accent.primary}80`,
               width: 8,
               height: 8,
               marginBottom: -8,
@@ -136,216 +160,137 @@ function OrbitalIllustration() {
         </View>
       </View>
 
-      {/* Floating Nodes with glass-node styling */}
-      {/* KCAL Node */}
+      {/* Glass nodes – design: orange KCAL, indigo PROTEIN, emerald MACROS */}
       <View
-        className="absolute left-[10%] top-[15%] z-30 h-16 w-16 flex-col items-center justify-center rounded-2xl"
-        style={{
-          top: '15%',
-          left: '10%',
-          // glass-node: bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)]
-          backgroundColor: `${theme.colors.text.white}0D`, // bg-white/5
-          borderColor: `${theme.colors.text.white}1A`, // border-white/10
-          borderWidth: 1,
-          borderRadius: theme.borderRadius['2xl'],
-          shadowColor: theme.colors.text.black,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 32,
-          elevation: 5,
-        }}
+        className="absolute left-[10%] top-[15%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
+        style={[
+          glassNodeStyle,
+          { top: '15%', left: '10%', borderRadius: theme.borderRadius['2xl'] },
+        ]}
       >
-        <MaterialIcons
-          name="local-fire-department"
-          size={24} // text-2xl
-          color={theme.colors.status.amber}
-          style={{ marginBottom: 2 }} // mb-0.5
-        />
-        <Text
-          className="text-[10px] font-bold tracking-wider"
-          style={{
-            color: theme.colors.text.tertiary, // text-gray-400
-            fontSize: 10,
-            fontWeight: theme.typography.fontWeight.bold,
-            letterSpacing: 2,
-          }}
-        >
-          KCAL
-        </Text>
-      </View>
-
-      {/* PROTEIN Node */}
-      <View
-        className="absolute right-[8%] top-[20%] z-30 h-20 w-20 flex-col items-center justify-center rounded-[2rem]"
-        style={{
-          top: '20%',
-          right: '8%',
-          // glass-node styling
-          backgroundColor: `${theme.colors.text.white}0D`,
-          borderColor: `${theme.colors.text.white}1A`,
-          borderWidth: 1,
-          borderRadius: 32, // rounded-[2rem]
-          shadowColor: theme.colors.text.black,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 32,
-          elevation: 5,
-        }}
-      >
-        <MaterialIcons
-          name="fitness-center"
-          size={30} // text-3xl
-          color={theme.colors.status.indigo}
-          style={{ marginBottom: 4 }} // mb-1
-        />
-        <Text
-          className="text-[10px] font-bold tracking-wider"
-          style={{
-            color: theme.colors.text.tertiary,
-            fontSize: 10,
-            fontWeight: theme.typography.fontWeight.bold,
-            letterSpacing: 2,
-          }}
-        >
-          PROTEIN
-        </Text>
-      </View>
-
-      {/* MACROS Node */}
-      <View
-        className="absolute bottom-[20%] right-[15%] z-30 h-16 w-16 flex-col items-center justify-center rounded-2xl"
-        style={{
-          bottom: '20%',
-          right: '15%',
-          // glass-node styling
-          backgroundColor: `${theme.colors.text.white}0D`,
-          borderColor: `${theme.colors.text.white}1A`,
-          borderWidth: 1,
-          borderRadius: theme.borderRadius['2xl'],
-          shadowColor: theme.colors.text.black,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.3,
-          shadowRadius: 32,
-          elevation: 5,
-        }}
-      >
-        <MaterialIcons
-          name="eco"
-          size={24} // text-2xl
-          color={theme.colors.accent.primary}
-          style={{ marginBottom: 2 }} // mb-0.5
-        />
-        <Text
-          className="text-[10px] font-bold tracking-wider"
-          style={{
-            color: theme.colors.text.tertiary,
-            fontSize: 10,
-            fontWeight: theme.typography.fontWeight.bold,
-            letterSpacing: 2,
-          }}
-        >
-          MACROS
-        </Text>
-      </View>
-
-      {/* Connection Lines with gradient and dashed effect */}
-      <View className="absolute inset-0" style={{ pointerEvents: 'none' }}>
-        {/* Line 1: Center to KCAL - from (160,140) to (110,110) */}
-        <View
-          className="absolute"
-          style={{
-            left: '27.5%', // 110/400
-            top: '27.5%', // 110/400
-            width: 60, // sqrt((160-110)^2 + (140-110)^2) ≈ 58
-            height: 1.5,
-            backgroundColor: 'transparent',
-            transform: [{ rotate: '-30deg' }],
-          }}
-        >
-          <LinearGradient
-            colors={[`${theme.colors.status.indigo}4D`, `${theme.colors.accent.primary}4D`]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: 1,
-            }}
+        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFillObject} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+          <MaterialIcons
+            name="local-fire-department"
+            size={24}
+            color={theme.colors.status.warning}
+            style={{ marginBottom: 2 }}
           />
-          {/* Dashed effect using overlay */}
-          <View
+          <Text
+            className="text-[10px] font-bold tracking-wider"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'transparent',
-              borderStyle: 'dashed',
-              borderColor: 'transparent',
-              borderWidth: 0,
-              borderRadius: 1,
+              color: theme.colors.text.primary,
+              fontSize: 10,
+              fontWeight: theme.typography.fontWeight.bold,
+              letterSpacing: 2,
             }}
-          />
-        </View>
-        
-        {/* Line 2: Center to PROTEIN - from (240,160) to (290,140) */}
-        <View
-          className="absolute"
-          style={{
-            right: '27.5%', // 110/400
-            top: '35%', // 140/400
-            width: 60, // sqrt((290-240)^2 + (140-160)^2) ≈ 54
-            height: 1.5,
-            backgroundColor: 'transparent',
-            transform: [{ rotate: '20deg' }],
-          }}
-        >
-          <LinearGradient
-            colors={[`${theme.colors.status.indigo}4D`, `${theme.colors.accent.primary}4D`]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: 1,
-            }}
-          />
-        </View>
-        
-        {/* Line 3: Center to MACROS - from (220,240) to (260,280) */}
-        <View
-          className="absolute"
-          style={{
-            right: '35%', // 140/400
-            bottom: '30%', // 120/400
-            width: 60, // sqrt((260-220)^2 + (280-240)^2) ≈ 57
-            height: 1.5,
-            backgroundColor: 'transparent',
-            transform: [{ rotate: '45deg' }],
-          }}
-        >
-          <LinearGradient
-            colors={[`${theme.colors.status.indigo}4D`, `${theme.colors.accent.primary}4D`]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              borderRadius: 1,
-            }}
-          />
+          >
+            KCAL
+          </Text>
         </View>
       </View>
+
+      <View
+        className="absolute right-[8%] top-[20%] z-30 h-20 w-20 flex-col items-center justify-center overflow-hidden rounded-[2rem]"
+        style={[glassNodeStyle, { top: '20%', right: '8%', borderRadius: 32 }]}
+      >
+        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFillObject} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+          <MaterialIcons
+            name="fitness-center"
+            size={30}
+            color={theme.colors.status.indigoLight}
+            style={{ marginBottom: 4 }}
+          />
+          <Text
+            className="text-[10px] font-bold tracking-wider"
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: 10,
+              fontWeight: theme.typography.fontWeight.bold,
+              letterSpacing: 2,
+            }}
+          >
+            PROTEIN
+          </Text>
+        </View>
+      </View>
+
+      <View
+        className="absolute bottom-[20%] right-[15%] z-30 h-16 w-16 flex-col items-center justify-center overflow-hidden rounded-2xl"
+        style={[
+          glassNodeStyle,
+          { bottom: '20%', right: '15%', borderRadius: theme.borderRadius['2xl'] },
+        ]}
+      >
+        <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFillObject} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+          <MaterialIcons
+            name="eco"
+            size={24}
+            color={theme.colors.status.emeraldLight}
+            style={{ marginBottom: 2 }}
+          />
+          <Text
+            className="text-[10px] font-bold tracking-wider"
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: 10,
+              fontWeight: theme.typography.fontWeight.bold,
+              letterSpacing: 2,
+            }}
+          >
+            MACROS
+          </Text>
+        </View>
+      </View>
+
+      {/* Dashed gradient connection lines – design SVG paths (viewBox 0 0 400 400) */}
+      {layoutSize > 0 ? (
+        <View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          ]}
+        >
+          <Svg
+            width={layoutSize}
+            height={layoutSize}
+            viewBox={`0 0 ${ILLUSTRATION_VIEWBOX} ${ILLUSTRATION_VIEWBOX}`}
+            fill="none"
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <Defs>
+              <SvgLinearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0%" stopColor={theme.colors.status.indigo} stopOpacity="0.3" />
+                <Stop offset="100%" stopColor={theme.colors.accent.primary} stopOpacity="0.3" />
+              </SvgLinearGradient>
+            </Defs>
+            <Path
+              d="M160 140 L110 110"
+              stroke="url(#lineGrad)"
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+            />
+            <Path
+              d="M240 160 L290 140"
+              stroke="url(#lineGrad)"
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+            />
+            <Path
+              d="M220 240 L260 280"
+              stroke="url(#lineGrad)"
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+            />
+          </Svg>
+        </View>
+      ) : null}
     </View>
   );
 }
