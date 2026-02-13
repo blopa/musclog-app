@@ -5,10 +5,25 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GenericCard } from '../../components/cards/GenericCard';
+import { LineChart } from '../../components/LineChart';
 import { Button } from '../../components/theme/Button';
 
 export default function NutritionGoalsResults() {
   const theme = useTheme();
+
+  // Projection data for the 90-day chart (simple linear projection from current to target weight)
+  const projectionLength = 10;
+  const startWeight = 83;
+  const targetWeight = 78.5;
+  const projectionData = Array.from({ length: projectionLength }).map((_, i) => {
+    const t = i / (projectionLength - 1);
+    const weight = startWeight + (targetWeight - startWeight) * t;
+    return {
+      marker: `${weight.toFixed(1)} kg`,
+      x: i,
+      y: parseFloat(weight.toFixed(1)),
+    };
+  });
 
   return (
     <View className="bg-background-dark flex-1">
@@ -399,25 +414,25 @@ export default function NutritionGoalsResults() {
               </Text>
             </View>
 
-            {/* TODO: use LineChart instead */}
-            <View className="relative mt-4 h-16 w-full flex-row items-end gap-1">
-              {[80, 75, 72, 65, 60, 55, 45, 40, 35, 25].map((height, index) => (
-                <View
-                  key={index}
-                  className="flex-1 rounded-t-sm"
-                  style={{
-                    height: `${height}%`,
-                    backgroundColor:
-                      index >= 6
-                        ? `${theme.colors.accent.primary}33`
-                        : `${theme.colors.text.white}0D`,
-                    borderTopWidth: index >= 6 ? 2 : 0,
-                    borderTopColor: index >= 6 ? theme.colors.accent.primary : 'transparent',
-                    borderTopLeftRadius: theme.borderRadius.sm,
-                    borderTopRightRadius: theme.borderRadius.sm,
-                  }}
-                />
-              ))}
+            {/* Use LineChart instead of bars */}
+            <View className="relative mt-4 w-full">
+              <LineChart
+                data={projectionData.map(({ x, y }) => ({ x, y }))}
+                height={160}
+                chartHeight={120}
+                lineColor={theme.colors.accent.primary}
+                areaColor={theme.colors.accent.primary30}
+                lineWidth={3}
+                showLastPoint={true}
+                lastPointSize={6}
+                lastPointStrokeColor={theme.colors.background.card}
+                xDomain={[0, projectionLength - 1]}
+                yDomain={[
+                  Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
+                  Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
+                ]}
+                marginBottom={12}
+              />
             </View>
           </GenericCard>
         </View>
