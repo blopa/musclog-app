@@ -267,13 +267,9 @@ export default function SetGoals() {
   return (
     <View className="bg-background-dark flex-1">
       {/* Main Content */}
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
-      >
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="gap-2 px-6 py-6" />
-        <View className="flex-col items-center px-6 pb-48">
+        <View className="flex-col items-center px-6 pb-8">
           <OrbitalIllustration />
 
           {/* Header */}
