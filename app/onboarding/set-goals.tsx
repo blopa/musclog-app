@@ -349,8 +349,11 @@ export default function SetGoals() {
           onPress={() => {
             // Handle AI calculation
           }}
-          className="mb-4"
+          style={{ marginBottom: theme.spacing.margin.sm }}
         />
+
+        {/* explicit spacer so spacing shows reliably inside the wrapper */}
+        <View style={{ height: theme.spacing.margin.sm }} />
 
         <Button
           label="I'll Set Them Myself"
@@ -360,7 +363,6 @@ export default function SetGoals() {
           onPress={() => {
             // Handle manual setup
           }}
-          className="mb-4"
         />
 
         <Text
