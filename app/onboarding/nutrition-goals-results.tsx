@@ -12,30 +12,12 @@ export default function NutritionGoalsResults() {
 
   return (
     <View className="bg-background-dark flex-1">
-      {/* Progress Steps */}
-      <View className="flex-row items-center justify-center gap-2 px-6 py-6">
-        {[1, 2, 3, 4].map((step) => (
-          <View
-            key={step}
-            className="h-1 flex-1 rounded-full"
-            style={{
-              backgroundColor: theme.colors.accent.primary,
-              shadowColor: theme.colors.accent.primary,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.4,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          />
-        ))}
-      </View>
-
-      {/* Main Content */}
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
       >
+        <View className="px-6 py-6" />
         <View className="flex-col items-center px-6 pb-40">
           {/* Header */}
           <View className="mb-8 items-center text-center">
@@ -417,7 +399,7 @@ export default function NutritionGoalsResults() {
               </Text>
             </View>
 
-            {/* Progress Chart */}
+            {/* TODO: use LineChart instead */}
             <View className="relative mt-4 h-16 w-full flex-row items-end gap-1">
               {[80, 75, 72, 65, 60, 55, 45, 40, 35, 25].map((height, index) => (
                 <View
