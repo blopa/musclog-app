@@ -3,11 +3,13 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'react-native-svg';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GradientText } from '../../components/GradientText';
+import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 
 const ILLUSTRATION_VIEWBOX = 400;
@@ -15,6 +17,7 @@ const ILLUSTRATION_VIEWBOX = 400;
 // Orbital Illustration Component – matches design: glass nodes, dashed gradient lines, orbit paths
 function OrbitalIllustration() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [layoutSize, setLayoutSize] = useState(0);
 
   const onLayout = useCallback(
@@ -265,7 +268,7 @@ export default function SetGoals() {
   const theme = useTheme();
 
   return (
-    <View className="bg-background-dark flex-1">
+    <MasterLayout showNavigationMenu={false}>
       {/* Main Content */}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="gap-2 px-6 py-6" />
@@ -395,6 +398,6 @@ export default function SetGoals() {
           efficiency.
         </Text>
       </BottomButtonWrapper>
-    </View>
+    </MasterLayout>
   );
 }

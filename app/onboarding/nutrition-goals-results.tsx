@@ -7,6 +7,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GenericCard } from '../../components/cards/GenericCard';
 import { LineChart } from '../../components/LineChart';
+import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 
 export default function NutritionGoalsResults() {
@@ -28,7 +29,7 @@ export default function NutritionGoalsResults() {
   });
 
   return (
-    <View className="bg-background-dark flex-1">
+    <MasterLayout showNavigationMenu={false}>
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -471,6 +472,6 @@ export default function NutritionGoalsResults() {
           }}
         />
       </BottomButtonWrapper>
-    </View>
+    </MasterLayout>
   );
 }
