@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'react-native-svg';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { GradientText } from '../../components/GradientText';
 import { Button } from '../../components/theme/Button';
 
 const ILLUSTRATION_VIEWBOX = 400;
@@ -285,16 +286,15 @@ export default function SetGoals() {
             }}
           >
             Smart Goal{' '}
-            <Text
+            <GradientText
+              colors={theme.colors.gradients.cta}
               style={{
-                color: theme.colors.status.indigoLight,
                 fontSize: 32,
                 fontWeight: theme.typography.fontWeight.bold,
               }}
             >
-              {/* TODO: this should be text with gradient - look for other examples in the code */}
               Calculation
-            </Text>
+            </GradientText>
           </Text>
 
           <Text
