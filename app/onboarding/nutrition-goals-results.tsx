@@ -30,10 +30,10 @@ export default function NutritionGoalsResults() {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
+        contentContainerStyle={{ paddingBottom: theme.spacing.padding['xl'] }}
       >
-        <View className="px-6 py-6" />
-        <View className="flex-col items-center px-6 pb-40">
+        <View className="px-6 py-2" />
+        <View className="flex-col items-center px-6 pb-8">
           {/* Header */}
           <View className="mb-8 items-center text-center">
             <View
@@ -339,10 +339,10 @@ export default function NutritionGoalsResults() {
               width: '100%',
               borderWidth: 1,
               borderColor: `${theme.colors.accent.primary}33`,
-              padding: theme.spacing.padding.lg,
+              padding: theme.spacing.padding.sm,
             }}
           >
-            <View className="mb-4 flex-row items-center gap-2">
+            <View className="mb-2 flex-row items-center gap-2">
               <MaterialIcons name="trending-down" size={18} color={theme.colors.accent.primary} />
               <Text
                 className="text-sm font-bold text-white"
@@ -356,7 +356,7 @@ export default function NutritionGoalsResults() {
               </Text>
             </View>
 
-            <View className="flex-col items-center justify-center py-4">
+            <View className="flex-col items-center justify-center py-1">
               <Text
                 className="mb-1 text-xs font-medium text-slate-400"
                 style={{
@@ -415,11 +415,13 @@ export default function NutritionGoalsResults() {
             </View>
 
             {/* Use LineChart instead of bars */}
-            <View className="relative mt-4 w-full">
+            <View className="relative mt-0 w-full">
               <LineChart
                 data={projectionData.map(({ x, y }) => ({ x, y }))}
-                height={160}
-                chartHeight={120}
+                height={96}
+                chartHeight={72}
+                // pull the chart up slightly to remove gap above
+                marginTop={-12}
                 lineColor={theme.colors.accent.primary}
                 areaColor={theme.colors.accent.primary30}
                 lineWidth={3}
@@ -431,7 +433,7 @@ export default function NutritionGoalsResults() {
                   Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
                   Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
                 ]}
-                marginBottom={12}
+                marginBottom={4}
               />
             </View>
           </GenericCard>
