@@ -87,6 +87,8 @@ export default function NutritionGoalsResults() {
     if (parsedPlan) {
       return {
         targetCalories: parsedPlan.targetCalories,
+        minTargetCalories: parsedPlan.minTargetCalories,
+        maxTargetCalories: parsedPlan.maxTargetCalories,
         protein: parsedPlan.protein,
         carbs: parsedPlan.carbs,
         fats: parsedPlan.fats,
@@ -208,6 +210,16 @@ export default function NutritionGoalsResults() {
 
   // Format calorie number with comma separator
   const formattedCalories = displayData ? displayData.targetCalories.toLocaleString() : '0';
+
+  // Whether we have a meaningful calorie range from body fat uncertainty
+  const hasCalorieRange =
+    displayData?.minTargetCalories !== undefined &&
+    displayData?.maxTargetCalories !== undefined &&
+    displayData.minTargetCalories !== displayData.maxTargetCalories;
+
+  const formattedCalorieRange = hasCalorieRange
+    ? `${displayData!.minTargetCalories!.toLocaleString()} – ${displayData!.maxTargetCalories!.toLocaleString()}`
+    : null;
 
   // Trending icon based on weight change direction
   const trendingIcon =
@@ -356,6 +368,33 @@ export default function NutritionGoalsResults() {
                   {t('nutritionGoals.results.kcal')}
                 </Text>
               </View>
+
+              {hasCalorieRange ? (
+                <View className="mt-2">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{
+                      color: `${theme.colors.text.white}B3`,
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    {t('nutritionGoals.results.calorieRange', {
+                      range: formattedCalorieRange,
+                    })}
+                  </Text>
+                  <Text
+                    className="mt-1 text-xs"
+                    style={{
+                      color: `${theme.colors.text.white}80`,
+                      fontSize: theme.typography.fontSize.xxs,
+                      fontWeight: theme.typography.fontWeight.normal,
+                    }}
+                  >
+                    {t('nutritionGoals.results.bodyFatUncertaintyNote')}
+                  </Text>
+                </View>
+              ) : null}
 
               {displayData?.goalLabel ? (
                 <View
@@ -652,7 +691,7 @@ export default function NutritionGoalsResults() {
               label={t('nutritionGoals.adjustGoalsManually')}
               variant="outline"
               width="full"
-              size="md"
+              size="sm"
               onPress={() => {
                 // await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
                 router.push('/onboarding/nutrition-goals');

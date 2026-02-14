@@ -317,8 +317,19 @@ export default function SetGoals() {
         )
         .fetch();
 
+      // Fetch latest body fat metric
+      const bodyFatMetrics = await database
+        .get<UserMetric>('user_metrics')
+        .query(
+          Q.where('type', 'bodyFat'),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc)
+        )
+        .fetch();
+
       const rawWeight = weightMetrics.length > 0 ? weightMetrics[0].value : 0;
       const rawHeight = heightMetrics.length > 0 ? heightMetrics[0].value : 0;
+      const rawBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0].value : undefined;
 
       if (rawWeight <= 0 || rawHeight <= 0) {
         showSnackbar('error', t('onboarding.setGoals.missingData'));
@@ -339,6 +350,10 @@ export default function SetGoals() {
         weightGoal: normalizeWeightGoal(user.weightGoal),
         fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
         liftingExperience: user.liftingExperience || 'intermediate',
+        // Pass body fat when available; calculator uses Katch-McArdle when valid
+        ...(rawBodyFat !== undefined &&
+          rawBodyFat >= 5 &&
+          rawBodyFat <= 60 && { bodyFatPercent: rawBodyFat }),
       };
 
       const plan = calculateNutritionPlan(input);
@@ -476,7 +491,7 @@ export default function SetGoals() {
           label={t('onboarding.setGoals.setThemMyself')}
           variant="secondary"
           width="full"
-          size="md"
+          size="sm"
           onPress={() => {
             router.push('/onboarding/nutrition-goals');
           }}

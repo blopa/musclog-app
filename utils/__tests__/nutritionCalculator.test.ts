@@ -1,11 +1,14 @@
 import {
+  BODY_FAT_UNCERTAINTY,
   calculateBMR,
+  calculateBMRKatchMcArdle,
   calculateMacros,
   calculateNutritionPlan,
   calculateTargetCalories,
   calculateTDEE,
   calculateWeightProjection,
   inchesToCm,
+  isValidBodyFat,
   lbsToKg,
   MIN_CALORIES,
   normalizeFitnessGoal,
@@ -382,5 +385,148 @@ describe('calculateNutritionPlan', () => {
     const sedentary = calculateNutritionPlan({ ...baseInput, activityLevel: 1 });
     const superActive = calculateNutritionPlan({ ...baseInput, activityLevel: 5 });
     expect(superActive.tdee).toBeGreaterThan(sedentary.tdee);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Katch-McArdle BMR
+// ---------------------------------------------------------------------------
+
+describe('calculateBMRKatchMcArdle', () => {
+  // Reference: 80kg at 15% body fat → LBM = 80 * 0.85 = 68 kg
+  // BMR = 370 + 21.6 * 68 = 370 + 1468.8 = 1838.8 → 1839
+  it('calculates BMR correctly for 80kg at 15% body fat', () => {
+    expect(calculateBMRKatchMcArdle(80, 15)).toBe(1839);
+  });
+
+  // 90kg at 25% body fat → LBM = 90 * 0.75 = 67.5 kg
+  // BMR = 370 + 21.6 * 67.5 = 370 + 1458 = 1828
+  it('calculates BMR correctly for 90kg at 25% body fat', () => {
+    expect(calculateBMRKatchMcArdle(90, 25)).toBe(1828);
+  });
+
+  it('returns higher BMR for lower body fat at same weight', () => {
+    const lean = calculateBMRKatchMcArdle(80, 10);
+    const heavy = calculateBMRKatchMcArdle(80, 30);
+    expect(lean).toBeGreaterThan(heavy);
+  });
+
+  it('returns higher BMR for heavier individual at same body fat', () => {
+    const lighter = calculateBMRKatchMcArdle(60, 20);
+    const heavier = calculateBMRKatchMcArdle(100, 20);
+    expect(heavier).toBeGreaterThan(lighter);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isValidBodyFat
+// ---------------------------------------------------------------------------
+
+describe('isValidBodyFat', () => {
+  it('returns true for values in valid range (5-60)', () => {
+    expect(isValidBodyFat(5)).toBe(true);
+    expect(isValidBodyFat(15)).toBe(true);
+    expect(isValidBodyFat(30)).toBe(true);
+    expect(isValidBodyFat(60)).toBe(true);
+  });
+
+  it('returns false for values outside valid range', () => {
+    expect(isValidBodyFat(4)).toBe(false);
+    expect(isValidBodyFat(61)).toBe(false);
+    expect(isValidBodyFat(0)).toBe(false);
+    expect(isValidBodyFat(100)).toBe(false);
+  });
+
+  it('returns false for undefined or null', () => {
+    expect(isValidBodyFat(undefined)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// calculateNutritionPlan with body fat (Katch-McArdle + range)
+// ---------------------------------------------------------------------------
+
+describe('calculateNutritionPlan with bodyFatPercent', () => {
+  const baseInput: NutritionCalculatorInput = {
+    gender: 'male',
+    weightKg: 83,
+    heightCm: 180,
+    age: 30,
+    activityLevel: 3,
+    weightGoal: 'lose',
+    fitnessGoal: 'weight_loss',
+    liftingExperience: 'intermediate',
+  };
+
+  it('uses Katch-McArdle when valid body fat is provided', () => {
+    const withBF = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+    const withoutBF = calculateNutritionPlan(baseInput);
+
+    // Should use different BMR formula → different BMR value
+    expect(withBF.bmr).not.toBe(withoutBF.bmr);
+
+    // Katch-McArdle: LBM = 83 * 0.80 = 66.4; BMR = 370 + 21.6 * 66.4 = 1804.24 → 1804
+    expect(withBF.bmr).toBe(Math.round(370 + 21.6 * (83 * 0.8)));
+  });
+
+  it('falls back to Mifflin-St Jeor when body fat is not provided', () => {
+    const plan = calculateNutritionPlan(baseInput);
+
+    // Mifflin-St Jeor for male: 10*83 + 6.25*180 - 5*30 + 5 = 1810
+    expect(plan.bmr).toBe(1810);
+    expect(plan.minTargetCalories).toBeUndefined();
+    expect(plan.maxTargetCalories).toBeUndefined();
+  });
+
+  it('falls back to Mifflin-St Jeor for invalid body fat (too low)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 3 });
+    expect(plan.bmr).toBe(1810); // Mifflin-St Jeor
+    expect(plan.minTargetCalories).toBeUndefined();
+  });
+
+  it('falls back to Mifflin-St Jeor for invalid body fat (too high)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 65 });
+    expect(plan.bmr).toBe(1810); // Mifflin-St Jeor
+    expect(plan.minTargetCalories).toBeUndefined();
+  });
+
+  it('produces min/max target calories when body fat is valid', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 20 });
+
+    expect(plan.minTargetCalories).toBeDefined();
+    expect(plan.maxTargetCalories).toBeDefined();
+    expect(plan.minTargetCalories!).toBeLessThanOrEqual(plan.targetCalories);
+    expect(plan.maxTargetCalories!).toBeGreaterThanOrEqual(plan.targetCalories);
+  });
+
+  it('min/max bracket the mid target calories', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 25 });
+
+    expect(plan.minTargetCalories!).toBeLessThanOrEqual(plan.targetCalories);
+    expect(plan.maxTargetCalories!).toBeGreaterThanOrEqual(plan.targetCalories);
+    // Range should reflect ±${BODY_FAT_UNCERTAINTY}% body fat
+    expect(plan.maxTargetCalories! - plan.minTargetCalories!).toBeGreaterThan(0);
+  });
+
+  it('handles body fat at lower boundary (5%)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 5 });
+
+    expect(plan.minTargetCalories).toBeDefined();
+    expect(plan.maxTargetCalories).toBeDefined();
+    // Low BF clamped: max(5 - 4, 1) = 1% → still valid
+    expect(plan.maxTargetCalories!).toBeGreaterThan(plan.minTargetCalories!);
+  });
+
+  it('handles body fat at upper boundary (60%)', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, bodyFatPercent: 60 });
+
+    expect(plan.minTargetCalories).toBeDefined();
+    expect(plan.maxTargetCalories).toBeDefined();
+    // High BF clamped: min(60 + 4, 99) = 64% → still valid
+    expect(plan.maxTargetCalories!).toBeGreaterThan(plan.minTargetCalories!);
+  });
+
+  it('BODY_FAT_UNCERTAINTY constant is 4', () => {
+    expect(BODY_FAT_UNCERTAINTY).toBe(4);
   });
 });

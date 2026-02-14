@@ -844,6 +844,8 @@
       "estimatedWeightGain": "Estimated Weight Gain",
       "projectionTitle": "{{days}}-Day Projection",
       "projectionDescription": "By tracking these goals, you are projected to reach {{weight}} kg in {{days}} days.",
+      "calorieRange": "Range: {{range}} kcal",
+      "bodyFatUncertaintyNote": "Range accounts for body fat measurement variation (±4%)",
       "goalLabels": {
         "moderateWeightLoss": "Moderate Weight Loss Strategy",
         "enduranceTraining": "Endurance Training",

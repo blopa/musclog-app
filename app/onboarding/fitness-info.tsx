@@ -57,11 +57,22 @@ export default function FitnessInfo() {
           .fetch();
         const latestHeight = heightMetrics.length > 0 ? heightMetrics[0] : null;
 
+        const bodyFatMetrics = await database
+          .get<UserMetric>('user_metrics')
+          .query(
+            Q.where('type', 'bodyFat'),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.sortBy('date', Q.desc)
+          )
+          .fetch();
+        const latestBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0] : null;
+
         if (user) {
           setInitialData({
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
+            fatPercentage: latestBodyFat ? latestBodyFat.value : 15,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
@@ -72,6 +83,7 @@ export default function FitnessInfo() {
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
+            fatPercentage: latestBodyFat ? latestBodyFat.value : 15,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
@@ -211,6 +223,44 @@ export default function FitnessInfo() {
               metric.type = 'height';
               metric.value = heightValue;
               metric.unit = data.units === 'imperial' ? 'in' : 'cm';
+              metric.date = currentDate;
+              metric.timezone = timezone;
+              metric.createdAt = now;
+              metric.updatedAt = now;
+            });
+          }
+        });
+      }
+
+      // Save body fat percentage to user_metrics
+      if (data.fatPercentage != null && data.fatPercentage > 0) {
+        const fatValue = data.fatPercentage;
+
+        // Check if body fat metric exists for today
+        const existingBodyFat = await database
+          .get<UserMetric>('user_metrics')
+          .query(
+            Q.where('type', 'bodyFat'),
+            Q.where('date', currentDate),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+
+        await database.write(async () => {
+          if (existingBodyFat.length > 0) {
+            // Update existing body fat for today
+            await existingBodyFat[0].update((metric) => {
+              metric.value = fatValue;
+              metric.unit = '%';
+              metric.timezone = timezone;
+              metric.updatedAt = now;
+            });
+          } else {
+            // Create new body fat metric with current date
+            await database.get<UserMetric>('user_metrics').create((metric) => {
+              metric.type = 'bodyFat';
+              metric.value = fatValue;
+              metric.unit = '%';
               metric.date = currentDate;
               metric.timezone = timezone;
               metric.createdAt = now;

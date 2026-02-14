@@ -24,6 +24,7 @@ export default function NutritionGoalsScreen() {
     if (!goal) {
       return undefined;
     }
+
     return {
       totalCalories: goal.totalCalories,
       protein: goal.protein,

@@ -15,6 +15,12 @@ export interface NutritionCalculatorInput {
   /** Type of training: drives macro split and optional label nuance. */
   fitnessGoal: FitnessGoal;
   liftingExperience: LiftingExperience;
+  /**
+   * Optional body fat percentage (0–100). When provided and valid (5–60),
+   * Katch-McArdle is used instead of Mifflin-St Jeor for BMR, and a ±4%
+   * uncertainty band produces min/max calorie targets.
+   */
+  bodyFatPercent?: number;
 }
 
 export interface NutritionPlan {
@@ -46,6 +52,16 @@ export interface NutritionPlan {
   projectionDays: number;
   /** Current weight used in the calculation */
   currentWeightKg: number;
+  /**
+   * Lower bound of calorie target when body fat is used (pessimistic LBM).
+   * Undefined when body fat was not provided.
+   */
+  minTargetCalories?: number;
+  /**
+   * Upper bound of calorie target when body fat is used (optimistic LBM).
+   * Undefined when body fat was not provided.
+   */
+  maxTargetCalories?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -105,8 +121,49 @@ const MACRO_SPLITS: Record<FitnessGoal, { carbsPct: number; proteinPct: number; 
     general: { carbsPct: 45, proteinPct: 25, fatsPct: 30 },
   };
 
+/**
+ * Uncertainty band (± percentage points) applied to user-reported body fat.
+ * Common measurement methods (BIA, skinfolds) have ~±3–5% error;
+ * we use 4 as a middle-ground to produce a realistic calorie range.
+ */
+export const BODY_FAT_UNCERTAINTY = 4;
+
+/** Valid body fat range for Katch-McArdle (percentage points). */
+const BODY_FAT_MIN = 5;
+const BODY_FAT_MAX = 60;
+
 // ---------------------------------------------------------------------------
-// Step 1 – BMR (Mifflin-St Jeor Equation)
+// Step 1a – BMR via Katch-McArdle (when body fat % is available)
+// ---------------------------------------------------------------------------
+
+/**
+ * Calculate Basal Metabolic Rate using the Katch-McArdle equation.
+ *
+ * BMR = 370 + 21.6 × LBM (kg)
+ * where LBM = weightKg × (1 − bodyFatPercent / 100)
+ *
+ * Preferred over Mifflin-St Jeor when a reliable body fat estimate exists.
+ */
+export function calculateBMRKatchMcArdle(weightKg: number, bodyFatPercent: number): number {
+  const leanBodyMass = weightKg * (1 - bodyFatPercent / 100);
+  return Math.round(370 + 21.6 * leanBodyMass);
+}
+
+/**
+ * Returns true if the given body fat percentage is within a valid range
+ * for use with Katch-McArdle.
+ */
+export function isValidBodyFat(bodyFatPercent: number | undefined): bodyFatPercent is number {
+  return (
+    bodyFatPercent !== undefined &&
+    bodyFatPercent !== null &&
+    bodyFatPercent >= BODY_FAT_MIN &&
+    bodyFatPercent <= BODY_FAT_MAX
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 1b – BMR via Mifflin-St Jeor (default, no body fat required)
 // ---------------------------------------------------------------------------
 
 /**
@@ -282,17 +339,33 @@ export function normalizeFitnessGoal(raw: string): FitnessGoal {
  * and preferences and returns a full NutritionPlan.
  *
  * Science basis:
- * - BMR: Mifflin-St Jeor equation (most accurate for modern populations)
+ * - BMR: Katch-McArdle (when body fat is available) or Mifflin-St Jeor
  * - TDEE: Standard Harris-Benedict activity multipliers
  * - Calorie adjustment: ±250–500 kcal depending on goal
  * - Macros: Percentage-split method per goal type
  * - Projection: Linear model based on ~7700 kcal per kg
+ *
+ * When body fat is provided, a ±4% uncertainty band is applied to produce
+ * `minTargetCalories` / `maxTargetCalories` reflecting measurement error.
  */
 export function calculateNutritionPlan(input: NutritionCalculatorInput): NutritionPlan {
-  const { gender, weightKg, heightCm, age, activityLevel, weightGoal, fitnessGoal } = input;
+  const {
+    gender,
+    weightKg,
+    heightCm,
+    age,
+    activityLevel,
+    weightGoal,
+    fitnessGoal,
+    bodyFatPercent,
+  } = input;
 
-  // Step 1 – BMR
-  const bmr = calculateBMR(gender, weightKg, heightCm, age);
+  const useBodyFat = isValidBodyFat(bodyFatPercent);
+
+  // Step 1 – BMR (Katch-McArdle when body fat available, else Mifflin-St Jeor)
+  const bmr = useBodyFat
+    ? calculateBMRKatchMcArdle(weightKg, bodyFatPercent)
+    : calculateBMR(gender, weightKg, heightCm, age);
 
   // Step 2 – TDEE
   const tdee = calculateTDEE(bmr, activityLevel);
@@ -309,6 +382,24 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   // Goal label key (for i18n) – from weight goal
   const goalLabel = WEIGHT_GOAL_LABELS[weightGoal] ?? 'generalFitness';
 
+  // Step 6 – Uncertainty range (only when body fat is used)
+  let minTargetCalories: number | undefined;
+  let maxTargetCalories: number | undefined;
+
+  if (useBodyFat) {
+    // Higher body fat → lower LBM → lower BMR (pessimistic / min calories)
+    const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
+    const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
+    const tdeeLow = calculateTDEE(bmrLow, activityLevel);
+    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal);
+
+    // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
+    const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
+    const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
+    const tdeeHigh = calculateTDEE(bmrHigh, activityLevel);
+    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal);
+  }
+
   return {
     bmr,
     tdee,
@@ -317,5 +408,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     goalLabel,
     ...projection,
     currentWeightKg: weightKg,
+    ...(minTargetCalories !== undefined && { minTargetCalories }),
+    ...(maxTargetCalories !== undefined && { maxTargetCalories }),
   };
 }
