@@ -12,6 +12,7 @@ import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
+import type { TFunction } from 'i18next';
 
 type WorkoutTemplate = {
   id: string;
@@ -33,56 +34,60 @@ type RawWorkoutTemplate = {
   icon?: string;
 };
 
-// Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
-const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[]).map(
-  (t, idx) => {
-    const title = t.title || `Template ${idx + 1}`;
-    const difficulty = (t.difficulty as any) || 'Beginner';
+const getNormalizedTemplates = (t: TFunction) => {
+  // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
+  const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[]).map(
+    (t, idx) => {
+      const title = t.title || `Template ${idx + 1}`;
+      const difficulty = (t.difficulty as any) || 'Beginner';
 
-    // Duration: number (minutes) -> "NN min", otherwise keep string
-    const duration =
-      typeof t.duration === 'number'
-        ? `${t.duration} min`
-        : typeof t.duration === 'string'
-          ? t.duration
-          : '';
+      // Duration: number (minutes) -> "NN min", otherwise keep string
+      const duration =
+        typeof t.duration === 'number'
+          ? `${t.duration} min`
+          : typeof t.duration === 'string'
+            ? t.duration
+            : '';
 
-    // Exercises: if array -> "N Exercises", if number -> "N Exercises", otherwise string
-    let exercisesText = '';
-    let totalSets = 0;
-    if (Array.isArray(t.exercises)) {
-      exercisesText = `${t.exercises.length} Exercises`;
-      totalSets = t.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
-    } else if (typeof t.exercises === 'number') {
-      exercisesText = `${t.exercises} Exercises`;
-    } else if (typeof t.exercises === 'string') {
-      exercisesText = t.exercises;
+      // Exercises: if array -> "N Exercises", if number -> "N Exercises", otherwise string
+      let exercisesText = '';
+      let totalSets = 0;
+      if (Array.isArray(t.exercises)) {
+        exercisesText = `${t.exercises.length} Exercises`;
+        totalSets = t.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
+      } else if (typeof t.exercises === 'number') {
+        exercisesText = `${t.exercises} Exercises`;
+      } else if (typeof t.exercises === 'string') {
+        exercisesText = t.exercises;
+      }
+
+      // If JSON provides top-level sets or we computed totalSets from exercises array, use that
+      if (!totalSets && typeof t.sets === 'number') {
+        totalSets = t.sets;
+      }
+
+      const setsText = totalSets ? `${totalSets} Sets` : '';
+
+      const iconKey = (t.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
+
+      const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
+
+      return {
+        id,
+        title,
+        difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
+          ? (difficulty as any)
+          : 'Beginner',
+        duration,
+        exercises: exercisesText,
+        sets: setsText,
+        icon: iconKey,
+      } as WorkoutTemplate;
     }
+  );
 
-    // If JSON provides top-level sets or we computed totalSets from exercises array, use that
-    if (!totalSets && typeof t.sets === 'number') {
-      totalSets = t.sets;
-    }
-
-    const setsText = totalSets ? `${totalSets} Sets` : '';
-
-    const iconKey = (t.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
-
-    const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
-
-    return {
-      id,
-      title,
-      difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
-        ? (difficulty as any)
-        : 'Beginner',
-      duration,
-      exercises: exercisesText,
-      sets: setsText,
-      icon: iconKey,
-    } as WorkoutTemplate;
-  }
-);
+  return normalizedTemplates;
+};
 
 type BrowseTemplatesModalProps = {
   visible: boolean;
@@ -128,6 +133,8 @@ export function BrowseTemplatesModal({
         };
     }
   };
+
+  const normalizedTemplates = getNormalizedTemplates(t);
 
   const filteredTemplates = normalizedTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
