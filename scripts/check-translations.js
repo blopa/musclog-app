@@ -110,7 +110,7 @@ class TranslationScanner {
             }
 
             // If the key contains a template literal with a variable, extract the static part
-            const dynamicMatch = key.match(/^(.*?)\$\{[^}]+\}/);
+            const dynamicMatch = key.match(/^(.*?)\$\{[^}]+}/);
             if (dynamicMatch) {
               const staticKey = dynamicMatch[1].replace(/\.$/, '');
               fileKeys.add(staticKey);
@@ -207,7 +207,7 @@ class TranslationScanner {
     if (key.includes('function') || key.includes('const') || key.includes('return')) return false;
 
     // Exclude boundary strings and form data
-    if (key.includes('------') || key.includes('content-disposition')) return false;
+    if (['------', 'content-disposition'].some((s) => key.includes(s))) return false;
 
     return true;
   }
@@ -311,7 +311,42 @@ class TranslationScanner {
       }
       console.log('}');
 
-      // TODO: add these missing keys to the JSON file
+      // Automatically add missing keys to the translations file (create a backup first)
+      try {
+        const backupPath = `${CONFIG.localeFile}.bak.${Date.now()}`;
+        fs.copyFileSync(CONFIG.localeFile, backupPath);
+        console.log(`\n🔁 Backup created at: ${backupPath}`);
+
+        const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
+        const translations = JSON.parse(content);
+
+        for (const key of sortedMissing) {
+          const defaultValue = this.generateDefaultValue(key);
+          // Set nested key in translations object without overwriting existing values
+          const parts = key.split('.');
+          let node = translations;
+          for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            if (i === parts.length - 1) {
+              // leaf
+              if (node[part] === undefined) {
+                node[part] = defaultValue;
+              }
+            } else {
+              if (node[part] === undefined || typeof node[part] !== 'object') {
+                node[part] = {};
+              }
+              node = node[part];
+            }
+          }
+        }
+
+        const newContent = JSON.stringify(translations, null, 2) + '\n';
+        fs.writeFileSync(CONFIG.localeFile, newContent, 'utf8');
+        console.log(`\n✅ Added ${sortedMissing.length} missing keys to ${CONFIG.localeFile}`);
+      } catch (e) {
+        console.error('✗ Failed to add missing keys to locale file:', e.message || e);
+      }
     } else {
       console.log('\n✅ All translations found! No missing keys detected.');
     }
