@@ -21,6 +21,7 @@ type WorkoutTemplate = {
   icon: keyof typeof MaterialIcons.glyphMap;
 };
 
+// TODO: load templates from workoutTemplatesEnUS.json, which has a sligtly different format, so change the code to accomodate that JSON, dont change the JSON.
 const mockTemplates: WorkoutTemplate[] = [
   {
     id: '1',

@@ -1,0 +1,13 @@
+[
+  {
+    "title": "5-Day Hypertrophy Split",
+    "difficulty": "Advanced",
+    "duration": 75,
+    "exercises": [{
+      "exerciseId": 1,
+      "sets": 3,
+      "reps": 12
+    }],
+    "icon": "fitness-center"
+  }
+]
