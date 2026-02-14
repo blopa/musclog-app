@@ -88,9 +88,14 @@ export default function NutritionGoalsScreen() {
         targetDate: goals.targetDate ?? null,
       });
 
+      // If the user arrived here from the results screen to adjust the AI plan,
+      // then after saving we should continue the onboarding flow to personal-info.
+      if (isAdjusting) {
+        router.push('/onboarding/personal-info');
+        return;
+      }
+
       router.push({
-        // TODO: if user is coming from the 'nutrition-goals-results' because they wanted to adjust the goals,
-        // then we should instead navigate to the personal-info
         pathname: '/onboarding/nutrition-goals-results',
         params: { aiGenerated: 'false' },
       });

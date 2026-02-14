@@ -777,8 +777,10 @@ export default function NutritionGoalsResults() {
               width="full"
               size="sm"
               onPress={() => {
-                // await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
-                router.push('/onboarding/nutrition-goals');
+                router.push({
+                  pathname: '/onboarding/nutrition-goals',
+                  params: { isAdjusting: 'true' },
+                });
               }}
             />
           </>
