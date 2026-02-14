@@ -19,6 +19,10 @@ import { SettingsService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 
+const DEFAULT_WEIGHT = '60.0';
+const DEFAULT_HEIGHT = '165';
+const DEFAULT_FAT_PERCENTAGE = 15;
+
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -70,9 +74,9 @@ export default function FitnessInfo() {
         if (user) {
           setInitialData({
             units,
-            weight: latestWeight ? String(latestWeight.value) : '0.0',
-            height: latestHeight ? String(latestHeight.value) : '0',
-            fatPercentage: latestBodyFat ? latestBodyFat.value : 15,
+            weight: latestWeight ? String(latestWeight.value) : DEFAULT_WEIGHT,
+            height: latestHeight ? String(latestHeight.value) : DEFAULT_HEIGHT,
+            fatPercentage: latestBodyFat ? latestBodyFat.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
@@ -81,9 +85,9 @@ export default function FitnessInfo() {
         } else {
           setInitialData({
             units,
-            weight: latestWeight ? String(latestWeight.value) : '0.0',
-            height: latestHeight ? String(latestHeight.value) : '0',
-            fatPercentage: latestBodyFat ? latestBodyFat.value : 15,
+            weight: latestWeight ? String(latestWeight.value) : DEFAULT_WEIGHT,
+            height: latestHeight ? String(latestHeight.value) : DEFAULT_HEIGHT,
+            fatPercentage: latestBodyFat ? latestBodyFat.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
@@ -94,8 +98,9 @@ export default function FitnessInfo() {
         console.error('Error loading fitness data:', error);
         setInitialData({
           units: 'metric',
-          weight: '0.0',
-          height: '0',
+          weight: DEFAULT_WEIGHT,
+          height: DEFAULT_HEIGHT,
+          fatPercentage: DEFAULT_FAT_PERCENTAGE,
           weightGoal: 'maintain',
           fitnessGoal: 'general',
           activityLevel: 3,
