@@ -69,6 +69,8 @@ export interface NutritionPlan {
   targetBMI?: number;
   /** Target FFMI at projected weight (when height and body fat available). */
   targetFFMI?: number;
+  /** User's lifting experience (for maintenance messaging, e.g. muscle gain potential). */
+  liftingExperience?: LiftingExperience;
 }
 
 // ---------------------------------------------------------------------------
@@ -479,6 +481,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     goalLabel,
     ...projection,
     currentWeightKg: weightKg,
+    liftingExperience: input.liftingExperience,
     ...(minTargetCalories !== undefined && { minTargetCalories }),
     ...(maxTargetCalories !== undefined && { maxTargetCalories }),
   };

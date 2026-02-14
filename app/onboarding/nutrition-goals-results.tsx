@@ -196,6 +196,19 @@ export default function NutritionGoalsResults() {
   const trendingIcon =
     displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
 
+  const isMaintenance = displayData != null && displayData.weightChange === 0;
+
+  const maintenanceMuscleRange = useMemo(() => {
+    const exp = parsedPlan?.liftingExperience ?? 'intermediate';
+    const ranges: Record<string, string> = {
+      beginner: '0.5–2',
+      intermediate: '0.25–1',
+      advanced: '0.1–0.5',
+    };
+
+    return ranges[exp] ?? ranges.intermediate;
+  }, [parsedPlan?.liftingExperience]);
+
   const handleAccept = async () => {
     if (!displayData) {
       return;
@@ -653,7 +666,11 @@ export default function NutritionGoalsResults() {
             >
               <View className="mb-2 flex-row items-center gap-2">
                 <MaterialIcons
-                  name={trendingIcon as 'trending-down' | 'trending-up'}
+                  name={
+                    isMaintenance
+                      ? 'fitness-center'
+                      : (trendingIcon as 'trending-down' | 'trending-up')
+                  }
                   size={18}
                   color={theme.colors.accent.primary}
                 />
@@ -671,81 +688,113 @@ export default function NutritionGoalsResults() {
                 </Text>
               </View>
 
-              <View className="flex-col items-center justify-center py-1">
-                <Text
-                  className="mb-1 text-xs font-medium text-slate-400"
-                  style={{
-                    color: theme.colors.text.secondary,
-                    fontSize: theme.typography.fontSize.xxs,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    marginBottom: theme.spacing.margin.xs,
-                  }}
-                >
-                  {weightChangeLabel}
-                </Text>
-                <View className="flex-row items-baseline">
+              {isMaintenance ? (
+                <View className="flex-col items-center justify-center py-2">
                   <Text
-                    className="mr-2 text-4xl font-black tracking-tight text-white"
+                    className="mb-2 text-base font-semibold text-white"
                     style={{
                       color: theme.colors.text.primary,
-                      fontSize: theme.typography.fontSize['4xl'],
-                      fontWeight: theme.typography.fontWeight.black,
-                      letterSpacing: -0.5,
+                      fontSize: theme.typography.fontSize.base,
+                      fontWeight: theme.typography.fontWeight.semibold,
+                      marginBottom: theme.spacing.margin.sm,
                     }}
                   >
-                    {formattedWeightChange}
+                    {t('nutritionGoals.results.projectionMaintenanceTitle')}
                   </Text>
                   <Text
-                    className="text-primary text-xl font-bold"
+                    className="max-w-[280px] text-center text-sm leading-relaxed text-slate-400"
                     style={{
-                      color: theme.colors.accent.primary,
-                      fontSize: theme.typography.fontSize.xl,
-                      fontWeight: theme.typography.fontWeight.bold,
+                      color: theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: theme.typography.fontWeight.normal,
+                      textAlign: 'center',
+                      lineHeight: 20,
                     }}
                   >
-                    kg
+                    {t('nutritionGoals.results.projectionMaintenanceMuscleGain', {
+                      days: displayData.projectionDays,
+                      range: maintenanceMuscleRange,
+                    })}
                   </Text>
                 </View>
-                <Text
-                  className="max-w-[200px] text-center text-[11px] text-slate-500"
-                  style={{
-                    color: theme.colors.text.tertiary,
-                    fontSize: theme.typography.fontSize.xxs,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    textAlign: 'center',
-                    maxWidth: 200,
-                  }}
-                >
-                  {t('nutritionGoals.results.projectionDescription', {
-                    weight: displayData.projectedWeight.toFixed(1),
-                    days: displayData.projectionDays,
-                  })}
-                </Text>
-              </View>
+              ) : (
+                <>
+                  <View className="flex-col items-center justify-center py-1">
+                    <Text
+                      className="mb-1 text-xs font-medium text-slate-400"
+                      style={{
+                        color: theme.colors.text.secondary,
+                        fontSize: theme.typography.fontSize.xxs,
+                        fontWeight: theme.typography.fontWeight.medium,
+                        marginBottom: theme.spacing.margin.xs,
+                      }}
+                    >
+                      {weightChangeLabel}
+                    </Text>
+                    <View className="flex-row items-baseline">
+                      <Text
+                        className="mr-2 text-4xl font-black tracking-tight text-white"
+                        style={{
+                          color: theme.colors.text.primary,
+                          fontSize: theme.typography.fontSize['4xl'],
+                          fontWeight: theme.typography.fontWeight.black,
+                          letterSpacing: -0.5,
+                        }}
+                      >
+                        {formattedWeightChange}
+                      </Text>
+                      <Text
+                        className="text-primary text-xl font-bold"
+                        style={{
+                          color: theme.colors.accent.primary,
+                          fontSize: theme.typography.fontSize.xl,
+                          fontWeight: theme.typography.fontWeight.bold,
+                        }}
+                      >
+                        kg
+                      </Text>
+                    </View>
+                    <Text
+                      className="max-w-[200px] text-center text-[11px] text-slate-500"
+                      style={{
+                        color: theme.colors.text.tertiary,
+                        fontSize: theme.typography.fontSize.xxs,
+                        fontWeight: theme.typography.fontWeight.medium,
+                        textAlign: 'center',
+                        maxWidth: 200,
+                      }}
+                    >
+                      {t('nutritionGoals.results.projectionDescription', {
+                        weight: displayData.projectedWeight.toFixed(1),
+                        days: displayData.projectionDays,
+                      })}
+                    </Text>
+                  </View>
 
-              {/* Projection line chart */}
-              {projectionData.length > 0 ? (
-                <View className="relative mt-0 w-full">
-                  <LineChart
-                    data={projectionData.map(({ x, y }) => ({ x, y }))}
-                    height={96}
-                    chartHeight={72}
-                    marginTop={-12}
-                    lineColor={theme.colors.accent.primary}
-                    areaColor={theme.colors.accent.primary30}
-                    lineWidth={3}
-                    showLastPoint={true}
-                    lastPointSize={6}
-                    lastPointStrokeColor={theme.colors.background.card}
-                    xDomain={[0, projectionLength - 1]}
-                    yDomain={[
-                      Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
-                      Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
-                    ]}
-                    marginBottom={4}
-                  />
-                </View>
-              ) : null}
+                  {projectionData.length > 0 ? (
+                    <View className="relative mt-0 w-full">
+                      <LineChart
+                        data={projectionData.map(({ x, y }) => ({ x, y }))}
+                        height={96}
+                        chartHeight={72}
+                        marginTop={-12}
+                        lineColor={theme.colors.accent.primary}
+                        areaColor={theme.colors.accent.primary30}
+                        lineWidth={3}
+                        showLastPoint={true}
+                        lastPointSize={6}
+                        lastPointStrokeColor={theme.colors.background.card}
+                        xDomain={[0, projectionLength - 1]}
+                        yDomain={[
+                          Math.floor(Math.min(...projectionData.map((d) => d.y)) * 0.95),
+                          Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
+                        ]}
+                        marginBottom={4}
+                      />
+                    </View>
+                  ) : null}
+                </>
+              )}
             </GenericCard>
           ) : null}
         </View>

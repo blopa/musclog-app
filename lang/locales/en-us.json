@@ -845,6 +845,8 @@
       "estimatedMaintenance": "Estimated Maintenance",
       "projectionTitle": "{{days}}-Day Projection",
       "projectionDescription": "By tracking these goals, you are projected to reach {{weight}} kg in {{days}} days.",
+      "projectionMaintenanceTitle": "Maintaining weight",
+      "projectionMaintenanceMuscleGain": "With consistent training and nutrition, natural muscle gain in {{days}} days is typically {{range}} kg, depending on genetics and experience.",
       "calorieRange": "Range: {{range}} kcal",
       "bodyFatUncertaintyNote": "Range accounts for body fat measurement variation (±4%)",
       "goalLabels": {

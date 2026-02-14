@@ -72,38 +72,41 @@ export default function NutritionGoalsScreen() {
     return undefined;
   }, [goal, storedPlanGoals]);
 
-  const handleSave = useCallback(async (goals: NutritionGoals) => {
-    try {
-      await NutritionGoalService.saveGoals({
-        totalCalories: goals.totalCalories,
-        protein: goals.protein,
-        carbs: goals.carbs,
-        fats: goals.fats,
-        fiber: goals.fiber,
-        eatingPhase: goals.eatingPhase,
-        targetWeight: goals.targetWeight,
-        targetBodyFat: goals.targetBodyFat,
-        targetBMI: goals.targetBMI,
-        targetFFMI: goals.targetFFMI,
-        targetDate: goals.targetDate ?? null,
-      });
+  const handleSave = useCallback(
+    async (goals: NutritionGoals) => {
+      try {
+        await NutritionGoalService.saveGoals({
+          totalCalories: goals.totalCalories,
+          protein: goals.protein,
+          carbs: goals.carbs,
+          fats: goals.fats,
+          fiber: goals.fiber,
+          eatingPhase: goals.eatingPhase,
+          targetWeight: goals.targetWeight,
+          targetBodyFat: goals.targetBodyFat,
+          targetBMI: goals.targetBMI,
+          targetFFMI: goals.targetFFMI,
+          targetDate: goals.targetDate ?? null,
+        });
 
-      // If the user arrived here from the results screen to adjust the AI plan,
-      // then after saving we should continue the onboarding flow to personal-info.
-      if (isAdjusting) {
-        router.push('/onboarding/personal-info');
-        return;
+        // If the user arrived here from the results screen to adjust the AI plan,
+        // then after saving we should continue the onboarding flow to personal-info.
+        if (isAdjusting) {
+          router.push('/onboarding/personal-info');
+          return;
+        }
+
+        router.push({
+          pathname: '/onboarding/nutrition-goals-results',
+          params: { aiGenerated: 'false' },
+        });
+      } catch (e) {
+        showSnackbar('error', t('nutritionGoals.errorSaving'));
+        console.error('Error saving nutrition goals:', e);
       }
-
-      router.push({
-        pathname: '/onboarding/nutrition-goals-results',
-        params: { aiGenerated: 'false' },
-      });
-    } catch (e) {
-      showSnackbar('error', t('nutritionGoals.errorSaving'));
-      console.error('Error saving nutrition goals:', e);
-    }
-  }, [isAdjusting, router, t]);
+    },
+    [isAdjusting, router, t]
+  );
 
   if (isLoading) {
     return (
