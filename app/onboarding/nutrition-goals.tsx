@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -72,7 +72,7 @@ export default function NutritionGoalsScreen() {
     return undefined;
   }, [goal, storedPlanGoals]);
 
-  const handleSave = async (goals: NutritionGoals) => {
+  const handleSave = useCallback(async (goals: NutritionGoals) => {
     try {
       await NutritionGoalService.saveGoals({
         totalCalories: goals.totalCalories,
@@ -103,7 +103,7 @@ export default function NutritionGoalsScreen() {
       showSnackbar('error', t('nutritionGoals.errorSaving'));
       console.error('Error saving nutrition goals:', e);
     }
-  };
+  }, [isAdjusting, router, t]);
 
   if (isLoading) {
     return (
