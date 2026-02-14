@@ -349,8 +349,7 @@ export default function WorkoutsScreen() {
           }}
           onBrowseTemplates={() => {
             setIsCreateOptionsVisible(false);
-            // Navigate to templates browser if exists
-            router.push('/workout/templates');
+            // TODO: open BrowseTemplatesModalmodal
           }}
         />
       ) : null}
