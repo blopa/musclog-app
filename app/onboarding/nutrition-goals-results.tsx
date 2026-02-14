@@ -20,6 +20,8 @@ export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+
+  // TODO: instead of passing the plan as param, let's store it into the AsyncStorage and read it here
   const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
   const [isSaving, setIsSaving] = useState(false);
