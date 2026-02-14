@@ -80,7 +80,7 @@ export const useHealthConnect = (): UseHealthConnectResult => {
 
       // Show user-friendly error
       if (hcError.code === 'SDK_NOT_AVAILABLE') {
-        // TODO: use the snackbar system
+        // TODO: use the snackbar system and translations
         Alert.alert('Health Connect Not Available', hcError.getUserMessage(), [
           { text: 'OK', style: 'default' },
           {
@@ -155,7 +155,7 @@ export const useHealthConnect = (): UseHealthConnectResult => {
    */
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     if (!isAvailable) {
-      // TODO: use the snackbar system
+      // TODO: use the snackbar system and translations
       Alert.alert('Health Connect Not Available', 'Please initialize Health Connect first.', [
         { text: 'OK' },
       ]);
@@ -172,7 +172,7 @@ export const useHealthConnect = (): UseHealthConnectResult => {
 
       if (!allGranted && result.denied.length > 0) {
         const deniedTypes = result.denied.map((p) => p.recordType).join(', ');
-        // TODO: use the snackbar system
+        // TODO: use the snackbar system and translations
         Alert.alert(
           'Permissions Required',
           `The following permissions were not granted: ${deniedTypes}. Some features may not work correctly.`,

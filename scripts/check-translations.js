@@ -8,7 +8,7 @@ const glob = require('glob');
 // Configuration
 const CONFIG = {
   localeFile: path.join(__dirname, '../lang/locales/en-us.json'),
-  scanPaths: ['../app/**/*.tsx', '../components/**/*.tsx', '../**/*.ts'],
+  scanPaths: ['../app/**/*.tsx', '../components/**/*.tsx', '../utils/**/*.ts', '../hooks/**/*.ts', '../types/**/*.ts', '../services/**/*.ts'],
   patterns: [
     /t\(['"`]([^'"`]+)['"`]\)/g, // t('key')
     /t\(`([^`]+)`\)/g, // t(`key`)
@@ -84,6 +84,11 @@ class TranslationScanner {
         while ((match = pattern.exec(content)) !== null) {
           const key = match[1];
           if (key) {
+            // Filter out invalid keys
+            if (!this.isValidTranslationKey(key)) {
+              continue;
+            }
+
             // If the key contains a template literal with a variable, extract the static part
             const dynamicMatch = key.match(/^(.*?)\$\{[^}]+\}/);
             if (dynamicMatch) {
@@ -148,6 +153,26 @@ class TranslationScanner {
         this.missingKeys.add(key);
       }
     }
+  }
+
+  // Check if a key is a valid translation key
+  isValidTranslationKey(key) {
+    // Exclude empty strings, single characters, obvious non-keys
+    if (!key || key.length < 2) return false;
+    
+    // Exclude keys that look like file paths, URLs, or code
+    if (key.includes('/') || key.includes('node_modules') || key.includes('.d.ts')) return false;
+    
+    // Exclude keys that are just symbols or numbers
+    if (/^[^a-zA-Z]+$/.test(key) && key.length < 3) return false;
+    
+    // Exclude obvious code patterns
+    if (key.includes('function') || key.includes('const') || key.includes('return')) return false;
+    
+    // Exclude boundary strings and form data
+    if (key.includes('------') || key.includes('content-disposition')) return false;
+    
+    return true;
   }
 
   // Remove unused translations from the locale file
