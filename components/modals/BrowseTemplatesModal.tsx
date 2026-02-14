@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Search } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import workoutTemplatesEnUS from '../../data/workoutTemplatesEnUS.json';
@@ -33,13 +34,18 @@ type RawWorkoutTemplate = {
 };
 
 // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
-const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[])
-  .map((t, idx) => {
+const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[]).map(
+  (t, idx) => {
     const title = t.title || `Template ${idx + 1}`;
     const difficulty = (t.difficulty as any) || 'Beginner';
 
     // Duration: number (minutes) -> "NN min", otherwise keep string
-    const duration = typeof t.duration === 'number' ? `${t.duration} min` : (typeof t.duration === 'string' ? t.duration : '');
+    const duration =
+      typeof t.duration === 'number'
+        ? `${t.duration} min`
+        : typeof t.duration === 'string'
+          ? t.duration
+          : '';
 
     // Exercises: if array -> "N Exercises", if number -> "N Exercises", otherwise string
     let exercisesText = '';
@@ -67,13 +73,16 @@ const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorko
     return {
       id,
       title,
-      difficulty: (['Beginner', 'Intermediate', 'Advanced'].includes(difficulty) ? (difficulty as any) : 'Beginner'),
+      difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
+        ? (difficulty as any)
+        : 'Beginner',
       duration,
       exercises: exercisesText,
       sets: setsText,
       icon: iconKey,
     } as WorkoutTemplate;
-  });
+  }
+);
 
 type BrowseTemplatesModalProps = {
   visible: boolean;
@@ -86,6 +95,7 @@ export function BrowseTemplatesModal({
   onClose,
   onTemplateSelect,
 }: BrowseTemplatesModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -175,7 +185,7 @@ export function BrowseTemplatesModal({
           <View className="flex-row items-center gap-6 border-t border-white/5 pt-3">
             <View className="flex-col gap-0.5">
               <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
-                Duration
+                {t('workouts.browseTemplatesModal.stats.duration')}
               </Text>
               <View className="flex-row items-center gap-1.5">
                 <MaterialIcons name="schedule" size={16} color={theme.colors.accent.primary} />
@@ -184,7 +194,7 @@ export function BrowseTemplatesModal({
             </View>
             <View className="flex-col gap-0.5">
               <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
-                Exercises
+                {t('workouts.browseTemplatesModal.stats.exercises')}
               </Text>
               <View className="flex-row items-center gap-1.5">
                 <MaterialIcons
@@ -199,7 +209,7 @@ export function BrowseTemplatesModal({
             </View>
             <View className="flex-col gap-0.5">
               <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
-                Sets
+                {t('workouts.browseTemplatesModal.stats.sets')}
               </Text>
               <View className="flex-row items-center gap-1.5">
                 <MaterialIcons
@@ -220,7 +230,7 @@ export function BrowseTemplatesModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title="Browse Templates"
+      title={t('workouts.browseTemplatesModal.title')}
       scrollable={false}
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -231,7 +241,7 @@ export function BrowseTemplatesModal({
               label=""
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholder="Search expert programs..."
+              placeholder={t('workouts.browseTemplatesModal.searchPlaceholder') as string}
               icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
             />
           </View>
@@ -239,13 +249,13 @@ export function BrowseTemplatesModal({
           {/* Category Filter Tabs */}
           <FilterTabs
             tabs={[
-              { id: 'All', label: 'All' },
-              { id: 'Beginner', label: 'Beginner' },
-              { id: 'Intermediate', label: 'Intermediate' },
-              { id: 'Advanced', label: 'Advanced' },
-              { id: 'Strength', label: 'Strength' },
-              { id: 'Hypertrophy', label: 'Hypertrophy' },
-              { id: 'Cardio', label: 'Cardio' },
+              { id: 'All', label: t('workouts.browseTemplatesModal.tabs.all') },
+              { id: 'Beginner', label: t('workouts.browseTemplatesModal.tabs.beginner') },
+              { id: 'Intermediate', label: t('workouts.browseTemplatesModal.tabs.intermediate') },
+              { id: 'Advanced', label: t('workouts.browseTemplatesModal.tabs.advanced') },
+              { id: 'Strength', label: t('workouts.browseTemplatesModal.tabs.strength') },
+              { id: 'Hypertrophy', label: t('workouts.browseTemplatesModal.tabs.hypertrophy') },
+              { id: 'Cardio', label: t('workouts.browseTemplatesModal.tabs.cardio') },
             ]}
             activeTab={selectedCategory}
             onTabChange={setSelectedCategory}

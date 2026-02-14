@@ -494,6 +494,24 @@
       "browseTemplates": "Browse Templates",
       "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
     },
+    "browseTemplatesModal": {
+      "title": "Browse Templates",
+      "searchPlaceholder": "Search expert programs...",
+      "tabs": {
+        "all": "All",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced",
+        "strength": "Strength",
+        "hypertrophy": "Hypertrophy",
+        "cardio": "Cardio"
+      },
+      "stats": {
+        "duration": "Duration",
+        "exercises": "Exercises",
+        "sets": "Sets"
+      }
+    },
     "createWorkoutOptionsModal": {
       "header": "Create Workout",
       "title": "How do you want to build your routine?",
