@@ -18,6 +18,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
+  fatPercentage: number;
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
@@ -39,6 +40,7 @@ export function EditFitnessDetailsModal({
     units,
     weight,
     height,
+    fatPercentage,
     weightGoal,
     fitnessGoal,
     activityLevel,
@@ -48,6 +50,7 @@ export function EditFitnessDetailsModal({
       units,
       weight,
       height,
+      fatPercentage,
       weightGoal,
       fitnessGoal,
       activityLevel,
@@ -62,6 +65,7 @@ export function EditFitnessDetailsModal({
       currentFormData.units &&
       currentFormData.weight &&
       currentFormData.height &&
+      currentFormData.fatPercentage &&
       currentFormData.weightGoal &&
       currentFormData.fitnessGoal &&
       currentFormData.activityLevel &&

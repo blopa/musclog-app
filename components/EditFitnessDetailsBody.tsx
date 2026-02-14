@@ -25,6 +25,7 @@ import { OptionsSelector } from './OptionsSelector';
 import { Button } from './theme/Button';
 import { PickerButton } from './theme/PickerButton';
 import { SegmentedControl } from './theme/SegmentedControl';
+import { Slider } from './theme/Slider';
 import { TextInput } from './theme/TextInput';
 
 type EditFitnessDetailsBodyProps = {
@@ -42,6 +43,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
+  fatPercentage: number;
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
@@ -71,6 +73,7 @@ export function EditFitnessDetailsBody({
   const [experience, setExperience] = useState<'beginner' | 'intermediate' | 'advanced'>(
     initialData?.experience ?? 'intermediate'
   );
+  const [fatPercentage, setFatPercentage] = useState(initialData?.fatPercentage ?? 15);
 
   // Call onFormChange whenever form data changes
   useEffect(() => {
@@ -79,13 +82,24 @@ export function EditFitnessDetailsBody({
         units,
         weight,
         height,
+        fatPercentage,
         weightGoal,
         fitnessGoal,
         activityLevel,
         experience,
       });
     }
-  }, [units, weight, height, weightGoal, fitnessGoal, activityLevel, experience, onFormChange]);
+  }, [
+    units,
+    weight,
+    height,
+    fatPercentage,
+    weightGoal,
+    fitnessGoal,
+    activityLevel,
+    experience,
+    onFormChange,
+  ]);
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
   const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
   const [focusedInput, setFocusedInput] = useState<'weight' | 'height' | null>(null);
@@ -95,6 +109,7 @@ export function EditFitnessDetailsBody({
       units,
       weight,
       height,
+      fatPercentage,
       weightGoal,
       fitnessGoal,
       activityLevel,
@@ -292,6 +307,24 @@ export function EditFitnessDetailsBody({
                 }
               />
             </View>
+          </View>
+          {/* Fat Percentage Slider */}
+          <View className="mt-4">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('editFitnessDetails.fatPercentage')}
+              </Text>
+              <Text className="text-sm font-medium text-text-primary">{fatPercentage}%</Text>
+            </View>
+            <Slider
+              value={fatPercentage}
+              min={5}
+              max={50}
+              step={0.5}
+              onChange={setFatPercentage}
+              variant="gradient"
+              useGradient={true}
+            />
           </View>
         </View>
 

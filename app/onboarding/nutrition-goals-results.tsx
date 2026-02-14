@@ -156,7 +156,9 @@ export default function NutritionGoalsResults() {
   }, [parsedPlan, savedGoal]);
 
   const handleAccept = async () => {
-    if (!displayData) return;
+    if (!displayData) {
+      return;
+    }
 
     setIsSaving(true);
     try {
