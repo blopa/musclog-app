@@ -445,7 +445,8 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             min={0}
-            max={300}
+            // TODO: change max depending on eatingPhase
+            max={600}
             color={theme.colors.macros.protein.bg}
             onChange={setProtein}
           />
@@ -454,7 +455,8 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             min={0}
-            max={500}
+            // TODO: change max depending on eatingPhase
+            max={800}
             color={theme.colors.macros.carbs.bg}
             onChange={setCarbs}
           />
@@ -463,7 +465,8 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             min={0}
-            max={150}
+            // TODO: change max depending on eatingPhase
+            max={600}
             color={theme.colors.macros.fat.bg}
             onChange={setFats}
           />
@@ -472,7 +475,8 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             min={0}
-            max={100}
+            // TODO: change max depending on eatingPhase
+            max={200}
             color={theme.colors.macros.fiber.bg}
             onChange={setFiber}
           />
