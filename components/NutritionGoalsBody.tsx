@@ -10,7 +10,7 @@ import {
   Scale,
   TrendingUp,
 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
@@ -52,16 +52,26 @@ type MacroCardProps = {
   max: number;
   color: string;
   onChange: (value: number) => void;
+  step?: number;
 };
 
-function MacroCard({ label, kcalPerGram, value, min, max, color, onChange }: MacroCardProps) {
+function MacroCard({
+  label,
+  kcalPerGram,
+  value,
+  min,
+  max,
+  color,
+  onChange,
+  step = 5,
+}: MacroCardProps) {
   const theme = useTheme();
   const handleDecrement = () => {
-    onChange(Math.max(min, value - 5));
+    onChange(Math.max(min, value - step));
   };
 
   const handleIncrement = () => {
-    onChange(Math.min(max, value + 5));
+    onChange(Math.min(max, value + step));
   };
 
   // Web-specific styles to allow horizontal gestures on slider area
@@ -376,7 +386,7 @@ export function NutritionGoalsBody({
     onFormChange,
   ]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     const goals: NutritionGoals = {
       totalCalories,
       protein,
@@ -391,7 +401,20 @@ export function NutritionGoalsBody({
       targetDate,
     };
     onSave?.(goals);
-  };
+  }, [
+    carbs,
+    eatingPhase,
+    fats,
+    fiber,
+    onSave,
+    protein,
+    targetBMI,
+    targetBodyFat,
+    targetDate,
+    targetFFMI,
+    targetWeight,
+    totalCalories,
+  ]);
 
   // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g, fiber is typically ~2 kcal/g or ignored, but we'll include it for accuracy if needed)
   // Skip recalculation on initial mount when initialGoals is provided to preserve the plan's targetCalories.
@@ -512,6 +535,7 @@ export function NutritionGoalsBody({
             max={macroMax.fiber}
             color={theme.colors.macros.fiber.bg}
             onChange={setFiber}
+            step={1}
           />
         </View>
 
