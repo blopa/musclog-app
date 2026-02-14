@@ -301,7 +301,10 @@ class TranslationScanner {
       console.log('\n💡 SUGGESTED ADDITIONS TO en-us.json:');
       console.log('{');
 
-      const sortedMissing = Array.from(this.missingKeys).sort();
+      const sortedMissing = Array.from(this.missingKeys).sort().filter((key) => {
+        return (key.includes('.') || key.includes('_')) && !key.includes(' ');
+      });
+
       for (const key of sortedMissing) {
         const value = this.generateDefaultValue(key);
         console.log(`  "${key}": "${value}",`);
@@ -342,7 +345,8 @@ class TranslationScanner {
       .pop() // Get the last part of the key
       .replace(/([A-Z])/g, ' $1') // Add space before capital letters
       .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
-      .trim();
+      .trim()
+      .replaceAll('_', ' ');
   }
 
   // Run the complete scan

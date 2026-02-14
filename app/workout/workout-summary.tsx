@@ -87,7 +87,7 @@ export default function WorkoutSummaryScreen() {
     };
 
     loadWorkoutData();
-  }, [workoutLogId]);
+  }, [t, workoutLogId]);
 
   const handleGoHome = () => {
     router.replace('/');
