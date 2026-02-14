@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,6 @@ import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
-import type { TFunction } from 'i18next';
 
 type WorkoutTemplate = {
   id: string;
@@ -37,38 +37,41 @@ type RawWorkoutTemplate = {
 const getNormalizedTemplates = (t: TFunction) => {
   // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
   const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[]).map(
-    (t, idx) => {
-      const title = t.title || `Template ${idx + 1}`;
-      const difficulty = (t.difficulty as any) || 'Beginner';
+    (item, idx) => {
+      const title =
+        item.title || t('workouts.browseTemplatesModal.templateName', { number: idx + 1 });
+      const difficulty = (item.difficulty as any) || 'Beginner';
 
       // Duration: number (minutes) -> "NN min", otherwise keep string
       const duration =
-        typeof t.duration === 'number'
-          ? `${t.duration} min`
-          : typeof t.duration === 'string'
-            ? t.duration
+        typeof item.duration === 'number'
+          ? `${item.duration} ${t('common.min')}`
+          : typeof item.duration === 'string'
+            ? item.duration
             : '';
 
       // Exercises: if array -> "N Exercises", if number -> "N Exercises", otherwise string
       let exercisesText = '';
       let totalSets = 0;
-      if (Array.isArray(t.exercises)) {
-        exercisesText = `${t.exercises.length} Exercises`;
-        totalSets = t.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
-      } else if (typeof t.exercises === 'number') {
-        exercisesText = `${t.exercises} Exercises`;
-      } else if (typeof t.exercises === 'string') {
-        exercisesText = t.exercises;
+      if (Array.isArray(item.exercises)) {
+        exercisesText = `${item.exercises.length} ${t('workouts.browseTemplatesModal.stats.exercises')}`;
+        totalSets = item.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
+      } else if (typeof item.exercises === 'number') {
+        exercisesText = `${item.exercises} ${t('workouts.browseTemplatesModal.stats.exercises')}`;
+      } else if (typeof item.exercises === 'string') {
+        exercisesText = item.exercises;
       }
 
       // If JSON provides top-level sets or we computed totalSets from exercises array, use that
-      if (!totalSets && typeof t.sets === 'number') {
-        totalSets = t.sets;
+      if (!totalSets && typeof item.sets === 'number') {
+        totalSets = item.sets;
       }
 
-      const setsText = totalSets ? `${totalSets} Sets` : '';
+      const setsText = totalSets
+        ? `${totalSets} ${t('workouts.browseTemplatesModal.stats.sets')}`
+        : '';
 
-      const iconKey = (t.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
+      const iconKey = (item.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
 
       const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
 

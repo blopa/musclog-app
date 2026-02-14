@@ -497,6 +497,7 @@
     "browseTemplatesModal": {
       "title": "Browse Templates",
       "searchPlaceholder": "Search expert programs...",
+      "templateName": "Template {{number}}",
       "tabs": {
         "all": "All",
         "beginner": "Beginner",
