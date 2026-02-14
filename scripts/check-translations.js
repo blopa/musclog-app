@@ -310,6 +310,8 @@ class TranslationScanner {
         console.log(`  "${key}": "${value}",`);
       }
       console.log('}');
+
+      // TODO: add these missing keys to the JSON file
     } else {
       console.log('\n✅ All translations found! No missing keys detected.');
     }
