@@ -305,12 +305,22 @@ export default function NutritionGoalsResults() {
   const trendingIcon =
     displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
 
-  // Weight change label
-  const weightChangeLabel =
-    // TODO: what about maintanence?
-    displayData && displayData.weightChange > 0
-      ? t('nutritionGoals.results.estimatedWeightGain')
-      : t('nutritionGoals.results.estimatedWeightLoss');
+  // TODO: use useMemo
+  const weightChangeLabel = (() => {
+    if (!displayData) {
+      return '';
+    }
+
+    if (displayData.weightChange > 0) {
+      return t('nutritionGoals.results.estimatedWeightGain');
+    }
+
+    if (displayData.weightChange < 0) {
+      return t('nutritionGoals.results.estimatedWeightLoss');
+    }
+
+    return t('nutritionGoals.results.estimatedMaintenance');
+  })();
 
   // Formatted weight change with sign
   const formattedWeightChange = displayData

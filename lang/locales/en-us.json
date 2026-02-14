@@ -842,6 +842,7 @@
       "fats": "Fats",
       "estimatedWeightLoss": "Estimated Weight Loss",
       "estimatedWeightGain": "Estimated Weight Gain",
+      "estimatedMaintenance": "Estimated Maintenance",
       "projectionTitle": "{{days}}-Day Projection",
       "projectionDescription": "By tracking these goals, you are projected to reach {{weight}} kg in {{days}} days.",
       "calorieRange": "Range: {{range}} kcal",
