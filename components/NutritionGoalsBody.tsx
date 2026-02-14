@@ -10,7 +10,7 @@ import {
   Scale,
   TrendingUp,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
@@ -305,6 +305,7 @@ export function NutritionGoalsBody({
   const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
+  const isInitialMount = useRef(true);
 
   // Call onFormChange whenever form data changes
   useEffect(() => {
@@ -356,12 +357,18 @@ export function NutritionGoalsBody({
   };
 
   // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g, fiber is typically ~2 kcal/g or ignored, but we'll include it for accuracy if needed)
+  // Skip recalculation on initial mount when initialGoals is provided to preserve the plan's targetCalories.
   useEffect(() => {
+    if (isInitialMount.current && initialGoals?.totalCalories != null) {
+      isInitialMount.current = false;
+      return;
+    }
+    isInitialMount.current = false;
     // Note: Fiber is often included in total carbs (4kcal/g) or sometimes calculated as 2kcal/g.
     // Most food labels include fiber in the carb count.
     const calculatedCalories = protein * 4 + carbs * 4 + fats * 9 + fiber * 2;
     setTotalCalories(Math.round(calculatedCalories));
-  }, [protein, carbs, fats, fiber]);
+  }, [protein, carbs, fats, fiber, initialGoals?.totalCalories]);
 
   // Web-specific ScrollView styles to prevent browser gestures
   const webScrollViewStyle =
