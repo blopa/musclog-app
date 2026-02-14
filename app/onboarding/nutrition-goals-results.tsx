@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -13,9 +14,18 @@ import { LineChart } from '../../components/LineChart';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
+import { database } from '../../database';
+import UserMetric from '../../database/models/UserMetric';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import type { NutritionPlan } from '../../utils/nutritionCalculator';
+import {
+  bmiFromWeightAndHeightM,
+  estimateTargetBodyFatWhenCutting,
+  ffmiFromWeightHeightAndBodyFat,
+  fiberFromCalories,
+  inchesToCm,
+  NutritionPlan,
+} from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsResults() {
@@ -133,7 +143,9 @@ export default function NutritionGoalsResults() {
   // Build projection chart data
   const projectionLength = 10;
   const projectionData = useMemo(() => {
-    if (!displayData?.hasProjection) return [];
+    if (!displayData?.hasProjection) {
+      return [];
+    }
 
     const { startWeight, projectedWeight } = displayData;
     return Array.from({ length: projectionLength }).map((_, i) => {
@@ -152,8 +164,15 @@ export default function NutritionGoalsResults() {
     if (!parsedPlan) {
       return savedGoal?.eatingPhase ?? 'maintain';
     }
-    if (parsedPlan.targetCalories < parsedPlan.tdee) return 'cut';
-    if (parsedPlan.targetCalories > parsedPlan.tdee) return 'bulk';
+
+    if (parsedPlan.targetCalories < parsedPlan.tdee) {
+      return 'cut';
+    }
+
+    if (parsedPlan.targetCalories > parsedPlan.tdee) {
+      return 'bulk';
+    }
+
     return 'maintain';
   }, [parsedPlan, savedGoal]);
 
@@ -166,17 +185,78 @@ export default function NutritionGoalsResults() {
     try {
       // Only save if this is an AI-generated plan (manual already saved in nutrition-goals screen)
       if (aiGenerated && parsedPlan) {
+        let heightM = 0;
+        let currentBodyFatPercent: number | null = null;
+
+        try {
+          const heightMetrics = await database
+            .get<UserMetric>('user_metrics')
+            .query(
+              Q.where('type', 'height'),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('date', Q.desc)
+            )
+            .fetch();
+
+          const bodyFatMetrics = await database
+            .get<UserMetric>('user_metrics')
+            .query(
+              Q.where('type', 'bodyFat'),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('date', Q.desc)
+            )
+            .fetch();
+
+          if (heightMetrics.length > 0) {
+            const rawHeight = heightMetrics[0].value;
+            const heightUnit = heightMetrics[0].unit;
+            const heightCm = heightUnit === 'in' ? inchesToCm(rawHeight) : rawHeight;
+            heightM = heightCm / 100;
+          }
+
+          if (
+            bodyFatMetrics.length > 0 &&
+            bodyFatMetrics[0].value >= 1 &&
+            bodyFatMetrics[0].value <= 99
+          ) {
+            currentBodyFatPercent = bodyFatMetrics[0].value;
+          }
+        } catch (e) {
+          console.warn('Could not fetch height/bodyFat for target metrics:', e);
+        }
+
+        const fiber = fiberFromCalories(parsedPlan.targetCalories);
+        const targetBMI =
+          heightM > 0 ? bmiFromWeightAndHeightM(parsedPlan.projectedWeightKg, heightM) : 0;
+
+        let targetBodyFat = 0;
+        if (eatingPhase === 'cut' && currentBodyFatPercent != null) {
+          targetBodyFat = estimateTargetBodyFatWhenCutting(
+            parsedPlan.currentWeightKg,
+            parsedPlan.projectedWeightKg,
+            currentBodyFatPercent
+          );
+        } else if (eatingPhase === 'maintain' && currentBodyFatPercent != null) {
+          targetBodyFat = currentBodyFatPercent;
+        }
+
+        const bodyFatForFfmi = targetBodyFat > 0 ? targetBodyFat : (currentBodyFatPercent ?? 0);
+        const targetFFMI =
+          heightM > 0 && bodyFatForFfmi > 0
+            ? ffmiFromWeightHeightAndBodyFat(parsedPlan.projectedWeightKg, heightM, bodyFatForFfmi)
+            : 0;
+
         await NutritionGoalService.saveGoals({
           totalCalories: parsedPlan.targetCalories,
           protein: parsedPlan.protein,
           carbs: parsedPlan.carbs,
           fats: parsedPlan.fats,
-          fiber: 30, // TODO: calculate based on the other properties
+          fiber,
           eatingPhase: eatingPhase as 'cut' | 'maintain' | 'bulk',
           targetWeight: parsedPlan.projectedWeightKg,
-          targetBodyFat: 0, // TODO: calculate based on the other properties
-          targetBMI: 0, // TODO: calculate based on the other properties
-          targetFFMI: 0, // TODO: calculate based on the other properties
+          targetBodyFat,
+          targetBMI,
+          targetFFMI,
           targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
         });
 

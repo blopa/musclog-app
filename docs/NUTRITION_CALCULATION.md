@@ -34,7 +34,7 @@ We use the **Mifflin-St Jeor equation** (1990), which predicts resting energy ex
   We use the average of the male and female formulas (equivalent to `− 78` instead of `+ 5` or `− 161`).
 
 **Source:**  
-Mifflin MD, St Jeor ST, Hill LA, Scott BJ, Daugherty SA, Koh YO. *A new predictive equation for resting energy expenditure in healthy individuals.* American Journal of Clinical Nutrition. 1990;51(2):241-247.
+Mifflin MD, St Jeor ST, Hill LA, Scott BJ, Daugherty SA, Koh YO. _A new predictive equation for resting energy expenditure in healthy individuals._ American Journal of Clinical Nutrition. 1990;51(2):241-247.
 
 - PubMed: <https://pubmed.ncbi.nlm.nih.gov/2305711/>
 
@@ -64,13 +64,13 @@ This form is often recommended when body fat is available, especially for more m
 
 TDEE is BMR multiplied by an **activity factor** (same idea as in Harris–Benedict–style equations):
 
-| Level | Multiplier | Description        |
-|-------|------------|--------------------|
-| 1     | 1.2        | Sedentary          |
-| 2     | 1.375      | Light (1–3 days/week) |
+| Level | Multiplier | Description              |
+| ----- | ---------- | ------------------------ |
+| 1     | 1.2        | Sedentary                |
+| 2     | 1.375      | Light (1–3 days/week)    |
 | 3     | 1.55       | Moderate (3–5 days/week) |
-| 4     | 1.725      | Active (6–7 days/week) |
-| 5     | 1.9        | Very active        |
+| 4     | 1.725      | Active (6–7 days/week)   |
+| 5     | 1.9        | Very active              |
 
 `TDEE = BMR × activity multiplier`
 
@@ -104,14 +104,14 @@ We estimate how your weight might change over **90 days** from the difference be
 
 We use an **energy equivalent of body weight change** of **7,700 kcal per kg**. That value is a practical average for “mixed” weight change (both fat and lean tissue), not pure fat (which would be ~9,400 kcal/kg) or pure lean (~1,800 kcal/kg).
 
-- **Daily calorie delta** = target calories − TDEE  
-- **Weekly weight change (kg)** = (daily delta × 7) / 7,700  
+- **Daily calorie delta** = target calories − TDEE
+- **Weekly weight change (kg)** = (daily delta × 7) / 7,700
 - **90-day projected weight** = current weight + (weekly change × 90/7)
 
 **Source:**
 
-- Hall KD. *What is the required energy deficit per unit weight loss?* International Journal of Obesity. 2008;32(3):573-576.  
-  - PubMed: <https://pubmed.ncbi.nlm.nih.gov/17848938/>  
+- Hall KD. _What is the required energy deficit per unit weight loss?_ International Journal of Obesity. 2008;32(3):573-576.
+  - PubMed: <https://pubmed.ncbi.nlm.nih.gov/17848938/>
   - PMC: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2376744/>
 
 ---
@@ -142,27 +142,27 @@ On the results screen, when body fat was used we show this range (e.g. “2,100 
 
 ## Where it lives in the code
 
-- **Calculator logic:** `utils/nutritionCalculator.ts`  
+- **Calculator logic:** `utils/nutritionCalculator.ts`
   - BMR (Mifflin-St Jeor and Katch-McArdle), TDEE, target calories, macros, projection, body fat band and min/max targets.
-- **Inputs:**  
-  - Onboarding: `app/onboarding/fitness-info.tsx` (saves body fat to `user_metrics`).  
+- **Inputs:**
+  - Onboarding: `app/onboarding/fitness-info.tsx` (saves body fat to `user_metrics`).
   - “Calculate for me”: `app/onboarding/set-goals.tsx` (loads weight, height, body fat and calls the calculator).
-- **Results:**  
+- **Results:**
   - `app/onboarding/nutrition-goals-results.tsx` shows the single target and, when present, the min–max range and body fat note.
 
 ---
 
 ## References (all links used in this document)
 
-| Topic | Citation / link |
-|-------|------------------|
-| Mifflin-St Jeor (1990) | Mifflin et al., Am J Clin Nutr. 1990;51(2):241-247. <https://pubmed.ncbi.nlm.nih.gov/2305711/> |
-| Katch-McArdle (LBM-based BMR) | Med LibreTexts – RMR from LBM: <https://med.libretexts.org/Courses/Irvine_Valley_College/Physiology_Labs_at_Home/04%3A_Metabolism_and_Calorie_Burn/4.02%3A_Part_B._Calculating_RMR_based_off_of_Lean_Body_Mass_(LBM)> |
-| Katch-McArdle (nutrition use) | Nutrium blog: <https://nutrium.com/blog/katch-mcardle-equation-for-nutrition-professionals/> |
-| 7,700 kcal per kg weight change | Hall KD. Int J Obes. 2008;32(3):573-576. <https://pubmed.ncbi.nlm.nih.gov/17848938/> ; PMC: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2376744/> |
-| Body fat validity (BIA/skinfolds) | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2024/10001/validity_of_bia_and_skinfolds_for_the_measurement.1813.aspx> |
-| Body fat comparison (methods) | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2023/09001/comparison_of_percent_body_fat_measurement_by.884.aspx> |
-| Six body fat estimates comparison | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2015/05001/a_comparison_of_six_estimates_of_body_fat_percent.137.aspx> |
-| Consumer BIA vs. ADP accuracy | WKU Digital Commons: <https://digitalcommons.wku.edu/ijes/vol4/iss3/2/> |
+| Topic                             | Citation / link                                                                                                                                                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mifflin-St Jeor (1990)            | Mifflin et al., Am J Clin Nutr. 1990;51(2):241-247. <https://pubmed.ncbi.nlm.nih.gov/2305711/>                                                                                                                        |
+| Katch-McArdle (LBM-based BMR)     | Med LibreTexts – RMR from LBM: <https://med.libretexts.org/Courses/Irvine_Valley_College/Physiology_Labs_at_Home/04%3A_Metabolism_and_Calorie_Burn/4.02%3A_Part_B._Calculating_RMR_based_off_of_Lean_Body_Mass_(LBM)> |
+| Katch-McArdle (nutrition use)     | Nutrium blog: <https://nutrium.com/blog/katch-mcardle-equation-for-nutrition-professionals/>                                                                                                                          |
+| 7,700 kcal per kg weight change   | Hall KD. Int J Obes. 2008;32(3):573-576. <https://pubmed.ncbi.nlm.nih.gov/17848938/> ; PMC: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2376744/>                                                                   |
+| Body fat validity (BIA/skinfolds) | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2024/10001/validity_of_bia_and_skinfolds_for_the_measurement.1813.aspx>                                                                                       |
+| Body fat comparison (methods)     | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2023/09001/comparison_of_percent_body_fat_measurement_by.884.aspx>                                                                                            |
+| Six body fat estimates comparison | ACSM-MSSE: <https://journals.lww.com/acsm-msse/fulltext/2015/05001/a_comparison_of_six_estimates_of_body_fat_percent.137.aspx>                                                                                        |
+| Consumer BIA vs. ADP accuracy     | WKU Digital Commons: <https://digitalcommons.wku.edu/ijes/vol4/iss3/2/>                                                                                                                                               |
 
 These are the same links used to justify the formulas and the ±4% body fat uncertainty in this doc; no other or “hallucinated” references are included.

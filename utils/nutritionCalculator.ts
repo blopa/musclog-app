@@ -328,6 +328,50 @@ export function normalizeFitnessGoal(raw: string): FitnessGoal {
   return 'general';
 }
 
+/** Fiber (g): 14 g per 1000 kcal, clamped to 25–40 (IOM-style recommendation). */
+export function fiberFromCalories(targetCalories: number): number {
+  const fiber = (targetCalories / 1000) * 14;
+  return Math.round(Math.max(25, Math.min(40, fiber)));
+}
+
+/** BMI = weight (kg) / height (m)². */
+export function bmiFromWeightAndHeightM(weightKg: number, heightM: number): number {
+  if (heightM <= 0) return 0;
+  return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
+}
+
+/** FFMI = fat-free mass (kg) / height (m)². FFM = weight × (1 − bodyFat%/100). */
+export function ffmiFromWeightHeightAndBodyFat(
+  weightKg: number,
+  heightM: number,
+  bodyFatPercent: number
+): number {
+  if (heightM <= 0) return 0;
+  const ffm = weightKg * (1 - bodyFatPercent / 100);
+  return parseFloat((ffm / (heightM * heightM)).toFixed(1));
+}
+
+/**
+ * Estimate target body fat % when cutting: assume ~70% of weight lost is fat mass.
+ * Returns 0 if not cutting or missing data.
+ */
+export function estimateTargetBodyFatWhenCutting(
+  currentWeightKg: number,
+  projectedWeightKg: number,
+  currentBodyFatPercent: number
+): number {
+  const weightLost = currentWeightKg - projectedWeightKg;
+  if (weightLost <= 0) {
+    return 0;
+  }
+
+  const fatLostKg = 0.7 * weightLost;
+  const currentFatKg = currentWeightKg * (currentBodyFatPercent / 100);
+  const targetFatKg = Math.max(0, currentFatKg - fatLostKg);
+  const targetBodyFat = (targetFatKg / projectedWeightKg) * 100;
+  return parseFloat(Math.max(0, Math.min(100, targetBodyFat)).toFixed(1));
+}
+
 // ---------------------------------------------------------------------------
 // Main exported function
 // ---------------------------------------------------------------------------
