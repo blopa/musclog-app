@@ -82,9 +82,14 @@ class TranslationScanner {
         let match;
         while ((match = pattern.exec(content)) !== null) {
           const key = match[1];
-          if (key && !key.includes('${')) {
-            // Exclude template literals with variables
-            fileKeys.add(key);
+          if (key) {
+            // If the key contains a template literal with a variable, extract the static part
+            const dynamicMatch = key.match(/^(.*?)\$\{[^}]+\}/);
+            if (dynamicMatch) {
+              fileKeys.add(dynamicMatch[1].replace(/\.$/, '')); // Add the static prefix, removing trailing dot if any
+            } else {
+              fileKeys.add(key);
+            }
           }
         }
       }
@@ -117,6 +122,26 @@ class TranslationScanner {
 
   // Find missing translations
   findMissingTranslations() {
+    // First, add all exact matches
+    for (const key of this.usedKeys) {
+      if (!this.existingKeys.has(key)) {
+        this.missingKeys.add(key);
+      }
+    }
+
+    // Then, handle dynamic prefixes - mark all nested keys as used
+    for (const usedKey of this.usedKeys) {
+      for (const existingKey of this.existingKeys) {
+        if (existingKey.startsWith(usedKey + '.')) {
+          // This existing key is a nested key under a used prefix
+          // So we consider it "used" and don't report it as unused
+          this.usedKeys.add(existingKey);
+        }
+      }
+    }
+
+    // Recalculate missing keys after adding nested keys
+    this.missingKeys.clear();
     for (const key of this.usedKeys) {
       if (!this.existingKeys.has(key)) {
         this.missingKeys.add(key);
