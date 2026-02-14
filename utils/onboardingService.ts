@@ -6,6 +6,7 @@ import {
   ONBOARDING_CURRENT_STEP,
   ONBOARDING_VERSION,
   TEMP_GOOGLE_USER_NAME,
+  TEMP_NUTRITION_PLAN,
 } from '../constants/auth';
 
 export interface OnboardingStatus {
@@ -54,7 +55,11 @@ export const setOnboardingCompleted = async (
     [ONBOARDING_VERSION, version],
   ]);
 
-  await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_GOOGLE_USER_NAME]);
+  await AsyncStorage.multiRemove([
+    ONBOARDING_CURRENT_STEP,
+    TEMP_GOOGLE_USER_NAME,
+    TEMP_NUTRITION_PLAN,
+  ]);
 };
 
 /**
@@ -66,6 +71,7 @@ export const resetOnboarding = async (): Promise<void> => {
     ONBOARDING_VERSION,
     TEMP_GOOGLE_USER_NAME,
     ONBOARDING_CURRENT_STEP,
+    TEMP_NUTRITION_PLAN,
   ]);
 };
 
