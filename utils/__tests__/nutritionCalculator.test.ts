@@ -579,7 +579,7 @@ describe('bmiFromWeightAndHeightM', () => {
     // 70kg at 1.75m: 70 / (1.75 * 1.75) = 22.86
     expect(bmiFromWeightAndHeightM(70, 1.75)).toBe(22.9);
     // 80kg at 1.80m: 80 / (1.80 * 1.80) = 24.69
-    expect(bmiFromWeightAndHeightM(80, 1.80)).toBe(24.7);
+    expect(bmiFromWeightAndHeightM(80, 1.8)).toBe(24.7);
     // 60kg at 1.65m: 60 / (1.65 * 1.65) = 22.04
     expect(bmiFromWeightAndHeightM(60, 1.65)).toBe(22.0);
   });
@@ -596,7 +596,7 @@ describe('bmiFromWeightAndHeightM', () => {
 
   it('handles obese BMI', () => {
     // 100kg at 1.70m: 100 / (1.70 * 1.70) = 34.60
-    expect(bmiFromWeightAndHeightM(100, 1.70)).toBe(34.6);
+    expect(bmiFromWeightAndHeightM(100, 1.7)).toBe(34.6);
   });
 
   it('returns 0 for invalid height (zero or negative)', () => {
@@ -621,7 +621,7 @@ describe('ffmiFromWeightHeightAndBodyFat', () => {
     // 80kg at 1.80m with 15% body fat:
     // FFM = 80 * (1 - 0.15) = 68kg
     // FFMI = 68 / (1.80 * 1.80) = 20.99
-    expect(ffmiFromWeightHeightAndBodyFat(80, 1.80, 15)).toBe(21.0);
+    expect(ffmiFromWeightHeightAndBodyFat(80, 1.8, 15)).toBe(21.0);
   });
 
   it('calculates FFMI for lean individual', () => {
@@ -635,29 +635,29 @@ describe('ffmiFromWeightHeightAndBodyFat', () => {
     // 85kg at 1.80m with 25% body fat:
     // FFM = 85 * (1 - 0.25) = 63.75kg
     // FFMI = 63.75 / (1.80 * 1.80) = 19.68
-    expect(ffmiFromWeightHeightAndBodyFat(85, 1.80, 25)).toBe(19.7);
+    expect(ffmiFromWeightHeightAndBodyFat(85, 1.8, 25)).toBe(19.7);
   });
 
   it('returns 0 for invalid height (zero or negative)', () => {
     expect(ffmiFromWeightHeightAndBodyFat(80, 0, 15)).toBe(0);
-    expect(ffmiFromWeightHeightAndBodyFat(80, -1.80, 15)).toBe(0);
+    expect(ffmiFromWeightHeightAndBodyFat(80, -1.8, 15)).toBe(0);
   });
 
   it('returns 0 for 0% body fat (theoretically impossible but handled)', () => {
     // 80kg at 1.80m with 0% body fat: FFM = 80kg
     // FFMI = 80 / (1.80 * 1.80) = 24.69
-    expect(ffmiFromWeightHeightAndBodyFat(80, 1.80, 0)).toBe(24.7);
+    expect(ffmiFromWeightHeightAndBodyFat(80, 1.8, 0)).toBe(24.7);
   });
 
   it('returns lower FFMI for higher body fat at same weight', () => {
-    const lean = ffmiFromWeightHeightAndBodyFat(80, 1.80, 10);
-    const fat = ffmiFromWeightHeightAndBodyFat(80, 1.80, 30);
+    const lean = ffmiFromWeightHeightAndBodyFat(80, 1.8, 10);
+    const fat = ffmiFromWeightHeightAndBodyFat(80, 1.8, 30);
     expect(lean).toBeGreaterThan(fat);
   });
 
   it('returns higher FFMI for heavier individual at same body fat', () => {
-    const lighter = ffmiFromWeightHeightAndBodyFat(70, 1.80, 15);
-    const heavier = ffmiFromWeightHeightAndBodyFat(90, 1.80, 15);
+    const lighter = ffmiFromWeightHeightAndBodyFat(70, 1.8, 15);
+    const heavier = ffmiFromWeightHeightAndBodyFat(90, 1.8, 15);
     expect(heavier).toBeGreaterThan(lighter);
   });
 

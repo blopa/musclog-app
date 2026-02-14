@@ -1,6 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -8,9 +9,11 @@ import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { MasterLayout } from '../../components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { Button } from '../../components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { theme } from '../../theme';
+import { NutritionPlan, planToInitialGoals } from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
@@ -18,29 +21,51 @@ export default function NutritionGoalsScreen() {
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
+  const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
 
-  // Map goal data to initialGoals format when goal changes
-  const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
-    if (!goal) {
-      // TODO: load the TEMP_NUTRITION_PLAN and parse it and use it as initial data
-      // if nothing on TEMP_NUTRITION_PLAN, then return undefined
-      return undefined;
+  // When there is no goal from DB, try to load TEMP_NUTRITION_PLAN as initial data
+  useEffect(() => {
+    if (goal) {
+      setStoredPlanGoals(null);
+      return;
     }
-
-    return {
-      totalCalories: goal.totalCalories,
-      protein: goal.protein,
-      carbs: goal.carbs,
-      fats: goal.fats,
-      fiber: goal.fiber,
-      eatingPhase: goal.eatingPhase as 'cut' | 'maintain' | 'bulk',
-      targetWeight: goal.targetWeight,
-      targetBodyFat: goal.targetBodyFat,
-      targetBMI: goal.targetBmi,
-      targetFFMI: goal.targetFfmi,
-      targetDate: goal.targetDate ?? null,
+    let isMounted = true;
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(TEMP_NUTRITION_PLAN);
+        if (!raw || !isMounted) return;
+        const parsed = JSON.parse(raw) as NutritionPlan;
+        if (isMounted && parsed?.targetCalories != null) {
+          setStoredPlanGoals(planToInitialGoals(parsed));
+        }
+      } catch {
+        // ignore parse errors
+      }
+    })();
+    return () => {
+      isMounted = false;
     };
   }, [goal]);
+
+  // Map goal data or stored plan to initialGoals format
+  const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
+    if (goal) {
+      return {
+        totalCalories: goal.totalCalories,
+        protein: goal.protein,
+        carbs: goal.carbs,
+        fats: goal.fats,
+        fiber: goal.fiber,
+        eatingPhase: goal.eatingPhase as 'cut' | 'maintain' | 'bulk',
+        targetWeight: goal.targetWeight,
+        targetBodyFat: goal.targetBodyFat,
+        targetBMI: goal.targetBmi,
+        targetFFMI: goal.targetFfmi,
+        targetDate: goal.targetDate ?? null,
+      };
+    }
+    return storedPlanGoals ?? undefined;
+  }, [goal, storedPlanGoals]);
 
   const handleSave = async (goals: NutritionGoals) => {
     try {
@@ -95,6 +120,7 @@ export default function NutritionGoalsScreen() {
             </Text>
           </View>
           <NutritionGoalsBody
+            key={goal ? `goal-${goal.id}` : storedPlanGoals ? 'stored-plan' : 'empty'}
             onSave={handleSave}
             initialGoals={initialGoals}
             showSaveButton={false}

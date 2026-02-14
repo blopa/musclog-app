@@ -288,89 +288,80 @@ export default function SetGoals() {
   const { units } = useSettings();
   const [isCalculating, setIsCalculating] = useState(false);
 
+  /** Fetch user + metrics, calculate plan, save to AsyncStorage. Returns plan or null. */
+  const calculateAndStorePlan = useCallback(async () => {
+    const user = await UserService.getCurrentUser();
+    if (!user) {
+      return null;
+    }
+
+    const weightMetrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(Q.where('type', 'weight'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
+      .fetch();
+
+    const heightMetrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(Q.where('type', 'height'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
+      .fetch();
+
+    const bodyFatMetrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', 'bodyFat'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc)
+      )
+      .fetch();
+
+    const rawWeight = weightMetrics.length > 0 ? weightMetrics[0].value : 0;
+    const rawHeight = heightMetrics.length > 0 ? heightMetrics[0].value : 0;
+    const rawBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0].value : undefined;
+
+    if (rawWeight <= 0 || rawHeight <= 0) {
+      return null;
+    }
+
+    const weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
+    const heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
+    const age = user.getAge();
+
+    const input: NutritionCalculatorInput = {
+      gender: user.gender,
+      weightKg,
+      heightCm,
+      age: age > 0 ? age : 25,
+      activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
+      weightGoal: normalizeWeightGoal(user.weightGoal),
+      fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
+      liftingExperience: user.liftingExperience || 'intermediate',
+      ...(rawBodyFat !== undefined &&
+        rawBodyFat >= 5 &&
+        rawBodyFat <= 60 && { bodyFatPercent: rawBodyFat }),
+    };
+
+    const plan = calculateNutritionPlan(input);
+    try {
+      await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
+    } catch (e) {
+      console.warn('Failed to persist nutrition plan to AsyncStorage', e);
+    }
+
+    return plan;
+  }, [units]);
+
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);
     try {
-      const user = await UserService.getCurrentUser();
-      if (!user) {
+      const plan = await calculateAndStorePlan();
+      if (!plan) {
         showSnackbar('error', t('onboarding.setGoals.missingData'));
         return;
       }
 
-      // Fetch latest weight metric
-      const weightMetrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', 'weight'),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc)
-        )
-        .fetch();
-
-      // Fetch latest height metric
-      const heightMetrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', 'height'),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc)
-        )
-        .fetch();
-
-      // Fetch latest body fat metric
-      const bodyFatMetrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(
-          Q.where('type', 'bodyFat'),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc)
-        )
-        .fetch();
-
-      const rawWeight = weightMetrics.length > 0 ? weightMetrics[0].value : 0;
-      const rawHeight = heightMetrics.length > 0 ? heightMetrics[0].value : 0;
-      const rawBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0].value : undefined;
-
-      if (rawWeight <= 0 || rawHeight <= 0) {
-        showSnackbar('error', t('onboarding.setGoals.missingData'));
-        return;
-      }
-
-      // Convert to metric if stored in imperial
-      const weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
-      const heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
-      const age = user.getAge();
-
-      const input: NutritionCalculatorInput = {
-        gender: user.gender,
-        weightKg,
-        heightCm,
-        age: age > 0 ? age : 25, // fallback if DOB is placeholder
-        activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
-        weightGoal: normalizeWeightGoal(user.weightGoal),
-        fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
-        liftingExperience: user.liftingExperience || 'intermediate',
-        // Pass body fat when available; calculator uses Katch-McArdle when valid
-        ...(rawBodyFat !== undefined &&
-          rawBodyFat >= 5 &&
-          rawBodyFat <= 60 && { bodyFatPercent: rawBodyFat }),
-      };
-
-      const plan = calculateNutritionPlan(input);
-
-      // Persist the AI-generated plan in AsyncStorage instead of passing large route params
-      try {
-        await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
-      } catch (e) {
-        console.warn('Failed to persist nutrition plan to AsyncStorage', e);
-      }
-
-      // Navigate to the results screen; results screen will read the plan from AsyncStorage
       router.push({
         pathname: '/onboarding/nutrition-goals-results',
-        params: {
-          aiGenerated: 'true',
-        },
+        params: { aiGenerated: 'true' },
       });
     } catch (error) {
       console.error('Error calculating nutrition plan:', error);
@@ -378,7 +369,20 @@ export default function SetGoals() {
     } finally {
       setIsCalculating(false);
     }
-  }, [units, router, t]);
+  }, [calculateAndStorePlan, router, t]);
+
+  const handleSetThemMyself = useCallback(async () => {
+    setIsCalculating(true);
+    try {
+      await calculateAndStorePlan();
+      router.push('/onboarding/nutrition-goals');
+    } catch (error) {
+      console.error('Error calculating nutrition plan:', error);
+      showSnackbar('error', t('onboarding.setGoals.missingData'));
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [calculateAndStorePlan, router, t]);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -492,10 +496,9 @@ export default function SetGoals() {
           variant="secondary"
           width="full"
           size="sm"
-          onPress={() => {
-            // TODO: if this is picked, we should still calculate and save it to the async storage
-            router.push('/onboarding/nutrition-goals');
-          }}
+          onPress={handleSetThemMyself}
+          loading={isCalculating}
+          disabled={isCalculating}
         />
 
         <MaybeLaterButton

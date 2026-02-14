@@ -1,4 +1,11 @@
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models/User';
+import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
+import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
+import { useEffect, useState } from 'react';
+import { NutritionGoals } from '../components/NutritionGoalsBody';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TEMP_NUTRITION_PLAN } from '../constants/auth';
 
 // ---------------------------------------------------------------------------
 // Input / Output types
@@ -370,6 +377,26 @@ export function estimateTargetBodyFatWhenCutting(
   const targetFatKg = Math.max(0, currentFatKg - fatLostKg);
   const targetBodyFat = (targetFatKg / projectedWeightKg) * 100;
   return parseFloat(Math.max(0, Math.min(100, targetBodyFat)).toFixed(1));
+}
+
+/** Map a stored NutritionPlan to initial form data (Partial<NutritionGoals>). */
+export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals> {
+  const fiber = Math.round(Math.max(25, Math.min(40, (plan.targetCalories / 1000) * 14)));
+  const eatingPhase: 'cut' | 'maintain' | 'bulk' =
+    plan.targetCalories < plan.tdee ? 'cut' : plan.targetCalories > plan.tdee ? 'bulk' : 'maintain';
+  return {
+    totalCalories: plan.targetCalories,
+    protein: plan.protein,
+    carbs: plan.carbs,
+    fats: plan.fats,
+    fiber,
+    eatingPhase,
+    targetWeight: plan.projectedWeightKg,
+    targetBodyFat: 0,
+    targetBMI: 0,
+    targetFFMI: 0,
+    targetDate: null,
+  };
 }
 
 // ---------------------------------------------------------------------------

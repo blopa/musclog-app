@@ -307,6 +307,7 @@ export default function NutritionGoalsResults() {
 
   // Weight change label
   const weightChangeLabel =
+    // TODO: what about maintanence?
     displayData && displayData.weightChange > 0
       ? t('nutritionGoals.results.estimatedWeightGain')
       : t('nutritionGoals.results.estimatedWeightLoss');
