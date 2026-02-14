@@ -107,7 +107,8 @@ export default function PersonalInfo() {
           email: data.email,
           avatarIcon: data.avatarIcon,
           avatarColor: data.avatarColor,
-          fitnessGoal: 'general', // Will be set in fitness-info step
+          fitnessGoal: 'general',
+          weightGoal: 'maintain',
           activityLevel: 3, // Default, will be updated
           liftingExperience: 'beginner', // Default, will be updated
         });

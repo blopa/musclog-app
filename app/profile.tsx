@@ -373,6 +373,7 @@ export default function ProfileScreen() {
                 units,
                 weight: metrics.weight?.toString() || '',
                 height: metrics.height?.toString() || '',
+                weightGoal: dbUser.weightGoal ?? 'maintain',
                 fitnessGoal: dbUser.fitnessGoal,
                 activityLevel: dbUser.activityLevel,
                 experience: dbUser.liftingExperience,

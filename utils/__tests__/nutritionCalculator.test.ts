@@ -9,6 +9,7 @@ import {
   lbsToKg,
   MIN_CALORIES,
   normalizeFitnessGoal,
+  normalizeWeightGoal,
   type NutritionCalculatorInput,
 } from '../nutritionCalculator';
 
@@ -95,34 +96,25 @@ describe('calculateTDEE', () => {
 // ---------------------------------------------------------------------------
 
 describe('calculateTargetCalories', () => {
-  it('applies -500 deficit for weight_loss', () => {
-    expect(calculateTargetCalories(2500, 'weight_loss')).toBe(2000);
+  it('applies -500 deficit for lose', () => {
+    expect(calculateTargetCalories(2500, 'lose')).toBe(2000);
   });
 
-  it('maintains TDEE for general fitness', () => {
-    expect(calculateTargetCalories(2500, 'general')).toBe(2500);
+  it('maintains TDEE for maintain', () => {
+    expect(calculateTargetCalories(2500, 'maintain')).toBe(2500);
   });
 
-  it('maintains TDEE for endurance', () => {
-    expect(calculateTargetCalories(2500, 'endurance')).toBe(2500);
-  });
-
-  it('applies +250 surplus for hypertrophy', () => {
-    expect(calculateTargetCalories(2500, 'hypertrophy')).toBe(2750);
-  });
-
-  it('applies +350 surplus for strength', () => {
-    expect(calculateTargetCalories(2500, 'strength')).toBe(2850);
+  it('applies +250 surplus for gain', () => {
+    expect(calculateTargetCalories(2500, 'gain')).toBe(2750);
   });
 
   it('never goes below MIN_CALORIES safety floor', () => {
-    // Very low TDEE scenario
-    expect(calculateTargetCalories(1500, 'weight_loss')).toBe(MIN_CALORIES);
-    expect(calculateTargetCalories(1200, 'weight_loss')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(1500, 'lose')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(1200, 'lose')).toBe(MIN_CALORIES);
   });
 
   it('returns MIN_CALORIES when TDEE itself is at floor', () => {
-    expect(calculateTargetCalories(MIN_CALORIES, 'weight_loss')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(MIN_CALORIES, 'lose')).toBe(MIN_CALORIES);
   });
 });
 
@@ -277,6 +269,32 @@ describe('normalizeFitnessGoal', () => {
 });
 
 // ---------------------------------------------------------------------------
+// normalizeWeightGoal
+// ---------------------------------------------------------------------------
+
+describe('normalizeWeightGoal', () => {
+  it('returns maintain for undefined or empty', () => {
+    expect(normalizeWeightGoal(undefined)).toBe('maintain');
+    expect(normalizeWeightGoal('')).toBe('maintain');
+  });
+
+  it('recognizes lose, maintain, gain', () => {
+    expect(normalizeWeightGoal('lose')).toBe('lose');
+    expect(normalizeWeightGoal('maintain')).toBe('maintain');
+    expect(normalizeWeightGoal('gain')).toBe('gain');
+  });
+
+  it('is case-insensitive', () => {
+    expect(normalizeWeightGoal('LOSE')).toBe('lose');
+    expect(normalizeWeightGoal('GAIN')).toBe('gain');
+  });
+
+  it('falls back to maintain for unknown input', () => {
+    expect(normalizeWeightGoal('unknown')).toBe('maintain');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Full calculateNutritionPlan integration
 // ---------------------------------------------------------------------------
 
@@ -287,6 +305,7 @@ describe('calculateNutritionPlan', () => {
     heightCm: 180,
     age: 30,
     activityLevel: 3,
+    weightGoal: 'lose',
     fitnessGoal: 'weight_loss',
     liftingExperience: 'intermediate',
   };
@@ -297,7 +316,7 @@ describe('calculateNutritionPlan', () => {
     expect(plan.bmr).toBeGreaterThan(0);
     expect(plan.tdee).toBeGreaterThan(plan.bmr);
     expect(plan.targetCalories).toBeGreaterThan(0);
-    expect(plan.targetCalories).toBeLessThan(plan.tdee); // weight_loss
+    expect(plan.targetCalories).toBeLessThan(plan.tdee); // weightGoal: lose
     expect(plan.protein).toBeGreaterThan(0);
     expect(plan.carbs).toBeGreaterThan(0);
     expect(plan.fats).toBeGreaterThan(0);
@@ -309,25 +328,23 @@ describe('calculateNutritionPlan', () => {
   });
 
   it('reproduces the reference example from design (≈2150 kcal for 83kg male)', () => {
-    // 10*83 + 6.25*180 - 5*30 + 5 = 830 + 1125 - 150 + 5 = 1810 BMR
-    // TDEE = 1810 * 1.55 ≈ 2806
-    // Target = 2806 - 500 = 2306 (not exactly 2150 as the design used a simple split,
-    // but within a reasonable range for the algorithm)
+    // 10*83 + 6.25*180 - 5*30 + 5 = 1810 BMR; TDEE = 1810 * 1.55 ≈ 2806
+    // Target = 2806 - 500 (lose) = 2306
     const plan = calculateNutritionPlan(baseInput);
     expect(plan.bmr).toBe(1810);
     expect(plan.tdee).toBe(Math.round(1810 * 1.55));
     expect(plan.targetCalories).toBe(plan.tdee - 500);
   });
 
-  it('produces surplus for hypertrophy goal', () => {
-    const plan = calculateNutritionPlan({ ...baseInput, fitnessGoal: 'hypertrophy' });
+  it('produces surplus for gain weight goal', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'gain' });
     expect(plan.targetCalories).toBeGreaterThan(plan.tdee);
     expect(plan.goalLabel).toBe('leanBulk');
     expect(plan.projectedWeightKg).toBeGreaterThan(83);
   });
 
-  it('produces maintenance for general fitness', () => {
-    const plan = calculateNutritionPlan({ ...baseInput, fitnessGoal: 'general' });
+  it('produces maintenance for maintain weight goal', () => {
+    const plan = calculateNutritionPlan({ ...baseInput, weightGoal: 'maintain' });
     expect(plan.targetCalories).toBe(plan.tdee);
     expect(plan.goalLabel).toBe('generalFitness');
   });
@@ -339,7 +356,7 @@ describe('calculateNutritionPlan', () => {
       heightCm: 150,
       age: 60,
       activityLevel: 1,
-      fitnessGoal: 'weight_loss',
+      weightGoal: 'lose',
     });
     expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES);
   });

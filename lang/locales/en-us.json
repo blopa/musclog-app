@@ -718,6 +718,12 @@
       "active": "Hard exercise 6-7 days/week",
       "superActive": "Very hard exercise & physical job"
     },
+    "weightGoal": "Your goal",
+    "weightGoalLabels": {
+      "lose": "Lose weight",
+      "maintain": "Maintain",
+      "gain": "Gain muscle"
+    },
     "fitnessGoalLabels": {
       "hypertrophy": "Hypertrophy (Build Muscle)",
       "strength": "Strength (Lift Heavier)",

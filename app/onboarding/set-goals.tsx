@@ -23,6 +23,7 @@ import {
   inchesToCm,
   lbsToKg,
   normalizeFitnessGoal,
+  normalizeWeightGoal,
   type NutritionCalculatorInput,
 } from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
@@ -333,6 +334,7 @@ export default function SetGoals() {
         heightCm,
         age: age > 0 ? age : 25, // fallback if DOB is placeholder
         activityLevel: (user.activityLevel || 3) as 1 | 2 | 3 | 4 | 5,
+        weightGoal: normalizeWeightGoal(user.weightGoal),
         fitnessGoal: normalizeFitnessGoal(user.fitnessGoal),
         liftingExperience: user.liftingExperience || 'intermediate',
       };

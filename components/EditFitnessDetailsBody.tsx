@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { FitnessGoal } from '../database/models/User';
+import { FitnessGoal, WeightGoal } from '../database/models/User';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -42,6 +42,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
+  weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
@@ -62,6 +63,7 @@ export function EditFitnessDetailsBody({
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
   const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
   const [height, setHeight] = useState(initialData?.height ?? '0');
+  const [weightGoal, setWeightGoal] = useState<WeightGoal>(initialData?.weightGoal ?? 'maintain');
   const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>(
     initialData?.fitnessGoal ?? 'general'
   );
@@ -77,12 +79,13 @@ export function EditFitnessDetailsBody({
         units,
         weight,
         height,
+        weightGoal,
         fitnessGoal,
         activityLevel,
         experience,
       });
     }
-  }, [units, weight, height, fitnessGoal, activityLevel, experience, onFormChange]);
+  }, [units, weight, height, weightGoal, fitnessGoal, activityLevel, experience, onFormChange]);
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
   const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
   const [focusedInput, setFocusedInput] = useState<'weight' | 'height' | null>(null);
@@ -92,6 +95,7 @@ export function EditFitnessDetailsBody({
       units,
       weight,
       height,
+      weightGoal,
       fitnessGoal,
       activityLevel,
       experience,
@@ -296,6 +300,20 @@ export function EditFitnessDetailsBody({
           <Text className="ml-1 text-xl font-bold tracking-tight text-text-primary">
             {t('editFitnessDetails.goalsStrategy')}
           </Text>
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('editFitnessDetails.weightGoal')}
+            </Text>
+            <SegmentedControl
+              options={[
+                { label: t('editFitnessDetails.weightGoalLabels.lose'), value: 'lose' },
+                { label: t('editFitnessDetails.weightGoalLabels.maintain'), value: 'maintain' },
+                { label: t('editFitnessDetails.weightGoalLabels.gain'), value: 'gain' },
+              ]}
+              value={weightGoal}
+              onValueChange={(val) => setWeightGoal(val as WeightGoal)}
+            />
+          </View>
           <View className="gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
               {t('editFitnessDetails.fitnessGoal')}

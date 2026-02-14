@@ -1,4 +1,4 @@
-import type { FitnessGoal, Gender, LiftingExperience } from '../database/models/User';
+import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models/User';
 
 // ---------------------------------------------------------------------------
 // Input / Output types
@@ -10,6 +10,9 @@ export interface NutritionCalculatorInput {
   heightCm: number;
   age: number;
   activityLevel: 1 | 2 | 3 | 4 | 5;
+  /** User's body goal: drives calorie target (deficit / maintenance / surplus). */
+  weightGoal: WeightGoal;
+  /** Type of training: drives macro split and optional label nuance. */
   fitnessGoal: FitnessGoal;
   liftingExperience: LiftingExperience;
 }
@@ -70,25 +73,23 @@ export const ACTIVITY_MULTIPLIERS: Record<number, number> = {
 };
 
 /**
- * Calorie adjustment (relative to TDEE) per fitness goal.
+ * Calorie adjustment (relative to TDEE) per weight goal.
+ * Used for target calories; fitnessGoal is used for macro split only.
+ * TODO: these must be calculated depending on the weight of the user
  */
-const GOAL_CALORIE_ADJUSTMENTS: Record<FitnessGoal, number> = {
-  weight_loss: -500,
-  endurance: 0,
-  general: 0,
-  hypertrophy: 250,
-  strength: 350,
+const WEIGHT_GOAL_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
+  lose: -500,
+  maintain: 0,
+  gain: 250,
 };
 
 /**
- * Human-readable i18n label key per fitness goal.
+ * Human-readable i18n label key per weight goal (for results screen).
  */
-const GOAL_LABELS: Record<FitnessGoal, string> = {
-  weight_loss: 'moderateWeightLoss',
-  endurance: 'enduranceTraining',
-  general: 'generalFitness',
-  hypertrophy: 'leanBulk',
-  strength: 'strengthSurplus',
+const WEIGHT_GOAL_LABELS: Record<WeightGoal, string> = {
+  lose: 'moderateWeightLoss',
+  maintain: 'generalFitness',
+  gain: 'leanBulk',
 };
 
 /**
@@ -147,11 +148,11 @@ export function calculateTDEE(bmr: number, activityLevel: number): number {
 // ---------------------------------------------------------------------------
 
 /**
- * Calculate the daily calorie target by adjusting TDEE for the fitness goal.
+ * Calculate the daily calorie target by adjusting TDEE for the weight goal.
  * Applies a safety floor of MIN_CALORIES.
  */
-export function calculateTargetCalories(tdee: number, fitnessGoal: FitnessGoal): number {
-  const adjustment = GOAL_CALORIE_ADJUSTMENTS[fitnessGoal] ?? 0;
+export function calculateTargetCalories(tdee: number, weightGoal: WeightGoal): number {
+  const adjustment = WEIGHT_GOAL_CALORIE_ADJUSTMENTS[weightGoal] ?? 0;
   return Math.max(MIN_CALORIES, Math.round(tdee + adjustment));
 }
 
@@ -233,6 +234,18 @@ export function inchesToCm(inches: number): number {
 // ---------------------------------------------------------------------------
 
 /**
+ * Normalize weight goal for backward compatibility (e.g. missing DB column).
+ */
+export function normalizeWeightGoal(raw: string | undefined): WeightGoal {
+  if (!raw) return 'maintain';
+  const lower = raw.toLowerCase();
+  if (lower === 'lose') return 'lose';
+  if (lower === 'gain') return 'gain';
+  if (lower === 'maintain') return 'maintain';
+  return 'maintain';
+}
+
+/**
  * Maps legacy translated fitness goal labels to the stable FitnessGoal enum key.
  * Falls back to 'general' if no match is found.
  */
@@ -276,7 +289,7 @@ export function normalizeFitnessGoal(raw: string): FitnessGoal {
  * - Projection: Linear model based on ~7700 kcal per kg
  */
 export function calculateNutritionPlan(input: NutritionCalculatorInput): NutritionPlan {
-  const { gender, weightKg, heightCm, age, activityLevel, fitnessGoal } = input;
+  const { gender, weightKg, heightCm, age, activityLevel, weightGoal, fitnessGoal } = input;
 
   // Step 1 – BMR
   const bmr = calculateBMR(gender, weightKg, heightCm, age);
@@ -284,17 +297,17 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   // Step 2 – TDEE
   const tdee = calculateTDEE(bmr, activityLevel);
 
-  // Step 3 – Calorie target
-  const targetCalories = calculateTargetCalories(tdee, fitnessGoal);
+  // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
+  const targetCalories = calculateTargetCalories(tdee, weightGoal);
 
-  // Step 4 – Macros
+  // Step 4 – Macros (driven by fitness goal for split)
   const macros = calculateMacros(targetCalories, fitnessGoal);
 
   // Step 5 – Projection
   const projection = calculateWeightProjection(weightKg, targetCalories, tdee);
 
-  // Goal label key (for i18n)
-  const goalLabel = GOAL_LABELS[fitnessGoal] ?? 'generalFitness';
+  // Goal label key (for i18n) – from weight goal
+  const goalLabel = WEIGHT_GOAL_LABELS[weightGoal] ?? 'generalFitness';
 
   return {
     bmr,

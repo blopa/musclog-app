@@ -4,7 +4,7 @@ import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
-import User, { FitnessGoal, UserProfileUpdate } from '../models/User';
+import User, { FitnessGoal, UserProfileUpdate, WeightGoal } from '../models/User';
 
 export class UserService {
   /**
@@ -45,6 +45,7 @@ export class UserService {
     dateOfBirth: number;
     gender: 'male' | 'female' | 'other';
     fitnessGoal: FitnessGoal;
+    weightGoal?: WeightGoal;
     activityLevel: number;
     liftingExperience: 'beginner' | 'intermediate' | 'advanced';
     email?: string;
@@ -67,6 +68,7 @@ export class UserService {
         u.dateOfBirth = initialData.dateOfBirth;
         u.gender = initialData.gender;
         u.fitnessGoal = initialData.fitnessGoal;
+        u.weightGoal = initialData.weightGoal ?? 'maintain';
         u.activityLevel = initialData.activityLevel;
         u.liftingExperience = initialData.liftingExperience;
         u.avatarIcon = initialData.avatarIcon ?? 'person';

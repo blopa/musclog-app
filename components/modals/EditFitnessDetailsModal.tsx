@@ -2,7 +2,7 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FitnessGoal } from '../../database/models/User';
+import { FitnessGoal, WeightGoal } from '../../database/models/User';
 import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -18,6 +18,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
+  weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
   experience: 'beginner' | 'intermediate' | 'advanced';
@@ -38,6 +39,7 @@ export function EditFitnessDetailsModal({
     units,
     weight,
     height,
+    weightGoal,
     fitnessGoal,
     activityLevel,
     experience,
@@ -46,6 +48,7 @@ export function EditFitnessDetailsModal({
       units,
       weight,
       height,
+      weightGoal,
       fitnessGoal,
       activityLevel,
       experience,
@@ -59,6 +62,7 @@ export function EditFitnessDetailsModal({
       currentFormData.units &&
       currentFormData.weight &&
       currentFormData.height &&
+      currentFormData.weightGoal &&
       currentFormData.fitnessGoal &&
       currentFormData.activityLevel &&
       currentFormData.experience

@@ -7,6 +7,8 @@ import { AvatarIcon } from '../../types/AvatarIcon';
 export type Gender = 'male' | 'female' | 'other';
 export type LiftingExperience = 'beginner' | 'intermediate' | 'advanced';
 export type FitnessGoal = 'hypertrophy' | 'strength' | 'endurance' | 'weight_loss' | 'general';
+/** User's body composition goal: lose weight, gain muscle, or maintain. */
+export type WeightGoal = 'lose' | 'gain' | 'maintain';
 
 export interface UserProfileUpdate {
   fullName?: string;
@@ -14,6 +16,7 @@ export interface UserProfileUpdate {
   dateOfBirth?: number;
   gender?: Gender;
   fitnessGoal?: FitnessGoal;
+  weightGoal?: WeightGoal;
   activityLevel?: number;
   liftingExperience?: LiftingExperience;
   avatarIcon?: AvatarIcon | null;
@@ -30,6 +33,7 @@ export default class User extends Model {
   @field('date_of_birth') dateOfBirth!: number;
   @field('gender') gender!: Gender;
   @field('fitness_goal') fitnessGoal!: FitnessGoal;
+  @field('weight_goal') weightGoal?: WeightGoal; // optional for backward compatibility
   @field('activity_level') activityLevel!: number;
   @field('lifting_experience') liftingExperience!: LiftingExperience;
   @field('avatar_icon') avatarIcon?: AvatarIcon;
@@ -66,6 +70,7 @@ export default class User extends Model {
       if (data.dateOfBirth !== undefined) user.dateOfBirth = data.dateOfBirth;
       if (data.gender !== undefined) user.gender = data.gender;
       if (data.fitnessGoal !== undefined) user.fitnessGoal = data.fitnessGoal;
+      if (data.weightGoal !== undefined) user.weightGoal = data.weightGoal;
       if (data.activityLevel !== undefined) {
         if (data.activityLevel < 1 || data.activityLevel > 5) {
           throw new Error('Activity level must be between 1 and 5');

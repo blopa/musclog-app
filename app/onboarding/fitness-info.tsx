@@ -62,15 +62,17 @@ export default function FitnessInfo() {
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
-            fitnessGoal: user.fitnessGoal || '',
-            activityLevel: user.activityLevel || 3,
-            experience: user.liftingExperience || 'intermediate',
+            weightGoal: user.weightGoal ?? 'maintain',
+            fitnessGoal: user.fitnessGoal,
+            activityLevel: user.activityLevel ?? 3,
+            experience: user.liftingExperience ?? 'intermediate',
           });
         } else {
           setInitialData({
             units,
             weight: latestWeight ? String(latestWeight.value) : '0.0',
             height: latestHeight ? String(latestHeight.value) : '0',
+            weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
             experience: 'intermediate',
@@ -82,6 +84,7 @@ export default function FitnessInfo() {
           units: 'metric',
           weight: '0.0',
           height: '0',
+          weightGoal: 'maintain',
           fitnessGoal: 'general',
           activityLevel: 3,
           experience: 'intermediate',
@@ -123,6 +126,7 @@ export default function FitnessInfo() {
           dateOfBirth: new Date().getTime(),
           gender: 'other',
           fitnessGoal: data.fitnessGoal,
+          weightGoal: data.weightGoal,
           activityLevel: data.activityLevel,
           liftingExperience: data.experience,
         });
@@ -130,6 +134,7 @@ export default function FitnessInfo() {
         // Update user fitness info
         await user.updateProfile({
           fitnessGoal: data.fitnessGoal,
+          weightGoal: data.weightGoal,
           activityLevel: data.activityLevel,
           liftingExperience: data.experience,
         });

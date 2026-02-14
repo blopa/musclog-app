@@ -254,6 +254,7 @@ export const schema = appSchema({
         { name: 'date_of_birth', type: 'number' },
         { name: 'gender', type: 'string' }, // 'male', 'female', 'other'
         { name: 'fitness_goal', type: 'string' },
+        { name: 'weight_goal', type: 'string' }, // 'lose' | 'gain' | 'maintain'
         { name: 'activity_level', type: 'number' },
         { name: 'lifting_experience', type: 'string' }, // 'beginner', 'intermediate', 'advanced'
         { name: 'avatar_icon', type: 'string', isOptional: true }, // 'person', 'fitness_center', 'bolt', 'monitoring', 'directions_run', 'emoji_events'
