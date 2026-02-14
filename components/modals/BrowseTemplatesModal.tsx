@@ -1,11 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Search } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { addOpacityToHex } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutTemplate = {
@@ -76,24 +79,21 @@ export function BrowseTemplatesModal({
     switch (difficulty) {
       case 'Beginner':
         return {
-          // TODO: use colors from theme
-          bg: 'rgba(16, 185, 129, 0.1)',
-          text: '#10b981',
-          border: 'rgba(16, 185, 129, 0.2)',
+          bg: theme.colors.status.emerald10,
+          text: theme.colors.status.emerald,
+          border: theme.colors.status.emerald20,
         };
       case 'Intermediate':
         return {
-          // TODO: use colors from theme
-          bg: 'rgba(251, 191, 36, 0.1)',
-          text: '#f59e0b',
-          border: 'rgba(251, 191, 36, 0.2)',
+          bg: theme.colors.status.amber10,
+          text: theme.colors.status.amber,
+          border: addOpacityToHex(theme.colors.status.amber, 0.2),
         };
       case 'Advanced':
         return {
-          // TODO: use colors from theme
-          bg: 'rgba(239, 68, 68, 0.1)',
-          text: '#ef4444',
-          border: 'rgba(239, 68, 68, 0.2)',
+          bg: theme.colors.status.error10,
+          text: theme.colors.status.error,
+          border: theme.colors.status.error20,
         };
       default:
         return {
@@ -211,24 +211,13 @@ export function BrowseTemplatesModal({
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="bg-bg-primary px-4 pb-4 pt-6">
           {/* Search Bar */}
-          <View className="relative mb-5">
-            <MaterialIcons
-              name="search"
-              size={20}
-              color={theme.colors.text.secondary}
-              style={{ position: 'absolute', left: 16, top: 14 }}
-            />
-            {/*TODO: instead of TextInput from RN, use the one from theme. Also, look for examples of other places with search inputs and do it like them*/}
+          <View className="mb-5">
             <TextInput
-              className="w-full rounded-2xl border border-white/5 bg-bg-card py-3.5 pl-12 pr-4 text-sm text-text-primary"
-              style={{
-                color: theme.colors.text.primary,
-                borderColor: theme.colors.border.default,
-              }}
-              placeholder="Search expert programs..."
-              placeholderTextColor={theme.colors.text.secondary}
+              label=""
               value={searchQuery}
               onChangeText={setSearchQuery}
+              placeholder="Search expert programs..."
+              icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
             />
           </View>
 
