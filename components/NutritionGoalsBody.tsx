@@ -335,6 +335,15 @@ export function NutritionGoalsBody({
     }
   }, [eatingPhase]);
 
+  // If the eating phase changes to a lower-max (e.g. bulk -> cut), clamp current macro values
+  // so they never exceed the allowed maximum for the selected phase.
+  useEffect(() => {
+    setProtein((curr) => Math.min(curr, macroMax.protein));
+    setCarbs((curr) => Math.min(curr, macroMax.carbs));
+    setFats((curr) => Math.min(curr, macroMax.fats));
+    setFiber((curr) => Math.min(curr, macroMax.fiber));
+  }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber]);
+
   // Call onFormChange whenever form data changes
   useEffect(() => {
     if (onFormChange) {
