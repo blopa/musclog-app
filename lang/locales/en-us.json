@@ -509,8 +509,10 @@
       },
       "stats": {
         "duration": "Duration",
-        "exercises": "Exercises",
-        "sets": "Sets"
+        "exercises": "{{count}} Exercise",
+        "exercises_plural": "{{count}} Exercises",
+        "sets": "{{count}} Set",
+        "sets_plural": "{{count}} Sets"
       }
     },
     "createWorkoutOptionsModal": {
