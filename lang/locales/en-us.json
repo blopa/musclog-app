@@ -7,8 +7,6 @@
     "weeksAgo": "{{count}} weeks ago",
     "monthsAgo": "{{count}} months ago",
     "seeAll": "See all",
-    "remaining": "remaining",
-    "goal": "Goal",
     "kcal": "kcal",
     "min": "min",
     "cancel": "Cancel",
@@ -33,12 +31,7 @@
   },
   "home": {
     "greeting": {
-      "goodMorning": "Good Morning",
-      "goodAfternoon": "Good Afternoon",
       "goodEvening": "Good Evening"
-    },
-    "dailySummary": {
-      "title": "DAILY SUMMARY"
     },
     "actions": {
       "startWorkout": "Start\nWorkout",
@@ -52,16 +45,7 @@
       "home": "Home",
       "workouts": "Workouts",
       "food": "Food",
-      "camera": "Camera",
-      "coach": "Coach",
-      "progress": "Progress",
-      "schedule": "Schedule",
-      "profile": "Profile"
-    },
-    "macros": {
-      "protein": "{{value}}G P",
-      "carbs": "{{value}}G C",
-      "fat": "{{value}}G F"
+      "coach": "Coach"
     }
   },
   "food": {
@@ -130,24 +114,12 @@
       "date": "Date",
       "today": "Today",
       "addFood": "Add Food",
-      "macro": "MACRO",
       "additionalNutrition": "Additional Nutrition",
       "sugars": "Sugars",
       "saturatedFat": "Saturated Fat",
       "salt": "Salt",
       "successMessage": "Food tracked successfully!",
       "errorMessage": "Failed to track food. Please try again."
-    },
-    "datePicker": {
-      "selectDate": "Select Date",
-      "selectMonthYear": "Select Month & Year",
-      "month": "Month",
-      "year": "Year",
-      "today": "Today",
-      "tomorrow": "Tomorrow",
-      "nextMonday": "Next Monday",
-      "cancel": "Cancel",
-      "confirm": "Confirm"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",
@@ -174,7 +146,6 @@
       "requestingPermission": "Requesting camera permission...",
       "permissionRequired": "Camera permission is required to use this feature",
       "grantPermission": "Grant Permission",
-      "aiDetecting": "AI Detecting",
       "mealInstruction": "Point at your meal for instant estimation",
       "labelInstruction": "Point at food label or nutrition facts",
       "barcodeInstruction": "Align the barcode inside the frame to scan",
@@ -279,8 +250,6 @@
     "weight": "WEIGHT",
     "reps": "REPS",
     "partials": "PARTIALS",
-    "kg": "kg",
-    "lb": "lb",
     "previous": "Previous",
     "history": "History",
     "skip": "SKIP",
@@ -299,7 +268,6 @@
   },
   "logSetPerformance": {
     "title": "Log Set Performance",
-    "editSetDetails": "Edit Set Details",
     "difficulty": "DIFFICULTY (RPE)",
     "easy": "EASY",
     "moderate": "MODERATE",
@@ -392,14 +360,12 @@
     "submit": "SUBMIT FEEDBACK"
   },
   "restTimer": {
-    "totalDuration": "TOTAL DURATION",
     "resting": "Resting...",
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
     "skipRest": "SKIP REST",
     "done": "Done",
     "reps": "reps",
-    "sets": "Sets",
     "upNext": "UP NEXT"
   },
   "workoutOptions": {
@@ -424,13 +390,10 @@
       "flexibility": "Flexibility"
     },
     "archive": "Archive",
-    "last": "Last",
     "exercises": "Exercises",
-    "start": "Start",
     "addExercise": {
       "title": "Add Exercise",
       "targetMuscle": "Target Muscle",
-      "multiSelect": "MULTI-SELECT",
       "searchPlaceholder": "Search {{muscle}} exercises...",
       "createSet": "Create Set",
       "bodyweight": "Bodyweight",
@@ -527,19 +490,16 @@
     "calories": "Calories",
     "volumeTrend": "Volume Trend",
     "volumeTrendPercentage": "+{{percentage}}% vs avg",
-    "exercises": "Exercises",
     "exercisesCount": "Exercises ({{count}})",
     "minsSpent": "{{minutes}} mins spent",
     "set": "SET",
     "weight": "WEIGHT",
     "reps": "REPS",
     "partial": "PARTIAL",
-    "rest": "REST",
     "editSetsTitle": "Edit Sets",
     "addSet": "Add New Set",
     "setLabel": "Set {{index}}",
     "remove": "Remove",
-    "prBadge": "PR",
     "rir": "RIR (Reps in Reserve)",
     "inputs": {
       "weightKg": "Weight (kg)",
@@ -549,13 +509,10 @@
   "foodSearch": {
     "recentHistory": "Recent History",
     "viewAll": "View All",
-    "commonBreakfastFoods": "Common Breakfast Foods",
-    "createMeal": "+ Create Meal",
     "yourFoods": "🍽️ Your Foods ({{count}}) 🍽️",
     "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
     "filters": {
       "allResults": "All Results",
-      "myFoods": "Favorites",
       "openFoodFacts": "Open Food Facts",
       "meals": "Meals",
       "recipes": "Recipes"
@@ -592,33 +549,6 @@
     "history": "History",
     "management": "Management",
     "loading": "Loading...",
-    "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body Fat",
-      "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
-    },
-    "bmiStatus": {
-      "underweight": "Underweight",
-      "normal": "Normal",
-      "overweight": "Overweight",
-      "obese": "Obese"
-    },
-    "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
-    },
-    "managementItems": {
-      "editPersonal": "Edit Personal Information",
-      "editPersonalDesc": "Name, Email, Birthday",
-      "editFitness": "Edit Fitness Details",
-      "editFitnessDesc": "Goals, Experience Level",
-      "appPreferences": "App Preferences",
-      "appPreferencesDesc": "Units, Notifications, Privacy"
-    },
     "syncing": {
       "healthKit": "Syncing with HealthKit..."
     }
@@ -675,11 +605,6 @@
       "createWorkout": "Create Workout",
       "analyzeProgress": "Analyze Progress",
       "nutritionCheck": "Nutrition Check"
-    },
-    "mock": {
-      "trainerGreeting": "Hello! I'm ready to help. Should we plan your next session or look at your stats?",
-      "userLegsRequest": "I want to focus on legs today. Can you make it intense?",
-      "trainerResponse": "Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥"
     }
   },
   "editFitnessDetails": {
@@ -752,7 +677,6 @@
   },
   "editPersonalInfo": {
     "title": "Edit Personal Info",
-    "changePhoto": "Change Photo",
     "fullName": "Full Name",
     "fullNamePlaceholder": "e.g. Alex Johnson",
     "emailAddress": "Email Address",
@@ -784,10 +708,7 @@
     "goHome": "Go Home",
     "youCrushedIt": "You Crushed It!",
     "feedbackSubmitted": "Workout feedback submitted successfully.",
-    "shareSummary": "Share Summary",
-    "noWorkoutId": "No workout ID provided",
-    "failedToLoad": "Failed to load workout summary",
-    "unableToLoad": "Unable to load workout summary. Please try again."
+    "shareSummary": "Share Summary"
   },
   "nutritionGoals": {
     "title": "Set Nutrition & Body Goals",
@@ -823,9 +744,6 @@
       "targetBMI": "Body Mass Index",
       "targetFFMI": "Fat-Free Mass Index"
     },
-    "aiCalculationComplete": "Calculation Complete",
-    "calculationComplete": "Calculation Complete",
-    "planDescription": "Here's a personalized nutrition plan based on your goals. You can accept it or adjust it manually.",
     "acceptAndContinue": "Accept and Continue",
     "adjustGoalsManually": "Adjust Goals Manually",
     "continue": "Continue",
@@ -870,12 +788,6 @@
     "history": "GOALS HISTORY",
     "newGoal": "New Goal"
   },
-  "recentWorkouts": {
-    "prs": "PRS"
-  },
-  "mealItemCard": {
-    "track": "Track"
-  },
   "meals": {
     "title": "My Meals",
     "filters": {
@@ -893,11 +805,7 @@
     "steps": {
       "step1": {
         "title": "Effortless Tracking",
-        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time.",
-        "badge": {
-          "title": "Workout Complete",
-          "subtitle": "3 Personal Records set!"
-        }
+        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
       },
       "step2": {
         "title": "Smart Nutrition",
@@ -918,8 +826,7 @@
       "save": "Save"
     },
     "personalInfo": {
-      "title": "Set Personal Information",
-      "save": "Save"
+      "title": "Set Personal Information"
     },
     "connectGoogle": {
       "title": "Connect Your Google Account",
@@ -961,13 +868,11 @@
       "dynamicAdjustments": "Dynamic Adjustments",
       "calculateForMe": "Calculate for Me",
       "setThemMyself": "I'll Set Them Myself",
-      "aiEngineDisclaimer": "Musclogs AI engine uses verified metabolic formulas to ensure your safety and progress efficiency.",
       "missingData": "Please complete your fitness details first so we can calculate your plan."
     }
   },
   "settings": {
     "title": "Settings",
-    "searchPlaceholder": "Search settings",
     "configuration": "Configuration",
     "basicSettings": {
       "title": "Basic Settings",
@@ -1007,7 +912,6 @@
     "aiSettings": {
       "title": "AI Settings",
       "googleGeminiIntegration": "GOOGLE GEMINI INTEGRATION",
-      "connectGoogleAccount": "Connect Google Account",
       "googleGeminiApiKey": "GOOGLE GEMINI API KEY",
       "apiKeyPlaceholder": "Paste your API key here",
       "apiKeyHelper": "Leaving this blank will use the connected account quota.",
@@ -1027,11 +931,9 @@
       "setupGuide": "Read the setup guide",
       "version": "Musclog AI {{version}}"
     },
-    "darkMode": "Dark Mode",
     "notifications": "Notifications",
     "aboutMusclog": "About Musclog",
-    "privacyPolicy": "Privacy Policy",
-    "signOut": "Sign Out"
+    "privacyPolicy": "Privacy Policy"
   },
   "connectGoogleAccount": {
     "title": "Connect Google Account",
@@ -1046,10 +948,6 @@
       "geminiPowered": {
         "title": "Gemini Powered",
         "description": "Advanced LLM fitness intelligence"
-      },
-      "secureToken": {
-        "title": "Secure Token",
-        "description": "Direct integration with your key"
       }
     },
     "connectWithGoogle": "Connect with Google",
@@ -1178,7 +1076,6 @@
     "history": {
       "title": "History",
       "filter": "Filter",
-      "viewAll": "View All History",
       "loadMore": "Load More",
       "loadingMore": "Loading...",
       "notes": {

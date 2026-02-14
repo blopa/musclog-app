@@ -19,11 +19,12 @@ const CONFIG = {
 };
 
 class TranslationScanner {
-  constructor() {
+  constructor(options = {}) {
     this.existingKeys = new Set();
     this.usedKeys = new Set();
     this.missingKeys = new Set();
     this.filesWithTranslations = new Map();
+    this.cleanup = options.cleanup || false;
   }
 
   // Load existing translations from JSON file
@@ -149,7 +150,57 @@ class TranslationScanner {
     }
   }
 
-  // Generate report
+  // Remove unused translations from the locale file
+  cleanupUnusedTranslations() {
+    const unusedKeys = [...this.existingKeys].filter(key => !this.usedKeys.has(key));
+    
+    if (unusedKeys.length === 0) {
+      console.log('\n✅ No unused translations to remove.');
+      return;
+    }
+
+    try {
+      const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
+      const translations = JSON.parse(content);
+      
+      // Remove unused keys recursively
+      this.removeUnusedKeysFromObject(translations, unusedKeys);
+      
+      // Write back to file with proper formatting
+      const cleanedContent = JSON.stringify(translations, null, 2) + '\n';
+      fs.writeFileSync(CONFIG.localeFile, cleanedContent, 'utf8');
+      
+      console.log(`\n🧹 Removed ${unusedKeys.length} unused translations from en-us.json`);
+      console.log('📝 Backup: The original file has been overwritten.');
+      
+    } catch (error) {
+      console.error('✗ Error cleaning up translations:', error.message);
+    }
+  }
+
+  // Recursively remove unused keys from an object
+  removeUnusedKeysFromObject(obj, unusedKeys, prefix = '') {
+    const keysToRemove = [];
+    
+    for (const [key, value] of Object.entries(obj)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+      
+      if (typeof value === 'object' && value !== null) {
+        this.removeUnusedKeysFromObject(value, unusedKeys, fullKey);
+        // Remove empty objects after cleanup
+        if (Object.keys(value).length === 0) {
+          keysToRemove.push(key);
+        }
+      } else if (unusedKeys.includes(fullKey)) {
+        keysToRemove.push(key);
+      }
+    }
+    
+    // Remove the keys
+    for (const key of keysToRemove) {
+      delete obj[key];
+    }
+  }
   generateReport() {
     console.log('\n' + '='.repeat(60));
     console.log('🔍 TRANSLATION SCAN REPORT');
@@ -208,8 +259,13 @@ class TranslationScanner {
 
     console.log('\n' + '='.repeat(60));
 
-    // Exit with error code if missing translations found
-    if (this.missingKeys.size > 0) {
+    // Perform cleanup if requested (before exit code check)
+    if (this.cleanup) {
+      this.cleanupUnusedTranslations();
+    }
+
+    // Exit with error code if missing translations found (but only if not cleaning up)
+    if (this.missingKeys.size > 0 && !this.cleanup) {
       process.exit(1);
     }
   }
@@ -232,7 +288,42 @@ class TranslationScanner {
     this.scanFiles();
     this.findMissingTranslations();
     this.generateReport();
+
+    // Perform cleanup if requested
+    if (this.cleanup) {
+      this.cleanupUnusedTranslations();
+    }
   }
+}
+
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const options = {};
+  
+  if (args.includes('--cleanup') || args.includes('-c')) {
+    options.cleanup = true;
+  }
+  
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+🔍 Translation Scanner
+
+Usage: node scripts/check-translations.js [options]
+
+Options:
+  --cleanup, -c    Automatically remove unused translations from en-us.json
+  --help, -h       Show this help message
+
+Examples:
+  node scripts/check-translations.js              # Scan and report only
+  node scripts/check-translations.js --cleanup     # Scan and remove unused translations
+  npm run check-translations -- --cleanup         # Scan and remove unused translations via npm
+`);
+    process.exit(0);
+  }
+  
+  return options;
 }
 
 // Check if glob package is available, try to install if not
@@ -247,7 +338,8 @@ try {
 
 // Run the scanner
 if (require.main === module) {
-  const scanner = new TranslationScanner();
+  const options = parseArgs();
+  const scanner = new TranslationScanner(options);
   scanner.run();
 }
 
