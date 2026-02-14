@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, Plus, Search, SlidersHorizontal, WifiOff } from 'lucide-react-native';
+import { Dumbbell, Plus, Search, WifiOff } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -8,6 +8,7 @@ import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
 import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
+import { BrowseTemplatesModal } from '../../components/modals/BrowseTemplatesModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
@@ -43,6 +44,7 @@ export default function WorkoutsScreen() {
   const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
+  const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
 
   // Use reactive hook for workout templates
   const { templates, isLoading, error } = useWorkoutTemplates();
@@ -349,7 +351,8 @@ export default function WorkoutsScreen() {
           }}
           onBrowseTemplates={() => {
             setIsCreateOptionsVisible(false);
-            // TODO: open BrowseTemplatesModalmodal
+            // Open the Browse Templates modal
+            setIsBrowseTemplatesVisible(true);
           }}
         />
       ) : null}
@@ -361,6 +364,15 @@ export default function WorkoutsScreen() {
             setEditingTemplateId(undefined);
           }}
           templateId={editingTemplateId}
+        />
+      ) : null}
+      {isBrowseTemplatesVisible ? (
+        <BrowseTemplatesModal
+          visible={isBrowseTemplatesVisible}
+          onClose={() => setIsBrowseTemplatesVisible(false)}
+          onTemplateSelect={(template) => {
+            setIsBrowseTemplatesVisible(false);
+          }}
         />
       ) : null}
       {/* Workout Session Overview Modal */}

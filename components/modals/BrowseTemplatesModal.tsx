@@ -56,23 +56,25 @@ const getNormalizedTemplates = (t: TFunction) => {
       if (Array.isArray(item.exercises)) {
         // Use i18next pluralization by passing `count` so translations can handle singular/plural forms.
         const count = item.exercises.length;
-        exercisesText = t('workouts.browseTemplatesModal.stats.exercises', { count });
+        exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', { count });
         totalSets = item.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
       } else if (typeof item.exercises === 'number') {
         // Use i18next pluralization for numbers too
-        exercisesText = t('workouts.browseTemplatesModal.stats.exercises', { count: item.exercises });
+        exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', {
+          count: item.exercises,
+        });
       } else if (typeof item.exercises === 'string') {
         exercisesText = item.exercises;
       }
 
-      // If JSON provides top-level sets or we computed totalSets from exercises array, use that
+      // If JSON provides top-level sets, or we computed totalSets from exercises array, use that
       if (!totalSets && typeof item.sets === 'number') {
         totalSets = item.sets;
       }
 
       const setsText = totalSets
         // Use i18next pluralization so translations can include the number and handle pluralization rules
-        ? t('workouts.browseTemplatesModal.stats.sets', { count: totalSets })
+        ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
         : '';
 
       const iconKey = (item.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
