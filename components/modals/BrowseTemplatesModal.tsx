@@ -5,6 +5,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
+import { FilterTabs } from '../FilterTabs';
 import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutTemplate = {
@@ -68,21 +69,24 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
     switch (difficulty) {
       case 'Beginner':
         return {
-          bg: theme.colors.status.emerald,
-          text: theme.colors.status.emerald30,
-          border: theme.colors.status.emerald20,
+          // TODO: use colors from theme
+          bg: 'rgba(16, 185, 129, 0.1)',
+          text: '#10b981',
+          border: 'rgba(16, 185, 129, 0.2)',
         };
       case 'Intermediate':
         return {
-          bg: theme.colors.status.warning,
-          text: theme.colors.status.warning50,
-          border: theme.colors.status.warning10,
+          // TODO: use colors from theme
+          bg: 'rgba(251, 191, 36, 0.1)',
+          text: '#f59e0b',
+          border: 'rgba(251, 191, 36, 0.2)',
         };
       case 'Advanced':
         return {
-          bg: theme.colors.status.error,
-          text: theme.colors.status.error50,
-          border: theme.colors.status.error20,
+          // TODO: use colors from theme
+          bg: 'rgba(239, 68, 68, 0.1)',
+          text: '#ef4444',
+          border: 'rgba(239, 68, 68, 0.2)',
         };
       default:
         return {
@@ -95,7 +99,9 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
 
   const filteredTemplates = mockTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || template.title.toLowerCase().includes(selectedCategory.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || 
+      template.difficulty === selectedCategory ||
+      template.title.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
   });
 
@@ -173,78 +179,9 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
       visible={visible}
       onClose={onClose}
       title="Browse Templates"
-      showHeader={false}
       scrollable={false}
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Custom Header */}
-        <View className="sticky top-0 z-50 bg-bg-primary/80 backdrop-blur-md px-4 pt-12 pb-4">
-          <View className="flex-row items-center gap-4 mb-4">
-            <Pressable
-              className="w-10 h-10 items-center justify-center rounded-full bg-bg-card border border-white/5"
-              onPress={onClose}
-            >
-              <MaterialIcons name="arrow-back-ios-new" size={20} color={theme.colors.text.primary} />
-            </Pressable>
-            <Text className="text-xl font-bold tracking-tight text-text-primary">Browse Templates</Text>
-          </View>
-
-          {/* Search Bar */}
-          <View className="relative mb-5">
-            <MaterialIcons
-              name="search"
-              size={20}
-              color={theme.colors.text.secondary}
-              style={{ position: 'absolute', left: 16, top: 14 }}
-            />
-            <TextInput
-              className="w-full bg-bg-card border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-text-primary"
-              style={{
-                color: theme.colors.text.primary,
-                borderColor: theme.colors.border.default,
-              }}
-              placeholder="Search expert programs..."
-              placeholderTextColor={theme.colors.text.secondary}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-
-          {/* Category Pills */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="pb-1">
-            <View className="flex-row gap-2">
-              {categories.map((category) => {
-                const isSelected = selectedCategory === category;
-                return (
-                  <Pressable
-                    key={category}
-                    className={`px-5 py-2 rounded-full border ${
-                      isSelected
-                        ? ''
-                        : 'bg-bg-card border-white/5'
-                    }`}
-                    onPress={() => setSelectedCategory(category)}
-                  >
-                    {isSelected ? (
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        className="px-5 py-2 rounded-full"
-                      >
-                        <Text className="text-xs font-bold text-white uppercase">{category}</Text>
-                      </LinearGradient>
-                    ) : (
-                      <Text className="text-xs font-bold text-text-secondary uppercase">{category}</Text>
-                    )}
-                  </Pressable>
-                );
-              })}
-            </View>
-          </ScrollView>
-        </View>
-
-        {/* Template List */}
         <View className="px-4 py-4 pb-28">
           {filteredTemplates.map(renderTemplateCard)}
         </View>
