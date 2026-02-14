@@ -102,7 +102,7 @@ This keeps the logic simple and aligned with common sports-nutrition practice (p
 
 We estimate how your weight might change over **90 days** from the difference between target calories and TDEE.
 
-We use an **energy equivalent of body weight change** of **7,700 kcal per kg**. That value is a practical average for “mixed” weight change (both fat and lean tissue), not pure fat (which would be ~9,400 kcal/kg) or pure lean (~1,800 kcal/kg).
+We use an **energy equivalent of body weight change** of **7,700 kcal per kg**. That value is a practical average for “mixed” weight change (both fat and lean tissue), not pure fat (which would be ~9,400 kcal/kg) or pure lean (~1,800 kcal/kg). Hall’s analysis notes that this rule can slightly overestimate the deficit required per kg lost in leaner individuals (lower initial body fat) and underestimate it in those with higher body fat; we keep a single constant for simplicity.
 
 - **Daily calorie delta** = target calories − TDEE
 - **Weekly weight change (kg)** = (daily delta × 7) / 7,700
