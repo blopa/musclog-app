@@ -33,6 +33,7 @@ class TranslationScanner {
     this.filesWithTranslations = new Map();
     this.missingKeyLocations = new Map();
     this.cleanup = options.cleanup || false;
+    this.addMissing = options.addMissing || false;
   }
 
   // Load existing translations from JSON file
@@ -301,9 +302,11 @@ class TranslationScanner {
       console.log('\n💡 SUGGESTED ADDITIONS TO en-us.json:');
       console.log('{');
 
-      const sortedMissing = Array.from(this.missingKeys).sort().filter((key) => {
-        return (key.includes('.') || key.includes('_')) && !key.includes(' ');
-      });
+      const sortedMissing = Array.from(this.missingKeys)
+        .sort()
+        .filter((key) => {
+          return (key.includes('.') || key.includes('_')) && !key.includes(' ');
+        });
 
       for (const key of sortedMissing) {
         const value = this.generateDefaultValue(key);
@@ -311,41 +314,47 @@ class TranslationScanner {
       }
       console.log('}');
 
-      // Automatically add missing keys to the translations file (create a backup first)
-      try {
-        const backupPath = `${CONFIG.localeFile}.bak.${Date.now()}`;
-        fs.copyFileSync(CONFIG.localeFile, backupPath);
-        console.log(`\n🔁 Backup created at: ${backupPath}`);
+      // Only add missing keys to the locale file if the user explicitly passed --add-missing
+      if (this.addMissing) {
+        try {
+          const backupPath = `${CONFIG.localeFile}.bak.${Date.now()}`;
+          fs.copyFileSync(CONFIG.localeFile, backupPath);
+          console.log(`\n🔁 Backup created at: ${backupPath}`);
 
-        const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
-        const translations = JSON.parse(content);
+          const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
+          const translations = JSON.parse(content);
 
-        for (const key of sortedMissing) {
-          const defaultValue = this.generateDefaultValue(key);
-          // Set nested key in translations object without overwriting existing values
-          const parts = key.split('.');
-          let node = translations;
-          for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
-            if (i === parts.length - 1) {
-              // leaf
-              if (node[part] === undefined) {
-                node[part] = defaultValue;
+          for (const key of sortedMissing) {
+            const defaultValue = this.generateDefaultValue(key);
+            // Set nested key in translations object without overwriting existing values
+            const parts = key.split('.');
+            let node = translations;
+            for (let i = 0; i < parts.length; i++) {
+              const part = parts[i];
+              if (i === parts.length - 1) {
+                // leaf
+                if (node[part] === undefined) {
+                  node[part] = defaultValue;
+                }
+              } else {
+                if (node[part] === undefined || typeof node[part] !== 'object') {
+                  node[part] = {};
+                }
+                node = node[part];
               }
-            } else {
-              if (node[part] === undefined || typeof node[part] !== 'object') {
-                node[part] = {};
-              }
-              node = node[part];
             }
           }
-        }
 
-        const newContent = JSON.stringify(translations, null, 2) + '\n';
-        fs.writeFileSync(CONFIG.localeFile, newContent, 'utf8');
-        console.log(`\n✅ Added ${sortedMissing.length} missing keys to ${CONFIG.localeFile}`);
-      } catch (e) {
-        console.error('✗ Failed to add missing keys to locale file:', e.message || e);
+          const newContent = JSON.stringify(translations, null, 2) + '\n';
+          fs.writeFileSync(CONFIG.localeFile, newContent, 'utf8');
+          console.log(`\n✅ Added ${sortedMissing.length} missing keys to ${CONFIG.localeFile}`);
+        } catch (err) {
+          console.error('✗ Failed to add missing keys to locale file:', err.message || err);
+        }
+      } else {
+        console.log(
+          '\nℹ️  Missing keys not added. Re-run with --add-missing or -a to auto-insert them into the locale file.'
+        );
       }
     } else {
       console.log('\n✅ All translations found! No missing keys detected.');
@@ -411,6 +420,10 @@ function parseArgs() {
     options.cleanup = true;
   }
 
+  if (args.includes('--add-missing') || args.includes('-a')) {
+    options.addMissing = true;
+  }
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 🔍 Translation Scanner
@@ -419,6 +432,7 @@ Usage: node scripts/check-translations.js [options]
 
 Options:
   --cleanup, -c    Automatically remove unused translations from en-us.json
+  --add-missing, -a  Automatically add missing translation keys to en-us.json (creates a backup)
   --help, -h       Show this help message
 
 Examples:
@@ -435,7 +449,7 @@ Examples:
 // Check if glob package is available, try to install if not
 try {
   require.resolve('glob');
-} catch (e) {
+} catch (_err) {
   console.error('❌ "glob" package is required. Please install it with:');
   console.error('   npm install glob');
   console.error('   or yarn add glob');
