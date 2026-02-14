@@ -11,7 +11,7 @@ type BottomButtonWrapperProps = {
   effect: 'gradient' | 'blur';
 };
 
-export function BottomButtonWrapper({ effect = 'blur', children }: BottomButtonWrapperProps) {
+export function BottomButtonWrapper({ effect = 'gradient', children }: BottomButtonWrapperProps) {
   const theme = useTheme();
 
   const renderContent = () => (
@@ -34,7 +34,7 @@ export function BottomButtonWrapper({ effect = 'blur', children }: BottomButtonW
   return (
     <View className="absolute bottom-0 left-0 right-0" style={wrapperStyle}>
       {effect === 'blur' ? (
-        <BlurView intensity={10} tint="dark" className="w-full">
+        <BlurView intensity={60} tint="dark" className="w-full">
           {renderContent()}
         </BlurView>
       ) : (
