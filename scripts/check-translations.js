@@ -8,7 +8,14 @@ const glob = require('glob');
 // Configuration
 const CONFIG = {
   localeFile: path.join(__dirname, '../lang/locales/en-us.json'),
-  scanPaths: ['../app/**/*.tsx', '../components/**/*.tsx', '../utils/**/*.ts', '../hooks/**/*.ts', '../types/**/*.ts', '../services/**/*.ts'],
+  scanPaths: [
+    '../app/**/*.tsx',
+    '../components/**/*.tsx',
+    '../utils/**/*.ts',
+    '../hooks/**/*.ts',
+    '../types/**/*.ts',
+    '../services/**/*.ts',
+  ],
   patterns: [
     /t\(['"`]([^'"`]+)['"`]\)/g, // t('key')
     /t\(`([^`]+)`\)/g, // t(`key`)
@@ -24,6 +31,7 @@ class TranslationScanner {
     this.usedKeys = new Set();
     this.missingKeys = new Set();
     this.filesWithTranslations = new Map();
+    this.missingKeyLocations = new Map();
     this.cleanup = options.cleanup || false;
   }
 
@@ -78,11 +86,23 @@ class TranslationScanner {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
       const fileKeys = new Set();
+      const lines = content.split('\n');
 
       for (const pattern of CONFIG.patterns) {
         let match;
+        // Reset regex lastIndex for each pattern
+        pattern.lastIndex = 0;
+
         while ((match = pattern.exec(content)) !== null) {
           const key = match[1];
+
+          // Find line number for this match
+          const matchIndex = match.index;
+          const lineNumber = lines.slice(
+            0,
+            content.substring(0, matchIndex).split('\n').length
+          ).length;
+
           if (key) {
             // Filter out invalid keys
             if (!this.isValidTranslationKey(key)) {
@@ -92,9 +112,26 @@ class TranslationScanner {
             // If the key contains a template literal with a variable, extract the static part
             const dynamicMatch = key.match(/^(.*?)\$\{[^}]+\}/);
             if (dynamicMatch) {
-              fileKeys.add(dynamicMatch[1].replace(/\.$/, '')); // Add the static prefix, removing trailing dot if any
+              const staticKey = dynamicMatch[1].replace(/\.$/, '');
+              fileKeys.add(staticKey);
+
+              // Track location for missing keys
+              if (!this.existingKeys.has(staticKey)) {
+                if (!this.missingKeyLocations.has(staticKey)) {
+                  this.missingKeyLocations.set(staticKey, []);
+                }
+                this.missingKeyLocations.get(staticKey).push({ file: filePath, line: lineNumber });
+              }
             } else {
               fileKeys.add(key);
+
+              // Track location for missing keys
+              if (!this.existingKeys.has(key)) {
+                if (!this.missingKeyLocations.has(key)) {
+                  this.missingKeyLocations.set(key, []);
+                }
+                this.missingKeyLocations.get(key).push({ file: filePath, line: lineNumber });
+              }
             }
           }
         }
@@ -159,26 +196,26 @@ class TranslationScanner {
   isValidTranslationKey(key) {
     // Exclude empty strings, single characters, obvious non-keys
     if (!key || key.length < 2) return false;
-    
+
     // Exclude keys that look like file paths, URLs, or code
     if (key.includes('/') || key.includes('node_modules') || key.includes('.d.ts')) return false;
-    
+
     // Exclude keys that are just symbols or numbers
     if (/^[^a-zA-Z]+$/.test(key) && key.length < 3) return false;
-    
+
     // Exclude obvious code patterns
     if (key.includes('function') || key.includes('const') || key.includes('return')) return false;
-    
+
     // Exclude boundary strings and form data
     if (key.includes('------') || key.includes('content-disposition')) return false;
-    
+
     return true;
   }
 
   // Remove unused translations from the locale file
   cleanupUnusedTranslations() {
-    const unusedKeys = [...this.existingKeys].filter(key => !this.usedKeys.has(key));
-    
+    const unusedKeys = [...this.existingKeys].filter((key) => !this.usedKeys.has(key));
+
     if (unusedKeys.length === 0) {
       console.log('\n✅ No unused translations to remove.');
       return;
@@ -187,17 +224,16 @@ class TranslationScanner {
     try {
       const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
       const translations = JSON.parse(content);
-      
+
       // Remove unused keys recursively
       this.removeUnusedKeysFromObject(translations, unusedKeys);
-      
+
       // Write back to file with proper formatting
       const cleanedContent = JSON.stringify(translations, null, 2) + '\n';
       fs.writeFileSync(CONFIG.localeFile, cleanedContent, 'utf8');
-      
+
       console.log(`\n🧹 Removed ${unusedKeys.length} unused translations from en-us.json`);
       console.log('📝 Backup: The original file has been overwritten.');
-      
     } catch (error) {
       console.error('✗ Error cleaning up translations:', error.message);
     }
@@ -206,10 +242,10 @@ class TranslationScanner {
   // Recursively remove unused keys from an object
   removeUnusedKeysFromObject(obj, unusedKeys, prefix = '') {
     const keysToRemove = [];
-    
+
     for (const [key, value] of Object.entries(obj)) {
       const fullKey = prefix ? `${prefix}.${key}` : key;
-      
+
       if (typeof value === 'object' && value !== null) {
         this.removeUnusedKeysFromObject(value, unusedKeys, fullKey);
         // Remove empty objects after cleanup
@@ -220,7 +256,7 @@ class TranslationScanner {
         keysToRemove.push(key);
       }
     }
-    
+
     // Remove the keys
     for (const key of keysToRemove) {
       delete obj[key];
@@ -243,18 +279,22 @@ class TranslationScanner {
       // Group missing keys by file for better context
       const missingByFile = new Map();
 
-      for (const [filePath, fileKeys] of this.filesWithTranslations) {
-        const missingInFile = [...fileKeys].filter((key) => this.missingKeys.has(key));
-        if (missingInFile.length > 0) {
-          missingByFile.set(filePath, missingInFile);
+      for (const key of this.missingKeys) {
+        const locations = this.missingKeyLocations.get(key) || [];
+        for (const location of locations) {
+          const relativePath = path.relative(process.cwd(), location.file);
+          if (!missingByFile.has(relativePath)) {
+            missingByFile.set(relativePath, []);
+          }
+          missingByFile.get(relativePath).push({ key, line: location.line });
         }
       }
 
-      for (const [filePath, missingKeys] of missingByFile) {
+      for (const [filePath, missingInfos] of missingByFile) {
         const relativePath = path.relative(process.cwd(), filePath);
         console.log(`\n📄 ${relativePath}:`);
-        for (const key of missingKeys) {
-          console.log(`   • ${key}`);
+        for (const { key, line } of missingInfos) {
+          console.log(`   • ${key} (line ${line})`);
         }
       }
 
@@ -325,11 +365,11 @@ class TranslationScanner {
 function parseArgs() {
   const args = process.argv.slice(2);
   const options = {};
-  
+
   if (args.includes('--cleanup') || args.includes('-c')) {
     options.cleanup = true;
   }
-  
+
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
 🔍 Translation Scanner
@@ -347,7 +387,7 @@ Examples:
 `);
     process.exit(0);
   }
-  
+
   return options;
 }
 
