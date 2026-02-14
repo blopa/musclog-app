@@ -28,7 +28,7 @@ export function CreateWorkoutOptionsModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title=""
+      title={t('workouts.createWorkoutOptionsModal.header')}
       scrollable={true}
       withGradient={false}
     >
@@ -44,7 +44,6 @@ export function CreateWorkoutOptionsModal({
             borderRadius: theme.borderRadius['150'],
             backgroundColor: theme.colors.accent.primary20,
             opacity: theme.colors.opacity.subtle,
-            // Blur is handled via opacity/size here since React Native blur is limited
           }}
         />
         <View
@@ -59,33 +58,6 @@ export function CreateWorkoutOptionsModal({
             opacity: theme.colors.opacity.subtle,
           }}
         />
-      </View>
-
-      {/* Custom Header to match mockup */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: theme.spacing.padding.base,
-          paddingTop: Platform.OS === 'ios' ? theme.size['16'] : theme.size['10'],
-          paddingBottom: theme.spacing.padding.sm,
-          zIndex: theme.zIndex.popover,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: theme.typography.fontSize.sm,
-            fontWeight: theme.typography.fontWeight.bold,
-            color: theme.colors.text.secondary,
-            textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.extraWide,
-            opacity: theme.colors.opacity.strong,
-          }}
-        >
-          {t('workouts.createWorkoutOptionsModal.header')}
-        </Text>
-        <View style={{ width: theme.size['10'] }} />
       </View>
 
       <View
@@ -121,6 +93,7 @@ export function CreateWorkoutOptionsModal({
         </View>
 
         <View style={{ gap: theme.spacing.gap.base }}>
+          {/*TODO: only show if there's AI enabled*/}
           <NewWorkoutCard
             variant="popular"
             icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}

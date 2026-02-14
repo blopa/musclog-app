@@ -23,6 +23,7 @@ import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
+// TODO: implement search
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -119,9 +120,6 @@ export default function WorkoutsScreen() {
               <View className="ml-4 flex-row gap-4">
                 <Pressable className="rounded-lg p-2">
                   <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
-                </Pressable>
-                <Pressable className="rounded-lg p-2">
-                  <SlidersHorizontal size={theme.iconSize.md} color={theme.colors.text.primary} />
                 </Pressable>
               </View>
             </View>
