@@ -21,12 +21,16 @@ import UserMetric from '../../database/models/UserMetric';
 import { UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import {
+  bmiFromWeightAndHeightM,
   calculateNutritionPlan,
+  estimateTargetBodyFatWhenCutting,
+  ffmiFromWeightHeightAndBodyFat,
   inchesToCm,
   lbsToKg,
   normalizeFitnessGoal,
   normalizeWeightGoal,
   type NutritionCalculatorInput,
+  type NutritionPlan,
 } from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
 
@@ -341,13 +345,45 @@ export default function SetGoals() {
     };
 
     const plan = calculateNutritionPlan(input);
+    const heightM = heightCm / 100;
+
+    const targetBMI = heightM > 0 ? bmiFromWeightAndHeightM(plan.projectedWeightKg, heightM) : 0;
+    const eatingPhase =
+      plan.targetCalories < plan.tdee
+        ? 'cut'
+        : plan.targetCalories > plan.tdee
+          ? 'bulk'
+          : 'maintain';
+    let targetBodyFat = 0;
+    if (eatingPhase === 'cut' && rawBodyFat != null && rawBodyFat >= 1 && rawBodyFat <= 99) {
+      targetBodyFat = estimateTargetBodyFatWhenCutting(
+        plan.currentWeightKg,
+        plan.projectedWeightKg,
+        rawBodyFat
+      );
+    } else if (eatingPhase === 'maintain' && rawBodyFat != null) {
+      targetBodyFat = rawBodyFat;
+    }
+    const bodyFatForFfmi = targetBodyFat > 0 ? targetBodyFat : (rawBodyFat ?? 0);
+    const targetFFMI =
+      heightM > 0 && bodyFatForFfmi >= 0
+        ? ffmiFromWeightHeightAndBodyFat(plan.projectedWeightKg, heightM, bodyFatForFfmi)
+        : 0;
+
+    const planWithTargets: NutritionPlan = {
+      ...plan,
+      targetBodyFat,
+      targetBMI,
+      targetFFMI,
+    };
+
     try {
-      await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
+      await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(planWithTargets));
     } catch (e) {
       console.warn('Failed to persist nutrition plan to AsyncStorage', e);
     }
 
-    return plan;
+    return planWithTargets;
   }, [units]);
 
   const handleCalculateForMe = useCallback(async () => {

@@ -1,11 +1,5 @@
-import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models/User';
-import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
-import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
-import { useEffect, useState } from 'react';
 import { NutritionGoals } from '../components/NutritionGoalsBody';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TEMP_NUTRITION_PLAN } from '../constants/auth';
+import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models/User';
 
 // ---------------------------------------------------------------------------
 // Input / Output types
@@ -69,6 +63,12 @@ export interface NutritionPlan {
    * Undefined when body fat was not provided.
    */
   maxTargetCalories?: number;
+  /** Target body fat % at projected weight (when computed from height/body fat). */
+  targetBodyFat?: number;
+  /** Target BMI at projected weight (when height available). */
+  targetBMI?: number;
+  /** Target FFMI at projected weight (when height and body fat available). */
+  targetFFMI?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -392,9 +392,9 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
     fiber,
     eatingPhase,
     targetWeight: plan.projectedWeightKg,
-    targetBodyFat: 0,
-    targetBMI: 0,
-    targetFFMI: 0,
+    targetBodyFat: plan.targetBodyFat ?? 0,
+    targetBMI: plan.targetBMI ?? 0,
+    targetFFMI: plan.targetFFMI ?? 0,
     targetDate: null,
   };
 }

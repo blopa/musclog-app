@@ -193,7 +193,8 @@ export default function NutritionGoalsResults() {
     return t('nutritionGoals.results.estimatedMaintenance');
   }, [displayData, t]);
 
-  const trendingIcon = displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
+  const trendingIcon =
+    displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
 
   const handleAccept = async () => {
     if (!displayData) {
