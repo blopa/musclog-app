@@ -517,7 +517,7 @@ export default function NutritionGoalsResults() {
                 className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-indigo-400"
                 style={{
                   color: theme.colors.status.indigo,
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
                   letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,

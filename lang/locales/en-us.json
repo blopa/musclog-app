@@ -949,7 +949,7 @@
     "setGoals": {
       "title": "Smart Goal",
       "calculation": "Calculation",
-      "description": "Based on your activity level and fitness goals, our AI can calculate your optimal daily calorie and macro targets for you.",
+      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
       "personalizedMacros": "Personalized Macros",
       "dynamicAdjustments": "Dynamic Adjustments",
       "calculateForMe": "Calculate for Me",

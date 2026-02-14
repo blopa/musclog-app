@@ -166,7 +166,7 @@ function OrbitalIllustration() {
             className="text-[10px] font-bold tracking-wider"
             style={{
               color: theme.colors.text.primary,
-              fontSize: 10,
+              fontSize: theme.typography.fontSize.xxs,
               fontWeight: theme.typography.fontWeight.bold,
               letterSpacing: 2,
             }}
@@ -192,7 +192,7 @@ function OrbitalIllustration() {
             className="text-[10px] font-bold tracking-wider"
             style={{
               color: theme.colors.text.primary,
-              fontSize: 10,
+              fontSize: theme.typography.fontSize.xxs,
               fontWeight: theme.typography.fontWeight.bold,
               letterSpacing: 2,
             }}
@@ -221,7 +221,7 @@ function OrbitalIllustration() {
             className="text-[10px] font-bold tracking-wider"
             style={{
               color: theme.colors.text.primary,
-              fontSize: 10,
+              fontSize: theme.typography.fontSize.xxs,
               fontWeight: theme.typography.fontWeight.bold,
               letterSpacing: 2,
             }}
@@ -393,7 +393,7 @@ export default function SetGoals() {
             className="mb-4 text-center text-[32px] font-bold leading-[1.1]"
             style={{
               color: theme.colors.text.primary,
-              fontSize: 32,
+              fontSize: theme.typography.fontSize['3xl'],
               fontWeight: theme.typography.fontWeight.bold,
             }}
           >
@@ -401,7 +401,7 @@ export default function SetGoals() {
             <GradientText
               colors={theme.colors.gradients.cta}
               style={{
-                fontSize: 32,
+                fontSize: theme.typography.fontSize['3xl'],
                 fontWeight: theme.typography.fontWeight.bold,
               }}
             >
@@ -413,7 +413,7 @@ export default function SetGoals() {
             className="mb-8 text-center text-[16px] font-normal leading-relaxed"
             style={{
               color: theme.colors.text.secondary,
-              fontSize: 16,
+              fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.normal,
               maxWidth: '90%',
             }}
@@ -436,7 +436,7 @@ export default function SetGoals() {
                 className="text-xs font-medium"
                 style={{
                   color: theme.colors.status.indigoLight,
-                  fontSize: 12,
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
@@ -457,7 +457,7 @@ export default function SetGoals() {
                 className="text-xs font-medium"
                 style={{
                   color: theme.colors.accent.secondary,
-                  fontSize: 12,
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
