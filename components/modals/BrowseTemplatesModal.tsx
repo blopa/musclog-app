@@ -57,8 +57,6 @@ const mockTemplates: WorkoutTemplate[] = [
   },
 ];
 
-const categories = ['All', 'Strength', 'Hypertrophy', 'Cardio', 'Beginner'];
-
 type BrowseTemplatesModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -211,7 +209,7 @@ export function BrowseTemplatesModal({
       scrollable={false}
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="sticky top-0 z-50 bg-bg-primary/80 px-4 pb-4 pt-6 backdrop-blur-md">
+        <View className="bg-bg-primary px-4 pb-4 pt-6">
           {/* Search Bar */}
           <View className="relative mb-5">
             <MaterialIcons
@@ -220,6 +218,7 @@ export function BrowseTemplatesModal({
               color={theme.colors.text.secondary}
               style={{ position: 'absolute', left: 16, top: 14 }}
             />
+            {/*TODO: instead of TextInput from RN, use the one from theme. Also, look for examples of other places with search inputs and do it like them*/}
             <TextInput
               className="w-full rounded-2xl border border-white/5 bg-bg-card py-3.5 pl-12 pr-4 text-sm text-text-primary"
               style={{
