@@ -387,7 +387,7 @@ export function NutritionGoalsBody({
   ]);
 
   const handleSave = useCallback(() => {
-    const goals: NutritionGoals = {
+    onSave?.({
       totalCalories,
       protein,
       carbs,
@@ -399,8 +399,7 @@ export function NutritionGoalsBody({
       targetBMI,
       targetFFMI,
       targetDate,
-    };
-    onSave?.(goals);
+    } as NutritionGoals);
   }, [
     carbs,
     eatingPhase,
