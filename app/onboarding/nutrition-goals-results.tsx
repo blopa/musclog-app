@@ -176,6 +176,25 @@ export default function NutritionGoalsResults() {
     return 'maintain';
   }, [parsedPlan, savedGoal]);
 
+  // Trending icon and memoized weight change label must be declared as hooks here
+  const weightChangeLabel = useMemo(() => {
+    if (!displayData) {
+      return '';
+    }
+
+    if (displayData.weightChange > 0) {
+      return t('nutritionGoals.results.estimatedWeightGain');
+    }
+
+    if (displayData.weightChange < 0) {
+      return t('nutritionGoals.results.estimatedWeightLoss');
+    }
+
+    return t('nutritionGoals.results.estimatedMaintenance');
+  }, [displayData, t]);
+
+  const trendingIcon = displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
+
   const handleAccept = async () => {
     if (!displayData) {
       return;
@@ -300,27 +319,6 @@ export default function NutritionGoalsResults() {
   const formattedCalorieRange = hasCalorieRange
     ? `${displayData!.minTargetCalories!.toLocaleString()} – ${displayData!.maxTargetCalories!.toLocaleString()}`
     : null;
-
-  // Trending icon based on weight change direction
-  const trendingIcon =
-    displayData && displayData.weightChange > 0 ? 'trending-up' : 'trending-down';
-
-  // TODO: use useMemo
-  const weightChangeLabel = (() => {
-    if (!displayData) {
-      return '';
-    }
-
-    if (displayData.weightChange > 0) {
-      return t('nutritionGoals.results.estimatedWeightGain');
-    }
-
-    if (displayData.weightChange < 0) {
-      return t('nutritionGoals.results.estimatedWeightLoss');
-    }
-
-    return t('nutritionGoals.results.estimatedMaintenance');
-  })();
 
   // Formatted weight change with sign
   const formattedWeightChange = displayData
