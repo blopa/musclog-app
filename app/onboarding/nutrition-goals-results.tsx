@@ -171,12 +171,12 @@ export default function NutritionGoalsResults() {
           protein: parsedPlan.protein,
           carbs: parsedPlan.carbs,
           fats: parsedPlan.fats,
-          fiber: 30, // default fiber recommendation
+          fiber: 30, // TODO: calculate based on the other properties
           eatingPhase: eatingPhase as 'cut' | 'maintain' | 'bulk',
           targetWeight: parsedPlan.projectedWeightKg,
-          targetBodyFat: 0,
-          targetBMI: 0,
-          targetFFMI: 0,
+          targetBodyFat: 0, // TODO: calculate based on the other properties
+          targetBMI: 0, // TODO: calculate based on the other properties
+          targetFFMI: 0, // TODO: calculate based on the other properties
           targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
         });
 
