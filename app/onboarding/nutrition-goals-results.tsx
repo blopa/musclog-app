@@ -361,7 +361,24 @@ export default function NutritionGoalsResults() {
                   {t('nutritionGoals.results.aiCalculationComplete')}
                 </Text>
               </View>
-            ) : null}
+            ) : (
+              <View
+                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
+                style={{ backgroundColor: theme.colors.status.indigo10 }}
+              >
+                <MaterialIcons name="tune" size={14} color={theme.colors.status.indigoLight} />
+                <Text
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{
+                    color: theme.colors.status.indigoLight,
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.bold,
+                  }}
+                >
+                  {t('nutritionGoals.results.manualPlanBadge')}
+                </Text>
+              </View>
+            )}
 
             <Text
               className="mb-2 text-center text-[32px] font-bold leading-[1.1]"
@@ -652,6 +669,134 @@ export default function NutritionGoalsResults() {
               </Text>
             </GenericCard>
           </View>
+
+          {/* Manual plan: macro split bar + tips (when aiGenerated is false) */}
+          {!aiGenerated && displayData ? (
+            <>
+              <View className="mb-6 w-full">
+                <Text
+                  className="mb-2 text-center text-xs font-semibold uppercase tracking-wider"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.xxs,
+                    fontWeight: theme.typography.fontWeight.semibold,
+                    letterSpacing: 1.5,
+                    marginBottom: theme.spacing.margin.sm,
+                  }}
+                >
+                  {t('nutritionGoals.results.macroSplit')}
+                </Text>
+                <View
+                  className="h-3 w-full flex-row overflow-hidden rounded-full"
+                  style={{
+                    borderRadius: 999,
+                    backgroundColor: theme.colors.background.card,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: `${displayData.proteinPct ?? 0}%`,
+                      backgroundColor: theme.colors.status.indigo,
+                      minWidth: displayData.proteinPct ? 4 : 0,
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: `${displayData.carbsPct ?? 0}%`,
+                      backgroundColor: theme.colors.accent.primary,
+                      minWidth: displayData.carbsPct ? 4 : 0,
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: `${displayData.fatsPct ?? 0}%`,
+                      backgroundColor: theme.colors.status.pink500,
+                      minWidth: displayData.fatsPct ? 4 : 0,
+                    }}
+                  />
+                </View>
+                <View className="mt-2 flex-row justify-between px-0.5">
+                  <Text
+                    className="text-[10px] font-medium"
+                    style={{
+                      color: theme.colors.status.indigo,
+                      fontSize: theme.typography.fontSize.xxs,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    P {displayData.proteinPct ?? 0}%
+                  </Text>
+                  <Text
+                    className="text-[10px] font-medium"
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontSize: theme.typography.fontSize.xxs,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    C {displayData.carbsPct ?? 0}%
+                  </Text>
+                  <Text
+                    className="text-[10px] font-medium"
+                    style={{
+                      color: theme.colors.status.pink500,
+                      fontSize: theme.typography.fontSize.xxs,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    F {displayData.fatsPct ?? 0}%
+                  </Text>
+                </View>
+              </View>
+
+              <GenericCard
+                variant="default"
+                containerStyle={{
+                  width: '100%',
+                  marginBottom: theme.spacing.margin.lg,
+                  borderWidth: 1,
+                  borderColor: theme.colors.accent.primary + '22',
+                  padding: theme.spacing.padding.md,
+                }}
+              >
+                <View className="flex-row items-start gap-3">
+                  <View
+                    className="mt-0.5 rounded-full p-1.5"
+                    style={{ backgroundColor: theme.colors.accent.primary10 }}
+                  >
+                    <MaterialIcons
+                      name="lightbulb-outline"
+                      size={18}
+                      color={theme.colors.accent.primary}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className="mb-1 text-sm font-bold"
+                      style={{
+                        color: theme.colors.text.primary,
+                        fontSize: theme.typography.fontSize.sm,
+                        fontWeight: theme.typography.fontWeight.bold,
+                      }}
+                    >
+                      {t('nutritionGoals.results.manualTipsTitle')}
+                    </Text>
+                    <Text
+                      className="text-xs leading-relaxed"
+                      style={{
+                        color: theme.colors.text.secondary,
+                        fontSize: theme.typography.fontSize.xs,
+                        fontWeight: theme.typography.fontWeight.normal,
+                        lineHeight: 18,
+                      }}
+                    >
+                      {t('nutritionGoals.results.manualTipsDescription')}
+                    </Text>
+                  </View>
+                </View>
+              </GenericCard>
+            </>
+          ) : null}
 
           {/* 90-Day Projection Card (only for AI-generated plans) */}
           {displayData?.hasProjection ? (
