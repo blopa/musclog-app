@@ -4,6 +4,7 @@ import { Search } from 'lucide-react-native';
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
+import workoutTemplatesEnUS from '../../data/workoutTemplatesEnUS.json';
 import { useTheme } from '../../hooks/useTheme';
 import { addOpacityToHex } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
@@ -21,45 +22,58 @@ type WorkoutTemplate = {
   icon: keyof typeof MaterialIcons.glyphMap;
 };
 
-// TODO: load templates from workoutTemplatesEnUS.json, which has a sligtly different format, so change the code to accomodate that JSON, dont change the JSON.
-const mockTemplates: WorkoutTemplate[] = [
-  {
-    id: '1',
-    title: '5-Day Hypertrophy Split',
-    difficulty: 'Advanced',
-    duration: '75 min',
-    exercises: '8 Exercises',
-    sets: '24 Sets',
-    icon: 'fitness-center',
-  },
-  {
-    id: '2',
-    title: 'Full Body Foundation',
-    difficulty: 'Beginner',
-    duration: '45 min',
-    exercises: '6 Exercises',
-    sets: '18 Sets',
-    icon: 'home',
-  },
-  {
-    id: '3',
-    title: 'HIIT Power Burn',
-    difficulty: 'Intermediate',
-    duration: '30 min',
-    exercises: '12 Rounds',
-    sets: '36 Sets',
-    icon: 'timer',
-  },
-  {
-    id: '4',
-    title: 'Morning Mobility',
-    difficulty: 'Beginner',
-    duration: '15 min',
-    exercises: '5 Moves',
-    sets: '10 Sets',
-    icon: 'favorite',
-  },
-];
+// Raw template type as found in workoutTemplatesEnUS.json
+type RawWorkoutTemplate = {
+  title: string;
+  difficulty?: string;
+  duration?: number | string;
+  exercises?: { exerciseId?: number; sets?: number; reps?: number }[] | number | string;
+  sets?: number;
+  icon?: string;
+};
+
+// Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
+const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[])
+  .map((t, idx) => {
+    const title = t.title || `Template ${idx + 1}`;
+    const difficulty = (t.difficulty as any) || 'Beginner';
+
+    // Duration: number (minutes) -> "NN min", otherwise keep string
+    const duration = typeof t.duration === 'number' ? `${t.duration} min` : (typeof t.duration === 'string' ? t.duration : '');
+
+    // Exercises: if array -> "N Exercises", if number -> "N Exercises", otherwise string
+    let exercisesText = '';
+    let totalSets = 0;
+    if (Array.isArray(t.exercises)) {
+      exercisesText = `${t.exercises.length} Exercises`;
+      totalSets = t.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
+    } else if (typeof t.exercises === 'number') {
+      exercisesText = `${t.exercises} Exercises`;
+    } else if (typeof t.exercises === 'string') {
+      exercisesText = t.exercises;
+    }
+
+    // If JSON provides top-level sets or we computed totalSets from exercises array, use that
+    if (!totalSets && typeof t.sets === 'number') {
+      totalSets = t.sets;
+    }
+
+    const setsText = totalSets ? `${totalSets} Sets` : '';
+
+    const iconKey = (t.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
+
+    const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
+
+    return {
+      id,
+      title,
+      difficulty: (['Beginner', 'Intermediate', 'Advanced'].includes(difficulty) ? (difficulty as any) : 'Beginner'),
+      duration,
+      exercises: exercisesText,
+      sets: setsText,
+      icon: iconKey,
+    } as WorkoutTemplate;
+  });
 
 type BrowseTemplatesModalProps = {
   visible: boolean;
@@ -105,7 +119,7 @@ export function BrowseTemplatesModal({
     }
   };
 
-  const filteredTemplates = mockTemplates.filter((template) => {
+  const filteredTemplates = normalizedTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
       selectedCategory === 'All' ||
