@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
@@ -14,6 +14,7 @@ type WorkoutTemplate = {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   duration: string;
   exercises: string;
+  sets: string;
   icon: keyof typeof MaterialIcons.glyphMap;
 };
 
@@ -24,6 +25,7 @@ const mockTemplates: WorkoutTemplate[] = [
     difficulty: 'Advanced',
     duration: '75 min',
     exercises: '8 Exercises',
+    sets: '24 Sets',
     icon: 'fitness-center',
   },
   {
@@ -32,6 +34,7 @@ const mockTemplates: WorkoutTemplate[] = [
     difficulty: 'Beginner',
     duration: '45 min',
     exercises: '6 Exercises',
+    sets: '18 Sets',
     icon: 'home',
   },
   {
@@ -40,6 +43,7 @@ const mockTemplates: WorkoutTemplate[] = [
     difficulty: 'Intermediate',
     duration: '30 min',
     exercises: '12 Rounds',
+    sets: '36 Sets',
     icon: 'timer',
   },
   {
@@ -48,6 +52,7 @@ const mockTemplates: WorkoutTemplate[] = [
     difficulty: 'Beginner',
     duration: '15 min',
     exercises: '5 Moves',
+    sets: '10 Sets',
     icon: 'favorite',
   },
 ];
@@ -60,7 +65,11 @@ type BrowseTemplatesModalProps = {
   onTemplateSelect?: (template: WorkoutTemplate) => void;
 };
 
-export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: BrowseTemplatesModalProps) {
+export function BrowseTemplatesModal({
+  visible,
+  onClose,
+  onTemplateSelect,
+}: BrowseTemplatesModalProps) {
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -99,7 +108,8 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
 
   const filteredTemplates = mockTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || 
+    const matchesCategory =
+      selectedCategory === 'All' ||
       template.difficulty === selectedCategory ||
       template.title.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
@@ -118,8 +128,8 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
       >
         <View className="p-4">
           {/* Header with icon and difficulty */}
-          <View className="flex-row items-start justify-between mb-4">
-            <View className="w-12 h-12 rounded-full overflow-hidden">
+          <View className="mb-4 flex-row items-start justify-between">
+            <View className="h-12 w-12 overflow-hidden rounded-full">
               <LinearGradient
                 colors={theme.colors.gradients.cta}
                 start={{ x: 0, y: 0 }}
@@ -130,7 +140,7 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
               </LinearGradient>
             </View>
             <View
-              className="px-3 py-1 rounded-full border"
+              className="rounded-full border px-3 py-1"
               style={{
                 backgroundColor: difficultyColors.bg,
                 borderColor: difficultyColors.border,
@@ -146,12 +156,12 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
           </View>
 
           {/* Title */}
-          <Text className="text-lg font-bold mb-4 text-text-primary">{template.title}</Text>
+          <Text className="mb-4 text-lg font-bold text-text-primary">{template.title}</Text>
 
           {/* Stats */}
-          <View className="flex-row items-center gap-6 pt-3 border-t border-white/5">
+          <View className="flex-row items-center gap-6 border-t border-white/5 pt-3">
             <View className="flex-col gap-0.5">
-              <Text className="text-[10px] text-text-secondary uppercase font-semibold tracking-widest">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 Duration
               </Text>
               <View className="flex-row items-center gap-1.5">
@@ -160,12 +170,31 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
               </View>
             </View>
             <View className="flex-col gap-0.5">
-              <Text className="text-[10px] text-text-secondary uppercase font-semibold tracking-widest">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 Exercises
               </Text>
               <View className="flex-row items-center gap-1.5">
-                <MaterialIcons name="format-list-bulleted" size={16} color={theme.colors.accent.primary} />
-                <Text className="text-sm font-medium text-text-secondary">{template.exercises}</Text>
+                <MaterialIcons
+                  name="format-list-bulleted"
+                  size={16}
+                  color={theme.colors.accent.primary}
+                />
+                <Text className="text-sm font-medium text-text-secondary">
+                  {template.exercises}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-col gap-0.5">
+              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+                Sets
+              </Text>
+              <View className="flex-row items-center gap-1.5">
+                <MaterialIcons
+                  name="fitness-center"
+                  size={16}
+                  color={theme.colors.accent.primary}
+                />
+                <Text className="text-sm font-medium text-text-secondary">{template.sets}</Text>
               </View>
             </View>
           </View>
@@ -182,9 +211,49 @@ export function BrowseTemplatesModal({ visible, onClose, onTemplateSelect }: Bro
       scrollable={false}
     >
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-4 py-4 pb-28">
-          {filteredTemplates.map(renderTemplateCard)}
+        <View className="sticky top-0 z-50 bg-bg-primary/80 px-4 pb-4 pt-6 backdrop-blur-md">
+          {/* Search Bar */}
+          <View className="relative mb-5">
+            <MaterialIcons
+              name="search"
+              size={20}
+              color={theme.colors.text.secondary}
+              style={{ position: 'absolute', left: 16, top: 14 }}
+            />
+            <TextInput
+              className="w-full rounded-2xl border border-white/5 bg-bg-card py-3.5 pl-12 pr-4 text-sm text-text-primary"
+              style={{
+                color: theme.colors.text.primary,
+                borderColor: theme.colors.border.default,
+              }}
+              placeholder="Search expert programs..."
+              placeholderTextColor={theme.colors.text.secondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          {/* Category Filter Tabs */}
+          <FilterTabs
+            tabs={[
+              { id: 'All', label: 'All' },
+              { id: 'Beginner', label: 'Beginner' },
+              { id: 'Intermediate', label: 'Intermediate' },
+              { id: 'Advanced', label: 'Advanced' },
+              { id: 'Strength', label: 'Strength' },
+              { id: 'Hypertrophy', label: 'Hypertrophy' },
+              { id: 'Cardio', label: 'Cardio' },
+            ]}
+            activeTab={selectedCategory}
+            onTabChange={setSelectedCategory}
+            showContainer={false}
+            containerClassName=""
+            scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
+          />
         </View>
+
+        {/* Template List */}
+        <View className="px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
       </ScrollView>
     </FullScreenModal>
   );
