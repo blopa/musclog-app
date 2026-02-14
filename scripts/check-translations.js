@@ -8,7 +8,7 @@ const glob = require('glob');
 // Configuration
 const CONFIG = {
   localeFile: path.join(__dirname, '../lang/locales/en-us.json'),
-  scanPaths: ['../app/**/*.tsx', '../components/**/*.tsx'],
+  scanPaths: ['../app/**/*.tsx', '../components/**/*.tsx', '../**/*.ts'],
   patterns: [
     /t\(['"`]([^'"`]+)['"`]\)/g, // t('key')
     /t\(`([^`]+)`\)/g, // t(`key`)
