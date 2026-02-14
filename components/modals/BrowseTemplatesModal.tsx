@@ -241,7 +241,7 @@ export function BrowseTemplatesModal({
         </View>
 
         {/* Template List */}
-        <View className="px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
+        <View className="gap-2 px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
       </ScrollView>
     </FullScreenModal>
   );

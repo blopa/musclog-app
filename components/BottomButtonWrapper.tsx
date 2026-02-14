@@ -8,7 +8,7 @@ import { addOpacityToHex } from '../theme';
 
 type BottomButtonWrapperProps = {
   children: ReactNode;
-  effect: 'gradient' | 'blur';
+  effect?: 'gradient' | 'blur';
 };
 
 export function BottomButtonWrapper({ effect = 'gradient', children }: BottomButtonWrapperProps) {
