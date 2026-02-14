@@ -12,6 +12,7 @@ import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
 import { BasicSettingsModal } from '../../components/modals/BasicSettingsModal';
 import BodyMetricsHistoryModal from '../../components/modals/BodyMetricsHistoryModal';
+import { BrowseTemplatesModal } from '../../components/modals/BrowseTemplatesModal';
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { CoachModal } from '../../components/modals/CoachModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
@@ -174,6 +175,8 @@ export default function ModalsTestScreen() {
   const [isPortionSizesPickerVisible, setIsPortionSizesPickerVisible] = useState(false);
   // Create Food Portion Modal
   const [isCreateFoodPortionVisible, setIsCreateFoodPortionVisible] = useState(false);
+  // Browse Templates Modal
+  const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -864,6 +867,21 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Browse Templates Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Browse Templates Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              A full-screen modal for browsing and selecting workout templates with search and
+              category filtering.
+            </Text>
+            <Button
+              label="Open Browse Templates Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsBrowseTemplatesVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1287,6 +1305,14 @@ export default function ModalsTestScreen() {
         onClose={() => setIsCreateFoodPortionVisible(false)}
         onCreatePortion={(portion) => {
           console.log('Food portion created:', portion);
+        }}
+      />
+
+      <BrowseTemplatesModal
+        visible={isBrowseTemplatesVisible}
+        onClose={() => setIsBrowseTemplatesVisible(false)}
+        onTemplateSelect={(template) => {
+          console.log('Template selected:', template);
         }}
       />
     </SafeAreaView>
