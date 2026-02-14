@@ -327,25 +327,6 @@ export default function NutritionGoalsResults() {
                   >
                     {t(`nutritionGoals.results.goalLabels.${displayData.goalLabel}`)}
                   </Text>
-                  <View
-                    className="h-1.5 w-12 overflow-hidden rounded-full bg-white/30"
-                    style={{
-                      height: 6,
-                      width: 48,
-                      backgroundColor: `${theme.colors.text.white}4D`,
-                      borderRadius: theme.borderRadius.full,
-                    }}
-                  >
-                    <View
-                      className="h-full bg-white"
-                      style={{
-                        height: '100%',
-                        width: '66%',
-                        backgroundColor: theme.colors.text.white,
-                        borderRadius: theme.borderRadius.full,
-                      }}
-                    />
-                  </View>
                 </View>
               ) : null}
             </View>
