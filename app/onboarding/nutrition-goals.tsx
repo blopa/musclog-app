@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,8 @@ export default function NutritionGoalsScreen() {
   const { goal, isLoading } = useCurrentNutritionGoal();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
+  const params = useLocalSearchParams<{ isAdjusting?: string }>();
+  const isAdjusting = params.isAdjusting === 'true';
 
   // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
   // We prefer this over the DB goal in initialGoals when present.
@@ -87,6 +89,8 @@ export default function NutritionGoalsScreen() {
       });
 
       router.push({
+        // TODO: if user is coming from the 'nutrition-goals-results' because they wanted to adjust the goals,
+        // then we should instead navigate to the personal-info
         pathname: '/onboarding/nutrition-goals-results',
         params: { aiGenerated: 'false' },
       });
