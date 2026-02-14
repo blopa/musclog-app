@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -14,6 +15,7 @@ import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { database } from '../../database';
 import UserMetric from '../../database/models/UserMetric';
 import { UserService } from '../../database/services';
@@ -341,11 +343,18 @@ export default function SetGoals() {
 
       const plan = calculateNutritionPlan(input);
 
+      // Persist the AI-generated plan in AsyncStorage instead of passing large route params
+      try {
+        await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
+      } catch (e) {
+        console.warn('Failed to persist nutrition plan to AsyncStorage', e);
+      }
+
+      // Navigate to the results screen; results screen will read the plan from AsyncStorage
       router.push({
         pathname: '/onboarding/nutrition-goals-results',
         params: {
           aiGenerated: 'true',
-          plan: JSON.stringify(plan),
         },
       });
     } catch (error) {

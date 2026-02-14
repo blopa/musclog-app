@@ -1,8 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -11,6 +12,7 @@ import { GenericCard } from '../../components/cards/GenericCard';
 import { LineChart } from '../../components/LineChart';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
+import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import type { NutritionPlan } from '../../utils/nutritionCalculator';
@@ -21,13 +23,14 @@ export default function NutritionGoalsResults() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  // TODO: instead of passing the plan as param, let's store it into the AsyncStorage and read it here
   const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
   const [isSaving, setIsSaving] = useState(false);
+  const [storedPlan, setStoredPlan] = useState<NutritionPlan | null>(null);
 
   // Parse the plan from route params (AI-generated) or fall back to DB (manual)
-  const parsedPlan = useMemo<NutritionPlan | null>(() => {
+  // prefer AsyncStorage when aiGenerated; fall back to route param for backwards compatibility
+  const parsedPlanFromParams = useMemo<NutritionPlan | null>(() => {
     if (params.plan) {
       try {
         return JSON.parse(params.plan) as NutritionPlan;
@@ -37,6 +40,42 @@ export default function NutritionGoalsResults() {
     }
     return null;
   }, [params.plan]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPlan = async () => {
+      if (aiGenerated) {
+        try {
+          const raw = await AsyncStorage.getItem(TEMP_NUTRITION_PLAN);
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw) as NutritionPlan;
+              if (isMounted) setStoredPlan(parsed);
+              return;
+            } catch {
+              // ignore parse errors and fall back to params
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to read stored nutrition plan:', e);
+        }
+      }
+
+      // fallback to param-based plan
+      if (parsedPlanFromParams && isMounted) {
+        setStoredPlan(parsedPlanFromParams);
+      }
+    };
+
+    loadPlan();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [aiGenerated, parsedPlanFromParams]);
+
+  const parsedPlan = storedPlan;
 
   // For manual entry, load saved goal from DB
   const { goal: savedGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
@@ -136,6 +175,13 @@ export default function NutritionGoalsResults() {
           targetFFMI: 0,
           targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
         });
+
+        // clear the temporary plan storage to avoid stale data
+        try {
+          await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
+        } catch (e) {
+          console.warn('Failed to clear temp nutrition plan:', e);
+        }
       }
 
       router.push('/onboarding/personal-info');
@@ -460,7 +506,7 @@ export default function NutritionGoalsResults() {
                 className="text-center text-[11px] font-medium text-slate-500"
                 style={{
                   color: theme.colors.text.tertiary,
-                  fontSize: theme.typography.fontSize.xxs,
+                  fontSize: theme.typography.fontSize.xs,
                   fontWeight: theme.typography.fontWeight.medium,
                 }}
               >
@@ -606,6 +652,7 @@ export default function NutritionGoalsResults() {
               width="full"
               size="md"
               onPress={() => {
+                // await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
                 router.push('/onboarding/nutrition-goals');
               }}
             />

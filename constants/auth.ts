@@ -33,3 +33,6 @@ export const ONBOARDING_VERSION = 'onboardingVersion';
 export const CURRENT_ONBOARDING_VERSION = '1.0.0';
 // Persist the current onboarding step so we can return after external auth
 export const ONBOARDING_CURRENT_STEP = 'onboardingCurrentStep';
+
+// Temporary storage key used to pass an AI-generated nutrition plan between screens
+export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
