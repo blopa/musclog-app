@@ -10,7 +10,7 @@ import {
   Scale,
   TrendingUp,
 } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
@@ -307,6 +307,34 @@ export function NutritionGoalsBody({
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const isInitialMount = useRef(true);
 
+  // Dynamically compute sensible max values for macros depending on eating phase
+  const macroMax = useMemo(() => {
+    switch (eatingPhase) {
+      case 'cut':
+        return {
+          protein: 400,
+          carbs: 350,
+          fats: 150,
+          fiber: 80,
+        };
+      case 'bulk':
+        return {
+          protein: 800,
+          carbs: 1000,
+          fats: 600,
+          fiber: 200,
+        };
+      case 'maintain':
+      default:
+        return {
+          protein: 600,
+          carbs: 800,
+          fats: 600,
+          fiber: 200,
+        };
+    }
+  }, [eatingPhase]);
+
   // Call onFormChange whenever form data changes
   useEffect(() => {
     if (onFormChange) {
@@ -364,7 +392,7 @@ export function NutritionGoalsBody({
       return;
     }
     isInitialMount.current = false;
-    // Note: Fiber is often included in total carbs (4kcal/g) or sometimes calculated as 2kcal/g.
+    // Note: Fiber is often included in the total carbs (4kcal/g) or sometimes calculated as 2kcal/g.
     // Most food labels include fiber in the carb count.
     const calculatedCalories = protein * 4 + carbs * 4 + fats * 9 + fiber * 2;
     setTotalCalories(Math.round(calculatedCalories));
@@ -445,8 +473,7 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             min={0}
-            // TODO: change max depending on eatingPhase
-            max={600}
+            max={macroMax.protein}
             color={theme.colors.macros.protein.bg}
             onChange={setProtein}
           />
@@ -455,8 +482,7 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             min={0}
-            // TODO: change max depending on eatingPhase
-            max={800}
+            max={macroMax.carbs}
             color={theme.colors.macros.carbs.bg}
             onChange={setCarbs}
           />
@@ -465,8 +491,7 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             min={0}
-            // TODO: change max depending on eatingPhase
-            max={600}
+            max={macroMax.fats}
             color={theme.colors.macros.fat.bg}
             onChange={setFats}
           />
@@ -475,8 +500,7 @@ export function NutritionGoalsBody({
             kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             min={0}
-            // TODO: change max depending on eatingPhase
-            max={200}
+            max={macroMax.fiber}
             color={theme.colors.macros.fiber.bg}
             onChange={setFiber}
           />
