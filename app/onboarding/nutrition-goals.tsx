@@ -23,12 +23,9 @@ export default function NutritionGoalsScreen() {
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
 
-  // When there is no goal from DB, try to load TEMP_NUTRITION_PLAN as initial data
+  // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
+  // We prefer this over the DB goal in initialGoals when present.
   useEffect(() => {
-    if (goal) {
-      setStoredPlanGoals(null);
-      return;
-    }
     let isMounted = true;
     (async () => {
       try {
@@ -45,10 +42,15 @@ export default function NutritionGoalsScreen() {
     return () => {
       isMounted = false;
     };
-  }, [goal]);
+  }, []);
 
-  // Map goal data or stored plan to initialGoals format
+  // Map goal data or stored plan to initialGoals format.
+  // Prefer stored plan (e.g. from "Adjust Goals Manually") over DB goal so the user sees the plan they just viewed.
   const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
+    if (storedPlanGoals) {
+      return storedPlanGoals;
+    }
+
     if (goal) {
       return {
         totalCalories: goal.totalCalories,
@@ -64,7 +66,8 @@ export default function NutritionGoalsScreen() {
         targetDate: goal.targetDate ?? null,
       };
     }
-    return storedPlanGoals ?? undefined;
+
+    return undefined;
   }, [goal, storedPlanGoals]);
 
   const handleSave = async (goals: NutritionGoals) => {

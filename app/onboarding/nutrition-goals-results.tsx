@@ -278,13 +278,7 @@ export default function NutritionGoalsResults() {
           targetFFMI,
           targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
         });
-
-        // clear the temporary plan storage to avoid stale data
-        try {
-          await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
-        } catch (e) {
-          console.warn('Failed to clear temp nutrition plan:', e);
-        }
+        // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
       router.push('/onboarding/personal-info');
