@@ -1,3 +1,4 @@
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, View } from 'react-native';
@@ -10,36 +11,46 @@ type BottomButtonWrapperProps = {
   effect: 'gradient' | 'blur';
 };
 
-export function BottomButtonWrapper({ effect = 'gradient', children }: BottomButtonWrapperProps) {
+export function BottomButtonWrapper({ effect = 'blur', children }: BottomButtonWrapperProps) {
   const theme = useTheme();
-  return (
+
+  const renderContent = () => (
     <View
-      className="absolute bottom-0 left-0 right-0"
+      className="px-6 pb-6 pt-6"
       style={{
-        paddingBottom: theme.spacing.padding.zero,
-        paddingHorizontal: theme.spacing.padding.zero,
-        backgroundColor: 'transparent',
+        paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : 0,
       }}
     >
-      <LinearGradient
-        colors={[
-          theme.colors.background.primary,
-          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.full),
-          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.full),
-          addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.subtle),
-        ]}
-        start={{ x: 0.5, y: 1 }}
-        end={{ x: 0.5, y: 0 }}
-      >
-        <View
-          className="px-6 pb-6 pt-6"
-          style={{
-            paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : 0,
-          }}
+      {children}
+    </View>
+  );
+
+  const wrapperStyle = {
+    paddingBottom: theme.spacing.padding.zero,
+    paddingHorizontal: theme.spacing.padding.zero,
+    backgroundColor: 'transparent',
+  };
+
+  return (
+    <View className="absolute bottom-0 left-0 right-0" style={wrapperStyle}>
+      {effect === 'blur' ? (
+        <BlurView intensity={10} tint="dark" className="w-full">
+          {renderContent()}
+        </BlurView>
+      ) : (
+        <LinearGradient
+          colors={[
+            theme.colors.background.primary,
+            addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.full),
+            addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.full),
+            addOpacityToHex(theme.colors.background.primary, theme.colors.opacity.subtle),
+          ]}
+          start={{ x: 0.5, y: 1 }}
+          end={{ x: 0.5, y: 0 }}
         >
-          {children}
-        </View>
-      </LinearGradient>
+          {renderContent()}
+        </LinearGradient>
+      )}
     </View>
   );
 }
