@@ -22,6 +22,8 @@ export default function NutritionGoalsScreen() {
   // Map goal data to initialGoals format when goal changes
   const initialGoals = useMemo<Partial<NutritionGoals> | undefined>(() => {
     if (!goal) {
+      // TODO: load the TEMP_NUTRITION_PLAN and parse it and use it as initial data
+      // if nothing on TEMP_NUTRITION_PLAN, then return undefined
       return undefined;
     }
 

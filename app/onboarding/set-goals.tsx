@@ -493,6 +493,7 @@ export default function SetGoals() {
           width="full"
           size="sm"
           onPress={() => {
+            // TODO: if this is picked, we should still calculate and save it to the async storage
             router.push('/onboarding/nutrition-goals');
           }}
         />
