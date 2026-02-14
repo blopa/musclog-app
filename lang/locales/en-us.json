@@ -493,6 +493,11 @@
       "createFromEmptyTemplateSubtitle": "Design your own routine from scratch, exercise by exercise.",
       "browseTemplates": "Browse Templates",
       "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Create Workout",
+      "title": "How do you want to build your routine?",
+      "subtitle": "Select how you want to build your routine today."
     }
   },
   "createWorkout": {

@@ -4,7 +4,6 @@ import { Platform, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { NewWorkoutCard } from '../cards/NewWorkoutCard';
-import { GradientText } from '../GradientText';
 import { FullScreenModal } from './FullScreenModal';
 
 type CreateWorkoutOptionsModalProps = {
@@ -84,7 +83,7 @@ export function CreateWorkoutOptionsModal({
             opacity: theme.colors.opacity.strong,
           }}
         >
-          New Session
+          {t('workouts.createWorkoutOptionsModal.header')}
         </Text>
         <View style={{ width: theme.size['10'] }} />
       </View>
@@ -107,19 +106,8 @@ export function CreateWorkoutOptionsModal({
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
             }}
           >
-            {"Let's crush a"}
+            {t('workouts.createWorkoutOptionsModal.title')}
           </Text>
-          <GradientText
-            colors={theme.colors.gradients.cta}
-            style={{
-              fontSize: theme.typography.fontSize['3xl'],
-              fontWeight: theme.typography.fontWeight.extrabold,
-              lineHeight: theme.typography.fontSize['3xl'] * 1.2,
-              marginBottom: theme.spacing.padding.xs,
-            }}
-          >
-            new workout.
-          </GradientText>
           <Text
             style={{
               fontSize: theme.typography.fontSize.sm,
@@ -128,7 +116,7 @@ export function CreateWorkoutOptionsModal({
               marginTop: theme.spacing.padding.xs,
             }}
           >
-            Select how you want to build your routine today.
+            {t('workouts.createWorkoutOptionsModal.subtitle')}
           </Text>
         </View>
 

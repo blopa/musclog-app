@@ -256,9 +256,7 @@ export default function HomeScreen() {
           <ActionButton
             variant="workout"
             label={t('home.actions.startWorkout')}
-            onPress={() => {
-              // TODO: Implement start workout
-            }}
+            onPress={() => router.push('/workout/workouts')}
           />
           <ActionButton
             variant="food"
@@ -376,9 +374,7 @@ export default function HomeScreen() {
           ) : recentWorkouts.length === 0 ? (
             <WorkoutFoodEmptyState
               type="workout"
-              onButtonPress={() => {
-                // TODO: Implement start workout
-              }}
+              onButtonPress={() => router.push('/workout/workouts')}
             />
           ) : (
             <View className="gap-3">
