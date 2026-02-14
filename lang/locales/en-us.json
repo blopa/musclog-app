@@ -15,7 +15,17 @@
     "loading": "Loading...",
     "saving": "Saving...",
     "save": "Save",
-    "edit": "Edit"
+    "edit": "Edit",
+    "change": "Change",
+    "confirm": "Confirm",
+    "decreaseValue": "Decrease Value",
+    "delete": "Delete",
+    "error": "Error",
+    "goHome": "Go Home",
+    "increaseValue": "Increase Value",
+    "noBarcode": "No Barcode",
+    "ok": "Ok",
+    "permissionRequired": "Permission Required"
   },
   "emptyState": {
     "workout": {
@@ -50,7 +60,8 @@
   },
   "food": {
     "header": {
-      "today": "Today"
+      "today": "Today",
+      "yesterday": "Yesterday"
     },
     "caloriesRemaining": "Calories Remaining",
     "macros": {
@@ -67,7 +78,18 @@
       "scanBarcode": "Scan Barcode",
       "track": "Track",
       "aiCamera": "AI Camera",
-      "moreFoodOptions": "More Food Options"
+      "moreFoodOptions": "More Food Options",
+      "delete": "Delete",
+      "deleteConfirmMessage": "Are you sure you want to remove {{foodName}} from this meal?",
+      "deleteConfirmTitle": "Delete food?",
+      "deleteDesc": "Remove this food from the meal",
+      "deleteError": "Failed to delete food",
+      "deleteSuccess": "Food removed successfully",
+      "duplicate": "Duplicate",
+      "duplicateDesc": "Create a copy to add to another meal",
+      "edit": "Edit",
+      "editDesc": "Modify serving size and nutrition",
+      "goToToday": "Go To Today"
     },
     "meals": {
       "breakfast": "Breakfast",
@@ -119,7 +141,8 @@
       "saturatedFat": "Saturated Fat",
       "salt": "Salt",
       "successMessage": "Food tracked successfully!",
-      "errorMessage": "Failed to track food. Please try again."
+      "errorMessage": "Failed to track food. Please try again.",
+      "updateFood": "Update Food"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",
@@ -153,7 +176,13 @@
         "mealPhoto": "AI Meal",
         "labelScan": "AI Label",
         "barcodeScan": "Barcode"
-      }
+      },
+      "closeScanner": "Close Scanner",
+      "galleryError": "Could not load image from gallery",
+      "galleryPermissionRequired": "Gallery access required to upload photos",
+      "noBarcodeDetected": "No barcode detected",
+      "noBarcodeFound": "No barcode found",
+      "uploadFromGallery": "Choose from gallery"
     },
     "aiNutritionContext": {
       "title": "Add Context for AI",
@@ -190,7 +219,15 @@
       "sugar": "Sugar",
       "alcohol": "Alcohol",
       "monounsatFat": "Monounsat. Fat",
-      "polyunsatFat": "Polyunsat. Fat"
+      "polyunsatFat": "Polyunsat. Fat",
+      "addToFavorites": "Add To Favorites",
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. Kellogg's",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "Paste image URL"
+    },
+    "errors": {
+      "refreshFailed": "Refresh Failed"
     }
   },
   "notifications": {
@@ -242,7 +279,12 @@
     "inProgress": "In Progress",
     "exercises": "{{count}} Exercises",
     "workoutSequence": "Workout Sequence",
-    "skipped": "SKIPPED"
+    "skipped": "SKIPPED",
+    "summary": {
+      "failedToLoad": "Failed to load",
+      "noWorkoutId": "No workout ID",
+      "unableToLoad": "Unable to load"
+    }
   },
   "workoutSession": {
     "totalTime": "TOTAL TIME",
@@ -264,7 +306,8 @@
     },
     "notFoundTitle": "Workout not found",
     "notFoundDescription": "Unable to load workout session. Please try again.",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "bodyweight": "Bodyweight"
   },
   "logSetPerformance": {
     "title": "Log Set Performance",
@@ -280,7 +323,8 @@
     "subtitle": "Modify targets for {{setLabel}}",
     "partialReps": "PARTIAL REPS",
     "cancel": "CANCEL",
-    "saveChanges": "SAVE CHANGES"
+    "saveChanges": "SAVE CHANGES",
+    "repsInReserve": "Reps in Reserve"
   },
   "workoutHistory": {
     "title": "Session History",
@@ -471,7 +515,16 @@
     "repeatOnDays": "Repeat on days",
     "weekly": "Weekly",
     "exercises": "Exercises",
-    "exercisesInWorkout": "Exercises in the workout"
+    "exercisesInWorkout": "Exercises in the workout",
+    "addExerciseError": "Failed to Add Exercise",
+    "editTitle": "Edit Title",
+    "loadError": "Failed to Load",
+    "noExercisesPlaceholder": "No Exercises",
+    "saveError": "Failed to Save",
+    "validation": {
+      "titleRequired": "Title is required",
+      "titleRequiredMessage": "Please enter a workout title"
+    }
   },
   "workoutDetails": {
     "subtitle": "Manage this workout",
@@ -515,7 +568,8 @@
       "allResults": "All Results",
       "openFoodFacts": "Open Food Facts",
       "meals": "Meals",
-      "recipes": "Recipes"
+      "recipes": "Recipes",
+      "favorites": "Favorites"
     },
     "searching": "SEARCHING...",
     "bestMatches": "BEST MATCHES",
@@ -528,7 +582,10 @@
     "loadMoreAPI": "Load more from Open Food Facts",
     "noResultsFor": "No results found for \"{{query}}\"",
     "trySomethingElse": "Try searching for something else or create a custom food",
-    "noRecentFoods": "No recent foods found. Start searching or add custom foods!"
+    "noRecentFoods": "No recent foods found. Start searching or add custom foods!",
+    "createFood": "Create Food",
+    "noFavoriteFoods": "No Favorite Foods",
+    "yourFavoriteFoods": "Your Favorite Foods"
   },
   "endWorkout": {
     "title": "End Workout",
@@ -699,7 +756,8 @@
       "chest": "Chest",
       "shoulders": "Shoulders",
       "triceps": "Triceps"
-    }
+    },
+    "selectExercise": "Select Exercise"
   },
   "workoutSummary": {
     "totalTime": "Total Time",
@@ -778,7 +836,8 @@
         "leanBulk": "Lean Bulk Strategy",
         "strengthSurplus": "Strength Surplus Strategy"
       }
-    }
+    },
+    "errorSaving": "Error Saving"
   },
   "goalsManagement": {
     "title": "Goals Management",
@@ -823,16 +882,20 @@
     "fitnessInfo": {
       "title": "Set Fitness Details",
       "maybeLater": "Maybe later",
-      "save": "Save"
+      "save": "Save",
+      "errorSaving": "Error Saving"
     },
     "personalInfo": {
-      "title": "Set Personal Information"
+      "title": "Set Personal Information",
+      "errorSaving": "Error Saving",
+      "finish": "Finish"
     },
     "connectGoogle": {
       "title": "Connect Your Google Account",
       "welcome": "Welcome, {{name}}",
       "welcomeDescription": "You're connected — personalize your experience before continuing.",
-      "continue": "Continue"
+      "continue": "Continue",
+      "error": "Error"
     },
     "healthConnect": {
       "connectYour": "Connect Your",
@@ -850,7 +913,8 @@
       "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
       "initializing": "Initializing Health Connect...",
       "syncing": "Syncing health data...",
-      "processing": "Processing..."
+      "processing": "Processing...",
+      "continue": "Continue"
     },
     "landing": {
       "getStarted": "Get Started",
@@ -929,7 +993,12 @@
       "selectModel": "Select a model",
       "apiKeyHelp": "Need help finding your API keys?",
       "setupGuide": "Read the setup guide",
-      "version": "Musclog AI {{version}}"
+      "version": "Musclog AI {{version}}",
+      "selectGeminiModel": "Select Gemini Model",
+      "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
+      "selectOpenAiModel": "Select OpenAI model",
+      "selectOpenAiModelSubtitle": "Select the model to be used by all AI features",
+      "subtitle": "Settings for all the AI used on this app"
     },
     "notifications": "Notifications",
     "aboutMusclog": "About Musclog",
@@ -1106,7 +1175,65 @@
         "3": "Good",
         "4": "Great"
       },
-      "saveEntry": "Save Entry"
+      "saveEntry": "Save Entry",
+      "errorSaving": "Error Saving"
     }
-  }
+  },
+  "access_token": "Access token",
+  "addMeal": {
+    "createMeal": "Create Meal",
+    "createMealDesc": "Add a new meal to your daily log",
+    "generateMealAI": "Generate Meal with AI",
+    "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
+    "manageCategories": "Manage Categories",
+    "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
+    "title": "Add Meal"
+  },
+  "camera": {
+    "title": "Title"
+  },
+  "dailySummaryCard": {
+    "carbs": "Carbs",
+    "dailySummary": "Daily Summary",
+    "fats": "Fats",
+    "kcal": "Kcal",
+    "over": "Over",
+    "protein": "Protein",
+    "remaining": "Remaining",
+    "setGoals": "Set Goals",
+    "setGoalsToTrack": "Set Goals To Track",
+    "today": "Today"
+  },
+  "datePicker": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "month": "Month",
+    "nextMonday": "Next Monday",
+    "selectDate": "Select Date",
+    "selectMonthYear": "Select Month Year",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "year": "Year"
+  },
+  "error_description": "Error description",
+  "expires_in": "Expires in",
+  "nutrition": {
+    "createCustom": "Create Custom",
+    "createCustomDesc": "Manually add nutrition details",
+    "foodNotFound": "Food Not Found",
+    "searchAgain": "Search Again",
+    "searchAgainDesc": "Try a different search term",
+    "tryAICamera": "Try AI Camera",
+    "tryAICameraDesc": "Scan your meal for instant identification"
+  },
+  "portionSizes": {
+    "addNew": "Add New",
+    "noResults": "No Results",
+    "searchPlaceholder": "Search portions...",
+    "selectTitle": "Select portion size"
+  },
+  "token_type": "Token type",
+  "workout_log_sets": "Workout log sets",
+  "workout_logs": "Workout logs",
+  "your_google_auth_expired_reauth": "Your google auth expired reauth"
 }
