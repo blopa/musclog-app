@@ -144,7 +144,7 @@ export default function FoodScreen() {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
     const consumedCalories = Math.ceil(dailyNutrients?.calories || 0);
     const remainingCalories = Math.max(0, totalCalories - consumedCalories);
-    const percentage = Math.round((consumedCalories / totalCalories) * 100);
+    const percentage = Math.round((remainingCalories / totalCalories) * 100);
 
     return {
       remaining: Math.ceil(remainingCalories),
