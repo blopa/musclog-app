@@ -1,4 +1,3 @@
-import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, WifiOff } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
@@ -24,11 +23,9 @@ import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
-import { database } from '../../database';
-import Exercise from '../../database/models/Exercise';
-import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
+import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
+import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
@@ -61,13 +58,18 @@ export default function WorkoutsScreen() {
     templateId: string;
     title: string;
   } | null>(null);
-  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
-  const [previewTemplate, setPreviewTemplate] = useState<WorkoutTemplate | null>(null);
-  const [previewTemplateSets, setPreviewTemplateSets] = useState<WorkoutTemplateSet[]>([]);
-  const [previewExercises, setPreviewExercises] = useState<Exercise[]>([]);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
+  const isPreviewModalVisible = previewTemplateId !== null;
 
   const { showSnackbar } = useSnackbar();
+
+  // Reactively fetch template details when previewTemplateId is set
+  const {
+    template: previewTemplate,
+    templateSets: previewTemplateSets,
+    exercises: previewExercises,
+    isLoading: isLoadingPreview,
+  } = useWorkoutTemplateDetails(previewTemplateId);
 
   // Use reactive hook for workout templates
   const { templates, isLoading, error } = useWorkoutTemplates();
@@ -129,50 +131,36 @@ export default function WorkoutsScreen() {
     }
   }, []);
 
-  // Helper function to open preview modal
-  const handlePreviewWorkout = useCallback(async (templateId: string) => {
-    setIsLoadingPreview(true);
-    setIsMenuVisible(false);
-    try {
-      // Fetch template details
-      const { template, sets: templateSets } =
-        await WorkoutTemplateService.getTemplateWithDetails(templateId);
+  // Helper function to open preview modal (now synchronous!)
+  const handlePreviewWorkout = useCallback(
+    (templateId: string) => {
+      // Verify template exists in already loaded templates
+      const templateMetadata = templates.find((t) => t.id === templateId);
+      if (!templateMetadata) {
+        showSnackbar('error', t('common.error'));
+        return;
+      }
 
-      // Get unique exercise IDs from template sets
-      const exerciseIds = [
-        ...new Set(templateSets.map((set) => set.exerciseId).filter((id) => id !== undefined)),
-      ];
-
-      // Fetch exercises
-      const exercises = await database
-        .get<Exercise>('exercises')
-        .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      setPreviewTemplate(template);
-      setPreviewTemplateSets(templateSets);
-      setPreviewExercises(exercises);
-      setIsPreviewModalVisible(true);
-    } catch (err) {
-      console.error('Error loading workout preview:', err);
-      showSnackbar('error', t('common.error'));
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  }, [showSnackbar, t]);
+      setIsMenuVisible(false);
+      setPreviewTemplateId(templateId);
+    },
+    [templates, showSnackbar, t]
+  );
 
   // Helper function to start workout from preview
   const handleStartWorkoutFromPreview = useCallback(async () => {
-    if (!previewTemplate) return;
+    if (!previewTemplateId) {
+      return;
+    }
 
-    setIsPreviewModalVisible(false);
+    setPreviewTemplateId(null);
     try {
-      await handleStartWorkout(previewTemplate.id);
+      await handleStartWorkout(previewTemplateId);
     } catch (err) {
       console.error('Error starting workout from preview:', err);
       showSnackbar('error', t('common.error'));
     }
-  }, [handleStartWorkout, previewTemplate, showSnackbar, t]);
+  }, [previewTemplateId, handleStartWorkout, showSnackbar, t]);
 
   return (
     <MasterLayout>
@@ -540,14 +528,11 @@ export default function WorkoutsScreen() {
       ) : null}
 
       {/* Workout Preview Modal */}
-      {isPreviewModalVisible && previewTemplate ? (
+      {isPreviewModalVisible && previewTemplate && !isLoadingPreview ? (
         <WorkoutSessionHistoryModal
           visible={isPreviewModalVisible}
           onClose={() => {
-            setIsPreviewModalVisible(false);
-            setPreviewTemplate(null);
-            setPreviewTemplateSets([]);
-            setPreviewExercises([]);
+            setPreviewTemplateId(null);
           }}
           isPreview={true}
           workoutTemplate={previewTemplate}
