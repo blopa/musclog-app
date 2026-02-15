@@ -486,7 +486,7 @@
         "core": "Core"
       }
     },
-    "createTemplate": "Create from Empty Template",
+    "createTemplate": "Create New Workout",
     "createWorkoutOptions": {
       "generateWithAi": "Generate with AI",
       "generateWithAiSubtitle": "Let Musclog build a personalized routine based on your goals and equipment.",

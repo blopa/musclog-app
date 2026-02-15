@@ -296,7 +296,7 @@ export default function WorkoutsScreen() {
                 <DashedButton
                   label={t('workouts.createTemplate')}
                   onPress={() => {
-                    setIsCreateWorkoutModalVisible(true);
+                    setIsCreateOptionsVisible(true);
                   }}
                   size="lg"
                   icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
