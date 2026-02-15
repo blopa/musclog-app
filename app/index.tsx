@@ -531,10 +531,7 @@ export default function HomeScreen() {
 
       {/* My Meals Modal */}
       {isMyMealsVisible ? (
-        <MyMealsModal
-          visible={isMyMealsVisible}
-          onClose={() => setIsMyMealsVisible(false)}
-        />
+        <MyMealsModal visible={isMyMealsVisible} onClose={() => setIsMyMealsVisible(false)} />
       ) : null}
 
       {/* Create Custom Food Modal */}

@@ -1,5 +1,5 @@
 import { Apple, Check, Coffee, Moon, Utensils } from 'lucide-react-native';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
@@ -27,6 +27,7 @@ type LogMealModalProps = {
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
+// TODO: use colors from theme
 const mealTypeOptions: SelectorOption<MealType>[] = [
   {
     id: 'breakfast',
@@ -68,15 +69,23 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
+  const [isLogging, setIsLogging] = useState(false);
 
-  const formatDate = (date: Date) => {
+  const formatDate = useCallback((date: Date) => {
     return date.toISOString().split('T')[0];
-  };
+  }, []);
 
-  const handleLogMeal = () => {
-    onLogMeal(selectedDate, selectedMealType);
-    onClose();
-  };
+  const handleLogMeal = useCallback(async () => {
+    setIsLogging(true);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    try {
+      onLogMeal(selectedDate, selectedMealType);
+      onClose();
+    } finally {
+      setIsLogging(false);
+    }
+  }, [onClose, onLogMeal, selectedDate, selectedMealType]);
 
   const footer = (
     <Button
@@ -86,10 +95,8 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
       width="full"
       icon={Check}
       onPress={handleLogMeal}
-      // TODO: while we're handleling the request from handleLogMeal
-      // we should set the loading to true, so the button is disabled too
-      loading={false}
-      disabled={false}
+      loading={isLogging}
+      disabled={isLogging}
     />
   );
 
