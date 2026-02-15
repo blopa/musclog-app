@@ -12,6 +12,8 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { type MealType } from '../../database/models';
 import {
   Alert,
   Animated,
@@ -180,7 +182,7 @@ export default function SmartCameraModal({
     console.log('Track custom meal');
   }, []);
 
-  const handleMealTypeSelect = useCallback((mealType: string) => {
+  const handleMealTypeSelect = useCallback((mealType: MealType) => {
     // TODO: do something with this
     console.log('Selected meal type:', mealType);
   }, []);

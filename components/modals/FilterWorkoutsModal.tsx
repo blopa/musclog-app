@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { type MuscleGroup } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
@@ -12,7 +13,13 @@ import { FullScreenModal } from './FullScreenModal';
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
 
 // UI-specific muscle group type for filtering (aggregated categories)
-type TargetMuscle = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
+// Combines database MuscleGroup values with UI aggregations ('legs', 'arms', 'core', 'full-body')
+type TargetMuscle =
+  | MuscleGroup
+  | 'full-body' // UI variant of 'full_body'
+  | 'legs' // UI aggregate: quads, hamstrings, glutes, calves
+  | 'arms' // UI aggregate: biceps, triceps, forearms
+  | 'core'; // UI aggregate: abs
 
 type FilterWorkoutsModalProps = {
   visible: boolean;

@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { type MuscleGroup } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
@@ -13,7 +14,13 @@ import { Slider } from '../theme/Slider';
 type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
 type DateRange = '30' | '90' | 'custom';
 // UI-specific muscle group type for filtering (aggregated categories)
-type MuscleGroup = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
+// Combines database MuscleGroup values with UI aggregations ('legs', 'arms', 'core', 'full-body')
+type FilterMuscleGroup =
+  | MuscleGroup
+  | 'full-body' // UI variant of 'full_body'
+  | 'legs' // UI aggregate: quads, hamstrings, glutes, calves
+  | 'arms' // UI aggregate: biceps, triceps, forearms
+  | 'core'; // UI aggregate: abs
 
 type PastWorkoutsHistoryFilterMenuProps = {
   visible: boolean;
@@ -21,14 +28,14 @@ type PastWorkoutsHistoryFilterMenuProps = {
   onApplyFilters?: (filters: {
     workoutType?: WorkoutType;
     dateRange?: DateRange;
-    muscleGroups: MuscleGroup[];
+    muscleGroups: FilterMuscleGroup[];
     minDuration: number;
   }) => void;
   onClearFilters?: () => void;
   initialFilters?: {
     workoutType?: WorkoutType;
     dateRange?: DateRange;
-    muscleGroups?: MuscleGroup[];
+    muscleGroups?: FilterMuscleGroup[];
     minDuration?: number;
   };
 };
@@ -49,7 +56,7 @@ export function PastWorkoutsHistoryFilterMenu({
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange>(
     initialFilters?.dateRange || '30'
   );
-  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>(
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<FilterMuscleGroup[]>(
     initialFilters?.muscleGroups || []
   );
   const [minDuration, setMinDuration] = useState(initialFilters?.minDuration || 0);
@@ -116,7 +123,7 @@ export function PastWorkoutsHistoryFilterMenu({
     [t]
   );
 
-  const toggleMuscleGroup = (muscleGroup: MuscleGroup) => {
+  const toggleMuscleGroup = (muscleGroup: FilterMuscleGroup) => {
     setSelectedMuscleGroups((prev) => {
       if (prev.includes(muscleGroup)) {
         return prev.filter((m) => m !== muscleGroup);
@@ -279,11 +286,11 @@ export function PastWorkoutsHistoryFilterMenu({
             }}
           >
             {muscleGroups.map((muscle) => {
-              const isSelected = selectedMuscleGroups.includes(muscle.id as MuscleGroup);
+              const isSelected = selectedMuscleGroups.includes(muscle.id as FilterMuscleGroup);
               return (
                 <Pressable
                   key={muscle.id}
-                  onPress={() => toggleMuscleGroup(muscle.id as MuscleGroup)}
+                  onPress={() => toggleMuscleGroup(muscle.id as FilterMuscleGroup)}
                   className="flex-row items-center gap-2 rounded-full border px-4 py-2 active:scale-95"
                   style={{
                     backgroundColor: isSelected

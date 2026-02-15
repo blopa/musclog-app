@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { type MuscleGroup } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutHistory } from '../../hooks/useWorkoutHistory';
 import { type WorkoutHistoryItem, WorkoutHistorySection } from '../../utils/workoutHistory';
@@ -13,6 +14,14 @@ import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { PastWorkoutsHistoryFilterMenu } from './PastWorkoutsHistoryFilterMenu';
+
+// UI filter muscle group type (includes database types + UI aggregations)
+type FilterMuscleGroup =
+  | MuscleGroup
+  | 'full-body' // UI variant of 'full_body'
+  | 'legs' // UI aggregate: quads, hamstrings, glutes, calves
+  | 'arms' // UI aggregate: biceps, triceps, forearms
+  | 'core'; // UI aggregate: abs
 
 type WorkoutHistoryModalProps = {
   visible: boolean;
@@ -417,9 +426,7 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         initialFilters={{
           workoutType: filters.workoutType,
           dateRange: filters.dateRange,
-          muscleGroups: filters.muscleGroups as Array<
-            'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full-body'
-          >,
+          muscleGroups: filters.muscleGroups as FilterMuscleGroup[],
           minDuration: filters.minDuration,
         }}
         onApplyFilters={handleApplyFilters}
