@@ -10,18 +10,22 @@ import { WorkoutAnalytics, WorkoutService } from '../database/services';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
 
-export type WorkoutSet = {
+/**
+ * Set data for workout detail display.
+ * Extends WorkoutLogSet model fields with UI-specific formatting and display properties.
+ */
+export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
   setNumber: number;
-  weight: string;
-  reps: number;
-  partial: string;
-  repsInReserve: number;
+  weight: string; // Formatted weight string
+  partial: string; // Formatted difficulty level
   isHighlighted: boolean;
 };
 
-export type WorkoutExercise = {
-  id: string;
-  name: string;
+/**
+ * Exercise data for workout detail display.
+ * Extends Exercise model fields with UI-specific properties.
+ */
+export type WorkoutExercise = Pick<Exercise, 'id' | 'name'> & {
   timeSpent: number;
   iconColor: string;
   iconBgColor: string;

@@ -5,12 +5,16 @@ import { createElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import Exercise from '../../database/models/Exercise';
+import WorkoutLog from '../../database/models/WorkoutLog';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { WorkoutService } from '../../database/services/WorkoutService';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../LineChart';
 import { MenuButton } from '../theme/MenuButton';
@@ -18,27 +22,6 @@ import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
 import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
-
-// Types
-type WorkoutSet = {
-  setNumber: number;
-  weight: string;
-  reps: number;
-  partial: string;
-  repsInReserve: number;
-  isHighlighted: boolean;
-};
-
-// UI-specific exercise type for workout history display
-type WorkoutExercise = {
-  id: string;
-  name: string;
-  timeSpent: number;
-  iconColor: string;
-  iconBgColor: string;
-  icon: any;
-  sets: WorkoutSet[];
-};
 
 // Component: Workout Summary Card
 type WorkoutSummaryCardProps = {
@@ -399,9 +382,9 @@ export default function PastWorkoutDetailModal({
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
-    workoutLog: any;
-    sets: any[];
-    exercises: any[];
+    workoutLog: WorkoutLog;
+    sets: WorkoutLogSet[];
+    exercises: Exercise[];
   } | null>(null);
 
   const formatDate = (date: Date) => {
@@ -503,7 +486,7 @@ export default function PastWorkoutDetailModal({
             // Determine original setOrder slots for this exercise
             const originalSets = (rawSets || [])
               .filter((rs) => rs.exerciseId === editingExerciseId)
-              .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
+              .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
             // Track which sets were deleted
             const deletedSetIds = originalSets
@@ -538,7 +521,7 @@ export default function PastWorkoutDetailModal({
           exerciseId={editingExerciseId}
           initialSets={(rawSets || [])
             .filter((s) => s.exerciseId === editingExerciseId)
-            .sort((a: any, b: any) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
+            .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
             .map((s) => ({
               id: s.id,
               weight: s.weight,

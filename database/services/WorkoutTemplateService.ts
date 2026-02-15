@@ -18,19 +18,22 @@ import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateReposi
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 
-export type ExerciseInWorkout = {
-  id: string; // exerciseId
-  label: string;
-  description: string;
+/**
+ * Exercise data for workout template creation/editing.
+ * Combines Exercise model fields with WorkoutTemplateSet data and UI-specific properties.
+ */
+export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
+  label: string; // UI label (derived from exercise name)
+  description: string; // UI description (formatted sets/reps)
   icon: any;
   iconBgColor: string;
   iconColor: string;
   groupId?: string; // UI-only for grouping
-  sets: number;
-  reps: number;
-  weight: number;
-  isBodyweight: boolean;
-  restTimeAfter?: number; // Rest time in seconds after completing this set
+  sets: number; // From WorkoutTemplateSet aggregation
+  reps: number; // From WorkoutTemplateSet
+  weight: number; // From WorkoutTemplateSet
+  isBodyweight: boolean; // Derived from Exercise.equipmentType
+  restTimeAfter?: number; // From WorkoutTemplateSet
 };
 
 export interface SaveTemplateData {

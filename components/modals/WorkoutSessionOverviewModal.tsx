@@ -11,6 +11,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
+import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useTheme } from '../../hooks/useTheme';
@@ -36,7 +37,7 @@ function WorkoutInfo({
   exerciseCount,
   isLoading,
 }: {
-  workoutLog: any;
+  workoutLog: WorkoutLog | null;
   exerciseCount: number;
   isLoading: boolean;
 }) {

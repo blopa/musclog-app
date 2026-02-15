@@ -3,9 +3,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Switch, Text, View } from 'react-native';
 
+import { type EquipmentType, type MechanicType, type MuscleGroup } from '../../database/models';
 import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { type AddExerciseData } from '../../hooks/useWorkoutForm';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
@@ -14,11 +16,6 @@ import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
-import {
-  type EquipmentType,
-  type MechanicType,
-  type MuscleGroup,
-} from '../../database/models';
 
 // UI-specific muscle group filter type (subset of MuscleGroup + 'all')
 type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
@@ -33,7 +30,7 @@ type ExerciseOption = SelectorOption<ExerciseId> & {
 type AddExerciseModalProps = {
   visible: boolean;
   onClose: () => void;
-  onAddExercise?: (data: any) => void;
+  onAddExercise?: (data: AddExerciseData) => void;
 };
 
 // Helper function to normalize muscle group names from database to UI categories
