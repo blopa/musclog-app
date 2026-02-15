@@ -11,6 +11,9 @@ import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { MenuButton } from '../../components/theme/MenuButton';
 import { theme } from '../../theme';
 
+// TODO: remove this hardcodded data
+// and seed meals in the dev.ts file
+// remember that meals are created with the pivot table for foods
 const MEALS_DATA = [
   {
     id: '1',

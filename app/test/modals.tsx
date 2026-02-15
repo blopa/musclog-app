@@ -432,7 +432,7 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Add Food Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Modal for adding food to a meal with various options.
+              Modal for adding food to a nutrition data with various options.
             </Text>
             <Button
               label="Open Add Food Modal"
