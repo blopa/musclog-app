@@ -523,8 +523,8 @@ export class WorkoutTemplateService {
     // We then adjust based on experience and age
     const suggestedWeight = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
-    // Round to 1 decimal place
-    return Math.round(suggestedWeight * 10) / 10;
+    // Round to nearest integer (no decimals)
+    return Math.round(suggestedWeight);
   }
 
   /**
