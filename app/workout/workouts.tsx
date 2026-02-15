@@ -16,6 +16,7 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { useSnackbar } from '../../components/SnackbarContext';
 import DashedButton from '../../components/theme/DashedButton';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
@@ -51,10 +52,13 @@ export default function WorkoutsScreen() {
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
     useState(false);
+  const [isCreatingWorkoutsFromTemplate, setIsCreatingWorkoutsFromTemplate] = useState(false);
   const [selectedRawTemplate, setSelectedRawTemplate] = useState<{
     templateId: string;
     title: string;
   } | null>(null);
+
+  const { showSnackbar } = useSnackbar();
 
   // Use reactive hook for workout templates
   const { templates, isLoading, error } = useWorkoutTemplates();
@@ -400,6 +404,7 @@ export default function WorkoutsScreen() {
             setSelectedRawTemplate(null);
           }}
           onConfirm={async () => {
+            setIsCreatingWorkoutsFromTemplate(true);
             try {
               const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
               if (!rawTemplate) {
@@ -408,20 +413,20 @@ export default function WorkoutsScreen() {
               }
 
               await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-              // Templates will be automatically refreshed via useWorkoutTemplates hook
-              setIsCreateFromTemplateConfirmationVisible(false);
-              setSelectedRawTemplate(null);
+              showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
+              setIsBrowseTemplatesVisible(false);
             } catch (error) {
               console.error('Error creating workouts from template:', error);
-              // TODO: Show error message to user
-              setIsCreateFromTemplateConfirmationVisible(false);
-              setSelectedRawTemplate(null);
+              showSnackbar('error', t('common.error'));
+            } finally {
+              setIsCreatingWorkoutsFromTemplate(false);
             }
           }}
           title={t('workouts.createFromTemplate.title')}
           message={t('workouts.createFromTemplate.message')}
           confirmLabel={t('workouts.createFromTemplate.confirm')}
           cancelLabel={t('workouts.createFromTemplate.cancel')}
+          isLoading={isCreatingWorkoutsFromTemplate}
         />
       ) : null}
       {/* Workout Session Overview Modal */}

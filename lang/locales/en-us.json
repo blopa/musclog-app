@@ -525,7 +525,8 @@
       "title": "Create Workouts from Template",
       "message": "This will create separate workout templates for each day in this program. Each workout will include the exercises, sets, and reps specified for that day.",
       "confirm": "Create Workouts",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "successMessage": "Workouts created successfully"
     }
   },
   "createWorkout": {

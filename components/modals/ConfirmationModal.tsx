@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Platform, Pressable, Text, View } from 'react-native';
 
@@ -10,13 +11,14 @@ export type ConfirmationModalVariant = 'destructive' | 'primary' | 'default';
 type ConfirmationModalProps = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title: string;
   message: string;
   confirmLabel: string;
   cancelLabel?: string;
   variant?: ConfirmationModalVariant;
   maxWidth?: number;
+  isLoading?: boolean;
 };
 
 export function ConfirmationModal({
@@ -29,6 +31,7 @@ export function ConfirmationModal({
   cancelLabel,
   variant = 'default',
   maxWidth,
+  isLoading = false,
 }: ConfirmationModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -36,10 +39,14 @@ export function ConfirmationModal({
   // Default maxWidth is 30% larger than 320px (416px)
   const modalMaxWidth = maxWidth || theme.size['400'];
 
-  const handleConfirm = () => {
-    onConfirm();
+  const handleConfirm = useCallback(async () => {
+    if (isLoading) {
+      return;
+    }
+
+    await Promise.resolve(onConfirm());
     onClose();
-  };
+  }, [isLoading, onClose, onConfirm]);
 
   const getConfirmButtonVariant = (): 'accent' | 'discard' => {
     return variant === 'destructive' ? 'discard' : 'accent';
@@ -77,7 +84,7 @@ export function ConfirmationModal({
       <Pressable
         className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: backdropColor }, webBackdropStyle]}
-        onPress={onClose}
+        onPress={isLoading ? undefined : onClose}
       >
         {/* Modal */}
         <Pressable
@@ -141,6 +148,7 @@ export function ConfirmationModal({
                 size="sm"
                 width="flex-1"
                 onPress={onClose}
+                disabled={isLoading}
               />
               <Button
                 label={confirmLabel}
@@ -148,6 +156,8 @@ export function ConfirmationModal({
                 size="sm"
                 width="flex-1"
                 onPress={handleConfirm}
+                disabled={isLoading}
+                loading={isLoading}
               />
             </View>
           </View>
