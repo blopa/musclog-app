@@ -1,23 +1,22 @@
 import { EXERCISE_TYPES } from '../constants/exercises';
+import Exercise from '../database/models/Exercise';
+import WorkoutLogSet from '../database/models/WorkoutLogSet';
 
 /**
- * Interface representing a set with weight, reps, and optional RIR (Reps in Reserve)
+ * Type representing a set with only the fields needed for volume calculation.
+ * Extracted from WorkoutLogSet model.
+ * repsInReserve is optional as it may not always be provided.
  */
-export interface WorkoutSet {
-  weight: number;
-  reps: number;
-  repsInReserve?: number;
-}
+type WorkoutSet = Pick<WorkoutLogSet, 'weight' | 'reps' | 'repsInReserve'>;
 
 /**
- * Interface representing an exercise with its mechanic type
+ * Type representing an exercise with only the fields needed for volume calculation.
+ * Extracted from Exercise model.
  */
-export interface ExerciseData {
-  mechanicType: string;
-}
+type ExerciseData = Pick<Exercise, 'equipmentType'>;
 
 /**
- * Interface representing an exercise with its sets
+ * Interface representing an exercise with its sets for volume calculation
  */
 export interface ExerciseWithSets {
   exercise: ExerciseData;
@@ -43,7 +42,7 @@ export async function calculateWorkoutVolume(
     for (const { exercise, sets } of exercises) {
       let addedWeight = 0;
 
-      if (exercise?.mechanicType === EXERCISE_TYPES.BODY_WEIGHT) {
+      if (exercise?.equipmentType === EXERCISE_TYPES.BODY_WEIGHT) {
         addedWeight = bodyWeight || 0;
       }
 
