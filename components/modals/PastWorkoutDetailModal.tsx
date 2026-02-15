@@ -5,6 +5,7 @@ import { createElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { WorkoutService } from '../../database/services/WorkoutService';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
@@ -16,6 +17,7 @@ import { MenuButton } from '../theme/MenuButton';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
+import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
 
 // Types
 type WorkoutSet = {
@@ -394,6 +396,12 @@ export default function PastWorkoutDetailModal({
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
+  const [previewWorkoutData, setPreviewWorkoutData] = useState<{
+    workoutLog: any;
+    sets: any[];
+    exercises: any[];
+  } | null>(null);
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
@@ -468,7 +476,19 @@ export default function PastWorkoutDetailModal({
         onEdit={onEdit}
         onShare={onShare}
         onDelete={onDelete}
-        onPreview={() => {}} // TODO: open WorkoutSessionHistoryModal modal
+        onPreview={async () => {
+          if (!workoutId) {
+            return;
+          }
+
+          try {
+            const data = await WorkoutService.getWorkoutWithDetails(workoutId);
+            setPreviewWorkoutData(data);
+            setIsPreviewModalVisible(true);
+          } catch (error) {
+            console.error('Error loading workout for preview:', error);
+          }
+        }}
       />
       {editingExerciseId ? (
         <EditPastWorkoutDataModal
@@ -528,6 +548,20 @@ export default function PastWorkoutDetailModal({
             }))}
         />
       ) : null}
+
+      {previewWorkoutData && (
+        <WorkoutSessionHistoryModal
+          visible={isPreviewModalVisible}
+          onClose={() => {
+            setIsPreviewModalVisible(false);
+            setPreviewWorkoutData(null);
+          }}
+          workoutLog={previewWorkoutData.workoutLog}
+          sets={previewWorkoutData.sets}
+          exercises={previewWorkoutData.exercises}
+          isPreview={true}
+        />
+      )}
     </>
   );
 }

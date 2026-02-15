@@ -1,4 +1,4 @@
-import { Pencil, Share2, Trash2 } from 'lucide-react-native';
+import { List, Pencil, Share2, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -27,7 +27,17 @@ export function PastWorkoutBottomMenu({
   const { t } = useTranslation();
 
   const menuItems: BottomPopUpMenuItem[] = [
-    // TODO: add option to preview workout
+    {
+      icon: List,
+      iconColor: theme.colors.text.primary,
+      iconBgColor: theme.colors.text.primary20,
+      title: t('workoutDetails.preview'),
+      description: t('workoutDetails.previewDescription'),
+      onPress: () => {
+        onClose();
+        onPreview?.();
+      },
+    },
     {
       icon: Pencil,
       iconColor: theme.colors.text.primary,

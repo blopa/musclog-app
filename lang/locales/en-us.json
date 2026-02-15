@@ -565,6 +565,8 @@
   },
   "workoutDetails": {
     "subtitle": "Manage this workout",
+    "preview": "Preview Workout",
+    "previewDescription": "View full workout details",
     "edit": "Edit Workout",
     "editDescription": "Modify exercises and sets",
     "duplicate": "Duplicate",
