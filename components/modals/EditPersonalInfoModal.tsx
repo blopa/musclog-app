@@ -20,7 +20,9 @@ export function EditPersonalInfoModal({
   initialData,
 }: EditPersonalInfoModalProps) {
   const { t } = useTranslation();
-  const [currentFormData, setCurrentFormData] = useState<(PersonalInfo & { photoUri?: string }) | undefined>(undefined);
+  const [currentFormData, setCurrentFormData] = useState<
+    (PersonalInfo & { photoUri?: string }) | undefined
+  >(undefined);
 
   const handleSave = ({
     fullName,

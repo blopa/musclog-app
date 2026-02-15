@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
+import { useTheme } from '../hooks/useTheme';
 
 /**
  * Set data for display in workout history.
@@ -82,7 +82,8 @@ export function SetRow({ set }: SetRowProps) {
         <Text
           className="text-sm tabular-nums"
           style={{
-            color: (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
+            color:
+              (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
             fontWeight:
               (set.partials ?? 0) > 0
                 ? theme.typography.fontWeight.bold

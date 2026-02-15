@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, TextInput, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
 import Exercise from '../../database/models/Exercise';
+import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';

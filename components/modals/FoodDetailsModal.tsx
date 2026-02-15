@@ -234,7 +234,7 @@ export function FoodDetailsModal({
 
   const scaledFood = getScaledNutrition();
 
-  const mealTabs: Array<{ id: MealType; label: string }> = [
+  const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },

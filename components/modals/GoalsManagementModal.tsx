@@ -7,13 +7,12 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { type EatingPhase } from '../../database/models';
 import { NutritionGoalService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
+import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
-
-type EatingPhaseUI = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
 interface GoalHistoryItem {
   id: number;
@@ -38,20 +37,6 @@ interface CurrentGoal {
   ffmi?: number;
   bmi?: number;
   goalDate?: string;
-}
-
-// Helper to convert DB eating phase to UI format
-function convertEatingPhase(dbPhase: string): EatingPhaseUI {
-  switch (dbPhase) {
-    case 'cut':
-      return 'cutting';
-    case 'maintain':
-      return 'maintenance';
-    case 'bulk':
-      return 'bulking';
-    default:
-      return 'maintenance';
-  }
 }
 
 type GoalsManagementModalProps = {
@@ -84,7 +69,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       const current = await NutritionGoalService.getCurrent();
       if (current) {
         setCurrentGoal({
-          phase: convertEatingPhase(current.eatingPhase),
+          phase: convertEatingPhaseToUI(current.eatingPhase),
           calories: current.totalCalories,
           protein: current.protein,
           carbs: current.carbs,
@@ -131,7 +116,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           return {
             id: parseInt(goal.id, 10) || index,
             dateRange,
-            phase: convertEatingPhase(goal.eatingPhase),
+            phase: convertEatingPhaseToUI(goal.eatingPhase),
             calories: goal.totalCalories,
             protein: goal.protein,
             carbs: goal.carbs,

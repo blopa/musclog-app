@@ -42,13 +42,13 @@ export function AddFoodModal({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const mealTypes: Array<{
+  const mealTypes: {
     icon: typeof UtensilsCrossed;
     label: string;
     iconBgColor: string;
     iconColor: string;
     mealType: MealType;
-  }> = [
+  }[] = [
     {
       icon: UtensilsCrossed,
       label: t('food.meals.breakfast'),

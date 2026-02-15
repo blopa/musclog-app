@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { GenericCard } from './GenericCard';
-
-type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
 interface CurrentGoal {
   phase: EatingPhase;

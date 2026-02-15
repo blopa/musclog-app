@@ -4,7 +4,13 @@ import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
-import User, { type FitnessGoal, type Gender, type LiftingExperience, UserProfileUpdate, type WeightGoal } from '../models/User';
+import User, {
+  type FitnessGoal,
+  type Gender,
+  type LiftingExperience,
+  UserProfileUpdate,
+  type WeightGoal,
+} from '../models/User';
 
 export class UserService {
   /**

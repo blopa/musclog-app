@@ -1,5 +1,11 @@
 import { NutritionGoals } from '../components/NutritionGoalsBody';
-import type { EatingPhase , FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models';
+import type {
+  EatingPhase,
+  FitnessGoal,
+  Gender,
+  LiftingExperience,
+  WeightGoal,
+} from '../database/models';
 
 // ---------------------------------------------------------------------------
 // Input / Output types

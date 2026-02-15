@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { StatCard } from '../components/cards/StatCard';
+import { type PersonalInfo } from '../components/EditPersonalInfoBody';
 import { ManagementItem } from '../components/ManagementItem';
 import { MasterLayout } from '../components/MasterLayout';
 import BodyMetricsHistoryModal from '../components/modals/BodyMetricsHistoryModal';
@@ -13,7 +14,6 @@ import {
   type FitnessDetails,
 } from '../components/modals/EditFitnessDetailsModal';
 import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
-import { type PersonalInfo } from '../components/EditPersonalInfoBody';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import { type Gender } from '../database/models';

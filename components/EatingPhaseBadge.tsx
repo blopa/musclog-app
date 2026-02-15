@@ -2,11 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
-
-type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
+import { type EatingPhaseUI } from '../types/EatingPhaseUI';
 
 interface EatingPhaseBadgeProps {
-  phase: EatingPhase;
+  phase: EatingPhaseUI;
   variant?: 'default' | 'compact';
   showBorder?: boolean;
 }
