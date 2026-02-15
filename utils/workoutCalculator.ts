@@ -8,11 +8,10 @@ export async function calculateWorkoutVolume(
   try {
     let totalVolume = 0;
 
-    for (const { exerciseId, sets } of exercises) {
-      const exercise = {} as any; // TODO
+    for (const { exercise, sets } of exercises) {
       let addedWeight = 0;
 
-      if (exercise?.type === EXERCISE_TYPES.BODY_WEIGHT) {
+      if (exercise?.mechanicType === EXERCISE_TYPES.BODY_WEIGHT) {
         addedWeight = bodyWeight || 0;
       }
 
