@@ -1,5 +1,5 @@
 import { EXERCISE_TYPES } from '../constants/exercises';
-import Exercise from '../database/models/Exercise';
+import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 
 /**
@@ -13,7 +13,9 @@ type WorkoutSet = Pick<WorkoutLogSet, 'weight' | 'reps' | 'repsInReserve'>;
  * Type representing an exercise with only the fields needed for volume calculation.
  * Extracted from Exercise model.
  */
-type ExerciseData = Pick<Exercise, 'equipmentType'>;
+type ExerciseData = {
+  equipmentType?: EquipmentType | string;
+};
 
 /**
  * Interface representing an exercise with its sets for volume calculation

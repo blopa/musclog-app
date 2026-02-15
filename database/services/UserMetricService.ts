@@ -1,13 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import UserMetric from '../models/UserMetric';
+import UserMetric, { type UserMetricType } from '../models/UserMetric';
 
 export class UserMetricService {
   /**
    * Get latest metric value for a specific type
    */
-  static async getLatest(type: string): Promise<UserMetric | null> {
+  static async getLatest(type: UserMetricType | string): Promise<UserMetric | null> {
     const metrics = await database
       .get<UserMetric>('user_metrics')
       .query(
@@ -24,7 +24,7 @@ export class UserMetricService {
    * Get metrics history with pagination support
    */
   static async getMetricsHistory(
-    type?: string, // Optional filter by metric type
+    type?: UserMetricType | string, // Optional filter by metric type
     dateRange?: { startDate: number; endDate: number }, // Optional date range
     limit?: number,
     offset?: number

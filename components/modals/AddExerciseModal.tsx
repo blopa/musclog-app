@@ -14,8 +14,10 @@ import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
+import { type MuscleGroup } from '../../database/models';
 
-type MuscleGroup = 'all' | 'chest' | 'back' | 'legs' | 'arms';
+// UI-specific muscle group filter type (subset of MuscleGroup + 'all')
+type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 
 type ExerciseId = string;
 
@@ -31,7 +33,7 @@ type AddExerciseModalProps = {
 };
 
 // Helper function to normalize muscle group names from database to UI categories
-const normalizeMuscleGroup = (muscleGroup: string): MuscleGroup | null => {
+const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFilter | null => {
   const normalized = muscleGroup.toLowerCase();
   if (normalized.includes('chest')) {
     return 'chest';
@@ -93,7 +95,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const [activeMuscle, setActiveMuscle] = useState<MuscleGroup>('all');
+  const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExerciseId, setSelectedExerciseId] = useState<ExerciseId | null>(null);
   const selectedExerciseIdRef = useRef<ExerciseId | null>(null);
@@ -113,7 +115,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
   // Group exercises by muscle group
   const exercises = useMemo(() => {
-    const groupedExercises: Record<MuscleGroup, ExerciseOption[]> = {
+    const groupedExercises: Record<MuscleGroupFilter, ExerciseOption[]> = {
       all: [],
       chest: [],
       back: [],
@@ -156,7 +158,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
     // Sort exercises within each group by name
     Object.keys(groupedExercises).forEach((key) => {
-      const group = key as MuscleGroup;
+      const group = key as MuscleGroupFilter;
       groupedExercises[group].sort((a, b) => a.label.localeCompare(b.label));
     });
 
@@ -323,7 +325,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               <FilterTabs
                 tabs={muscleTabs}
                 activeTab={activeMuscle}
-                onTabChange={(id) => setActiveMuscle(id as MuscleGroup)}
+                onTabChange={(id) => setActiveMuscle(id as MuscleGroupFilter)}
                 showContainer={false}
                 withCheckmark={true}
                 scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}

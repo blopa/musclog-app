@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, TextInput, View } from 'react-native';
 
-import Exercise from '../../database/models/Exercise';
+import Exercise, { type MechanicType, type MuscleGroup } from '../../database/models/Exercise';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
@@ -30,26 +30,26 @@ const DEFAULT_EXERCISES: ReplaceExerciseData[] = [
   {
     id: '1',
     name: 'Flat Dumbbell Press',
-    muscleGroup: 'chest',
-    mechanicType: 'compound',
+    muscleGroup: 'chest' as MuscleGroup,
+    mechanicType: 'compound' as MechanicType,
   },
   {
     id: '2',
     name: 'Barbell Bench Press',
-    muscleGroup: 'chest',
-    mechanicType: 'compound',
+    muscleGroup: 'chest' as MuscleGroup,
+    mechanicType: 'compound' as MechanicType,
   },
   {
     id: '3',
     name: 'Cable Crossover',
-    muscleGroup: 'chest',
-    mechanicType: 'isolation',
+    muscleGroup: 'chest' as MuscleGroup,
+    mechanicType: 'isolation' as MechanicType,
   },
   {
     id: '4',
     name: 'Dumbbell Flys',
-    muscleGroup: 'chest',
-    mechanicType: 'isolation',
+    muscleGroup: 'chest' as MuscleGroup,
+    mechanicType: 'isolation' as MechanicType,
   },
 ];
 

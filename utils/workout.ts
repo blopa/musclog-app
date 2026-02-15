@@ -2,7 +2,7 @@ import type { LucideIcon } from 'lucide-react-native';
 import { Dumbbell, User } from 'lucide-react-native';
 
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
-import Exercise from '../database/models/Exercise';
+import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import { theme } from '../theme';
@@ -53,7 +53,7 @@ export interface ExerciseIconConfig {
 /**
  * Determine if an exercise is bodyweight based on equipment type
  */
-export function isBodyweightExercise(equipmentType?: string): boolean {
+export function isBodyweightExercise(equipmentType?: EquipmentType | string): boolean {
   const type = equipmentType?.toLowerCase() || '';
   return type.includes('bodyweight') || type.includes('body weight');
 }
