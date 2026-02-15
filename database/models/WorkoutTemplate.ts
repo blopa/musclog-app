@@ -17,6 +17,7 @@ export default class WorkoutTemplate extends Model {
 
   @field('name') name!: string;
   @field('description') description?: string;
+  @field('is_archived') isArchived!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
@@ -73,5 +74,23 @@ export default class WorkoutTemplate extends Model {
       template.updatedAt = now;
     });
     // Note: We don't delete related template sets or schedules to preserve historical data
+  }
+
+  @writer
+  async archive(): Promise<void> {
+    const now = Date.now();
+    await this.update((template) => {
+      template.isArchived = true;
+      template.updatedAt = now;
+    });
+  }
+
+  @writer
+  async unarchive(): Promise<void> {
+    const now = Date.now();
+    await this.update((template) => {
+      template.isArchived = false;
+      template.updatedAt = now;
+    });
   }
 }

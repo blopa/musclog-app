@@ -26,6 +26,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
+        { name: 'is_archived', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

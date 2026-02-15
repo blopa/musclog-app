@@ -211,6 +211,7 @@ export class WorkoutTemplateService {
         template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
+          t.isArchived = false; // Default to not archived
           t.createdAt = now;
           t.updatedAt = now;
         });
@@ -711,5 +712,104 @@ export class WorkoutTemplateService {
     }
 
     return createdTemplates;
+  }
+
+  /**
+   * Archive a workout template
+   */
+  static async archiveTemplate(templateId: string): Promise<void> {
+    const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
+    await template.archive();
+  }
+
+  /**
+   * Unarchive a workout template
+   */
+  static async unarchiveTemplate(templateId: string): Promise<void> {
+    const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
+    await template.unarchive();
+  }
+
+  /**
+   * Get all archived templates with metadata
+   */
+  static async getArchivedTemplatesWithMetadata(): Promise<
+    {
+      id: string;
+      name: string;
+      description?: string;
+      exerciseCount: number;
+      lastCompleted?: string; // Formatted relative date string
+      lastCompletedTimestamp?: number;
+      duration?: string; // Formatted duration string
+      image?: any;
+    }[]
+  > {
+    // Fetch all archived templates
+    const templates = await WorkoutTemplateRepository.getArchived().fetch();
+
+    // Process each template to get metadata (same logic as getAllTemplatesWithMetadata)
+    const templatesWithMetadata = await Promise.all(
+      templates.map(async (template) => {
+        // Get template sets to count exercises
+        const sets = await database
+          .get<WorkoutTemplateSet>('workout_template_sets')
+          .query(Q.where('template_id', template.id), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        // Get unique exercise count
+        const uniqueExerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+        const exerciseCount = uniqueExerciseIds.length;
+
+        // Get last completed workout log for this template
+        const workoutLogs = await database
+          .get<WorkoutLog>('workout_logs')
+          .query(
+            Q.where('template_id', template.id),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.sortBy('completed_at', Q.desc)
+          )
+          .fetch();
+
+        const lastWorkoutLog = workoutLogs[0];
+
+        let lastCompleted: string | undefined;
+        let lastCompletedTimestamp: number | undefined;
+
+        if (lastWorkoutLog?.completedAt) {
+          lastCompletedTimestamp = lastWorkoutLog.completedAt;
+          lastCompleted = this.formatRelativeDate(lastCompletedTimestamp);
+        }
+
+        return {
+          id: template.id,
+          name: template.name,
+          description: template.description,
+          exerciseCount,
+          lastCompleted,
+          lastCompletedTimestamp,
+        };
+      })
+    );
+
+    return templatesWithMetadata;
+  }
+
+  /**
+   * Format timestamp to relative date string (e.g., "2 days ago", "1 week ago")
+   */
+  private static formatRelativeDate(timestamp: number): string {
+    const now = Date.now();
+    const diffMs = now - timestamp;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30)
+      return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+    if (diffDays < 365)
+      return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+    return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
   }
 }

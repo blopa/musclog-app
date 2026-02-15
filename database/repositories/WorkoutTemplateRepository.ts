@@ -12,6 +12,26 @@ export class WorkoutTemplateRepository {
   static getActive(): Query<WorkoutTemplate> {
     return database
       .get<WorkoutTemplate>('workout_templates')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('is_archived', Q.eq(false)),
+        Q.sortBy('created_at', Q.desc)
+      );
+  }
+
+  static getAll(): Query<WorkoutTemplate> {
+    return database
+      .get<WorkoutTemplate>('workout_templates')
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+  }
+
+  static getArchived(): Query<WorkoutTemplate> {
+    return database
+      .get<WorkoutTemplate>('workout_templates')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('is_archived', Q.eq(true)),
+        Q.sortBy('created_at', Q.desc)
+      );
   }
 }
