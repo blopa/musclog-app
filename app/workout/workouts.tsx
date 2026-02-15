@@ -371,6 +371,12 @@ export default function WorkoutsScreen() {
           visible={isBrowseTemplatesVisible}
           onClose={() => setIsBrowseTemplatesVisible(false)}
           onTemplateSelect={(template) => {
+            // TODO: show a ConfirmationModal asking "create workout based on template" or something
+            // and if confirmed, we then must create workouts based on that template.
+            // for example, the first workout in the data/workoutTemplatesEnUS.json file contains
+            // 21 exercises, divided into 3 different days, so we need to create 3 workouts, one for each day
+            // using the exercise, sets and reps from the list. As for the weight, for now let's just have it
+            // hardcodded to 50 kg
             setIsBrowseTemplatesVisible(false);
           }}
         />
