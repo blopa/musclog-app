@@ -2,7 +2,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 
 import type { SelectorOption } from '../../components/theme/OptionsMultiSelector/utils';
 import Exercise from '../../database/models/Exercise';
-import Schedule from '../../database/models/Schedule';
+import Schedule, { type DayOfWeek } from '../../database/models/Schedule';
 import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
 import { theme } from '../../theme';
 import {
@@ -34,7 +34,7 @@ const createMockExercise = (overrides: Partial<Exercise> = {}): Partial<Exercise
 
 // Mock Schedule model
 const createMockSchedule = (dayOfWeek: string): Partial<Schedule> => ({
-  dayOfWeek,
+  dayOfWeek: dayOfWeek as DayOfWeek,
 });
 
 // Mock ExerciseInWorkout

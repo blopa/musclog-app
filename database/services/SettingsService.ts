@@ -18,7 +18,7 @@ import {
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '../../constants/settings';
 import { database } from '../../database';
-import Setting from '../models/Setting';
+import Setting, { type SettingType } from '../models/Setting';
 
 export class SettingsService {
   /**
@@ -225,7 +225,7 @@ export class SettingsService {
         }
       } else {
         await database.get<Setting>('settings').create((setting) => {
-          setting.type = type;
+          setting.type = type as SettingType;
           setting.value = value.toString();
           setting.createdAt = now;
           setting.updatedAt = now;
@@ -253,7 +253,7 @@ export class SettingsService {
         });
       } else {
         await database.get<Setting>('settings').create((setting) => {
-          setting.type = type;
+          setting.type = type as SettingType;
           setting.value = value;
           setting.createdAt = now;
           setting.updatedAt = now;

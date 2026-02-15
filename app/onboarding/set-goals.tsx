@@ -312,7 +312,7 @@ export default function SetGoals() {
     const bodyFatMetrics = await database
       .get<UserMetric>('user_metrics')
       .query(
-        Q.where('type', 'bodyFat'),
+        Q.where('type', 'body_fat'),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc)
       )

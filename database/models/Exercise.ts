@@ -5,6 +5,34 @@ import WorkoutLog from './WorkoutLog';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 
+export type MuscleGroup =
+  | 'chest'
+  | 'back'
+  | 'shoulders'
+  | 'biceps'
+  | 'triceps'
+  | 'forearms'
+  | 'abs'
+  | 'quads'
+  | 'hamstrings'
+  | 'glutes'
+  | 'calves'
+  | 'full_body'
+  | 'cardio'
+  | 'other';
+
+export type EquipmentType =
+  | 'dumbbell'
+  | 'barbell'
+  | 'bodyweight'
+  | 'machine'
+  | 'cable'
+  | 'kettlebell'
+  | 'resistance_band'
+  | 'other';
+
+export type MechanicType = 'compound' | 'isolation';
+
 export default class Exercise extends Model {
   static table = 'exercises';
 
@@ -16,9 +44,9 @@ export default class Exercise extends Model {
   @field('name') name!: string;
   @field('description') description!: string;
   @field('image_url') imageUrl?: string;
-  @field('muscle_group') muscleGroup!: string;
-  @field('equipment_type') equipmentType!: string;
-  @field('mechanic_type') mechanicType!: string;
+  @field('muscle_group') muscleGroup!: MuscleGroup;
+  @field('equipment_type') equipmentType!: EquipmentType;
+  @field('mechanic_type') mechanicType!: MechanicType;
   @field('load_multiplier') loadMultiplier!: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

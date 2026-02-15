@@ -64,7 +64,7 @@ export default function FitnessInfo() {
         const bodyFatMetrics = await database
           .get<UserMetric>('user_metrics')
           .query(
-            Q.where('type', 'bodyFat'),
+            Q.where('type', 'body_fat'),
             Q.where('deleted_at', Q.eq(null)),
             Q.sortBy('date', Q.desc)
           )
@@ -245,7 +245,7 @@ export default function FitnessInfo() {
         const existingBodyFat = await database
           .get<UserMetric>('user_metrics')
           .query(
-            Q.where('type', 'bodyFat'),
+            Q.where('type', 'body_fat'),
             Q.where('date', currentDate),
             Q.where('deleted_at', Q.eq(null))
           )
@@ -263,7 +263,7 @@ export default function FitnessInfo() {
           } else {
             // Create new body fat metric with current date
             await database.get<UserMetric>('user_metrics').create((metric) => {
-              metric.type = 'bodyFat';
+              metric.type = 'body_fat';
               metric.value = fatValue;
               metric.unit = '%';
               metric.date = currentDate;

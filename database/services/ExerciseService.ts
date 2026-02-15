@@ -1,7 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import Exercise from '../models/Exercise';
+import Exercise, {
+  type EquipmentType,
+  type MechanicType,
+  type MuscleGroup,
+} from '../models/Exercise';
 
 export class ExerciseService {
   /**
@@ -17,7 +21,7 @@ export class ExerciseService {
   /**
    * Get exercises by muscle group
    */
-  static async getExercisesByMuscleGroup(muscleGroup: string): Promise<Exercise[]> {
+  static async getExercisesByMuscleGroup(muscleGroup: MuscleGroup | string): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('muscle_group', muscleGroup))
@@ -27,7 +31,9 @@ export class ExerciseService {
   /**
    * Get exercises by equipment type
    */
-  static async getExercisesByEquipmentType(equipmentType: string): Promise<Exercise[]> {
+  static async getExercisesByEquipmentType(
+    equipmentType: EquipmentType | string
+  ): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('equipment_type', equipmentType))
@@ -37,7 +43,9 @@ export class ExerciseService {
   /**
    * Get exercises by mechanic type
    */
-  static async getExercisesByMechanicType(mechanicType: string): Promise<Exercise[]> {
+  static async getExercisesByMechanicType(
+    mechanicType: MechanicType | string
+  ): Promise<Exercise[]> {
     return await database
       .get<Exercise>('exercises')
       .query(Q.where('deleted_at', Q.eq(null)), Q.where('mechanic_type', mechanicType))
@@ -72,9 +80,9 @@ export class ExerciseService {
   static async createExercise(
     name: string,
     description: string,
-    muscleGroup: string,
-    equipmentType: string,
-    mechanicType: string,
+    muscleGroup: MuscleGroup | string,
+    equipmentType: EquipmentType | string,
+    mechanicType: MechanicType | string,
     loadMultiplier: number = 1.0,
     imageUrl?: string
   ): Promise<Exercise> {
@@ -85,9 +93,9 @@ export class ExerciseService {
         exercise.name = name;
         exercise.description = description;
         exercise.imageUrl = imageUrl;
-        exercise.muscleGroup = muscleGroup;
-        exercise.equipmentType = equipmentType;
-        exercise.mechanicType = mechanicType;
+        exercise.muscleGroup = muscleGroup as MuscleGroup;
+        exercise.equipmentType = equipmentType as EquipmentType;
+        exercise.mechanicType = mechanicType as MechanicType;
         exercise.loadMultiplier = loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
@@ -104,9 +112,9 @@ export class ExerciseService {
       name?: string;
       description?: string;
       imageUrl?: string;
-      muscleGroup?: string;
-      equipmentType?: string;
-      mechanicType?: string;
+      muscleGroup?: MuscleGroup | string;
+      equipmentType?: EquipmentType | string;
+      mechanicType?: MechanicType | string;
       loadMultiplier?: number;
     }
   ): Promise<Exercise> {
@@ -121,9 +129,12 @@ export class ExerciseService {
         if (updates.name !== undefined) record.name = updates.name;
         if (updates.description !== undefined) record.description = updates.description;
         if (updates.imageUrl !== undefined) record.imageUrl = updates.imageUrl;
-        if (updates.muscleGroup !== undefined) record.muscleGroup = updates.muscleGroup;
-        if (updates.equipmentType !== undefined) record.equipmentType = updates.equipmentType;
-        if (updates.mechanicType !== undefined) record.mechanicType = updates.mechanicType;
+        if (updates.muscleGroup !== undefined)
+          record.muscleGroup = updates.muscleGroup as MuscleGroup;
+        if (updates.equipmentType !== undefined)
+          record.equipmentType = updates.equipmentType as EquipmentType;
+        if (updates.mechanicType !== undefined)
+          record.mechanicType = updates.mechanicType as MechanicType;
         if (updates.loadMultiplier !== undefined) record.loadMultiplier = updates.loadMultiplier;
         record.updatedAt = Date.now();
       });

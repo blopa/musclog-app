@@ -1160,6 +1160,7 @@
     "fats": "Fats",
     "targetWeight": "Target Weight",
     "bodyFat": "Body Fat",
+    "body_fat": "Body Fat",
     "ffmi": "FFMI",
     "bmi": "BMI",
     "g": "g",
@@ -1183,6 +1184,7 @@
     "metrics": {
       "weight": "Weight",
       "bodyFat": "Body Fat",
+      "body_fat": "Body Fat",
       "height": "Height",
       "bmi": "BMI",
       "ffmi": "FFMI"

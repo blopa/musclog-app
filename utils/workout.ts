@@ -3,7 +3,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
 import Exercise from '../database/models/Exercise';
-import Schedule from '../database/models/Schedule';
+import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import { theme } from '../theme';
 
@@ -36,8 +36,8 @@ export function dayNameToIndex(dayName: string): number {
 /**
  * Convert WeekdayPicker index to day name for database
  */
-export function indexToDayName(index: number): string {
-  return WEEKDAY_NAMES[index] || WEEKDAY_NAMES[0];
+export function indexToDayName(index: number): DayOfWeek {
+  return (WEEKDAY_NAMES[index] || WEEKDAY_NAMES[0]) as DayOfWeek;
 }
 
 // ============================================================================

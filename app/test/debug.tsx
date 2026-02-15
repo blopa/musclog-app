@@ -8,6 +8,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
+import type { MuscleGroup } from '../../database/models/Exercise';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
 
@@ -110,7 +111,7 @@ export default function DebugTestScreen() {
       await database.write(async () => {
         await database.get<Exercise>('exercises').create((exercise) => {
           exercise.name = name;
-          exercise.muscleGroup = muscleGroup;
+          exercise.muscleGroup = muscleGroup as MuscleGroup;
         });
       });
       setName('');

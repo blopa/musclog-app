@@ -3,6 +3,15 @@ import { field, relation } from '@nozbe/watermelondb/decorators';
 
 import WorkoutTemplate from './WorkoutTemplate';
 
+export type DayOfWeek =
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday';
+
 export default class Schedule extends Model {
   static table = 'schedules';
 
@@ -11,7 +20,7 @@ export default class Schedule extends Model {
   };
 
   @field('template_id') templateId!: string;
-  @field('day_of_week') dayOfWeek!: string;
+  @field('day_of_week') dayOfWeek!: DayOfWeek;
   @field('reminder_time') reminderTime?: string;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

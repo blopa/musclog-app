@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import UserMetric from '../database/models/UserMetric';
-import { UserMetricService } from '../database/services/UserMetricService';
+import { UserMetricService } from '../database/services';
 import { useSettings } from './useSettings';
+import { MetricType } from '../services/healthDataTransform';
 
 export interface UserMetrics {
   weight?: number;
@@ -17,7 +18,7 @@ export interface UserMetrics {
 // Hook parameters
 export interface UseUserMetricsParams {
   mode?: 'latest' | 'history'; // Default: 'latest'
-  metricType?: string; // For history mode: filter by type ('weight', 'height', 'bodyFat', etc.)
+  metricType?: MetricType; // For history mode: filter by type ('weight', 'height', 'bodyFat', etc.)
   dateRange?: { startDate: number; endDate: number }; // For history mode: filter by date range
   initialLimit?: number; // For history mode, default: 5 (ignored if getAll is true)
   batchSize?: number; // For history mode, default: 5 (ignored if getAll is true)
@@ -159,10 +160,13 @@ export function useUserMetrics({
     try {
       let metricsHistory: UserMetric[];
 
+      // Map UI metric types to database types
+      const dbMetricType = metricType;
+
       if (getAll) {
         // Fetch all metrics of the specified type (no pagination)
         metricsHistory = await UserMetricService.getMetricsHistory(
-          metricType,
+          dbMetricType,
           dateRange
           // No limit or offset - gets all
         );
@@ -171,7 +175,7 @@ export function useUserMetrics({
         // Fetch initial batch with pagination
         setHasMore(true);
         metricsHistory = await UserMetricService.getMetricsHistory(
-          metricType,
+          dbMetricType,
           dateRange,
           initialLimit
         );
@@ -192,7 +196,7 @@ export function useUserMetrics({
         } else {
           // Check if there's a next batch
           const nextBatch = await UserMetricService.getMetricsHistory(
-            metricType,
+            dbMetricType,
             dateRange,
             1,
             initialLimit
@@ -213,7 +217,7 @@ export function useUserMetrics({
       // Get latest values for convenience
       const weightMetric = await UserMetricService.getLatest('weight');
       const heightMetric = await UserMetricService.getLatest('height');
-      const bodyFatMetric = await UserMetricService.getLatest('bodyFat');
+      const bodyFatMetric = await UserMetricService.getLatest('body_fat');
       const latest = convertMetricsToUserMetrics(weightMetric, heightMetric, bodyFatMetric);
       setLatestValues(latest);
     } catch (err) {
@@ -345,7 +349,7 @@ export function useUserMetrics({
     const bodyFatQuery = database
       .get<UserMetric>('user_metrics')
       .query(
-        Q.where('type', 'bodyFat'),
+        Q.where('type', 'body_fat'),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
         Q.take(1)

@@ -16,7 +16,7 @@ import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { FullScreenModal } from './FullScreenModal';
 
-type MetricType = 'weight' | 'bodyFat' | 'height';
+type MetricType = 'weight' | 'body_fat' | 'height';
 
 type MetricConfig = {
   label: string;
@@ -35,7 +35,7 @@ type AddUserMetricEntryModalProps = {
 // Map metric types to page indices
 const metricToPageIndex: Record<MetricType, number> = {
   weight: 0,
-  bodyFat: 1,
+  body_fat: 1,
   height: 2,
 };
 
@@ -58,11 +58,11 @@ export default function AddUserMetricEntryModal({
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const pageIndexToMetric: MetricType[] = ['weight', 'bodyFat', 'height'];
+  const pageIndexToMetric: MetricType[] = ['weight', 'body_fat', 'height'];
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
-    { label: t('bodyMetrics.metrics.bodyFat'), value: 'bodyFat' },
+    { label: t('bodyMetrics.metrics.bodyFat'), value: 'body_fat' },
     { label: t('bodyMetrics.metrics.height'), value: 'height' },
   ];
 
@@ -74,7 +74,7 @@ export default function AddUserMetricEntryModal({
       quickIncrements: [0.5, 1.0, 5.0],
       step: 0.1,
     },
-    bodyFat: {
+    body_fat: {
       label: t('bodyMetrics.addEntry.enterBodyFat'),
       unit: '%',
       defaultValue: 15.0,
@@ -92,12 +92,12 @@ export default function AddUserMetricEntryModal({
 
   const currentConfig = metricConfigs[selectedMetric];
   const currentValue =
-    selectedMetric === 'weight' ? weight : selectedMetric === 'bodyFat' ? bodyFat : height;
+    selectedMetric === 'weight' ? weight : selectedMetric === 'body_fat' ? bodyFat : height;
 
   const handleIncrement = (amount: number) => {
     if (selectedMetric === 'weight') {
       setWeight((prev) => Math.round((prev + amount) * 10) / 10);
-    } else if (selectedMetric === 'bodyFat') {
+    } else if (selectedMetric === 'body_fat') {
       setBodyFat((prev) => Math.round((prev + amount) * 10) / 10);
     } else {
       setHeight((prev) => Math.round((prev + amount) * 10) / 10);
@@ -107,7 +107,7 @@ export default function AddUserMetricEntryModal({
   const handleDecrement = () => {
     if (selectedMetric === 'weight') {
       setWeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
-    } else if (selectedMetric === 'bodyFat') {
+    } else if (selectedMetric === 'body_fat') {
       setBodyFat((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
     } else {
       setHeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
@@ -117,7 +117,7 @@ export default function AddUserMetricEntryModal({
   const handleIncrementAction = () => {
     if (selectedMetric === 'weight') {
       setWeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
-    } else if (selectedMetric === 'bodyFat') {
+    } else if (selectedMetric === 'body_fat') {
       setBodyFat((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
     } else {
       setHeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
@@ -175,7 +175,7 @@ export default function AddUserMetricEntryModal({
 
         // Save body fat metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'bodyFat';
+          metric.type = 'body_fat';
           metric.value = bodyFat;
           metric.unit = '%';
           metric.date = dateTimestamp;
@@ -224,12 +224,12 @@ export default function AddUserMetricEntryModal({
   // Render full metric entry card content for a specific metric type
   const renderMetricEntry = (metric: MetricType) => {
     const config = metricConfigs[metric];
-    const value = metric === 'weight' ? weight : metric === 'bodyFat' ? bodyFat : height;
+    const value = metric === 'weight' ? weight : metric === 'body_fat' ? bodyFat : height;
 
     const handleIncrement = (amount: number) => {
       if (metric === 'weight') {
         setWeight((prev) => Math.round((prev + amount) * 10) / 10);
-      } else if (metric === 'bodyFat') {
+      } else if (metric === 'body_fat') {
         setBodyFat((prev) => Math.round((prev + amount) * 10) / 10);
       } else {
         setHeight((prev) => Math.round((prev + amount) * 10) / 10);
@@ -239,7 +239,7 @@ export default function AddUserMetricEntryModal({
     const handleDecrement = () => {
       if (metric === 'weight') {
         setWeight((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
-      } else if (metric === 'bodyFat') {
+      } else if (metric === 'body_fat') {
         setBodyFat((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
       } else {
         setHeight((prev) => Math.max(0, Math.round((prev - config.step) * 10) / 10));
@@ -249,7 +249,7 @@ export default function AddUserMetricEntryModal({
     const handleIncrementAction = () => {
       if (metric === 'weight') {
         setWeight((prev) => Math.round((prev + config.step) * 10) / 10);
-      } else if (metric === 'bodyFat') {
+      } else if (metric === 'body_fat') {
         setBodyFat((prev) => Math.round((prev + config.step) * 10) / 10);
       } else {
         setHeight((prev) => Math.round((prev + config.step) * 10) / 10);
@@ -418,7 +418,7 @@ export default function AddUserMetricEntryModal({
                   {/* Weight Page */}
                   <View key="weight">{renderMetricEntry('weight')}</View>
                   {/* Body Fat Page */}
-                  <View key="bodyFat">{renderMetricEntry('bodyFat')}</View>
+                  <View key="body_fat">{renderMetricEntry('body_fat')}</View>
                   {/* Height Page */}
                   <View key="height">{renderMetricEntry('height')}</View>
                 </PagerView>

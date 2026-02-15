@@ -17,5 +17,10 @@ export { default as WorkoutTemplate } from './WorkoutTemplate';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
+export type { EquipmentType, MechanicType, MuscleGroup } from './Exercise';
 export type { MicrosData } from './Food';
+export type { EatingPhase } from './NutritionGoal';
 export type { MealType } from './NutritionLog';
+export type { DayOfWeek } from './Schedule';
+export type { SettingType } from './Setting';
+export type { UserMetricType } from './UserMetric';

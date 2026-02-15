@@ -6,9 +6,9 @@
 import { Q } from '@nozbe/watermelondb';
 import type { RecordType } from 'react-native-health-connect';
 
-import { database } from '../database/database-instance';
+import { database } from '../database';
 import Setting from '../database/models/Setting';
-import UserMetric from '../database/models/UserMetric';
+import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
 import { healthConnectService } from './healthConnect';
 import {
   HealthConnectError,
@@ -449,7 +449,8 @@ class HealthDataSyncService {
       await database.write(async () => {
         for (const record of newRecords) {
           await database.get<UserMetric>('user_metrics').create((metric) => {
-            metric.type = record.type;
+            // Convert MetricType enum value to UserMetricType string
+            metric.type = record.type as UserMetricType;
             metric.value = record.value;
             metric.unit = record.unit;
             metric.date = record.date;

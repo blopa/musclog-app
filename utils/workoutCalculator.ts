@@ -28,7 +28,7 @@ export interface ExerciseWithSets {
  * Calculates the total workout volume based on exercises and their sets.
  * For bodyweight exercises, adds the user's bodyweight to each set.
  * Volume is calculated using the average 1RM formula across all standard formulas.
- * 
+ *
  * @param exercises - Array of exercises with their corresponding sets
  * @param bodyWeight - User's bodyweight in kg/lbs (used for bodyweight exercises)
  * @returns Total workout volume rounded to 2 decimal places
@@ -63,12 +63,19 @@ export async function calculateWorkoutVolume(
 /**
  * Type representing the supported 1RM calculation formulas
  */
-export type FormulaType = 'Epley' | 'Brzycki' | 'Lander' | 'Lombardi' | 'Mayhew' | 'OConner' | 'Wathan';
+export type FormulaType =
+  | 'Epley'
+  | 'Brzycki'
+  | 'Lander'
+  | 'Lombardi'
+  | 'Mayhew'
+  | 'OConner'
+  | 'Wathan';
 
 /**
  * Calculates the average one-rep max (1RM) across multiple validated formulas.
  * This provides a more accurate estimate than using a single formula.
- * 
+ *
  * @param weight - The weight lifted in the set
  * @param reps - Number of repetitions performed
  * @param rir - Reps in Reserve (RIR) - how many more reps could have been done
@@ -76,7 +83,15 @@ export type FormulaType = 'Epley' | 'Brzycki' | 'Lander' | 'Lombardi' | 'Mayhew'
  */
 export function calculateAverage1RM(weight: number, reps: number, rir: number = 0): number {
   try {
-    const formulas: FormulaType[] = ['Epley', 'Brzycki', 'Lander', 'Lombardi', 'Mayhew', 'OConner', 'Wathan'];
+    const formulas: FormulaType[] = [
+      'Epley',
+      'Brzycki',
+      'Lander',
+      'Lombardi',
+      'Mayhew',
+      'OConner',
+      'Wathan',
+    ];
     let total1RM = 0;
     let validFormulas = 0;
 
@@ -97,7 +112,7 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
 
 /**
  * Calculates the estimated one-rep max (1RM) using a specific formula.
- * 
+ *
  * All formulas have been validated against their published sources:
  * - Brzycki (1993): Most commonly used, accurate for 2-10 reps
  * - Epley (1985): Good for general use, slightly more conservative
@@ -106,16 +121,21 @@ export function calculateAverage1RM(weight: number, reps: number, rir: number = 
  * - Mayhew et al. (1992): Exponential model, accurate across wide rep range
  * - O'Connor et al. (1989): Linear model, conservative estimates
  * - Wathan (1994): Exponential model, good for higher rep ranges
- * 
+ *
  * @param weight - The weight lifted in the set
  * @param reps - Number of repetitions performed
  * @param formula - The formula to use for calculation
  * @param rir - Reps in Reserve (RIR) - adjusts for submaximal effort
  * @returns Estimated 1RM, or null if formula is not recognized
  */
-export function calculate1RM(weight: number, reps: number, formula: FormulaType, rir: number = 0): number | null {
+export function calculate1RM(
+  weight: number,
+  reps: number,
+  formula: FormulaType,
+  rir: number = 0
+): number | null {
   const adjustedReps = reps + rir;
-  
+
   try {
     switch (formula) {
       case 'Brzycki': {

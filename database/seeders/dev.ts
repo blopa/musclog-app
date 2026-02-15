@@ -2,7 +2,11 @@ import { Q } from '@nozbe/watermelondb';
 
 import exercisesData from '../../data/exercisesEnUS.json';
 import { database } from '../index';
-import Exercise from '../models/Exercise';
+import Exercise, {
+  type EquipmentType,
+  type MechanicType,
+  type MuscleGroup,
+} from '../models/Exercise';
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
@@ -34,33 +38,33 @@ function mapExerciseType(type: ExerciseJsonData['type']): {
   switch (type) {
     case 'compound':
       mechanicType = 'compound';
-      // Try to infer equipment from name (will default to Barbell)
-      equipmentType = 'Barbell';
+      // Try to infer equipment from name (will default to barbell)
+      equipmentType = 'barbell';
       break;
     case 'isolation':
       mechanicType = 'isolation';
-      // Try to infer equipment from name (will default to Dumbbell for isolation)
-      equipmentType = 'Dumbbell';
+      // Try to infer equipment from name (will default to dumbbell for isolation)
+      equipmentType = 'dumbbell';
       break;
     case 'machine':
       mechanicType = 'compound'; // Machine exercises can be compound or isolation, default to compound
-      equipmentType = 'Machine';
+      equipmentType = 'machine';
       break;
     case 'bodyweight':
       mechanicType = 'compound'; // Bodyweight exercises can be compound or isolation, default to compound
-      equipmentType = 'Bodyweight';
+      equipmentType = 'bodyweight';
       break;
     case 'cardio':
       mechanicType = 'compound';
-      equipmentType = 'Cardio';
+      equipmentType = 'cardio';
       break;
     case 'plyometric':
       mechanicType = 'compound';
-      equipmentType = 'Plyometric';
+      equipmentType = 'other';
       break;
     default:
       mechanicType = 'compound';
-      equipmentType = 'Barbell';
+      equipmentType = 'barbell';
   }
 
   return { mechanicType, equipmentType };
@@ -74,19 +78,19 @@ function inferEquipmentFromName(name: string, defaultEquipment: string): string 
   const lowerName = name.toLowerCase();
 
   if (lowerName.includes('dumbbell') || lowerName.includes('db ')) {
-    return 'Dumbbell';
+    return 'dumbbell';
   }
   if (lowerName.includes('barbell') || lowerName.includes('bb ')) {
-    return 'Barbell';
+    return 'barbell';
   }
   if (lowerName.includes('cable')) {
-    return 'Cable';
+    return 'cable';
   }
   if (lowerName.includes('kettlebell')) {
-    return 'Kettlebell';
+    return 'kettlebell';
   }
   if (lowerName.includes('machine') || lowerName.includes(' smith')) {
-    return 'Machine';
+    return 'machine';
   }
 
   return defaultEquipment;
@@ -128,9 +132,9 @@ async function loadExercisesFromJson(): Promise<{ created: number; skipped: numb
         return database.get<Exercise>('exercises').prepareCreate((exercise) => {
           exercise.name = exerciseData.name;
           exercise.description = exerciseData.description;
-          exercise.muscleGroup = exerciseData.muscleGroup;
-          exercise.equipmentType = equipmentType;
-          exercise.mechanicType = mechanicType;
+          exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
+          exercise.equipmentType = equipmentType as EquipmentType;
+          exercise.mechanicType = mechanicType as MechanicType;
           exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
           exercise.imageUrl = undefined; // No image URLs in JSON
           exercise.createdAt = now;
@@ -229,9 +233,9 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           exercise = await database.get<Exercise>('exercises').create((ex) => {
             ex.name = name;
             ex.description = `Default ${name}`;
-            ex.muscleGroup = muscleGroup;
-            ex.equipmentType = 'Dumbbell';
-            ex.mechanicType = 'compound';
+            ex.muscleGroup = muscleGroup as MuscleGroup;
+            ex.equipmentType = 'dumbbell' as EquipmentType;
+            ex.mechanicType = 'compound' as MechanicType;
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
@@ -816,9 +820,9 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
           exercise = await database.get<Exercise>('exercises').create((ex) => {
             ex.name = name;
             ex.description = `Default ${name}`;
-            ex.muscleGroup = muscleGroup;
-            ex.equipmentType = 'Dumbbell';
-            ex.mechanicType = 'compound';
+            ex.muscleGroup = muscleGroup as MuscleGroup;
+            ex.equipmentType = 'dumbbell' as EquipmentType;
+            ex.mechanicType = 'compound' as MechanicType;
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
@@ -1279,7 +1283,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
 
         // Body Fat metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'bodyFat';
+          metric.type = 'body_fat';
           metric.value = data.bodyFat;
           metric.unit = '%';
           metric.date = data.date;
