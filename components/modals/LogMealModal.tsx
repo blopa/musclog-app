@@ -1,4 +1,4 @@
-import { Apple,Check, Coffee, Moon, Utensils } from 'lucide-react-native';
+import { Apple, Check, Coffee, Moon, Utensils } from 'lucide-react-native';
 import { useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
@@ -61,12 +61,7 @@ const mealTypeOptions: SelectorOption<MealType>[] = [
   },
 ];
 
-export function LogMealModal({
-  visible,
-  onClose,
-  meal,
-  onLogMeal,
-}: LogMealModalProps) {
+export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModalProps) {
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -101,19 +96,19 @@ export function LogMealModal({
         footer={footer}
         scrollable
       >
-        <View className="px-4 space-y-6 mb-6 mt-6">
+        <View className="mb-6 mt-6 space-y-6 px-4">
           {/* Meal Details Card */}
           <GenericCard variant="highlighted" backgroundVariant="gradient">
             <View className="relative">
               {/* Gradient decoration */}
               <View
-                className="absolute -top-10 -right-10 h-32 w-32 rounded-full blur-3xl opacity-20"
+                className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
                 style={{ backgroundColor: theme.colors.accent.primary }}
               />
-              
+
               <View className="relative z-10 px-4 py-4">
                 {/* Meal Header */}
-                <View className="flex-row items-start justify-between mb-4">
+                <View className="mb-4 flex-row items-start justify-between">
                   <View className="flex-1">
                     <View className="mb-2">
                       <Text
@@ -131,37 +126,36 @@ export function LogMealModal({
                       </Text>
                     </View>
                     <Text
-                      className="text-2xl font-bold leading-tight tracking-tight mb-1"
+                      className="mb-1 text-2xl font-bold leading-tight tracking-tight"
                       style={{ color: theme.colors.text.primary }}
                     >
                       {meal.name}
                     </Text>
-                    <Text
-                      className="text-sm"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
+                    <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
                       Custom Meal • Created by you
                     </Text>
                   </View>
-                  
-                  {meal.image ? <Image
+
+                  {meal.image ? (
+                    <Image
                       source={{ uri: meal.image }}
-                      className="w-16 h-16 rounded-lg ml-3"
+                      className="ml-3 h-16 w-16 rounded-lg"
                       style={{ backgroundColor: theme.colors.background.overlay }}
-                  /> : null}
+                    />
+                  ) : null}
                 </View>
 
                 {/* Nutrition Stats */}
-                <View className="grid grid-cols-4 gap-2 mt-6">
+                <View className="mt-6 grid grid-cols-4 gap-2">
                   <View
-                    className="flex-col items-center p-2 rounded-lg"
+                    className="flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
                     }}
                   >
                     <Text
-                      className="text-xs font-medium mb-1"
+                      className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       Calories
@@ -172,23 +166,20 @@ export function LogMealModal({
                     >
                       {meal.calories}
                     </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
+                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       kcal
                     </Text>
                   </View>
 
                   <View
-                    className="flex-col items-center p-2 rounded-lg"
+                    className="flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
                     }}
                   >
                     <Text
-                      className="text-xs font-medium mb-1"
+                      className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       Protein
@@ -199,64 +190,49 @@ export function LogMealModal({
                     >
                       {meal.protein}
                     </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
+                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
                     </Text>
                   </View>
 
                   <View
-                    className="flex-col items-center p-2 rounded-lg"
+                    className="flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
                     }}
                   >
                     <Text
-                      className="text-xs font-medium mb-1"
+                      className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       Carbs
                     </Text>
-                    <Text
-                      className="text-lg font-bold"
-                      style={{ color: '#60a5fa' }}
-                    >
+                    <Text className="text-lg font-bold" style={{ color: '#60a5fa' }}>
                       {meal.carbs}
                     </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
+                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
                     </Text>
                   </View>
 
                   <View
-                    className="flex-col items-center p-2 rounded-lg"
+                    className="flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
                     }}
                   >
                     <Text
-                      className="text-xs font-medium mb-1"
+                      className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
                       Fat
                     </Text>
-                    <Text
-                      className="text-lg font-bold"
-                      style={{ color: '#fbbf24' }}
-                    >
+                    <Text className="text-lg font-bold" style={{ color: '#fbbf24' }}>
                       {meal.fat}
                     </Text>
-                    <Text
-                      className="text-xs"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
+                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
                     </Text>
                   </View>
@@ -268,13 +244,13 @@ export function LogMealModal({
           {/* Date Picker */}
           <View>
             <Text
-              className="text-sm font-semibold mb-3 ml-1"
+              className="mb-3 ml-1 text-sm font-semibold"
               style={{ color: theme.colors.text.primary }}
             >
               Date
             </Text>
             <Pressable
-              className="flex-row items-center justify-between p-4 rounded-xl"
+              className="flex-row items-center justify-between rounded-xl p-4"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderColor: theme.colors.border.light,

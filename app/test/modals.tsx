@@ -36,6 +36,7 @@ import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
+import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
@@ -49,7 +50,6 @@ import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
-import { LogMealModal } from '../../components/modals/LogMealModal';
 import { Button } from '../../components/theme/Button';
 
 export default function ModalsTestScreen() {
@@ -1340,7 +1340,8 @@ export default function ModalsTestScreen() {
         meal={{
           name: 'Chicken & Rice Bowl',
           type: 'Lunch',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgHwqUjNwt7pYkcCh9wPuRU31RWGIrWYDLXPJDDNrfBXCFSKxpLBeHsDY16TfU5HYsaCTi-u_8B1BcbIYdVpvNuhGxsVBL6mCNOEdOm9Z6uc6BrRCTNKG8G21FwVcD2HxMmg7ZVVAum9UlrPxDk0ZHjSDSsPBEuBJbbT1-7j9oIW1b9AYpg7la8RmX9oyRxgronJChnW7EMtAf5uL_wGtwacJUegLjkb0p4zFxeHsy6NQNSXq6m33Z3QzW8d4I1-xTKsxWvehxV5Vi',
+          image:
+            'https://lh3.googleusercontent.com/aida-public/AB6AXuDgHwqUjNwt7pYkcCh9wPuRU31RWGIrWYDLXPJDDNrfBXCFSKxpLBeHsDY16TfU5HYsaCTi-u_8B1BcbIYdVpvNuhGxsVBL6mCNOEdOm9Z6uc6BrRCTNKG8G21FwVcD2HxMmg7ZVVAum9UlrPxDk0ZHjSDSsPBEuBJbbT1-7j9oIW1b9AYpg7la8RmX9oyRxgronJChnW7EMtAf5uL_wGtwacJUegLjkb0p4zFxeHsy6NQNSXq6m33Z3QzW8d4I1-xTKsxWvehxV5Vi',
           calories: 650,
           protein: 45,
           carbs: 60,

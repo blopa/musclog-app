@@ -9,8 +9,12 @@ import { FilterTabs } from '../../components/FilterTabs';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddMealModal } from '../../components/modals/AddMealModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
+import { LogMealModal } from '../../components/modals/LogMealModal';
 import { MenuButton } from '../../components/theme/MenuButton';
 import Meal from '../../database/models/Meal';
+import type { MealType } from '../../database/models/NutritionLog';
+import { MealService } from '../../database/services/MealService';
+import { NutritionService } from '../../database/services/NutritionService';
 import { useMeals } from '../../hooks/useMeals';
 import { theme } from '../../theme';
 
@@ -71,6 +75,72 @@ const deriveTags = (
   return tags;
 };
 
+// Wrapper component to handle async nutrient calculation for LogMealModal
+function LogMealModalWrapper({
+  visible,
+  meal,
+  onClose,
+  onLogMeal,
+}: {
+  visible: boolean;
+  meal: Meal;
+  onClose: () => void;
+  onLogMeal: (date: Date, mealType: MealType) => Promise<void>;
+}) {
+  const [nutrients, setNutrients] = useState<{
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  } | null>(null);
+  const [isLoadingNutrients, setIsLoadingNutrients] = useState(true);
+
+  useEffect(() => {
+    if (visible && meal) {
+      const loadNutrients = async () => {
+        setIsLoadingNutrients(true);
+        try {
+          const totalNutrients = await meal.getTotalNutrients();
+          setNutrients({
+            calories: Math.round(totalNutrients.calories),
+            protein: Math.round(totalNutrients.protein),
+            carbs: Math.round(totalNutrients.carbs),
+            fat: Math.round(totalNutrients.fat),
+          });
+        } catch (error) {
+          console.error('Error loading meal nutrients:', error);
+          setNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+        } finally {
+          setIsLoadingNutrients(false);
+        }
+      };
+      loadNutrients();
+    }
+  }, [visible, meal]);
+
+  if (!nutrients && isLoadingNutrients) {
+    return null; // Don't render modal until nutrients are loaded
+  }
+
+  return (
+    <LogMealModal
+      visible={visible}
+      onClose={onClose}
+      meal={{
+        // TODO: use translations here
+        name: meal.name ?? 'Untitled Meal',
+        type: 'Custom Meal',
+        image: meal.imageUrl,
+        calories: nutrients?.calories ?? 0,
+        protein: nutrients?.protein ?? 0,
+        carbs: nutrients?.carbs ?? 0,
+        fat: nutrients?.fat ?? 0,
+      }}
+      onLogMeal={onLogMeal}
+    />
+  );
+}
+
 export default function MyMealsScreen() {
   const { t } = useTranslation();
   const [activeFilter, setActiveFilter] = useState('all');
@@ -84,6 +154,8 @@ export default function MyMealsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
+  const [logMealModalVisible, setLogMealModalVisible] = useState(false);
+  const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
 
   // Fetch meals from database
   const { meals, isLoading, refresh } = useMeals({
@@ -96,6 +168,15 @@ export default function MyMealsScreen() {
   // State to store transformed meal data with nutrients
   const [mealCardsData, setMealCardsData] = useState<MealCardData[]>([]);
   const [isTransforming, setIsTransforming] = useState(false);
+
+  // Map to store meal objects by ID for quick lookup
+  const mealsMap = useMemo(() => {
+    const map = new Map<string, Meal>();
+    meals.forEach((meal) => {
+      map.set(meal.id, meal);
+    });
+    return map;
+  }, [meals]);
 
   // Transform meals to card data format
   useEffect(() => {
@@ -168,6 +249,50 @@ export default function MyMealsScreen() {
     setAddMealModalVisible(false);
     // Implement manage categories logic
     console.log('Manage Categories pressed');
+  };
+
+  const handleTrackMeal = async (mealId: string) => {
+    const meal = mealsMap.get(mealId);
+    if (!meal) {
+      console.error('Meal not found:', mealId);
+      return;
+    }
+
+    setSelectedMealForLogging(meal);
+    setLogMealModalVisible(true);
+  };
+
+  const handleLogMeal = async (date: Date, mealType: MealType) => {
+    if (!selectedMealForLogging) {
+      return;
+    }
+
+    try {
+      // Get meal with its foods
+      const mealWithFoods = await MealService.getMealWithFoods(selectedMealForLogging.id);
+
+      if (!mealWithFoods) {
+        console.error('Failed to get meal foods');
+        return;
+      }
+
+      // Log each food in the meal
+      for (const mealFood of mealWithFoods.foods) {
+        await NutritionService.logFood(
+          mealFood.foodId,
+          date,
+          mealType,
+          mealFood.amount,
+          mealFood.portionId
+        );
+      }
+
+      // Close modal and reset
+      setLogMealModalVisible(false);
+      setSelectedMealForLogging(null);
+    } catch (error) {
+      console.error('Error logging meal:', error);
+    }
   };
 
   // Show loading state
@@ -267,7 +392,7 @@ export default function MyMealsScreen() {
                   calories={meal.calories}
                   macros={meal.macros}
                   image={meal.image}
-                  onTrackPress={() => console.log('Track meal:', meal.title)}
+                  onTrackPress={() => handleTrackMeal(meal.id)}
                 />
               ))}
               {/* Bottom spacing for FAB and TabBar */}
@@ -294,6 +419,18 @@ export default function MyMealsScreen() {
             onSave={() => {
               refresh();
             }}
+          />
+        ) : null}
+        {/* LogMealModal */}
+        {logMealModalVisible && selectedMealForLogging ? (
+          <LogMealModalWrapper
+            visible={logMealModalVisible}
+            meal={selectedMealForLogging}
+            onClose={() => {
+              setLogMealModalVisible(false);
+              setSelectedMealForLogging(null);
+            }}
+            onLogMeal={handleLogMeal}
           />
         ) : null}
       </View>

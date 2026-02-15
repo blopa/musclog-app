@@ -105,12 +105,12 @@ const MealMacrosSummary = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  
+
   // Calculate progress percentages (simple estimation)
   const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
   const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
   const fatProgress = Math.min((macros.fat / 80) * 100, 100);
-  
+
   return (
     <View
       style={{
@@ -254,21 +254,17 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
-      Alert.alert(
-        t('food.createMeal.error'),
-        t('food.createMeal.mealNameRequired'),
-        [{ text: t('common.ok') }]
-      );
+      Alert.alert(t('food.createMeal.error'), t('food.createMeal.mealNameRequired'), [
+        { text: t('common.ok') },
+      ]);
       return;
     }
 
     // Validate ingredients
     if (ingredients.length === 0) {
-      Alert.alert(
-        t('food.createMeal.error'),
-        t('food.createMeal.ingredientsRequired'),
-        [{ text: t('common.ok') }]
-      );
+      Alert.alert(t('food.createMeal.error'), t('food.createMeal.ingredientsRequired'), [
+        { text: t('common.ok') },
+      ]);
       return;
     }
 
@@ -286,20 +282,18 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
 
       // Callback to refresh meals list
       onSave?.();
-      
+
       // Reset form
       setMealName('');
       setIngredients([]);
-      
+
       // Close modal
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
-      Alert.alert(
-        t('food.createMeal.error'),
-        t('food.createMeal.saveFailed'),
-        [{ text: t('common.ok') }]
-      );
+      Alert.alert(t('food.createMeal.error'), t('food.createMeal.saveFailed'), [
+        { text: t('common.ok') },
+      ]);
     } finally {
       setIsSaving(false);
     }
@@ -346,7 +340,13 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
             disabled={isSaving}
           />
           {isSaving ? (
-            <View style={{ position: 'absolute', right: theme.spacing.padding.xl, top: theme.spacing.padding.lg }}>
+            <View
+              style={{
+                position: 'absolute',
+                right: theme.spacing.padding.xl,
+                top: theme.spacing.padding.lg,
+              }}
+            >
               <ActivityIndicator size="small" color={theme.colors.text.black} />
             </View>
           ) : null}

@@ -1,13 +1,7 @@
 import { Check, PlusCircle, Search } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
@@ -253,10 +247,12 @@ export function AddFoodItemToMealModal({
   };
 
   const handleAdd = () => {
-    const foodsToAdd = foods.filter((f) => selectedItems[f.id]?.selected).map((f) => ({
-      food: f,
-      amount: selectedItems[f.id].amount || 0,
-    }));
+    const foodsToAdd = foods
+      .filter((f) => selectedItems[f.id]?.selected)
+      .map((f) => ({
+        food: f,
+        amount: selectedItems[f.id].amount || 0,
+      }));
     onAddFoods?.(foodsToAdd);
     onClose();
   };
