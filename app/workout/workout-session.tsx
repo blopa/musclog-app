@@ -12,7 +12,7 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
-import { Exercise, ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
+import { ReplaceExerciseData, ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
@@ -201,7 +201,7 @@ export default function WorkoutSessionScreen() {
     }
   };
 
-  const handleReplaceExercise = async (exercise: Exercise) => {
+  const handleReplaceExercise = async (exercise: ReplaceExerciseData) => {
     if (!currentSetData || !workoutLog) return;
 
     try {

@@ -4,51 +4,52 @@ import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import Exercise from '../../database/models/Exercise';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 
-export type Exercise = {
-  id: string;
-  name: string;
-  muscleGroup: string;
-  type: string;
+/**
+ * Exercise data for replacement modal.
+ * Uses Pick to extract only needed fields from Exercise model.
+ */
+export type ReplaceExerciseData = Pick<Exercise, 'id' | 'name' | 'muscleGroup' | 'mechanicType'> & {
   image?: any; // ImageSourcePropType
 };
 
 type ReplaceExerciseModalProps = {
   visible: boolean;
   onClose: () => void;
-  onReplace: (exercise: Exercise) => void;
+  onReplace: (exercise: ReplaceExerciseData) => void;
   currentExercise?: string;
-  exercises?: Exercise[];
+  exercises?: ReplaceExerciseData[];
 };
 
-const DEFAULT_EXERCISES: Exercise[] = [
+const DEFAULT_EXERCISES: ReplaceExerciseData[] = [
   {
     id: '1',
     name: 'Flat Dumbbell Press',
-    muscleGroup: 'Chest',
-    type: 'Compound',
+    muscleGroup: 'chest',
+    mechanicType: 'compound',
   },
   {
     id: '2',
     name: 'Barbell Bench Press',
-    muscleGroup: 'Chest',
-    type: 'Compound',
+    muscleGroup: 'chest',
+    mechanicType: 'compound',
   },
   {
     id: '3',
     name: 'Cable Crossover',
-    muscleGroup: 'Chest',
-    type: 'Isolation',
+    muscleGroup: 'chest',
+    mechanicType: 'isolation',
   },
   {
     id: '4',
     name: 'Dumbbell Flys',
-    muscleGroup: 'Chest',
-    type: 'Isolation',
+    muscleGroup: 'chest',
+    mechanicType: 'isolation',
   },
 ];
 
@@ -74,7 +75,9 @@ export function ReplaceExerciseModal({
 
   const filteredExercises = exercises.filter((exercise) => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = selectedFilter === 'All' || exercise.muscleGroup === selectedFilter;
+    const matchesFilter =
+      selectedFilter === 'All' ||
+      exercise.muscleGroup.toLowerCase() === selectedFilter.toLowerCase();
     return matchesSearch && matchesFilter;
   });
 
@@ -197,7 +200,7 @@ export function ReplaceExerciseModal({
                 const option: SelectorOption<string> = {
                   id: exercise.id,
                   label: exercise.name,
-                  description: `${exercise.muscleGroup} • ${exercise.type}`,
+                  description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
                   icon: IconComponent,
                   iconBgColor: theme.colors.background.iconDark,
                   iconColor: theme.colors.text.primary,

@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
+import Exercise from '../database/models/Exercise';
 import { SetData, SetRow } from './WorkoutHistorySetRow';
 
-export type ExerciseData = {
-  id: string;
-  name: string;
+/**
+ * Exercise data for display in workout history.
+ * Extends Exercise model fields with UI-specific properties.
+ */
+export type ExerciseData = Pick<Exercise, 'id' | 'name'> & {
   time: string;
   exerciseNumber: number;
   image?: any;

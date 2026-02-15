@@ -1,12 +1,14 @@
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
+import WorkoutLogSet from '../database/models/WorkoutLogSet';
 
-export type SetData = {
+/**
+ * Set data for display in workout history.
+ * Extends WorkoutLogSet model fields with UI-specific properties.
+ */
+export type SetData = Pick<WorkoutLogSet, 'weight' | 'reps' | 'partials'> & {
   setNumber: number;
-  weight: number;
-  reps: number;
-  partials: number;
   isCurrent?: boolean;
 };
 
@@ -80,14 +82,14 @@ export function SetRow({ set }: SetRowProps) {
         <Text
           className="text-sm tabular-nums"
           style={{
-            color: set.partials > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
+            color: (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
             fontWeight:
-              set.partials > 0
+              (set.partials ?? 0) > 0
                 ? theme.typography.fontWeight.bold
                 : theme.typography.fontWeight.normal,
           }}
         >
-          {set.partials > 0 ? `+${set.partials}` : '-'}
+          {(set.partials ?? 0) > 0 ? `+${set.partials}` : '-'}
         </Text>
       </View>
     </View>
