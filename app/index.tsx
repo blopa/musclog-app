@@ -32,6 +32,7 @@ import ShowMoreButton from '../components/ShowMoreButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
+import { type MealType } from '../database/models';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useUser } from '../hooks/useUser';
@@ -112,7 +113,7 @@ export default function HomeScreen() {
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
   const [isCameraVisible, setIsCameraVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<string>('');
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
     'ai-meal-photo'
   );

@@ -33,7 +33,7 @@ import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
-import NutritionLog from '../../database/models/NutritionLog';
+import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
 import { NutritionService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../../hooks/useNutritionLogs';
@@ -63,7 +63,7 @@ export default function FoodScreen() {
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState(t('food.meals.breakfast'));
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
@@ -295,7 +295,7 @@ export default function FoodScreen() {
     },
   ];
 
-  const handleAddFoodToMeal = (mealType: string) => {
+  const handleAddFoodToMeal = (mealType: MealType) => {
     setSelectedMealType(mealType);
     setIsFoodSearchModalVisible(true);
   };
@@ -476,7 +476,7 @@ export default function FoodScreen() {
                   totalProtein={dailyNutrients?.byMealType?.breakfast?.protein || 0}
                   totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
-                  onAddFood={() => handleAddFoodToMeal(t('food.meals.breakfast'))}
+                  onAddFood={() => handleAddFoodToMeal('breakfast')}
                 >
                   {mealsByType.breakfast.map((entry) => (
                     <FoodItemCard
@@ -501,7 +501,7 @@ export default function FoodScreen() {
                   totalProtein={dailyNutrients?.byMealType?.lunch?.protein || 0}
                   totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
-                  onAddFood={() => handleAddFoodToMeal(t('food.meals.lunch'))}
+                  onAddFood={() => handleAddFoodToMeal('lunch')}
                 >
                   {mealsByType.lunch.map((entry) => (
                     <FoodItemCard
@@ -526,7 +526,7 @@ export default function FoodScreen() {
                   totalProtein={dailyNutrients?.byMealType?.dinner?.protein || 0}
                   totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
-                  onAddFood={() => handleAddFoodToMeal(t('food.meals.dinner'))}
+                  onAddFood={() => handleAddFoodToMeal('dinner')}
                 >
                   {mealsByType.dinner.map((entry) => (
                     <FoodItemCard
@@ -551,7 +551,7 @@ export default function FoodScreen() {
                   totalProtein={dailyNutrients?.byMealType?.snack?.protein || 0}
                   totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
-                  onAddFood={() => handleAddFoodToMeal(t('food.meals.snacks'))}
+                  onAddFood={() => handleAddFoodToMeal('snack')}
                 >
                   {mealsByType.snack.map((entry) => (
                     <FoodItemCard
@@ -576,7 +576,7 @@ export default function FoodScreen() {
                   totalProtein={dailyNutrients?.byMealType?.other?.protein || 0}
                   totalCarbs={dailyNutrients?.byMealType?.other?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
-                  onAddFood={() => handleAddFoodToMeal(t('food.meals.other'))}
+                  onAddFood={() => handleAddFoodToMeal('other')}
                 >
                   {mealsByType.other.map((entry) => (
                     <FoodItemCard
@@ -608,15 +608,7 @@ export default function FoodScreen() {
           visible={isAddFoodModalVisible}
           onClose={() => setIsAddFoodModalVisible(false)}
           onMealTypeSelect={(mealType) => {
-            // Map meal type to display name
-            const mealTypeMap: Record<string, string> = {
-              breakfast: t('food.meals.breakfast'),
-              lunch: t('food.meals.lunch'),
-              dinner: t('food.meals.dinner'),
-              snack: t('food.meals.snacks'),
-              other: t('food.meals.other'),
-            };
-            setSelectedMealType(mealTypeMap[mealType] || t('food.meals.breakfast'));
+            setSelectedMealType(mealType);
             setIsAddFoodModalVisible(false);
             setIsFoodSearchModalVisible(true);
           }}

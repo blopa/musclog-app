@@ -34,7 +34,7 @@ type FoodItem = UnifiedFoodResult & {
 type FoodSearchModalProps = {
   visible: boolean;
   onClose: () => void;
-  mealType: string; // e.g., "Breakfast", "Lunch", etc.
+  mealType: MealType; // e.g., "Breakfast", "Lunch", etc.
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
@@ -443,7 +443,9 @@ export function FoodSearchModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('food.meals.addFoodTo', { meal: mealType })}
+      title={t('food.meals.addFoodTo', {
+        meal: t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`),
+      })}
       headerRight={headerRight}
       scrollable={false}
     >

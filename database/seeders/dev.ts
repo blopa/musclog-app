@@ -29,11 +29,11 @@ interface ExerciseJsonData {
  * Maps JSON exercise type to Exercise model fields
  */
 function mapExerciseType(type: ExerciseJsonData['type']): {
-  mechanicType: 'compound' | 'isolation';
-  equipmentType: string;
+  mechanicType: MechanicType;
+  equipmentType: EquipmentType;
 } {
-  let mechanicType: 'compound' | 'isolation' = 'compound';
-  let equipmentType: string;
+  let mechanicType: MechanicType = 'compound';
+  let equipmentType: EquipmentType;
 
   switch (type) {
     case 'compound':
@@ -56,7 +56,7 @@ function mapExerciseType(type: ExerciseJsonData['type']): {
       break;
     case 'cardio':
       mechanicType = 'compound';
-      equipmentType = 'cardio';
+      equipmentType = 'other'; // Cardio exercises don't have specific equipment type
       break;
     case 'plyometric':
       mechanicType = 'compound';
@@ -74,23 +74,23 @@ function mapExerciseType(type: ExerciseJsonData['type']): {
  * Infers equipment type from exercise name
  * This is a helper to improve accuracy of equipment type mapping
  */
-function inferEquipmentFromName(name: string, defaultEquipment: string): string {
+function inferEquipmentFromName(name: string, defaultEquipment: EquipmentType): EquipmentType {
   const lowerName = name.toLowerCase();
 
   if (lowerName.includes('dumbbell') || lowerName.includes('db ')) {
-    return 'dumbbell';
+    return 'dumbbell' as EquipmentType;
   }
   if (lowerName.includes('barbell') || lowerName.includes('bb ')) {
-    return 'barbell';
+    return 'barbell' as EquipmentType;
   }
   if (lowerName.includes('cable')) {
-    return 'cable';
+    return 'cable' as EquipmentType;
   }
   if (lowerName.includes('kettlebell')) {
-    return 'kettlebell';
+    return 'kettlebell' as EquipmentType;
   }
   if (lowerName.includes('machine') || lowerName.includes(' smith')) {
-    return 'machine';
+    return 'machine' as EquipmentType;
   }
 
   return defaultEquipment;
