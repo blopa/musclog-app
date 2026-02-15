@@ -49,6 +49,7 @@ import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { LogMealModal } from '../../components/modals/LogMealModal';
 import { Button } from '../../components/theme/Button';
 
 export default function ModalsTestScreen() {
@@ -177,6 +178,9 @@ export default function ModalsTestScreen() {
   const [isCreateFoodPortionVisible, setIsCreateFoodPortionVisible] = useState(false);
   // Browse Templates Modal
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
+
+  // Log Meal Modal
+  const [isLogMealVisible, setIsLogMealVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -882,6 +886,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Log Meal Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Log Meal Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for logging a meal with date and meal type selection.
+            </Text>
+            <Button
+              label="Open Log Meal Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsLogMealVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1313,6 +1331,23 @@ export default function ModalsTestScreen() {
         onClose={() => setIsBrowseTemplatesVisible(false)}
         onTemplateSelect={(template) => {
           console.log('Template selected:', template);
+        }}
+      />
+
+      <LogMealModal
+        visible={isLogMealVisible}
+        onClose={() => setIsLogMealVisible(false)}
+        meal={{
+          name: 'Chicken & Rice Bowl',
+          type: 'Lunch',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgHwqUjNwt7pYkcCh9wPuRU31RWGIrWYDLXPJDDNrfBXCFSKxpLBeHsDY16TfU5HYsaCTi-u_8B1BcbIYdVpvNuhGxsVBL6mCNOEdOm9Z6uc6BrRCTNKG8G21FwVcD2HxMmg7ZVVAum9UlrPxDk0ZHjSDSsPBEuBJbbT1-7j9oIW1b9AYpg7la8RmX9oyRxgronJChnW7EMtAf5uL_wGtwacJUegLjkb0p4zFxeHsy6NQNSXq6m33Z3QzW8d4I1-xTKsxWvehxV5Vi',
+          calories: 650,
+          protein: 45,
+          carbs: 60,
+          fat: 18,
+        }}
+        onLogMeal={(date, mealType) => {
+          console.log('Meal logged:', { date, mealType });
         }}
       />
     </SafeAreaView>
