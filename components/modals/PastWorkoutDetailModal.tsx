@@ -549,7 +549,7 @@ export default function PastWorkoutDetailModal({
         />
       ) : null}
 
-      {previewWorkoutData && (
+      {previewWorkoutData ? (
         <WorkoutSessionHistoryModal
           visible={isPreviewModalVisible}
           onClose={() => {
@@ -561,7 +561,7 @@ export default function PastWorkoutDetailModal({
           exercises={previewWorkoutData.exercises}
           isPreview={true}
         />
-      )}
+      ) : null}
     </>
   );
 }

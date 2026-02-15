@@ -348,7 +348,7 @@ export default function WorkoutsScreen() {
             setIsMenuVisible(false);
           }}
           onPreview={() => {
-            // TODO: open WorkoutSessionHistoryModal modal
+            // TODO: open WorkoutSessionHistoryModal modal with `isPreview` set to true
           }}
         />
       ) : null}

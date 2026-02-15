@@ -10,8 +10,8 @@ import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
-import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { Button } from '../theme/Button';
+import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
@@ -190,7 +190,7 @@ export function WorkoutSessionHistoryModal({
                 {workoutName}
               </Text>
             </View>
-            {!isPreview && (
+            {!isPreview ? (
               <View className="items-end">
                 <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
@@ -199,7 +199,7 @@ export function WorkoutSessionHistoryModal({
                   {t('workoutHistory.duration')}
                 </Text>
               </View>
-            )}
+            ) : null}
           </View>
 
           {/* Stats Pills */}
@@ -213,7 +213,7 @@ export function WorkoutSessionHistoryModal({
                 {totalVolume.toLocaleString()} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
-            {!isPreview && (
+            {!isPreview ? (
               <View
                 className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
                 style={{ backgroundColor: theme.colors.background.white5 }}
@@ -223,7 +223,7 @@ export function WorkoutSessionHistoryModal({
                   {completedSetsCount} {t('workoutHistory.setsDone')}
                 </Text>
               </View>
-            )}
+            ) : null}
           </View>
         </View>
 
@@ -247,7 +247,7 @@ export function WorkoutSessionHistoryModal({
         </View>
 
         {/* Start Workout Button (Preview Mode) */}
-        {isPreview && onStartWorkout && (
+        {isPreview && onStartWorkout ? (
           <View className="mt-4">
             <Button
               label={t('workoutHistory.startThisWorkout')}
@@ -257,7 +257,7 @@ export function WorkoutSessionHistoryModal({
               onPress={onStartWorkout}
             />
           </View>
-        )}
+        ) : null}
 
         {/* Bottom spacing */}
         <View className="h-8" />
