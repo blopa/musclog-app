@@ -392,6 +392,8 @@ export default function WorkoutsScreen() {
                 title={t('workouts.noSearchResults')}
                 description={t('workouts.noSearchResultsDescription', { query: searchQuery })}
                 iconGradient={false}
+                buttonLabel={t('workouts.noSearchResultsButtonLabel')}
+                onButtonPress={() => setSearchQuery('')}
               />
             ) : null}
 

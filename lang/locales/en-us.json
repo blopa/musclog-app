@@ -446,6 +446,7 @@
     "searchPlaceholder": "Search workouts...",
     "noSearchResults": "No workouts found",
     "noSearchResultsDescription": "No workouts match \"{{query}}\"",
+    "noSearchResultsButtonLabel": "Clear Search",
     "exercises": "Exercises",
     "addExercise": {
       "title": "Add Exercise",
