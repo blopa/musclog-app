@@ -149,7 +149,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              P: {food.protein}g
+              P: {Math.round((food.protein * amount) / 100)}g
             </Text>
             <Text
               style={{
@@ -158,7 +158,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              C: {food.carbs}g
+              C: {Math.round((food.carbs * amount) / 100)}g
             </Text>
             <Text
               style={{
@@ -167,7 +167,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              F: {food.fat}g
+              F: {Math.round((food.fat * amount) / 100)}g
             </Text>
           </View>
         </View>
