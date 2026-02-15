@@ -8,7 +8,7 @@ import { MacroCard } from './MacroCard';
 
 type CaloriesRemainingCardProps = {
   calories: {
-    remaining: number;
+    consumed: number;
     total: number;
     percentage: number;
   };
@@ -42,10 +42,10 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
     <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
       <View className="p-6">
         <View className="mb-6">
-          <Text className="mb-2 text-sm text-text-secondary">{t('food.caloriesRemaining')}</Text>
+          <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
           <View className="mb-1 flex-row items-baseline gap-2">
             <Text className="text-6xl font-bold text-text-primary">
-              {calories.remaining.toLocaleString('en-US', { useGrouping: false })}
+              {calories.consumed.toLocaleString('en-US', { useGrouping: false })}
             </Text>
             <Text className="text-2xl text-text-secondary">
               / {calories.total.toLocaleString('en-US', { useGrouping: false })}

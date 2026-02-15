@@ -148,7 +148,7 @@ export default function CardsTestScreen() {
 
         <TestSection title="Calories Remaining" subtitle="Monitor your calorie goals">
           <CaloriesRemainingCard
-            calories={{ remaining: 1800, total: 2200, percentage: 82 }}
+            calories={{ consumed: 1800, total: 2200, percentage: 82 }}
             macros={{
               protein: {
                 percentage: 40,

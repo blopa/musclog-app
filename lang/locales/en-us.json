@@ -63,7 +63,7 @@
       "today": "Today",
       "yesterday": "Yesterday"
     },
-    "caloriesRemaining": "Calories Remaining",
+    "calories": "Calories",
     "macros": {
       "protein": "Protein",
       "carbs": "Carbs",

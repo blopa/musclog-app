@@ -139,15 +139,14 @@ export default function FoodScreen() {
 
   const isScreenLoading = isLoading || isResolvingRelations;
 
-  // Calculate calories remaining and macros
+  // Calculate calories consumed and macros
   const caloriesData = useMemo(() => {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
     const consumedCalories = Math.ceil(dailyNutrients?.calories || 0);
-    const remainingCalories = Math.max(0, totalCalories - consumedCalories);
-    const percentage = Math.round((remainingCalories / totalCalories) * 100);
+    const percentage = Math.round((consumedCalories / totalCalories) * 100);
 
     return {
-      remaining: Math.ceil(remainingCalories),
+      consumed: consumedCalories,
       total: totalCalories,
       percentage,
     };
