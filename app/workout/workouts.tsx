@@ -1,6 +1,7 @@
+import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, WifiOff } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, View } from 'react-native';
 
@@ -15,6 +16,7 @@ import {
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import DashedButton from '../../components/theme/DashedButton';
@@ -23,7 +25,9 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { database } from '../../database';
+import Exercise from '../../database/models/Exercise';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
+import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
@@ -57,6 +61,11 @@ export default function WorkoutsScreen() {
     templateId: string;
     title: string;
   } | null>(null);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState<WorkoutTemplate | null>(null);
+  const [previewTemplateSets, setPreviewTemplateSets] = useState<WorkoutTemplateSet[]>([]);
+  const [previewExercises, setPreviewExercises] = useState<Exercise[]>([]);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   const { showSnackbar } = useSnackbar();
 
@@ -100,13 +109,16 @@ export default function WorkoutsScreen() {
 
   // Filter workouts based on active filter
   const filteredWorkouts = workouts.filter((workout) => {
-    if (activeFilter === 'all') return true;
+    if (activeFilter === 'all') {
+      return true;
+    }
+
     // Add filter logic based on workout type
     return true;
   });
 
   // Helper function to start a workout and show overview modal
-  const handleStartWorkout = async (templateId: string) => {
+  const handleStartWorkout = useCallback(async (templateId: string) => {
     try {
       const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
       setSelectedWorkoutLogId(workoutLog.id);
@@ -115,7 +127,52 @@ export default function WorkoutsScreen() {
       console.error('Error starting workout:', err);
       // Show error to user (you might want to add an alert here)
     }
-  };
+  }, []);
+
+  // Helper function to open preview modal
+  const handlePreviewWorkout = useCallback(async (templateId: string) => {
+    setIsLoadingPreview(true);
+    setIsMenuVisible(false);
+    try {
+      // Fetch template details
+      const { template, sets: templateSets } =
+        await WorkoutTemplateService.getTemplateWithDetails(templateId);
+
+      // Get unique exercise IDs from template sets
+      const exerciseIds = [
+        ...new Set(templateSets.map((set) => set.exerciseId).filter((id) => id !== undefined)),
+      ];
+
+      // Fetch exercises
+      const exercises = await database
+        .get<Exercise>('exercises')
+        .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      setPreviewTemplate(template);
+      setPreviewTemplateSets(templateSets);
+      setPreviewExercises(exercises);
+      setIsPreviewModalVisible(true);
+    } catch (err) {
+      console.error('Error loading workout preview:', err);
+      showSnackbar('error', t('common.error'));
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  }, [showSnackbar, t]);
+
+  // Helper function to start workout from preview
+  const handleStartWorkoutFromPreview = useCallback(async () => {
+    if (!previewTemplate) return;
+
+    setIsPreviewModalVisible(false);
+    try {
+      await handleStartWorkout(previewTemplate.id);
+    } catch (err) {
+      console.error('Error starting workout from preview:', err);
+      showSnackbar('error', t('common.error'));
+    }
+  }, [handleStartWorkout, previewTemplate, showSnackbar, t]);
 
   return (
     <MasterLayout>
@@ -348,7 +405,9 @@ export default function WorkoutsScreen() {
             setIsMenuVisible(false);
           }}
           onPreview={() => {
-            // TODO: open WorkoutSessionHistoryModal modal with `isPreview` set to true
+            if (selectedWorkoutId) {
+              handlePreviewWorkout(selectedWorkoutId);
+            }
           }}
         />
       ) : null}
@@ -477,6 +536,24 @@ export default function WorkoutsScreen() {
             // Navigate to workout summary
             router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
           }}
+        />
+      ) : null}
+
+      {/* Workout Preview Modal */}
+      {isPreviewModalVisible && previewTemplate ? (
+        <WorkoutSessionHistoryModal
+          visible={isPreviewModalVisible}
+          onClose={() => {
+            setIsPreviewModalVisible(false);
+            setPreviewTemplate(null);
+            setPreviewTemplateSets([]);
+            setPreviewExercises([]);
+          }}
+          isPreview={true}
+          workoutTemplate={previewTemplate}
+          templateSets={previewTemplateSets}
+          exercises={previewExercises}
+          onStartWorkout={handleStartWorkoutFromPreview}
         />
       ) : null}
     </MasterLayout>
