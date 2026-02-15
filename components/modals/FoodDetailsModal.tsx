@@ -112,10 +112,9 @@ export function FoodDetailsModal({
         carbs: food.carbs || 0,
         fat: food.fat || 0,
         fiber: food.fiber || 0,
-        sugars: 0,
-        saturatedFat: 0,
-        sodium: 0,
-        salt: 0,
+        sugar: food.micros?.sugar || 0,
+        saturatedFat: food.micros?.saturatedFat || 0,
+        sodium: food.micros?.sodium || 0,
       };
     }
 
@@ -129,10 +128,9 @@ export function FoodDetailsModal({
         fiber:
           (nutrients['carbohydrates-total'] as number) - (nutrients['carbohydrates'] as number) ||
           0,
-        sugars: (nutrients['sugars'] as number) || 0,
+        sugar: (nutrients['sugars'] as number) || 0,
         saturatedFat: (nutrients['saturated-fat'] as number) || 0,
-        sodium: (nutrients['sodium'] as number) || 0,
-        salt: (nutrients['salt'] as number) || 0,
+        sodium: (nutrients['sodium'] as number) || (nutrients['salt'] as number) || 0, // salt contains sodium, use sodium if available, otherwise salt
       };
     }
 
@@ -329,10 +327,9 @@ export function FoodDetailsModal({
         carbs: nutritionalData.carbs,
         fat: nutritionalData.fat,
         fiber: nutritionalData.fiber,
-        sugars: nutritionalData.sugars,
+        sugar: nutritionalData.sugar,
         saturatedFat: nutritionalData.saturatedFat,
         sodium: nutritionalData.sodium,
-        salt: nutritionalData.salt,
         isFavorite: isFavorite,
       });
 
@@ -376,10 +373,9 @@ export function FoodDetailsModal({
     nutritionalData.fat,
     nutritionalData.fiber,
     nutritionalData.protein,
-    nutritionalData.salt,
     nutritionalData.saturatedFat,
     nutritionalData.sodium,
-    nutritionalData.sugars,
+    nutritionalData.sugar,
     onAddFood,
     onClose,
     selectedDate,
@@ -468,10 +464,10 @@ export function FoodDetailsModal({
             <FoodInfoCard food={scaledFood} />
 
             {/* Additional Nutritional Info */}
-            {nutritionalData.fiber > 0 ||
-            nutritionalData.sugars > 0 ||
-            nutritionalData.saturatedFat > 0 ||
-            nutritionalData.salt > 0 ? (
+            {(nutritionalData.fiber ?? 0) > 0 ||
+            (nutritionalData.sugar ?? 0) > 0 ||
+            (nutritionalData.saturatedFat ?? 0) > 0 ||
+            (nutritionalData.sodium ?? 0) > 0 ? (
               <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
                 <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
                   {t('food.foodDetails.additionalNutrition')}
@@ -485,13 +481,13 @@ export function FoodDetailsModal({
                       </Text>
                     </View>
                   ) : null}
-                  {nutritionalData.sugars > 0 ? (
+                  {(nutritionalData.sugar ?? 0) > 0 ? (
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-text-secondary">
                         {t('food.foodDetails.sugars')}
                       </Text>
                       <Text className="text-sm font-medium text-text-primary">
-                        {Math.round(nutritionalData.sugars * (servingSize / 100) * 10) / 10}g
+                        {Math.round((nutritionalData.sugar ?? 0) * (servingSize / 100) * 10) / 10}g
                       </Text>
                     </View>
                   ) : null}
@@ -505,13 +501,13 @@ export function FoodDetailsModal({
                       </Text>
                     </View>
                   ) : null}
-                  {nutritionalData.salt > 0 ? (
+                  {nutritionalData.sodium > 0 ? (
                     <View className="flex-row justify-between">
                       <Text className="text-sm text-text-secondary">
                         {t('food.foodDetails.salt')}
                       </Text>
                       <Text className="text-sm font-medium text-text-primary">
-                        {Math.round(nutritionalData.salt * (servingSize / 100) * 1000) / 1000}g
+                        {Math.round(nutritionalData.sodium * (servingSize / 100) * 1000) / 1000}g
                       </Text>
                     </View>
                   ) : null}

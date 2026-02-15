@@ -5,8 +5,8 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import UserMetric from '../database/models/UserMetric';
 import { UserMetricService } from '../database/services';
-import { useSettings } from './useSettings';
 import { MetricType } from '../services/healthDataTransform';
+import { useSettings } from './useSettings';
 
 export interface UserMetrics {
   weight?: number;

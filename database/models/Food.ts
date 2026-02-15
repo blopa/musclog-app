@@ -48,10 +48,6 @@ export interface MicrosData {
   riboflavin?: number;
   potassium?: number;
 
-  // Legacy fields for backward compatibility
-  sugars?: number;
-  salt?: number;
-
   [key: string]: number | undefined;
 }
 
@@ -125,10 +121,6 @@ export default class Food extends Model {
         sodium: typeof data.sodium === 'number' ? data.sodium : undefined,
         riboflavin: typeof data.riboflavin === 'number' ? data.riboflavin : undefined,
         potassium: typeof data.potassium === 'number' ? data.potassium : undefined,
-
-        // Legacy fields for backward compatibility
-        sugars: typeof data.sugars === 'number' ? data.sugars : undefined,
-        salt: typeof data.salt === 'number' ? data.salt : undefined,
       };
     }
     return {};

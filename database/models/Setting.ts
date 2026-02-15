@@ -4,7 +4,6 @@ import { field } from '@nozbe/watermelondb/decorators';
 export type SettingType =
   | 'theme'
   | 'unit_system'
-  | 'units' // Legacy support
   | 'language'
   | 'notifications_enabled'
   | 'workout_reminder'

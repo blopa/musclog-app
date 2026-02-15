@@ -18,10 +18,9 @@ export class FoodService {
       carbs: number;
       fat: number;
       fiber?: number;
-      sugars?: number;
+      sugar?: number;
       saturatedFat?: number;
       sodium?: number;
-      salt?: number;
       isFavorite?: boolean;
     }
   ): Promise<Food> {
@@ -59,10 +58,9 @@ export class FoodService {
 
         // Store micros
         const micros = {
-          sugars: nutritionData.sugars,
+          sugar: nutritionData.sugar,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
-          salt: nutritionData.salt,
         };
 
         food.micros = Object.fromEntries(
@@ -99,10 +97,9 @@ export class FoodService {
       carbs: number;
       fat: number;
       fiber?: number;
-      sugars?: number;
+      sugar?: number;
       saturatedFat?: number;
       sodium?: number;
-      salt?: number;
     },
     brand?: string,
     servingAmount: number = 100,
@@ -145,10 +142,9 @@ export class FoodService {
 
         // Store micros
         const micros = {
-          sugars: nutritionData.sugars,
+          sugar: nutritionData.sugar,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
-          salt: nutritionData.salt,
         };
 
         food.micros = Object.fromEntries(
