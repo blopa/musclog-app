@@ -1,13 +1,11 @@
 import { Check, PlusCircle, Search } from 'lucide-react-native';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  Platform,
   Pressable,
   ScrollView,
   Text,
-  TextInput as RNTextInput,
   View,
 } from 'react-native';
 
@@ -15,15 +13,16 @@ import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
+import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodResultCardProps = {
   food: Food;
   isSelected: boolean;
-  amount: string;
+  amount: number;
   onToggle: () => void;
-  onAmountChange: (value: string) => void;
+  onAmountChange: (value: number) => void;
 };
 
 function FoodResultCard({
@@ -35,38 +34,7 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = Math.round((food.calories * (parseInt(amount) || 0)) / 100);
-  const amountInputRef = useRef<RNTextInput>(null);
-  const [selection, setSelection] = useState<{ start: number; end: number } | undefined>(undefined);
-
-  const handleAmountFocus = () => {
-    // Select all text on focus
-    if (amountInputRef.current && amount) {
-      const length = amount.length;
-      setSelection({ start: 0, end: length });
-
-      // For iOS, use selectTextOnFocus prop, but we'll handle it with selection
-      // For Android, we need to use setNativeProps
-      if (Platform.OS === 'android') {
-        setTimeout(() => {
-          amountInputRef.current?.setNativeProps({
-            selection: { start: 0, end: length },
-          });
-        }, 0);
-      }
-    }
-  };
-
-  const handleAmountChange = (value: string) => {
-    // Clear selection when user starts typing so they can type normally
-    setSelection(undefined);
-    onAmountChange(value);
-  };
-
-  const handleAmountBlur = () => {
-    // Clear selection on blur
-    setSelection(undefined);
-  };
+  const calories = Math.round((food.calories * amount) / 100);
 
   return (
     <View
@@ -213,60 +181,16 @@ function FoodResultCard({
             borderTopWidth: theme.borderWidth.thin,
             borderStyle: 'dashed',
             borderColor: theme.colors.border.light,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
           }}
         >
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              fontWeight: theme.typography.fontWeight.medium,
-              color: theme.colors.text.secondary,
-            }}
-          >
-            {t('food.addFoodItemToMeal.amount')}
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: theme.colors.background.secondaryDark,
-              borderRadius: theme.borderRadius.sm,
-              paddingHorizontal: theme.spacing.padding.sm,
-              height: theme.components.button.height.sm,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: 'transparent',
-            }}
-          >
-            {/*OBS: this one can stay unthemed for now*/}
-            <RNTextInput
-              ref={amountInputRef}
-              value={amount}
-              onChangeText={handleAmountChange}
-              onFocus={handleAmountFocus}
-              onBlur={handleAmountBlur}
-              selection={selection}
-              keyboardType="numeric"
-              style={{
-                width: 80,
-                textAlign: 'center',
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.bold,
-                fontSize: theme.typography.fontSize.sm,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.primary,
-                paddingRight: theme.spacing.padding.xs,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
-            >
-              g
-            </Text>
-          </View>
+          <StepperInput
+            label={t('food.addFoodItemToMeal.amount')}
+            value={amount}
+            onChangeValue={onAmountChange}
+            onIncrement={() => onAmountChange(amount + 1)}
+            onDecrement={() => onAmountChange(Math.max(0, amount - 1))}
+            unit="g"
+          />
         </View>
       ) : null}
     </View>
@@ -288,7 +212,7 @@ export function AddFoodItemToMealModal({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
-    Record<string, { selected: boolean; amount: string }>
+    Record<string, { selected: boolean; amount: number }>
   >({});
 
   // Fetch foods from database
@@ -304,7 +228,7 @@ export function AddFoodItemToMealModal({
     return foods.reduce((acc, food) => {
       const selection = selectedItems[food.id];
       if (selection?.selected) {
-        return acc + Math.round((food.calories * (parseInt(selection.amount) || 0)) / 100);
+        return acc + Math.round((food.calories * selection.amount) / 100);
       }
 
       return acc;
@@ -313,7 +237,7 @@ export function AddFoodItemToMealModal({
 
   const toggleItem = (id: string) => {
     setSelectedItems((prev) => {
-      const current = prev[id] || { selected: false, amount: '100' };
+      const current = prev[id] || { selected: false, amount: 100 };
       return {
         ...prev,
         [id]: { ...current, selected: !current.selected },
@@ -321,17 +245,17 @@ export function AddFoodItemToMealModal({
     });
   };
 
-  const updateAmount = (id: string, amount: string) => {
+  const updateAmount = (id: string, amount: number) => {
     setSelectedItems((prev) => ({
       ...prev,
-      [id]: { ...(prev[id] || { selected: true, amount: '100' }), amount },
+      [id]: { ...(prev[id] || { selected: true, amount: 100 }), amount },
     }));
   };
 
   const handleAdd = () => {
     const foodsToAdd = foods.filter((f) => selectedItems[f.id]?.selected).map((f) => ({
       food: f,
-      amount: parseInt(selectedItems[f.id].amount) || 0,
+      amount: selectedItems[f.id].amount || 0,
     }));
     onAddFoods?.(foodsToAdd);
     onClose();
@@ -449,7 +373,7 @@ export function AddFoodItemToMealModal({
                 key={food.id}
                 food={food}
                 isSelected={!!selectedItems[food.id]?.selected}
-                amount={selectedItems[food.id]?.amount || '100'}
+                amount={selectedItems[food.id]?.amount || 100}
                 onToggle={() => toggleItem(food.id)}
                 onAmountChange={(val) => updateAmount(food.id, val)}
               />
