@@ -235,6 +235,22 @@ export function WorkoutSessionHistoryModal({
     return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
   }, [isPreview, sets]);
 
+  // Prepare footer content for preview mode
+  const footerContent = useMemo(() => {
+    if (isPreview && onStartWorkout) {
+      return (
+        <Button
+          label={t('workoutHistory.startThisWorkout')}
+          variant="accent"
+          size="md"
+          width="full"
+          onPress={onStartWorkout}
+        />
+      );
+    }
+    return null;
+  }, [isPreview, onStartWorkout, t]);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -245,6 +261,7 @@ export function WorkoutSessionHistoryModal({
           <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
       }
+      footer={footerContent}
     >
       <View className="gap-6 px-4 pb-8 pt-4">
         {/* Workout Summary */}
@@ -318,20 +335,6 @@ export function WorkoutSessionHistoryModal({
             <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
           )}
         </View>
-
-        {/* TODO: show this using the FullScreenModal footer */}
-        {isPreview && onStartWorkout ? (
-          <View className="mt-4">
-            <Button
-              label={t('workoutHistory.startThisWorkout')}
-              variant="accent"
-              size="md"
-              width="full"
-              onPress={onStartWorkout}
-            />
-          </View>
-        ) : null}
-
         {/* Bottom spacing */}
         <View className="h-8" />
       </View>
