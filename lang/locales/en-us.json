@@ -99,7 +99,13 @@
       "other": "Other",
       "addFood": "Add Food",
       "addFoodTo": "Add food to {{meal}}",
-      "trackOther": "Track Other"
+      "trackOther": "Track Other",
+      "descriptions": {
+        "breakfast": "Start your day",
+        "lunch": "Midday meal",
+        "dinner": "Evening meal",
+        "snack": "Light bite"
+      }
     },
     "addFoodModal": {
       "title": "Add Food",

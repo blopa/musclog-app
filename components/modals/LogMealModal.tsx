@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import { Apple, Check, Coffee, Moon, Utensils } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,6 @@ import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
-import type { TFunction } from 'i18next';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
@@ -29,36 +29,35 @@ type LogMealModalProps = {
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
-// TODO: translate texts
 const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
   {
     id: 'breakfast',
-    label: 'Breakfast',
-    description: 'Start your day',
+    label: t('food.meals.breakfast'),
+    description: t('food.meals.descriptions.breakfast'),
     icon: Coffee,
     iconBgColor: theme.colors.status.warning10,
     iconColor: theme.colors.status.warning,
   },
   {
     id: 'lunch',
-    label: 'Lunch',
-    description: 'Midday meal',
+    label: t('food.meals.lunch'),
+    description: t('food.meals.descriptions.lunch'),
     icon: Utensils,
     iconBgColor: theme.colors.status.info10,
     iconColor: theme.colors.status.info,
   },
   {
     id: 'dinner',
-    label: 'Dinner',
-    description: 'Evening meal',
+    label: t('food.meals.dinner'),
+    description: t('food.meals.descriptions.dinner'),
     icon: Moon,
     iconBgColor: theme.colors.status.purple10,
     iconColor: theme.colors.status.purple,
   },
   {
     id: 'snack',
-    label: 'Snack',
-    description: 'Light bite',
+    label: t('food.meals.snacks'),
+    description: t('food.meals.descriptions.snack'),
     icon: Apple,
     iconBgColor: theme.colors.status.success20,
     iconColor: theme.colors.status.success,
