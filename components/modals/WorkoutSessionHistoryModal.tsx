@@ -11,6 +11,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
+import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
@@ -23,14 +24,9 @@ export type WorkoutHistoryModalProps = {
   exercises?: Exercise[];
   currentSetOrder?: number | null;
   isPreview?: boolean;
+  onStartWorkout?: () => void;
 };
 
-// TODO: if `isPreview` is on, then we should:
-// - not show the workout timer
-// - change all copies from "session" and/or "history" to something else - the idea is that the user
-//   is previewing the workout
-// - do not show amount of "done sets"
-// - add a button to start this workout
 export function WorkoutSessionHistoryModal({
   visible,
   onClose,
@@ -38,7 +34,8 @@ export function WorkoutSessionHistoryModal({
   sets = [],
   exercises = [],
   currentSetOrder = null,
-  isPreview = false, // TODO: implement usage of isPreview prop
+  isPreview = false,
+  onStartWorkout,
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -169,7 +166,7 @@ export function WorkoutSessionHistoryModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('workoutHistory.title')}
+      title={isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title')}
       headerRight={
         <Pressable className="rounded-full p-2">
           <Share2 size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -185,20 +182,24 @@ export function WorkoutSessionHistoryModal({
                 className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
                 style={{ color: theme.colors.accent.primary }}
               >
-                {t('workoutHistory.workoutInProgress')}
+                {isPreview
+                  ? t('workoutHistory.previewSubtitle')
+                  : t('workoutHistory.workoutInProgress')}
               </Text>
               <Text className="text-3xl font-bold leading-tight text-text-primary">
                 {workoutName}
               </Text>
             </View>
-            <View className="items-end">
-              <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
-                {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
-              </Text>
-              <Text className="text-sm font-medium text-text-secondary">
-                {t('workoutHistory.duration')}
-              </Text>
-            </View>
+            {!isPreview && (
+              <View className="items-end">
+                <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
+                  {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
+                </Text>
+                <Text className="text-sm font-medium text-text-secondary">
+                  {t('workoutHistory.duration')}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Stats Pills */}
@@ -212,15 +213,17 @@ export function WorkoutSessionHistoryModal({
                 {totalVolume.toLocaleString()} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
-            <View
-              className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
-              style={{ backgroundColor: theme.colors.background.white5 }}
-            >
-              <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
-              <Text className="text-sm font-semibold text-text-secondary">
-                {completedSetsCount} {t('workoutHistory.setsDone')}
-              </Text>
-            </View>
+            {!isPreview && (
+              <View
+                className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+                style={{ backgroundColor: theme.colors.background.white5 }}
+              >
+                <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                <Text className="text-sm font-semibold text-text-secondary">
+                  {completedSetsCount} {t('workoutHistory.setsDone')}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -242,6 +245,19 @@ export function WorkoutSessionHistoryModal({
             <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
           )}
         </View>
+
+        {/* Start Workout Button (Preview Mode) */}
+        {isPreview && onStartWorkout && (
+          <View className="mt-4">
+            <Button
+              label={t('workoutHistory.startThisWorkout')}
+              variant="accent"
+              size="md"
+              width="full"
+              onPress={onStartWorkout}
+            />
+          </View>
+        )}
 
         {/* Bottom spacing */}
         <View className="h-8" />

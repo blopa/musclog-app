@@ -468,6 +468,7 @@ export default function PastWorkoutDetailModal({
         onEdit={onEdit}
         onShare={onShare}
         onDelete={onDelete}
+        onPreview={() => {}} // TODO: open WorkoutSessionHistoryModal modal
       />
       {editingExerciseId ? (
         <EditPastWorkoutDataModal

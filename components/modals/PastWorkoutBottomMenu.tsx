@@ -11,6 +11,7 @@ type PastWorkoutBottomMenuProps = {
   onEdit?: () => void;
   onShare?: () => void;
   onDelete?: () => void;
+  onPreview?: () => void;
 };
 
 export function PastWorkoutBottomMenu({
@@ -20,11 +21,13 @@ export function PastWorkoutBottomMenu({
   onEdit,
   onShare,
   onDelete,
+  onPreview,
 }: PastWorkoutBottomMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
   const menuItems: BottomPopUpMenuItem[] = [
+    // TODO: add option to preview workout
     {
       icon: Pencil,
       iconColor: theme.colors.text.primary,
