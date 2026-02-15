@@ -3,16 +3,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { MealItemCard } from '../../components/cards/MealItemCard';
-import type { PersonalInfo } from '../../components/EditPersonalInfoBody';
-import { FilterTabs } from '../../components/FilterTabs';
-import { MasterLayout } from '../../components/MasterLayout';
-import { AddMealModal } from '../../components/modals/AddMealModal';
-import { CreateMealModal } from '../../components/modals/CreateMealModal';
-import { FullScreenModal } from '../../components/modals/FullScreenModal';
-import { LogMealModal } from '../../components/modals/LogMealModal';
-import { MenuButton } from '../../components/theme/MenuButton';
-import { TextInput } from '../../components/theme/TextInput';
+import { MealItemCard } from '../cards/MealItemCard';
+import type { PersonalInfo } from '../EditPersonalInfoBody';
+import { FilterTabs } from '../FilterTabs';
+import { MasterLayout } from '../MasterLayout';
+import { AddMealModal } from './AddMealModal';
+import { CreateMealModal } from './CreateMealModal';
+import { FullScreenModal } from './FullScreenModal';
+import { LogMealModal } from './LogMealModal';
+import { MenuButton } from '../theme/MenuButton';
+import { TextInput } from '../theme/TextInput';
 import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
@@ -143,12 +143,12 @@ function LogMealModalWrapper({
   );
 }
 
-type MyMealsScreenProps = {
+type MyMealsModalProps = {
   visible: boolean;
   onClose: () => void;
 };
 
-export default function MyMealsScreen({ visible, onClose }: MyMealsScreenProps) {
+export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [activeFilter, setActiveFilter] = useState('all');
