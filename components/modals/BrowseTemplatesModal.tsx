@@ -72,9 +72,10 @@ const getNormalizedTemplates = (t: TFunction) => {
         totalSets = item.sets;
       }
 
+      // TODO: Use i18next pluralization so translations can include the number and handle pluralization rules
       const setsText = totalSets
-        // Use i18next pluralization so translations can include the number and handle pluralization rules
-        ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
+        ?
+          t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
         : '';
 
       const iconKey = (item.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
