@@ -11,6 +11,8 @@ import WorkoutLog from '../models/WorkoutLog';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
 import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateRepository';
+import { UserMetricService } from './UserMetricService';
+import { UserService } from './UserService';
 
 export type ExerciseInWorkout = {
   id: string; // exerciseId
@@ -453,6 +455,55 @@ export class WorkoutTemplateService {
   }
 
   /**
+   * Calculate suggested weight for an exercise based on user profile and exercise characteristics
+   */
+  private static calculateSuggestedWeight(
+    userWeightKg: number,
+    loadMultiplier: number,
+    liftingExperience: string,
+    age: number,
+    isBodyweight: boolean
+  ): number {
+    // Bodyweight exercises always return 0
+    if (isBodyweight || loadMultiplier === 0) {
+      return 0;
+    }
+
+    // Experience factor: beginners start lighter, advanced lift at full capacity
+    let experienceFactor: number;
+    switch (liftingExperience) {
+      case 'beginner':
+        experienceFactor = 0.55;
+        break;
+      case 'intermediate':
+        experienceFactor = 0.8;
+        break;
+      case 'advanced':
+        experienceFactor = 1.0;
+        break;
+      default:
+        // Unknown experience level, default to intermediate
+        experienceFactor = 0.8;
+    }
+
+    // Age factor: slight reduction for older users (recovery/safety)
+    let ageFactor: number;
+    if (age < 35) {
+      ageFactor = 1.0;
+    } else if (age < 50) {
+      ageFactor = 0.95;
+    } else {
+      ageFactor = 0.9;
+    }
+
+    // Calculate suggested weight: userWeight × loadMultiplier × experienceFactor × ageFactor
+    const suggestedWeight = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
+
+    // Round to 1 decimal place
+    return Math.round(suggestedWeight * 10) / 10;
+  }
+
+  /**
    * Create workout templates from a JSON template, splitting by day
    * Each day becomes a separate workout template
    */
@@ -477,6 +528,26 @@ export class WorkoutTemplateService {
     if (exercises.length === 0) {
       throw new Error('Template has no valid exercises');
     }
+
+    // Fetch user context for weight calculation
+    const user = await UserService.getCurrentUser();
+    const weightMetric = await UserMetricService.getLatest('weight');
+
+    // Convert user weight to kg (default to 70 kg if not available)
+    let userWeightKg = 70; // Default fallback
+    if (weightMetric) {
+      userWeightKg = weightMetric.value;
+      // Convert from lbs to kg if needed
+      if (weightMetric.unit === 'lbs') {
+        userWeightKg = weightMetric.value / 2.20462;
+      }
+    }
+
+    // Get user lifting experience (default to 'intermediate' if not available)
+    const liftingExperience = user?.liftingExperience || 'intermediate';
+
+    // Get user age (default to 30 if not available, which gives ageFactor 1.0)
+    const age = user ? user.getAge() : 30;
 
     // Get all exercises from database ordered by creation time
     // This assumes exercises are seeded in the same order as the JSON exerciseId indices
@@ -546,6 +617,16 @@ export class WorkoutTemplateService {
           : theme.colors.accent.primary10;
         const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 
+        // Calculate suggested weight based on user profile and exercise characteristics
+        const loadMultiplier = dbExercise.loadMultiplier ?? 1.0;
+        const suggestedWeight = this.calculateSuggestedWeight(
+          userWeightKg,
+          loadMultiplier,
+          liftingExperience,
+          age,
+          isBodyweight
+        );
+
         exercisesInWorkout.push({
           id: databaseExerciseId,
           label: dbExercise.name ?? '',
@@ -555,7 +636,7 @@ export class WorkoutTemplateService {
           iconColor,
           sets: exerciseData.sets,
           reps: exerciseData.reps,
-          weight: 50, // TODO: calculate this based on the lifting experience, age and weight of the user and the load_multiplier present on the exercise from the database
+          weight: suggestedWeight,
           isBodyweight,
         });
       }
