@@ -1,8 +1,10 @@
-import { Apple, CheckCircle2, Egg, Info, Plus, Trash2 } from 'lucide-react-native';
-import { ElementType, useState } from 'react';
+import { Apple, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'react-native';
 
+import Food from '../../database/models/Food';
+import { MealService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
@@ -10,42 +12,19 @@ import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type Ingredient = {
-  id: string;
+  foodId: string;
   name: string;
-  amount: string;
+  amount: number; // in grams
   calories: number;
-  icon: ElementType;
+  protein: number;
+  carbs: number;
+  fat: number;
 };
-
-// TODO; remove mocked data and make this modal work for real
-const INITIAL_INGREDIENTS: Ingredient[] = [
-  {
-    id: '1',
-    name: 'Large Whole Eggs',
-    amount: '2 large',
-    calories: 143,
-    icon: Egg,
-  },
-  {
-    id: '2',
-    name: 'Sourdough Toast',
-    amount: '2 slices',
-    calories: 180,
-    icon: Info, // Using Info as a fallback for bakery
-  },
-  {
-    id: '3',
-    name: 'Avocado',
-    amount: '1/2 medium',
-    calories: 114,
-    icon: Apple, // Using Apple as a fallback for nutrition/fruit
-  },
-];
 
 type CreateMealModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSave?: (mealData: any) => void;
+  onSave?: () => void; // Callback to refresh meals list
 };
 
 const MacroCard = ({
@@ -118,12 +97,20 @@ const MacroCard = ({
 
 // Local component for Meal Macros Summary
 const MealMacrosSummary = ({
+  calories,
   macros,
 }: {
+  calories: number;
   macros: { protein: number; carbs: number; fat: number };
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  
+  // Calculate progress percentages (simple estimation)
+  const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
+  const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
+  const fatProgress = Math.min((macros.fat / 80) * 100, 100);
+  
   return (
     <View
       style={{
@@ -189,7 +176,7 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
               }}
             >
-              854 {t('common.kcal')}
+              {Math.round(calories)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -219,20 +206,20 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={t('food.macros.protein')}
-            value="62g"
-            progress={70}
+            value={`${Math.round(macros.protein)}g`}
+            progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
             label={t('food.macros.carbs')}
-            value="95g"
-            progress={45}
+            value={`${Math.round(macros.carbs)}g`}
+            progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
             label={t('food.macros.fat')}
-            value="24g"
-            progress={30}
+            value={`${Math.round(macros.fat)}g`}
+            progress={fatProgress}
             color={theme.colors.status.amber}
           />
         </View>
@@ -246,21 +233,99 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   const { t } = useTranslation();
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [ingredients, setIngredients] = useState<Ingredient[]>(INITIAL_INGREDIENTS);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    onSave?.({
-      name: mealName,
-      ingredients,
-      totalCalories: 854,
-      macros: { protein: 62, carbs: 95, fat: 24 },
-    });
-    onClose();
+  // Calculate total macros from ingredients
+  const totalMacros = useMemo(() => {
+    const totals = ingredients.reduce(
+      (acc, ingredient) => ({
+        calories: acc.calories + ingredient.calories,
+        protein: acc.protein + ingredient.protein,
+        carbs: acc.carbs + ingredient.carbs,
+        fat: acc.fat + ingredient.fat,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    );
+    return totals;
+  }, [ingredients]);
+
+  const handleSave = async () => {
+    // Validate meal name
+    if (!mealName.trim()) {
+      Alert.alert(
+        t('food.createMeal.error'),
+        t('food.createMeal.mealNameRequired'),
+        [{ text: t('common.ok') }]
+      );
+      return;
+    }
+
+    // Validate ingredients
+    if (ingredients.length === 0) {
+      Alert.alert(
+        t('food.createMeal.error'),
+        t('food.createMeal.ingredientsRequired'),
+        [{ text: t('common.ok') }]
+      );
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // Create meal with foods using MealService
+      await MealService.createMealFromFoods(
+        mealName.trim(),
+        ingredients.map((ing) => ({
+          foodId: ing.foodId,
+          amount: ing.amount,
+        })),
+        '' // No description for now
+      );
+
+      // Callback to refresh meals list
+      onSave?.();
+      
+      // Reset form
+      setMealName('');
+      setIngredients([]);
+      
+      // Close modal
+      onClose();
+    } catch (error) {
+      console.error('Error saving meal:', error);
+      Alert.alert(
+        t('food.createMeal.error'),
+        t('food.createMeal.saveFailed'),
+        [{ text: t('common.ok') }]
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const removeIngredient = (id: string) => {
-    setIngredients((prev) => prev.filter((item) => item.id !== id));
+  const removeIngredient = (foodId: string) => {
+    setIngredients((prev) => prev.filter((item) => item.foodId !== foodId));
+  };
+
+  const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
+    const newIngredients: Ingredient[] = selectedFoods.map((item) => {
+      // Calculate nutrients based on amount (per 100g base)
+      const multiplier = item.amount / 100;
+      return {
+        foodId: item.food.id,
+        name: item.food.name ?? 'Unknown',
+        amount: item.amount,
+        calories: item.food.calories * multiplier,
+        protein: item.food.protein * multiplier,
+        carbs: item.food.carbs * multiplier,
+        fat: item.food.fat * multiplier,
+      };
+    });
+
+    setIngredients((prev) => [...prev, ...newIngredients]);
+    setIsAddFoodVisible(false);
   };
 
   return (
@@ -272,13 +337,19 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
-            label={t('food.createMeal.saveMeal')}
+            label={isSaving ? t('common.saving') : t('food.createMeal.saveMeal')}
             variant="gradientCta"
             size="md"
             width="full"
-            icon={CheckCircle2}
+            icon={isSaving ? undefined : CheckCircle2}
             onPress={handleSave}
+            disabled={isSaving}
           />
+          {isSaving ? (
+            <View style={{ position: 'absolute', right: theme.spacing.padding.xl, top: theme.spacing.padding.lg }}>
+              <ActivityIndicator size="small" color={theme.colors.text.black} />
+            </View>
+          ) : null}
         </View>
       }
     >
@@ -330,7 +401,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
         </View>
 
         {/* Total Nutrition Card */}
-        <MealMacrosSummary macros={{ protein: 62, carbs: 95, fat: 24 }} />
+        <MealMacrosSummary calories={totalMacros.calories} macros={totalMacros} />
 
         {/* Ingredients Section */}
         <View className="mb-6">
@@ -362,11 +433,28 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
           </View>
 
           <View style={{ gap: theme.spacing.gap.md }}>
-            {ingredients.map((item) => {
-              const Icon = item.icon;
-              return (
+            {ingredients.length === 0 ? (
+              <View
+                style={{
+                  padding: theme.spacing.padding.xl,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.text.tertiary,
+                    textAlign: 'center',
+                  }}
+                >
+                  {t('food.createMeal.noIngredients')}
+                </Text>
+              </View>
+            ) : (
+              ingredients.map((item) => (
                 <View
-                  key={item.id}
+                  key={item.foodId}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -390,7 +478,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                       marginRight: theme.spacing.padding.md,
                     }}
                   >
-                    <Icon size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                    <Apple size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text
@@ -416,7 +504,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {item.amount}
+                        {Math.round(item.amount)}g
                       </Text>
                       <View
                         style={{
@@ -432,16 +520,16 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {item.calories} {t('common.kcal')}
+                        {Math.round(item.calories)} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>
-                  <Pressable onPress={() => removeIngredient(item.id)} className="p-2">
+                  <Pressable onPress={() => removeIngredient(item.foodId)} className="p-2">
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>
-              );
-            })}
+              ))
+            )}
 
             <Pressable
               onPress={() => setIsAddFoodVisible(true)}
@@ -493,12 +581,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
         <AddFoodItemToMealModal
           visible={isAddFoodVisible}
           onClose={() => setIsAddFoodVisible(false)}
-          onAddFoods={(foods) => {
-            console.log('Foods added to meal:', foods);
-            // Here you would typically add these to the ingredients state
-            // but for now we just close the modal as per the prompt
-            setIsAddFoodVisible(false);
-          }}
+          onAddFoods={handleAddFoods}
         />
       ) : null}
     </FullScreenModal>

@@ -2,6 +2,7 @@ import { Check, PlusCircle, Search } from 'lucide-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   Platform,
   Pressable,
   ScrollView,
@@ -10,71 +11,15 @@ import {
   View,
 } from 'react-native';
 
+import Food from '../../database/models/Food';
+import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
-type FoodResult = {
-  id: string;
-  name: string;
-  description: string;
-  caloriesPer100g: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-};
-
-const SEARCH_RESULTS: FoodResult[] = [
-  {
-    id: '1',
-    name: 'Chicken Breast',
-    description: 'Raw, boneless, skinless • 100g',
-    caloriesPer100g: 165,
-    protein: 31,
-    carbs: 0,
-    fat: 3.6,
-  },
-  {
-    id: '2',
-    name: 'Chicken Thigh',
-    description: 'Raw, skinless • 100g',
-    caloriesPer100g: 209,
-    protein: 26,
-    carbs: 0,
-    fat: 10.9,
-  },
-  {
-    id: '3',
-    name: 'Roasted Chicken',
-    description: 'Meat only, cooked • 100g',
-    caloriesPer100g: 237,
-    protein: 27,
-    carbs: 0,
-    fat: 13.5,
-  },
-  {
-    id: '4',
-    name: 'Chicken Wings',
-    description: 'Raw, with skin • 100g',
-    caloriesPer100g: 203,
-    protein: 18,
-    carbs: 0,
-    fat: 14,
-  },
-  {
-    id: '5',
-    name: 'Chicken Soup',
-    description: 'Homemade • 100g',
-    caloriesPer100g: 36,
-    protein: 2.5,
-    carbs: 3.5,
-    fat: 1.2,
-  },
-];
-
 type FoodResultCardProps = {
-  food: FoodResult;
+  food: Food;
   isSelected: boolean;
   amount: string;
   onToggle: () => void;
@@ -90,7 +35,7 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = Math.round((food.caloriesPer100g * (parseInt(amount) || 0)) / 100);
+  const calories = Math.round((food.calories * (parseInt(amount) || 0)) / 100);
   const amountInputRef = useRef<RNTextInput>(null);
   const [selection, setSelection] = useState<{ start: number; end: number } | undefined>(undefined);
 
@@ -206,7 +151,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${food.caloriesPer100g} ${t('common.kcal')}`}
+                  : `${Math.round(food.calories)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -218,7 +163,7 @@ function FoodResultCard({
               marginTop: theme.size.xs,
             }}
           >
-            {food.description}
+            {food.brand ? `${food.brand} • ` : ''}100g serving
           </Text>
 
           <View
@@ -331,7 +276,7 @@ function FoodResultCard({
 type AddFoodItemToMealModalProps = {
   visible: boolean;
   onClose: () => void;
-  onAddFoods?: (foods: { food: FoodResult; amount: number }[]) => void;
+  onAddFoods?: (foods: { food: Food; amount: number }[]) => void;
 };
 
 export function AddFoodItemToMealModal({
@@ -341,25 +286,30 @@ export function AddFoodItemToMealModal({
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('Chicken');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: string }>
-  >({
-    '1': { selected: true, amount: '200' },
-    '3': { selected: true, amount: '150' },
-  });
+  >({});
+
+  // Fetch foods from database
+  const { foods, isLoading } = useFoods({
+    mode: searchQuery.trim() ? 'search' : 'list',
+    searchTerm: searchQuery.trim(),
+    getAll: true,
+  }) as { foods: Food[]; isLoading: boolean };
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
 
   const totalCalories = useMemo(() => {
-    return SEARCH_RESULTS.reduce((acc, food) => {
+    return foods.reduce((acc, food) => {
       const selection = selectedItems[food.id];
       if (selection?.selected) {
-        return acc + Math.round((food.caloriesPer100g * (parseInt(selection.amount) || 0)) / 100);
+        return acc + Math.round((food.calories * (parseInt(selection.amount) || 0)) / 100);
       }
+
       return acc;
     }, 0);
-  }, [selectedItems]);
+  }, [selectedItems, foods]);
 
   const toggleItem = (id: string) => {
     setSelectedItems((prev) => {
@@ -379,7 +329,7 @@ export function AddFoodItemToMealModal({
   };
 
   const handleAdd = () => {
-    const foodsToAdd = SEARCH_RESULTS.filter((f) => selectedItems[f.id]?.selected).map((f) => ({
+    const foodsToAdd = foods.filter((f) => selectedItems[f.id]?.selected).map((f) => ({
       food: f,
       amount: parseInt(selectedItems[f.id].amount) || 0,
     }));
@@ -443,27 +393,70 @@ export function AddFoodItemToMealModal({
           <Text
             style={{ fontSize: theme.typography.fontSize.xs, color: theme.colors.text.tertiary }}
           >
-            {t('food.addFoodItemToMeal.foundItems', { count: SEARCH_RESULTS.length })}
+            {t('food.addFoodItemToMeal.foundItems', { count: foods.length })}
           </Text>
         </View>
 
         {/* Results List */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: theme.spacing.gap.md }}
-        >
-          {SEARCH_RESULTS.map((food) => (
-            <FoodResultCard
-              key={food.id}
-              food={food}
-              isSelected={!!selectedItems[food.id]?.selected}
-              amount={selectedItems[food.id]?.amount || '100'}
-              onToggle={() => toggleItem(food.id)}
-              onAmountChange={(val) => updateAmount(food.id, val)}
-            />
-          ))}
-          <View style={{ height: theme.size['100'] }} />
-        </ScrollView>
+        {isLoading ? (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: theme.spacing.padding['4xl'],
+            }}
+          >
+            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            <Text
+              style={{
+                marginTop: theme.spacing.padding.md,
+                fontSize: theme.typography.fontSize.sm,
+                color: theme.colors.text.tertiary,
+              }}
+            >
+              {t('common.loading')}
+            </Text>
+          </View>
+        ) : foods.length === 0 ? (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingVertical: theme.spacing.padding['4xl'],
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.sm,
+                color: theme.colors.text.tertiary,
+                textAlign: 'center',
+              }}
+            >
+              {searchQuery.trim()
+                ? t('food.addFoodItemToMeal.noResults')
+                : t('food.addFoodItemToMeal.noFoods')}
+            </Text>
+          </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: theme.spacing.gap.md }}
+          >
+            {foods.map((food) => (
+              <FoodResultCard
+                key={food.id}
+                food={food}
+                isSelected={!!selectedItems[food.id]?.selected}
+                amount={selectedItems[food.id]?.amount || '100'}
+                onToggle={() => toggleItem(food.id)}
+                onAmountChange={(val) => updateAmount(food.id, val)}
+              />
+            ))}
+            <View style={{ height: theme.size['100'] }} />
+          </ScrollView>
+        )}
       </View>
     </FullScreenModal>
   );

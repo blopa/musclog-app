@@ -1,3 +1,4 @@
+import { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,6 @@ import { MenuButton } from '../../components/theme/MenuButton';
 import Meal from '../../database/models/Meal';
 import { useMeals } from '../../hooks/useMeals';
 import { theme } from '../../theme';
-import { TFunction } from 'i18next';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -28,11 +28,9 @@ type MealCardData = {
   image: any;
 };
 
-// TODO: translate tags
 const deriveTags = (
   nutrients: { protein: number; carbs: number; fat: number },
   name: string,
-  t: TFunction,
   description?: string
 ): string[] => {
   const tags: string[] = [];
@@ -88,12 +86,12 @@ export default function MyMealsScreen() {
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
 
   // Fetch meals from database
-  const { meals, isLoading } = useMeals({
+  const { meals, isLoading, refresh } = useMeals({
     mode: 'list',
     getAll: true,
     sortBy: 'name',
     sortOrder: 'asc',
-  }) as { meals: Meal[]; isLoading: boolean };
+  }) as { meals: Meal[]; isLoading: boolean; refresh: () => Promise<void> };
 
   // State to store transformed meal data with nutrients
   const [mealCardsData, setMealCardsData] = useState<MealCardData[]>([]);
@@ -112,7 +110,7 @@ export default function MyMealsScreen() {
         const transformedMeals = await Promise.all(
           meals.map(async (meal) => {
             const nutrients = await meal.getTotalNutrients();
-            const tags = deriveTags(nutrients, meal.name ?? '', t, meal.description);
+            const tags = deriveTags(nutrients, meal.name ?? '', meal.description);
 
             return {
               id: meal.id,
@@ -293,6 +291,9 @@ export default function MyMealsScreen() {
           <CreateMealModal
             visible={createMealModalVisible}
             onClose={() => setCreateMealModalVisible(false)}
+            onSave={() => {
+              refresh();
+            }}
           />
         ) : null}
       </View>

@@ -163,6 +163,7 @@
       "mealNamePlaceholder": "e.g. Post-Workout Smoothie",
       "ingredients": "Ingredients ({{count}})",
       "editList": "Edit List",
+      "noIngredients": "No Ingredients",
       "addFoodItem": "Add Food Item"
     },
     "aiCamera": {
