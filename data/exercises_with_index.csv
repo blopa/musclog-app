@@ -1,0 +1,106 @@
+name,type,loadMultiplier
+Bench Press,compound,1.0
+Inclined Bench Press,compound,0.8
+Declined Bench Press,compound,1.1
+Overhead Shoulder Press,compound,0.6
+Deadlift,compound,1.5
+Pec Fly Machine,machine,0.5
+Leg Extension Machine,machine,0.5
+Squat,compound,1.2
+Barbell Back Squat,compound,1.2
+Leg Press Machine,machine,3.5
+Lat Pulldown,machine,0.7
+Pull-Up,bodyweight,0.0
+Seated Row,machine,0.7
+Bicep Curl,isolation,0.35
+Tricep Overhead Extension,isolation,0.25
+Leg Curl Machine,machine,0.4
+Lateral Raise,isolation,0.1
+Front Raise,isolation,0.08
+Calf Raise,isolation,1.0
+Hammer Curl,isolation,0.18
+Preacher Curl,isolation,0.25
+Cable Tricep Pushdown,isolation,0.35
+Chest Press Machine,machine,0.9
+Smith Machine Squat,machine,1.3
+T-Bar Row,compound,0.9
+Bent Over Row,compound,0.8
+Upright Row,compound,0.4
+Dumbbell Fly,isolation,0.15
+Incline Dumbbell Press,compound,0.3
+Machine Shoulder Press,machine,0.6
+Reverse Pec Deck Fly,machine,0.5
+Cable Crossover,isolation,0.3
+Seated Calf Raise,isolation,0.8
+Standing Calf Raise,isolation,1.0
+Romanian Deadlift,compound,1.0
+Glute Bridge,bodyweight,0.0
+Hip Thrust,compound,1.4
+Cable Bicep Curl,isolation,0.25
+Dumbbell Shoulder Press,compound,0.25
+Smith Machine Bench Press,machine,1.0
+Hack Squat,machine,1.5
+Reverse Lunge,compound,0.3
+Step-Up,compound,0.5
+Kettlebell Swing,compound,0.4
+Goblet Squat,compound,0.4
+Sumo Deadlift,compound,1.5
+Hip Abduction Machine,machine,0.6
+Hip Adduction Machine,machine,0.6
+Cable Face Pull,isolation,0.3
+Incline Dumbbell Fly,isolation,0.15
+Dips,bodyweight,0.0
+Push-Up,bodyweight,0.0
+Plank,bodyweight,0.0
+Russian Twist,bodyweight,0.1
+Hanging Leg Raise,bodyweight,0.0
+Mountain Climbers,bodyweight,0.0
+Burpees,bodyweight,0.0
+Box Jump,plyometric,0.0
+Turkish Get-Up,compound,0.2
+Farmer's Walk,compound,0.6
+Snatch,compound,0.7
+Clean and Jerk,compound,0.9
+Battle Ropes,compound,0.0
+Crunch Machine,machine,0.5
+Chest Supported Row Machine,machine,0.8
+Barbell Row,compound,0.8
+Skull Crusher,isolation,0.3
+Bulgarian Split Squat,compound,0.4
+Pallof Press,isolation,0.2
+Hanging Knee Raise,bodyweight,0.0
+Landmine Press,compound,0.5
+Landmine Row,compound,0.6
+Donkey Calf Raise,isolation,1.0
+Jump Rope,cardio,0.0
+Running,cardio,0.0
+Cycling,cardio,0.0
+Rowing Machine,cardio,0.0
+Elliptical Trainer,cardio,0.0
+High-Intensity Interval Training (HIIT),cardio,0.0
+Stair Climber,cardio,0.0
+Aerobics,cardio,0.0
+Dance Cardio,cardio,0.0
+Shadow Boxing,cardio,0.0
+Narrow Grip Lat Pulldown,machine,0.7
+Supinated Lat Pulldown,machine,0.7
+Cable Pullover,isolation,0.3
+Dumbbell Pullover,compound,0.3
+Reverse Grip Bench Press,compound,0.8
+Cable Chest Press,isolation,0.3
+Cable Front Raise,isolation,0.08
+Cable Lateral Raise,isolation,0.1
+Single-Arm Dumbbell Row,compound,0.4
+Dumbbell Shrug,isolation,0.5
+Lying Leg Curl,machine,0.4
+Good Morning,compound,0.7
+Zercher Squat,compound,1.0
+Sissy Squat,isolation,0.0
+Jefferson Deadlift,compound,1.4
+Cossack Squat,compound,0.3
+Dragon Flag,bodyweight,0.0
+Hollow Body Hold,bodyweight,0.0
+Reverse Crunch,bodyweight,0.0
+Ab Wheel Rollout,bodyweight,0.0
+Pike Push-Up,bodyweight,0.0
+Cable Crunch,bodyweight,0.4
