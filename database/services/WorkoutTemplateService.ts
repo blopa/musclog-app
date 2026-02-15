@@ -555,7 +555,7 @@ export class WorkoutTemplateService {
           iconColor,
           sets: exerciseData.sets,
           reps: exerciseData.reps,
-          weight: 50, // Hardcoded to 50 kg as specified
+          weight: 50, // TODO: calculate this based on the lifting experience, age and weight of the user
           isBodyweight,
         });
       }
