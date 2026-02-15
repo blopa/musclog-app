@@ -8,7 +8,7 @@ import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { GenericCard } from './GenericCard';
 
 interface CurrentGoal {
-  phase: EatingPhase;
+  phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;

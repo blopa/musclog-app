@@ -10,7 +10,7 @@ import { GenericCard } from './GenericCard';
 interface GoalHistoryItem {
   id: number;
   dateRange: string;
-  phase: EatingPhase;
+  phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;
