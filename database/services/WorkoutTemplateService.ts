@@ -555,7 +555,7 @@ export class WorkoutTemplateService {
           iconColor,
           sets: exerciseData.sets,
           reps: exerciseData.reps,
-          weight: 50, // TODO: calculate this based on the lifting experience, age and weight of the user
+          weight: 50, // TODO: calculate this based on the lifting experience, age and weight of the user and the load_multiplier present on the exercise from the database
           isBodyweight,
         });
       }

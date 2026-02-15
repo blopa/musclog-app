@@ -75,6 +75,7 @@ export class ExerciseService {
     muscleGroup: string,
     equipmentType: string,
     mechanicType: string,
+    loadMultiplier: number = 1.0,
     imageUrl?: string
   ): Promise<Exercise> {
     return await database.write(async () => {
@@ -87,6 +88,7 @@ export class ExerciseService {
         exercise.muscleGroup = muscleGroup;
         exercise.equipmentType = equipmentType;
         exercise.mechanicType = mechanicType;
+        exercise.loadMultiplier = loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
       });
@@ -105,6 +107,7 @@ export class ExerciseService {
       muscleGroup?: string;
       equipmentType?: string;
       mechanicType?: string;
+      loadMultiplier?: number;
     }
   ): Promise<Exercise> {
     return await database.write(async () => {
@@ -121,6 +124,7 @@ export class ExerciseService {
         if (updates.muscleGroup !== undefined) record.muscleGroup = updates.muscleGroup;
         if (updates.equipmentType !== undefined) record.equipmentType = updates.equipmentType;
         if (updates.mechanicType !== undefined) record.mechanicType = updates.mechanicType;
+        if (updates.loadMultiplier !== undefined) record.loadMultiplier = updates.loadMultiplier;
         record.updatedAt = Date.now();
       });
 

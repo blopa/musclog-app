@@ -13,6 +13,7 @@ export const schema = appSchema({
         { name: 'muscle_group', type: 'string', isIndexed: true },
         { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight
         { name: 'mechanic_type', type: 'string' }, // 'compound' or 'isolation'
+        { name: 'load_multiplier', type: 'number' }, // Load multiplier for volume calculations
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

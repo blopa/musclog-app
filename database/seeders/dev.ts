@@ -18,6 +18,7 @@ interface ExerciseJsonData {
   type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
   description: string;
   targetMuscles?: string[];
+  loadMultiplier?: number;
 }
 
 /**
@@ -130,6 +131,7 @@ async function loadExercisesFromJson(): Promise<{ created: number; skipped: numb
           exercise.muscleGroup = exerciseData.muscleGroup;
           exercise.equipmentType = equipmentType;
           exercise.mechanicType = mechanicType;
+          exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
           exercise.imageUrl = undefined; // No image URLs in JSON
           exercise.createdAt = now;
           exercise.updatedAt = now;
@@ -230,6 +232,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             ex.muscleGroup = muscleGroup;
             ex.equipmentType = 'Dumbbell';
             ex.mechanicType = 'compound';
+            ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
           });
@@ -816,6 +819,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             ex.muscleGroup = muscleGroup;
             ex.equipmentType = 'Dumbbell';
             ex.mechanicType = 'compound';
+            ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
           });

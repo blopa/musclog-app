@@ -19,6 +19,7 @@ export default class Exercise extends Model {
   @field('muscle_group') muscleGroup!: string;
   @field('equipment_type') equipmentType!: string;
   @field('mechanic_type') mechanicType!: string;
+  @field('load_multiplier') loadMultiplier!: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
