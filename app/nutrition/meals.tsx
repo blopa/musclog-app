@@ -16,6 +16,8 @@ import Meal from '../../database/models/Meal';
 import { MealService , NutritionService } from '../../database/services';
 import { useMeals } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
+import { FullScreenModal } from '../../components/modals/FullScreenModal';
+import type { PersonalInfo } from '../../components/EditPersonalInfoBody';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -140,7 +142,12 @@ function LogMealModalWrapper({
   );
 }
 
-export default function MyMealsScreen() {
+type MyMealsScreenProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export default function MyMealsScreen({ visible, onClose }: MyMealsScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [activeFilter, setActiveFilter] = useState('all');
@@ -317,20 +324,12 @@ export default function MyMealsScreen() {
   const showLoading = isLoading || isTransforming;
 
   return (
-    <MasterLayout>
+    <FullScreenModal visible={visible} onClose={onClose} title={t('meals.title')}>
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize['4xl'],
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.primary,
-              }}
-            >
-              {t('meals.title')}
-            </Text>
+        <View className="px-6 pb-4 pt-6">
+          <View className="mb-4 flex-row items-center justify-between">
+            {/*TODO: move this button to FullScreenModal header*/}
             <MenuButton
               size="md"
               color={theme.colors.text.primary}
@@ -392,8 +391,8 @@ export default function MyMealsScreen() {
                 {searchQuery.trim()
                   ? 'No meals found'
                   : activeFilter === 'all'
-                  ? 'No meals yet'
-                  : 'No meals found'}
+                    ? 'No meals yet'
+                    : 'No meals found'}
               </Text>
               <Text
                 className="text-center font-medium"
@@ -405,8 +404,8 @@ export default function MyMealsScreen() {
                 {searchQuery.trim()
                   ? `No meals match "${searchQuery}"`
                   : activeFilter === 'all'
-                  ? 'Create your first meal to get started'
-                  : 'Try a different filter'}
+                    ? 'Create your first meal to get started'
+                    : 'Try a different filter'}
               </Text>
             </View>
           ) : (
@@ -461,6 +460,6 @@ export default function MyMealsScreen() {
           />
         ) : null}
       </View>
-    </MasterLayout>
+    </FullScreenModal>
   );
 }
