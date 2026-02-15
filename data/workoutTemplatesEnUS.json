@@ -4,11 +4,27 @@
     "difficulty": "Advanced",
     "duration": 75,
     "exercises": [
-      {
-        "exerciseId": 1,
-        "sets": 3,
-        "reps": 12
-      }
+      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 12 },
+      { "exerciseId": 2, "day": 1, "sets": 3, "reps": 12 },
+      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
+      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 10 },
+      { "exerciseId": 11, "day": 2, "sets": 3, "reps": 12 },
+      { "exerciseId": 13, "day": 2, "sets": 3, "reps": 12 },
+      { "exerciseId": 26, "day": 2, "sets": 3, "reps": 10 },
+      { "exerciseId": 4, "day": 3, "sets": 3, "reps": 12 },
+      { "exerciseId": 17, "day": 3, "sets": 3, "reps": 15 },
+      { "exerciseId": 30, "day": 3, "sets": 3, "reps": 15 },
+      { "exerciseId": 48, "day": 3, "sets": 3, "reps": 15 },
+      { "exerciseId": 9, "day": 4, "sets": 3, "reps": 10 },
+      { "exerciseId": 10, "day": 4, "sets": 3, "reps": 12 },
+      { "exerciseId": 16, "day": 4, "sets": 3, "reps": 12 },
+      { "exerciseId": 7, "day": 4, "sets": 3, "reps": 12 },
+      { "exerciseId": 35, "day": 4, "sets": 3, "reps": 12 },
+      { "exerciseId": 19, "day": 4, "sets": 3, "reps": 15 },
+      { "exerciseId": 14, "day": 5, "sets": 3, "reps": 12 },
+      { "exerciseId": 20, "day": 5, "sets": 3, "reps": 12 },
+      { "exerciseId": 15, "day": 5, "sets": 3, "reps": 12 },
+      { "exerciseId": 22, "day": 5, "sets": 3, "reps": 12 }
     ],
     "icon": "fitness-center"
   }
