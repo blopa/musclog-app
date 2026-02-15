@@ -85,7 +85,7 @@ export function LogMealModal({
     <Button
       label="Log Meal"
       variant="gradientCta"
-      size="lg"
+      size="md"
       width="full"
       icon={Check}
       onPress={handleLogMeal}
@@ -101,7 +101,7 @@ export function LogMealModal({
         footer={footer}
         scrollable
       >
-        <View className="space-y-6">
+        <View className="px-4 space-y-6 mb-6 mt-6">
           {/* Meal Details Card */}
           <GenericCard variant="highlighted" backgroundVariant="gradient">
             <View className="relative">
@@ -111,7 +111,7 @@ export function LogMealModal({
                 style={{ backgroundColor: theme.colors.accent.primary }}
               />
               
-              <View className="relative z-10">
+              <View className="relative z-10 px-4 py-4">
                 {/* Meal Header */}
                 <View className="flex-row items-start justify-between mb-4">
                   <View className="flex-1">
