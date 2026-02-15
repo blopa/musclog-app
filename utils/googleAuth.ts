@@ -166,6 +166,8 @@ export const getAccessToken = async (): Promise<string | undefined> => {
     if (!isNaN(expirationTime) && new Date().getTime() < expirationTime - 60 * 1000) {
       return accessToken;
     }
+  } else {
+    return;
   }
 
   return await refreshAccessToken();

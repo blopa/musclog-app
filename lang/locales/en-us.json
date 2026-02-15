@@ -287,6 +287,7 @@
     }
   },
   "workoutSession": {
+    "kg": "kg",
     "totalTime": "TOTAL TIME",
     "setOf": "SET {{current}} OF {{total}}",
     "weight": "WEIGHT",
@@ -519,6 +520,12 @@
       "header": "Create Workout",
       "title": "How do you want to build your routine?",
       "subtitle": "Select how you want to build your routine today."
+    },
+    "createFromTemplate": {
+      "title": "Create Workouts from Template",
+      "message": "This will create separate workout templates for each day in this program. Each workout will include the exercises, sets, and reps specified for that day.",
+      "confirm": "Create Workouts",
+      "cancel": "Cancel"
     }
   },
   "createWorkout": {

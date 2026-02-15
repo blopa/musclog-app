@@ -8,7 +8,11 @@ import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
 import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
-import { BrowseTemplatesModal } from '../../components/modals/BrowseTemplatesModal';
+import {
+  BrowseTemplatesModal,
+  getRawTemplateById,
+} from '../../components/modals/BrowseTemplatesModal';
+import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
@@ -19,7 +23,7 @@ import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { database } from '../../database';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
-import { WorkoutService } from '../../database/services';
+import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
@@ -45,6 +49,12 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
+  const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
+    useState(false);
+  const [selectedRawTemplate, setSelectedRawTemplate] = useState<{
+    templateId: string;
+    title: string;
+  } | null>(null);
 
   // Use reactive hook for workout templates
   const { templates, isLoading, error } = useWorkoutTemplates();
@@ -371,14 +381,47 @@ export default function WorkoutsScreen() {
           visible={isBrowseTemplatesVisible}
           onClose={() => setIsBrowseTemplatesVisible(false)}
           onTemplateSelect={(template) => {
-            // TODO: show a ConfirmationModal asking "create workout based on template" or something
-            // and if confirmed, we then must create workouts based on that template.
-            // for example, the first workout in the data/workoutTemplatesEnUS.json file contains
-            // 21 exercises, divided into 3 different days, so we need to create 3 workouts, one for each day
-            // using the exercise, sets and reps from the list. As for the weight, for now let's just have it
-            // hardcodded to 50 kg
-            setIsBrowseTemplatesVisible(false);
+            const rawTemplate = getRawTemplateById(template.id);
+            if (rawTemplate) {
+              setSelectedRawTemplate({ templateId: template.id, title: template.title });
+              setIsCreateFromTemplateConfirmationVisible(true);
+            } else {
+              console.error('Could not find raw template data for:', template.id);
+              setIsBrowseTemplatesVisible(false);
+            }
           }}
+        />
+      ) : null}
+      {isCreateFromTemplateConfirmationVisible && selectedRawTemplate ? (
+        <ConfirmationModal
+          visible={isCreateFromTemplateConfirmationVisible}
+          onClose={() => {
+            setIsCreateFromTemplateConfirmationVisible(false);
+            setSelectedRawTemplate(null);
+          }}
+          onConfirm={async () => {
+            try {
+              const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
+              if (!rawTemplate) {
+                console.error('Could not find raw template data');
+                return;
+              }
+
+              await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+              // Templates will be automatically refreshed via useWorkoutTemplates hook
+              setIsCreateFromTemplateConfirmationVisible(false);
+              setSelectedRawTemplate(null);
+            } catch (error) {
+              console.error('Error creating workouts from template:', error);
+              // TODO: Show error message to user
+              setIsCreateFromTemplateConfirmationVisible(false);
+              setSelectedRawTemplate(null);
+            }
+          }}
+          title={t('workouts.createFromTemplate.title')}
+          message={t('workouts.createFromTemplate.message')}
+          confirmLabel={t('workouts.createFromTemplate.confirm')}
+          cancelLabel={t('workouts.createFromTemplate.cancel')}
         />
       ) : null}
       {/* Workout Session Overview Modal */}

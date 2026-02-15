@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { Dumbbell, User } from 'lucide-react-native';
 
+import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplatesModal';
 import { theme } from '../../theme';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
 import { database } from '../index';
@@ -449,5 +450,135 @@ export class WorkoutTemplateService {
     });
 
     return templatesWithMetadata;
+  }
+
+  /**
+   * Create workout templates from a JSON template, splitting by day
+   * Each day becomes a separate workout template
+   */
+  static async createWorkoutsFromJsonTemplate(
+    rawTemplate: RawWorkoutTemplate
+  ): Promise<WorkoutTemplate[]> {
+    // Validate that exercises is an array
+    if (!Array.isArray(rawTemplate.exercises)) {
+      throw new Error('Template exercises must be an array');
+    }
+
+    const exercises = rawTemplate.exercises.filter(
+      (e): e is { exerciseId: number; day: number; sets: number; reps: number } =>
+        typeof e === 'object' &&
+        e !== null &&
+        typeof e.exerciseId === 'number' &&
+        typeof e.day === 'number' &&
+        typeof e.sets === 'number' &&
+        typeof e.reps === 'number'
+    );
+
+    if (exercises.length === 0) {
+      throw new Error('Template has no valid exercises');
+    }
+
+    // Get all exercises from database ordered by creation time
+    // This assumes exercises are seeded in the same order as the JSON exerciseId indices
+    const allExercises = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
+      .fetch();
+
+    // Create mapping: exerciseId (1-based) -> database exercise ID
+    const exerciseIdMap = new Map<number, string>();
+    allExercises.forEach((exercise, index) => {
+      // exerciseId in JSON is 1-based, array index is 0-based
+      exerciseIdMap.set(index + 1, exercise.id);
+    });
+
+    // Group exercises by day
+    const exercisesByDay = new Map<number, typeof exercises>();
+    exercises.forEach((exercise) => {
+      const day = exercise.day;
+      if (!exercisesByDay.has(day)) {
+        exercisesByDay.set(day, []);
+      }
+      exercisesByDay.get(day)!.push(exercise);
+    });
+
+    // Get unique days and sort them
+    const days = Array.from(exercisesByDay.keys()).sort((a, b) => a - b);
+
+    // Create workout template for each day
+    const createdTemplates: WorkoutTemplate[] = [];
+
+    for (const day of days) {
+      const dayExercises = exercisesByDay.get(day)!;
+
+      // Group exercises by exerciseId (in case same exercise appears multiple times)
+      // We'll combine them into a single exercise entry with the sets/reps from the first occurrence
+      const exerciseMap = new Map<number, (typeof exercises)[0]>();
+      dayExercises.forEach((exercise) => {
+        if (!exerciseMap.has(exercise.exerciseId)) {
+          exerciseMap.set(exercise.exerciseId, exercise);
+        }
+      });
+
+      // Convert to ExerciseInWorkout format
+      const exercisesInWorkout: ExerciseInWorkout[] = [];
+      for (const [exerciseId, exerciseData] of exerciseMap) {
+        const databaseExerciseId = exerciseIdMap.get(exerciseId);
+        if (!databaseExerciseId) {
+          console.warn(`Exercise ID ${exerciseId} not found in database, skipping`);
+          continue;
+        }
+
+        // Get exercise from database to determine if it's bodyweight
+        const dbExercise = allExercises.find((ex) => ex.id === databaseExerciseId);
+        if (!dbExercise) {
+          console.warn(`Exercise with ID ${databaseExerciseId} not found, skipping`);
+          continue;
+        }
+
+        const equipmentType = dbExercise.equipmentType?.toLowerCase() || '';
+        const isBodyweight =
+          equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
+
+        const Icon = isBodyweight ? User : Dumbbell;
+        const iconBgColor = isBodyweight
+          ? theme.colors.background.white5
+          : theme.colors.accent.primary10;
+        const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
+
+        exercisesInWorkout.push({
+          id: databaseExerciseId,
+          label: dbExercise.name ?? '',
+          description: `${exerciseData.sets} sets × ${exerciseData.reps} reps`,
+          icon: Icon,
+          iconBgColor,
+          iconColor,
+          sets: exerciseData.sets,
+          reps: exerciseData.reps,
+          weight: 50, // Hardcoded to 50 kg as specified
+          isBodyweight,
+        });
+      }
+
+      if (exercisesInWorkout.length === 0) {
+        console.warn(`No valid exercises for day ${day}, skipping template creation`);
+        continue;
+      }
+
+      // Create workout template name
+      const templateName = `${rawTemplate.title} - Day ${day}`;
+
+      // Create the template using saveTemplate
+      const template = await this.saveTemplate({
+        name: templateName,
+        description: rawTemplate.description,
+        exercises: exercisesInWorkout,
+        selectedDays: [], // No schedule days selected
+      });
+
+      createdTemplates.push(template);
+    }
+
+    return createdTemplates;
   }
 }

@@ -25,14 +25,39 @@ type WorkoutTemplate = {
 };
 
 // Raw template type as found in workoutTemplatesEnUS.json
-type RawWorkoutTemplate = {
+export type RawWorkoutTemplate = {
   title: string;
+  description?: string;
   difficulty?: string;
   duration?: number | string;
-  exercises?: { exerciseId?: number; sets?: number; reps?: number }[] | number | string;
+  exercises?:
+    | { exerciseId?: number; day?: number; sets?: number; reps?: number }[]
+    | number
+    | string;
   sets?: number;
   icon?: string;
 };
+
+/**
+ * Extracts the template index from a normalized template ID
+ * ID format: template-${idx}-${title}
+ */
+export function getRawTemplateById(templateId: string): RawWorkoutTemplate | null {
+  // Extract index from ID format: template-${idx}-${title}
+  const match = templateId.match(/^template-(\d+)-/);
+  if (!match) {
+    return null;
+  }
+
+  const index = parseInt(match[1], 10);
+  const templates = workoutTemplatesEnUS as RawWorkoutTemplate[];
+
+  if (index < 0 || index >= templates.length) {
+    return null;
+  }
+
+  return templates[index];
+}
 
 const getNormalizedTemplates = (t: TFunction) => {
   // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
@@ -74,8 +99,7 @@ const getNormalizedTemplates = (t: TFunction) => {
 
       // TODO: Use i18next pluralization so translations can include the number and handle pluralization rules
       const setsText = totalSets
-        ?
-          t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
+        ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
         : '';
 
       const iconKey = (item.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
