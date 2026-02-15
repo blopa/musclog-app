@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import NutritionGoal from '../models/NutritionGoal';
+import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
 
 export interface NutritionGoalInput {
   totalCalories: number;
@@ -9,7 +9,7 @@ export interface NutritionGoalInput {
   carbs: number;
   fats: number;
   fiber: number;
-  eatingPhase: 'cut' | 'maintain' | 'bulk';
+  eatingPhase: EatingPhase;
   targetWeight: number;
   targetBodyFat: number;
   targetBMI: number;

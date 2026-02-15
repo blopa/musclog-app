@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import { type EatingPhase } from '../../database/models';
 import { NutritionGoalService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
@@ -12,12 +13,12 @@ import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 
-type EatingPhase = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
+type EatingPhaseUI = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 
 interface GoalHistoryItem {
   id: number;
   dateRange: string;
-  phase: EatingPhase;
+  phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;
@@ -27,7 +28,7 @@ interface GoalHistoryItem {
 }
 
 interface CurrentGoal {
-  phase: EatingPhase;
+  phase: EatingPhaseUI;
   calories: number;
   protein: number;
   carbs: number;
@@ -40,7 +41,7 @@ interface CurrentGoal {
 }
 
 // Helper to convert DB eating phase to UI format
-function convertEatingPhase(dbPhase: string): EatingPhase {
+function convertEatingPhase(dbPhase: string): EatingPhaseUI {
   switch (dbPhase) {
     case 'cut':
       return 'cutting';
@@ -103,7 +104,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           carbs: current.carbs,
           fats: current.fats,
           fiber: current.fiber,
-          eatingPhase: current.eatingPhase as 'cut' | 'maintain' | 'bulk',
+          eatingPhase: current.eatingPhase as EatingPhase,
           targetWeight: current.targetWeight,
           targetBodyFat: current.targetBodyFat,
           targetBMI: current.targetBmi,

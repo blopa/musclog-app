@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import { type EatingPhase } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
@@ -28,7 +29,7 @@ export type NutritionGoals = {
   carbs: number;
   fats: number;
   fiber: number;
-  eatingPhase: 'cut' | 'maintain' | 'bulk';
+  eatingPhase: EatingPhase;
   targetWeight: number;
   targetBodyFat: number;
   targetBMI: number;
@@ -306,7 +307,7 @@ export function NutritionGoalsBody({
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
   const [fats, setFats] = useState(initialGoals?.fats ?? 80);
   const [fiber, setFiber] = useState(initialGoals?.fiber ?? 30);
-  const [eatingPhase, setEatingPhase] = useState<'cut' | 'maintain' | 'bulk'>(
+  const [eatingPhase, setEatingPhase] = useState<EatingPhase>(
     initialGoals?.eatingPhase ?? 'maintain'
   );
   const [targetWeight, setTargetWeight] = useState(initialGoals?.targetWeight ?? 75);
@@ -487,7 +488,7 @@ export function NutritionGoalsBody({
               { label: t('editFitnessDetails.bulk'), value: 'bulk' },
             ]}
             value={eatingPhase}
-            onValueChange={(val) => setEatingPhase(val as 'cut' | 'maintain' | 'bulk')}
+            onValueChange={(val) => setEatingPhase(val as EatingPhase)}
           />
         </View>
 

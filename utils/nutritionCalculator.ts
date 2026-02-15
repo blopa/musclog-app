@@ -1,5 +1,5 @@
 import { NutritionGoals } from '../components/NutritionGoalsBody';
-import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models/User';
+import type { EatingPhase , FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../database/models';
 
 // ---------------------------------------------------------------------------
 // Input / Output types
@@ -384,7 +384,7 @@ export function estimateTargetBodyFatWhenCutting(
 /** Map a stored NutritionPlan to initial form data (Partial<NutritionGoals>). */
 export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals> {
   const fiber = Math.round(Math.max(25, Math.min(40, (plan.targetCalories / 1000) * 14)));
-  const eatingPhase: 'cut' | 'maintain' | 'bulk' =
+  const eatingPhase: EatingPhase =
     plan.targetCalories < plan.tdee ? 'cut' : plan.targetCalories > plan.tdee ? 'bulk' : 'maintain';
   return {
     totalCalories: plan.targetCalories,

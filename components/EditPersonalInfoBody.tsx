@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { type Gender } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
@@ -26,7 +27,7 @@ export type PersonalInfo = {
   fullName: string;
   email: string;
   dob: string;
-  gender: string;
+  gender: Gender;
   avatarIcon?: AvatarIcon;
   avatarColor?: AvatarColor;
 };
@@ -57,7 +58,7 @@ export function EditPersonalInfoBody({
   const [fullName, setFullName] = useState(initialData?.fullName ?? '');
   const [email, setEmail] = useState(initialData?.email ?? '');
   const [dob, setDob] = useState(initialData?.dob ?? '');
-  const [gender, setGender] = useState(initialData?.gender ?? 'other');
+  const [gender, setGender] = useState<Gender>(initialData?.gender ?? 'other');
   const [avatarIcon, setAvatarIcon] = useState<AvatarIcon>(initialData?.avatarIcon ?? 'person');
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(
     initialData?.avatarColor ?? 'emerald'
@@ -185,7 +186,11 @@ export function EditPersonalInfoBody({
               <Text style={{ color: theme.colors.status.error }}>*</Text>
             </View>
           </Text>
-          <SegmentedControl options={genderOptions} value={gender} onValueChange={setGender} />
+          <SegmentedControl
+            options={genderOptions}
+            value={gender}
+            onValueChange={(val) => setGender(val as Gender)}
+          />
         </View>
       </View>
 

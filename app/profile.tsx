@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { CheckCircle, Dumbbell, Edit, List, Settings, TrendingUp, User } from 'lucide-react-native';
 import { createElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { StatCard } from '../components/cards/StatCard';
 import { ManagementItem } from '../components/ManagementItem';
@@ -12,12 +12,11 @@ import {
   EditFitnessDetailsModal,
   type FitnessDetails,
 } from '../components/modals/EditFitnessDetailsModal';
-import {
-  EditPersonalInfoModal,
-  type PersonalInfo,
-} from '../components/modals/EditPersonalInfoModal';
+import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
+import { type PersonalInfo } from '../components/EditPersonalInfoBody';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
+import { type Gender } from '../database/models';
 import { UserService } from '../database/services';
 import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
@@ -187,7 +186,7 @@ export default function ProfileScreen() {
         fullName: data.fullName,
         email: data.email,
         dateOfBirth: new Date(data.dob).getTime(),
-        gender: data.gender as 'male' | 'female' | 'other',
+        gender: data.gender as Gender,
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
       });

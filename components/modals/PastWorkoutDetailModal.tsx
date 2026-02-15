@@ -29,7 +29,8 @@ type WorkoutSet = {
   isHighlighted: boolean;
 };
 
-type Exercise = {
+// UI-specific exercise type for workout history display
+type WorkoutExercise = {
   id: string;
   name: string;
   timeSpent: number;
@@ -280,7 +281,7 @@ function SetsTable({ sets }: SetsTableProps) {
 
 // Component: Exercise Card
 type ExerciseCardProps = {
-  exercise: Exercise;
+  exercise: WorkoutExercise;
   onEdit?: (exerciseId?: string) => void;
   onClose?: () => void;
 };
@@ -338,7 +339,7 @@ function ExerciseCard({ exercise, onEdit, onClose }: ExerciseCardProps) {
 
 // Component: Exercises Section
 type ExercisesSectionProps = {
-  exercises: Exercise[];
+  exercises: WorkoutExercise[];
   onEdit?: (exerciseId?: string) => void;
   onClose?: () => void;
 };

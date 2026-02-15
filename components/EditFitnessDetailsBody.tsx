@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { FitnessGoal, WeightGoal } from '../database/models/User';
+import { FitnessGoal, LiftingExperience, WeightGoal } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -47,7 +47,7 @@ export type FitnessDetails = {
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
-  experience: 'beginner' | 'intermediate' | 'advanced';
+  experience: LiftingExperience;
 };
 
 export function EditFitnessDetailsBody({
@@ -70,7 +70,7 @@ export function EditFitnessDetailsBody({
     initialData?.fitnessGoal ?? 'general'
   );
   const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 3);
-  const [experience, setExperience] = useState<'beginner' | 'intermediate' | 'advanced'>(
+  const [experience, setExperience] = useState<LiftingExperience>(
     initialData?.experience ?? 'intermediate'
   );
   const [fatPercentage, setFatPercentage] = useState(initialData?.fatPercentage ?? 15);

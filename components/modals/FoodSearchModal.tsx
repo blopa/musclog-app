@@ -12,6 +12,7 @@ import {
   View,
 } from 'react-native';
 
+import { type MealType } from '../../database/models';
 import { NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
@@ -276,7 +277,7 @@ export function FoodSearchModal({
 
       try {
         const hour = new Date().getHours();
-        let mealKey: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' = 'other';
+        let mealKey: MealType = 'other';
         let titleKey = 'foodSearch.commonFoods';
 
         if (hour < 10) {

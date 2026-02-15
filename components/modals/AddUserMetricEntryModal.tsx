@@ -16,6 +16,7 @@ import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { FullScreenModal } from './FullScreenModal';
 
+// UI metric type - subset of UserMetricType for this modal
 type MetricType = 'weight' | 'body_fat' | 'height';
 
 type MetricConfig = {

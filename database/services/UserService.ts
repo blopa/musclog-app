@@ -4,7 +4,7 @@ import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
 import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
-import User, { FitnessGoal, UserProfileUpdate, WeightGoal } from '../models/User';
+import User, { type FitnessGoal, type Gender, type LiftingExperience, UserProfileUpdate, type WeightGoal } from '../models/User';
 
 export class UserService {
   /**
@@ -43,11 +43,11 @@ export class UserService {
   static async initializeUser(initialData: {
     fullName: string;
     dateOfBirth: number;
-    gender: 'male' | 'female' | 'other';
+    gender: Gender;
     fitnessGoal: FitnessGoal;
     weightGoal?: WeightGoal;
     activityLevel: number;
-    liftingExperience: 'beginner' | 'intermediate' | 'advanced';
+    liftingExperience: LiftingExperience;
     email?: string;
     avatarIcon?: AvatarIcon;
     avatarColor?: AvatarColor;

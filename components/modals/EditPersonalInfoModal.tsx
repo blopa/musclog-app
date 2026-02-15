@@ -2,27 +2,15 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AvatarColor } from '../../types/AvatarColor';
-import { AvatarIcon } from '../../types/AvatarIcon';
-import { EditPersonalInfoBody } from '../EditPersonalInfoBody';
+import { EditPersonalInfoBody, type PersonalInfo } from '../EditPersonalInfoBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
 type EditPersonalInfoModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSave?: (data: PersonalInfo) => void;
-  initialData?: PersonalInfo;
-};
-
-export type PersonalInfo = {
-  fullName: string;
-  email: string;
-  dob: string;
-  gender: string;
-  photoUri?: string;
-  avatarIcon?: AvatarIcon;
-  avatarColor?: AvatarColor;
+  onSave?: (data: PersonalInfo & { photoUri?: string }) => void;
+  initialData?: PersonalInfo & { photoUri?: string };
 };
 
 export function EditPersonalInfoModal({
@@ -32,7 +20,7 @@ export function EditPersonalInfoModal({
   initialData,
 }: EditPersonalInfoModalProps) {
   const { t } = useTranslation();
-  const [currentFormData, setCurrentFormData] = useState<PersonalInfo | undefined>(undefined);
+  const [currentFormData, setCurrentFormData] = useState<(PersonalInfo & { photoUri?: string }) | undefined>(undefined);
 
   const handleSave = ({
     fullName,
@@ -42,7 +30,7 @@ export function EditPersonalInfoModal({
     photoUri,
     avatarIcon,
     avatarColor,
-  }: PersonalInfo) => {
+  }: PersonalInfo & { photoUri?: string }) => {
     onSave?.({
       fullName,
       email,

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import Food from '../database/models/Food';
-import NutritionLog from '../database/models/NutritionLog';
+import NutritionLog, { type MealType } from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
 
 // Hook parameters
@@ -13,7 +13,7 @@ export interface UseNutritionLogsParams {
   date?: Date; // For daily and meal-type modes
   startDate?: Date; // For range mode
   endDate?: Date; // For range mode
-  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other'; // For meal-type mode
+  mealType?: MealType; // For meal-type mode
   initialLimit?: number; // Default: 20
   batchSize?: number; // Default: 20
   getAll?: boolean; // If true, fetch all logs (no pagination)
@@ -50,7 +50,7 @@ export type UseNutritionLogsResultDaily = {
     fat: number;
     fiber: number;
     byMealType: Record<
-      'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other',
+      MealType,
       {
         calories: number;
         protein: number;

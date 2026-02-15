@@ -17,6 +17,7 @@ import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { database } from '../../database';
+import { type EatingPhase } from '../../database/models';
 import UserMetric from '../../database/models/UserMetric';
 import { UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
@@ -348,7 +349,7 @@ export default function SetGoals() {
     const heightM = heightCm / 100;
 
     const targetBMI = heightM > 0 ? bmiFromWeightAndHeightM(plan.projectedWeightKg, heightM) : 0;
-    const eatingPhase =
+    const eatingPhase: EatingPhase =
       plan.targetCalories < plan.tdee
         ? 'cut'
         : plan.targetCalories > plan.tdee

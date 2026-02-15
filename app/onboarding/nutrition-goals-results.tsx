@@ -15,6 +15,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { database } from '../../database';
+import { type EatingPhase } from '../../database/models';
 import UserMetric from '../../database/models/UserMetric';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
@@ -160,7 +161,7 @@ export default function NutritionGoalsResults() {
   }, [displayData]);
 
   // Determine eating phase from the calorie delta
-  const eatingPhase = useMemo(() => {
+  const eatingPhase = useMemo<EatingPhase>(() => {
     if (!parsedPlan) {
       return savedGoal?.eatingPhase ?? 'maintain';
     }
@@ -285,7 +286,7 @@ export default function NutritionGoalsResults() {
           carbs: parsedPlan.carbs,
           fats: parsedPlan.fats,
           fiber,
-          eatingPhase: eatingPhase as 'cut' | 'maintain' | 'bulk',
+          eatingPhase: eatingPhase,
           targetWeight: parsedPlan.projectedWeightKg,
           targetBodyFat,
           targetBMI,

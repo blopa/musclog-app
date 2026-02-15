@@ -23,4 +23,5 @@ export type { EatingPhase } from './NutritionGoal';
 export type { MealType } from './NutritionLog';
 export type { DayOfWeek } from './Schedule';
 export type { SettingType } from './Setting';
+export type { FitnessGoal, Gender, LiftingExperience, UserProfileUpdate, WeightGoal } from './User';
 export type { UserMetricType } from './UserMetric';

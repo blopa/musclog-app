@@ -13,6 +13,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
+import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
@@ -93,7 +94,7 @@ export default function PersonalInfo() {
           fullName: data.fullName,
           email: data.email || null,
           dateOfBirth,
-          gender: data.gender as 'male' | 'female' | 'other',
+          gender: data.gender as Gender,
           avatarIcon: data.avatarIcon || null,
           avatarColor: data.avatarColor || null,
         });
@@ -103,7 +104,7 @@ export default function PersonalInfo() {
         await UserService.initializeUser({
           fullName: data.fullName,
           dateOfBirth,
-          gender: data.gender as 'male' | 'female' | 'other',
+          gender: data.gender as Gender,
           email: data.email,
           avatarIcon: data.avatarIcon,
           avatarColor: data.avatarColor,
@@ -140,7 +141,7 @@ export default function PersonalInfo() {
     // Required fields: fullName, dob, gender
     const hasFullName = currentFormData.fullName.trim().length > 0;
     const hasDob = currentFormData.dob.trim().length > 0;
-    const hasGender = currentFormData.gender && currentFormData.gender !== '';
+    const hasGender = !!currentFormData.gender;
 
     return Boolean(hasFullName && hasDob && hasGender);
   };
