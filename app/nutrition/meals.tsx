@@ -1,8 +1,7 @@
-import { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { MealItemCard } from '../../components/cards/MealItemCard';
 import { FilterTabs } from '../../components/FilterTabs';
@@ -11,12 +10,12 @@ import { AddMealModal } from '../../components/modals/AddMealModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { MenuButton } from '../../components/theme/MenuButton';
+import { TextInput } from '../../components/theme/TextInput';
+import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import type { MealType } from '../../database/models/NutritionLog';
-import { MealService } from '../../database/services/MealService';
-import { NutritionService } from '../../database/services/NutritionService';
+import { MealService , NutritionService } from '../../database/services';
 import { useMeals } from '../../hooks/useMeals';
-import { theme } from '../../theme';
+import { useTheme } from '../../hooks/useTheme';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -143,7 +142,9 @@ function LogMealModalWrapper({
 
 export default function MyMealsScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const FILTER_TABS = [
     { id: 'all', label: t('meals.filters.all') },
@@ -151,7 +152,6 @@ export default function MyMealsScreen() {
     { id: 'breakfast', label: t('meals.filters.breakfast') },
     { id: 'lunch', label: t('meals.filters.lunch') },
   ];
-  const [searchQuery, setSearchQuery] = useState('');
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
@@ -218,20 +218,34 @@ export default function MyMealsScreen() {
     transformMeals();
   }, [meals]);
 
-  // Filter meals based on active filter
+  // Filter meals based on active filter and search query
   const filteredMeals = useMemo(() => {
-    if (activeFilter === 'all') {
-      return mealCardsData;
+    let filtered = mealCardsData;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((meal) => {
+        return (
+          meal.title.toLowerCase().includes(query) ||
+          meal.tags.some((tag) => tag.toLowerCase().includes(query))
+        );
+      });
     }
 
-    return mealCardsData.filter((meal) => {
+    // Apply category filter
+    if (activeFilter !== 'all') {
       const lowerFilter = activeFilter.toLowerCase();
-      if (lowerFilter === 'high-protein') {
-        return meal.tags.some((tag) => tag.toLowerCase().includes('high protein'));
-      }
-      return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
-    });
-  }, [mealCardsData, activeFilter]);
+      filtered = filtered.filter((meal) => {
+        if (lowerFilter === 'high-protein') {
+          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein'));
+        }
+        return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
+      });
+    }
+
+    return filtered;
+  }, [mealCardsData, activeFilter, searchQuery]);
 
   // Handlers for AddMealModal options
   const handleCreateMeal = () => {
@@ -249,6 +263,10 @@ export default function MyMealsScreen() {
     setAddMealModalVisible(false);
     // Implement manage categories logic
     console.log('Manage Categories pressed');
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
   };
 
   const handleTrackMeal = async (mealId: string) => {
@@ -302,23 +320,17 @@ export default function MyMealsScreen() {
     <MasterLayout>
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
-        <View className="flex-row items-center justify-between px-6 py-6">
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize['4xl'],
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.primary,
-            }}
-          >
-            {t('meals.title')}
-          </Text>
-          <View className="flex-row gap-4">
-            <Pressable
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{ backgroundColor: theme.colors.background.white5 }}
+        <View className="px-6 pt-6 pb-4">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize['4xl'],
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.primary,
+              }}
             >
-              <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
-            </Pressable>
+              {t('meals.title')}
+            </Text>
             <MenuButton
               size="md"
               color={theme.colors.text.primary}
@@ -326,6 +338,15 @@ export default function MyMealsScreen() {
               className="h-10 w-10"
             />
           </View>
+
+          {/* Search Input */}
+          <TextInput
+            label=""
+            value={searchQuery}
+            onChangeText={handleSearchChange}
+            placeholder="Search meals..."
+            icon={<Search size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+          />
         </View>
 
         {/* Filter Tabs */}
@@ -368,7 +389,11 @@ export default function MyMealsScreen() {
                   fontSize: theme.typography.fontSize.xl,
                 }}
               >
-                {activeFilter === 'all' ? 'No meals yet' : 'No meals found'}
+                {searchQuery.trim()
+                  ? 'No meals found'
+                  : activeFilter === 'all'
+                  ? 'No meals yet'
+                  : 'No meals found'}
               </Text>
               <Text
                 className="text-center font-medium"
@@ -377,7 +402,9 @@ export default function MyMealsScreen() {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                {activeFilter === 'all'
+                {searchQuery.trim()
+                  ? `No meals match "${searchQuery}"`
+                  : activeFilter === 'all'
                   ? 'Create your first meal to get started'
                   : 'Try a different filter'}
               </Text>
