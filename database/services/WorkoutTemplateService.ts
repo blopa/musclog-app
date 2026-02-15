@@ -456,6 +456,18 @@ export class WorkoutTemplateService {
 
   /**
    * Calculate suggested weight for an exercise based on user profile and exercise characteristics
+   *
+   * Formula based on strength standards research:
+   * - Uses bodyweight multipliers from established strength standards (ExRx.net, Strength Level)
+   * - Experience factors derived from strength standards ratios:
+   *   - Beginner: ~40% of intermediate capacity (based on strength standards showing beginners lift ~0.5x BW vs intermediate ~1.25x BW for bench)
+   *   - Intermediate: 100% (baseline)
+   *   - Advanced: ~140% of intermediate capacity (based on advanced lifters achieving ~1.75x BW vs intermediate ~1.25x BW)
+   * - Age factors: Conservative reduction for older adults, though research shows resistance training remains effective
+   *
+   * References:
+   * - Strength Standards: https://exrx.net/WorkoutTools/StrengthStandards
+   * - Bodyweight multipliers vary by exercise and experience level
    */
   private static calculateSuggestedWeight(
     userWeightKg: number,
@@ -469,34 +481,46 @@ export class WorkoutTemplateService {
       return 0;
     }
 
-    // Experience factor: beginners start lighter, advanced lift at full capacity
+    // Experience factor based on strength standards research
+    // Strength standards show: Beginner ~0.5x BW, Intermediate ~1.25x BW, Advanced ~1.75x BW (for bench press)
+    // Normalized to intermediate as baseline (1.0):
     let experienceFactor: number;
     switch (liftingExperience) {
       case 'beginner':
-        experienceFactor = 0.55;
+        // Beginner lifts ~40% of intermediate capacity (0.5/1.25 = 0.4)
+        // Using 0.4 for conservative starting point
+        experienceFactor = 0.4;
         break;
       case 'intermediate':
-        experienceFactor = 0.8;
+        // Intermediate is the baseline (100%)
+        experienceFactor = 1.0;
         break;
       case 'advanced':
-        experienceFactor = 1.0;
+        // Advanced lifts ~140% of intermediate capacity (1.75/1.25 = 1.4)
+        experienceFactor = 1.4;
         break;
       default:
         // Unknown experience level, default to intermediate
-        experienceFactor = 0.8;
+        experienceFactor = 1.0;
     }
 
-    // Age factor: slight reduction for older users (recovery/safety)
+    // Age factor: Conservative reduction for older users
+    // Research shows resistance training remains effective for older adults, but we apply
+    // slight reduction for safety and recovery considerations
     let ageFactor: number;
     if (age < 35) {
-      ageFactor = 1.0;
+      ageFactor = 1.0; // No reduction for younger adults
     } else if (age < 50) {
-      ageFactor = 0.95;
+      ageFactor = 0.95; // 5% reduction for middle-aged adults
+    } else if (age < 65) {
+      ageFactor = 0.9; // 10% reduction for older adults
     } else {
-      ageFactor = 0.9;
+      ageFactor = 0.85; // 15% reduction for seniors (still effective per research)
     }
 
     // Calculate suggested weight: userWeight × loadMultiplier × experienceFactor × ageFactor
+    // The loadMultiplier represents the typical bodyweight multiplier for the exercise at intermediate level
+    // We then adjust based on experience and age
     const suggestedWeight = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
     // Round to 1 decimal place
