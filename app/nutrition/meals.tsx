@@ -4,20 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { MealItemCard } from '../../components/cards/MealItemCard';
+import type { PersonalInfo } from '../../components/EditPersonalInfoBody';
 import { FilterTabs } from '../../components/FilterTabs';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddMealModal } from '../../components/modals/AddMealModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
+import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { MenuButton } from '../../components/theme/MenuButton';
 import { TextInput } from '../../components/theme/TextInput';
 import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import { MealService , NutritionService } from '../../database/services';
+import { MealService, NutritionService } from '../../database/services';
 import { useMeals } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
-import { FullScreenModal } from '../../components/modals/FullScreenModal';
-import type { PersonalInfo } from '../../components/EditPersonalInfoBody';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -321,24 +321,25 @@ export default function MyMealsScreen({ visible, onClose }: MyMealsScreenProps) 
     }
   };
 
-  // Show loading state
   const showLoading = isLoading || isTransforming;
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title={t('meals.title')}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('meals.title')}
+      headerRight={
+        <MenuButton
+          size="md"
+          color={theme.colors.text.primary}
+          onPress={() => setAddMealModalVisible(true)}
+          className="h-10 w-10"
+        />
+      }
+    >
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
         <View className="px-6 pb-4 pt-6">
-          <View className="mb-4 flex-row items-center justify-between">
-            {/*TODO: move this button to FullScreenModal header*/}
-            <MenuButton
-              size="md"
-              color={theme.colors.text.primary}
-              onPress={() => setAddMealModalVisible(true)}
-              className="h-10 w-10"
-            />
-          </View>
-
           {/* Search Input */}
           <TextInput
             label=""
