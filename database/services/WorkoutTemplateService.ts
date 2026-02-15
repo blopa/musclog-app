@@ -1,12 +1,16 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 import { Dumbbell, User } from 'lucide-react-native';
 
 import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplatesModal';
+import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { theme } from '../../theme';
+import { getWeightUnit } from '../../utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
+import Setting from '../models/Setting';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
@@ -468,14 +472,17 @@ export class WorkoutTemplateService {
    * References:
    * - Strength Standards: https://exrx.net/WorkoutTools/StrengthStandards
    * - Bodyweight multipliers vary by exercise and experience level
+   *
+   * Note: Weight is always stored in kg in the database. If user prefers pounds, we convert to lbs,
+   * round to nearest integer, then convert back to kg to ensure clean integer values in the user's preferred unit.
    */
-  private static calculateSuggestedWeight(
+  private static async calculateSuggestedWeight(
     userWeightKg: number,
     loadMultiplier: number,
     liftingExperience: string,
     age: number,
     isBodyweight: boolean
-  ): number {
+  ): Promise<number> {
     // Bodyweight exercises always return 0
     if (isBodyweight || loadMultiplier === 0) {
       return 0;
@@ -521,10 +528,29 @@ export class WorkoutTemplateService {
     // Calculate suggested weight: userWeight × loadMultiplier × experienceFactor × ageFactor
     // The loadMultiplier represents the typical bodyweight multiplier for the exercise at intermediate level
     // We then adjust based on experience and age
-    const suggestedWeight = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
+    let suggestedWeightKg = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
-    // Round to nearest integer (no decimals)
-    return Math.round(suggestedWeight);
+    // Get user's preferred weight unit from settings
+    const unitsSetting = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const units = unitsSetting.length > 0 && unitsSetting[0].value === '1' ? 'imperial' : 'metric';
+    const weightUnit = getWeightUnit(units);
+
+    // If user prefers pounds, convert to lbs, round to nearest integer, then convert back to kg
+    // This ensures the weight appears as a clean integer in the user's preferred unit
+    if (weightUnit === 'lbs') {
+      const suggestedWeightLbs = convert(suggestedWeightKg, 'kg').to('lb');
+      const roundedWeightLbs = Math.round(suggestedWeightLbs);
+      suggestedWeightKg = convert(roundedWeightLbs, 'lb').to('kg');
+    } else {
+      // For metric (kg), just round to nearest integer
+      suggestedWeightKg = Math.round(suggestedWeightKg);
+    }
+
+    return suggestedWeightKg;
   }
 
   /**
@@ -643,7 +669,7 @@ export class WorkoutTemplateService {
 
         // Calculate suggested weight based on user profile and exercise characteristics
         const loadMultiplier = dbExercise.loadMultiplier ?? 1.0;
-        const suggestedWeight = this.calculateSuggestedWeight(
+        const suggestedWeight = await this.calculateSuggestedWeight(
           userWeightKg,
           loadMultiplier,
           liftingExperience,
