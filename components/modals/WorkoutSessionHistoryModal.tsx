@@ -22,8 +22,15 @@ export type WorkoutHistoryModalProps = {
   sets?: WorkoutLogSet[];
   exercises?: Exercise[];
   currentSetOrder?: number | null;
+  isPreview?: boolean;
 };
 
+// TODO: if `isPreview` is on, then we should:
+// - not show the workout timer
+// - change all copies from "session" and/or "history" to something else - the idea is that the user
+//   is previewing the workout
+// - do not show amount of "done sets"
+// - add a button to start this workout
 export function WorkoutSessionHistoryModal({
   visible,
   onClose,
@@ -31,6 +38,7 @@ export function WorkoutSessionHistoryModal({
   sets = [],
   exercises = [],
   currentSetOrder = null,
+  isPreview = false, // TODO: implement usage of isPreview prop
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
