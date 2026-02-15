@@ -88,6 +88,8 @@ function LogMealModalWrapper({
   onClose: () => void;
   onLogMeal: (date: Date, mealType: MealType) => Promise<void>;
 }) {
+  const { t } = useTranslation();
+
   const [nutrients, setNutrients] = useState<{
     calories: number;
     protein: number;
@@ -120,7 +122,7 @@ function LogMealModalWrapper({
   }, [visible, meal]);
 
   if (!nutrients && isLoadingNutrients) {
-    return null; // Don't render modal until nutrients are loaded
+    return null;
   }
 
   return (
@@ -128,9 +130,8 @@ function LogMealModalWrapper({
       visible={visible}
       onClose={onClose}
       meal={{
-        // TODO: use translations here
-        name: meal.name ?? 'Untitled Meal',
-        type: 'Custom Meal',
+        name: meal.name ?? t('meals.untitledMeal'),
+        type: t('meals.customMeal'),
         image: meal.imageUrl,
         calories: nutrients?.calories ?? 0,
         protein: nutrients?.protein ?? 0,

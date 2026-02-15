@@ -903,7 +903,12 @@
       "highProtein": "High Protein",
       "breakfast": "Breakfast",
       "lunch": "Lunch"
-    }
+    },
+    "untitledMeal": "Untitled Meal",
+    "customMeal": "Custom Meal",
+    "createdByYou": "Created by you",
+    "logMeal": "Log Meal",
+    "mealType": "Meal Type"
   },
   "onboarding": {
     "skip": "Skip",

@@ -1,5 +1,6 @@
 import { Apple, Check, Coffee, Moon, Utensils } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -62,6 +63,7 @@ const mealTypeOptions: SelectorOption<MealType>[] = [
 ];
 
 export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -78,7 +80,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
 
   const footer = (
     <Button
-      label="Log Meal"
+      label={t('meals.logMeal')}
       variant="gradientCta"
       size="md"
       width="full"
@@ -92,7 +94,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        title="Log Meal"
+        title={t('meals.logMeal')}
         footer={footer}
         scrollable
       >
@@ -132,7 +134,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                       {meal.name}
                     </Text>
                     <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                      Custom Meal • Created by you
+                      {t('meals.customMeal')} • {t('meals.createdByYou')}
                     </Text>
                   </View>
 
@@ -158,7 +160,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      Calories
+                      {t('food.calories')}
                     </Text>
                     <Text
                       className="text-lg font-bold"
@@ -182,7 +184,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      Protein
+                      {t('food.macros.protein')}
                     </Text>
                     <Text
                       className="text-lg font-bold"
@@ -206,7 +208,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      Carbs
+                      {t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: '#60a5fa' }}>
                       {meal.carbs}
@@ -227,7 +229,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      Fat
+                      {t('food.macros.fat')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: '#fbbf24' }}>
                       {meal.fat}
@@ -247,7 +249,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
               className="mb-3 ml-1 text-sm font-semibold"
               style={{ color: theme.colors.text.primary }}
             >
-              Date
+              {t('food.foodDetails.date')}
             </Text>
             <Pressable
               className="flex-row items-center justify-between rounded-xl p-4"
@@ -272,7 +274,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
 
           {/* Meal Type Selector */}
           <OptionsSelector<MealType>
-            title="Meal Type"
+            title={t('meals.mealType')}
             options={mealTypeOptions}
             selectedId={selectedMealType}
             onSelect={setSelectedMealType}
