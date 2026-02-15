@@ -9,6 +9,7 @@ import UserMetric from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
+import { MetricType as AppMetricType } from '../../services/healthDataTransform';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { LineChart } from '../LineChart';
@@ -17,7 +18,8 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { FullScreenModal } from './FullScreenModal';
 
-type MetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
+// UI-facing metric keys
+type UiMetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
 type TimePeriod = '30D' | '3M' | '1Y';
 
 type HistoryEntry = {
@@ -68,7 +70,7 @@ export default function BodyMetricsHistoryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
-  const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
+  const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
 
   const metricOptions = [
@@ -77,6 +79,20 @@ export default function BodyMetricsHistoryModal({
     { label: t('bodyMetrics.metrics.bmi'), value: 'bmi' },
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
+
+  // Map UI metric keys to canonical AppMetricType values (or undefined when not applicable)
+  const mapUiMetricToAppMetric = (m: UiMetricType): AppMetricType | undefined => {
+    switch (m) {
+      case 'weight':
+        return AppMetricType.WEIGHT;
+      case 'bodyFat':
+        return AppMetricType.BODY_FAT;
+      // BMI and FFMI are derived metrics, not stored directly as a MetricType in HealthDataTransformer
+      case 'bmi':
+      case 'ffmi':
+        return undefined;
+    }
+  };
 
   // Calculate date range based on selected period
   const dateRange = useMemo(() => {
@@ -101,7 +117,7 @@ export default function BodyMetricsHistoryModal({
     loadMore,
   } = useUserMetrics({
     mode: 'history',
-    metricType: selectedMetric,
+    metricType: mapUiMetricToAppMetric(selectedMetric),
     dateRange,
     initialLimit: 5,
     batchSize: 5,
@@ -112,7 +128,7 @@ export default function BodyMetricsHistoryModal({
   // Use hook for all metrics (for chart display)
   const { metrics: allMetricsForChart } = useUserMetrics({
     mode: 'history',
-    metricType: selectedMetric,
+    metricType: mapUiMetricToAppMetric(selectedMetric),
     dateRange,
     getAll: true,
     enableReactivity: false, // Chart doesn't need reactivity
@@ -121,7 +137,7 @@ export default function BodyMetricsHistoryModal({
 
   // Helper to get unit for metric type (uses settings for weight)
   const getMetricUnit = useCallback(
-    (type: MetricType): string => {
+    (type: UiMetricType): string => {
       switch (type) {
         case 'weight':
           return units === 'imperial' ? 'lbs' : 'kg';
@@ -139,7 +155,7 @@ export default function BodyMetricsHistoryModal({
 
   // Helper to get label for metric type
   const getMetricLabel = useCallback(
-    (type: MetricType): string => {
+    (type: UiMetricType): string => {
       return t(`bodyMetrics.metrics.${type}`);
     },
     [t]
@@ -286,7 +302,7 @@ export default function BodyMetricsHistoryModal({
           <SegmentedControl
             options={metricOptions}
             value={selectedMetric}
-            onValueChange={(value) => setSelectedMetric(value as MetricType)}
+            onValueChange={(value) => setSelectedMetric(value as UiMetricType)}
             variant="gradient"
           />
 
