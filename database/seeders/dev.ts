@@ -1577,8 +1577,8 @@ async function seedFoods(): Promise<{ created: number }> {
 }
 
 export async function seedDevData(): Promise<boolean> {
-  return false;
   const exercisesSeeded = await seedExercisesIfEmpty();
+  return false;
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
   const foodsSeeded = await seedFoods();

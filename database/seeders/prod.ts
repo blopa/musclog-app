@@ -6,6 +6,7 @@ import { FoodPortionService } from '../services';
  * Foods are NOT seeded in production - users will add them as needed via the app
  */
 export async function seedProductionData(): Promise<boolean> {
+  // TODO: see exercises too
   try {
     // Check if portions already exist
     const existingPortions = await FoodPortionService.getAllPortions();
