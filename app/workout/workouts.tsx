@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Dumbbell, Plus, Search, WifiOff } from 'lucide-react-native';
+import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -22,6 +22,7 @@ import DashedButton from '../../components/theme/DashedButton';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
+import { TextInput } from '../../components/theme/TextInput';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
@@ -30,17 +31,16 @@ import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
-// TODO: implement search
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
   const FILTER_TABS = [
-    // TODO: add option to show archieved workouts in the filter
     { id: 'all', label: t('workouts.filters.all') },
     { id: 'strength', label: t('workouts.filters.strength') },
     { id: 'cardio', label: t('workouts.filters.cardio') },
     { id: 'flexibility', label: t('workouts.filters.flexibility') },
+    { id: 'archived', label: t('workouts.filters.archived') },
   ];
   const [activeFilter, setActiveFilter] = useState('all');
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -61,6 +61,8 @@ export default function WorkoutsScreen() {
   } | null>(null);
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const isPreviewModalVisible = previewTemplateId !== null;
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const { showSnackbar } = useSnackbar();
 
@@ -72,8 +74,10 @@ export default function WorkoutsScreen() {
     isLoading: isLoadingPreview,
   } = useWorkoutTemplateDetails(previewTemplateId);
 
-  // Use reactive hook for workout templates
-  const { templates, isLoading, error } = useWorkoutTemplates();
+  // Use reactive hook for workout templates with scope based on active filter
+  const { templates, isLoading, error } = useWorkoutTemplates({
+    scope: activeFilter === 'archived' ? 'archived' : 'active',
+  });
 
   // Process templates to separate featured vs regular
   const { featuredWorkout, workouts } = useMemo(() => {
@@ -86,6 +90,7 @@ export default function WorkoutsScreen() {
     const featuredWorkoutData = {
       id: featured.id,
       name: featured.name,
+      description: featured.description,
       lastCompleted: featured.lastCompleted,
       lastCompletedTimestamp: featured.lastCompletedTimestamp,
       exerciseCount: featured.exerciseCount,
@@ -97,6 +102,7 @@ export default function WorkoutsScreen() {
     const regularWorkouts = templates.slice(1).map((template) => ({
       id: template.id,
       name: template.name,
+      description: template.description,
       lastCompleted: template.lastCompleted,
       lastCompletedTimestamp: template.lastCompletedTimestamp,
       exerciseCount: template.exerciseCount,
@@ -110,15 +116,56 @@ export default function WorkoutsScreen() {
     };
   }, [templates]);
 
-  // Filter workouts based on active filter
-  const filteredWorkouts = workouts.filter((workout) => {
-    if (activeFilter === 'all') {
+  // Filter workouts based on search query and active filter
+  const filteredWorkouts = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    return workouts.filter((workout) => {
+      // Apply search filter
+      if (normalizedQuery) {
+        const matchesName = workout.name.toLowerCase().includes(normalizedQuery);
+        const matchesDescription = workout.description?.toLowerCase().includes(normalizedQuery);
+        if (!matchesName && !matchesDescription) {
+          return false;
+        }
+      }
+
+      // Apply type filter (strength/cardio/flexibility)
+      // Note: Workout type filtering requires a workout_type field in the schema.
+      // To implement type-based filtering:
+      // 1. Add workout_type column to workout_templates table (schema migration)
+      // 2. Update WorkoutTemplate model to include workout_type field
+      // 3. Update CreateWorkoutModal to allow users to set workout type
+      // 4. Update WorkoutTemplateService.saveTemplate to persist workout_type
+      // 5. Then filter here: if (activeFilter !== 'all' && activeFilter !== 'archived') { return workout.type === activeFilter; }
+      if (activeFilter === 'all' || activeFilter === 'archived') {
+        return true;
+      }
+
+      // Type-based filtering not yet implemented - requires schema changes
       return true;
+    });
+  }, [workouts, searchQuery, activeFilter]);
+
+  // Filter featured workout based on search query
+  const filteredFeaturedWorkout = useMemo(() => {
+    if (!featuredWorkout) {
+      return null;
     }
 
-    // Add filter logic based on workout type
-    return true;
-  });
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    if (normalizedQuery) {
+      const matchesName = featuredWorkout.name.toLowerCase().includes(normalizedQuery);
+      const matchesDescription = featuredWorkout.description
+        ?.toLowerCase()
+        .includes(normalizedQuery);
+      if (!matchesName && !matchesDescription) {
+        return null;
+      }
+    }
+
+    return featuredWorkout;
+  }, [featuredWorkout, searchQuery]);
 
   // Helper function to start a workout and show overview modal
   const handleStartWorkout = useCallback(async (templateId: string) => {
@@ -170,19 +217,62 @@ export default function WorkoutsScreen() {
           {/* Header */}
           <View className="px-6 py-6">
             <View className="flex-row items-center justify-between">
-              <GradientText
-                colors={theme.colors.gradients.workoutsTitle}
-                style={{
-                  fontSize: theme.typography.fontSize['4xl'],
-                  fontWeight: theme.typography.fontWeight.bold,
-                }}
-              >
-                {t('workouts.title')}
-              </GradientText>
+              {!isSearchActive ? (
+                <GradientText
+                  colors={theme.colors.gradients.workoutsTitle}
+                  style={{
+                    fontSize: theme.typography.fontSize['4xl'],
+                    fontWeight: theme.typography.fontWeight.bold,
+                  }}
+                >
+                  {t('workouts.title')}
+                </GradientText>
+              ) : (
+                <View className="mr-4 flex-1">
+                  <TextInput
+                    label=""
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder={t('workouts.searchPlaceholder')}
+                    icon={
+                      searchQuery ? (
+                        <Pressable
+                          onPress={() => {
+                            setSearchQuery('');
+                          }}
+                        >
+                          <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                        </Pressable>
+                      ) : (
+                        <Search size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                      )
+                    }
+                    focused={isSearchActive}
+                    onFocus={() => setIsSearchActive(true)}
+                  />
+                </View>
+              )}
               <View className="ml-4 flex-row gap-4">
-                <Pressable className="rounded-lg p-2">
-                  <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
-                </Pressable>
+                {isSearchActive ? (
+                  <Pressable
+                    className="rounded-lg p-2"
+                    onPress={() => {
+                      setIsSearchActive(false);
+                      setSearchQuery('');
+                    }}
+                  >
+                    <X size={theme.iconSize.md} color={theme.colors.text.primary} />
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    className="rounded-lg p-2"
+                    onPress={() => {
+                      setIsSearchActive(true);
+                    }}
+                  >
+                    <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
+                  </Pressable>
+                )}
               </View>
             </View>
             {/* Add spacing below header */}
@@ -275,7 +365,11 @@ export default function WorkoutsScreen() {
                 ))}
               </>
             ) : null}
-            {!isLoading && !error && !featuredWorkout && filteredWorkouts.length === 0 ? (
+            {!isLoading &&
+            !error &&
+            !filteredFeaturedWorkout &&
+            filteredWorkouts.length === 0 &&
+            !searchQuery ? (
               <EmptyStateCard
                 icon={Dumbbell}
                 title={t('emptyStates.workouts.title')}
@@ -288,24 +382,36 @@ export default function WorkoutsScreen() {
                 }}
               />
             ) : null}
+            {!isLoading &&
+            !error &&
+            searchQuery &&
+            filteredFeaturedWorkout === null &&
+            filteredWorkouts.length === 0 ? (
+              <EmptyStateCard
+                icon={Search}
+                title={t('workouts.noSearchResults')}
+                description={t('workouts.noSearchResultsDescription', { query: searchQuery })}
+                iconGradient={false}
+              />
+            ) : null}
 
             {/* Normal State - Featured Workout */}
-            {!isLoading && !error && featuredWorkout ? (
+            {!isLoading && !error && filteredFeaturedWorkout ? (
               <WorkoutCard
-                name={featuredWorkout.name}
-                lastCompleted={featuredWorkout.lastCompleted}
-                lastCompletedTimestamp={featuredWorkout.lastCompletedTimestamp}
-                exerciseCount={featuredWorkout.exerciseCount}
-                duration={featuredWorkout.duration}
-                image={featuredWorkout.image}
+                name={filteredFeaturedWorkout.name}
+                lastCompleted={filteredFeaturedWorkout.lastCompleted}
+                lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
+                exerciseCount={filteredFeaturedWorkout.exerciseCount}
+                duration={filteredFeaturedWorkout.duration}
+                image={filteredFeaturedWorkout.image}
                 onStart={async () => {
-                  if (featuredWorkout.id) {
-                    await handleStartWorkout(featuredWorkout.id);
+                  if (filteredFeaturedWorkout.id) {
+                    await handleStartWorkout(filteredFeaturedWorkout.id);
                   }
                 }}
                 onMore={() => {
-                  setSelectedWorkoutName(featuredWorkout.name);
-                  setSelectedWorkoutId(featuredWorkout.id);
+                  setSelectedWorkoutName(filteredFeaturedWorkout.name);
+                  setSelectedWorkoutId(filteredFeaturedWorkout.id);
                   setIsMenuVisible(true);
                 }}
               />
@@ -327,9 +433,14 @@ export default function WorkoutsScreen() {
                     onStart={async () => {
                       await handleStartWorkout(workout.id);
                     }}
-                    onArchive={() => {
-                      // TODO: Implement archive functionality
-                      console.log('Archive workout:', workout.name);
+                    onArchive={async () => {
+                      try {
+                        await WorkoutTemplateService.archiveTemplate(workout.id);
+                        showSnackbar('success', t('workouts.archiveSuccess'));
+                      } catch (err) {
+                        console.error('Error archiving workout:', err);
+                        showSnackbar('error', t('workouts.archiveError'));
+                      }
                     }}
                     onMore={() => {
                       setSelectedWorkoutName(workout.name);
@@ -370,11 +481,24 @@ export default function WorkoutsScreen() {
               setIsMenuVisible(false);
             }
           }}
-          onDuplicate={() => {
-            // TODO: Implement duplicate functionality, which is basically just duplicate it
-            // the user is then free to edit it
-            console.log('Duplicate workout:', selectedWorkoutName);
-            setIsMenuVisible(false);
+          onDuplicate={async () => {
+            if (!selectedWorkoutId) {
+              console.error('Cannot duplicate workout: No workout ID selected');
+              setIsMenuVisible(false);
+              return;
+            }
+
+            try {
+              const newTemplate = await WorkoutTemplateService.duplicateTemplate(selectedWorkoutId);
+              setEditingTemplateId(newTemplate.id);
+              setIsCreateWorkoutModalVisible(true);
+              setIsMenuVisible(false);
+              showSnackbar('success', t('workouts.duplicateSuccess'));
+            } catch (err) {
+              console.error('Error duplicating workout:', err);
+              showSnackbar('error', t('workouts.duplicateError'));
+              // Keep menu open on error so user can try again
+            }
           }}
           onShare={() => {
             // TODO: Implement share functionality

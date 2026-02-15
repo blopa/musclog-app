@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
+import { WorkoutTemplateRepository } from '../database/repositories/WorkoutTemplateRepository';
 import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
 
 export type WorkoutTemplateWithMetadata = {
@@ -25,6 +26,7 @@ export interface UseWorkoutTemplatesParams {
   getAll?: boolean; // For paginated mode: if true, fetch all templates (no pagination)
   enableReactivity?: boolean; // Default: true
   visible?: boolean; // For modal visibility control, default: true
+  scope?: 'active' | 'archived'; // Default: 'active'
 }
 
 // Return type for all mode
@@ -64,6 +66,7 @@ export function useWorkoutTemplates({
   getAll = false,
   enableReactivity = true,
   visible = true,
+  scope = 'active',
 }: UseWorkoutTemplatesParams = {}): UseWorkoutTemplatesResult {
   // State for all mode
   const [allTemplates, setAllTemplates] = useState<WorkoutTemplateWithMetadata[]>([]);
@@ -94,14 +97,21 @@ export function useWorkoutTemplates({
 
       if (getAll) {
         // Fetch all templates (no pagination)
-        templatesHistory = await WorkoutTemplateService.getTemplatesWithMetadataPaginated();
+        templatesHistory = await WorkoutTemplateService.getTemplatesWithMetadataPaginated(
+          undefined,
+          undefined,
+          scope
+        );
         // No limit or offset - gets all
         setHasMore(false); // No more to load when getAll is true
       } else {
         // Fetch initial batch with pagination
         setHasMore(true);
-        templatesHistory =
-          await WorkoutTemplateService.getTemplatesWithMetadataPaginated(initialLimit);
+        templatesHistory = await WorkoutTemplateService.getTemplatesWithMetadataPaginated(
+          initialLimit,
+          undefined,
+          scope
+        );
 
         if (templatesHistory.length === 0) {
           setTemplates([]);
@@ -119,7 +129,8 @@ export function useWorkoutTemplates({
           // Check if there's a next batch
           const nextBatch = await WorkoutTemplateService.getTemplatesWithMetadataPaginated(
             1,
-            initialLimit
+            initialLimit,
+            scope
           );
           setHasMore(nextBatch.length > 0);
         }
@@ -140,7 +151,7 @@ export function useWorkoutTemplates({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, getAll]);
+  }, [visible, initialLimit, getAll, scope]);
 
   // Load more templates (pagination)
   const loadMore = useCallback(async () => {
@@ -159,7 +170,8 @@ export function useWorkoutTemplates({
       // Fetch next batch
       const templatesHistory = await WorkoutTemplateService.getTemplatesWithMetadataPaginated(
         batchSize,
-        currentOffset
+        currentOffset,
+        scope
       );
 
       if (templatesHistory.length === 0) {
@@ -181,7 +193,8 @@ export function useWorkoutTemplates({
         // Check if there's a next batch
         const nextBatch = await WorkoutTemplateService.getTemplatesWithMetadataPaginated(
           1,
-          newOffset
+          newOffset,
+          scope
         );
         setHasMore(nextBatch.length > 0);
       }
@@ -192,17 +205,19 @@ export function useWorkoutTemplates({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, getAll]);
+  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, getAll, scope]);
 
-  // All mode: Observe all templates
+  // All mode: Observe templates based on scope
   useEffect(() => {
     if (mode !== 'all') {
       return;
     }
 
-    const query = database
-      .get<WorkoutTemplate>('workout_templates')
-      .query(Q.where('deleted_at', Q.eq(null)));
+    // Use the appropriate repository query based on scope
+    const query =
+      scope === 'archived'
+        ? WorkoutTemplateRepository.getArchived()
+        : WorkoutTemplateRepository.getActive();
 
     const subscription = query.observe().subscribe({
       next: async (_templatesList) => {
@@ -212,7 +227,8 @@ export function useWorkoutTemplates({
         try {
           setErrorAll(null);
           // Process templates with metadata when they change
-          const templatesWithMetadata = await WorkoutTemplateService.getAllTemplatesWithMetadata();
+          const templatesWithMetadata =
+            await WorkoutTemplateService.getAllTemplatesWithMetadata(scope);
           setAllTemplates(templatesWithMetadata);
           setIsLoadingAll(false);
         } catch (err) {
@@ -231,7 +247,7 @@ export function useWorkoutTemplates({
     });
 
     return () => subscription.unsubscribe();
-  }, [mode]);
+  }, [mode, scope]);
 
   // Paginated mode: Observe for new templates to trigger reload (reactivity)
   useEffect(() => {
@@ -248,13 +264,14 @@ export function useWorkoutTemplates({
     }
 
     // Observe workout templates to detect when new ones are created/updated
-    const query = database.get<WorkoutTemplate>('workout_templates').query(
-      Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy('created_at', Q.desc),
-      Q.take(1) // Only need to know if there are any changes
-    );
+    // Use the appropriate repository query based on scope
+    const query =
+      scope === 'archived'
+        ? WorkoutTemplateRepository.getArchived()
+        : WorkoutTemplateRepository.getActive();
+    const observeQuery = query.extend(Q.take(1)); // Only need to know if there are any changes
 
-    const subscription = query.observe().subscribe({
+    const subscription = observeQuery.observe().subscribe({
       next: () => {
         // When a new template is created/updated, reload the initial batch
         loadInitialTemplates();
@@ -268,7 +285,7 @@ export function useWorkoutTemplates({
     loadInitialTemplates();
 
     return () => subscription.unsubscribe();
-  }, [mode, enableReactivity, visible, getAll, loadInitialTemplates]);
+  }, [mode, enableReactivity, visible, getAll, scope, loadInitialTemplates]);
 
   // All mode result
   const allResult = useMemo(

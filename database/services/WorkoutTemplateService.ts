@@ -281,7 +281,7 @@ export class WorkoutTemplateService {
   /**
    * Get all active workout templates with metadata (exercise count, last completed, etc.)
    */
-  static async getAllTemplatesWithMetadata(): Promise<
+  static async getAllTemplatesWithMetadata(scope: 'active' | 'archived' = 'active'): Promise<
     {
       id: string;
       name: string;
@@ -293,8 +293,11 @@ export class WorkoutTemplateService {
       image?: any;
     }[]
   > {
-    // Fetch all active templates
-    const templates = await WorkoutTemplateRepository.getActive().fetch();
+    // Fetch templates based on scope
+    const templates =
+      scope === 'archived'
+        ? await WorkoutTemplateRepository.getArchived().fetch()
+        : await WorkoutTemplateRepository.getActive().fetch();
 
     // Process each template to get metadata
     const templatesWithMetadata = await Promise.all(
@@ -411,7 +414,8 @@ export class WorkoutTemplateService {
    */
   static async getTemplatesWithMetadataPaginated(
     limit?: number,
-    offset?: number
+    offset?: number,
+    scope: 'active' | 'archived' = 'active'
   ): Promise<
     {
       id: string;
@@ -424,8 +428,11 @@ export class WorkoutTemplateService {
       image?: any;
     }[]
   > {
-    // Fetch templates with pagination
-    let query = WorkoutTemplateRepository.getActive();
+    // Fetch templates with pagination based on scope
+    let query =
+      scope === 'archived'
+        ? WorkoutTemplateRepository.getArchived()
+        : WorkoutTemplateRepository.getActive();
 
     if (limit) {
       if (offset !== undefined && offset !== null && offset > 0) {
@@ -728,6 +735,64 @@ export class WorkoutTemplateService {
   static async unarchiveTemplate(templateId: string): Promise<void> {
     const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
     await template.unarchive();
+  }
+
+  /**
+   * Duplicate a workout template (create a copy)
+   */
+  static async duplicateTemplate(templateId: string): Promise<WorkoutTemplate> {
+    return await database.write(async () => {
+      // Get template with all details (sets and schedule)
+      const { template, sets, schedule } = await this.getTemplateWithDetails(templateId);
+
+      if (template.deletedAt) {
+        throw new Error('Cannot duplicate deleted template');
+      }
+
+      const now = Date.now();
+
+      // Create new template with "(Copy)" suffix
+      const newTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
+        t.name = `${template.name} (Copy)`;
+        t.description = template.description;
+        t.isArchived = false;
+        t.createdAt = now;
+        t.updatedAt = now;
+      });
+
+      // Copy all template sets
+      const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
+      const preparedSets = sets.map((set) =>
+        templateSetsCollection.prepareCreate((ts) => {
+          ts.templateId = newTemplate.id;
+          ts.exerciseId = set.exerciseId;
+          ts.targetReps = set.targetReps;
+          ts.targetWeight = set.targetWeight;
+          ts.restTimeAfter = set.restTimeAfter;
+          ts.setOrder = set.setOrder;
+          ts.groupId = set.groupId;
+          ts.createdAt = now;
+          ts.updatedAt = now;
+        })
+      );
+
+      // Copy all schedule entries
+      const schedulesCollection = database.get<Schedule>('schedules');
+      const preparedSchedules = schedule.map((sched) =>
+        schedulesCollection.prepareCreate((s) => {
+          s.templateId = newTemplate.id;
+          s.dayOfWeek = sched.dayOfWeek;
+          s.reminderTime = sched.reminderTime;
+          s.createdAt = now;
+          s.updatedAt = now;
+        })
+      );
+
+      // Batch commit all sets and schedules atomically
+      await database.batch(...preparedSets, ...preparedSchedules);
+
+      return newTemplate;
+    });
   }
 
   /**

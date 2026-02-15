@@ -435,9 +435,17 @@
       "all": "All",
       "strength": "Strength",
       "cardio": "Cardio",
-      "flexibility": "Flexibility"
+      "flexibility": "Flexibility",
+      "archived": "Archived"
     },
     "archive": "Archive",
+    "archiveSuccess": "Workout archived successfully",
+    "archiveError": "Failed to archive workout",
+    "duplicateSuccess": "Workout duplicated successfully",
+    "duplicateError": "Failed to duplicate workout",
+    "searchPlaceholder": "Search workouts...",
+    "noSearchResults": "No workouts found",
+    "noSearchResultsDescription": "No workouts match \"{{query}}\"",
     "exercises": "Exercises",
     "addExercise": {
       "title": "Add Exercise",
