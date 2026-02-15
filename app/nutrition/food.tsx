@@ -27,6 +27,7 @@ import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import MyMealsModal from '../../components/modals/MyMealsModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
@@ -53,6 +54,7 @@ export default function FoodScreen() {
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
@@ -633,9 +635,17 @@ export default function FoodScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
-            // TODO: open MyMealsModal modal
-            console.log('Track Custom Meal pressed');
+            setIsMyMealsModalVisible(true);
+            setIsAddFoodModalVisible(false);
           }}
+        />
+      ) : null}
+
+      {/* My Meals Modal */}
+      {isMyMealsModalVisible ? (
+        <MyMealsModal
+          visible={isMyMealsModalVisible}
+          onClose={() => setIsMyMealsModalVisible(false)}
         />
       ) : null}
 

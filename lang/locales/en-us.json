@@ -78,7 +78,7 @@
       "scanBarcode": "Scan Barcode",
       "track": "Track",
       "aiCamera": "AI Camera",
-      "moreFoodOptions": "More Food Options",
+      "moreFoodOptions": "More Options",
       "delete": "Delete",
       "deleteConfirmMessage": "Are you sure you want to remove {{foodName}} from this meal?",
       "deleteConfirmTitle": "Delete food?",

@@ -86,6 +86,10 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
       width="full"
       icon={Check}
       onPress={handleLogMeal}
+      // TODO: while we're handleling the request from handleLogMeal
+      // we should set the loading to true, so the button is disabled too
+      loading={false}
+      disabled={false}
     />
   );
 

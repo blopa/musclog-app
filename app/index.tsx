@@ -22,6 +22,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
+import MyMealsModal from '../components/modals/MyMealsModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
@@ -113,6 +114,7 @@ export default function HomeScreen() {
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
   const [isCameraVisible, setIsCameraVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
+  const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
     'ai-meal-photo'
@@ -482,9 +484,8 @@ export default function HomeScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
-            // TODO: open MyMealsModal modal
+            setIsMyMealsVisible(true);
             setIsAddFoodVisible(false);
-            // Do nothing for now, it's ok
           }}
         />
       ) : null}
@@ -525,6 +526,14 @@ export default function HomeScreen() {
           visible={isCameraVisible}
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}
+        />
+      ) : null}
+
+      {/* My Meals Modal */}
+      {isMyMealsVisible ? (
+        <MyMealsModal
+          visible={isMyMealsVisible}
+          onClose={() => setIsMyMealsVisible(false)}
         />
       ) : null}
 

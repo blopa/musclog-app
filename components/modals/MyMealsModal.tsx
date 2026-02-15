@@ -3,21 +3,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import { MealItemCard } from '../cards/MealItemCard';
-import type { PersonalInfo } from '../EditPersonalInfoBody';
-import { FilterTabs } from '../FilterTabs';
-import { MasterLayout } from '../MasterLayout';
-import { AddMealModal } from './AddMealModal';
-import { CreateMealModal } from './CreateMealModal';
-import { FullScreenModal } from './FullScreenModal';
-import { LogMealModal } from './LogMealModal';
-import { MenuButton } from '../theme/MenuButton';
-import { TextInput } from '../theme/TextInput';
 import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { useMeals } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
+import { MealItemCard } from '../cards/MealItemCard';
+import { FilterTabs } from '../FilterTabs';
+import { MenuButton } from '../theme/MenuButton';
+import { TextInput } from '../theme/TextInput';
+import { AddMealModal } from './AddMealModal';
+import { CreateMealModal } from './CreateMealModal';
+import { FullScreenModal } from './FullScreenModal';
+import { LogMealModal } from './LogMealModal';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -316,6 +314,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       // Close modal and reset
       setLogMealModalVisible(false);
       setSelectedMealForLogging(null);
+      onClose();
     } catch (error) {
       console.error('Error logging meal:', error);
     }
