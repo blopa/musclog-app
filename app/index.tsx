@@ -482,7 +482,7 @@ export default function HomeScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
-            console.log('Track custom meal pressed');
+            // TODO: open MyMealsModal modal
             setIsAddFoodVisible(false);
             // Do nothing for now, it's ok
           }}

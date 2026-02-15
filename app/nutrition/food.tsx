@@ -633,7 +633,7 @@ export default function FoodScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onTrackCustomMealPress={() => {
-            // TODO: implement track custom meal functionality
+            // TODO: open MyMealsModal modal
             console.log('Track Custom Meal pressed');
           }}
         />
