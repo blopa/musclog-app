@@ -12,7 +12,8 @@ import { Slider } from '../theme/Slider';
 
 type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
 type DateRange = '30' | '90' | 'custom';
-type MuscleGroup = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full-body';
+// UI-specific muscle group type for filtering (aggregated categories)
+type MuscleGroup = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
 
 type PastWorkoutsHistoryFilterMenuProps = {
   visible: boolean;

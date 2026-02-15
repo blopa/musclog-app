@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { type MuscleGroup } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
@@ -11,8 +12,23 @@ import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
 
 // Muscle groups will be translated using useTranslation hook
-const PRIMARY_MUSCLES_KEYS = ['chest', 'shoulders', 'back', 'legs', 'arms', 'core'];
-const SECONDARY_MUSCLES_KEYS = ['triceps', 'biceps', 'abs', 'forearms', 'traps', 'glutes'];
+// Using string arrays for translation keys, but values should match MuscleGroup where possible
+const PRIMARY_MUSCLES_KEYS: (MuscleGroup | 'legs' | 'arms' | 'core')[] = [
+  'chest',
+  'shoulders',
+  'back',
+  'legs',
+  'arms',
+  'core',
+];
+const SECONDARY_MUSCLES_KEYS: (MuscleGroup | 'abs' | 'forearms' | 'traps' | 'glutes')[] = [
+  'triceps',
+  'biceps',
+  'abs',
+  'forearms',
+  'traps',
+  'glutes',
+];
 
 type CreateExerciseModalProps = {
   visible: boolean;

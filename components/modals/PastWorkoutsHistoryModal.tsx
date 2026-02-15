@@ -417,15 +417,9 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
         initialFilters={{
           workoutType: filters.workoutType,
           dateRange: filters.dateRange,
-          muscleGroups: filters.muscleGroups as (
-            | 'chest'
-            | 'back'
-            | 'legs'
-            | 'shoulders'
-            | 'arms'
-            | 'core'
-            | 'full-body'
-          )[],
+          muscleGroups: filters.muscleGroups as Array<
+            'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core' | 'full-body'
+          >,
           minDuration: filters.minDuration,
         }}
         onApplyFilters={handleApplyFilters}

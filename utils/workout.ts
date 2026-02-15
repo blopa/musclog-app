@@ -16,7 +16,7 @@ export const WEEKDAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 // Day names mapping for database: WeekdayPicker index -> Day name
 // WeekdayPicker uses: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
-export const WEEKDAY_NAMES = [
+export const WEEKDAY_NAMES: DayOfWeek[] = [
   'Monday',
   'Tuesday',
   'Wednesday',
@@ -29,8 +29,8 @@ export const WEEKDAY_NAMES = [
 /**
  * Convert day name from database to WeekdayPicker index
  */
-export function dayNameToIndex(dayName: string): number {
-  return WEEKDAY_NAMES.indexOf(dayName);
+export function dayNameToIndex(dayName: DayOfWeek | string): number {
+  return WEEKDAY_NAMES.indexOf(dayName as DayOfWeek);
 }
 
 /**

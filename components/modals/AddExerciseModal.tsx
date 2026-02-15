@@ -14,7 +14,11 @@ import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
-import { type MuscleGroup } from '../../database/models';
+import {
+  type EquipmentType,
+  type MechanicType,
+  type MuscleGroup,
+} from '../../database/models';
 
 // UI-specific muscle group filter type (subset of MuscleGroup + 'all')
 type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
@@ -23,7 +27,7 @@ type ExerciseId = string;
 
 type ExerciseOption = SelectorOption<ExerciseId> & {
   category: string;
-  type: 'compound' | 'isolation' | 'bodyweight' | 'machine';
+  type: MechanicType | EquipmentType;
 };
 
 type AddExerciseModalProps = {
@@ -66,20 +70,20 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
 const getExerciseType = (
   mechanicType: string,
   equipmentType: string
-): 'compound' | 'isolation' | 'bodyweight' | 'machine' => {
+): MechanicType | EquipmentType => {
   const mechanic = mechanicType?.toLowerCase() || '';
   const equipment = equipmentType?.toLowerCase() || '';
 
   if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
-    return 'bodyweight';
+    return 'bodyweight' as EquipmentType;
   }
   if (mechanic.includes('compound')) {
-    return 'compound';
+    return 'compound' as MechanicType;
   }
   if (equipment.includes('machine')) {
-    return 'machine';
+    return 'machine' as EquipmentType;
   }
-  return 'isolation';
+  return 'isolation' as MechanicType;
 };
 
 // Helper function to get icon for exercise type

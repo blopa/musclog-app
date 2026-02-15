@@ -1,3 +1,5 @@
+import { type EatingPhase } from '../database/models';
+
 /**
  * UI-specific eating phase types for display purposes.
  * These map to the database EatingPhase types ('cut' | 'maintain' | 'bulk')
@@ -8,7 +10,7 @@ export type EatingPhaseUI = 'cutting' | 'maintenance' | 'bulking' | 'lean-bulk';
 /**
  * Converts database EatingPhase to UI EatingPhaseUI
  */
-export function convertEatingPhaseToUI(dbPhase: string): EatingPhaseUI {
+export function convertEatingPhaseToUI(dbPhase: EatingPhase | string): EatingPhaseUI {
   switch (dbPhase) {
     case 'cut':
       return 'cutting';
@@ -24,7 +26,7 @@ export function convertEatingPhaseToUI(dbPhase: string): EatingPhaseUI {
 /**
  * Converts UI EatingPhaseUI to database EatingPhase
  */
-export function convertEatingPhaseToDB(uiPhase: EatingPhaseUI): 'cut' | 'maintain' | 'bulk' {
+export function convertEatingPhaseToDB(uiPhase: EatingPhaseUI): EatingPhase {
   switch (uiPhase) {
     case 'cutting':
       return 'cut';

@@ -11,6 +11,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 type WorkoutType = 'strength' | 'cardio' | 'flexibility';
 
+// UI-specific muscle group type for filtering (aggregated categories)
 type TargetMuscle = 'full-body' | 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
 
 type FilterWorkoutsModalProps = {
