@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import type { Theme } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+import type { TFunction } from 'i18next';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
@@ -27,39 +29,39 @@ type LogMealModalProps = {
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
-// TODO: use colors from theme
-const mealTypeOptions: SelectorOption<MealType>[] = [
+// TODO: translate texts
+const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
   {
     id: 'breakfast',
     label: 'Breakfast',
     description: 'Start your day',
     icon: Coffee,
-    iconBgColor: '#fed7aa',
-    iconColor: '#ea580c',
+    iconBgColor: theme.colors.status.warning10,
+    iconColor: theme.colors.status.warning,
   },
   {
     id: 'lunch',
     label: 'Lunch',
     description: 'Midday meal',
     icon: Utensils,
-    iconBgColor: '#dbeafe',
-    iconColor: '#2563eb',
+    iconBgColor: theme.colors.status.info10,
+    iconColor: theme.colors.status.info,
   },
   {
     id: 'dinner',
     label: 'Dinner',
     description: 'Evening meal',
     icon: Moon,
-    iconBgColor: '#e9d5ff',
-    iconColor: '#7c3aed',
+    iconBgColor: theme.colors.status.purple10,
+    iconColor: theme.colors.status.purple,
   },
   {
     id: 'snack',
     label: 'Snack',
     description: 'Light bite',
     icon: Apple,
-    iconBgColor: '#d1fae5',
-    iconColor: '#059669',
+    iconBgColor: theme.colors.status.success20,
+    iconColor: theme.colors.status.success,
   },
 ];
 
@@ -286,7 +288,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
           {/* Meal Type Selector */}
           <OptionsSelector<MealType>
             title={t('meals.mealType')}
-            options={mealTypeOptions}
+            options={getMealTypeOptions(theme, t)}
             selectedId={selectedMealType}
             onSelect={setSelectedMealType}
           />
