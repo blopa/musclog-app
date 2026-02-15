@@ -12,6 +12,7 @@ type WorkoutDetailsMenuProps = {
   onDuplicate?: () => void;
   onShare?: () => void;
   onDelete?: () => void;
+  onPreview?: () => void;
 };
 
 export function WorkoutDetailsMenu({
@@ -22,10 +23,12 @@ export function WorkoutDetailsMenu({
   onDuplicate,
   onShare,
   onDelete,
+  onPreview,
 }: WorkoutDetailsMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
+  // TODO: add option to preview workout
   const items: BottomPopUpMenuItem[] = [
     {
       icon: Pencil,
