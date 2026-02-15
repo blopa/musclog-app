@@ -36,6 +36,7 @@ export default function WorkoutsScreen() {
   const router = useRouter();
 
   const FILTER_TABS = [
+    // TODO: add option to show archieved workouts in the filter
     { id: 'all', label: t('workouts.filters.all') },
     { id: 'strength', label: t('workouts.filters.strength') },
     { id: 'cardio', label: t('workouts.filters.cardio') },
@@ -370,7 +371,8 @@ export default function WorkoutsScreen() {
             }
           }}
           onDuplicate={() => {
-            // TODO: Implement duplicate functionality
+            // TODO: Implement duplicate functionality, which is basically just duplicate it
+            // the user is then free to edit it
             console.log('Duplicate workout:', selectedWorkoutName);
             setIsMenuVisible(false);
           }}
