@@ -10,11 +10,13 @@ import Exercise, {
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
+import Meal from '../models/Meal';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
+import { MealService } from '../services';
 
 interface ExerciseJsonData {
   name: string;
@@ -1584,16 +1586,125 @@ async function seedFoods(): Promise<{ created: number }> {
   }
 }
 
+/**
+ * Seeds the meals database with test meal data
+ * Creates meals with foods via the meal_foods pivot table
+ * Only runs if the meals table is empty
+ * Returns number of meals created
+ */
+async function seedMeals(): Promise<{ created: number }> {
+  let created = 0;
+
+  try {
+    // Check if there are any meals in the database
+    const existingMeals = await database.get<Meal>('meals').query().fetch();
+
+    // If database already has meals, skip seeding
+    if (existingMeals.length > 0) {
+      console.log(`Skipping meal seeding: ${existingMeals.length} meals already exist`);
+      return { created: 0 };
+    }
+
+    // Get all foods from the database to use in meals
+    const foods = await database.get<Food>('foods').query().fetch();
+
+    if (foods.length === 0) {
+      console.warn('No foods found. Please seed foods before seeding meals.');
+      return { created: 0 };
+    }
+
+    // Create a map for easy food lookup by name
+    const foodByName = new Map<string, Food>(foods.map((f) => [(f.name ?? '').toLowerCase(), f]));
+
+    // Helper to get food by name
+    const getFood = (name: string): Food | undefined => {
+      return foodByName.get(name.toLowerCase());
+    };
+
+    // Meal 1: Chicken & Rice Bowl
+    const chickenBreast = getFood('chicken breast');
+    const brownRice = getFood('brown rice');
+
+    if (chickenBreast && brownRice) {
+      await MealService.createMealFromFoods(
+        'Chicken & Rice Bowl',
+        [
+          { foodId: chickenBreast.id, amount: 200 }, // 200g chicken breast
+          { foodId: brownRice.id, amount: 200 }, // 200g brown rice
+        ],
+        'High protein meal with lean chicken and brown rice'
+      );
+      created++;
+    }
+
+    // Meal 2: Oatmeal & Berries
+    const oatmeal = getFood('oatmeal');
+    const banana = getFood('banana');
+    const greekYogurt = getFood('greek yogurt');
+
+    if (oatmeal && banana && greekYogurt) {
+      await MealService.createMealFromFoods(
+        'Oatmeal & Berries',
+        [
+          { foodId: oatmeal.id, amount: 150 }, // 150g oatmeal
+          { foodId: banana.id, amount: 120 }, // 120g banana (as berry substitute)
+          { foodId: greekYogurt.id, amount: 100 }, // 100g greek yogurt
+        ],
+        'Healthy breakfast with oats, fruit, and yogurt'
+      );
+      created++;
+    }
+
+    // Meal 3: Salmon Salad
+    const salmon = getFood('salmon');
+    const sweetPotato = getFood('sweet potato');
+
+    if (salmon && sweetPotato) {
+      await MealService.createMealFromFoods(
+        'Salmon Salad',
+        [
+          { foodId: salmon.id, amount: 180 }, // 180g salmon
+          { foodId: sweetPotato.id, amount: 150 }, // 150g sweet potato
+        ],
+        'Omega-3 rich salmon with roasted sweet potato'
+      );
+      created++;
+    }
+
+    // Meal 4: Avocado Toast & Egg
+    const eggs = getFood('eggs');
+
+    if (eggs && banana) {
+      await MealService.createMealFromFoods(
+        'Avocado Toast & Egg',
+        [
+          { foodId: eggs.id, amount: 150 }, // 150g eggs (about 2 large eggs)
+          { foodId: banana.id, amount: 100 }, // 100g banana (as toast substitute)
+        ],
+        'Protein-rich breakfast with eggs'
+      );
+      created++;
+    }
+
+    console.log(`Seeded meals database: ${created} meals created`);
+    return { created };
+  } catch (error) {
+    console.error('Error seeding meals database:', error);
+    throw error;
+  }
+}
+
 export async function seedDevData(): Promise<boolean> {
   const exercisesSeeded = await seedExercisesIfEmpty();
+  const foodsSeeded = await seedFoods();
+  const mealsSeeded = await seedMeals();
   return false;
+
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
-  const foodsSeeded = await seedFoods();
-  // const foodsSeeded = { created: 10 };
 
   console.log(
-    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods`
+    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Meals: ${mealsSeeded.created} meals`
   );
 
   return (
@@ -1601,6 +1712,7 @@ export async function seedDevData(): Promise<boolean> {
     workoutData.templatesCreated > 0 ||
     workoutData.workoutsCreated > 0 ||
     userMetricsSeeded.created > 0 ||
-    foodsSeeded.created > 0
+    foodsSeeded.created > 0 ||
+    mealsSeeded.created > 0
   );
 }
