@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
+import { MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealTypeButton } from '../MealTypeButton';
@@ -20,7 +21,7 @@ import { TrackingMethodButton } from '../TrackingMethodButton';
 type AddFoodModalProps = {
   visible: boolean;
   onClose: () => void;
-  onMealTypeSelect?: (mealType: string) => void;
+  onMealTypeSelect?: (mealType: MealType) => void;
   onAiCameraPress?: () => void;
   onScanBarcodePress?: () => void;
   onSearchFoodPress?: () => void;
@@ -41,7 +42,13 @@ export function AddFoodModal({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const mealTypes = [
+  const mealTypes: Array<{
+    icon: typeof UtensilsCrossed;
+    label: string;
+    iconBgColor: string;
+    iconColor: string;
+    mealType: MealType;
+  }> = [
     {
       icon: UtensilsCrossed,
       label: t('food.meals.breakfast'),
@@ -116,7 +123,7 @@ export function AddFoodModal({
                   iconColor={theme.colors.text.secondary}
                   span={2}
                   onPress={() => {
-                    onMealTypeSelect?.('other');
+                    onMealTypeSelect?.('other' as MealType);
                     onClose();
                   }}
                 />

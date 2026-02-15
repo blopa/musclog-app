@@ -2,7 +2,7 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FitnessGoal, WeightGoal } from '../../database/models/User';
+import { FitnessGoal, LiftingExperience, WeightGoal } from '../../database/models';
 import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -22,7 +22,7 @@ export type FitnessDetails = {
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
-  experience: 'beginner' | 'intermediate' | 'advanced';
+  experience: LiftingExperience;
 };
 
 export function EditFitnessDetailsModal({

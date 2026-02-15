@@ -40,7 +40,7 @@ export function FoodDetailsModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [servingSize, setServingSize] = useState(100);
-  const [selectedMeal, setSelectedMeal] = useState('lunch');
+  const [selectedMeal, setSelectedMeal] = useState<MealType>('lunch');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
@@ -234,7 +234,7 @@ export function FoodDetailsModal({
 
   const scaledFood = getScaledNutrition();
 
-  const mealTabs = [
+  const mealTabs: Array<{ id: MealType; label: string }> = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },
@@ -253,7 +253,7 @@ export function FoodDetailsModal({
           await Promise.all([
             // Update amount in grams (set portion to undefined so amount is grams)
             foodLog.updateAmount(servingSize),
-            foodLog.updateMealType(selectedMeal as MealType),
+            foodLog.updateMealType(selectedMeal),
             foodLog.updatePortion(undefined),
           ]);
 
@@ -282,7 +282,7 @@ export function FoodDetailsModal({
         const logFoodPromise = NutritionService.logFood(
           food.id,
           selectedDate,
-          selectedMeal as MealType,
+          selectedMeal,
           servingSize
         );
         let foodUpdatePromise = null;
@@ -529,7 +529,7 @@ export function FoodDetailsModal({
               <FilterTabs
                 tabs={mealTabs}
                 activeTab={selectedMeal}
-                onTabChange={setSelectedMeal}
+                onTabChange={(tabId) => setSelectedMeal(tabId as MealType)}
                 showContainer={false}
                 scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
               />

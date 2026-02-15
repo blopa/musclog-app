@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
-import UserMetric from '../../database/models/UserMetric';
+import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
 import { useTheme } from '../../hooks/useTheme';
 import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
@@ -17,7 +17,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { FullScreenModal } from './FullScreenModal';
 
 // UI metric type - subset of UserMetricType for this modal
-type MetricType = 'weight' | 'body_fat' | 'height';
+type MetricType = Extract<UserMetricType, 'weight' | 'body_fat' | 'height'>;
 
 type MetricConfig = {
   label: string;
@@ -165,7 +165,7 @@ export default function AddUserMetricEntryModal({
       await database.write(async () => {
         // Save weight metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'weight';
+          metric.type = 'weight' as UserMetricType;
           metric.value = weight;
           metric.unit = 'kg';
           metric.date = dateTimestamp;
@@ -176,7 +176,7 @@ export default function AddUserMetricEntryModal({
 
         // Save body fat metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'body_fat';
+          metric.type = 'body_fat' as UserMetricType;
           metric.value = bodyFat;
           metric.unit = '%';
           metric.date = dateTimestamp;
@@ -187,7 +187,7 @@ export default function AddUserMetricEntryModal({
 
         // Save height metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'height';
+          metric.type = 'height' as UserMetricType;
           metric.value = height;
           metric.unit = 'cm';
           metric.date = dateTimestamp;
@@ -198,7 +198,7 @@ export default function AddUserMetricEntryModal({
 
         // Save mood metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
-          metric.type = 'mood';
+          metric.type = 'mood' as UserMetricType;
           metric.value = mood;
           metric.unit = '';
           metric.date = dateTimestamp;

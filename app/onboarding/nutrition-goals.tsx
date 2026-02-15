@@ -10,6 +10,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
+import { EatingPhase } from '../../database/models';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { theme } from '../../theme';
@@ -60,7 +61,7 @@ export default function NutritionGoalsScreen() {
         carbs: goal.carbs,
         fats: goal.fats,
         fiber: goal.fiber,
-        eatingPhase: goal.eatingPhase as 'cut' | 'maintain' | 'bulk',
+        eatingPhase: goal.eatingPhase as EatingPhase,
         targetWeight: goal.targetWeight,
         targetBodyFat: goal.targetBodyFat,
         targetBMI: goal.targetBmi,
