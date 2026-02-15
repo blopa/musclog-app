@@ -17,6 +17,7 @@ type Ingredient = {
   icon: ElementType;
 };
 
+// TODO; remove mocked data and make this modal work for real
 const INITIAL_INGREDIENTS: Ingredient[] = [
   {
     id: '1',
