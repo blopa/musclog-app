@@ -405,10 +405,15 @@ export default function WorkoutsScreen() {
           }}
           onConfirm={async () => {
             setIsCreatingWorkoutsFromTemplate(true);
+
+            // Small delay to ensure React processes the state update and shows loading state
+            await new Promise<void>((resolve) => setTimeout(resolve, 10));
+
             try {
               const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
               if (!rawTemplate) {
                 console.error('Could not find raw template data');
+                setIsCreatingWorkoutsFromTemplate(false);
                 return;
               }
 
