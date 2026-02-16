@@ -38,7 +38,9 @@
     "icon": "Icon",
     "archived": "Archived",
     "eatingPhase": "Eating Phase",
-    "loadMultiplier": "Load Multiplier"
+    "loadMultiplier": "Load Multiplier",
+    "close": "Close",
+    "datePickerNotImplemented": "Date picker not yet implemented"
   },
   "emptyState": {
     "workout": {
@@ -243,7 +245,9 @@
       "searchPlaceholder": "Search food (e.g. Chicken)...",
       "searchResults": "Search Results",
       "foundItems": "Found {{count}} items",
-      "amount": "Amount"
+      "amount": "Amount",
+      "noFoods": "No foods available",
+      "noResults": "No results found"
     },
     "createMeal": {
       "title": "Create New Meal",
@@ -255,7 +259,11 @@
       "ingredients": "Ingredients ({{count}})",
       "editList": "Edit List",
       "noIngredients": "No Ingredients",
-      "addFoodItem": "Add Food Item"
+      "addFoodItem": "Add Food Item",
+      "error": "Error",
+      "mealNameRequired": "Please enter a meal name",
+      "ingredientsRequired": "Please add at least one ingredient",
+      "saveFailed": "Failed to save meal. Please try again."
     },
     "aiCamera": {
       "requestingPermission": "Requesting camera permission...",
