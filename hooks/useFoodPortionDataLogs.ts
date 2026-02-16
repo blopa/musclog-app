@@ -1,0 +1,250 @@
+import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
+import type { TFunction } from 'i18next';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import FoodPortion from '../database/models/FoodPortion';
+import { FoodPortionService } from '../database/services';
+
+export type FoodPortionDisplayItem = {
+  id: string;
+  name: string;
+  icon: string;
+  iconColor: string;
+  iconBgColor: string;
+  portionGramWeight: number;
+};
+
+export type FoodPortionDayGroup = {
+  date: string;
+  dateTimestamp: number;
+  items: FoodPortionDisplayItem[];
+};
+
+const BATCH_SIZE = 20;
+
+const ICON_COLORS: Record<string, { color: string; bg: string }> = {
+  scale: { color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.15)' },
+  egg: { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
+  'local-cafe': { color: '#78716c', bg: 'rgba(120, 113, 108, 0.15)' },
+  'water-drop': { color: '#0ea5e9', bg: 'rgba(14, 165, 233, 0.1)' },
+  restaurant: { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
+};
+
+function formatRelativeDate(timestamp: number, t: TFunction): string {
+  const date = new Date(timestamp);
+  if (isToday(date)) {
+    return t('common.today');
+  }
+  if (isYesterday(date)) {
+    return t('common.yesterday');
+  }
+  if (isThisWeek(date)) {
+    return format(date, 'EEEE');
+  }
+  return format(date, 'MMM d');
+}
+
+function mapPortionIconToMaterial(icon?: string): string {
+  if (!icon) return 'scale';
+  const m: Record<string, string> = {
+    scale: 'scale',
+    egg: 'egg',
+    cup: 'local-cafe',
+    droplet: 'water-drop',
+  };
+  return m[icon] ?? 'scale';
+}
+
+function portionToDisplayItem(portion: FoodPortion): FoodPortionDisplayItem {
+  const icon = mapPortionIconToMaterial(portion.icon);
+  const colors = ICON_COLORS[icon] ?? ICON_COLORS.scale;
+
+  return {
+    id: portion.id,
+    name: portion.name,
+    icon,
+    iconColor: colors.color,
+    iconBgColor: colors.bg,
+    portionGramWeight: portion.gramWeight,
+  };
+}
+
+function groupPortionsByDate(
+  items: { item: FoodPortionDisplayItem; dateTimestamp: number }[],
+  t: TFunction
+): FoodPortionDayGroup[] {
+  const groupMap = new Map<number, FoodPortionDisplayItem[]>();
+
+  items.forEach(({ item, dateTimestamp }) => {
+    if (!groupMap.has(dateTimestamp)) {
+      groupMap.set(dateTimestamp, []);
+    }
+    groupMap.get(dateTimestamp)!.push(item);
+  });
+
+  return Array.from(groupMap.entries())
+    .map(([dateTimestamp, items]) => ({
+      date: formatRelativeDate(dateTimestamp, t),
+      dateTimestamp,
+      items,
+    }))
+    .sort((a, b) => b.dateTimestamp - a.dateTimestamp);
+}
+
+function mergeIntoDayGroups(
+  existing: FoodPortionDayGroup[],
+  newItemsWithDates: { item: FoodPortionDisplayItem; dateTimestamp: number }[],
+  t: TFunction
+): FoodPortionDayGroup[] {
+  const groupMap = new Map<number, FoodPortionDisplayItem[]>();
+  const existingIds = new Set<string>();
+
+  existing.forEach((g) => {
+    groupMap.set(g.dateTimestamp, [...g.items]);
+    g.items.forEach((i) => existingIds.add(i.id));
+  });
+
+  newItemsWithDates.forEach(({ item, dateTimestamp }) => {
+    if (existingIds.has(item.id)) return;
+    existingIds.add(item.id);
+
+    if (!groupMap.has(dateTimestamp)) {
+      groupMap.set(dateTimestamp, []);
+    }
+    groupMap.get(dateTimestamp)!.push(item);
+  });
+
+  return Array.from(groupMap.entries())
+    .map(([dateTimestamp, items]) => ({
+      date: formatRelativeDate(dateTimestamp, t),
+      dateTimestamp,
+      items: items.sort((a, b) => a.name.localeCompare(b.name)),
+    }))
+    .sort((a, b) => b.dateTimestamp - a.dateTimestamp);
+}
+
+function filterDayGroupsBySearch(
+  groups: FoodPortionDayGroup[],
+  searchQuery: string
+): FoodPortionDayGroup[] {
+  if (!searchQuery.trim()) return groups;
+
+  return groups
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+      ),
+    }))
+    .filter((g) => g.items.length > 0);
+}
+
+export interface UseFoodPortionDataLogsParams {
+  visible?: boolean;
+  batchSize?: number;
+  searchQuery?: string;
+}
+
+export interface UseFoodPortionDataLogsResult {
+  dayGroups: FoodPortionDayGroup[];
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
+  refresh: () => Promise<void>;
+}
+
+export function useFoodPortionDataLogs({
+  visible = true,
+  batchSize = BATCH_SIZE,
+  searchQuery = '',
+}: UseFoodPortionDataLogsParams = {}): UseFoodPortionDataLogsResult {
+  const { t } = useTranslation();
+  const [dayGroups, setDayGroups] = useState<FoodPortionDayGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+
+  const loadInitial = useCallback(async () => {
+    if (!visible) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setOffset(0);
+
+    try {
+      const portions = await FoodPortionService.getPortionsPaginated(batchSize, 0);
+      const results = portions.map((portion) => ({
+        item: portionToDisplayItem(portion),
+        dateTimestamp: portion.createdAt,
+      }));
+      const groups = groupPortionsByDate(results, t);
+      setDayGroups(groups);
+      setHasMore(portions.length === batchSize);
+      setOffset(portions.length);
+    } catch (err) {
+      console.error('Error loading food portion data logs:', err);
+      setDayGroups([]);
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [visible, batchSize, t]);
+
+  const loadMore = useCallback(async () => {
+    if (!visible || isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+
+    try {
+      const portions = await FoodPortionService.getPortionsPaginated(batchSize, offset);
+      if (portions.length === 0) {
+        setHasMore(false);
+        setIsLoadingMore(false);
+        return;
+      }
+
+      const results = portions.map((portion) => ({
+        item: portionToDisplayItem(portion),
+        dateTimestamp: portion.createdAt,
+      }));
+
+      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));
+      setHasMore(portions.length === batchSize);
+      setOffset((prev) => prev + portions.length);
+    } catch (err) {
+      console.error('Error loading more food portion data logs:', err);
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+
+  const refresh = useCallback(async () => {
+    if (isLoading) return;
+    await loadInitial();
+  }, [loadInitial, isLoading]);
+
+  useEffect(() => {
+    if (!visible) return;
+    loadInitial();
+  }, [visible, loadInitial]);
+
+  const filteredGroups = useMemo(
+    () => filterDayGroupsBySearch(dayGroups, searchQuery),
+    [dayGroups, searchQuery]
+  );
+
+  return {
+    dayGroups: filteredGroups,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+  };
+}

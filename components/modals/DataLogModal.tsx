@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
+import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
 import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useTheme } from '../../hooks/useTheme';
@@ -23,6 +24,7 @@ export type DataLogModalVariant =
   | 'meal'
   | 'nutrition_log'
   | 'food'
+  | 'foodPortion'
   | 'exercise'
   | 'workoutLog'
   | 'workoutTemplate'
@@ -256,6 +258,35 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'foodPortion') {
+    return {
+      title: t('food.managePortionData.title'),
+      searchPlaceholder: t('food.managePortionData.searchPlaceholder'),
+      noItemsText: t('food.managePortionData.noPortions', 'No portions yet'),
+      noItemsDesc: t(
+        'food.managePortionData.noPortionsDesc',
+        'Create custom portion sizes to see them here'
+      ),
+      endOfHistoryText: t('food.managePortionData.endOfHistory'),
+      menuTitle: t('food.managePortionData.portionOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('food.managePortionData.editPortion'),
+      editDesc: t('food.managePortionData.editPortionDesc'),
+      duplicateTitle: t('food.managePortionData.duplicatePortion'),
+      duplicateDesc: t('food.managePortionData.duplicatePortionDesc'),
+      deleteTitle: t('food.managePortionData.deletePortion'),
+      deleteDesc: t('food.managePortionData.deletePortionDesc'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) =>
+        t('food.managePortionData.gramWeightFormat', {
+          grams: item.portionGramWeight ?? 0,
+        }),
+    };
+  }
+
   // Exhaustive: should not reach (all variants handled above)
   return {
     title: '',
@@ -297,6 +328,7 @@ export type DataLogDisplayItem = {
   description?: string; // Optional - only workout templates have this
   metricValue?: number; // Optional - only user metrics have this
   metricUnit?: string; // Optional - only user metrics have this
+  portionGramWeight?: number; // Optional - only food portions have this
 };
 
 export type DataLogModalData = {
@@ -523,13 +555,16 @@ export function DataLogModal({
               >
                 <MaterialIcons
                   name={
+                  // TODO: move this into a helper function
                     variant === 'exercise' ||
                     variant === 'workoutLog' ||
                     variant === 'workoutTemplate'
                       ? 'fitness-center'
                       : variant === 'userMetric'
                         ? 'monitor-weight'
-                        : 'restaurant-menu' // meal, nutrition_log, food
+                        : variant === 'foodPortion'
+                          ? 'scale'
+                          : 'restaurant-menu' // meal, nutrition_log, food
                   }
                   size={48}
                   color={theme.colors.text.tertiary}
@@ -680,6 +715,36 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       visible={visible}
       onClose={onClose}
       variant="food"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useFoodPortionDataLogs
+type FoodPortionDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function FoodPortionDataModal({ visible, onClose }: FoodPortionDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodPortionDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="foodPortion"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

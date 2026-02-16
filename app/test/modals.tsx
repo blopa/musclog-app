@@ -26,6 +26,7 @@ import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkout
 import {
   ExerciseDataModal,
   FoodDataModal,
+  FoodPortionDataModal,
   MealDataModal,
   NutritionLogModal,
   UserMetricDataModal,
@@ -211,6 +212,9 @@ export default function ModalsTestScreen() {
 
   // User Metric Data Modal
   const [isUserMetricDataVisible, setIsUserMetricDataVisible] = useState(false);
+
+  // Food Portion Data Modal
+  const [isFoodPortionDataVisible, setIsFoodPortionDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1033,6 +1037,22 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Food Portion Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Food Portion Data Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing portion sizes (e.g. cup, slice, 100g) with search and options.
+            </Text>
+            <Button
+              label="Open Food Portion Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFoodPortionDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1512,6 +1532,11 @@ export default function ModalsTestScreen() {
       <UserMetricDataModal
         visible={isUserMetricDataVisible}
         onClose={() => setIsUserMetricDataVisible(false)}
+      />
+
+      <FoodPortionDataModal
+        visible={isFoodPortionDataVisible}
+        onClose={() => setIsFoodPortionDataVisible(false)}
       />
     </SafeAreaView>
   );
