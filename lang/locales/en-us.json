@@ -109,6 +109,26 @@
       "goToToday": "Go To Today"
     },
     "meals": {
+      "manageMealData": {
+        "title": "Manage Meal Data",
+        "searchPlaceholder": "Search meals...",
+        "mealOptions": "Meal Options",
+        "editMeal": "Edit Meal",
+        "editMealDesc": "Modify meal name and ingredients",
+        "duplicateMeal": "Duplicate Meal",
+        "duplicateMealDesc": "Create a copy of this meal",
+        "deleteMeal": "Delete Meal",
+        "deleteMealDesc": "Remove this meal permanently",
+        "addToFavorites": "Add to Favorites",
+        "addToFavoritesDesc": "Quick access to this meal",
+        "removeFromFavorites": "Remove from Favorites",
+        "removeFromFavoritesDesc": "Remove from favorites list",
+        "endOfHistory": "End of meal history",
+        "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+        "unknownMeal": "Unknown Meal",
+        "noMeals": "No meals yet",
+        "noMealsDesc": "Create custom meals to see them here"
+      },
       "breakfast": "Breakfast",
       "lunch": "Lunch",
       "dinner": "Dinner",

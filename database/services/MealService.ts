@@ -59,6 +59,26 @@ export class MealService {
   }
 
   /**
+   * Get meals with pagination (for Manage Meal Data modal).
+   * Ordered by created_at desc. Most recent first.
+   */
+  static async getMealsPaginated(limit: number, offset: number): Promise<Meal[]> {
+    let query = database
+      .get<Meal>('meals')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+
+    if (limit > 0) {
+      if (offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Get favorite meals
    */
   static async getFavoriteMeals(): Promise<Meal[]> {
