@@ -25,6 +25,7 @@ import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import {
   ExerciseDataModal,
+  FoodDataModal,
   MealDataModal,
   NutritionLogModal,
   UserMetricDataModal,
@@ -105,6 +106,9 @@ export default function ModalsTestScreen() {
 
   // Nutrition Log Modal
   const [isNutritionLogVisible, setIsNutritionLogVisible] = useState(false);
+
+  // Food Data Modal (Food library - Food model)
+  const [isFoodDataVisible, setIsFoodDataVisible] = useState(false);
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -471,6 +475,20 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsNutritionLogVisible(true)}
+            />
+          </View>
+
+          {/* Food Data Modal (Food library) */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Food Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing your food library (Food model) with search, favorites, and options.
+            </Text>
+            <Button
+              label="Open Food Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFoodDataVisible(true)}
             />
           </View>
 
@@ -1156,6 +1174,8 @@ export default function ModalsTestScreen() {
         visible={isNutritionLogVisible}
         onClose={() => setIsNutritionLogVisible(false)}
       />
+
+      <FoodDataModal visible={isFoodDataVisible} onClose={() => setIsFoodDataVisible(false)} />
 
       <AddFoodModal
         visible={isAddFoodVisible}

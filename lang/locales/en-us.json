@@ -59,6 +59,26 @@
     }
   },
   "food": {
+    "manageFoodLibrary": {
+      "title": "Food Library",
+      "searchPlaceholder": "Search foods...",
+      "noFoods": "No foods yet",
+      "noFoodsDesc": "Add custom foods or scan products to see them here",
+      "endOfHistory": "End of food library",
+      "foodOptions": "Food options",
+      "addToFavorites": "Add to favorites",
+      "removeFromFavorites": "Remove from favorites",
+      "addToFavoritesDesc": "Quick access from favorites",
+      "removeFromFavoritesDesc": "Remove from favorites list",
+      "editFood": "Edit food",
+      "editFoodDesc": "Change name, brand, and macros",
+      "duplicateFood": "Duplicate food",
+      "duplicateFoodDesc": "Create a copy to modify",
+      "deleteFood": "Delete food",
+      "deleteFoodDesc": "Remove this food from your library",
+      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+      "unknownFood": "Unknown"
+    },
     "manageFoodData": {
       "title": "Manage Food Data",
       "searchPlaceholder": "Search food logs...",

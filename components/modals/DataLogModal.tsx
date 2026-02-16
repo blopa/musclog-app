@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
+import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
@@ -21,6 +22,7 @@ import { FullScreenModal } from './FullScreenModal';
 export type DataLogModalVariant =
   | 'meal'
   | 'nutrition_log'
+  | 'food'
   | 'exercise'
   | 'workoutLog'
   | 'workoutTemplate'
@@ -209,7 +211,10 @@ export function getDataLogModalTranslations(
       title: t('nutrition.manageFoodData.title'),
       searchPlaceholder: t('nutrition.manageFoodData.searchPlaceholder'),
       noItemsText: t('nutrition.manageFoodData.noLogs', 'No food logs yet'),
-      noItemsDesc: t('nutrition.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
+      noItemsDesc: t(
+        'nutrition.manageFoodData.noLogsDesc',
+        'Start tracking your meals to see them here'
+      ),
       endOfHistoryText: t('nutrition.manageFoodData.endOfHistory'),
       menuTitle: t('nutrition.manageFoodData.foodOptions'),
       favoriteAddTitle: '',
@@ -228,23 +233,26 @@ export function getDataLogModalTranslations(
 
   if (variant === 'food') {
     return {
-      title: t('food.manageFoodData.title'),
-      searchPlaceholder: t('food.manageFoodData.searchPlaceholder'),
-      noItemsText: t('food.manageFoodData.noLogs', 'No food logs yet'),
-      noItemsDesc: t('food.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
-      endOfHistoryText: t('food.manageFoodData.endOfHistory'),
-      menuTitle: t('food.manageFoodData.foodOptions'),
-      favoriteAddTitle: '',
-      favoriteRemoveTitle: '',
-      favoriteAddDesc: '',
-      favoriteRemoveDesc: '',
-      editTitle: t('food.manageFoodData.editFoodEntry'),
-      editDesc: t('food.manageFoodData.editFoodEntryDesc'),
-      duplicateTitle: t('food.manageFoodData.duplicateEntry'),
-      duplicateDesc: t('food.manageFoodData.duplicateEntryDesc'),
-      deleteTitle: t('food.manageFoodData.deleteEntry'),
-      deleteDesc: t('food.manageFoodData.deleteEntryDesc'),
-      formatCaloriesMacros: (params) => t('food.manageFoodData.caloriesMacrosFormat', params),
+      title: t('food.manageFoodLibrary.title'),
+      searchPlaceholder: t('food.manageFoodLibrary.searchPlaceholder'),
+      noItemsText: t('food.manageFoodLibrary.noFoods', 'No foods yet'),
+      noItemsDesc: t(
+        'food.manageFoodLibrary.noFoodsDesc',
+        'Add custom foods or scan products to see them here'
+      ),
+      endOfHistoryText: t('food.manageFoodLibrary.endOfHistory'),
+      menuTitle: t('food.manageFoodLibrary.foodOptions'),
+      favoriteAddTitle: t('food.manageFoodLibrary.addToFavorites'),
+      favoriteRemoveTitle: t('food.manageFoodLibrary.removeFromFavorites'),
+      favoriteAddDesc: t('food.manageFoodLibrary.addToFavoritesDesc'),
+      favoriteRemoveDesc: t('food.manageFoodLibrary.removeFromFavoritesDesc'),
+      editTitle: t('food.manageFoodLibrary.editFood'),
+      editDesc: t('food.manageFoodLibrary.editFoodDesc'),
+      duplicateTitle: t('food.manageFoodLibrary.duplicateFood'),
+      duplicateDesc: t('food.manageFoodLibrary.duplicateFoodDesc'),
+      deleteTitle: t('food.manageFoodLibrary.deleteFood'),
+      deleteDesc: t('food.manageFoodLibrary.deleteFoodDesc'),
+      formatCaloriesMacros: (params) => t('food.manageFoodLibrary.caloriesMacrosFormat', params),
     };
   }
 
@@ -351,8 +359,8 @@ export function DataLogModal({
 
     const menuItems: BottomPopUpMenuItem[] = [];
 
-    // Add Favorite toggle for meals only
-    if (variant === 'meal') {
+    // Add Favorite toggle for meals and food library
+    if (variant === 'meal' || variant === 'food') {
       menuItems.push({
         icon: FavoriteIcon,
         iconColor: theme.colors.text.primary,
@@ -421,7 +429,7 @@ export function DataLogModal({
               <Text className="flex-1 text-base font-semibold leading-snug text-text-primary">
                 {item.name}
               </Text>
-              {variant === 'meal' && item.isFavorite ? (
+              {(variant === 'meal' || variant === 'food') && item.isFavorite ? (
                 <MaterialIcons name="star" size={16} color={theme.colors.accent.secondary} />
               ) : null}
             </View>
@@ -521,7 +529,7 @@ export function DataLogModal({
                       ? 'fitness-center'
                       : variant === 'userMetric'
                         ? 'monitor-weight'
-                        : 'restaurant-menu'
+                        : 'restaurant-menu' // meal, nutrition_log, food
                   }
                   size={48}
                   color={theme.colors.text.tertiary}
@@ -642,6 +650,36 @@ export function NutritionLogModal({ visible, onClose }: NutritionLogModalProps) 
       visible={visible}
       onClose={onClose}
       variant="nutrition_log"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useFoodsDataLogs (Food model / food library)
+type FoodDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodsDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="food"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

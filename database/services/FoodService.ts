@@ -185,6 +185,27 @@ export class FoodService {
   }
 
   /**
+   * Get foods with pagination (for food library modal), most recent first
+   */
+  static async getFoodsPaginated(limit: number, offset: number): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+
+    let query = database
+      .get<Food>('foods')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+
+    if (offset > 0) {
+      query = query.extend(Q.skip(offset), Q.take(limit));
+    } else {
+      query = query.extend(Q.take(limit));
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Get favorite foods
    */
   static async getFavoriteFoods(): Promise<Food[]> {
