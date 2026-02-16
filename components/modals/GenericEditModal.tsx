@@ -1,9 +1,10 @@
-import { Check } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { Check, Circle } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
 import { CheckRadioBox } from '../theme/CheckRadioBox';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -20,6 +21,12 @@ import type {
   TextFieldConfig,
 } from './GenericEditModal/types';
 
+// TODO: improve Meals modal so it's possible to add/remove foods from it, maybe use the existing modal
+// TODO: improve portion modal to add an icon picker instead of textinput for icon
+// TODO: improve the workout template so that the checkbox uses the Toggler.tsx component
+// TODO: improve the edit workout template so, well, maybe use the existing modal
+// TODO: improve the user metrics modal to have the date picker and instead of multiple options picker, maybe use the bottom menu options to choose the option
+// TODO: improve exercise edit modal instead of multiple options picker, maybe use the bottom menu options to choose the option
 export function GenericEditModal({
   visible,
   onClose,
@@ -157,27 +164,44 @@ export function GenericEditModal({
           );
         }
 
-        // For longer lists, use a scrollable radio list
+        // For longer lists, use OptionsSelector
+        const selectorOptions: SelectorOption<string | number>[] = useMemo(
+          () =>
+            options.map((option, index) => {
+              // Use a rotating color scheme for icons
+              const colorSchemes = [
+                { bg: theme.colors.accent.primary10, color: theme.colors.accent.primary },
+                { bg: theme.colors.status.info10, color: theme.colors.status.info },
+                { bg: theme.colors.status.success10, color: theme.colors.status.success },
+                { bg: theme.colors.status.warning10, color: theme.colors.status.warning },
+                { bg: theme.colors.status.purple10, color: theme.colors.status.purple },
+              ];
+              const colorScheme = colorSchemes[index % colorSchemes.length];
+
+              // Try to get a description from translation keys (e.g., food.meals.descriptions.breakfast)
+              const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
+              const description = t(descriptionKey, { defaultValue: '' });
+
+              return {
+                id: option.value,
+                label: t(option.label, option.label),
+                description: description,
+                icon: Circle,
+                iconBgColor: colorScheme.bg,
+                iconColor: colorScheme.color,
+              };
+            }),
+          [options, theme, t]
+        );
+
         return (
-          <View key={field.key} className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
-            <View
-              className="rounded-lg border bg-bg-card p-3"
-              style={{ borderColor: theme.colors.background.white10 }}
-            >
-              <ScrollView className="max-h-48">
-                {options.map((option) => (
-                  <CheckRadioBox
-                    key={String(option.value)}
-                    label={t(option.label, option.label)}
-                    value={value === option.value}
-                    onValueChange={() => handleFieldChange(field.key, option.value)}
-                    type="radio"
-                  />
-                ))}
-              </ScrollView>
-            </View>
-          </View>
+          <OptionsSelector
+            key={field.key}
+            title={label}
+            options={selectorOptions}
+            selectedId={value as string | number | undefined}
+            onSelect={(id) => handleFieldChange(field.key, id)}
+          />
         );
       }
 
