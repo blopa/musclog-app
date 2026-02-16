@@ -20,7 +20,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 export type DataLogModalVariant =
   | 'meal'
-  | 'food'
+  | 'nutrition_log'
   | 'exercise'
   | 'workoutLog'
   | 'workoutTemplate'
@@ -204,25 +204,69 @@ export function getDataLogModalTranslations(
     };
   }
 
-  // variant === 'food'
+  if (variant === 'nutrition_log') {
+    return {
+      title: t('nutrition.manageFoodData.title'),
+      searchPlaceholder: t('nutrition.manageFoodData.searchPlaceholder'),
+      noItemsText: t('nutrition.manageFoodData.noLogs', 'No food logs yet'),
+      noItemsDesc: t('nutrition.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
+      endOfHistoryText: t('nutrition.manageFoodData.endOfHistory'),
+      menuTitle: t('nutrition.manageFoodData.foodOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('nutrition.manageFoodData.editFoodEntry'),
+      editDesc: t('nutrition.manageFoodData.editFoodEntryDesc'),
+      duplicateTitle: t('nutrition.manageFoodData.duplicateEntry'),
+      duplicateDesc: t('nutrition.manageFoodData.duplicateEntryDesc'),
+      deleteTitle: t('nutrition.manageFoodData.deleteEntry'),
+      deleteDesc: t('nutrition.manageFoodData.deleteEntryDesc'),
+      formatCaloriesMacros: (params) => t('food.manageFoodData.caloriesMacrosFormat', params),
+    };
+  }
+
+  if (variant === 'food') {
+    return {
+      title: t('food.manageFoodData.title'),
+      searchPlaceholder: t('food.manageFoodData.searchPlaceholder'),
+      noItemsText: t('food.manageFoodData.noLogs', 'No food logs yet'),
+      noItemsDesc: t('food.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
+      endOfHistoryText: t('food.manageFoodData.endOfHistory'),
+      menuTitle: t('food.manageFoodData.foodOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('food.manageFoodData.editFoodEntry'),
+      editDesc: t('food.manageFoodData.editFoodEntryDesc'),
+      duplicateTitle: t('food.manageFoodData.duplicateEntry'),
+      duplicateDesc: t('food.manageFoodData.duplicateEntryDesc'),
+      deleteTitle: t('food.manageFoodData.deleteEntry'),
+      deleteDesc: t('food.manageFoodData.deleteEntryDesc'),
+      formatCaloriesMacros: (params) => t('food.manageFoodData.caloriesMacrosFormat', params),
+    };
+  }
+
+  // Exhaustive: should not reach (all variants handled above)
   return {
-    title: t('food.manageFoodData.title'),
-    searchPlaceholder: t('food.manageFoodData.searchPlaceholder'),
-    noItemsText: t('food.manageFoodData.noLogs', 'No food logs yet'),
-    noItemsDesc: t('food.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
-    endOfHistoryText: t('food.manageFoodData.endOfHistory'),
-    menuTitle: t('food.manageFoodData.foodOptions'),
+    title: '',
+    searchPlaceholder: '',
+    noItemsText: '',
+    noItemsDesc: '',
+    endOfHistoryText: '',
+    menuTitle: '',
     favoriteAddTitle: '',
     favoriteRemoveTitle: '',
     favoriteAddDesc: '',
     favoriteRemoveDesc: '',
-    editTitle: t('food.manageFoodData.editFoodEntry'),
-    editDesc: t('food.manageFoodData.editFoodEntryDesc'),
-    duplicateTitle: t('food.manageFoodData.duplicateEntry'),
-    duplicateDesc: t('food.manageFoodData.duplicateEntryDesc'),
-    deleteTitle: t('food.manageFoodData.deleteEntry'),
-    deleteDesc: t('food.manageFoodData.deleteEntryDesc'),
-    formatCaloriesMacros: (params) => t('food.manageFoodData.caloriesMacrosFormat', params),
+    editTitle: '',
+    editDesc: '',
+    duplicateTitle: '',
+    duplicateDesc: '',
+    deleteTitle: '',
+    deleteDesc: '',
+    formatCaloriesMacros: () => '',
   };
 }
 
@@ -580,12 +624,12 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
 }
 
 // Wrapper: owns search state and calls only useFoodDataLogs
-type FoodDataModalProps = {
+type NutritionLogModalProps = {
   visible: boolean;
   onClose: () => void;
 };
 
-export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
+export function NutritionLogModal({ visible, onClose }: NutritionLogModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodDataLogs({
     visible,
@@ -597,7 +641,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
     <DataLogModal
       visible={visible}
       onClose={onClose}
-      variant="food"
+      variant="nutrition_log"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

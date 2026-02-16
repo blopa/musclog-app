@@ -25,8 +25,8 @@ import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import {
   ExerciseDataModal,
-  FoodDataModal,
   MealDataModal,
+  NutritionLogModal,
   UserMetricDataModal,
   WorkoutLogDataModal,
   WorkoutTemplateDataModal,
@@ -103,8 +103,8 @@ export default function ModalsTestScreen() {
   // Food Details Modal
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
 
-  // Food Data Modal
-  const [isFoodDataVisible, setIsFoodDataVisible] = useState(false);
+  // Nutrition Log Modal
+  const [isNutritionLogVisible, setIsNutritionLogVisible] = useState(false);
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -458,17 +458,19 @@ export default function ModalsTestScreen() {
             />
           </View>
 
-          {/* Food Data Modal */}
+          {/* Nutrition Log Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Data Modal</Text>
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Nutrition Log Data Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Modal for managing food data with search and food item options.
+              Modal for managing nutrition log entries with search and food item options.
             </Text>
             <Button
-              label="Open Food Data Modal"
+              label="Open Nutrition Log Data Modal"
               variant="accent"
               width="full"
-              onPress={() => setIsFoodDataVisible(true)}
+              onPress={() => setIsNutritionLogVisible(true)}
             />
           </View>
 
@@ -1150,7 +1152,10 @@ export default function ModalsTestScreen() {
         barcode="3017620425035"
       />
 
-      <FoodDataModal visible={isFoodDataVisible} onClose={() => setIsFoodDataVisible(false)} />
+      <NutritionLogModal
+        visible={isNutritionLogVisible}
+        onClose={() => setIsNutritionLogVisible(false)}
+      />
 
       <AddFoodModal
         visible={isAddFoodVisible}
