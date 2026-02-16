@@ -59,11 +59,11 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
         title: selectedMealItem.isFavorite
-          ? t('meals.manageMealData.removeFromFavorites')
-          : t('meals.manageMealData.addToFavorites'),
+          ? t('food.meals.manageMealData.removeFromFavorites')
+          : t('food.meals.manageMealData.addToFavorites'),
         description: selectedMealItem.isFavorite
-          ? t('meals.manageMealData.removeFromFavoritesDesc')
-          : t('meals.manageMealData.addToFavoritesDesc'),
+          ? t('food.meals.manageMealData.removeFromFavoritesDesc')
+          : t('food.meals.manageMealData.addToFavoritesDesc'),
         onPress: () => {
           console.log('Toggle favorite:', selectedMealItem.name);
         },
@@ -72,8 +72,8 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
         icon: EditIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title: t('meals.manageMealData.editMeal'),
-        description: t('meals.manageMealData.editMealDesc'),
+        title: t('food.meals.manageMealData.editMeal'),
+        description: t('food.meals.manageMealData.editMealDesc'),
         onPress: () => {
           console.log('Edit meal:', selectedMealItem.name);
         },
@@ -82,8 +82,8 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
         icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title: t('meals.manageMealData.duplicateMeal'),
-        description: t('meals.manageMealData.duplicateMealDesc'),
+        title: t('food.meals.manageMealData.duplicateMeal'),
+        description: t('food.meals.manageMealData.duplicateMealDesc'),
         onPress: () => {
           console.log('Duplicate meal:', selectedMealItem.name);
         },
@@ -92,8 +92,8 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
         icon: DeleteIcon,
         iconColor: theme.colors.status.error50,
         iconBgColor: 'rgba(239, 68, 68, 0.1)',
-        title: t('meals.manageMealData.deleteMeal'),
-        description: t('meals.manageMealData.deleteMealDesc'),
+        title: t('food.meals.manageMealData.deleteMeal'),
+        description: t('food.meals.manageMealData.deleteMealDesc'),
         onPress: () => {
           console.log('Delete meal:', selectedMealItem.name);
         },
@@ -121,7 +121,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
               ) : null}
             </View>
             <Text className="text-sm font-medium tracking-wider text-text-secondary">
-              {t('meals.manageMealData.caloriesMacrosFormat', {
+              {t('food.meals.manageMealData.caloriesMacrosFormat', {
                 calories: item.calories,
                 protein: item.protein,
                 carbs: item.carbs,
@@ -156,7 +156,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        title={t('meals.manageMealData.title')}
+        title={t('food.meals.manageMealData.title')}
         headerRight={renderHeaderRight()}
         scrollable
       >
@@ -167,7 +167,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
               label=""
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholder={t('meals.manageMealData.searchPlaceholder')}
+              placeholder={t('food.meals.manageMealData.searchPlaceholder')}
               icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
             />
           </View>
@@ -210,13 +210,16 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
                   className="mt-3 text-center text-base font-medium"
                   style={{ color: theme.colors.text.secondary }}
                 >
-                  {t('meals.manageMealData.noMeals', 'No meals yet')}
+                  {t('food.meals.manageMealData.noMeals', 'No meals yet')}
                 </Text>
                 <Text
                   className="mt-1 text-center text-sm"
                   style={{ color: theme.colors.text.tertiary }}
                 >
-                  {t('meals.manageMealData.noMealsDesc', 'Create custom meals to see them here')}
+                  {t(
+                    'food.meals.manageMealData.noMealsDesc',
+                    'Create custom meals to see them here'
+                  )}
                 </Text>
               </View>
             ) : (
@@ -259,7 +262,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
             <View className="mt-12 flex flex-col items-center justify-center opacity-40">
               <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
               <Text className="mt-2 text-sm font-medium text-text-tertiary">
-                {t('meals.manageMealData.endOfHistory')}
+                {t('food.meals.manageMealData.endOfHistory')}
               </Text>
             </View>
           ) : null}
@@ -270,7 +273,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
       <BottomPopUpMenu
         visible={showMealMenu}
         onClose={() => setShowMealMenu(false)}
-        title={t('meals.manageMealData.mealOptions')}
+        title={t('food.meals.manageMealData.mealOptions')}
         items={getMealMenuItems()}
       />
     </>

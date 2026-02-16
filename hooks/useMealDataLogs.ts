@@ -75,7 +75,7 @@ async function mealToDisplayItemWithT(
     return {
       id: meal.id,
       mealId: meal.id,
-      name: meal.name || t('meals.manageMealData.unknownMeal', 'Unknown Meal'),
+      name: meal.name || t('food.meals.manageMealData.unknownMeal', 'Unknown Meal'),
       description: meal.description,
       calories: Math.round(nutrients.calories),
       protein: Math.round(nutrients.protein),

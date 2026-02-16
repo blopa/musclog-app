@@ -39,6 +39,7 @@ import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { MealDataModal } from '../../components/modals/MealDataModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
@@ -185,6 +186,9 @@ export default function ModalsTestScreen() {
 
   // Log Meal Modal
   const [isLogMealVisible, setIsLogMealVisible] = useState(false);
+
+  // Meal Data Modal
+  const [isMealDataVisible, setIsMealDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -918,6 +922,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Meal Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Meal Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing meal data with search and meal options.
+            </Text>
+            <Button
+              label="Open Meal Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsMealDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1371,6 +1389,8 @@ export default function ModalsTestScreen() {
           console.log('Meal logged:', { date, mealType });
         }}
       />
+
+      <MealDataModal visible={isMealDataVisible} onClose={() => setIsMealDataVisible(false)} />
     </SafeAreaView>
   );
 }
