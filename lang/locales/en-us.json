@@ -1172,6 +1172,8 @@
       "manageMetricsDataSubtitle": "Track and adjust your body metrics and progress",
       "manageExercisesData": "Manage Exercises Data",
       "manageExercisesDataSubtitle": "Maintain your custom exercise list and details",
+      "manageGoalsData": "Manage Nutrition Goals",
+      "manageGoalsDataSubtitle": "View and manage your nutrition and body composition goals history",
       "dangerZone": "DANGER ZONE",
       "requestAccountDeletion": "Request Account Deletion",
       "requestAccountDeletionSubtitle": "Permanently remove all data",
