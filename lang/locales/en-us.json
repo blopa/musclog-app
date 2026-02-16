@@ -384,6 +384,27 @@
     "exercise": "Exercise {{number}}",
     "set": "Set {{number}}"
   },
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "title": "Manage Workout Log Data",
+      "searchPlaceholder": "Search workout sessions...",
+      "noWorkoutLogs": "No workout logs yet",
+      "noWorkoutLogsDesc": "Complete workouts to see them here",
+      "endOfHistory": "End of workout history",
+      "workoutLogOptions": "Workout Options",
+      "editWorkoutLog": "Edit Workout",
+      "editWorkoutLogDesc": "Modify workout details",
+      "duplicateWorkoutLog": "Duplicate Workout",
+      "duplicateWorkoutLogDesc": "Create a copy of this workout",
+      "deleteWorkoutLog": "Delete Workout",
+      "deleteWorkoutLogDesc": "Remove this workout log",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In progress",
+      "volumeFormat": "{{volume}} kg",
+      "unknownWorkout": "Unknown Workout"
+    }
+  },
   "pastWorkoutHistory": {
     "title": "Workout History",
     "searchPlaceholder": "Search sessions...",

@@ -27,6 +27,7 @@ import {
   ExerciseDataModal,
   FoodDataModal,
   MealDataModal,
+  WorkoutLogDataModal,
 } from '../../components/modals/DataLogModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
@@ -195,6 +196,9 @@ export default function ModalsTestScreen() {
 
   // Exercise Data Modal
   const [isExerciseDataVisible, setIsExerciseDataVisible] = useState(false);
+
+  // Workout Log Data Modal
+  const [isWorkoutLogDataVisible, setIsWorkoutLogDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -956,6 +960,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Workout Log Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Workout Log Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing workout log data with search and session options.
+            </Text>
+            <Button
+              label="Open Workout Log Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsWorkoutLogDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1415,6 +1433,11 @@ export default function ModalsTestScreen() {
       <ExerciseDataModal
         visible={isExerciseDataVisible}
         onClose={() => setIsExerciseDataVisible(false)}
+      />
+
+      <WorkoutLogDataModal
+        visible={isWorkoutLogDataVisible}
+        onClose={() => setIsWorkoutLogDataVisible(false)}
       />
     </SafeAreaView>
   );
