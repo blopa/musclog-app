@@ -9,6 +9,7 @@ import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
+import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
@@ -16,7 +17,7 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
-export type DataLogModalVariant = 'meal' | 'food' | 'exercise' | 'workoutLog';
+export type DataLogModalVariant = 'meal' | 'food' | 'exercise' | 'workoutLog' | 'workoutTemplate';
 
 export type DataLogModalTranslations = {
   title: string;
@@ -104,6 +105,33 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'workoutTemplate') {
+    return {
+      title: t('workouts.manageWorkoutTemplateData.title'),
+      searchPlaceholder: t('workouts.manageWorkoutTemplateData.searchPlaceholder'),
+      noItemsText: t('workouts.manageWorkoutTemplateData.noTemplates', 'No workout templates yet'),
+      noItemsDesc: t(
+        'workouts.manageWorkoutTemplateData.noTemplatesDesc',
+        'Create workout templates to see them here'
+      ),
+      endOfHistoryText: t('workouts.manageWorkoutTemplateData.endOfHistory'),
+      menuTitle: t('workouts.manageWorkoutTemplateData.templateOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('workouts.manageWorkoutTemplateData.editTemplate'),
+      editDesc: t('workouts.manageWorkoutTemplateData.editTemplateDesc'),
+      duplicateTitle: t('workouts.manageWorkoutTemplateData.duplicateTemplate'),
+      duplicateDesc: t('workouts.manageWorkoutTemplateData.duplicateTemplateDesc'),
+      deleteTitle: t('workouts.manageWorkoutTemplateData.deleteTemplate'),
+      deleteDesc: t('workouts.manageWorkoutTemplateData.deleteTemplateDesc'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) =>
+        item.description ?? t('workouts.manageWorkoutTemplateData.noDescription'),
+    };
+  }
+
   if (variant === 'workoutLog') {
     return {
       title: t('workoutLog.manageWorkoutLogData.title'),
@@ -177,6 +205,7 @@ export type DataLogDisplayItem = {
   equipmentType?: string; // Optional - only exercises have this
   isCompleted?: boolean; // Optional - only workout logs have this
   totalVolume?: number; // Optional - only workout logs have this
+  description?: string; // Optional - only workout templates have this
 };
 
 export type DataLogModalData = {
@@ -403,7 +432,9 @@ export function DataLogModal({
               >
                 <MaterialIcons
                   name={
-                    variant === 'exercise' || variant === 'workoutLog'
+                    variant === 'exercise' ||
+                    variant === 'workoutLog' ||
+                    variant === 'workoutTemplate'
                       ? 'fitness-center'
                       : 'restaurant-menu'
                   }
@@ -586,6 +617,36 @@ export function WorkoutLogDataModal({ visible, onClose }: WorkoutLogDataModalPro
       visible={visible}
       onClose={onClose}
       variant="workoutLog"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useWorkoutTemplateDataLogs
+type WorkoutTemplateDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useWorkoutTemplateDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="workoutTemplate"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

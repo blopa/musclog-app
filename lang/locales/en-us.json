@@ -593,6 +593,22 @@
         "setsQty": "{{count}} Set"
       }
     },
+    "manageWorkoutTemplateData": {
+      "title": "Manage Workout Template Data",
+      "searchPlaceholder": "Search templates...",
+      "noTemplates": "No workout templates yet",
+      "noTemplatesDesc": "Create workout templates to see them here",
+      "endOfHistory": "End of template history",
+      "templateOptions": "Template Options",
+      "editTemplate": "Edit Template",
+      "editTemplateDesc": "Modify template name and exercises",
+      "duplicateTemplate": "Duplicate Template",
+      "duplicateTemplateDesc": "Create a copy of this template",
+      "deleteTemplate": "Delete Template",
+      "deleteTemplateDesc": "Remove this template permanently",
+      "noDescription": "No description",
+      "unknownTemplate": "Unknown Template"
+    },
     "createWorkoutOptionsModal": {
       "header": "Create Workout",
       "title": "How do you want to build your routine?",

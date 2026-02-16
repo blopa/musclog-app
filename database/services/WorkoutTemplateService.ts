@@ -413,6 +413,25 @@ export class WorkoutTemplateService {
   }
 
   /**
+   * Get workout templates with pagination (for Manage Workout Template Data modal).
+   * Active templates only, ordered by created_at desc.
+   */
+  static async getWorkoutTemplatesPaginated(
+    limit: number,
+    offset: number
+  ): Promise<WorkoutTemplate[]> {
+    let query = WorkoutTemplateRepository.getActive();
+    if (limit > 0) {
+      if (offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+    return await query.fetch();
+  }
+
+  /**
    * Get templates with metadata and pagination support
    */
   static async getTemplatesWithMetadataPaginated(
