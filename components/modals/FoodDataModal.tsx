@@ -3,93 +3,34 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { type FoodDataDisplayItem, useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
+import { Button } from '../theme/Button';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
-
-type FoodItem = {
-  id: string;
-  name: string;
-  calories: number;
-  protein: number;
-  icon: keyof typeof MaterialIcons.glyphMap;
-  iconColor: string;
-  iconBgColor: string;
-};
 
 type FoodDataModalProps = {
   visible: boolean;
   onClose: () => void;
 };
 
-const mockFoodData: { date: string; items: FoodItem[] }[] = [
-  {
-    date: 'Today, Oct 24',
-    items: [
-      {
-        id: '1',
-        name: 'Grilled Chicken Breast',
-        calories: 240,
-        protein: 42,
-        icon: 'restaurant',
-        iconColor: '#29e08e',
-        iconBgColor: 'rgba(41, 224, 142, 0.1)',
-      },
-      {
-        id: '2',
-        name: 'Boiled Eggs (2)',
-        calories: 140,
-        protein: 12,
-        icon: 'egg',
-        iconColor: '#6366f1',
-        iconBgColor: 'rgba(99, 102, 241, 0.1)',
-      },
-    ],
-  },
-  {
-    date: 'Yesterday, Oct 23',
-    items: [
-      {
-        id: '3',
-        name: 'Homemade Protein Pizza',
-        calories: 580,
-        protein: 35,
-        icon: 'local-pizza',
-        iconColor: '#f97316',
-        iconBgColor: 'rgba(249, 115, 22, 0.1)',
-      },
-      {
-        id: '4',
-        name: 'Whey Isolate Shake',
-        calories: 120,
-        protein: 25,
-        icon: 'fitness-center',
-        iconColor: '#29e08e',
-        iconBgColor: 'rgba(41, 224, 142, 0.1)',
-      },
-      {
-        id: '5',
-        name: 'Greek Yogurt w/ Berries',
-        calories: 180,
-        protein: 18,
-        icon: 'restaurant-menu',
-        iconColor: '#3b82f6',
-        iconBgColor: 'rgba(59, 130, 246, 0.1)',
-      },
-    ],
-  },
-];
-
 export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(null);
+  const [selectedFoodItem, setSelectedFoodItem] = useState<FoodDataDisplayItem | null>(null);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
 
-  const handleFoodItemPress = (item: FoodItem) => {
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useFoodDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  const handleFoodItemPress = (item: FoodDataDisplayItem) => {
     setSelectedFoodItem(item);
     setShowFoodMenu(true);
   };
@@ -143,10 +84,10 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
     ];
   };
 
-  const renderFoodItem = (item: FoodItem) => (
+  const renderFoodItem = (item: FoodDataDisplayItem) => (
     <GenericCard key={item.id} variant="card" isPressable onPress={() => handleFoodItemPress(item)}>
       <View className="flex-row items-center px-4 py-3">
-        <View className="flex-row items-center gap-4 flex-1">
+        <View className="flex-1 flex-row items-center gap-4">
           <View
             className="size-10 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: item.iconBgColor }}
@@ -159,7 +100,10 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
             </Text>
             <Text className="text-sm font-medium tracking-wider text-text-secondary">
               {/*TODO: add other macros*/}
-              {t('food.manageFoodData.caloriesProteinFormat', { calories: item.calories, protein: item.protein })}
+              {t('food.manageFoodData.caloriesProteinFormat', {
+                calories: item.calories,
+                protein: item.protein,
+              })}
             </Text>
           </View>
         </View>
@@ -167,11 +111,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
           className="size-8 items-center justify-center rounded-full active:opacity-70"
           onPress={() => handleFoodItemPress(item)}
         >
-          <MaterialIcons
-            name="more-vert"
-            size={20}
-            color={theme.colors.text.secondary}
-          />
+          <MaterialIcons name="more-vert" size={20} color={theme.colors.text.secondary} />
         </Pressable>
       </View>
     </GenericCard>
@@ -205,37 +145,104 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder={t('food.manageFoodData.searchPlaceholder')}
-              icon={
-                <MaterialIcons
-                  name="search"
-                  size={20}
-                  color={theme.colors.text.tertiary}
-                />
-              }
+              icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
             />
           </View>
 
           {/* Food List */}
           <View className="mt-6 flex flex-col gap-3">
-            {mockFoodData.map((dayData) => (
-              <View key={dayData.date} className="flex flex-col gap-2">
-                <View>
-                  <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
-                    {dayData.date}
-                  </Text>
-                </View>
-                <View className="flex flex-col gap-2">{dayData.items.map(renderFoodItem)}</View>
+            {isLoading ? (
+              <View className="flex flex-col gap-4">
+                <SkeletonLoader width={80} height={16} className="mb-2" />
+                {[1, 2, 3].map((i) => (
+                  <View
+                    key={i}
+                    className="rounded-lg border p-4"
+                    style={{
+                      backgroundColor: theme.colors.background.card,
+                      borderColor: theme.colors.background.white5,
+                    }}
+                  >
+                    <View className="flex-row items-center gap-4">
+                      <SkeletonLoader width={40} height={40} borderRadius={20} />
+                      <View className="flex-1 gap-2">
+                        <SkeletonLoader width="70%" height={16} />
+                        <SkeletonLoader width="50%" height={14} />
+                      </View>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
+            ) : dayGroups.length === 0 ? (
+              <View
+                className="items-center justify-center py-12"
+                style={{ backgroundColor: theme.colors.background.card }}
+              >
+                <MaterialIcons
+                  name="restaurant-menu"
+                  size={48}
+                  color={theme.colors.text.tertiary}
+                />
+                <Text
+                  className="mt-3 text-center text-base font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('food.manageFoodData.noLogs', 'No food logs yet')}
+                </Text>
+                <Text
+                  className="mt-1 text-center text-sm"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  {t(
+                    'food.manageFoodData.noLogsDesc',
+                    'Start tracking your meals to see them here'
+                  )}
+                </Text>
+              </View>
+            ) : (
+              dayGroups.map((dayData) => (
+                <View
+                  key={`${dayData.date}-${dayData.dateTimestamp}`}
+                  className="flex flex-col gap-2"
+                >
+                  <View>
+                    <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
+                      {dayData.date}
+                    </Text>
+                  </View>
+                  <View className="flex flex-col gap-2">{dayData.items.map(renderFoodItem)}</View>
+                </View>
+              ))
+            )}
+
+            {!isLoading && hasMore ? (
+              <View className="py-4">
+                <Button
+                  label={
+                    isLoadingMore
+                      ? t('common.loading', 'Loading...')
+                      : t('bodyMetrics.history.loadMore', 'Load More')
+                  }
+                  variant="outline"
+                  size="md"
+                  width="full"
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                  onPress={loadMore}
+                />
+              </View>
+            ) : null}
           </View>
 
           {/* End of history indicator */}
-          <View className="mt-12 flex flex-col items-center justify-center opacity-40">
-            <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
-            <Text className="mt-2 text-sm font-medium text-text-tertiary">
-              {t('food.manageFoodData.endOfHistory')}
-            </Text>
-          </View>
+          {!isLoading && dayGroups.length > 0 && !hasMore ? (
+            <View className="mt-12 flex flex-col items-center justify-center opacity-40">
+              <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
+              <Text className="mt-2 text-sm font-medium text-text-tertiary">
+                {t('food.manageFoodData.endOfHistory')}
+              </Text>
+            </View>
+          ) : null}
         </ScrollView>
       </FullScreenModal>
 

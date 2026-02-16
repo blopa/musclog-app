@@ -49,6 +49,30 @@ export class NutritionService {
   }
 
   /**
+   * Get nutrition logs with pagination (for Manage Food Data modal).
+   * Ordered by date desc, then created_at desc. Most recent first.
+   */
+  static async getNutritionLogsPaginated(limit: number, offset: number): Promise<NutritionLog[]> {
+    let query = database
+      .get<NutritionLog>('nutrition_logs')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('created_at', Q.desc)
+      );
+
+    if (limit > 0) {
+      if (offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Get nutrition logs for a date range
    */
   static async getNutritionLogsForDateRange(
