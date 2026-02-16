@@ -98,33 +98,43 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       return [];
     }
 
+    const EditIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="edit" {...props} />
+    );
+    const DuplicateIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="content-copy" {...props} />
+    );
+    const DeleteIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="delete" {...props} />
+    );
+
     return [
       {
-        icon: MaterialIcons,
+        icon: EditIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title: 'Edit Food Entry',
-        description: 'Modify the food details',
+        title: t('food.manageFoodData.editFoodEntry'),
+        description: t('food.manageFoodData.editFoodEntryDesc'),
         onPress: () => {
           console.log('Edit food:', selectedFoodItem.name);
         },
       },
       {
-        icon: MaterialIcons,
+        icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title: 'Duplicate Entry',
-        description: 'Create a copy of this entry',
+        title: t('food.manageFoodData.duplicateEntry'),
+        description: t('food.manageFoodData.duplicateEntryDesc'),
         onPress: () => {
           console.log('Duplicate food:', selectedFoodItem.name);
         },
       },
       {
-        icon: MaterialIcons,
+        icon: DeleteIcon,
         iconColor: theme.colors.status.error50,
         iconBgColor: 'rgba(239, 68, 68, 0.1)',
-        title: 'Delete Entry',
-        description: 'Remove this food entry',
+        title: t('food.manageFoodData.deleteEntry'),
+        description: t('food.manageFoodData.deleteEntryDesc'),
         onPress: () => {
           console.log('Delete food:', selectedFoodItem.name);
         },
@@ -181,7 +191,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        title="Manage Food Data"
+        title={t('food.manageFoodData.title')}
         headerRight={renderHeaderRight()}
         scrollable
       >
@@ -201,7 +211,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
             >
               <RNTextInput
                 className="text-sm font-medium text-text-primary"
-                placeholder="Search food logs..."
+                placeholder={t('food.manageFoodData.searchPlaceholder')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -232,7 +242,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
               color={theme.colors.text.tertiary}
             />
             <Text className="mt-2 text-sm font-medium text-text-tertiary">
-              End of food log history
+              {t('food.manageFoodData.endOfHistory')}
             </Text>
           </View>
         </View>
@@ -242,7 +252,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       <BottomPopUpMenu
         visible={showFoodMenu}
         onClose={() => setShowFoodMenu(false)}
-        title="Food Options"
+        title={t('food.manageFoodData.foodOptions')}
         items={getFoodMenuItems()}
       />
     </>

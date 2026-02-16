@@ -59,6 +59,18 @@
     }
   },
   "food": {
+    "manageFoodData": {
+      "title": "Manage Food Data",
+      "searchPlaceholder": "Search food logs...",
+      "foodOptions": "Food Options",
+      "editFoodEntry": "Edit Food Entry",
+      "editFoodEntryDesc": "Modify the food details",
+      "duplicateEntry": "Duplicate Entry",
+      "duplicateEntryDesc": "Create a copy of this entry",
+      "deleteEntry": "Delete Entry",
+      "deleteEntryDesc": "Remove this food entry",
+      "endOfHistory": "End of food log history"
+    },
     "header": {
       "today": "Today",
       "yesterday": "Yesterday"
