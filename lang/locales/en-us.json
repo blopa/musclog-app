@@ -71,6 +71,7 @@
       "deleteEntryDesc": "Remove this food entry",
       "endOfHistory": "End of food log history",
       "caloriesProteinFormat": "{{calories}} kcal • {{protein}}g Protein",
+      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "unknownFood": "Unknown",
       "noLogs": "No food logs yet",
       "noLogsDesc": "Start tracking your meals to see them here"

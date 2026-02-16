@@ -12,6 +12,8 @@ export type FoodDataDisplayItem = {
   name: string;
   calories: number;
   protein: number;
+  carbs: number;
+  fat: number;
   icon: 'restaurant' | 'egg' | 'local-pizza' | 'fitness-center' | 'restaurant-menu';
   iconColor: string;
   iconBgColor: string;
@@ -81,6 +83,8 @@ async function logToDisplayItemWithT(
       name: food?.name ?? t('food.manageFoodData.unknownFood', 'Unknown'),
       calories: Math.round(nutrients.calories),
       protein: Math.round(nutrients.protein),
+      carbs: Math.round(nutrients.carbs),
+      fat: Math.round(nutrients.fat),
       icon,
       iconColor: colors.color,
       iconBgColor: colors.bg,

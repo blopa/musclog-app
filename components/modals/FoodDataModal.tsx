@@ -99,10 +99,11 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
               {item.name}
             </Text>
             <Text className="text-sm font-medium tracking-wider text-text-secondary">
-              {/*TODO: add other macros*/}
-              {t('food.manageFoodData.caloriesProteinFormat', {
+              {t('food.manageFoodData.caloriesMacrosFormat', {
                 calories: item.calories,
                 protein: item.protein,
+                carbs: item.carbs,
+                fat: item.fat,
               })}
             </Text>
           </View>
