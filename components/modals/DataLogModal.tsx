@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import type { TFunction } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -12,6 +13,83 @@ import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
+
+export type DataLogModalVariant = 'meal' | 'food';
+
+export type DataLogModalTranslations = {
+  title: string;
+  searchPlaceholder: string;
+  noItemsText: string;
+  noItemsDesc: string;
+  endOfHistoryText: string;
+  menuTitle: string;
+  favoriteAddTitle: string;
+  favoriteRemoveTitle: string;
+  favoriteAddDesc: string;
+  favoriteRemoveDesc: string;
+  editTitle: string;
+  editDesc: string;
+  duplicateTitle: string;
+  duplicateDesc: string;
+  deleteTitle: string;
+  deleteDesc: string;
+  formatCaloriesMacros: (params: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => string;
+};
+
+export function getDataLogModalTranslations(
+  variant: DataLogModalVariant,
+  t: TFunction
+): DataLogModalTranslations {
+  if (variant === 'meal') {
+    return {
+      title: t('food.meals.manageMealData.title'),
+      searchPlaceholder: t('food.meals.manageMealData.searchPlaceholder'),
+      noItemsText: t('food.meals.manageMealData.noMeals', 'No meals yet'),
+      noItemsDesc: t(
+        'food.meals.manageMealData.noMealsDesc',
+        'Create custom meals to see them here'
+      ),
+      endOfHistoryText: t('food.meals.manageMealData.endOfHistory'),
+      menuTitle: t('food.meals.manageMealData.mealOptions'),
+      favoriteAddTitle: t('food.meals.manageMealData.addToFavorites'),
+      favoriteRemoveTitle: t('food.meals.manageMealData.removeFromFavorites'),
+      favoriteAddDesc: t('food.meals.manageMealData.addToFavoritesDesc'),
+      favoriteRemoveDesc: t('food.meals.manageMealData.removeFromFavoritesDesc'),
+      editTitle: t('food.meals.manageMealData.editMeal'),
+      editDesc: t('food.meals.manageMealData.editMealDesc'),
+      duplicateTitle: t('food.meals.manageMealData.duplicateMeal'),
+      duplicateDesc: t('food.meals.manageMealData.duplicateMealDesc'),
+      deleteTitle: t('food.meals.manageMealData.deleteMeal'),
+      deleteDesc: t('food.meals.manageMealData.deleteMealDesc'),
+      formatCaloriesMacros: (params) => t('food.meals.manageMealData.caloriesMacrosFormat', params),
+    };
+  }
+
+  return {
+    title: t('food.manageFoodData.title'),
+    searchPlaceholder: t('food.manageFoodData.searchPlaceholder'),
+    noItemsText: t('food.manageFoodData.noLogs', 'No food logs yet'),
+    noItemsDesc: t('food.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here'),
+    endOfHistoryText: t('food.manageFoodData.endOfHistory'),
+    menuTitle: t('food.manageFoodData.foodOptions'),
+    favoriteAddTitle: '',
+    favoriteRemoveTitle: '',
+    favoriteAddDesc: '',
+    favoriteRemoveDesc: '',
+    editTitle: t('food.manageFoodData.editFoodEntry'),
+    editDesc: t('food.manageFoodData.editFoodEntryDesc'),
+    duplicateTitle: t('food.manageFoodData.duplicateEntry'),
+    duplicateDesc: t('food.manageFoodData.duplicateEntryDesc'),
+    deleteTitle: t('food.manageFoodData.deleteEntry'),
+    deleteDesc: t('food.manageFoodData.deleteEntryDesc'),
+    formatCaloriesMacros: (params) => t('food.manageFoodData.caloriesMacrosFormat', params),
+  };
+}
 
 // Base type that both MealDataDisplayItem and FoodDataDisplayItem satisfy
 export type DataLogDisplayItem = {
@@ -60,6 +138,8 @@ export function DataLogModal({
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
 
+  const translations = getDataLogModalTranslations(variant, t);
+
   const handleItemPress = (item: DataLogDisplayItem) => {
     setSelectedItem(item);
     setShowMenu(true);
@@ -92,11 +172,11 @@ export function DataLogModal({
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
         title: selectedItem.isFavorite
-          ? t('food.meals.manageMealData.removeFromFavorites')
-          : t('food.meals.manageMealData.addToFavorites'),
+          ? translations.favoriteRemoveTitle
+          : translations.favoriteAddTitle,
         description: selectedItem.isFavorite
-          ? t('food.meals.manageMealData.removeFromFavoritesDesc')
-          : t('food.meals.manageMealData.addToFavoritesDesc'),
+          ? translations.favoriteRemoveDesc
+          : translations.favoriteAddDesc,
         onPress: () => {
           console.log('Toggle favorite:', selectedItem.name);
         },
@@ -109,14 +189,8 @@ export function DataLogModal({
         icon: EditIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.editMeal')
-            : t('food.manageFoodData.editFoodEntry'),
-        description:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.editMealDesc')
-            : t('food.manageFoodData.editFoodEntryDesc'),
+        title: translations.editTitle,
+        description: translations.editDesc,
         onPress: () => {
           console.log('Edit:', selectedItem.name);
         },
@@ -125,14 +199,8 @@ export function DataLogModal({
         icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
-        title:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.duplicateMeal')
-            : t('food.manageFoodData.duplicateEntry'),
-        description:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.duplicateMealDesc')
-            : t('food.manageFoodData.duplicateEntryDesc'),
+        title: translations.duplicateTitle,
+        description: translations.duplicateDesc,
         onPress: () => {
           console.log('Duplicate:', selectedItem.name);
         },
@@ -141,14 +209,8 @@ export function DataLogModal({
         icon: DeleteIcon,
         iconColor: theme.colors.status.error50,
         iconBgColor: 'rgba(239, 68, 68, 0.1)',
-        title:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.deleteMeal')
-            : t('food.manageFoodData.deleteEntry'),
-        description:
-          variant === 'meal'
-            ? t('food.meals.manageMealData.deleteMealDesc')
-            : t('food.manageFoodData.deleteEntryDesc'),
+        title: translations.deleteTitle,
+        description: translations.deleteDesc,
         onPress: () => {
           console.log('Delete:', selectedItem.name);
         },
@@ -178,19 +240,12 @@ export function DataLogModal({
               ) : null}
             </View>
             <Text className="text-sm font-medium tracking-wider text-text-secondary">
-              {variant === 'meal'
-                ? t('food.meals.manageMealData.caloriesMacrosFormat', {
-                    calories: item.calories,
-                    protein: item.protein,
-                    carbs: item.carbs,
-                    fat: item.fat,
-                  })
-                : t('food.manageFoodData.caloriesMacrosFormat', {
-                    calories: item.calories,
-                    protein: item.protein,
-                    carbs: item.carbs,
-                    fat: item.fat,
-                  })}
+              {translations.formatCaloriesMacros({
+                calories: item.calories,
+                protein: item.protein,
+                carbs: item.carbs,
+                fat: item.fat,
+              })}
             </Text>
           </View>
         </View>
@@ -215,35 +270,6 @@ export function DataLogModal({
     </Pressable>
   );
 
-  // Get variant-specific copy
-  const title =
-    variant === 'meal' ? t('food.meals.manageMealData.title') : t('food.manageFoodData.title');
-
-  const searchPlaceholder =
-    variant === 'meal'
-      ? t('food.meals.manageMealData.searchPlaceholder')
-      : t('food.manageFoodData.searchPlaceholder');
-
-  const noItemsText =
-    variant === 'meal'
-      ? t('food.meals.manageMealData.noMeals', 'No meals yet')
-      : t('food.manageFoodData.noLogs', 'No food logs yet');
-
-  const noItemsDesc =
-    variant === 'meal'
-      ? t('food.meals.manageMealData.noMealsDesc', 'Create custom meals to see them here')
-      : t('food.manageFoodData.noLogsDesc', 'Start tracking your meals to see them here');
-
-  const endOfHistoryText =
-    variant === 'meal'
-      ? t('food.meals.manageMealData.endOfHistory')
-      : t('food.manageFoodData.endOfHistory');
-
-  const menuTitle =
-    variant === 'meal'
-      ? t('food.meals.manageMealData.mealOptions')
-      : t('food.manageFoodData.foodOptions');
-
   // Unify load more button to size="md" and consistent labels
   const loadingLabel = isLoadingMore
     ? t('common.loading', 'Loading...')
@@ -254,7 +280,7 @@ export function DataLogModal({
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        title={title}
+        title={translations.title}
         headerRight={renderHeaderRight()}
         scrollable
       >
@@ -265,7 +291,7 @@ export function DataLogModal({
               label=""
               value={searchQuery}
               onChangeText={onSearchQueryChange}
-              placeholder={searchPlaceholder}
+              placeholder={translations.searchPlaceholder}
               icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
             />
           </View>
@@ -308,13 +334,13 @@ export function DataLogModal({
                   className="mt-3 text-center text-base font-medium"
                   style={{ color: theme.colors.text.secondary }}
                 >
-                  {noItemsText}
+                  {translations.noItemsText}
                 </Text>
                 <Text
                   className="mt-1 text-center text-sm"
                   style={{ color: theme.colors.text.tertiary }}
                 >
-                  {noItemsDesc}
+                  {translations.noItemsDesc}
                 </Text>
               </View>
             ) : (
@@ -353,7 +379,7 @@ export function DataLogModal({
             <View className="mt-12 flex flex-col items-center justify-center opacity-40">
               <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
               <Text className="mt-2 text-sm font-medium text-text-tertiary">
-                {endOfHistoryText}
+                {translations.endOfHistoryText}
               </Text>
             </View>
           ) : null}
@@ -364,7 +390,7 @@ export function DataLogModal({
       <BottomPopUpMenu
         visible={showMenu}
         onClose={() => setShowMenu(false)}
-        title={menuTitle}
+        title={translations.menuTitle}
         items={getMenuItems()}
       />
     </>
