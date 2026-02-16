@@ -1,4 +1,17 @@
-import { Bug, ChevronRight, Download, Trash2, Upload } from 'lucide-react-native';
+import {
+  Apple,
+  Bug,
+  ChevronRight,
+  Coffee,
+  Database,
+  Download,
+  Dumbbell,
+  Target,
+  Trash2,
+  TrendingUp,
+  Upload,
+  Utensils,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -17,6 +30,15 @@ type AdvancedSettingsModalProps = {
   // Privacy & Diagnostics
   anonymousBugReport?: boolean;
   onAnonymousBugReportChange?: (value: boolean) => void;
+  // Data Management
+  onManageFoodDataPress?: () => void;
+  onManageNutritionLogsDataPress?: () => void;
+  onManageMealsDataPress?: () => void;
+  onManagePortionsDataPress?: () => void;
+  onManageWorkoutsDataPress?: () => void;
+  onManageWorkoutsLogDataPress?: () => void;
+  onManageMetricsDataPress?: () => void;
+  onManageExercisesDataPress?: () => void;
   // Danger Zone
   onAccountDeletionPress?: () => void;
 };
@@ -28,6 +50,14 @@ export function AdvancedSettingsModal({
   onImportPress,
   anonymousBugReport = true,
   onAnonymousBugReportChange,
+  onManageFoodDataPress,
+  onManageNutritionLogsDataPress,
+  onManageMealsDataPress,
+  onManagePortionsDataPress,
+  onManageWorkoutsDataPress,
+  onManageWorkoutsLogDataPress,
+  onManageMetricsDataPress,
+  onManageExercisesDataPress,
   onAccountDeletionPress,
 }: AdvancedSettingsModalProps) {
   const theme = useTheme();
@@ -109,6 +139,120 @@ export function AdvancedSettingsModal({
             {t('settings.advancedSettings.privacyDiagnostics')}
           </Text>
           <ToggleInput items={bugReportItems} />
+        </View>
+
+        {/* Data Management Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.advancedSettings.dataManagement')}
+          </Text>
+          <SettingsCard
+            icon={<Utensils size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageFoodData')}
+            subtitle={t('settings.advancedSettings.manageFoodDataSubtitle')}
+            onPress={onManageFoodDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Apple size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageNutritionLogsData')}
+            subtitle={t('settings.advancedSettings.manageNutritionLogsDataSubtitle')}
+            onPress={onManageNutritionLogsDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Coffee size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageMealsData')}
+            subtitle={t('settings.advancedSettings.manageMealsDataSubtitle')}
+            onPress={onManageMealsDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.managePortionsData')}
+            subtitle={t('settings.advancedSettings.managePortionsDataSubtitle')}
+            onPress={onManagePortionsDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageWorkoutsData')}
+            subtitle={t('settings.advancedSettings.manageWorkoutsDataSubtitle')}
+            onPress={onManageWorkoutsDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Target size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageWorkoutsLogData')}
+            subtitle={t('settings.advancedSettings.manageWorkoutsLogDataSubtitle')}
+            onPress={onManageWorkoutsLogDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<TrendingUp size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageMetricsData')}
+            subtitle={t('settings.advancedSettings.manageMetricsDataSubtitle')}
+            onPress={onManageMetricsDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
+          <SettingsCard
+            icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.manageExercisesData')}
+            subtitle={t('settings.advancedSettings.manageExercisesDataSubtitle')}
+            onPress={onManageExercisesDataPress || (() => {})}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
         </View>
 
         {/* TODO: simply open the Android cache and data settings from the app, since all data is stored locally */}

@@ -29,11 +29,17 @@ export function SettingsCard({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between',
             padding: theme.spacing.padding.base,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.gap.base }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme.spacing.gap.base,
+              flex: 1,
+            }}
+          >
             <View
               style={[
                 {
@@ -49,7 +55,7 @@ export function SettingsCard({
             >
               {icon}
             </View>
-            <View>
+            <View style={{ flex: 1, flexShrink: 1, minWidth: 0 }}>
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.base,
@@ -65,6 +71,7 @@ export function SettingsCard({
                   color: theme.colors.text.secondary,
                   marginTop: theme.spacing.padding.xsHalf,
                 }}
+                numberOfLines={2}
               >
                 {subtitle}
               </Text>
