@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
@@ -144,31 +144,31 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
 
   const renderFoodItem = (item: FoodItem) => (
     <GenericCard key={item.id} variant="card" isPressable onPress={() => handleFoodItemPress(item)}>
-      <View className="flex-row items-center p-4">
-        <View className="flex flex-1 items-center gap-4">
+      <View className="flex-row items-center px-4 py-3">
+        <View className="flex-row items-center gap-4 flex-1">
           <View
-            className="flex size-12 shrink-0 items-center justify-center rounded-full"
+            className="size-10 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: item.iconBgColor }}
           >
-            <MaterialIcons name={item.icon} size={theme.iconSize.md} color={item.iconColor} />
+            <MaterialIcons name={item.icon} size={20} color={item.iconColor} />
           </View>
           <View className="flex-1">
-            <Text className="text-[15px] font-bold leading-snug text-text-primary">
+            <Text className="text-base font-semibold leading-snug text-text-primary">
               {item.name}
             </Text>
-            <Text className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
+            <Text className="text-sm font-medium uppercase tracking-wider text-text-secondary">
               {item.calories} kcal • {item.protein}g Protein
             </Text>
           </View>
         </View>
         <Pressable
-          className="flex size-8 items-center justify-center rounded-full active:opacity-70"
+          className="size-8 items-center justify-center rounded-full active:opacity-70"
           onPress={() => handleFoodItemPress(item)}
         >
           <MaterialIcons
             name="more-vert"
-            size={theme.iconSize.sm}
-            color={theme.colors.text.tertiary}
+            size={20}
+            color={theme.colors.text.secondary}
           />
         </Pressable>
       </View>
@@ -195,22 +195,23 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
         headerRight={renderHeaderRight()}
         scrollable
       >
-        <View className="flex flex-col gap-4">
+        <ScrollView className="mt-6 flex flex-col gap-3 px-4">
           {/* Search Bar */}
           <View className="relative">
             <View className="absolute left-4 top-1/2 z-10 -translate-y-1/2">
               <MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />
             </View>
             <View
-              className="w-full rounded-xl border-none bg-bg-card py-3.5 pl-11 pr-4"
+              className="w-full rounded-xl bg-bg-card py-3 pl-12 pr-5"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderColor: theme.colors.border.light,
                 borderWidth: 1,
               }}
             >
+              {/*TODO: dont use RNTextInput, use TextInput from theme*/}
               <RNTextInput
-                className="text-sm font-medium text-text-primary"
+                className="text-base font-medium text-text-primary"
                 placeholder={t('food.manageFoodData.searchPlaceholder')}
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={searchQuery}
@@ -221,31 +222,27 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
           </View>
 
           {/* Food List */}
-          <View className="flex flex-col gap-4">
+          <View className="mt-6 flex flex-col gap-3">
             {mockFoodData.map((dayData) => (
-              <View key={dayData.date} className="flex flex-col gap-3">
-                <View className="px-1">
-                  <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <View key={dayData.date} className="flex flex-col gap-2">
+                <View>
+                  <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
                     {dayData.date}
                   </Text>
                 </View>
-                <View className="flex flex-col gap-3">{dayData.items.map(renderFoodItem)}</View>
+                <View className="flex flex-col gap-2">{dayData.items.map(renderFoodItem)}</View>
               </View>
             ))}
           </View>
 
           {/* End of history indicator */}
-          <View className="mt-8 flex flex-col items-center justify-center opacity-40">
-            <MaterialIcons
-              name="history"
-              size={theme.iconSize['3xl']}
-              color={theme.colors.text.tertiary}
-            />
+          <View className="mt-12 flex flex-col items-center justify-center opacity-40">
+            <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
             <Text className="mt-2 text-sm font-medium text-text-tertiary">
               {t('food.manageFoodData.endOfHistory')}
             </Text>
           </View>
-        </View>
+        </ScrollView>
       </FullScreenModal>
 
       {/* Food Item Menu */}
