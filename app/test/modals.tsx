@@ -32,6 +32,7 @@ import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import ExercisesModal from '../../components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
+import { FoodDataModal } from '../../components/modals/FoodDataModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
@@ -94,6 +95,9 @@ export default function ModalsTestScreen() {
 
   // Food Details Modal
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
+
+  // Food Data Modal
+  const [isFoodDataVisible, setIsFoodDataVisible] = useState(false);
 
   // Add Food Modal
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -429,6 +433,20 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsFoodDetailsVisible(true)}
+            />
+          </View>
+
+          {/* Food Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Food Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing food data with search and food item options.
+            </Text>
+            <Button
+              label="Open Food Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFoodDataVisible(true)}
             />
           </View>
 
@@ -1035,6 +1053,11 @@ export default function ModalsTestScreen() {
         visible={isFoodDetailsVisible}
         onClose={() => setIsFoodDetailsVisible(false)}
         barcode="3017620425035"
+      />
+
+      <FoodDataModal
+        visible={isFoodDataVisible}
+        onClose={() => setIsFoodDataVisible(false)}
       />
 
       <AddFoodModal
