@@ -69,7 +69,8 @@
       "duplicateEntryDesc": "Create a copy of this entry",
       "deleteEntry": "Delete Entry",
       "deleteEntryDesc": "Remove this food entry",
-      "endOfHistory": "End of food log history"
+      "endOfHistory": "End of food log history",
+      "caloriesProteinFormat": "{{calories}} kcal • {{protein}}g Protein"
     },
     "header": {
       "today": "Today",

@@ -157,9 +157,9 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
             <Text className="text-base font-semibold leading-snug text-text-primary">
               {item.name}
             </Text>
-            <Text className="text-sm font-medium uppercase tracking-wider text-text-secondary">
-              {/*TODO: use translation here*/}
-              {item.calories} kcal • {item.protein}g Protein
+            <Text className="text-sm font-medium tracking-wider text-text-secondary">
+              {/*TODO: add other macros*/}
+              {t('food.manageFoodData.caloriesProteinFormat', { calories: item.calories, protein: item.protein })}
             </Text>
           </View>
         </View>
