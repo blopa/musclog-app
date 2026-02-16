@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useTheme } from '../../hooks/useTheme';
@@ -14,7 +15,7 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
-export type DataLogModalVariant = 'meal' | 'food';
+export type DataLogModalVariant = 'meal' | 'food' | 'exercise';
 
 export type DataLogModalTranslations = {
   title: string;
@@ -39,6 +40,8 @@ export type DataLogModalTranslations = {
     carbs: number;
     fat: number;
   }) => string;
+  /** When set (e.g. for exercise variant), used for the row subtitle instead of formatCaloriesMacros */
+  formatItemSubtitle?: (item: DataLogDisplayItem) => string;
 };
 
 export function getDataLogModalTranslations(
@@ -70,6 +73,37 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'exercise') {
+    return {
+      title: t('exercises.manageExerciseData.title'),
+      searchPlaceholder: t('exercises.manageExerciseData.searchPlaceholder'),
+      noItemsText: t('exercises.manageExerciseData.noExercises', 'No exercises yet'),
+      noItemsDesc: t(
+        'exercises.manageExerciseData.noExercisesDesc',
+        'Create custom exercises to see them here'
+      ),
+      endOfHistoryText: t('exercises.manageExerciseData.endOfHistory'),
+      menuTitle: t('exercises.manageExerciseData.exerciseOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('exercises.manageExerciseData.editExercise'),
+      editDesc: t('exercises.manageExerciseData.editExerciseDesc'),
+      duplicateTitle: t('exercises.manageExerciseData.duplicateExercise'),
+      duplicateDesc: t('exercises.manageExerciseData.duplicateExerciseDesc'),
+      deleteTitle: t('exercises.manageExerciseData.deleteExercise'),
+      deleteDesc: t('exercises.manageExerciseData.deleteExerciseDesc'),
+      formatCaloriesMacros: () => '', // Not used when formatItemSubtitle is set
+      formatItemSubtitle: (item) =>
+        t('exercises.manageExerciseData.detailFormat', {
+          muscleGroup: t(`exercises.muscleGroups.${item.muscleGroup ?? 'other'}`),
+          equipment: t(`exercises.equipmentTypes.${item.equipmentType ?? 'other'}`),
+        }),
+    };
+  }
+
+  // variant === 'food'
   return {
     title: t('food.manageFoodData.title'),
     searchPlaceholder: t('food.manageFoodData.searchPlaceholder'),
@@ -91,18 +125,20 @@ export function getDataLogModalTranslations(
   };
 }
 
-// Base type that both MealDataDisplayItem and FoodDataDisplayItem satisfy
+// Base type that MealDataDisplayItem, FoodDataDisplayItem, and ExerciseDataDisplayItem satisfy
 export type DataLogDisplayItem = {
   id: string;
   name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
   icon: string;
   iconColor: string;
   iconBgColor: string;
   isFavorite?: boolean; // Optional - only meals have this
+  muscleGroup?: string; // Optional - only exercises have this
+  equipmentType?: string; // Optional - only exercises have this
 };
 
 export type DataLogModalData = {
@@ -116,7 +152,7 @@ export type DataLogModalData = {
 type DataLogModalProps = {
   visible: boolean;
   onClose: () => void;
-  variant: 'meal' | 'food';
+  variant: DataLogModalVariant;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
 } & DataLogModalData;
@@ -240,12 +276,14 @@ export function DataLogModal({
               ) : null}
             </View>
             <Text className="text-sm font-medium tracking-wider text-text-secondary">
-              {translations.formatCaloriesMacros({
-                calories: item.calories,
-                protein: item.protein,
-                carbs: item.carbs,
-                fat: item.fat,
-              })}
+              {translations.formatItemSubtitle
+                ? translations.formatItemSubtitle(item)
+                : translations.formatCaloriesMacros({
+                    calories: item.calories ?? 0,
+                    protein: item.protein ?? 0,
+                    carbs: item.carbs ?? 0,
+                    fat: item.fat ?? 0,
+                  })}
             </Text>
           </View>
         </View>
@@ -326,7 +364,7 @@ export function DataLogModal({
                 style={{ backgroundColor: theme.colors.background.card }}
               >
                 <MaterialIcons
-                  name="restaurant-menu"
+                  name={variant === 'exercise' ? 'fitness-center' : 'restaurant-menu'}
                   size={48}
                   color={theme.colors.text.tertiary}
                 />
@@ -364,7 +402,7 @@ export function DataLogModal({
                 <Button
                   label={loadingLabel}
                   variant="outline"
-                  size="md"
+                  size="sm"
                   width="full"
                   disabled={isLoadingMore}
                   loading={isLoadingMore}
@@ -446,6 +484,36 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       visible={visible}
       onClose={onClose}
       variant="food"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useExerciseDataLogs
+type ExerciseDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function ExerciseDataModal({ visible, onClose }: ExerciseDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useExerciseDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="exercise"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

@@ -184,6 +184,26 @@ export class ExerciseService {
   }
 
   /**
+   * Get exercises with pagination (for Manage Exercise Data modal).
+   * Ordered by created_at desc. Most recent first.
+   */
+  static async getExercisesPaginated(limit: number, offset: number): Promise<Exercise[]> {
+    let query = database
+      .get<Exercise>('exercises')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+
+    if (limit > 0) {
+      if (offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Get frequently used exercises (based on workout logs)
    */
   static async getFrequentlyUsedExercises(limit: number = 10): Promise<Exercise[]> {

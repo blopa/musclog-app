@@ -1152,7 +1152,17 @@
       "core": "Core",
       "abdomen": "Abdomen",
       "glutes": "Glutes",
-      "fullBody": "Full Body"
+      "fullBody": "Full Body",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Forearms",
+      "abs": "Abs",
+      "quads": "Quads",
+      "hamstrings": "Hamstrings",
+      "calves": "Calves",
+      "full_body": "Full Body",
+      "cardio": "Cardio",
+      "other": "Other"
     },
     "typeTags": {
       "bodyweight": "BODYWEIGHT",
@@ -1210,6 +1220,32 @@
       "duplicateDescription": "Create a copy of this exercise",
       "delete": "Delete",
       "deleteDescription": "Remove this exercise permanently"
+    },
+    "manageExerciseData": {
+      "title": "Manage Exercise Data",
+      "searchPlaceholder": "Search exercises...",
+      "noExercises": "No exercises yet",
+      "noExercisesDesc": "Create custom exercises to see them here",
+      "endOfHistory": "End of exercise history",
+      "exerciseOptions": "Exercise Options",
+      "editExercise": "Edit Exercise",
+      "editExerciseDesc": "Modify exercise details",
+      "duplicateExercise": "Duplicate Exercise",
+      "duplicateExerciseDesc": "Create a copy of this exercise",
+      "deleteExercise": "Delete Exercise",
+      "deleteExerciseDesc": "Remove this exercise permanently",
+      "detailFormat": "{{muscleGroup}} • {{equipment}}",
+      "unknownExercise": "Unknown Exercise"
+    },
+    "equipmentTypes": {
+      "dumbbell": "Dumbbell",
+      "barbell": "Barbell",
+      "bodyweight": "Bodyweight",
+      "machine": "Machine",
+      "cable": "Cable",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Resistance Band",
+      "other": "Other"
     }
   },
   "eatingPhaseBadge": {

@@ -23,7 +23,11 @@ import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortio
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
-import { FoodDataModal, MealDataModal } from '../../components/modals/DataLogModal';
+import {
+  ExerciseDataModal,
+  FoodDataModal,
+  MealDataModal,
+} from '../../components/modals/DataLogModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
 import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
@@ -188,6 +192,9 @@ export default function ModalsTestScreen() {
 
   // Meal Data Modal
   const [isMealDataVisible, setIsMealDataVisible] = useState(false);
+
+  // Exercise Data Modal
+  const [isExerciseDataVisible, setIsExerciseDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -935,6 +942,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Exercise Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Exercise Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing exercise data with search and exercise options.
+            </Text>
+            <Button
+              label="Open Exercise Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsExerciseDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1390,6 +1411,11 @@ export default function ModalsTestScreen() {
       />
 
       <MealDataModal visible={isMealDataVisible} onClose={() => setIsMealDataVisible(false)} />
+
+      <ExerciseDataModal
+        visible={isExerciseDataVisible}
+        onClose={() => setIsExerciseDataVisible(false)}
+      />
     </SafeAreaView>
   );
 }
