@@ -32,6 +32,9 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+import { GenericEditModal } from './GenericEditModal';
+import { getEditFields } from './GenericEditModal/entityEditConfig';
+import { useEditRecord } from './GenericEditModal/useEditRecord';
 
 export type DataLogModalVariant =
   | 'meal'
@@ -438,8 +441,30 @@ export function DataLogModal({
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editRecordId, setEditRecordId] = useState<string | null>(null);
 
   const translations = getDataLogModalTranslations(variant, t);
+
+  // Edit modal integration
+  const {
+    initialValues: editInitialValues,
+    isLoading: isLoadingEdit,
+    error: editError,
+    save: saveEdit,
+  } = useEditRecord(variant, editRecordId, editModalVisible);
+
+  const editFields = getEditFields(variant);
+
+  const handleCloseEditModal = () => {
+    setEditModalVisible(false);
+    setEditRecordId(null);
+  };
+
+  const handleSaveEdit = async (values: any) => {
+    await saveEdit(values);
+    await refresh();
+  };
 
   const handleItemPress = (item: DataLogDisplayItem) => {
     setSelectedItem(item);
@@ -468,8 +493,8 @@ export function DataLogModal({
     }
 
     setShowMenu(false);
-    // TODO: Open an "Edit" version of the DataLogModal
-    console.log('Edit:', selectedItem.name);
+    setEditRecordId(selectedItem.id);
+    setEditModalVisible(true);
   };
 
   const handleDuplicate = async () => {
@@ -606,16 +631,32 @@ export function DataLogModal({
       });
     }
 
-    // Add common menu items
-    menuItems.push(
-      {
+    // Supported edit variants
+    const editSupportedVariants: DataLogModalVariant[] = [
+      'meal',
+      'exercise',
+      'foodPortion',
+      'userMetric',
+      'workoutTemplate',
+      'food',
+      'nutrition_log',
+      'nutritionGoal',
+    ];
+
+    // Add Edit menu item only if supported
+    if (editSupportedVariants.includes(variant)) {
+      menuItems.push({
         icon: EditIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
         title: translations.editTitle,
         description: translations.editDesc,
         onPress: handleEdit,
-      },
+      });
+    }
+
+    // Add common menu items (duplicate and delete)
+    menuItems.push(
       {
         icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
@@ -823,6 +864,18 @@ export function DataLogModal({
         confirmLabel={t('common.delete', 'Delete')}
         variant="destructive"
         isLoading={isDeleting}
+      />
+
+      {/* Edit Modal */}
+      <GenericEditModal
+        visible={editModalVisible}
+        onClose={handleCloseEditModal}
+        title={translations.editTitle}
+        fields={editFields}
+        initialValues={editInitialValues}
+        onSave={handleSaveEdit}
+        isLoading={isLoadingEdit}
+        loadError={editError ?? undefined}
       />
     </>
   );

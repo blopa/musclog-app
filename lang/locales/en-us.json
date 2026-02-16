@@ -30,7 +30,15 @@
     "deleteSuccess": "Successfully deleted",
     "deleteFailed": "Failed to delete",
     "duplicateSuccess": "Successfully duplicated",
-    "duplicateFailed": "Failed to duplicate"
+    "duplicateFailed": "Failed to duplicate",
+    "saveChanges": "Save Changes",
+    "name": "Name",
+    "description": "Description",
+    "value": "Value",
+    "icon": "Icon",
+    "archived": "Archived",
+    "eatingPhase": "Eating Phase",
+    "loadMultiplier": "Load Multiplier"
   },
   "emptyState": {
     "workout": {
@@ -1343,6 +1351,10 @@
       "kettlebell": "Kettlebell",
       "resistance_band": "Resistance Band",
       "other": "Other"
+    },
+    "mechanicTypes": {
+      "compound": "Compound",
+      "isolation": "Isolation"
     }
   },
   "eatingPhaseBadge": {
