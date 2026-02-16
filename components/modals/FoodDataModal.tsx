@@ -220,11 +220,11 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
                 <Button
                   label={
                     isLoadingMore
-                      ? t('common.loading', 'Loading...')
-                      : t('bodyMetrics.history.loadMore', 'Load More')
+                      ? t('bodyMetrics.history.loadingMore')
+                      : t('bodyMetrics.history.loadMore')
                   }
                   variant="outline"
-                  size="md"
+                  size="sm"
                   width="full"
                   disabled={isLoadingMore}
                   loading={isLoadingMore}
