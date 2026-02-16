@@ -9,6 +9,7 @@ import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
 import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
+import { useNutritionGoalDataLogs } from '../../hooks/useNutritionGoalDataLogs';
 import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
@@ -28,7 +29,8 @@ export type DataLogModalVariant =
   | 'exercise'
   | 'workoutLog'
   | 'workoutTemplate'
-  | 'userMetric';
+  | 'userMetric'
+  | 'nutritionGoal';
 
 export type DataLogModalTranslations = {
   title: string;
@@ -287,6 +289,37 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'nutritionGoal') {
+    return {
+      title: t('goalsManagement.manageGoalData.title'),
+      searchPlaceholder: t('goalsManagement.manageGoalData.searchPlaceholder'),
+      noItemsText: t('goalsManagement.manageGoalData.noGoals', 'No goals yet'),
+      noItemsDesc: t(
+        'goalsManagement.manageGoalData.noGoalsDesc',
+        'Set nutrition goals to see them here'
+      ),
+      endOfHistoryText: t('goalsManagement.manageGoalData.endOfHistory'),
+      menuTitle: t('goalsManagement.manageGoalData.goalOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('goalsManagement.manageGoalData.editGoal'),
+      editDesc: t('goalsManagement.manageGoalData.editGoalDesc'),
+      duplicateTitle: t('goalsManagement.manageGoalData.duplicateGoal'),
+      duplicateDesc: t('goalsManagement.manageGoalData.duplicateGoalDesc'),
+      deleteTitle: t('goalsManagement.manageGoalData.deleteGoal'),
+      deleteDesc: t('goalsManagement.manageGoalData.deleteGoalDesc'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) =>
+        t('goalsManagement.manageGoalData.subtitleFormat', {
+          calories: item.goalCalories ?? 0,
+          phase: item.goalEatingPhase ?? '',
+          targetWeight: item.goalTargetWeight ?? 0,
+        }),
+    };
+  }
+
   // Exhaustive: should not reach (all variants handled above)
   return {
     title: '',
@@ -323,6 +356,8 @@ export function getEmptyStateIconName(
       return 'monitor-weight';
     case 'foodPortion':
       return 'scale';
+    case 'nutritionGoal':
+      return 'flag';
     // meal, nutrition_log, food and any other fallback
     default:
       return 'restaurant-menu';
@@ -349,6 +384,9 @@ export type DataLogDisplayItem = {
   metricValue?: number; // Optional - only user metrics have this
   metricUnit?: string; // Optional - only user metrics have this
   portionGramWeight?: number; // Optional - only food portions have this
+  goalCalories?: number; // Optional - only nutrition goals have this
+  goalEatingPhase?: string; // Optional - only nutrition goals have this
+  goalTargetWeight?: number; // Optional - only nutrition goals have this
 };
 
 export type DataLogModalData = {
@@ -874,6 +912,36 @@ export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalPro
       visible={visible}
       onClose={onClose}
       variant="userMetric"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useNutritionGoalDataLogs
+type NutritionGoalDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function NutritionGoalDataModal({ visible, onClose }: NutritionGoalDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useNutritionGoalDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="nutritionGoal"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

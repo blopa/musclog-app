@@ -28,6 +28,7 @@ import {
   FoodDataModal,
   FoodPortionDataModal,
   MealDataModal,
+  NutritionGoalDataModal,
   NutritionLogModal,
   UserMetricDataModal,
   WorkoutLogDataModal,
@@ -215,6 +216,9 @@ export default function ModalsTestScreen() {
 
   // Food Portion Data Modal
   const [isFoodPortionDataVisible, setIsFoodPortionDataVisible] = useState(false);
+
+  // Nutrition Goal Data Modal
+  const [isNutritionGoalDataVisible, setIsNutritionGoalDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1053,6 +1057,22 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Nutrition Goal Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Nutrition Goal Data Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing nutrition goals history with search and options.
+            </Text>
+            <Button
+              label="Open Nutrition Goal Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsNutritionGoalDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1537,6 +1557,11 @@ export default function ModalsTestScreen() {
       <FoodPortionDataModal
         visible={isFoodPortionDataVisible}
         onClose={() => setIsFoodPortionDataVisible(false)}
+      />
+
+      <NutritionGoalDataModal
+        visible={isNutritionGoalDataVisible}
+        onClose={() => setIsNutritionGoalDataVisible(false)}
       />
     </SafeAreaView>
   );
