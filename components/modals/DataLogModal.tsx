@@ -125,11 +125,24 @@ export function getDataLogModalTranslations(
       deleteTitle: t('exercises.manageExerciseData.deleteExercise'),
       deleteDesc: t('exercises.manageExerciseData.deleteExerciseDesc'),
       formatCaloriesMacros: () => '', // Not used when formatItemSubtitle is set
-      formatItemSubtitle: (item) =>
-        t('exercises.manageExerciseData.detailFormat', {
-          muscleGroup: t(`exercises.muscleGroups.${item.muscleGroup ?? 'other'}`),
-          equipment: t(`exercises.equipmentTypes.${item.equipmentType ?? 'other'}`),
-        }),
+      formatItemSubtitle: (item) => {
+        // Normalize muscle group: ensure lowercase for translation keys
+        const muscleGroupRaw = (item.muscleGroup ?? 'other').toLowerCase();
+        const muscleGroup = t(`exercises.muscleGroups.${muscleGroupRaw}`, {
+          defaultValue: muscleGroupRaw,
+        });
+
+        // Normalize equipment type: ensure lowercase for translation keys
+        const equipmentTypeRaw = (item.equipmentType ?? 'other').toLowerCase();
+        const equipmentType = t(`exercises.equipmentTypes.${equipmentTypeRaw}`, {
+          defaultValue: equipmentTypeRaw,
+        });
+
+        return t('exercises.manageExerciseData.detailFormat', {
+          muscleGroup,
+          equipment: equipmentType,
+        });
+      },
     };
   }
 
