@@ -4,6 +4,17 @@ import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import {
+  ExerciseService,
+  FoodPortionService,
+  FoodService,
+  MealService,
+  NutritionGoalService,
+  NutritionService,
+  UserMetricService,
+  WorkoutService,
+  WorkoutTemplateService,
+} from '../../database/services';
 import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
@@ -19,6 +30,7 @@ import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 export type DataLogModalVariant =
@@ -395,6 +407,7 @@ export type DataLogModalData = {
   isLoadingMore: boolean;
   hasMore: boolean;
   loadMore: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 type DataLogModalProps = {
@@ -416,17 +429,142 @@ export function DataLogModal({
   isLoadingMore,
   hasMore,
   loadMore,
+  refresh,
 }: DataLogModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDuplicating, setIsDuplicating] = useState(false);
 
   const translations = getDataLogModalTranslations(variant, t);
 
   const handleItemPress = (item: DataLogDisplayItem) => {
     setSelectedItem(item);
     setShowMenu(true);
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!selectedItem) return;
+    setShowMenu(false);
+
+    try {
+      if (variant === 'meal') {
+        await MealService.toggleMealFavorite(selectedItem.id);
+      } else if (variant === 'food') {
+        await FoodService.toggleFavorite(selectedItem.id);
+      }
+      await refresh();
+    } catch (error) {
+      console.error('Toggle favorite failed:', error);
+    }
+  };
+
+  const handleEdit = () => {
+    if (!selectedItem) return;
+    setShowMenu(false);
+    // TODO: Open edit modal based on variant
+    console.log('Edit:', selectedItem.name);
+  };
+
+  const handleDuplicate = async () => {
+    if (!selectedItem) return;
+    setShowMenu(false);
+    setIsDuplicating(true);
+
+    try {
+      switch (variant) {
+        case 'meal':
+          await MealService.duplicateMeal(selectedItem.id);
+          break;
+        case 'food':
+          await FoodService.duplicateFood(selectedItem.id);
+          break;
+        case 'foodPortion':
+          await FoodPortionService.duplicatePortion(selectedItem.id);
+          break;
+        case 'exercise':
+          await ExerciseService.duplicateExercise(selectedItem.id);
+          break;
+        case 'workoutTemplate':
+          await WorkoutTemplateService.duplicateTemplate(selectedItem.id);
+          break;
+        case 'workoutLog':
+          await WorkoutService.duplicateWorkoutLog(selectedItem.id);
+          break;
+        case 'nutrition_log':
+          await NutritionService.duplicateNutritionLog(selectedItem.id);
+          break;
+        case 'userMetric':
+        case 'nutritionGoal':
+          // These variants don't support duplicate
+          break;
+      }
+      await refresh();
+    } catch (error) {
+      console.error('Duplicate failed:', error);
+    } finally {
+      setIsDuplicating(false);
+    }
+  };
+
+  const handleDelete = () => {
+    if (!selectedItem) return;
+    setShowMenu(false);
+    setDeleteModalVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedItem) return;
+    setIsDeleting(true);
+
+    try {
+      switch (variant) {
+        case 'meal':
+          // TODO: Check if meal is used in any nutrition logs and warn user
+          await MealService.deleteMeal(selectedItem.id);
+          break;
+        case 'food':
+          // TODO: Check if food is used in any meals or nutrition logs and warn user
+          await FoodService.deleteFood(selectedItem.id);
+          break;
+        case 'foodPortion':
+          // TODO: Check if portion is used in any foods, meals, or nutrition logs and warn user
+          await FoodPortionService.deleteFoodPortion(selectedItem.id);
+          break;
+        case 'exercise':
+          // TODO: Check if exercise is used in any workout templates or logs and warn user
+          await ExerciseService.deleteExercise(selectedItem.id);
+          break;
+        case 'workoutTemplate':
+          // TODO: Check if template has active schedules and warn user
+          await WorkoutTemplateService.deleteTemplate(selectedItem.id);
+          break;
+        case 'workoutLog':
+          // TODO: Check if this is the currently active workout and warn user
+          await WorkoutService.deleteWorkoutLog(selectedItem.id);
+          break;
+        case 'nutrition_log':
+          await NutritionService.deleteNutritionLog(selectedItem.id);
+          break;
+        case 'userMetric':
+          await UserMetricService.deleteMetric(selectedItem.id);
+          break;
+        case 'nutritionGoal':
+          // TODO: Check if this is the current active goal and warn user
+          await NutritionGoalService.deleteGoal(selectedItem.id);
+          break;
+      }
+      await refresh();
+      setDeleteModalVisible(false);
+    } catch (error) {
+      console.error('Delete failed:', error);
+      // TODO: Show error toast to user
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const getMenuItems = (): BottomPopUpMenuItem[] => {
@@ -461,9 +599,7 @@ export function DataLogModal({
         description: selectedItem.isFavorite
           ? translations.favoriteRemoveDesc
           : translations.favoriteAddDesc,
-        onPress: () => {
-          console.log('Toggle favorite:', selectedItem.name);
-        },
+        onPress: handleToggleFavorite,
       });
     }
 
@@ -475,9 +611,7 @@ export function DataLogModal({
         iconBgColor: theme.colors.background.iconDarker,
         title: translations.editTitle,
         description: translations.editDesc,
-        onPress: () => {
-          console.log('Edit:', selectedItem.name);
-        },
+        onPress: handleEdit,
       },
       {
         icon: DuplicateIcon,
@@ -485,9 +619,7 @@ export function DataLogModal({
         iconBgColor: theme.colors.background.iconDarker,
         title: translations.duplicateTitle,
         description: translations.duplicateDesc,
-        onPress: () => {
-          console.log('Duplicate:', selectedItem.name);
-        },
+        onPress: handleDuplicate,
       },
       {
         icon: DeleteIcon,
@@ -495,9 +627,7 @@ export function DataLogModal({
         iconBgColor: 'rgba(239, 68, 68, 0.1)',
         title: translations.deleteTitle,
         description: translations.deleteDesc,
-        onPress: () => {
-          console.log('Delete:', selectedItem.name);
-        },
+        onPress: handleDelete,
       }
     );
 
@@ -679,6 +809,18 @@ export function DataLogModal({
         title={translations.menuTitle}
         items={getMenuItems()}
       />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        visible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={handleConfirmDelete}
+        title={translations.deleteTitle}
+        message={t('common.deleteConfirmMessage', { name: selectedItem?.name || '' })}
+        confirmLabel={t('common.delete', 'Delete')}
+        variant="destructive"
+        isLoading={isDeleting}
+      />
     </>
   );
 }
@@ -691,7 +833,7 @@ type MealDataModalProps = {
 
 export function MealDataModal({ visible, onClose }: MealDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useMealDataLogs({
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMealDataLogs({
     visible,
     batchSize: 20,
     searchQuery,
@@ -709,6 +851,7 @@ export function MealDataModal({ visible, onClose }: MealDataModalProps) {
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -721,7 +864,7 @@ type NutritionLogModalProps = {
 
 export function NutritionLogModal({ visible, onClose }: NutritionLogModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodDataLogs({
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useFoodDataLogs({
     visible,
     batchSize: 20,
     searchQuery,
@@ -739,6 +882,7 @@ export function NutritionLogModal({ visible, onClose }: NutritionLogModalProps) 
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -751,7 +895,7 @@ type FoodDataModalProps = {
 
 export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodsDataLogs({
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useFoodsDataLogs({
     visible,
     batchSize: 20,
     searchQuery,
@@ -769,6 +913,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -781,11 +926,12 @@ type FoodPortionDataModalProps = {
 
 export function FoodPortionDataModal({ visible, onClose }: FoodPortionDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useFoodPortionDataLogs({
-    visible,
-    batchSize: 20,
-    searchQuery,
-  });
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } =
+    useFoodPortionDataLogs({
+      visible,
+      batchSize: 20,
+      searchQuery,
+    });
 
   return (
     <DataLogModal
@@ -799,6 +945,7 @@ export function FoodPortionDataModal({ visible, onClose }: FoodPortionDataModalP
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -811,7 +958,7 @@ type ExerciseDataModalProps = {
 
 export function ExerciseDataModal({ visible, onClose }: ExerciseDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useExerciseDataLogs({
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useExerciseDataLogs({
     visible,
     batchSize: 20,
     searchQuery,
@@ -829,6 +976,7 @@ export function ExerciseDataModal({ visible, onClose }: ExerciseDataModalProps) 
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -841,11 +989,13 @@ type WorkoutLogDataModalProps = {
 
 export function WorkoutLogDataModal({ visible, onClose }: WorkoutLogDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useWorkoutLogDataLogs({
-    visible,
-    batchSize: 20,
-    searchQuery,
-  });
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useWorkoutLogDataLogs(
+    {
+      visible,
+      batchSize: 20,
+      searchQuery,
+    }
+  );
 
   return (
     <DataLogModal
@@ -859,6 +1009,7 @@ export function WorkoutLogDataModal({ visible, onClose }: WorkoutLogDataModalPro
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -871,11 +1022,12 @@ type WorkoutTemplateDataModalProps = {
 
 export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useWorkoutTemplateDataLogs({
-    visible,
-    batchSize: 20,
-    searchQuery,
-  });
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } =
+    useWorkoutTemplateDataLogs({
+      visible,
+      batchSize: 20,
+      searchQuery,
+    });
 
   return (
     <DataLogModal
@@ -889,6 +1041,7 @@ export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDa
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -901,11 +1054,13 @@ type UserMetricDataModalProps = {
 
 export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useUserMetricDataLogs({
-    visible,
-    batchSize: 20,
-    searchQuery,
-  });
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useUserMetricDataLogs(
+    {
+      visible,
+      batchSize: 20,
+      searchQuery,
+    }
+  );
 
   return (
     <DataLogModal
@@ -919,6 +1074,7 @@ export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalPro
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }
@@ -931,11 +1087,12 @@ type NutritionGoalDataModalProps = {
 
 export function NutritionGoalDataModal({ visible, onClose }: NutritionGoalDataModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useNutritionGoalDataLogs({
-    visible,
-    batchSize: 20,
-    searchQuery,
-  });
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } =
+    useNutritionGoalDataLogs({
+      visible,
+      batchSize: 20,
+      searchQuery,
+    });
 
   return (
     <DataLogModal
@@ -949,6 +1106,7 @@ export function NutritionGoalDataModal({ visible, onClose }: NutritionGoalDataMo
       isLoadingMore={isLoadingMore}
       hasMore={hasMore}
       loadMore={loadMore}
+      refresh={refresh}
     />
   );
 }

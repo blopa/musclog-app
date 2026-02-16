@@ -304,4 +304,28 @@ export class FoodPortionService {
     // Extract the FoodPortion objects from each junction entry
     return Promise.all(foodFoodPortions.map((ffp) => ffp.foodPortion));
   }
+
+  /**
+   * Duplicate portion (create a copy)
+   */
+  static async duplicatePortion(id: string): Promise<FoodPortion> {
+    return await database.write(async () => {
+      const originalPortion = await database.get<FoodPortion>('food_portions').find(id);
+
+      if (originalPortion.deletedAt) {
+        throw new Error('Cannot duplicate deleted portion');
+      }
+
+      const now = Date.now();
+
+      // Create new portion with "(Copy)" suffix
+      return await database.get<FoodPortion>('food_portions').create((portion) => {
+        portion.name = `${originalPortion.name} (Copy)`;
+        portion.gramWeight = originalPortion.gramWeight;
+        portion.icon = originalPortion.icon;
+        portion.createdAt = now;
+        portion.updatedAt = now;
+      });
+    });
+  }
 }

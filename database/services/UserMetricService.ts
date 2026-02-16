@@ -57,4 +57,43 @@ export class UserMetricService {
 
     return await query.fetch();
   }
+
+  /**
+   * Update user metric
+   */
+  static async updateMetric(
+    id: string,
+    updates: {
+      value?: number;
+      date?: number;
+      type?: UserMetricType | string;
+    }
+  ): Promise<UserMetric> {
+    return await database.write(async () => {
+      const metric = await database.get<UserMetric>('user_metrics').find(id);
+
+      if (metric.deletedAt) {
+        throw new Error('Cannot update deleted metric');
+      }
+
+      await metric.update((record) => {
+        if (updates.value !== undefined) record.value = updates.value;
+        if (updates.date !== undefined) record.date = updates.date;
+        if (updates.type !== undefined) record.type = updates.type as UserMetricType;
+        record.updatedAt = Date.now();
+      });
+
+      return metric;
+    });
+  }
+
+  /**
+   * Delete user metric (soft delete)
+   */
+  static async deleteMetric(id: string): Promise<void> {
+    return await database.write(async () => {
+      const metric = await database.get<UserMetric>('user_metrics').find(id);
+      await metric.markAsDeleted();
+    });
+  }
 }

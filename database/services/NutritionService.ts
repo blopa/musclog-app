@@ -436,4 +436,30 @@ export class NutritionService {
 
     return streak;
   }
+
+  /**
+   * Duplicate nutrition log (create a copy)
+   */
+  static async duplicateNutritionLog(id: string): Promise<NutritionLog> {
+    return await database.write(async () => {
+      const originalLog = await database.get<NutritionLog>('nutrition_logs').find(id);
+
+      if (originalLog.deletedAt) {
+        throw new Error('Cannot duplicate deleted nutrition log');
+      }
+
+      const now = Date.now();
+
+      // Create new nutrition log with same data
+      return await database.get<NutritionLog>('nutrition_logs').create((log) => {
+        log.foodId = originalLog.foodId;
+        log.amount = originalLog.amount;
+        log.portionId = originalLog.portionId;
+        log.type = originalLog.type;
+        log.date = originalLog.date; // Same date as original
+        log.createdAt = now;
+        log.updatedAt = now;
+      });
+    });
+  }
 }

@@ -899,4 +899,63 @@ export class WorkoutTemplateService {
       return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
     return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
   }
+
+  /**
+   * Delete workout template (soft delete)
+   */
+  static async deleteTemplate(id: string): Promise<void> {
+    return await database.write(async () => {
+      const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
+      await template.markAsDeleted();
+
+      // Also soft-delete all associated sets
+      const sets = await database
+        .get<WorkoutTemplateSet>('workout_template_sets')
+        .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const set of sets) {
+        await set.markAsDeleted();
+      }
+
+      // Also soft-delete all associated schedules
+      const schedules = await database
+        .get<Schedule>('schedules')
+        .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const schedule of schedules) {
+        await schedule.markAsDeleted();
+      }
+    });
+  }
+
+  /**
+   * Update workout template
+   */
+  static async updateTemplate(
+    id: string,
+    updates: {
+      name?: string;
+      description?: string;
+      isArchived?: boolean;
+    }
+  ): Promise<WorkoutTemplate> {
+    return await database.write(async () => {
+      const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
+
+      if (template.deletedAt) {
+        throw new Error('Cannot update deleted template');
+      }
+
+      await template.update((record) => {
+        if (updates.name !== undefined) record.name = updates.name;
+        if (updates.description !== undefined) record.description = updates.description;
+        if (updates.isArchived !== undefined) record.isArchived = updates.isArchived;
+        record.updatedAt = Date.now();
+      });
+
+      return template;
+    });
+  }
 }

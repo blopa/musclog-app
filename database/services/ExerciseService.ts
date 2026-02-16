@@ -229,4 +229,32 @@ export class ExerciseService {
 
     return exercises.length;
   }
+
+  /**
+   * Duplicate exercise (create a copy)
+   */
+  static async duplicateExercise(id: string): Promise<Exercise> {
+    return await database.write(async () => {
+      const originalExercise = await database.get<Exercise>('exercises').find(id);
+
+      if (originalExercise.deletedAt) {
+        throw new Error('Cannot duplicate deleted exercise');
+      }
+
+      const now = Date.now();
+
+      // Create new exercise with "(Copy)" suffix
+      return await database.get<Exercise>('exercises').create((exercise) => {
+        exercise.name = `${originalExercise.name} (Copy)`;
+        exercise.description = originalExercise.description;
+        exercise.imageUrl = originalExercise.imageUrl;
+        exercise.muscleGroup = originalExercise.muscleGroup;
+        exercise.equipmentType = originalExercise.equipmentType;
+        exercise.mechanicType = originalExercise.mechanicType;
+        exercise.loadMultiplier = originalExercise.loadMultiplier;
+        exercise.createdAt = now;
+        exercise.updatedAt = now;
+      });
+    });
+  }
 }

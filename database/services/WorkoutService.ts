@@ -492,4 +492,81 @@ export class WorkoutService {
       exerciseGrouping,
     };
   }
+
+  /**
+   * Delete workout log (soft delete)
+   */
+  static async deleteWorkoutLog(id: string): Promise<void> {
+    return await database.write(async () => {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(id);
+      await workoutLog.markAsDeleted();
+
+      // Also soft-delete all associated sets
+      const sets = await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const set of sets) {
+        await set.markAsDeleted();
+      }
+    });
+  }
+
+  /**
+   * Duplicate workout log (create a copy with all sets, marked as not completed)
+   */
+  static async duplicateWorkoutLog(id: string): Promise<WorkoutLog> {
+    return await database.write(async () => {
+      const originalLog = await database.get<WorkoutLog>('workout_logs').find(id);
+
+      if (originalLog.deletedAt) {
+        throw new Error('Cannot duplicate deleted workout log');
+      }
+
+      const now = Date.now();
+
+      // Get all sets from the original workout
+      const originalSets = await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(
+          Q.where('workout_log_id', id),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('set_order', Q.asc)
+        )
+        .fetch();
+
+      // Create new workout log with "(Copy)" suffix
+      const newLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
+        log.templateId = originalLog.templateId;
+        log.workoutName = `${originalLog.workoutName} (Copy)`;
+        log.startedAt = now;
+        log.completedAt = undefined; // Not completed yet
+        log.totalVolume = 0;
+        log.createdAt = now;
+        log.updatedAt = now;
+      });
+
+      // Copy all sets (reset to unlogged state)
+      for (const originalSet of originalSets) {
+        await database.get<WorkoutLogSet>('workout_log_sets').create((set) => {
+          set.workoutLogId = newLog.id;
+          set.exerciseId = originalSet.exerciseId;
+          set.setOrder = originalSet.setOrder;
+          set.reps = 0; // Reset actual values
+          set.weight = 0;
+          set.partials = 0;
+          set.restTimeAfter = originalSet.restTimeAfter;
+          set.repsInReserve = 0;
+          set.difficultyLevel = 0; // Unlogged
+          set.isSkipped = false;
+          set.isDropSet = originalSet.isDropSet;
+          set.createdAt = now;
+          set.updatedAt = now;
+        });
+      }
+
+      return newLog;
+    });
+  }
 }

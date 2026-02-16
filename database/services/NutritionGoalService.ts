@@ -101,4 +101,47 @@ export class NutritionGoalService {
 
     return await query.fetch();
   }
+
+  /**
+   * Update nutrition goal
+   */
+  static async updateGoal(
+    id: string,
+    updates: Partial<NutritionGoalInput>
+  ): Promise<NutritionGoal> {
+    return await database.write(async () => {
+      const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
+
+      if (goal.deletedAt) {
+        throw new Error('Cannot update deleted goal');
+      }
+
+      await goal.update((record) => {
+        if (updates.totalCalories !== undefined) record.totalCalories = updates.totalCalories;
+        if (updates.protein !== undefined) record.protein = updates.protein;
+        if (updates.carbs !== undefined) record.carbs = updates.carbs;
+        if (updates.fats !== undefined) record.fats = updates.fats;
+        if (updates.fiber !== undefined) record.fiber = updates.fiber;
+        if (updates.eatingPhase !== undefined) record.eatingPhase = updates.eatingPhase;
+        if (updates.targetWeight !== undefined) record.targetWeight = updates.targetWeight;
+        if (updates.targetBodyFat !== undefined) record.targetBodyFat = updates.targetBodyFat;
+        if (updates.targetBMI !== undefined) record.targetBmi = updates.targetBMI;
+        if (updates.targetFFMI !== undefined) record.targetFfmi = updates.targetFFMI;
+        if (updates.targetDate !== undefined) record.targetDate = updates.targetDate ?? null;
+        record.updatedAt = Date.now();
+      });
+
+      return goal;
+    });
+  }
+
+  /**
+   * Delete nutrition goal (soft delete)
+   */
+  static async deleteGoal(id: string): Promise<void> {
+    return await database.write(async () => {
+      const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
+      await goal.markAsDeleted();
+    });
+  }
 }

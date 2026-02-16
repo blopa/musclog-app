@@ -320,4 +320,57 @@ export class FoodService {
       return food;
     });
   }
+
+  /**
+   * Duplicate food (create a copy with all portions)
+   */
+  static async duplicateFood(id: string): Promise<Food> {
+    return await database.write(async () => {
+      const originalFood = await database.get<Food>('foods').find(id);
+
+      if (originalFood.deletedAt) {
+        throw new Error('Cannot duplicate deleted food');
+      }
+
+      const now = Date.now();
+
+      // Get all portions associated with this food
+      const foodPortions = await database
+        .get<FoodFoodPortion>('food_food_portions')
+        .query(Q.where('food_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Create new food with "(Copy)" suffix
+      const newFood = await database.get<Food>('foods').create((food) => {
+        food.isAiGenerated = originalFood.isAiGenerated;
+        food.name = `${originalFood.name} (Copy)`;
+        food.brand = originalFood.brand;
+        food.barcode = originalFood.barcode;
+        food.imageUrl = originalFood.imageUrl;
+        food.calories = originalFood.calories;
+        food.protein = originalFood.protein;
+        food.carbs = originalFood.carbs;
+        food.fat = originalFood.fat;
+        food.fiber = originalFood.fiber;
+        food.micros = originalFood.micros;
+        food.isFavorite = false; // New copy is not favorite by default
+        food.source = originalFood.source;
+        food.createdAt = now;
+        food.updatedAt = now;
+      });
+
+      // Copy all portion relationships
+      for (const ffp of foodPortions) {
+        await database.get<FoodFoodPortion>('food_food_portions').create((newFfp) => {
+          newFfp.foodId = newFood.id;
+          newFfp.foodPortionId = ffp.foodPortionId;
+          newFfp.isDefault = ffp.isDefault;
+          newFfp.createdAt = now;
+          newFfp.updatedAt = now;
+        });
+      }
+
+      return newFood;
+    });
+  }
 }

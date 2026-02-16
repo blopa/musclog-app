@@ -25,7 +25,12 @@
     "increaseValue": "Increase Value",
     "noBarcode": "No Barcode",
     "ok": "Ok",
-    "permissionRequired": "Permission Required"
+    "permissionRequired": "Permission Required",
+    "deleteConfirmMessage": "Are you sure you want to delete {{name}}?",
+    "deleteSuccess": "Successfully deleted",
+    "deleteFailed": "Failed to delete",
+    "duplicateSuccess": "Successfully duplicated",
+    "duplicateFailed": "Failed to duplicate"
   },
   "emptyState": {
     "workout": {
