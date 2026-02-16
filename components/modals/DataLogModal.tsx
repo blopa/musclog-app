@@ -463,9 +463,12 @@ export function DataLogModal({
   };
 
   const handleEdit = () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
+
     setShowMenu(false);
-    // TODO: Open edit modal based on variant
+    // TODO: Open edit modal based on variant - it's possible that some Edit Model Modal already exist, check the components/modals/
     console.log('Edit:', selectedItem.name);
   };
 
