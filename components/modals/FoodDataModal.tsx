@@ -1,11 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
+import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodItem = {
@@ -157,6 +158,7 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
               {item.name}
             </Text>
             <Text className="text-sm font-medium uppercase tracking-wider text-text-secondary">
+              {/*TODO: use translation here*/}
               {item.calories} kcal • {item.protein}g Protein
             </Text>
           </View>
@@ -198,27 +200,19 @@ export function FoodDataModal({ visible, onClose }: FoodDataModalProps) {
         <ScrollView className="mt-6 flex flex-col gap-3 px-4">
           {/* Search Bar */}
           <View className="relative">
-            <View className="absolute left-4 top-1/2 z-10 -translate-y-1/2">
-              <MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />
-            </View>
-            <View
-              className="w-full rounded-xl bg-bg-card py-3 pl-12 pr-5"
-              style={{
-                backgroundColor: theme.colors.background.card,
-                borderColor: theme.colors.border.light,
-                borderWidth: 1,
-              }}
-            >
-              {/*TODO: dont use RNTextInput, use TextInput from theme*/}
-              <RNTextInput
-                className="text-base font-medium text-text-primary"
-                placeholder={t('food.manageFoodData.searchPlaceholder')}
-                placeholderTextColor={theme.colors.text.tertiary}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                style={{ color: theme.colors.text.primary }}
-              />
-            </View>
+            <TextInput
+              label=""
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('food.manageFoodData.searchPlaceholder')}
+              icon={
+                <MaterialIcons
+                  name="search"
+                  size={20}
+                  color={theme.colors.text.tertiary}
+                />
+              }
+            />
           </View>
 
           {/* Food List */}
