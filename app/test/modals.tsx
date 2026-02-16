@@ -23,6 +23,7 @@ import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortio
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import { FoodDataModal, MealDataModal } from '../../components/modals/DataLogModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
 import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
@@ -31,7 +32,6 @@ import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import ExercisesModal from '../../components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
-import { FoodDataModal } from '../../components/modals/FoodDataModal';
 import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
@@ -39,7 +39,6 @@ import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
-import { MealDataModal } from '../../components/modals/MealDataModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
