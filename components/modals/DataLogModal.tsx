@@ -8,6 +8,7 @@ import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useTheme } from '../../hooks/useTheme';
+import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -17,7 +18,13 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 
-export type DataLogModalVariant = 'meal' | 'food' | 'exercise' | 'workoutLog' | 'workoutTemplate';
+export type DataLogModalVariant =
+  | 'meal'
+  | 'food'
+  | 'exercise'
+  | 'workoutLog'
+  | 'workoutTemplate'
+  | 'userMetric';
 
 export type DataLogModalTranslations = {
   title: string;
@@ -167,6 +174,36 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'userMetric') {
+    return {
+      title: t('bodyMetrics.manageMetricData.title'),
+      searchPlaceholder: t('bodyMetrics.manageMetricData.searchPlaceholder'),
+      noItemsText: t('bodyMetrics.manageMetricData.noEntries', 'No metric entries yet'),
+      noItemsDesc: t(
+        'bodyMetrics.manageMetricData.noEntriesDesc',
+        'Add body metric entries to see them here'
+      ),
+      endOfHistoryText: t('bodyMetrics.manageMetricData.endOfHistory'),
+      menuTitle: t('bodyMetrics.manageMetricData.metricOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('bodyMetrics.manageMetricData.editEntry'),
+      editDesc: t('bodyMetrics.manageMetricData.editEntryDesc'),
+      duplicateTitle: t('bodyMetrics.manageMetricData.duplicateEntry'),
+      duplicateDesc: t('bodyMetrics.manageMetricData.duplicateEntryDesc'),
+      deleteTitle: t('bodyMetrics.manageMetricData.deleteEntry'),
+      deleteDesc: t('bodyMetrics.manageMetricData.deleteEntryDesc'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) => {
+        const value = item.metricValue ?? 0;
+        const unit = item.metricUnit ?? '';
+        return unit ? `${value} ${unit}`.trim() : String(value);
+      },
+    };
+  }
+
   // variant === 'food'
   return {
     title: t('food.manageFoodData.title'),
@@ -206,6 +243,8 @@ export type DataLogDisplayItem = {
   isCompleted?: boolean; // Optional - only workout logs have this
   totalVolume?: number; // Optional - only workout logs have this
   description?: string; // Optional - only workout templates have this
+  metricValue?: number; // Optional - only user metrics have this
+  metricUnit?: string; // Optional - only user metrics have this
 };
 
 export type DataLogModalData = {
@@ -436,7 +475,9 @@ export function DataLogModal({
                     variant === 'workoutLog' ||
                     variant === 'workoutTemplate'
                       ? 'fitness-center'
-                      : 'restaurant-menu'
+                      : variant === 'userMetric'
+                        ? 'monitor-weight'
+                        : 'restaurant-menu'
                   }
                   size={48}
                   color={theme.colors.text.tertiary}
@@ -647,6 +688,36 @@ export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDa
       visible={visible}
       onClose={onClose}
       variant="workoutTemplate"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useUserMetricDataLogs
+type UserMetricDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore } = useUserMetricDataLogs({
+    visible,
+    batchSize: 20,
+    searchQuery,
+  });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="userMetric"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

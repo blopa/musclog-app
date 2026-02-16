@@ -1349,6 +1349,20 @@
     },
     "noDataAvailable": "No data available",
     "noHistoryDataAvailable": "No history data available",
+    "manageMetricData": {
+      "title": "Metric History",
+      "searchPlaceholder": "Search by metric type...",
+      "noEntries": "No metric entries yet",
+      "noEntriesDesc": "Add body metric entries to see them here",
+      "endOfHistory": "End of metric history",
+      "metricOptions": "Metric options",
+      "editEntry": "Edit entry",
+      "editEntryDesc": "Change value and date",
+      "duplicateEntry": "Duplicate entry",
+      "duplicateEntryDesc": "Create a copy with a new date",
+      "deleteEntry": "Delete entry",
+      "deleteEntryDesc": "Remove this metric entry"
+    },
     "addEntry": {
       "title": "Add Entry",
       "enterWeight": "Enter Weight",

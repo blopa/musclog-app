@@ -27,6 +27,7 @@ import {
   ExerciseDataModal,
   FoodDataModal,
   MealDataModal,
+  UserMetricDataModal,
   WorkoutLogDataModal,
   WorkoutTemplateDataModal,
 } from '../../components/modals/DataLogModal';
@@ -203,6 +204,9 @@ export default function ModalsTestScreen() {
 
   // Workout Template Data Modal
   const [isWorkoutTemplateDataVisible, setIsWorkoutTemplateDataVisible] = useState(false);
+
+  // User Metric Data Modal
+  const [isUserMetricDataVisible, setIsUserMetricDataVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -994,6 +998,21 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* User Metric Data Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">User Metric Data Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing body metric entries (weight, body fat, etc.) with search and
+              history.
+            </Text>
+            <Button
+              label="Open User Metric Data Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsUserMetricDataVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1463,6 +1482,11 @@ export default function ModalsTestScreen() {
       <WorkoutTemplateDataModal
         visible={isWorkoutTemplateDataVisible}
         onClose={() => setIsWorkoutTemplateDataVisible(false)}
+      />
+
+      <UserMetricDataModal
+        visible={isUserMetricDataVisible}
+        onClose={() => setIsUserMetricDataVisible(false)}
       />
     </SafeAreaView>
   );
