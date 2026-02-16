@@ -1396,9 +1396,26 @@
       "weight": "Weight",
       "bodyFat": "Body Fat",
       "body_fat": "Body Fat",
-      "height": "Height",
+      "muscle_mass": "Muscle Mass",
+      "lean_body_mass": "Lean Body Mass",
+      "basal_metabolic_rate": "Basal Metabolic Rate",
+      "total_calories_burned": "Total Calories Burned",
+      "active_calories_burned": "Active Calories Burned",
       "bmi": "BMI",
-      "ffmi": "FFMI"
+      "height": "Height",
+      "chest": "Chest",
+      "waist": "Waist",
+      "hips": "Hips",
+      "arms": "Arms",
+      "thighs": "Thighs",
+      "calves": "Calves",
+      "neck": "Neck",
+      "shoulders": "Shoulders",
+      "mood": "Mood",
+      "ffmi": "FFMI",
+      "nutrition": "Nutrition",
+      "exercise": "Exercise",
+      "other": "Other"
     },
     "current": {
       "label": "CURRENT"

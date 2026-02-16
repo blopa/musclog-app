@@ -1,5 +1,5 @@
 import { Check, Circle } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -68,6 +68,37 @@ export function GenericEditModal({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Helper function to convert select options to SelectorOption format
+  const createSelectorOptions = (
+    options: { value: string | number; label: string }[],
+    selectedValue: string | number | null | undefined
+  ): SelectorOption<string | number>[] => {
+    return options.map((option, index) => {
+      // Use a rotating color scheme for icons
+      const colorSchemes = [
+        { bg: theme.colors.accent.primary10, color: theme.colors.accent.primary },
+        { bg: theme.colors.status.info10, color: theme.colors.status.info },
+        { bg: theme.colors.status.success20, color: theme.colors.status.success },
+        { bg: theme.colors.status.warning10, color: theme.colors.status.warning },
+        { bg: theme.colors.status.purple10, color: theme.colors.status.purple },
+      ];
+      const colorScheme = colorSchemes[index % colorSchemes.length];
+
+      // Try to get a description from translation keys (e.g., food.meals.descriptions.breakfast)
+      const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
+      const description = t(descriptionKey, { defaultValue: '' });
+
+      return {
+        id: option.value,
+        label: t(option.label, option.label),
+        description: description,
+        icon: Circle,
+        iconBgColor: colorScheme.bg,
+        iconColor: colorScheme.color,
+      };
+    });
   };
 
   const renderField = (field: EditFieldConfig) => {
@@ -165,41 +196,17 @@ export function GenericEditModal({
         }
 
         // For longer lists, use OptionsSelector
-        const selectorOptions: SelectorOption<string | number>[] = useMemo(
-          () =>
-            options.map((option, index) => {
-              // Use a rotating color scheme for icons
-              const colorSchemes = [
-                { bg: theme.colors.accent.primary10, color: theme.colors.accent.primary },
-                { bg: theme.colors.status.info10, color: theme.colors.status.info },
-                { bg: theme.colors.status.success10, color: theme.colors.status.success },
-                { bg: theme.colors.status.warning10, color: theme.colors.status.warning },
-                { bg: theme.colors.status.purple10, color: theme.colors.status.purple },
-              ];
-              const colorScheme = colorSchemes[index % colorSchemes.length];
-
-              // Try to get a description from translation keys (e.g., food.meals.descriptions.breakfast)
-              const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
-              const description = t(descriptionKey, { defaultValue: '' });
-
-              return {
-                id: option.value,
-                label: t(option.label, option.label),
-                description: description,
-                icon: Circle,
-                iconBgColor: colorScheme.bg,
-                iconColor: colorScheme.color,
-              };
-            }),
-          [options, theme, t]
-        );
+        // Convert value to string | number | undefined (exclude boolean/null)
+        const selectValue =
+          typeof value === 'string' || typeof value === 'number' ? value : undefined;
+        const selectorOptions = createSelectorOptions(options, selectValue ?? null);
 
         return (
           <OptionsSelector
             key={field.key}
             title={label}
             options={selectorOptions}
-            selectedId={value as string | number | undefined}
+            selectedId={selectValue}
             onSelect={(id) => handleFieldChange(field.key, id)}
           />
         );
