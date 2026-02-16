@@ -468,7 +468,7 @@ export function DataLogModal({
     }
 
     setShowMenu(false);
-    // TODO: Open edit modal based on variant - it's possible that some Edit Model Modal already exist, check the components/modals/
+    // TODO: Open an "Edit" version of the DataLogModal
     console.log('Edit:', selectedItem.name);
   };
 
