@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import type { TFunction } from 'i18next';
-import { useState } from 'react';
+import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -309,6 +309,26 @@ export function getDataLogModalTranslations(
   };
 }
 
+// Helper: determine the empty-state icon name for a given DataLogModal variant
+export function getEmptyStateIconName(
+  variant: DataLogModalVariant
+): ComponentProps<typeof MaterialIcons>['name'] {
+  // Map variants to MaterialIcons names used for the empty-state illustration
+  switch (variant) {
+    case 'exercise':
+    case 'workoutLog':
+    case 'workoutTemplate':
+      return 'fitness-center';
+    case 'userMetric':
+      return 'monitor-weight';
+    case 'foodPortion':
+      return 'scale';
+    // meal, nutrition_log, food and any other fallback
+    default:
+      return 'restaurant-menu';
+  }
+}
+
 // Base type that MealDataDisplayItem, FoodDataDisplayItem, ExerciseDataDisplayItem, and WorkoutLogDataDisplayItem satisfy
 export type DataLogDisplayItem = {
   id: string;
@@ -554,18 +574,7 @@ export function DataLogModal({
                 style={{ backgroundColor: theme.colors.background.card }}
               >
                 <MaterialIcons
-                  name={
-                  // TODO: move this into a helper function
-                    variant === 'exercise' ||
-                    variant === 'workoutLog' ||
-                    variant === 'workoutTemplate'
-                      ? 'fitness-center'
-                      : variant === 'userMetric'
-                        ? 'monitor-weight'
-                        : variant === 'foodPortion'
-                          ? 'scale'
-                          : 'restaurant-menu' // meal, nutrition_log, food
-                  }
+                  name={getEmptyStateIconName(variant)}
                   size={48}
                   color={theme.colors.text.tertiary}
                 />
