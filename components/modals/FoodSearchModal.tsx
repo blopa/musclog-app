@@ -16,6 +16,7 @@ import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
+import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '../../theme';
@@ -343,11 +344,22 @@ export function FoodSearchModal({
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [favoriteFoods, setFavoriteFoods] = useState<FoodItem[]>([]);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
-  const [meals, setMeals] = useState<Meal[]>([]);
-  const [mealsOffset, setMealsOffset] = useState(0);
-  const [hasMoreMeals, setHasMoreMeals] = useState(false);
-  const [isLoadingMeals, setIsLoadingMeals] = useState(false);
-  const [isLoadingMoreMeals, setIsLoadingMoreMeals] = useState(false);
+  const {
+    meals,
+    isLoading: isLoadingMeals,
+    isLoadingMore: isLoadingMoreMeals,
+    hasMore: hasMoreMeals,
+    loadMore: loadMoreMeals,
+    totalCount: mealsTotalCount,
+  } = useMeals({
+    mode: 'list',
+    visible,
+    initialLimit: 10,
+    batchSize: 10,
+    sortBy: 'created_at',
+    sortOrder: 'desc',
+    enableReactivity: true,
+  }) as UseMealsResultBasic;
   const [mealCardsData, setMealCardsData] = useState<MealCardData[]>([]);
 
   useEffect(() => {
@@ -483,47 +495,6 @@ export function FoodSearchModal({
     };
   }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10]);
 
-  // Load meals when Meals tab is active
-  useEffect(() => {
-    let mounted = true;
-
-    const loadMeals = async () => {
-      if (!visible || activeFilter !== 'meals') {
-        if (mounted) {
-          setMeals([]);
-          setMealsOffset(0);
-          setHasMoreMeals(false);
-          setMealCardsData([]);
-        }
-        return;
-      }
-
-      setIsLoadingMeals(true);
-      try {
-        const mealsList = await MealService.getMealsPaginated(10, 0);
-        if (mounted) {
-          setMeals(mealsList);
-          setMealsOffset(10);
-          setHasMoreMeals(mealsList.length === 10);
-        }
-      } catch (err) {
-        console.error('Error loading meals:', err);
-        if (mounted) {
-          setMeals([]);
-          setHasMoreMeals(false);
-        }
-      } finally {
-        if (mounted) setIsLoadingMeals(false);
-      }
-    };
-
-    loadMeals();
-
-    return () => {
-      mounted = false;
-    };
-  }, [visible, activeFilter]);
-
   // Transform meals to card data with nutrients
   useEffect(() => {
     const transformMeals = async () => {
@@ -557,31 +528,6 @@ export function FoodSearchModal({
 
     transformMeals();
   }, [meals]);
-
-  // Load more meals handler
-  const loadMoreMeals = async () => {
-    if (isLoadingMoreMeals || !hasMoreMeals) {
-      return;
-    }
-
-    setIsLoadingMoreMeals(true);
-    try {
-      const moreMeals = await MealService.getMealsPaginated(10, mealsOffset);
-      if (moreMeals.length === 0) {
-        setHasMoreMeals(false);
-      } else {
-        setMeals((prev) => [...prev, ...moreMeals]);
-        const newOffset = mealsOffset + moreMeals.length;
-        setMealsOffset(newOffset);
-        setHasMoreMeals(moreMeals.length === 10);
-      }
-    } catch (err) {
-      console.error('Error loading more meals:', err);
-      setHasMoreMeals(false);
-    } finally {
-      setIsLoadingMoreMeals(false);
-    }
-  };
 
   // Handle adding meal to current meal type
   const handleAddMeal = async (meal: Meal) => {
@@ -624,21 +570,21 @@ export function FoodSearchModal({
   }, [activeFilter, resultsBySource]);
 
   const FILTER_TABS = useMemo(() => {
-
     return [
       { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
       { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` },
       ...(apiCount > 0
         ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
         : []),
-      { id: 'meals', label: t('foodSearch.filters.meals') },
+      {
+        id: 'meals',
+        label:
+          mealsTotalCount !== undefined
+            ? `${t('foodSearch.filters.meals')} (${mealsTotalCount})`
+            : t('foodSearch.filters.meals'),
+      },
     ];
-  }, [
-    t,
-    resultsBySource.all.length,
-    localCount,
-    apiCount,
-  ]);
+  }, [t, resultsBySource.all.length, localCount, apiCount, mealsTotalCount]);
 
   // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {

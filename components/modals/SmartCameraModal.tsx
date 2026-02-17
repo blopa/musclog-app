@@ -612,9 +612,11 @@ export default function SmartCameraModal({
                   backgroundColor: theme.colors.background.darkGray50,
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.white10,
-                  opacity: hideCameraModePicker ? 0 : (
-                    mode === 'barcode-scan' ? theme.colors.opacity.strong : 1
-                  ),
+                  opacity: hideCameraModePicker
+                    ? 0
+                    : mode === 'barcode-scan'
+                      ? theme.colors.opacity.strong
+                      : 1,
                 }}
                 disabled={mode === 'barcode-scan'}
               >
