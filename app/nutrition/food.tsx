@@ -459,12 +459,15 @@ export default function FoodScreen() {
                   </View>
                   <View className="flex-row gap-4">
                     <Button
-                      label={t('food.actions.goToToday')}
-                      icon={Calendar}
+                      // label={t('food.actions.goToToday')}
+                      label={t('food.actions.myMeals')}
+                      // icon={Calendar}
+                      icon={UtensilsCrossed}
                       variant="secondary"
                       size="sm"
                       width="flex-1"
-                      onPress={goToToday}
+                      // onPress={goToToday}
+                      onPress={() => setIsMyMealsModalVisible(true)}
                     />
                     <Button
                       label={t('food.actions.moreFoodOptions')}
