@@ -272,10 +272,9 @@ export class NutritionService {
    * Delete nutrition log
    */
   static async deleteNutritionLog(id: string): Promise<void> {
-    return await database.write(async () => {
-      const log = await database.get<NutritionLog>('nutrition_logs').find(id);
-      await log.markAsDeleted();
-    });
+    const log = await database.get<NutritionLog>('nutrition_logs').find(id);
+    // markAsDeleted is a @writer method, so it already manages its own write transaction
+    await log.markAsDeleted();
   }
 
   /**
