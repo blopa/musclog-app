@@ -96,7 +96,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
 
-  // Fetch meals from database
+  // TODO: load only 10 and have an option to load more, like the other places where this hook is being used
   const { meals, isLoading, refresh } = useMeals({
     mode: 'list',
     getAll: true,

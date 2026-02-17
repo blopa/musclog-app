@@ -19,6 +19,7 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { ConnectGoogleAccountModal } from '../../components/modals/ConnectGoogleAccountModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import CreateExerciseModal from '../../components/modals/CreateExerciseModal';
+import MyMealsModal from '../../components/modals/MyMealsModal';
 import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortionModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
@@ -118,6 +119,8 @@ export default function ModalsTestScreen() {
 
   // Add Meal Modal
   const [isAddMealVisible, setIsAddMealVisible] = useState(false);
+  // My Meals Modal
+  const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   // Create Meal Modal
   const [isCreateMealVisible, setIsCreateMealVisible] = useState(false);
 
@@ -538,6 +541,20 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsCreateMealVisible(true)}
+            />
+          </View>
+
+          {/* My Meals Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">My Meals Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Preview the My Meals modal used for managing saved meals.
+            </Text>
+            <Button
+              label="Open My Meals Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsMyMealsVisible(true)}
             />
           </View>
 
@@ -1249,6 +1266,8 @@ export default function ModalsTestScreen() {
         visible={isCreateMealVisible}
         onClose={() => setIsCreateMealVisible(false)}
       />
+
+      <MyMealsModal visible={isMyMealsVisible} onClose={() => setIsMyMealsVisible(false)} />
 
       <FoodSearchModal
         visible={isFoodSearchVisible}
