@@ -352,6 +352,7 @@ export function FoodSearchModal({
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [favoriteFoods, setFavoriteFoods] = useState<FoodItem[]>([]);
+  const [favoriteFoodsCount, setFavoriteFoodsCount] = useState(0);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
   const {
     meals,
@@ -453,6 +454,37 @@ export function FoodSearchModal({
       mounted = false;
     };
   }, [visible, searchQuery, t, theme.colors.accent.primary, theme.colors.accent.primary10]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadFavoriteFoodsCount = async () => {
+      if (!visible) {
+        if (mounted) {
+          setFavoriteFoodsCount(0);
+        }
+        return;
+      }
+
+      try {
+        const count = await NutritionService.getFavoriteFoodsCount();
+        if (mounted) {
+          setFavoriteFoodsCount(count);
+        }
+      } catch (err) {
+        console.error('Error loading favorite foods count:', err);
+        if (mounted) {
+          setFavoriteFoodsCount(0);
+        }
+      }
+    };
+
+    loadFavoriteFoodsCount();
+
+    return () => {
+      mounted = false;
+    };
+  }, [visible]);
 
   useEffect(() => {
     let mounted = true;
@@ -566,7 +598,7 @@ export function FoodSearchModal({
   const FILTER_TABS = useMemo(() => {
     return [
       { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${favoriteFoods.length})` },
+      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${favoriteFoodsCount})` },
       ...(apiCount > 0
         ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
         : []),
@@ -578,7 +610,7 @@ export function FoodSearchModal({
             : t('foodSearch.filters.meals'),
       },
     ];
-  }, [t, resultsBySource.all.length, favoriteFoods.length, apiCount, mealsTotalCount]);
+  }, [t, resultsBySource.all.length, favoriteFoodsCount, apiCount, mealsTotalCount]);
 
   // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
