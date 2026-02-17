@@ -582,6 +582,19 @@ export function FoodSearchModal({
     setIsMealDetailsVisible(true);
   };
 
+  // Filter meals by search query (client-side, on name + description)
+  const filteredMealCardsData = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return mealCardsData;
+    }
+    const q = searchQuery.trim().toLowerCase();
+    return mealCardsData.filter(
+      (m) =>
+        m.name.toLowerCase().includes(q) ||
+        (m.description && m.description.toLowerCase().includes(q))
+    );
+  }, [mealCardsData, searchQuery]);
+
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
     switch (activeFilter) {
@@ -604,13 +617,23 @@ export function FoodSearchModal({
         : []),
       {
         id: 'meals',
-        label:
-          mealsTotalCount !== undefined
+        // TODO: move this into a function
+        label: searchQuery.trim()
+          ? `${t('foodSearch.filters.meals')} (${filteredMealCardsData.length})`
+          : mealsTotalCount !== undefined
             ? `${t('foodSearch.filters.meals')} (${mealsTotalCount})`
             : t('foodSearch.filters.meals'),
       },
     ];
-  }, [t, resultsBySource.all.length, favoriteFoodsCount, apiCount, mealsTotalCount]);
+  }, [
+    t,
+    resultsBySource.all.length,
+    favoriteFoodsCount,
+    apiCount,
+    mealsTotalCount,
+    searchQuery,
+    filteredMealCardsData.length,
+  ]);
 
   // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
@@ -708,161 +731,198 @@ export function FoodSearchModal({
             {/* Search Results Section */}
             {searchQuery ? (
               <View>
-                <SectionHeader
-                  title={
-                    isInitialLoad
-                      ? t('foodSearch.searching')
-                      : hasLocalResults || hasApiResults || isLoadingAPI
-                        ? t('foodSearch.bestMatches')
-                        : t('foodSearch.noResults')
-                  }
-                />
-                <View className="gap-1.5">
-                  {/* Show initial loading state */}
-                  {isInitialLoad ? (
-                    <View className="flex items-center justify-center py-12">
-                      <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-                      <Text className="mt-2 text-sm text-text-secondary">
-                        {isLoadingLocal && isLoadingAPI
-                          ? t('foodSearch.searchingLocalAndAPI')
-                          : isLoadingLocal
-                            ? t('foodSearch.searchingLocal')
-                            : t('foodSearch.searchingAPI')}
-                      </Text>
+                {activeFilter === 'meals' ? (
+                  /* Meals tab with search query: filter meals client-side */
+                  <View>
+                    <SectionHeader title={t('foodSearch.filters.meals')} />
+                    <View className="gap-1.5">
+                      {isLoadingMeals ? (
+                        <View className="flex items-center justify-center py-4">
+                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                        </View>
+                      ) : filteredMealCardsData.length > 0 ? (
+                        filteredMealCardsData.map((mealData) => (
+                          <MealSearchCard
+                            key={mealData.meal.id}
+                            mealData={mealData}
+                            onAddPress={() => handleMealSelect(mealData.meal)}
+                          />
+                        ))
+                      ) : (
+                        <View className="py-8">
+                          <Text className="text-center text-text-secondary">
+                            {t('foodSearch.noResultsFor', { query: searchQuery })}
+                          </Text>
+                          <Text className="mt-2 text-center text-sm text-text-tertiary">
+                            {t('foodSearch.trySomethingElse')}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                  ) : null}
-
-                  {/* Show results when available */}
-                  {!isInitialLoad && !error && filteredResults.length > 0 ? (
-                    <>
-                      {/* Local Results Section - only show if filter includes local or 'all' */}
-                      {(activeFilter === 'all' || activeFilter === 'myFoods') &&
-                      resultsBySource.local.length > 0 ? (
-                        <View className="mb-4">
-                          <View className="mb-3 flex-row items-center gap-2">
-                            <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                            <View className="flex-row items-center gap-2">
-                              <Text className="text-xs font-medium uppercase text-accent-primary">
-                                {t('foodSearch.yourFoods', { count: resultsBySource.local.length })}
-                              </Text>
-                            </View>
-                            <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                          </View>
-                          <View className="gap-1.5">
-                            {(resultsBySource.local || []).map((food) => (
-                              <FoodItemCard
-                                key={`local-${food.id}`}
-                                food={{
-                                  ...food,
-                                  name: food.name ?? '',
-                                  icon: '🍽️',
-                                  iconColor: theme.colors.accent.primary,
-                                  iconBgColor: theme.colors.accent.primary10,
-                                }}
-                                onAddPress={() =>
-                                  handleFoodClick({ ...food, name: food.name ?? '' })
-                                }
-                              />
-                            ))}
-                          </View>
-
-                          {/* Load More Local Button */}
-                          {hasMoreLocal ? (
-                            <View className="py-3">
-                              <Button
-                                label={
-                                  isLoadingMoreLocal
-                                    ? t('foodSearch.loadingMore')
-                                    : t('foodSearch.loadMoreLocal')
-                                }
-                                onPress={loadMoreLocal}
-                                size="sm"
-                                variant="outline"
-                                disabled={isLoadingMoreLocal}
-                                loading={isLoadingMoreLocal}
-                                width="full"
-                                iconPosition="left"
-                              />
-                            </View>
-                          ) : null}
+                  </View>
+                ) : (
+                  /* All / Favorites / API tabs: food search results */
+                  <View>
+                    <SectionHeader
+                      title={
+                        isInitialLoad
+                          ? t('foodSearch.searching')
+                          : hasLocalResults || hasApiResults || isLoadingAPI
+                            ? t('foodSearch.bestMatches')
+                            : t('foodSearch.noResults')
+                      }
+                    />
+                    <View className="gap-1.5">
+                      {/* Show initial loading state */}
+                      {isInitialLoad ? (
+                        <View className="flex items-center justify-center py-12">
+                          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                          <Text className="mt-2 text-sm text-text-secondary">
+                            {isLoadingLocal && isLoadingAPI
+                              ? t('foodSearch.searchingLocalAndAPI')
+                              : isLoadingLocal
+                                ? t('foodSearch.searchingLocal')
+                                : t('foodSearch.searchingAPI')}
+                          </Text>
                         </View>
                       ) : null}
 
-                      {/* API Results Section - only show if filter includes api or 'all' */}
-                      {(activeFilter === 'all' || activeFilter === 'api') &&
-                      resultsBySource.api.length > 0 ? (
-                        <View className="mb-4">
-                          <View className="mb-3 flex-row items-center gap-2">
-                            <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                            <View className="flex-row items-center gap-2">
-                              <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                {t('foodSearch.openFoodFacts', {
-                                  count: resultsBySource.api.length,
-                                })}
-                              </Text>
-                            </View>
-                            <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                          </View>
-                          <View className="gap-1.5">
-                            {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                              <FoodItemCard
-                                key={`api-${food.id}`}
-                                food={food}
-                                onAddPress={() => handleFoodClick(food)}
-                              />
-                            ))}
-                          </View>
+                      {/* Show results when available */}
+                      {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                        <>
+                          {/* Local Results Section - only show if filter includes local or 'all' */}
+                          {(activeFilter === 'all' || activeFilter === 'myFoods') &&
+                          resultsBySource.local.length > 0 ? (
+                            <View className="mb-4">
+                              <View className="mb-3 flex-row items-center gap-2">
+                                <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                                <View className="flex-row items-center gap-2">
+                                  <Text className="text-xs font-medium uppercase text-accent-primary">
+                                    {t('foodSearch.yourFoods', {
+                                      count: resultsBySource.local.length,
+                                    })}
+                                  </Text>
+                                </View>
+                                <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                              </View>
+                              <View className="gap-1.5">
+                                {(resultsBySource.local || []).map((food) => (
+                                  <FoodItemCard
+                                    key={`local-${food.id}`}
+                                    food={{
+                                      ...food,
+                                      name: food.name ?? '',
+                                      icon: '🍽️',
+                                      iconColor: theme.colors.accent.primary,
+                                      iconBgColor: theme.colors.accent.primary10,
+                                    }}
+                                    onAddPress={() =>
+                                      handleFoodClick({ ...food, name: food.name ?? '' })
+                                    }
+                                  />
+                                ))}
+                              </View>
 
-                          {/* Load More API Button */}
-                          {hasMoreAPI ? (
-                            <View className="py-3">
-                              <Button
-                                label={
-                                  isLoadingMoreAPI
-                                    ? t('foodSearch.loadingMore')
-                                    : t('foodSearch.loadMoreAPI')
-                                }
-                                onPress={loadMoreAPI}
-                                size="sm"
-                                variant="outline"
-                                disabled={isLoadingMoreAPI}
-                                loading={isLoadingMoreAPI}
-                                width="full"
-                                iconPosition="left"
-                              />
+                              {/* Load More Local Button */}
+                              {hasMoreLocal ? (
+                                <View className="py-3">
+                                  <Button
+                                    label={
+                                      isLoadingMoreLocal
+                                        ? t('foodSearch.loadingMore')
+                                        : t('foodSearch.loadMoreLocal')
+                                    }
+                                    onPress={loadMoreLocal}
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={isLoadingMoreLocal}
+                                    loading={isLoadingMoreLocal}
+                                    width="full"
+                                    iconPosition="left"
+                                  />
+                                </View>
+                              ) : null}
                             </View>
+                          ) : null}
+
+                          {/* API Results Section - only show if filter includes api or 'all' */}
+                          {(activeFilter === 'all' || activeFilter === 'api') &&
+                          resultsBySource.api.length > 0 ? (
+                            <View className="mb-4">
+                              <View className="mb-3 flex-row items-center gap-2">
+                                <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                <View className="flex-row items-center gap-2">
+                                  <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                    {t('foodSearch.openFoodFacts', {
+                                      count: resultsBySource.api.length,
+                                    })}
+                                  </Text>
+                                </View>
+                                <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                              </View>
+                              <View className="gap-1.5">
+                                {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                  <FoodItemCard
+                                    key={`api-${food.id}`}
+                                    food={food}
+                                    onAddPress={() => handleFoodClick(food)}
+                                  />
+                                ))}
+                              </View>
+
+                              {/* Load More API Button */}
+                              {hasMoreAPI ? (
+                                <View className="py-3">
+                                  <Button
+                                    label={
+                                      isLoadingMoreAPI
+                                        ? t('foodSearch.loadingMore')
+                                        : t('foodSearch.loadMoreAPI')
+                                    }
+                                    onPress={loadMoreAPI}
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={isLoadingMoreAPI}
+                                    loading={isLoadingMoreAPI}
+                                    width="full"
+                                    iconPosition="left"
+                                  />
+                                </View>
+                              ) : null}
+                            </View>
+                          ) : null}
+                        </>
+                      ) : null}
+
+                      {!isInitialLoad && isLoadingAPI ? (
+                        <View className="flex items-center justify-center py-4">
+                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                          <Text className="ml-2 text-xs text-text-secondary">
+                            {t('foodSearch.searchingAPI')}
+                          </Text>
+                        </View>
+                      ) : null}
+
+                      {/* Show no results state - only when API is completely done */}
+                      {!isInitialLoad &&
+                      !isLoadingAPI &&
+                      !error &&
+                      filteredResults.length === 0 &&
+                      searchQuery ? (
+                        <View className="py-8 text-center">
+                          <Text className="text-center text-text-secondary">
+                            {t('foodSearch.noResultsFor', { query: searchQuery })}
+                          </Text>
+                          {localCount === 0 && apiCount === 0 ? (
+                            <Text className="mt-2 text-center text-sm text-text-tertiary">
+                              {t('foodSearch.trySomethingElse')}
+                            </Text>
                           ) : null}
                         </View>
                       ) : null}
-                    </>
-                  ) : null}
-                  {!isInitialLoad && isLoadingAPI ? (
-                    <View className="flex items-center justify-center py-4">
-                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                      <Text className="ml-2 text-xs text-text-secondary">
-                        {t('foodSearch.searchingAPI')}
-                      </Text>
                     </View>
-                  ) : null}
-
-                  {/* Show no results state - only when API is completely done */}
-                  {!isInitialLoad &&
-                  !isLoadingAPI &&
-                  !error &&
-                  filteredResults.length === 0 &&
-                  searchQuery ? (
-                    <View className="py-8 text-center">
-                      <Text className="text-center text-text-secondary">
-                        {t('foodSearch.noResultsFor', { query: searchQuery })}
-                      </Text>
-                      {localCount === 0 && apiCount === 0 ? (
-                        <Text className="mt-2 text-center text-sm text-text-tertiary">
-                          {t('foodSearch.trySomethingElse')}
-                        </Text>
-                      ) : null}
-                    </View>
-                  ) : null}
-                </View>
+                  </View>
+                )}
               </View>
             ) : null}
 
