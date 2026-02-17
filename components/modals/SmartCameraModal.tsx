@@ -415,148 +415,150 @@ export default function SmartCameraModal({
           {/* Bottom Controls */}
           <View className="relative z-20 px-4 pb-10 pt-4">
             {/* Mode Selector */}
-            <View className="mb-6 w-full items-center">
-              <View
-                className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
-                style={{
-                  backgroundColor: theme.colors.background.darkGray90,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white10,
-                }}
-              >
-                {/* AI Meal Photo */}
-                <Pressable
-                  onPress={() => handleModeChange('ai-meal-photo')}
-                  className="flex-1 rounded-xl px-2 py-2.5"
-                  style={
-                    cameraMode === 'ai-meal-photo'
-                      ? {
-                          backgroundColor: 'transparent',
-                        }
-                      : {}
-                  }
+            {!hideCameraModePicker ? (
+              <View className="mb-6 w-full items-center">
+                <View
+                  className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
+                  style={{
+                    backgroundColor: theme.colors.background.darkGray90,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.background.white10,
+                  }}
                 >
-                  {cameraMode === 'ai-meal-photo' ? (
-                    <LinearGradient
-                      colors={theme.colors.gradients.cta}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      className="absolute inset-0 rounded-xl"
-                    />
-                  ) : null}
-                  <View className="flex-row items-center justify-center gap-1.5">
-                    <Sparkles
-                      size={theme.iconSize.md}
-                      color={
-                        cameraMode === 'ai-meal-photo'
-                          ? theme.colors.text.white
-                          : theme.colors.text.secondary
-                      }
-                    />
-                    <Text
-                      className="font-bold uppercase tracking-wide"
-                      style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color:
+                  {/* AI Meal Photo */}
+                  <Pressable
+                    onPress={() => handleModeChange('ai-meal-photo')}
+                    className="flex-1 rounded-xl px-2 py-2.5"
+                    style={
+                      cameraMode === 'ai-meal-photo'
+                        ? {
+                            backgroundColor: 'transparent',
+                          }
+                        : {}
+                    }
+                  >
+                    {cameraMode === 'ai-meal-photo' ? (
+                      <LinearGradient
+                        colors={theme.colors.gradients.cta}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        className="absolute inset-0 rounded-xl"
+                      />
+                    ) : null}
+                    <View className="flex-row items-center justify-center gap-1.5">
+                      <Sparkles
+                        size={theme.iconSize.md}
+                        color={
                           cameraMode === 'ai-meal-photo'
                             ? theme.colors.text.white
-                            : theme.colors.text.secondary,
-                      }}
-                    >
-                      {t('food.aiCamera.modes.mealPhoto')}
-                    </Text>
-                  </View>
-                </Pressable>
-
-                {/* AI Label Scan */}
-                <Pressable
-                  onPress={() => handleModeChange('ai-label-scan')}
-                  className="flex-1 rounded-xl px-2 py-2.5"
-                  style={
-                    cameraMode === 'ai-label-scan'
-                      ? {
-                          backgroundColor: 'transparent',
+                            : theme.colors.text.secondary
                         }
-                      : {}
-                  }
-                >
-                  {cameraMode === 'ai-label-scan' ? (
-                    <LinearGradient
-                      colors={theme.colors.gradients.cta}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      className="absolute inset-0 rounded-xl"
-                    />
-                  ) : null}
-                  <View className="flex-row items-center justify-center gap-1.5">
-                    <FileText
-                      size={theme.iconSize.md}
-                      color={
-                        cameraMode === 'ai-label-scan'
-                          ? theme.colors.text.white
-                          : theme.colors.text.secondary
-                      }
-                    />
-                    <Text
-                      className="font-bold uppercase tracking-wide"
-                      style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color:
+                      />
+                      <Text
+                        className="font-bold uppercase tracking-wide"
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color:
+                            cameraMode === 'ai-meal-photo'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary,
+                        }}
+                      >
+                        {t('food.aiCamera.modes.mealPhoto')}
+                      </Text>
+                    </View>
+                  </Pressable>
+
+                  {/* AI Label Scan */}
+                  <Pressable
+                    onPress={() => handleModeChange('ai-label-scan')}
+                    className="flex-1 rounded-xl px-2 py-2.5"
+                    style={
+                      cameraMode === 'ai-label-scan'
+                        ? {
+                            backgroundColor: 'transparent',
+                          }
+                        : {}
+                    }
+                  >
+                    {cameraMode === 'ai-label-scan' ? (
+                      <LinearGradient
+                        colors={theme.colors.gradients.cta}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        className="absolute inset-0 rounded-xl"
+                      />
+                    ) : null}
+                    <View className="flex-row items-center justify-center gap-1.5">
+                      <FileText
+                        size={theme.iconSize.md}
+                        color={
                           cameraMode === 'ai-label-scan'
                             ? theme.colors.text.white
-                            : theme.colors.text.secondary,
-                      }}
-                    >
-                      {t('food.aiCamera.modes.labelScan')}
-                    </Text>
-                  </View>
-                </Pressable>
-
-                {/* Barcode Scan */}
-                <Pressable
-                  onPress={() => handleModeChange('barcode-scan')}
-                  className="flex-1 rounded-xl px-2 py-2.5"
-                  style={
-                    cameraMode === 'barcode-scan'
-                      ? {
-                          backgroundColor: 'transparent',
+                            : theme.colors.text.secondary
                         }
-                      : {}
-                  }
-                >
-                  {cameraMode === 'barcode-scan' ? (
-                    <LinearGradient
-                      colors={theme.colors.gradients.cta}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      className="absolute inset-0 rounded-xl"
-                    />
-                  ) : null}
-                  <View className="flex-row items-center justify-center gap-1.5">
-                    <ScanBarcode
-                      size={theme.iconSize.md}
-                      color={
-                        cameraMode === 'barcode-scan'
-                          ? theme.colors.text.white
-                          : theme.colors.text.secondary
-                      }
-                    />
-                    <Text
-                      className="font-bold uppercase tracking-wide"
-                      style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color:
+                      />
+                      <Text
+                        className="font-bold uppercase tracking-wide"
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color:
+                            cameraMode === 'ai-label-scan'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary,
+                        }}
+                      >
+                        {t('food.aiCamera.modes.labelScan')}
+                      </Text>
+                    </View>
+                  </Pressable>
+
+                  {/* Barcode Scan */}
+                  <Pressable
+                    onPress={() => handleModeChange('barcode-scan')}
+                    className="flex-1 rounded-xl px-2 py-2.5"
+                    style={
+                      cameraMode === 'barcode-scan'
+                        ? {
+                            backgroundColor: 'transparent',
+                          }
+                        : {}
+                    }
+                  >
+                    {cameraMode === 'barcode-scan' ? (
+                      <LinearGradient
+                        colors={theme.colors.gradients.cta}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        className="absolute inset-0 rounded-xl"
+                      />
+                    ) : null}
+                    <View className="flex-row items-center justify-center gap-1.5">
+                      <ScanBarcode
+                        size={theme.iconSize.md}
+                        color={
                           cameraMode === 'barcode-scan'
                             ? theme.colors.text.white
-                            : theme.colors.text.secondary,
-                      }}
-                    >
-                      {t('food.aiCamera.modes.barcodeScan')}
-                    </Text>
-                  </View>
-                </Pressable>
+                            : theme.colors.text.secondary
+                        }
+                      />
+                      <Text
+                        className="font-bold uppercase tracking-wide"
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color:
+                            cameraMode === 'barcode-scan'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary,
+                        }}
+                      >
+                        {t('food.aiCamera.modes.barcodeScan')}
+                      </Text>
+                    </View>
+                  </Pressable>
+                </View>
               </View>
-            </View>
+            ) : null}
 
             {/* Camera Controls */}
             <View className="flex-row items-center justify-between px-2">
