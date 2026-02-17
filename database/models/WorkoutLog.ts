@@ -57,6 +57,9 @@ export default class WorkoutLog extends Model {
       throw new Error(`Set with id ${setId} not found`);
     }
 
+    const now = Date.now();
+
+    // Update the set first
     await set.update((updatedSet: WorkoutLogSet) => {
       if (data.reps !== undefined) updatedSet.reps = data.reps;
       if (data.weight !== undefined) updatedSet.weight = data.weight;
@@ -66,18 +69,20 @@ export default class WorkoutLog extends Model {
       if (data.isSkipped !== undefined) updatedSet.isSkipped = data.isSkipped;
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
-          throw new Error('Difficulty level must be between 1 and 10');
+          throw new Error('Difficulty level must be between1 and 10');
         }
         updatedSet.difficultyLevel = data.difficultyLevel;
       }
       if (data.isDropSet !== undefined) updatedSet.isDropSet = data.isDropSet;
-      updatedSet.updatedAt = Date.now();
+      updatedSet.updatedAt = now;
     });
 
-    // Update parent log timestamp
-    await this.update((log) => {
-      log.updatedAt = Date.now();
-    });
+    // Update parent log using callWriter to avoid nested write conflicts
+    await this.callWriter(() =>
+      this.update((log) => {
+        log.updatedAt = now;
+      })
+    );
   }
 
   @writer
@@ -137,9 +142,12 @@ export default class WorkoutLog extends Model {
 
     await set.markAsDeleted();
 
-    await this.update((log) => {
-      log.updatedAt = Date.now();
-    });
+    // Update parent log using callWriter to avoid nested write conflicts
+    await this.callWriter(() =>
+      this.update((log) => {
+        log.updatedAt = Date.now();
+      })
+    );
   }
 
   @writer

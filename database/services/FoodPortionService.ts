@@ -275,18 +275,17 @@ export class FoodPortionService {
    * Remove a portion from a food
    */
   static async removePortionFromFood(foodId: string, foodPortionId: string): Promise<void> {
-    return await database.write(async () => {
-      const FFP = database.get<FoodFoodPortion>('food_food_portions');
+    const FFP = database.get<FoodFoodPortion>('food_food_portions');
 
-      const ffp = await FFP.query(
-        Q.where('food_id', foodId),
-        Q.where('food_portion_id', foodPortionId)
-      ).fetch();
+    const ffp = await FFP.query(
+      Q.where('food_id', foodId),
+      Q.where('food_portion_id', foodPortionId)
+    ).fetch();
 
-      if (ffp.length > 0) {
-        await ffp[0].markAsDeleted();
-      }
-    });
+    if (ffp.length > 0) {
+      // markAsDeleted is a @writer method, so it already manages its own write transaction
+      await ffp[0].markAsDeleted();
+    }
   }
 
   /**
