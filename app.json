@@ -1,15 +1,18 @@
 {
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
-    "slug": "musclog",
+    "slug": "logger",
     "version": "2.0.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.png"
     },
     "experiments": {
+      "typedRoutes": true,
       "tsconfigPaths": true,
       "baseUrl": "/musclog-app"
     },
@@ -65,11 +68,13 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.werules.logger"
+      "bundleIdentifier": "com.werules.logger",
+      "buildNumber": "123"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.werules.logger",
+      "versionCode": 123,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
@@ -100,6 +105,9 @@
       ]
     },
     "extra": {
+      "router": {
+        "origin": false
+      },
       "eas": {
         "projectId": "7a194e96-295d-44a1-8324-78e776fe0807"
       }
