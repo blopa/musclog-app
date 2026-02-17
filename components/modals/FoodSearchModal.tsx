@@ -410,13 +410,29 @@ export function FoodSearchModal({
     }
   }, [activeFilter, resultsBySource]);
 
-  const FILTER_TABS = [
-    { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-    { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` },
-    { id: 'api', label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` },
-    { id: 'meals', label: t('foodSearch.filters.meals') },
-    { id: 'recipes', label: t('foodSearch.filters.recipes') },
-  ];
+  const FILTER_TABS = useMemo(() => {
+
+    return [
+      { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
+      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` },
+      ...(apiCount > 0
+        ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
+        : []),
+      { id: 'meals', label: t('foodSearch.filters.meals') },
+    ];
+  }, [
+    t,
+    resultsBySource.all.length,
+    localCount,
+    apiCount,
+  ]);
+
+  // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
+  useEffect(() => {
+    if (activeFilter === 'api' && apiCount === 0) {
+      setActiveFilter('all');
+    }
+  }, [activeFilter, apiCount]);
 
   const handleFoodClick = (food: UnifiedFoodResult) => {
     // Convert to FoodItem format
@@ -749,7 +765,10 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {!searchQuery && suggestedFoods && suggestedFoods.length > 0 ? (
+            {!searchQuery &&
+            activeFilter !== 'myFoods' &&
+            suggestedFoods &&
+            suggestedFoods.length > 0 ? (
               <View>
                 <SectionHeader title={suggestedTitle} icon={Sparkles} />
                 <View className="gap-1.5">
