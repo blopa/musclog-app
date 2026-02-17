@@ -323,8 +323,6 @@
       "addToFavorites": "Add To Favorites",
       "brand": "Brand",
       "brandPlaceholder": "e.g. Kellogg's",
-      "barcode": "Barcode",
-      "barcodePlaceholder": "e.g. 0000000000000",
       "imageUrl": "Image URL",
       "imageUrlPlaceholder": "Paste image URL"
     },
@@ -747,6 +745,11 @@
     }
   },
   "foodSearch": {
+    "commonFoods": "Common foods",
+    "commonBreakfastFoods": "Common breakfast foods",
+    "commonLunchFoods": "Common lunch foods",
+    "commonDinnerFoods": "Common dinner foods",
+    "commonSnackFoods": "Common snack foods",
     "recentHistory": "Recent History",
     "viewAll": "View All",
     "yourFoods": "🍽️ Your Foods ({{count}}) 🍽️",

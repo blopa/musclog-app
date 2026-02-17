@@ -317,7 +317,7 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: `${f.brand || 'Custom Food'} • ${f.calories || 0} kcal`,
               brand: (f as any).brand,
-              serving_size: '100 g',
+              serving_size: '100 g', // TODO: use the PortionSize model instead
               calories: f.calories,
               protein: f.protein,
               carbs: f.carbs,
@@ -700,7 +700,8 @@ export function FoodSearchModal({
                       rightAction={{
                         label: t('foodSearch.viewAll'),
                         onPress: () => {
-                          // Handle view all
+                          // TODO: open recent history
+                          console.log('View all clicked');
                         },
                       }}
                     />
