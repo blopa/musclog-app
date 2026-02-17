@@ -585,7 +585,7 @@ export function FoodSearchModal({
   const FILTER_TABS = useMemo(() => {
     return [
       { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` }, // TODO: use the favorite count instead of localCount
+      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${favoriteFoods.length})` },
       ...(apiCount > 0
         ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
         : []),
@@ -597,7 +597,7 @@ export function FoodSearchModal({
             : t('foodSearch.filters.meals'),
       },
     ];
-  }, [t, resultsBySource.all.length, localCount, apiCount, mealsTotalCount]);
+  }, [t, resultsBySource.all.length, favoriteFoods.length, apiCount, mealsTotalCount]);
 
   // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
