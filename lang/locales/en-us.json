@@ -770,12 +770,15 @@
     "loadingMore": "Loading more...",
     "loadMoreLocal": "Load more local foods",
     "loadMoreAPI": "Load more from Open Food Facts",
+    "loadMoreMeals": "Load more meals",
+    "loadingMeals": "Loading meals...",
     "noResultsFor": "No results found for \"{{query}}\"",
     "trySomethingElse": "Try searching for something else or create a custom food",
     "noRecentFoods": "No recent foods found. Start searching or add custom foods!",
     "createFood": "Create Food",
     "noFavoriteFoods": "No Favorite Foods",
-    "yourFavoriteFoods": "Your Favorite Foods"
+    "yourFavoriteFoods": "Your Favorite Foods",
+    "noMeals": "No meals yet. Create one from the Meals screen."
   },
   "endWorkout": {
     "title": "End Workout",

@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 
 import { type MealType } from '../../database/models';
-import { NutritionService } from '../../database/services';
+import Meal from '../../database/models/Meal';
+import { MealService, NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
@@ -96,6 +97,11 @@ type FoodItemCardProps = {
 
 function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
   const theme = useTheme();
+  const p = Math.round(food.protein ?? 0);
+  const c = Math.round(food.carbs ?? 0);
+  const f = Math.round(food.fat ?? 0);
+  const macroLine = `${p}g P • ${c}g C • ${f}g F`;
+
   return (
     <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
       {/* Icon/Image */}
@@ -162,6 +168,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
         <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
           {food.description}
         </Text>
+        <Text className="mt-0.5 text-xs text-text-secondary">{macroLine}</Text>
       </View>
 
       {/* Add Button */}
@@ -203,6 +210,79 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
         </Pressable>
       ) : null}
     </View>
+  );
+}
+
+type MealCardData = {
+  meal: Meal;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+type MealSearchCardProps = {
+  mealData: MealCardData;
+  onAddPress: () => void;
+};
+
+function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+
+  const macroSummary = `${Math.round(mealData.protein)}g P • ${Math.round(mealData.carbs)}g C • ${Math.round(mealData.fat)}g F`;
+
+  return (
+    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+      {/* Icon/Image */}
+      <View
+        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+        style={{
+          backgroundColor: theme.colors.background.secondaryDark,
+          borderColor: 'transparent',
+        }}
+      >
+        {mealData.imageUrl ? (
+          <Image
+            source={{ uri: mealData.imageUrl }}
+            className="h-full w-full"
+            resizeMode="cover"
+            style={{ borderRadius: theme.borderRadius.xl }}
+          />
+        ) : (
+          <Text className="text-xl">🍽️</Text>
+        )}
+      </View>
+
+      {/* Content */}
+      <View className="min-w-0 flex-1">
+        <Text className="flex-1 truncate pr-2 font-semibold text-text-primary" numberOfLines={1}>
+          {mealData.name}
+        </Text>
+        {mealData.description ? (
+          <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
+            {mealData.description}
+          </Text>
+        ) : null}
+        <Text className="mt-0.5 text-sm text-text-secondary">
+          {Math.round(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
+        </Text>
+      </View>
+
+      {/* Add Button */}
+      <Pressable
+        className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
+        onPress={onAddPress}
+        style={{
+          backgroundColor: theme.colors.background.secondaryDark,
+        }}
+      >
+        <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+      </Pressable>
+    </Pressable>
   );
 }
 
@@ -263,6 +343,12 @@ export function FoodSearchModal({
   const [suggestedTitle, setSuggestedTitle] = useState('');
   const [favoriteFoods, setFavoriteFoods] = useState<FoodItem[]>([]);
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [mealsOffset, setMealsOffset] = useState(0);
+  const [hasMoreMeals, setHasMoreMeals] = useState(false);
+  const [isLoadingMeals, setIsLoadingMeals] = useState(false);
+  const [isLoadingMoreMeals, setIsLoadingMoreMeals] = useState(false);
+  const [mealCardsData, setMealCardsData] = useState<MealCardData[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -396,6 +482,133 @@ export function FoodSearchModal({
       mounted = false;
     };
   }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10]);
+
+  // Load meals when Meals tab is active
+  useEffect(() => {
+    let mounted = true;
+
+    const loadMeals = async () => {
+      if (!visible || activeFilter !== 'meals') {
+        if (mounted) {
+          setMeals([]);
+          setMealsOffset(0);
+          setHasMoreMeals(false);
+          setMealCardsData([]);
+        }
+        return;
+      }
+
+      setIsLoadingMeals(true);
+      try {
+        const mealsList = await MealService.getMealsPaginated(10, 0);
+        if (mounted) {
+          setMeals(mealsList);
+          setMealsOffset(10);
+          setHasMoreMeals(mealsList.length === 10);
+        }
+      } catch (err) {
+        console.error('Error loading meals:', err);
+        if (mounted) {
+          setMeals([]);
+          setHasMoreMeals(false);
+        }
+      } finally {
+        if (mounted) setIsLoadingMeals(false);
+      }
+    };
+
+    loadMeals();
+
+    return () => {
+      mounted = false;
+    };
+  }, [visible, activeFilter]);
+
+  // Transform meals to card data with nutrients
+  useEffect(() => {
+    const transformMeals = async () => {
+      if (meals.length === 0) {
+        setMealCardsData([]);
+        return;
+      }
+
+      try {
+        const transformed = await Promise.all(
+          meals.map(async (meal) => {
+            const nutrients = await meal.getTotalNutrients();
+            return {
+              meal,
+              name: meal.name ?? '',
+              description: meal.description || undefined,
+              imageUrl: meal.imageUrl || undefined,
+              calories: nutrients.calories,
+              protein: nutrients.protein,
+              carbs: nutrients.carbs,
+              fat: nutrients.fat,
+            };
+          })
+        );
+        setMealCardsData(transformed);
+      } catch (error) {
+        console.error('Error transforming meals:', error);
+        setMealCardsData([]);
+      }
+    };
+
+    transformMeals();
+  }, [meals]);
+
+  // Load more meals handler
+  const loadMoreMeals = async () => {
+    if (isLoadingMoreMeals || !hasMoreMeals) {
+      return;
+    }
+
+    setIsLoadingMoreMeals(true);
+    try {
+      const moreMeals = await MealService.getMealsPaginated(10, mealsOffset);
+      if (moreMeals.length === 0) {
+        setHasMoreMeals(false);
+      } else {
+        setMeals((prev) => [...prev, ...moreMeals]);
+        const newOffset = mealsOffset + moreMeals.length;
+        setMealsOffset(newOffset);
+        setHasMoreMeals(moreMeals.length === 10);
+      }
+    } catch (err) {
+      console.error('Error loading more meals:', err);
+      setHasMoreMeals(false);
+    } finally {
+      setIsLoadingMoreMeals(false);
+    }
+  };
+
+  // Handle adding meal to current meal type
+  const handleAddMeal = async (meal: Meal) => {
+    try {
+      const mealWithFoods = await MealService.getMealWithFoods(meal.id);
+      if (!mealWithFoods) {
+        console.error('Failed to get meal foods');
+        return;
+      }
+
+      const today = new Date();
+      for (const mealFood of mealWithFoods.foods) {
+        await NutritionService.logFood(
+          mealFood.foodId,
+          today,
+          mealType,
+          mealFood.amount,
+          mealFood.portionId
+        );
+      }
+
+      // Close modal so parent can refresh
+      onClose();
+    } catch (error) {
+      console.error('Error adding meal:', error);
+    }
+  };
 
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
@@ -681,7 +894,7 @@ export function FoodSearchModal({
               </View>
             ) : null}
 
-            {/* Non-search area: show favorites when "myFoods" tab is active, otherwise recent history */}
+            {/* Non-search area: show favorites when "myFoods" tab is active, meals when "meals" tab is active, otherwise recent history */}
             {!searchQuery ? (
               <View>
                 {activeFilter === 'myFoods' ? (
@@ -704,6 +917,54 @@ export function FoodSearchModal({
                         <View className="py-8 text-center">
                           <Text className="text-center text-text-tertiary">
                             {t('foodSearch.noFavoriteFoods')}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                ) : activeFilter === 'meals' ? (
+                  <View>
+                    <SectionHeader title={t('foodSearch.filters.meals')} />
+                    <View className="gap-1.5">
+                      {isLoadingMeals ? (
+                        <View className="py-4">
+                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                          <Text className="mt-2 text-center text-sm text-text-secondary">
+                            {t('foodSearch.loadingMeals')}
+                          </Text>
+                        </View>
+                      ) : mealCardsData.length > 0 ? (
+                        <>
+                          {mealCardsData.map((mealData) => (
+                            <MealSearchCard
+                              key={mealData.meal.id}
+                              mealData={mealData}
+                              onAddPress={() => handleAddMeal(mealData.meal)}
+                            />
+                          ))}
+                          {hasMoreMeals ? (
+                            <View className="py-3">
+                              <Button
+                                label={
+                                  isLoadingMoreMeals
+                                    ? t('foodSearch.loadingMore')
+                                    : t('foodSearch.loadMoreMeals')
+                                }
+                                onPress={loadMoreMeals}
+                                size="sm"
+                                variant="outline"
+                                disabled={isLoadingMoreMeals}
+                                loading={isLoadingMoreMeals}
+                                width="full"
+                                iconPosition="left"
+                              />
+                            </View>
+                          ) : null}
+                        </>
+                      ) : (
+                        <View className="py-8 text-center">
+                          <Text className="text-center text-text-tertiary">
+                            {t('foodSearch.noMeals')}
                           </Text>
                         </View>
                       )}
@@ -767,6 +1028,7 @@ export function FoodSearchModal({
 
             {!searchQuery &&
             activeFilter !== 'myFoods' &&
+            activeFilter !== 'meals' &&
             suggestedFoods &&
             suggestedFoods.length > 0 ? (
               <View>
