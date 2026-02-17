@@ -40,7 +40,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
-import { FoodDetailsModal } from './FoodDetailsModal';
+import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
@@ -764,7 +764,7 @@ export default function CreateCustomFoodModal({
         onBarcodeScanned={handleBarcodeScanned}
       />
       {isFoodDetailsVisible && createdFood ? (
-        <FoodDetailsModal
+        <FoodMealDetailsModal
           visible={isFoodDetailsVisible}
           onClose={() => {
             setIsFoodDetailsVisible(false);

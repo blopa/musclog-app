@@ -42,7 +42,7 @@ import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
 import ExercisesModal from '../../components/modals/ExercisesModal';
 import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal';
-import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
+import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
@@ -1204,7 +1204,7 @@ export default function ModalsTestScreen() {
           console.log('Set details edited:', data);
         }}
       />
-      <FoodDetailsModal
+      <FoodMealDetailsModal
         visible={isFoodDetailsVisible}
         onClose={() => setIsFoodDetailsVisible(false)}
         barcode="3017620425035"

@@ -25,7 +25,7 @@ import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
-import { FoodDetailsModal } from '../../components/modals/FoodDetailsModal';
+import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
@@ -744,7 +744,7 @@ export default function FoodScreen() {
 
       {/* Food Details Modal (edit mode) */}
       {isFoodDetailsModalVisible && selectedFoodItem ? (
-        <FoodDetailsModal
+        <FoodMealDetailsModal
           visible={isFoodDetailsModalVisible}
           onClose={() => {
             setIsFoodDetailsModalVisible(false);

@@ -21,7 +21,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '../../theme';
 import { Button } from '../theme/Button';
-import { FoodDetailsModal } from './FoodDetailsModal';
+import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodItem = UnifiedFoodResult & {
@@ -307,7 +307,9 @@ export function FoodSearchModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
+  const [isMealDetailsVisible, setIsMealDetailsVisible] = useState(false);
 
   // Get recent local foods for the "Recent History" section
   const { foods: recentFoods } = useFoods({
@@ -542,31 +544,10 @@ export function FoodSearchModal({
     transformMeals();
   }, [meals]);
 
-  // Handle adding meal to current meal type
-  const handleAddMeal = async (meal: Meal) => {
-    try {
-      const mealWithFoods = await MealService.getMealWithFoods(meal.id);
-      if (!mealWithFoods) {
-        console.error('Failed to get meal foods');
-        return;
-      }
-
-      const today = new Date();
-      for (const mealFood of mealWithFoods.foods) {
-        await NutritionService.logFood(
-          mealFood.foodId,
-          today,
-          mealType,
-          mealFood.amount,
-          mealFood.portionId
-        );
-      }
-
-      // Close modal so parent can refresh
-      onClose();
-    } catch (error) {
-      console.error('Error adding meal:', error);
-    }
+  // Handle meal selection - open FoodDetailsModal instead of directly logging
+  const handleMealSelect = (meal: Meal) => {
+    setSelectedMeal(meal);
+    setIsMealDetailsVisible(true);
   };
 
   // Get filtered results based on active filter
@@ -898,7 +879,7 @@ export function FoodSearchModal({
                             <MealSearchCard
                               key={mealData.meal.id}
                               mealData={mealData}
-                              onAddPress={() => handleAddMeal(mealData.meal)}
+                              onAddPress={() => handleMealSelect(mealData.meal)}
                             />
                           ))}
                           {hasMoreMeals ? (
@@ -1018,7 +999,7 @@ export function FoodSearchModal({
 
       {/* Food Details Modal */}
       {selectedFood ? (
-        <FoodDetailsModal
+        <FoodMealDetailsModal
           visible={isFoodDetailsVisible}
           onClose={() => {
             setIsFoodDetailsVisible(false);
@@ -1037,6 +1018,31 @@ export function FoodSearchModal({
 
             setIsFoodDetailsVisible(false);
             setSelectedFood(null);
+          }}
+        />
+      ) : null}
+
+      {/* Meal Details Modal */}
+      {selectedMeal ? (
+        <FoodMealDetailsModal
+          visible={isMealDetailsVisible}
+          onClose={() => {
+            setIsMealDetailsVisible(false);
+            setSelectedMeal(null);
+          }}
+          meal={selectedMeal}
+          onLogMeal={(data) => {
+            // Call the original onFoodSelect if provided (for consistency)
+            // Note: meals don't have servingSize, so we pass undefined
+            onFoodSelect?.({
+              id: selectedMeal.id,
+              name: selectedMeal.name || '',
+              meal: data.meal,
+              date: data.date,
+            } as any);
+
+            setIsMealDetailsVisible(false);
+            setSelectedMeal(null);
           }}
         />
       ) : null}

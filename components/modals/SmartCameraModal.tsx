@@ -31,7 +31,7 @@ import { CameraView, useCameraPermissions } from '../CameraView';
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
-import { FoodDetailsModal } from './FoodDetailsModal';
+import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -642,7 +642,7 @@ export default function SmartCameraModal({
 
         {/* Food Details Modal */}
         {isFoodDetailsModalVisible ? (
-          <FoodDetailsModal
+          <FoodMealDetailsModal
             visible={isFoodDetailsModalVisible}
             onClose={handleFoodDetailsClose}
             barcode={detectedBarcode}

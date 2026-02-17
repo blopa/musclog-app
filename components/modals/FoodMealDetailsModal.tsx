@@ -6,7 +6,8 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
-import { FoodService, NutritionService } from '../../database/services';
+import Meal from '../../database/models/Meal';
+import { FoodService, MealService, NutritionService } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
@@ -25,16 +26,19 @@ type FoodDetailsModalProps = {
   onClose: () => void;
   barcode?: string | null;
   food?: Food | null;
+  meal?: Meal | null;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
+  onLogMeal?: (data: { meal: string; date: Date }) => void;
 };
 
-// TODO: update this modal to also be render a Meal too
-export function FoodDetailsModal({
+export function FoodMealDetailsModal({
   visible,
   onClose,
   barcode,
   food,
+  meal,
   onAddFood,
+  onLogMeal,
   foodLog,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
@@ -48,11 +52,31 @@ export function FoodDetailsModal({
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingFood, setIsAddingFood] = useState(false);
+  const [mealNutrients, setMealNutrients] = useState<{
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+  } | null>(null);
+  const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
+
+  // Determine mode: 'food' | 'foodLog' | 'meal' | 'barcode'
+  const mode = meal ? 'meal' : foodLog ? 'foodLog' : food ? 'food' : barcode ? 'barcode' : null;
 
   // Fetch detailed product data only if barcode is provided and no local food
-  const { data: productDetails } = useFoodProductDetails(barcode && !food ? barcode : null);
+  const { data: productDetails } = useFoodProductDetails(
+    barcode && !food && !meal ? barcode : null
+  );
 
   useEffect(() => {
+    if (meal) {
+      // Meal mode: load nutrients and show details
+      setIsFoodDetailsModalVisible(true);
+      setIsFavorite(meal.isFavorite);
+      return;
+    }
+
     if (food) {
       // Local food already available, show details
       setIsFoodDetailsModalVisible(true);
@@ -67,7 +91,36 @@ export function FoodDetailsModal({
         setIsFoodDetailsModalVisible(true);
       }
     }
-  }, [productDetails, food]);
+  }, [productDetails, food, meal]);
+
+  // Load meal nutrients when meal is provided
+  useEffect(() => {
+    if (!meal) {
+      setMealNutrients(null);
+      return;
+    }
+
+    const loadMealNutrients = async () => {
+      setIsLoadingMealNutrients(true);
+      try {
+        const nutrients = await meal.getTotalNutrients();
+        setMealNutrients({
+          calories: Math.round(nutrients.calories),
+          protein: Math.round(nutrients.protein * 10) / 10,
+          carbs: Math.round(nutrients.carbs * 10) / 10,
+          fat: Math.round(nutrients.fat * 10) / 10,
+          fiber: Math.round(nutrients.fiber * 10) / 10,
+        });
+      } catch (error) {
+        console.error('Error loading meal nutrients:', error);
+        setMealNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+      } finally {
+        setIsLoadingMealNutrients(false);
+      }
+    };
+
+    loadMealNutrients();
+  }, [meal]);
 
   // If we are given a foodLog, initialize edit mode values from it
   useEffect(() => {
@@ -103,8 +156,22 @@ export function FoodDetailsModal({
     })();
   }, [foodLog]);
 
-  // Extract nutritional data from barcode lookup or local food
+  // Extract nutritional data from meal, barcode lookup, or local food
   const getNutritionalData = useCallback(() => {
+    // If we have a meal, use its nutrients
+    if (meal && mealNutrients) {
+      return {
+        calories: mealNutrients.calories,
+        protein: mealNutrients.protein,
+        carbs: mealNutrients.carbs,
+        fat: mealNutrients.fat,
+        fiber: mealNutrients.fiber,
+        sugar: 0, // Meals don't track sugar separately
+        saturatedFat: 0, // Meals don't track saturated fat separately
+        sodium: 0, // Meals don't track sodium separately
+      };
+    }
+
     // If we have a local food, use its data directly
     if (food) {
       return {
@@ -146,12 +213,16 @@ export function FoodDetailsModal({
       sodium: 0,
       salt: 0,
     };
-  }, [productDetails, food]);
+  }, [productDetails, food, meal, mealNutrients]);
 
   const nutritionalData = getNutritionalData();
 
-  // Get product name from barcode lookup or local food
+  // Get product name from meal, barcode lookup, or local food
   const getProductName = useCallback(() => {
+    if (meal) {
+      return meal.name || 'Unknown Meal';
+    }
+
     if (food) {
       return food.name || 'Unknown Food';
     }
@@ -160,10 +231,14 @@ export function FoodDetailsModal({
       return productDetails.product.product_name || 'Unknown Food';
     }
     return 'Unknown Food';
-  }, [productDetails, food]);
+  }, [productDetails, food, meal]);
 
-  // Get product category/brand from barcode lookup or local food
+  // Get product category/brand from meal, barcode lookup, or local food
   const getProductCategory = useCallback(() => {
+    if (meal) {
+      return meal.description || t('meals.customMeal');
+    }
+
     if (food) {
       return food.brand || '';
     }
@@ -183,7 +258,7 @@ export function FoodDetailsModal({
       }
     }
     return '';
-  }, [productDetails, food]);
+  }, [productDetails, food, meal, t]);
 
   // Get default serving size from barcode lookup
   const getDefaultServingSize = useCallback(() => {
@@ -212,8 +287,21 @@ export function FoodDetailsModal({
     }
   }, [productDetails, getDefaultServingSize]);
 
-  // Calculate nutritional values based on serving size
+  // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
+    // For meals, nutrients are already calculated and don't need scaling
+    if (meal && mealNutrients) {
+      return {
+        name: getProductName(),
+        category: getProductCategory(),
+        calories: mealNutrients.calories,
+        protein: mealNutrients.protein,
+        carbs: mealNutrients.carbs,
+        fat: mealNutrients.fat,
+      };
+    }
+
+    // For foods, scale by serving size
     const scaleFactor = servingSize / 100; // API data is per 100g
     return {
       name: getProductName(),
@@ -226,6 +314,8 @@ export function FoodDetailsModal({
   }, [
     getProductCategory,
     getProductName,
+    meal,
+    mealNutrients,
     nutritionalData.calories,
     nutritionalData.carbs,
     nutritionalData.fat,
@@ -248,6 +338,54 @@ export function FoodDetailsModal({
     await new Promise((resolve) => setTimeout(resolve, 10));
 
     try {
+      // Handle meal logging
+      if (meal) {
+        try {
+          // Get meal with its foods
+          const mealWithFoods = await MealService.getMealWithFoods(meal.id);
+
+          if (!mealWithFoods) {
+            throw new Error('Failed to get meal foods');
+          }
+
+          // Log each food in the meal
+          for (const mealFood of mealWithFoods.foods) {
+            await NutritionService.logFood(
+              mealFood.foodId,
+              selectedDate,
+              selectedMeal,
+              mealFood.amount,
+              mealFood.portionId
+            );
+          }
+
+          // Update favorite status if needed
+          if (isFavorite && !meal.isFavorite) {
+            await MealService.toggleMealFavorite(meal.id);
+          } else if (!isFavorite && meal.isFavorite) {
+            await MealService.toggleMealFavorite(meal.id);
+          }
+
+          // Call callback if provided
+          onLogMeal?.({ meal: selectedMeal, date: selectedDate });
+
+          onClose();
+
+          showSnackbar('success', t('food.foodDetails.successMessage'), {
+            action: t('snackbar.ok'),
+          });
+        } catch (err) {
+          console.error('Error logging meal:', err);
+          showSnackbar('error', t('food.foodDetails.errorMessage'), {
+            action: t('snackbar.ok'),
+          });
+        } finally {
+          setIsAddingFood(false);
+        }
+
+        return;
+      }
+
       // If editing an existing food log, update it instead of creating a new one
       if (foodLog) {
         try {
@@ -366,22 +504,27 @@ export function FoodDetailsModal({
       setIsAddingFood(false);
     }
   }, [
-    productDetails,
+    meal,
+    foodLog,
     food,
-    isFavorite,
+    productDetails,
     nutritionalData.calories,
+    nutritionalData.protein,
     nutritionalData.carbs,
     nutritionalData.fat,
     nutritionalData.fiber,
-    nutritionalData.protein,
+    nutritionalData.sugar,
     nutritionalData.saturatedFat,
     nutritionalData.sodium,
-    nutritionalData.sugar,
-    onAddFood,
-    onClose,
+    isFavorite,
     selectedDate,
     selectedMeal,
     servingSize,
+    onAddFood,
+    onClose,
+    showSnackbar,
+    t,
+    onLogMeal,
   ]);
 
   // Handlers for FoodNotFoundModal actions
@@ -420,7 +563,11 @@ export function FoodDetailsModal({
     );
   }
 
-  const actionLabel = foodLog ? t('food.foodDetails.updateFood') : t('food.foodDetails.addFood');
+  const actionLabel = meal
+    ? t('meals.logMeal')
+    : foodLog
+      ? t('food.foodDetails.updateFood')
+      : t('food.foodDetails.addFood');
 
   return (
     <>
@@ -430,19 +577,35 @@ export function FoodDetailsModal({
         title={t('food.foodDetails.title')}
         scrollable={true}
         headerRight={
-          <Pressable
-            onPress={() => setIsFavorite(!isFavorite)}
-            className="flex-row items-center gap-1"
-          >
-            <BookmarkPlus
-              size={theme.iconSize.sm}
-              color={theme.colors.accent.primary}
-              fill={isFavorite ? theme.colors.accent.primary : 'none'}
-            />
-            <Text className="text-sm font-medium text-accent-primary">
-              {t('food.foodDetails.addFavorite')}
-            </Text>
-          </Pressable>
+          mode !== 'meal' ? (
+            <Pressable
+              onPress={() => setIsFavorite(!isFavorite)}
+              className="flex-row items-center gap-1"
+            >
+              <BookmarkPlus
+                size={theme.iconSize.sm}
+                color={theme.colors.accent.primary}
+                fill={isFavorite ? theme.colors.accent.primary : 'none'}
+              />
+              <Text className="text-sm font-medium text-accent-primary">
+                {t('food.foodDetails.addFavorite')}
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => setIsFavorite(!isFavorite)}
+              className="flex-row items-center gap-1"
+            >
+              <BookmarkPlus
+                size={theme.iconSize.sm}
+                color={theme.colors.accent.primary}
+                fill={isFavorite ? theme.colors.accent.primary : 'none'}
+              />
+              <Text className="text-sm font-medium text-accent-primary">
+                {t('food.foodDetails.addFavorite')}
+              </Text>
+            </Pressable>
+          )
         }
         footer={
           <View className="bg-transparent px-4 pb-6 pt-3">
@@ -464,11 +627,12 @@ export function FoodDetailsModal({
           <View className="mt-6">
             <FoodInfoCard food={scaledFood} />
 
-            {/* Additional Nutritional Info */}
-            {(nutritionalData.fiber ?? 0) > 0 ||
-            (nutritionalData.sugar ?? 0) > 0 ||
-            (nutritionalData.saturatedFat ?? 0) > 0 ||
-            (nutritionalData.sodium ?? 0) > 0 ? (
+            {/* Additional Nutritional Info - only show for foods, not meals */}
+            {mode !== 'meal' &&
+            ((nutritionalData.fiber ?? 0) > 0 ||
+              (nutritionalData.sugar ?? 0) > 0 ||
+              (nutritionalData.saturatedFat ?? 0) > 0 ||
+              (nutritionalData.sodium ?? 0) > 0) ? (
               <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
                 <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
                   {t('food.foodDetails.additionalNutrition')}
@@ -519,8 +683,10 @@ export function FoodDetailsModal({
 
           {/* Form Sections */}
           <View className="gap-6">
-            {/* Serving Size */}
-            <ServingSizeSelector value={servingSize} onChange={setServingSize} />
+            {/* Serving Size - only show for foods, not meals */}
+            {mode !== 'meal' ? (
+              <ServingSizeSelector value={servingSize} onChange={setServingSize} />
+            ) : null}
 
             {/* Meal Selection */}
             <View>

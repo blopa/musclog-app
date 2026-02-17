@@ -14,8 +14,8 @@ import { MenuButton } from '../theme/MenuButton';
 import { TextInput } from '../theme/TextInput';
 import { AddMealModal } from './AddMealModal';
 import { CreateMealModal } from './CreateMealModal';
+import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
-import { LogMealModal } from './LogMealModal';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -73,73 +73,6 @@ const deriveTags = (
 
   return tags;
 };
-
-// Wrapper component to handle async nutrient calculation for LogMealModal
-function LogMealModalWrapper({
-  visible,
-  meal,
-  onClose,
-  onLogMeal,
-}: {
-  visible: boolean;
-  meal: Meal;
-  onClose: () => void;
-  onLogMeal: (date: Date, mealType: MealType) => Promise<void>;
-}) {
-  const { t } = useTranslation();
-
-  const [nutrients, setNutrients] = useState<{
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  } | null>(null);
-  const [isLoadingNutrients, setIsLoadingNutrients] = useState(true);
-
-  useEffect(() => {
-    if (visible && meal) {
-      const loadNutrients = async () => {
-        setIsLoadingNutrients(true);
-        try {
-          const totalNutrients = await meal.getTotalNutrients();
-          setNutrients({
-            calories: Math.round(totalNutrients.calories),
-            protein: Math.round(totalNutrients.protein),
-            carbs: Math.round(totalNutrients.carbs),
-            fat: Math.round(totalNutrients.fat),
-          });
-        } catch (error) {
-          console.error('Error loading meal nutrients:', error);
-          setNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0 });
-        } finally {
-          setIsLoadingNutrients(false);
-        }
-      };
-      loadNutrients();
-    }
-  }, [visible, meal]);
-
-  if (!nutrients && isLoadingNutrients) {
-    return null;
-  }
-
-  return (
-    <LogMealModal
-      visible={visible}
-      onClose={onClose}
-      meal={{
-        name: meal.name ?? t('meals.untitledMeal'),
-        type: t('meals.customMeal'),
-        image: meal.imageUrl,
-        calories: nutrients?.calories ?? 0,
-        protein: nutrients?.protein ?? 0,
-        carbs: nutrients?.carbs ?? 0,
-        fat: nutrients?.fat ?? 0,
-      }}
-      onLogMeal={onLogMeal}
-    />
-  );
-}
 
 type MyMealsModalProps = {
   visible: boolean;
@@ -286,7 +219,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setLogMealModalVisible(true);
   };
 
-  const handleLogMeal = async (date: Date, mealType: MealType) => {
+  const handleLogMeal = async (data: { meal: string; date: Date }) => {
     if (!selectedMealForLogging) {
       return;
     }
@@ -304,12 +237,15 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
       for (const mealFood of mealWithFoods.foods) {
         await NutritionService.logFood(
           mealFood.foodId,
-          date,
-          mealType,
+          data.date,
+          data.meal as MealType,
           mealFood.amount,
           mealFood.portionId
         );
       }
+
+      // Refresh meals list
+      await refresh();
 
       // Close modal and reset
       setLogMealModalVisible(false);
@@ -448,9 +384,9 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             }}
           />
         ) : null}
-        {/* LogMealModal */}
+        {/* FoodDetailsModal for Meal */}
         {logMealModalVisible && selectedMealForLogging ? (
-          <LogMealModalWrapper
+          <FoodMealDetailsModal
             visible={logMealModalVisible}
             meal={selectedMealForLogging}
             onClose={() => {
