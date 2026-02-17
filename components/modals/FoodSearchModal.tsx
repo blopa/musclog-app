@@ -486,12 +486,18 @@ export function FoodSearchModal({
             }) as FoodItem
         );
 
-        if (mounted) setFavoriteFoods(mapped);
+        if (mounted) {
+          setFavoriteFoods(mapped);
+        }
       } catch (err) {
         console.error('Error loading favorite foods:', err);
-        if (mounted) setFavoriteFoods([]);
+        if (mounted) {
+          setFavoriteFoods([]);
+        }
       } finally {
-        if (mounted) setIsLoadingFavorites(false);
+        if (mounted) {
+          setIsLoadingFavorites(false);
+        }
       }
     };
 
@@ -579,7 +585,7 @@ export function FoodSearchModal({
   const FILTER_TABS = useMemo(() => {
     return [
       { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` },
+      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${localCount})` }, // TODO: use the favorite count instead of localCount
       ...(apiCount > 0
         ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
         : []),
