@@ -613,7 +613,7 @@ export function FoodMealDetailsModal({
           )
         }
         footer={
-          <View className="bg-transparent px-4 pb-6 pt-3">
+          <View className="pb-6">
             <Button
               label={actionLabel}
               icon={PlusCircle}
