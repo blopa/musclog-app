@@ -736,6 +736,7 @@ export function DataLogModal({
     <Pressable
       className="flex size-10 items-center justify-center rounded-full active:bg-white/10"
       onPress={() => {
+        // TODO: show a BottomPopUpMenu showing options to create new
         console.log('More options pressed');
       }}
     >

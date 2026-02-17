@@ -1,5 +1,3 @@
-export type EditFieldType = 'text' | 'number' | 'boolean' | 'select' | 'date';
-
 // Base field config
 type BaseFieldConfig = {
   key: string;
@@ -44,13 +42,19 @@ export type DateFieldConfig = BaseFieldConfig & {
   type: 'date';
 };
 
+// Icon field config
+export type IconFieldConfig = BaseFieldConfig & {
+  type: 'icon';
+};
+
 // Discriminated union of all field types
 export type EditFieldConfig =
   | TextFieldConfig
   | NumberFieldConfig
   | BooleanFieldConfig
   | SelectFieldConfig
-  | DateFieldConfig;
+  | DateFieldConfig
+  | IconFieldConfig;
 
 // Form values type
 export type EditFormValues = Record<string, string | number | boolean | undefined | null>;

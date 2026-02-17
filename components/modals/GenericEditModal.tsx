@@ -1,15 +1,18 @@
-import { Check, Circle } from 'lucide-react-native';
+import { Check, ChevronDown, Circle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
-import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
+import { showSnackbar } from '../../utils/snackbarService';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
-import { CheckRadioBox } from '../theme/CheckRadioBox';
+import { IconPicker } from '../theme/IconPicker';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
+import { ToggleInput } from '../theme/ToggleInput';
+import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 import type {
   BooleanFieldConfig,
@@ -22,11 +25,7 @@ import type {
 } from './GenericEditModal/types';
 
 // TODO: improve Meals modal so it's possible to add/remove foods from it, maybe use the existing modal
-// TODO: improve portion modal to add an icon picker instead of textinput for icon
-// TODO: improve the workout template so that the checkbox uses the Toggler.tsx component
 // TODO: improve the edit workout template so, well, maybe use the existing modal
-// TODO: improve the user metrics modal to have the date picker and instead of multiple options picker, maybe use the bottom menu options to choose the option
-// TODO: improve exercise edit modal instead of multiple options picker, maybe use the bottom menu options to choose the option
 export function GenericEditModal({
   visible,
   onClose,
@@ -42,6 +41,10 @@ export function GenericEditModal({
   const theme = useTheme();
   const [formValues, setFormValues] = useState<EditFormValues>(initialValues);
   const [isSaving, setIsSaving] = useState(false);
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [currentDateFieldKey, setCurrentDateFieldKey] = useState<string | null>(null);
+  const [selectMenuVisible, setSelectMenuVisible] = useState(false);
+  const [currentSelectFieldKey, setCurrentSelectFieldKey] = useState<string | null>(null);
 
   // Reset form when modal opens or initialValues change
   useEffect(() => {
@@ -64,17 +67,21 @@ export function GenericEditModal({
       onClose();
     } catch (error) {
       console.error('Error saving record:', error);
-      // TODO: Show error toast
+      const errorMessage =
+        error instanceof Error ? error.message : t('common.saveError', 'Failed to save changes');
+      showSnackbar('error', errorMessage, {
+        subtitle: t('common.saveErrorSubtitle', 'Please try again'),
+      });
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Helper function to convert select options to SelectorOption format
-  const createSelectorOptions = (
+  // Helper function to convert select options to BottomPopUpMenuItem format
+  const createBottomMenuItems = (
     options: { value: string | number; label: string }[],
-    selectedValue: string | number | null | undefined
-  ): SelectorOption<string | number>[] => {
+    onSelect: (value: string | number) => void
+  ): BottomPopUpMenuItem[] => {
     return options.map((option, index) => {
       // Use a rotating color scheme for icons
       const colorSchemes = [
@@ -86,17 +93,17 @@ export function GenericEditModal({
       ];
       const colorScheme = colorSchemes[index % colorSchemes.length];
 
-      // Try to get a description from translation keys (e.g., food.meals.descriptions.breakfast)
+      // Try to get a description from translation keys
       const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
       const description = t(descriptionKey, { defaultValue: '' });
 
       return {
-        id: option.value,
-        label: t(option.label, option.label),
-        description: description,
         icon: Circle,
-        iconBgColor: colorScheme.bg,
         iconColor: colorScheme.color,
+        iconBgColor: colorScheme.bg,
+        title: t(option.label, option.label),
+        description: description || t(option.label, option.label),
+        onPress: () => onSelect(option.value),
       };
     });
   };
@@ -159,13 +166,21 @@ export function GenericEditModal({
 
       case 'boolean': {
         const booleanField = field as BooleanFieldConfig;
+        const boolValue = (value as boolean) ?? false;
         return (
-          <CheckRadioBox
+          <ToggleInput
             key={field.key}
-            label={label}
-            value={(value as boolean) ?? false}
-            onValueChange={(val) => handleFieldChange(field.key, val)}
-            type="checkbox"
+            items={[
+              {
+                key: field.key,
+                label: label,
+                subtitle: booleanField.subtitle
+                  ? t(booleanField.subtitle, booleanField.subtitle)
+                  : undefined,
+                value: boolValue,
+                onValueChange: (val) => handleFieldChange(field.key, val),
+              },
+            ]}
           />
         );
       }
@@ -195,33 +210,98 @@ export function GenericEditModal({
           );
         }
 
-        // For longer lists, use OptionsSelector
+        // For longer lists, use BottomPopUpMenu
         // Convert value to string | number | undefined (exclude boolean/null)
         const selectValue =
           typeof value === 'string' || typeof value === 'number' ? value : undefined;
-        const selectorOptions = createSelectorOptions(options, selectValue ?? null);
+        const selectedOption = options.find((opt) => opt.value === selectValue);
+        const selectedLabel = selectedOption
+          ? t(selectedOption.label, selectedOption.label)
+          : t('common.select', 'Select...');
+
+        const menuItems = createBottomMenuItems(options, (val) => {
+          handleFieldChange(field.key, val);
+          setSelectMenuVisible(false);
+          setCurrentSelectFieldKey(null);
+        });
 
         return (
-          <OptionsSelector
-            key={field.key}
-            title={label}
-            options={selectorOptions}
-            selectedId={selectValue}
-            onSelect={(id) => handleFieldChange(field.key, id)}
-          />
+          <View key={field.key} className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+            <Pressable
+              onPress={() => {
+                setCurrentSelectFieldKey(field.key);
+                setSelectMenuVisible(true);
+              }}
+              className="flex-row items-center justify-between rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+            >
+              <Text className="text-base text-text-primary">{selectedLabel}</Text>
+              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+            </Pressable>
+            <BottomPopUpMenu
+              visible={selectMenuVisible ? currentSelectFieldKey === field.key : false}
+              onClose={() => {
+                setSelectMenuVisible(false);
+                setCurrentSelectFieldKey(null);
+              }}
+              title={label}
+              items={menuItems}
+            />
+          </View>
         );
       }
 
       case 'date': {
-        // TODO: Implement date picker
-        // For now, just show the timestamp as a number input
+        // Convert timestamp to Date object, or use current date as default
+        const timestamp = (value as number) ?? Date.now();
+        const dateValue = new Date(timestamp);
+
+        const formatDate = (date: Date) => {
+          return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+        };
+
         return (
-          <View key={field.key}>
+          <View key={field.key} className="gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
-            <Text className="mt-2 text-sm text-text-tertiary">
-              {t('common.datePickerNotImplemented', 'Date picker not yet implemented')}
-            </Text>
+            <Pressable
+              onPress={() => {
+                setCurrentDateFieldKey(field.key);
+                setDatePickerVisible(true);
+              }}
+              className="rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+            >
+              <Text className="text-base text-text-primary">{formatDate(dateValue)}</Text>
+            </Pressable>
+            <DatePickerModal
+              visible={datePickerVisible ? currentDateFieldKey === field.key : false}
+              onClose={() => {
+                setDatePickerVisible(false);
+                setCurrentDateFieldKey(null);
+              }}
+              selectedDate={dateValue}
+              onDateSelect={(date) => {
+                // Convert Date to timestamp (milliseconds)
+                handleFieldChange(field.key, date.getTime());
+                setDatePickerVisible(false);
+                setCurrentDateFieldKey(null);
+              }}
+            />
           </View>
+        );
+      }
+
+      case 'icon': {
+        return (
+          <IconPicker
+            key={field.key}
+            label={label}
+            value={(value as string) ?? ''}
+            onSelect={(iconName) => handleFieldChange(field.key, iconName)}
+          />
         );
       }
 

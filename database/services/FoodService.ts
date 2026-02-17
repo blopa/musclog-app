@@ -269,6 +269,7 @@ export class FoodService {
     updates: {
       name?: string;
       brand?: string;
+      barcode?: string;
       calories?: number;
       protein?: number;
       carbs?: number;
@@ -287,6 +288,7 @@ export class FoodService {
       await food.update((record) => {
         if (updates.name !== undefined) record.name = updates.name;
         if (updates.brand !== undefined) record.brand = updates.brand;
+        if (updates.barcode !== undefined) record.barcode = updates.barcode;
         if (updates.calories !== undefined) record.calories = updates.calories;
         if (updates.protein !== undefined) record.protein = updates.protein;
         if (updates.carbs !== undefined) record.carbs = updates.carbs;

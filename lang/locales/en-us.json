@@ -323,6 +323,8 @@
       "addToFavorites": "Add To Favorites",
       "brand": "Brand",
       "brandPlaceholder": "e.g. Kellogg's",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "e.g. 0000000000000",
       "imageUrl": "Image URL",
       "imageUrlPlaceholder": "Paste image URL"
     },

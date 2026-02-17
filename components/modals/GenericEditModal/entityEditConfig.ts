@@ -176,10 +176,9 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           required: true,
         },
         {
-          type: 'text',
+          type: 'icon',
           key: 'icon',
           label: 'common.icon',
-          placeholder: 'common.icon',
         },
       ];
 
@@ -249,6 +248,12 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           key: 'brand',
           label: 'food.newCustomFood.brand',
           placeholder: 'food.newCustomFood.brandPlaceholder',
+        },
+        {
+          type: 'text',
+          key: 'barcode',
+          label: 'food.newCustomFood.barcode',
+          placeholder: 'food.newCustomFood.barcodePlaceholder',
         },
         {
           type: 'number',
@@ -464,6 +469,7 @@ export async function getInitialValues(
       return {
         name: recordAny.name ?? '',
         brand: recordAny.brand ?? '',
+        barcode: recordAny.barcode ?? '',
         calories: recordAny.calories ?? 0,
         protein: recordAny.protein ?? 0,
         carbs: recordAny.carbs ?? 0,
@@ -551,6 +557,7 @@ export async function saveRecord(
       await FoodService.updateFood(recordId, {
         name: values.name as string | undefined,
         brand: values.brand as string | undefined,
+        barcode: values.barcode as string | undefined,
         calories: values.calories as number | undefined,
         protein: values.protein as number | undefined,
         carbs: values.carbs as number | undefined,
