@@ -14,7 +14,7 @@ import {
 
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import { MealService, NutritionService } from '../../database/services';
+import { NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
@@ -1031,6 +1031,7 @@ export function FoodSearchModal({
             setSelectedMeal(null);
           }}
           meal={selectedMeal}
+          initialMealType={mealType}
           onLogMeal={(data) => {
             // Call the original onFoodSelect if provided (for consistency)
             // Note: meals don't have servingSize, so we pass undefined

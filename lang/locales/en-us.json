@@ -220,8 +220,11 @@
       "kcal": "kcal"
     },
     "foodDetails": {
-      "title": "Food Details",
+      "foodTitle": "Food Details",
+      "mealTitle": "Meal Details",
       "servingSize": "Serving Size",
+      "portionSize": "Portion Size",
+      "servings": "Servings",
       "addFavorite": "Add Favorite",
       "grams": "Grams",
       "unitGrams": "g",

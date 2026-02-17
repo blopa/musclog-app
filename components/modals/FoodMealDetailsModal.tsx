@@ -27,6 +27,7 @@ type FoodDetailsModalProps = {
   barcode?: string | null;
   food?: Food | null;
   meal?: Meal | null;
+  initialMealType?: MealType;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
 };
@@ -37,6 +38,7 @@ export function FoodMealDetailsModal({
   barcode,
   food,
   meal,
+  initialMealType,
   onAddFood,
   onLogMeal,
   foodLog,
@@ -45,7 +47,8 @@ export function FoodMealDetailsModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [servingSize, setServingSize] = useState(100);
-  const [selectedMeal, setSelectedMeal] = useState<MealType>('lunch');
+  const [mealPortionMultiplier, setMealPortionMultiplier] = useState(1);
+  const [selectedMeal, setSelectedMeal] = useState<MealType>(initialMealType ?? 'lunch');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
@@ -289,15 +292,15 @@ export function FoodMealDetailsModal({
 
   // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
-    // For meals, nutrients are already calculated and don't need scaling
+    // For meals, scale nutrients by portion multiplier
     if (meal && mealNutrients) {
       return {
         name: getProductName(),
         category: getProductCategory(),
-        calories: mealNutrients.calories,
-        protein: mealNutrients.protein,
-        carbs: mealNutrients.carbs,
-        fat: mealNutrients.fat,
+        calories: Math.round(mealNutrients.calories * mealPortionMultiplier),
+        protein: Math.round(mealNutrients.protein * mealPortionMultiplier * 10) / 10,
+        carbs: Math.round(mealNutrients.carbs * mealPortionMultiplier * 10) / 10,
+        fat: Math.round(mealNutrients.fat * mealPortionMultiplier * 10) / 10,
       };
     }
 
@@ -316,6 +319,7 @@ export function FoodMealDetailsModal({
     getProductName,
     meal,
     mealNutrients,
+    mealPortionMultiplier,
     nutritionalData.calories,
     nutritionalData.carbs,
     nutritionalData.fat,
@@ -348,13 +352,13 @@ export function FoodMealDetailsModal({
             throw new Error('Failed to get meal foods');
           }
 
-          // Log each food in the meal
+          // Log each food in the meal, scaled by the portion multiplier
           for (const mealFood of mealWithFoods.foods) {
             await NutritionService.logFood(
               mealFood.foodId,
               selectedDate,
               selectedMeal,
-              mealFood.amount,
+              mealFood.amount * mealPortionMultiplier,
               mealFood.portionId
             );
           }
@@ -520,6 +524,7 @@ export function FoodMealDetailsModal({
     selectedDate,
     selectedMeal,
     servingSize,
+    mealPortionMultiplier,
     onAddFood,
     onClose,
     showSnackbar,
@@ -574,7 +579,7 @@ export function FoodMealDetailsModal({
       <FullScreenModal
         visible={isFoodDetailsModalVisible}
         onClose={onClose}
-        title={t('food.foodDetails.title')}
+        title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
         scrollable={true}
         headerRight={
           mode !== 'meal' ? (
@@ -686,7 +691,85 @@ export function FoodMealDetailsModal({
             {/* Serving Size - only show for foods, not meals */}
             {mode !== 'meal' ? (
               <ServingSizeSelector value={servingSize} onChange={setServingSize} />
-            ) : null}
+            ) : (
+              /* Portion Selector - only for meals */
+              <View className="mt-6 w-full">
+                <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                  {t('food.foodDetails.portionSize')}
+                </Text>
+                <View
+                  className="rounded-xl border bg-bg-cardDark p-3"
+                  style={{ borderColor: theme.colors.background.white10 }}
+                >
+                  {/* Multiplier Stepper */}
+                  <View className="mb-4 flex-row items-center gap-3">
+                    <Pressable
+                      className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
+                      style={{ borderColor: theme.colors.background.white5 }}
+                      onPress={() =>
+                        setMealPortionMultiplier((prev) =>
+                          Math.max(0.25, Math.round((prev - 0.25) * 100) / 100)
+                        )
+                      }
+                    >
+                      <Text className="text-2xl font-bold text-text-secondary">−</Text>
+                    </Pressable>
+                    <View className="flex-1 items-center justify-center">
+                      <Text className="text-4xl font-black text-text-primary">
+                        {mealPortionMultiplier % 1 === 0
+                          ? `${mealPortionMultiplier}`
+                          : `${mealPortionMultiplier}`}
+                      </Text>
+                      <Text className="mt-1 text-xs text-text-secondary">
+                        {t('food.foodDetails.servings')}
+                      </Text>
+                    </View>
+                    <Pressable
+                      className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
+                      onPress={() =>
+                        setMealPortionMultiplier((prev) => Math.round((prev + 0.25) * 100) / 100)
+                      }
+                    >
+                      <Text className="text-2xl font-bold text-accent-primary">+</Text>
+                    </Pressable>
+                  </View>
+                  {/* Quick Presets */}
+                  <View className="flex-row justify-center gap-2 pb-1">
+                    {[0.5, 1, 1.5, 2].map((preset) => (
+                      <Pressable
+                        key={preset}
+                        className="rounded-full border px-4"
+                        style={{
+                          paddingVertical: theme.spacing.padding['1half'],
+                          backgroundColor:
+                            mealPortionMultiplier === preset
+                              ? theme.colors.accent.primary10
+                              : 'transparent',
+                          borderColor:
+                            mealPortionMultiplier === preset
+                              ? theme.colors.accent.primary20
+                              : theme.colors.background.white5,
+                        }}
+                        onPress={() => setMealPortionMultiplier(preset)}
+                      >
+                        <Text
+                          className="text-xs font-medium"
+                          style={{
+                            color:
+                              mealPortionMultiplier === preset
+                                ? theme.colors.accent.primary
+                                : theme.colors.text.secondary,
+                            fontWeight: mealPortionMultiplier === preset ? '700' : '500',
+                          }}
+                        >
+                          {preset === 0.5 ? '½' : preset === 1 ? '1' : preset === 1.5 ? '1½' : '2'}×
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            )}
 
             {/* Meal Selection */}
             <View>
