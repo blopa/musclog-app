@@ -48,6 +48,7 @@ export default function FoodScreen() {
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const [isCameraVisible, setIsCameraVisible] = useState(false);
+  const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
   const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
     'ai-meal-photo'
   );
@@ -435,6 +436,7 @@ export default function FoodScreen() {
                       width="flex-1"
                       onPress={() => {
                         setCameraMode('barcode-scan');
+                        setHideCameraModePicker(false);
                         setIsCameraVisible(true);
                       }}
                     />
@@ -446,6 +448,7 @@ export default function FoodScreen() {
                       width="flex-1"
                       onPress={() => {
                         setCameraMode('ai-meal-photo');
+                        setHideCameraModePicker(false);
                         setIsCameraVisible(true);
                       }}
                     />
@@ -617,12 +620,14 @@ export default function FoodScreen() {
             // Open CameraModal with AI mode selected
             setIsAddFoodModalVisible(false);
             setCameraMode('ai-meal-photo');
+            setHideCameraModePicker(false);
             setIsCameraVisible(true);
           }}
           onScanBarcodePress={() => {
             // Open CameraModal with barcode mode selected
             setIsAddFoodModalVisible(false);
             setCameraMode('barcode-scan');
+            setHideCameraModePicker(false);
             setIsCameraVisible(true);
           }}
           onSearchFoodPress={() => {
@@ -655,6 +660,7 @@ export default function FoodScreen() {
           visible={isCameraVisible}
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}
+          hideCameraModePicker={hideCameraModePicker}
         />
       ) : null}
 
@@ -682,6 +688,7 @@ export default function FoodScreen() {
             // Open camera modal with barcode mode
             setIsFoodSearchModalVisible(false);
             setCameraMode('barcode-scan');
+            setHideCameraModePicker(true);
             setIsCameraVisible(true);
           }}
         />
