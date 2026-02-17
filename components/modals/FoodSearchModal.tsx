@@ -98,10 +98,13 @@ type FoodItemCardProps = {
 
 function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
   const theme = useTheme();
-  const p = Math.round(food.protein ?? 0);
-  const c = Math.round(food.carbs ?? 0);
-  const f = Math.round(food.fat ?? 0);
-  const macroLine = `${p}g P • ${c}g C • ${f}g F`;
+  const { t } = useTranslation();
+
+  const macroLine = t('food.manageFoodLibrary.macrosFormat', {
+    protein: Math.round(food.protein ?? 0),
+    carbs: Math.round(food.carbs ?? 0),
+    fat: Math.round(food.fat ?? 0),
+  });
 
   return (
     <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
@@ -234,7 +237,11 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const macroSummary = `${Math.round(mealData.protein)}g P • ${Math.round(mealData.carbs)}g C • ${Math.round(mealData.fat)}g F`;
+  const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
+    protein: Math.round(mealData.protein),
+    carbs: Math.round(mealData.carbs),
+    fat: Math.round(mealData.fat),
+  });
 
   return (
     <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">

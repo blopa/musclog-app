@@ -32,9 +32,7 @@ export function FoodItemCard({
   const p = Math.round(protein ?? 0);
   const c = Math.round(carbs ?? 0);
   const f = Math.round(fat ?? 0);
-  // TODO: use 'food.manageFoodLibrary.macrosFormat' translation key here
-  const macroLine = p > 0 || c > 0 || f > 0 ? `${p}g P • ${c}g C • ${f}g F` : null;
-  const combinedDescription = macroLine ? `${description} • ${macroLine}` : description;
+  const combinedDescription = `${description} • ${t('food.manageFoodLibrary.macrosFormat', { protein: p, carbs: c, fat: f })}`;
 
   return (
     <GenericCard variant="default">
