@@ -28,6 +28,7 @@ type FoodDetailsModalProps = {
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
 };
 
+// TODO: update this modal to also be render a Meal too
 export function FoodDetailsModal({
   visible,
   onClose,
