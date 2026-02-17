@@ -488,6 +488,9 @@ export default function FoodScreen() {
                       name={entry.food?.name ?? ''}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
+                      protein={entry.nutrients.protein}
+                      carbs={entry.nutrients.carbs}
+                      fat={entry.nutrients.fat}
                       image={
                         entry.food?.imageUrl
                           ? { uri: entry.food.imageUrl }
@@ -513,6 +516,9 @@ export default function FoodScreen() {
                       name={entry.food?.name ?? ''}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
+                      protein={entry.nutrients.protein}
+                      carbs={entry.nutrients.carbs}
+                      fat={entry.nutrients.fat}
                       image={
                         entry.food?.imageUrl
                           ? { uri: entry.food.imageUrl }
@@ -538,6 +544,9 @@ export default function FoodScreen() {
                       name={entry.food?.name ?? ''}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
+                      protein={entry.nutrients.protein}
+                      carbs={entry.nutrients.carbs}
+                      fat={entry.nutrients.fat}
                       image={
                         entry.food?.imageUrl
                           ? { uri: entry.food.imageUrl }
@@ -563,6 +572,9 @@ export default function FoodScreen() {
                       name={entry.food?.name ?? ''}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
+                      protein={entry.nutrients.protein}
+                      carbs={entry.nutrients.carbs}
+                      fat={entry.nutrients.fat}
                       image={
                         entry.food?.imageUrl
                           ? { uri: entry.food.imageUrl }
@@ -588,6 +600,9 @@ export default function FoodScreen() {
                       name={entry.food?.name ?? ''}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
+                      protein={entry.nutrients.protein}
+                      carbs={entry.nutrients.carbs}
+                      fat={entry.nutrients.fat}
                       image={
                         entry.food?.imageUrl
                           ? { uri: entry.food.imageUrl }

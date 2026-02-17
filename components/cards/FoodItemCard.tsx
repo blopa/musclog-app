@@ -11,6 +11,9 @@ type FoodItemCardProps = {
   calories: number;
   image: ImageSourcePropType;
   onMorePress?: () => void;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 };
 
 export function FoodItemCard({
@@ -19,9 +22,19 @@ export function FoodItemCard({
   calories,
   image,
   onMorePress,
+  protein,
+  carbs,
+  fat,
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  const p = Math.round(protein ?? 0);
+  const c = Math.round(carbs ?? 0);
+  const f = Math.round(fat ?? 0);
+  // TODO: use 'food.manageFoodLibrary.macrosFormat' translation key here
+  const macroLine = p > 0 || c > 0 || f > 0 ? `${p}g P • ${c}g C • ${f}g F` : null;
+  const combinedDescription = macroLine ? `${description} • ${macroLine}` : description;
 
   return (
     <GenericCard variant="default">
@@ -34,7 +47,7 @@ export function FoodItemCard({
         </View>
         <View className="min-w-0 flex-1">
           <Text className="mb-1 text-lg font-semibold text-text-primary">{name}</Text>
-          <Text className="truncate text-sm text-text-secondary">{description}</Text>
+          <Text className="truncate text-sm text-text-secondary">{combinedDescription}</Text>
         </View>
         <View className="flex-shrink-0 items-end">
           <Text className="text-2xl font-bold text-accent-secondary">

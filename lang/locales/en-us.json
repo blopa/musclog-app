@@ -92,6 +92,7 @@
       "deleteFood": "Delete food",
       "deleteFoodDesc": "Remove this food from your library",
       "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+      "macrosFormat": "{{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "unknownFood": "Unknown"
     },
     "managePortionData": {
