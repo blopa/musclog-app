@@ -256,6 +256,7 @@ export default function FoodScreen() {
     }
 
     try {
+      // The @writer method returns a promise that resolves when the operation completes
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
       showSnackbar('success', t('food.actions.deleteSuccess'));
     } catch (error) {
@@ -265,16 +266,6 @@ export default function FoodScreen() {
       // Always close the modal and clear selection, regardless of success or error
       setIsDeleteConfirmationVisible(false);
       setSelectedFoodItem(null);
-      
-      // Refresh data after a longer delay to ensure database operation completes 
-      // and avoid conflicts with reactive observers
-      setTimeout(async () => {
-        try {
-          await refresh();
-        } catch (refreshError) {
-          console.error('Error refreshing after delete:', refreshError);
-        }
-      }, 300);
     }
   };
 
