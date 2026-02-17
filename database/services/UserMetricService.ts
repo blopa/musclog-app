@@ -91,9 +91,8 @@ export class UserMetricService {
    * Delete user metric (soft delete)
    */
   static async deleteMetric(id: string): Promise<void> {
-    return await database.write(async () => {
-      const metric = await database.get<UserMetric>('user_metrics').find(id);
-      await metric.markAsDeleted();
-    });
+    const metric = await database.get<UserMetric>('user_metrics').find(id);
+    // markAsDeleted is a @writer method, so it already manages its own write transaction
+    await metric.markAsDeleted();
   }
 }

@@ -890,6 +890,7 @@ export class WorkoutTemplateService {
     const diffMs = now - timestamp;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
+    // TODO: add translations
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -904,9 +905,10 @@ export class WorkoutTemplateService {
    * Delete workout template (soft delete)
    */
   static async deleteTemplate(id: string): Promise<void> {
-    return await database.write(async () => {
+    return await database.write(async (writer) => {
       const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
-      await template.markAsDeleted();
+      // Use callWriter to avoid nested writes since markAsDeleted is a @writer method
+      await writer.callWriter(() => template.markAsDeleted());
 
       // Also soft-delete all associated sets
       const sets = await database
@@ -915,7 +917,7 @@ export class WorkoutTemplateService {
         .fetch();
 
       for (const set of sets) {
-        await set.markAsDeleted();
+        await writer.callWriter(() => set.markAsDeleted());
       }
 
       // Also soft-delete all associated schedules
@@ -925,7 +927,7 @@ export class WorkoutTemplateService {
         .fetch();
 
       for (const schedule of schedules) {
-        await schedule.markAsDeleted();
+        await writer.callWriter(() => schedule.markAsDeleted());
       }
     });
   }

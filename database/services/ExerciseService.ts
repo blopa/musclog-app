@@ -147,10 +147,9 @@ export class ExerciseService {
    * Delete exercise (soft delete)
    */
   static async deleteExercise(id: string): Promise<void> {
-    return await database.write(async () => {
-      const exercise = await database.get<Exercise>('exercises').find(id);
-      await exercise.markAsDeleted();
-    });
+    const exercise = await database.get<Exercise>('exercises').find(id);
+    // markAsDeleted is a @writer method, so it already manages its own write transaction
+    await exercise.markAsDeleted();
   }
 
   /**

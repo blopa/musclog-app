@@ -497,9 +497,10 @@ export class WorkoutService {
    * Delete workout log (soft delete)
    */
   static async deleteWorkoutLog(id: string): Promise<void> {
-    return await database.write(async () => {
+    return await database.write(async (writer) => {
       const workoutLog = await database.get<WorkoutLog>('workout_logs').find(id);
-      await workoutLog.markAsDeleted();
+      // Use callWriter to avoid nested writes since markAsDeleted is a @writer method
+      await writer.callWriter(() => workoutLog.markAsDeleted());
 
       // Also soft-delete all associated sets
       const sets = await database
@@ -508,7 +509,7 @@ export class WorkoutService {
         .fetch();
 
       for (const set of sets) {
-        await set.markAsDeleted();
+        await writer.callWriter(() => set.markAsDeleted());
       }
     });
   }

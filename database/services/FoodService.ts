@@ -306,10 +306,9 @@ export class FoodService {
    * Delete food (soft delete)
    */
   static async deleteFood(id: string): Promise<void> {
-    return await database.write(async () => {
-      const food = await database.get<Food>('foods').find(id);
-      await food.markAsDeleted();
-    });
+    const food = await database.get<Food>('foods').find(id);
+    // markAsDeleted is a @writer method, so it already manages its own write transaction
+    await food.markAsDeleted();
   }
 
   /**

@@ -129,10 +129,9 @@ export class FoodPortionService {
    * Delete food portion
    */
   static async deleteFoodPortion(id: string): Promise<void> {
-    return await database.write(async () => {
-      const portion = await database.get<FoodPortion>('food_portions').find(id);
-      await portion.markAsDeleted();
-    });
+    const portion = await database.get<FoodPortion>('food_portions').find(id);
+    // markAsDeleted is a @writer method, so it already manages its own write transaction
+    await portion.markAsDeleted();
   }
 
   /**
