@@ -143,10 +143,9 @@ export default function InputsTestScreen() {
             required
           />
           <TextInput
-            label="Email (Focused)"
+            label="Email (Tap to focus)"
             value={email}
             onChangeText={setEmail}
-            focused={true}
             keyboardType="email-address"
           />
         </TestSection>

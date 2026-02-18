@@ -247,7 +247,6 @@ export default function WorkoutsScreen() {
                         <Search size={theme.iconSize.md} color={theme.colors.text.secondary} />
                       )
                     }
-                    focused={isSearchActive}
                     onFocus={() => setIsSearchActive(true)}
                   />
                 </View>
