@@ -154,6 +154,7 @@ export default function NutritionGoalsScreen() {
             onPress={() => currentGoals && handleSave(currentGoals)}
             disabled={!currentGoals}
           />
+          <View style={{ height: theme.spacing.margin.md }} />
         </BottomButtonWrapper>
       </View>
     </MasterLayout>

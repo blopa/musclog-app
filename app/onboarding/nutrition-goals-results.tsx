@@ -978,6 +978,7 @@ export default function NutritionGoalsResults() {
                 });
               }}
             />
+            <View style={{ height: theme.spacing.margin.md }} />
           </>
         ) : null}
       </BottomButtonWrapper>

@@ -544,6 +544,7 @@ export default function SetGoals() {
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />
+        <View style={{ height: theme.spacing.margin.md }} />
       </BottomButtonWrapper>
     </MasterLayout>
   );
