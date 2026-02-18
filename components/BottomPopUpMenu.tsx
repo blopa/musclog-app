@@ -1,6 +1,6 @@
 import { ChevronRight } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 import { BottomPopUp } from './BottomPopUp';
@@ -42,8 +42,13 @@ function OptionItem({
   onPress,
 }: OptionItemProps) {
   const theme = useTheme();
+  // On Android, Pressable inside ScrollView often needs two taps because ScrollView captures the first touch.
+  // unstable_pressDelay lets the first tap register (press fires after delay if no scroll).
+  const pressableProps =
+    Platform.OS === 'android' ? { onPress, unstable_pressDelay: 130 as const } : { onPress };
+
   return (
-    <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" onPress={onPress}>
+    <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" {...pressableProps}>
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{ backgroundColor: iconBgColor || theme.colors.background.iconDarker }}

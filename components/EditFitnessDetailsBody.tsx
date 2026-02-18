@@ -280,7 +280,6 @@ export function EditFitnessDetailsBody({
                 placeholder="0.0"
                 keyboardType="numeric"
                 selectTextOnFocus={true}
-                disableFocusStyle
                 icon={
                   <Text className="text-center text-sm font-medium text-text-tertiary">
                     {getWeightUnit(units)}
@@ -296,7 +295,6 @@ export function EditFitnessDetailsBody({
                 placeholder="0"
                 keyboardType="numeric"
                 selectTextOnFocus={true}
-                disableFocusStyle
                 icon={
                   <Text className="text-center text-sm font-medium text-text-tertiary">
                     {getHeightUnit(units)}

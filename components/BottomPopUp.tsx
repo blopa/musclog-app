@@ -81,99 +81,103 @@ export function BottomPopUp({
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
-      {/* Backdrop */}
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View
-          className="flex-1"
-          style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        >
+      <View
+        className="flex-1"
+        style={[{ backgroundColor: 'transparent' }, webBackdropStyle]}
+        pointerEvents="box-none"
+      >
+        {/* Backdrop: sibling behind content so taps on content hit content first (fixes Android menu taps) */}
+        <TouchableWithoutFeedback onPress={onClose}>
           <View
-            className="flex-1 justify-end"
-            style={
-              Platform.OS === 'web'
-                ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
-                : undefined
-            }
+            style={[
+              { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+              { backgroundColor: theme.colors.overlay.black60 },
+            ]}
+          />
+        </TouchableWithoutFeedback>
+        {/* Content: sibling on top so hit-testing delivers touches to Pressables inside */}
+        <View
+          className="flex-1 justify-end"
+          style={
+            Platform.OS === 'web'
+              ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
+              : undefined
+          }
+          pointerEvents="box-none"
+        >
+          <Animated.View
+            className="border-t border-border-dark"
+            style={{
+              transform: [{ translateY: slideAnim }],
+              backgroundColor: theme.colors.background.cardElevated,
+              overflow: 'hidden',
+              borderTopLeftRadius: theme.borderRadius['3xl'],
+              borderTopRightRadius: theme.borderRadius['3xl'],
+              maxHeight: maxHeight || '90%',
+              width: '100%',
+            }}
           >
-            {/* Modal Content */}
-            <TouchableWithoutFeedback>
-              <Animated.View
-                className="border-t border-border-dark"
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
-                onResponderTerminationRequest={() => false}
+            {/* Header */}
+            <LinearGradient
+              colors={[
+                theme.colors.status.purple40,
+                theme.colors.accent.secondary10,
+                'transparent',
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="border-b border-border-dark"
+            >
+              <View className="flex-row items-center justify-between p-6">
+                <View className="flex-1 flex-row items-center gap-3">
+                  {headerIcon ? <View>{headerIcon}</View> : null}
+                  <View className="flex-1">
+                    <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                    {subtitle ? (
+                      <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                    ) : null}
+                  </View>
+                </View>
+                <Pressable
+                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                  onPress={onClose}
+                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+                >
+                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </Pressable>
+              </View>
+            </LinearGradient>
+
+            {/* Content */}
+            {children ? (
+              <ScrollView
+                className="p-6"
+                style={
+                  !footer
+                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                    : undefined
+                }
+                scrollEnabled={true}
+                nestedScrollEnabled={true}
+              >
+                {children}
+              </ScrollView>
+            ) : null}
+
+            {/* Footer */}
+            {footer ? (
+              <View
+                className="border-t border-border-dark px-6 pt-2"
                 style={{
-                  transform: [{ translateY: slideAnim }],
-                  backgroundColor: theme.colors.background.cardElevated,
-                  overflow: 'hidden',
-                  borderTopLeftRadius: theme.borderRadius['3xl'],
-                  borderTopRightRadius: theme.borderRadius['3xl'],
-                  maxHeight: maxHeight || '90%',
-                  width: '100%',
+                  paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
                 }}
               >
-                {/* Header */}
-                <LinearGradient
-                  colors={[
-                    theme.colors.status.purple40,
-                    theme.colors.accent.secondary10,
-                    'transparent',
-                  ]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  className="border-b border-border-dark"
-                >
-                  <View className="flex-row items-center justify-between p-6">
-                    <View className="flex-1 flex-row items-center gap-3">
-                      {headerIcon ? <View>{headerIcon}</View> : null}
-                      <View className="flex-1">
-                        <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-                        {subtitle ? (
-                          <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
-                        ) : null}
-                      </View>
-                    </View>
-                    <Pressable
-                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                      onPress={onClose}
-                    >
-                      <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                    </Pressable>
-                  </View>
-                </LinearGradient>
-
-                {/* Content */}
-                {children ? (
-                  <ScrollView
-                    className="p-6"
-                    style={
-                      !footer
-                        ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
-                        : undefined
-                    }
-                    scrollEnabled={true}
-                    nestedScrollEnabled={true}
-                  >
-                    {children}
-                  </ScrollView>
-                ) : null}
-
-                {/* Footer */}
-                {footer ? (
-                  <View
-                    className="border-t border-border-dark px-6 pt-2"
-                    style={{
-                      paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
-                    }}
-                  >
-                    {footer}
-                  </View>
-                ) : null}
-              </Animated.View>
-            </TouchableWithoutFeedback>
-          </View>
+                {footer}
+              </View>
+            ) : null}
+          </Animated.View>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </Modal>
   );
 }

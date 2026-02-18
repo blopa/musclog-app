@@ -7,12 +7,10 @@
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
     "web": {
-      "bundler": "metro",
       "output": "static",
       "favicon": "./assets/favicon.png"
     },
     "experiments": {
-      "typedRoutes": true,
       "tsconfigPaths": true,
       "baseUrl": "/musclog-app"
     },
@@ -105,9 +103,6 @@
       ]
     },
     "extra": {
-      "router": {
-        "origin": false
-      },
       "eas": {
         "projectId": "7a194e96-295d-44a1-8324-78e776fe0807"
       }
