@@ -23,7 +23,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
-  focused,
+  focused, // TODO: instead of having this, handle if the input is on focus or not internally, even better if there's a native way to do this without using javascript / react state
   keyboardType = 'default',
   icon,
   secureTextEntry,
