@@ -102,7 +102,6 @@ export function EditFitnessDetailsBody({
   ]);
   const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
   const [isActivityPickerVisible, setIsActivityPickerVisible] = useState(false);
-  const [focusedInput, setFocusedInput] = useState<'weight' | 'height' | null>(null);
 
   const handleSave = () => {
     onSave?.({
@@ -280,9 +279,8 @@ export function EditFitnessDetailsBody({
                 onChangeText={setWeight}
                 placeholder="0.0"
                 keyboardType="numeric"
-                focused={focusedInput === 'weight'}
-                onFocus={() => setFocusedInput('weight')}
-                onBlur={() => setFocusedInput(null)}
+                selectTextOnFocus={true}
+                disableFocusStyle
                 icon={
                   <Text className="text-center text-sm font-medium text-text-tertiary">
                     {getWeightUnit(units)}
@@ -297,9 +295,8 @@ export function EditFitnessDetailsBody({
                 onChangeText={setHeight}
                 placeholder="0"
                 keyboardType="numeric"
-                focused={focusedInput === 'height'}
-                onFocus={() => setFocusedInput('height')}
-                onBlur={() => setFocusedInput(null)}
+                selectTextOnFocus={true}
+                disableFocusStyle
                 icon={
                   <Text className="text-center text-sm font-medium text-text-tertiary">
                     {getHeightUnit(units)}

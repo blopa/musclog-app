@@ -321,6 +321,7 @@ export default function FitnessInfo() {
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             paddingBottom: theme.spacing.padding.bottomButton,
           }}
