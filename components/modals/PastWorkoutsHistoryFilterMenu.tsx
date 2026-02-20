@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type MuscleGroup } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
@@ -291,6 +291,7 @@ export function PastWorkoutsHistoryFilterMenu({
                 <Pressable
                   key={muscle.id}
                   onPress={() => toggleMuscleGroup(muscle.id as FilterMuscleGroup)}
+                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                   className="flex-row items-center gap-2 rounded-full border px-4 py-2 active:scale-95"
                   style={{
                     backgroundColor: isSelected

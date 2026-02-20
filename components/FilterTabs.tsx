@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react-native';
-import { Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -48,6 +48,7 @@ export function FilterTabs({
             }`}
             style={{ marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0 }}
             onPress={() => onTabChange(tab.id)}
+            {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             <Text
               className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}

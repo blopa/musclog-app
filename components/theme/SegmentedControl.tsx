@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
@@ -46,6 +46,7 @@ export function SegmentedControl({
             key={option.value}
             className="flex-1"
             onPress={() => onValueChange(option.value)}
+            {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             {variant === 'gradient' && isSelected ? (
               <LinearGradient
