@@ -197,6 +197,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
           </SafeAreaView>
         </View>
       ) : null}
+      <View style={{ height: theme.spacing.margin['3xl'] }} />
     </SafeAreaView>
   );
 }

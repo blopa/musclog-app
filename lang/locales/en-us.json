@@ -799,6 +799,26 @@
     "header": {
       "title": "Profile"
     },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "stats" : {
+      "weight": "Weight",
+      "height": "Height",
+      "age": "Age",
+      "gender": "Gender",
+      "activityLevel": "Activity Level"
+    },
+    "managementItems": {
+      "editFitness": "Edit Fitness Info",
+      "editFitnessDesc": "Edit your fitness information",
+      "editPersonal": "Edit Personal Info",
+      "editPersonalDesc": "Edit your personal information",
+      "appPreferences": "App Preferences",
+      "appPreferencesDesc": "Manage app preferences"
+    },
     "goal": "Goal",
     "currentStats": "Current Stats",
     "history": "History",

@@ -772,7 +772,6 @@ export default function FoodScreen() {
           }}
         />
       ) : null}
-      <View style={{ height: theme.spacing.margin['3xl'] }} />
     </MasterLayout>
   );
 }

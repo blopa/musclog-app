@@ -1,16 +1,18 @@
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { database } from '../database-instance';
-import { NutritionGoal, UserMetric } from '../models';
+import { NutritionGoal, User, UserMetric } from '../models';
 
 export interface MigrationResult {
   success: boolean;
   error?: string;
   fitnessGoals: number;
   userMetrics: number;
+  users: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
+    usersMigrated: number;
     errors: string[];
   };
 }
@@ -206,6 +208,81 @@ export class MigrationService {
   }
 
   /**
+   * Migrate user profiles from old User table to new users table
+   */
+  private async migrateUsers(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldUsers = (await this.oldDB.getAllAsync(`
+      SELECT * FROM User 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldUser of oldUsers) {
+      try {
+        await database.write(async () => {
+          await database.get<User>('users').create((newUser) => {
+            newUser.fullName = oldUser.name || '';
+            newUser.email = undefined; // Old schema doesn't have email, set to undefined as it's optional
+            newUser.dateOfBirth = this.convertTimestamp(oldUser.birthday);
+            newUser.gender = oldUser.gender || 'other';
+            newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain';
+            newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);
+            newUser.activityLevel = Number(oldUser.activityLevel) || 3; // Default to moderate
+            newUser.liftingExperience = oldUser.liftingExperience || 'beginner';
+            newUser.avatarIcon = undefined; // Not present in old schema
+            newUser.avatarColor = undefined; // Not present in old schema
+            newUser.syncId = this.generateUUID(); // Generate new sync ID
+            newUser.externalAccountId = undefined; // Not present in old schema
+            newUser.externalAccountProvider = undefined; // Not present in old schema
+            newUser.createdAt = this.convertTimestamp(oldUser.createdAt);
+            newUser.updatedAt = this.convertTimestamp(oldUser.createdAt);
+            newUser.deletedAt = oldUser.deletedAt
+              ? this.convertTimestamp(oldUser.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating user:', error, 'Data:', oldUser);
+        throw new Error(
+          `Failed to migrate user: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Map old fitness goals string to new weight goal format
+   */
+  private mapFitnessGoalToWeightGoal(fitnessGoals: string): 'lose' | 'gain' | 'maintain' {
+    if (!fitnessGoals) return 'maintain';
+
+    const lowerGoals = fitnessGoals.toLowerCase();
+    if (lowerGoals.includes('lose') || lowerGoals.includes('cut')) {
+      return 'lose';
+    } else if (lowerGoals.includes('gain') || lowerGoals.includes('bulk')) {
+      return 'gain';
+    }
+    return 'maintain';
+  }
+
+  /**
+   * Generate a simple UUID for sync ID
+   */
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
+  /**
    * Validate migration integrity
    */
   private async validateMigration(result: MigrationResult): Promise<void> {
@@ -215,9 +292,10 @@ export class MigrationService {
       .query()
       .fetchCount();
     const userMetricsCount = await database.get<UserMetric>('user_metrics').query().fetchCount();
+    const usersCount = await database.get<User>('users').query().fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -227,6 +305,10 @@ export class MigrationService {
 
     if (result.details.userMetricsMigrated > 0 && userMetricsCount === 0) {
       throw new Error('User metrics migration validation failed');
+    }
+
+    if (result.details.usersMigrated > 0 && usersCount === 0) {
+      throw new Error('Users migration validation failed');
     }
   }
 
@@ -238,9 +320,11 @@ export class MigrationService {
       success: false,
       fitnessGoals: 0,
       userMetrics: 0,
+      users: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
+        usersMigrated: 0,
         errors: [],
       },
     };
@@ -263,7 +347,12 @@ export class MigrationService {
       result.details.userMetricsMigrated = await this.migrateUserMetrics();
       result.userMetrics = result.details.userMetricsMigrated;
 
-      // Step 4: Validate migration
+      // Step 4: Migrate Users
+      console.log('Migrating users...');
+      result.details.usersMigrated = await this.migrateUsers();
+      result.users = result.details.usersMigrated;
+
+      // Step 5: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -285,12 +374,14 @@ export class MigrationService {
   async getMigrationSummary(): Promise<{
     fitnessGoalsCount: number;
     userMetricsCount: number;
+    usersCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
       return {
         fitnessGoalsCount: 0,
         userMetricsCount: 0,
+        usersCount: 0,
         tables: [],
       };
     }
@@ -299,6 +390,7 @@ export class MigrationService {
 
     let fitnessGoalsCount = 0;
     let userMetricsCount = 0;
+    let usersCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -316,6 +408,14 @@ export class MigrationService {
         `)) as { count: number }[];
         userMetricsCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('User')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM User 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        usersCount = result[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -323,6 +423,7 @@ export class MigrationService {
     return {
       fitnessGoalsCount,
       userMetricsCount,
+      usersCount,
       tables,
     };
   }

@@ -5,6 +5,7 @@ import { type MigrationResult, MigrationService } from '../database/services/Mig
 export interface MigrationSummary {
   fitnessGoalsCount: number;
   userMetricsCount: number;
+  usersCount: number;
   tables: string[];
 }
 
@@ -57,9 +58,11 @@ export const useOldDatabaseMigration = (): UseOldDatabaseMigrationReturn => {
         error: error instanceof Error ? error.message : 'Unknown error',
         fitnessGoals: 0,
         userMetrics: 0,
+        users: 0,
         details: {
           fitnessGoalsMigrated: 0,
           userMetricsMigrated: 0,
+          usersMigrated: 0,
           errors: [error instanceof Error ? error.message : 'Unknown error'],
         },
       });

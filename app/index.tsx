@@ -545,7 +545,6 @@ export default function HomeScreen() {
           }}
         />
       ) : null}
-      <View style={{ height: theme.spacing.margin['3xl'] }} />
     </MasterLayout>
   );
 }
