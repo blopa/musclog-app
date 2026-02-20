@@ -485,7 +485,8 @@ export default function DebugTestScreen() {
               </Pressable>
             </View>
 
-            {migrationSummary ? <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+            {migrationSummary ? (
+              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
                 <Text className="mb-2 text-sm font-bold text-text-primary">Migration Summary:</Text>
                 <Text className="text-sm text-text-secondary">
                   • Fitness Goals: {migrationSummary.fitnessGoalsCount} records
@@ -496,15 +497,17 @@ export default function DebugTestScreen() {
                 <Text className="text-sm text-text-secondary">
                   • Tables Found: {migrationSummary.tables.join(', ')}
                 </Text>
-              </View> : null}
+              </View>
+            ) : null}
 
-            {migrationResult ? <View
+            {migrationResult ? (
+              <View
                 className={`rounded-lg border p-3 ${
                   migrationResult.success
                     ? 'border-status-success bg-bg-success'
                     : 'border-status-error bg-bg-error'
                 }`}
-            >
+              >
                 <Text
                   className={`mb-2 text-sm font-bold ${
                     migrationResult.success ? 'text-status-success' : 'text-status-error'
@@ -525,11 +528,14 @@ export default function DebugTestScreen() {
                 ) : (
                   <Text className="text-status-error text-sm">Error: {migrationResult.error}</Text>
                 )}
-              </View> : null}
+              </View>
+            ) : null}
 
-            {!migrationSummary && !checkingOldDatabase ? <Text className="py-2 text-sm text-text-tertiary">
+            {!migrationSummary && !checkingOldDatabase ? (
+              <Text className="py-2 text-sm text-text-tertiary">
                 Click Check Migration Data to see what can be migrated
-              </Text> : null}
+              </Text>
+            ) : null}
           </View>
 
           {/* Form */}

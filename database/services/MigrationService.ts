@@ -34,7 +34,7 @@ export class MigrationService {
    */
   async checkOldDatabaseExists(): Promise<boolean> {
     if (!this.oldDB) return false;
-    
+
     try {
       await this.oldDB.getAllAsync('SELECT 1 FROM sqlite_master LIMIT 1');
       return true;
@@ -49,13 +49,13 @@ export class MigrationService {
    */
   async getOldDatabaseTables(): Promise<string[]> {
     if (!this.oldDB) throw new Error('Old database not available');
-    
+
     const result = await this.oldDB.getAllAsync(`
       SELECT name FROM sqlite_master 
       WHERE type='table' AND name NOT LIKE 'sqlite_%'
       ORDER BY name
     `);
-    
+
     return result.map((row: any) => row.name);
   }
 
@@ -64,7 +64,7 @@ export class MigrationService {
    */
   private convertTimestamp(textTimestamp: string | null): number {
     if (!textTimestamp) return Date.now();
-    
+
     try {
       // Handle ISO format and other common timestamp formats
       const date = new Date(textTimestamp);
@@ -84,14 +84,14 @@ export class MigrationService {
    */
   private async migrateFitnessGoals(): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
-    
-    const oldGoals = await this.oldDB.getAllAsync(`
+
+    const oldGoals = (await this.oldDB.getAllAsync(`
       SELECT * FROM FitnessGoals 
       WHERE deletedAt IS NULL OR deletedAt = ''
-    `);
-    
+    `)) as Record<string, any>[];
+
     let migratedCount = 0;
-    
+
     for (const oldGoal of oldGoals) {
       try {
         await database.write(async () => {
@@ -110,16 +110,20 @@ export class MigrationService {
             newGoal.effectiveUntil = null; // Current goals have no end date
             newGoal.createdAt = this.convertTimestamp(oldGoal.createdAt);
             newGoal.updatedAt = this.convertTimestamp(oldGoal.createdAt);
-            newGoal.deletedAt = oldGoal.deletedAt ? this.convertTimestamp(oldGoal.deletedAt) : undefined;
+            newGoal.deletedAt = oldGoal.deletedAt
+              ? this.convertTimestamp(oldGoal.deletedAt)
+              : undefined;
           });
         });
         migratedCount++;
       } catch (error) {
         console.error('Error migrating fitness goal:', error, 'Data:', oldGoal);
-        throw new Error(`Failed to migrate fitness goal: ${error.message}`);
+        throw new Error(
+          `Failed to migrate fitness goal: ${error instanceof Error ? error.message : String(error)}`
+        );
       }
     }
-    
+
     return migratedCount;
   }
 
@@ -128,25 +132,25 @@ export class MigrationService {
    */
   private async migrateUserMetrics(): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
-    
-    const oldMetrics = await this.oldDB.getAllAsync(`
+
+    const oldMetrics = (await this.oldDB.getAllAsync(`
       SELECT * FROM UserMetrics 
       WHERE deletedAt IS NULL OR deletedAt = ''
-    `);
-    
+    `)) as Record<string, any>[];
+
     let migratedCount = 0;
-    
+
     for (const oldMetric of oldMetrics) {
       const baseTimestamp = this.convertTimestamp(oldMetric.createdAt);
       const dateTimestamp = this.convertTimestamp(oldMetric.date);
-      
+
       // Create separate records for each metric type
       const metricTypes = [
-        { field: 'weight', type: 'weight', unit: 'kg' },
-        { field: 'height', type: 'height', unit: 'cm' },
-        { field: 'fatPercentage', type: 'body_fat', unit: '%' },
+        { field: 'weight', type: 'weight' as const, unit: 'kg' },
+        { field: 'height', type: 'height' as const, unit: 'cm' },
+        { field: 'fatPercentage', type: 'body_fat' as const, unit: '%' },
       ];
-      
+
       for (const metricType of metricTypes) {
         const value = oldMetric[metricType.field];
         if (value && value !== '' && value !== null) {
@@ -160,18 +164,27 @@ export class MigrationService {
                 newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
                 newMetric.createdAt = baseTimestamp;
                 newMetric.updatedAt = baseTimestamp;
-                newMetric.deletedAt = oldMetric.deletedAt ? this.convertTimestamp(oldMetric.deletedAt) : undefined;
+                newMetric.deletedAt = oldMetric.deletedAt
+                  ? this.convertTimestamp(oldMetric.deletedAt)
+                  : undefined;
               });
             });
             migratedCount++;
           } catch (error) {
-            console.error(`Error migrating user metric ${metricType.type}:`, error, 'Data:', oldMetric);
-            throw new Error(`Failed to migrate user metric ${metricType.type}: ${error.message}`);
+            console.error(
+              `Error migrating user metric ${metricType.type}:`,
+              error,
+              'Data:',
+              oldMetric
+            );
+            throw new Error(
+              `Failed to migrate user metric ${metricType.type}: ${error instanceof Error ? error.message : String(error)}`
+            );
           }
         }
       }
     }
-    
+
     return migratedCount;
   }
 
@@ -180,16 +193,21 @@ export class MigrationService {
    */
   private async validateMigration(result: MigrationResult): Promise<void> {
     // Check that we have the expected number of records
-    const nutritionGoalsCount = await database.get<NutritionGoal>('nutrition_goals').query().fetchCount();
+    const nutritionGoalsCount = await database
+      .get<NutritionGoal>('nutrition_goals')
+      .query()
+      .fetchCount();
     const userMetricsCount = await database.get<UserMetric>('user_metrics').query().fetchCount();
-    
-    console.log(`Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics`);
-    
+
+    console.log(
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics`
+    );
+
     // Basic validation - ensure we have some data if migration succeeded
     if (result.details.fitnessGoalsMigrated > 0 && nutritionGoalsCount === 0) {
       throw new Error('Fitness goals migration validation failed');
     }
-    
+
     if (result.details.userMetricsMigrated > 0 && userMetricsCount === 0) {
       throw new Error('User metrics migration validation failed');
     }
@@ -209,39 +227,38 @@ export class MigrationService {
         errors: [],
       },
     };
-    
+
     try {
       // Step 1: Check if old database exists
-      if (!await this.checkOldDatabaseExists()) {
+      if (!(await this.checkOldDatabaseExists())) {
         throw new Error('Old database not found or not accessible');
       }
-      
+
       console.log('Starting migration from old database...');
-      
+
       // Step 2: Migrate Fitness Goals
       console.log('Migrating fitness goals...');
       result.details.fitnessGoalsMigrated = await this.migrateFitnessGoals();
       result.fitnessGoals = result.details.fitnessGoalsMigrated;
-      
+
       // Step 3: Migrate User Metrics
       console.log('Migrating user metrics...');
       result.details.userMetricsMigrated = await this.migrateUserMetrics();
       result.userMetrics = result.details.userMetricsMigrated;
-      
+
       // Step 4: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
-      
+
       result.success = true;
       console.log('Migration completed successfully!');
-      
     } catch (error) {
       console.error('Migration failed:', error);
       result.error = error instanceof Error ? error.message : 'Unknown error';
       result.details.errors.push(result.error);
       result.success = false;
     }
-    
+
     return result;
   }
 
@@ -260,32 +277,32 @@ export class MigrationService {
         tables: [],
       };
     }
-    
+
     const tables = await this.getOldDatabaseTables();
-    
+
     let fitnessGoalsCount = 0;
     let userMetricsCount = 0;
-    
+
     try {
       if (tables.includes('FitnessGoals')) {
-        const result = await this.oldDB.getAllAsync(`
+        const result = (await this.oldDB.getAllAsync(`
           SELECT COUNT(*) as count FROM FitnessGoals 
           WHERE deletedAt IS NULL OR deletedAt = ''
-        `);
+        `)) as { count: number }[];
         fitnessGoalsCount = result[0]?.count || 0;
       }
-      
+
       if (tables.includes('UserMetrics')) {
-        const result = await this.oldDB.getAllAsync(`
+        const result = (await this.oldDB.getAllAsync(`
           SELECT COUNT(*) as count FROM UserMetrics 
           WHERE deletedAt IS NULL OR deletedAt = ''
-        `);
+        `)) as { count: number }[];
         userMetricsCount = result[0]?.count || 0;
       }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
-    
+
     return {
       fitnessGoalsCount,
       userMetricsCount,
