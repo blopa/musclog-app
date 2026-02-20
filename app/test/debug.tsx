@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
-import { openDatabaseSync } from 'expo-sqlite';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
@@ -11,7 +10,7 @@ import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
-import { UserService } from '../../database/services';
+import { MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { theme } from '../../theme';
 
@@ -57,14 +56,12 @@ export default function DebugTestScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [userMetrics, setUserMetrics] = useState<UserMetric[]>([]);
-  const [oldDatabaseTables, setOldDatabaseTables] = useState<string[]>([]);
-  const [oldDatabaseError, setOldDatabaseError] = useState<string | null>(null);
-  const [checkingOldDatabase, setCheckingOldDatabase] = useState(false);
   const [tableSchemas, setTableSchemas] = useState<
     Record<string, { name: string; type: string; notnull: boolean; pk: boolean }[]>
   >({});
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
-  const { checkMigrationData } = useOldDatabaseMigration();
+  const { checkMigrationData, migrationSummary, checkingOldDatabase } = useOldDatabaseMigration();
+  const [migrationService] = useState(() => new MigrationService());
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -172,43 +169,32 @@ export default function DebugTestScreen() {
   };
 
   const checkOldDatabase = async () => {
-    setCheckingOldDatabase(true);
-    setOldDatabaseError(null);
-    setOldDatabaseTables([]);
     setTableSchemas({});
     setExpandedTables(new Set());
 
     try {
-      const oldDatabase = openDatabaseSync('workoutLoggerDatabase.db', {
-        enableChangeListener: true,
-        useNewConnection: true,
-      });
+      if (!migrationSummary?.tables.length) {
+        return;
+      }
 
-      // Get all table names by querying sqlite_master
-      const tablesResult = await oldDatabase.getAllAsync(`
-        SELECT name FROM sqlite_master 
-        WHERE type='table' AND name NOT LIKE 'sqlite_%'
-        ORDER BY name
-      `);
-
-      const tableNames = tablesResult.map((row: any) => row.name);
-      setOldDatabaseTables(tableNames);
-
-      // Get schema for each table
+      // Get schema for each table using MigrationService
       const schemas: Record<
         string,
         { name: string; type: string; notnull: boolean; pk: boolean }[]
       > = {};
 
-      for (const tableName of tableNames) {
+      for (const tableName of migrationSummary.tables) {
         try {
-          const pragmaResult = await oldDatabase.getAllAsync(`PRAGMA table_info(${tableName})`);
-          schemas[tableName] = pragmaResult.map((row: any) => ({
-            name: row.name,
-            type: row.type,
-            notnull: Boolean(row.notnull),
-            pk: Boolean(row.pk),
-          }));
+          // Use MigrationService to get table schema
+          const pragmaResult = await migrationService.getTableSchema(tableName);
+          schemas[tableName] = pragmaResult.map(
+            (row: { name: string; type: string; notnull: boolean; pk: boolean }) => ({
+              name: row.name,
+              type: row.type,
+              notnull: Boolean(row.notnull),
+              pk: Boolean(row.pk),
+            })
+          );
         } catch (error) {
           console.error(`Error getting schema for table ${tableName}:`, error);
           schemas[tableName] = [];
@@ -216,13 +202,10 @@ export default function DebugTestScreen() {
       }
 
       setTableSchemas(schemas);
-      console.log('Old database tables:', tableNames);
+      console.log('Old database tables:', migrationSummary.tables);
       console.log('Table schemas:', schemas);
     } catch (error) {
       console.error('Error checking old database:', error);
-      setOldDatabaseError(error instanceof Error ? error.message : 'Unknown error');
-    } finally {
-      setCheckingOldDatabase(false);
     }
   };
 
@@ -326,20 +309,13 @@ export default function DebugTestScreen() {
               </Text>
             </Pressable>
 
-            {oldDatabaseError ? (
-              <View className="border-status-error bg-bg-error rounded-lg border p-3">
-                <Text className="text-status-error mb-1 text-sm font-bold">Error</Text>
-                <Text className="text-status-error text-sm">{oldDatabaseError}</Text>
-              </View>
-            ) : null}
-
-            {oldDatabaseTables.length > 0 ? (
+            {migrationSummary && migrationSummary.tables.length > 0 ? (
               <View className="rounded-lg border border-border-light bg-bg-primary p-3">
                 <Text className="mb-2 text-sm font-bold text-text-primary">
-                  Found {oldDatabaseTables.length} tables:
+                  Found {migrationSummary!.tables.length} tables:
                 </Text>
                 <View className="gap-2">
-                  {oldDatabaseTables.map((tableName, index) => (
+                  {migrationSummary!.tables.map((tableName, index) => (
                     <View
                       key={index}
                       className="rounded-lg border border-border-light bg-bg-overlay p-2"
@@ -384,9 +360,9 @@ export default function DebugTestScreen() {
                 </View>
               </View>
             ) : null}
-            {!checkingOldDatabase && oldDatabaseTables.length === 0 && !oldDatabaseError ? (
+            {!checkingOldDatabase && migrationSummary?.tables.length === 0 ? (
               <Text className="py-2 text-sm text-text-tertiary">
-                Click Check Old Database to see if workoutLoggerDatabase.db exists
+                No old database found or no tables available
               </Text>
             ) : null}
           </View>

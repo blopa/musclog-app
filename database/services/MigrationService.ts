@@ -60,6 +60,23 @@ export class MigrationService {
   }
 
   /**
+   * Get table schema for a specific table
+   */
+  async getTableSchema(
+    tableName: string
+  ): Promise<{ name: string; type: string; notnull: boolean; pk: boolean }[]> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const pragmaResult = await this.oldDB.getAllAsync(`PRAGMA table_info(${tableName})`);
+    return pragmaResult.map((row: any) => ({
+      name: row.name,
+      type: row.type,
+      notnull: Boolean(row.notnull),
+      pk: Boolean(row.pk),
+    }));
+  }
+
+  /**
    * Convert TEXT timestamp to Unix timestamp (number)
    */
   private convertTimestamp(textTimestamp: string | null): number {

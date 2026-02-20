@@ -15,7 +15,7 @@ export class MigrationService {
    */
   async checkOldDatabaseExists(): Promise<boolean> {
     // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return true;
   }
 
@@ -24,7 +24,7 @@ export class MigrationService {
    */
   async getOldDatabaseTables(): Promise<string[]> {
     // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return [
       'FitnessGoals',
       'UserMetrics',
@@ -33,7 +33,7 @@ export class MigrationService {
       'Meal',
       'Workout',
       'User',
-      'Setting'
+      'Setting',
     ];
   }
 
@@ -46,8 +46,8 @@ export class MigrationService {
     tables: string[];
   }> {
     // Simulate async operation
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     return {
       fitnessGoalsCount: 2, // Mock data
       userMetricsCount: 5, // Mock data
@@ -59,7 +59,7 @@ export class MigrationService {
         'Meal',
         'Workout',
         'User',
-        'Setting'
+        'Setting',
       ],
     };
   }
@@ -69,11 +69,11 @@ export class MigrationService {
    */
   async migrateAll(): Promise<MigrationResult> {
     // Simulate migration process with delay
-    await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay to show loading
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay to show loading
+
     // Simulate random success/failure for testing (90% success rate)
     const success = Math.random() > 0.1;
-    
+
     if (success) {
       return {
         success: true,
