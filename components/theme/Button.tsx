@@ -1,14 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode, useState } from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, Platform, Pressable, Text, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { Theme } from '../../theme';

@@ -617,16 +617,18 @@ export default function SmartCameraModal({
                   borderColor: theme.colors.background.white10,
                   opacity: hideCameraModePicker
                     ? 0
-                    : mode === 'barcode-scan'
+                    : cameraMode === 'barcode-scan'
                       ? theme.colors.opacity.strong
                       : 1,
                 }}
-                disabled={mode === 'barcode-scan'}
+                disabled={cameraMode === 'barcode-scan'}
               >
                 <MessageSquareText
                   size={theme.iconSize.lg}
                   color={
-                    mode === 'barcode-scan' ? theme.colors.text.gray500 : theme.colors.text.primary
+                    cameraMode === 'barcode-scan'
+                      ? theme.colors.text.gray500
+                      : theme.colors.text.primary
                   }
                 />
               </Pressable>
