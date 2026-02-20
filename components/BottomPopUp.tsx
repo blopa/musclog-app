@@ -159,6 +159,7 @@ export function BottomPopUp({
                 }
                 scrollEnabled={true}
                 nestedScrollEnabled={true}
+                keyboardShouldPersistTaps="handled"
               >
                 {children}
               </ScrollView>

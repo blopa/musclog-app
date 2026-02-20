@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Platform, Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
@@ -77,12 +77,7 @@ export function AINutritionTrackingContextModal({
         </View>
       }
     >
-      <View
-        className="pt-2"
-        onStartShouldSetResponder={() => true}
-        onMoveShouldSetResponder={() => true}
-        onResponderTerminationRequest={() => false}
-      >
+      <View className="pt-2">
         {/* Describe Your Meal Section */}
         <View className="mb-6">
           <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
@@ -127,6 +122,7 @@ export function AINutritionTrackingContextModal({
                   key={tag}
                   onPress={() => handleToggleTag(tag)}
                   className="rounded-full border px-4 py-2"
+                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                   style={{
                     backgroundColor: isSelected
                       ? theme.colors.background.white10
@@ -146,6 +142,7 @@ export function AINutritionTrackingContextModal({
           <Pressable
             onPress={handleCancel}
             className="flex-1 rounded-xl border px-6 py-4"
+            {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{
               backgroundColor: theme.colors.background.darkGreenSolidAlt,
               borderColor: theme.colors.background.white5,
@@ -158,6 +155,7 @@ export function AINutritionTrackingContextModal({
           <Pressable
             onPress={handleApply}
             className="flex-[2] rounded-xl px-6 py-4 active:scale-[0.98]"
+            {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{
               overflow: 'hidden',
             }}
