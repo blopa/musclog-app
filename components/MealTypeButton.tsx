@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -28,6 +28,7 @@ export function MealTypeButton({
       } active:bg-bg-card-elevated items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3 active:scale-95`}
       style={{ minHeight: theme.size['22'] }}
       onPress={onPress}
+      {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
     >
       <View
         className={`${span === 2 ? 'h-8 w-8' : 'h-10 w-10'} items-center justify-center rounded-full`}

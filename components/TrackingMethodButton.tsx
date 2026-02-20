@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, ChevronRight, LucideIcon } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -63,6 +63,7 @@ export function TrackingMethodButton({
         borderColor: highlighted ? theme.colors.accent.primary40 : theme.colors.border.default,
       }}
       onPress={onPress}
+      {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
     >
       {IconContainer}
       <View className="flex-1">
