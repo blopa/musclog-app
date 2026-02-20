@@ -429,20 +429,21 @@ export default function SmartCameraModal({
                   <Pressable
                     onPress={() => handleModeChange('ai-meal-photo')}
                     className="flex-1 rounded-xl px-2 py-2.5"
-                    style={
-                      cameraMode === 'ai-meal-photo'
-                        ? {
-                            backgroundColor: 'transparent',
-                          }
-                        : {}
-                    }
+                    style={[
+                      { overflow: 'hidden' },
+                      cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
+                    ]}
                   >
                     {cameraMode === 'ai-meal-photo' ? (
                       <LinearGradient
                         colors={theme.colors.gradients.cta}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        className="absolute inset-0 rounded-xl"
+                        className="absolute inset-0"
+                        style={{
+                          borderRadius: theme.borderRadius.md,
+                          overflow: 'hidden',
+                        }}
                       />
                     ) : null}
                     <View className="flex-row items-center justify-center gap-1.5">
@@ -473,20 +474,21 @@ export default function SmartCameraModal({
                   <Pressable
                     onPress={() => handleModeChange('ai-label-scan')}
                     className="flex-1 rounded-xl px-2 py-2.5"
-                    style={
-                      cameraMode === 'ai-label-scan'
-                        ? {
-                            backgroundColor: 'transparent',
-                          }
-                        : {}
-                    }
+                    style={[
+                      { overflow: 'hidden' },
+                      cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
+                    ]}
                   >
                     {cameraMode === 'ai-label-scan' ? (
                       <LinearGradient
                         colors={theme.colors.gradients.cta}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        className="absolute inset-0 rounded-xl"
+                        className="absolute inset-0"
+                        style={{
+                          borderRadius: theme.borderRadius.md,
+                          overflow: 'hidden',
+                        }}
                       />
                     ) : null}
                     <View className="flex-row items-center justify-center gap-1.5">
@@ -517,20 +519,21 @@ export default function SmartCameraModal({
                   <Pressable
                     onPress={() => handleModeChange('barcode-scan')}
                     className="flex-1 rounded-xl px-2 py-2.5"
-                    style={
-                      cameraMode === 'barcode-scan'
-                        ? {
-                            backgroundColor: 'transparent',
-                          }
-                        : {}
-                    }
+                    style={[
+                      { overflow: 'hidden' },
+                      cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
+                    ]}
                   >
                     {cameraMode === 'barcode-scan' ? (
                       <LinearGradient
                         colors={theme.colors.gradients.cta}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
-                        className="absolute inset-0 rounded-xl"
+                        className="absolute inset-0"
+                        style={{
+                          borderRadius: theme.borderRadius.md,
+                          overflow: 'hidden',
+                        }}
                       />
                     ) : null}
                     <View className="flex-row items-center justify-center gap-1.5">
