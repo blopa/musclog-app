@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { SettingsCard } from '../components/cards/SettingsCard';
 import { MasterLayout } from '../components/MasterLayout';
@@ -118,11 +118,13 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
-      <View
+      <ScrollView
         style={{
           flex: 1,
           marginHorizontal: theme.spacing.padding.base,
         }}
+        contentContainerStyle={{ paddingBottom: theme.size['8'] }}
+        showsVerticalScrollIndicator={false}
       >
         <View style={{ height: theme.size['6'] }} />
         {/* Configuration Section */}
@@ -292,7 +294,7 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
         <View style={{ height: theme.size['8'] }} />
-      </View>
+      </ScrollView>
 
       <AISettingsModal
         visible={isAISettingsVisible}

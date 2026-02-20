@@ -804,7 +804,7 @@
       "female": "Female",
       "other": "Other"
     },
-    "stats" : {
+    "stats": {
       "weight": "Weight",
       "height": "Height",
       "age": "Age",
