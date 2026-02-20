@@ -1,7 +1,15 @@
 import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
 import { openDatabaseSync } from 'expo-sqlite';
-import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
+import {
+  ArrowRight,
+  ChevronRight,
+  Database,
+  Download,
+  Plus,
+  RefreshCw,
+  Trash2,
+} from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -11,6 +19,7 @@ import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
 import { UserService } from '../../database/services';
+import { MigrationService } from '../../database/services/MigrationService';
 import { theme } from '../../theme';
 
 // All app screens for navigation
@@ -58,8 +67,14 @@ export default function DebugTestScreen() {
   const [oldDatabaseTables, setOldDatabaseTables] = useState<string[]>([]);
   const [oldDatabaseError, setOldDatabaseError] = useState<string | null>(null);
   const [checkingOldDatabase, setCheckingOldDatabase] = useState(false);
-  const [tableSchemas, setTableSchemas] = useState<Record<string, {name: string, type: string, notnull: boolean, pk: boolean}[]>>({});
+  const [tableSchemas, setTableSchemas] = useState<
+    Record<string, { name: string; type: string; notnull: boolean; pk: boolean }[]>
+  >({});
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
+  const [migrationService] = useState(() => new MigrationService());
+  const [migrationResult, setMigrationResult] = useState<any>(null);
+  const [migrating, setMigrating] = useState(false);
+  const [migrationSummary, setMigrationSummary] = useState<any>(null);
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -103,6 +118,7 @@ export default function DebugTestScreen() {
     const fetchData = async () => {
       await fetchExercises();
       await fetchUserData();
+      await loadMigrationSummary();
     };
 
     fetchData();
@@ -171,26 +187,29 @@ export default function DebugTestScreen() {
     setOldDatabaseTables([]);
     setTableSchemas({});
     setExpandedTables(new Set());
-    
+
     try {
       const oldDatabase = openDatabaseSync('workoutLoggerDatabase.db', {
         enableChangeListener: true,
         useNewConnection: true,
       });
-      
+
       // Get all table names by querying sqlite_master
       const tablesResult = await oldDatabase.getAllAsync(`
         SELECT name FROM sqlite_master 
         WHERE type='table' AND name NOT LIKE 'sqlite_%'
         ORDER BY name
       `);
-      
+
       const tableNames = tablesResult.map((row: any) => row.name);
       setOldDatabaseTables(tableNames);
-      
+
       // Get schema for each table
-      const schemas: Record<string, {name: string, type: string, notnull: boolean, pk: boolean}[]> = {};
-      
+      const schemas: Record<
+        string,
+        { name: string; type: string; notnull: boolean; pk: boolean }[]
+      > = {};
+
       for (const tableName of tableNames) {
         try {
           const pragmaResult = await oldDatabase.getAllAsync(`PRAGMA table_info(${tableName})`);
@@ -198,14 +217,14 @@ export default function DebugTestScreen() {
             name: row.name,
             type: row.type,
             notnull: Boolean(row.notnull),
-            pk: Boolean(row.pk)
+            pk: Boolean(row.pk),
           }));
         } catch (error) {
           console.error(`Error getting schema for table ${tableName}:`, error);
           schemas[tableName] = [];
         }
       }
-      
+
       setTableSchemas(schemas);
       console.log('Old database tables:', tableNames);
       console.log('Table schemas:', schemas);
@@ -225,6 +244,38 @@ export default function DebugTestScreen() {
       newExpanded.add(tableName);
     }
     setExpandedTables(newExpanded);
+  };
+
+  const loadMigrationSummary = async () => {
+    try {
+      const summary = await migrationService.getMigrationSummary();
+      setMigrationSummary(summary);
+    } catch (error) {
+      console.error('Error loading migration summary:', error);
+      setMigrationSummary(null);
+    }
+  };
+
+  const executeMigration = async () => {
+    setMigrating(true);
+    setMigrationResult(null);
+
+    try {
+      const result = await migrationService.migrateAll();
+      setMigrationResult(result);
+
+      // Refresh data after migration
+      await fetchUserData();
+      await fetchExercises();
+    } catch (error) {
+      console.error('Migration error:', error);
+      setMigrationResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    } finally {
+      setMigrating(false);
+    }
   };
 
   // Group screens by category
@@ -296,80 +347,188 @@ export default function DebugTestScreen() {
             <Text className="text-sm text-text-secondary">
               Check if the old workoutLoggerDatabase.db exists and view its tables
             </Text>
-            
+
             <Pressable
               className={`flex-row items-center justify-center gap-2 rounded-lg p-4 ${
-                checkingOldDatabase 
-                  ? 'bg-border-light' 
-                  : 'bg-accent-primary'
+                checkingOldDatabase ? 'bg-border-light' : 'bg-accent-primary'
               }`}
               onPress={checkOldDatabase}
               disabled={checkingOldDatabase}
             >
-              <Database 
-                size={theme.iconSize.lg} 
-                color={checkingOldDatabase 
-                  ? theme.colors.text.tertiary 
-                  : theme.colors.text.black
-                } 
+              <Database
+                size={theme.iconSize.lg}
+                color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.black}
               />
-              <Text className={`font-bold ${
-                checkingOldDatabase 
-                  ? 'text-text-tertiary' 
-                  : 'text-text-black'
-              }`}
+              <Text
+                className={`font-bold ${
+                  checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
+                }`}
               >
                 {checkingOldDatabase ? 'Checking...' : 'Check Old Database'}
               </Text>
             </Pressable>
 
-            {oldDatabaseError ? <View className="rounded-lg border border-status-error bg-bg-error p-3">
-                <Text className="mb-1 text-sm font-bold text-status-error">Error</Text>
-                <Text className="text-sm text-status-error">{oldDatabaseError}</Text>
-              </View> : null}
+            {oldDatabaseError ? (
+              <View className="border-status-error bg-bg-error rounded-lg border p-3">
+                <Text className="text-status-error mb-1 text-sm font-bold">Error</Text>
+                <Text className="text-status-error text-sm">{oldDatabaseError}</Text>
+              </View>
+            ) : null}
 
-            {oldDatabaseTables.length > 0 ? <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+            {oldDatabaseTables.length > 0 ? (
+              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
                 <Text className="mb-2 text-sm font-bold text-text-primary">
                   Found {oldDatabaseTables.length} tables:
                 </Text>
                 <View className="gap-2">
                   {oldDatabaseTables.map((tableName, index) => (
-                    <View key={index} className="rounded-lg border border-border-light bg-bg-overlay p-2">
+                    <View
+                      key={index}
+                      className="rounded-lg border border-border-light bg-bg-overlay p-2"
+                    >
                       <Pressable
                         className="flex-row items-center justify-between"
                         onPress={() => toggleTableExpansion(tableName)}
                       >
                         <Text className="text-sm font-medium text-text-primary">{tableName}</Text>
-                        <ChevronRight 
-                          size={theme.iconSize.sm} 
+                        <ChevronRight
+                          size={theme.iconSize.sm}
                           color={theme.colors.text.secondary}
                           style={{
-                            transform: [{ rotate: expandedTables.has(tableName) ? '90deg' : '0deg' }]
+                            transform: [
+                              { rotate: expandedTables.has(tableName) ? '90deg' : '0deg' },
+                            ],
                           }}
                         />
                       </Pressable>
-                      
-                      {expandedTables.has(tableName) && tableSchemas[tableName] ? <View className="mt-2 gap-1 pl-2">
-                          <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">Columns:</Text>
+
+                      {expandedTables.has(tableName) && tableSchemas[tableName] ? (
+                        <View className="mt-2 gap-1 pl-2">
+                          <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+                            Columns:
+                          </Text>
                           {tableSchemas[tableName].map((column, colIndex) => (
                             <View key={colIndex} className="flex-row gap-2">
-                              <Text className="text-xs text-text-secondary">
-                                {column.name}
-                              </Text>
-                              <Text className="text-xs text-text-tertiary">
-                                {column.type}
-                              </Text>
-                              {column.pk ? <Text className="text-xs font-bold text-accent-primary">PK</Text> : null}
-                              {column.notnull && !column.pk ? <Text className="text-xs text-text-tertiary">NOT NULL</Text> : null}
+                              <Text className="text-xs text-text-secondary">{column.name}</Text>
+                              <Text className="text-xs text-text-tertiary">{column.type}</Text>
+                              {column.pk ? (
+                                <Text className="text-xs font-bold text-accent-primary">PK</Text>
+                              ) : null}
+                              {column.notnull && !column.pk ? (
+                                <Text className="text-xs text-text-tertiary">NOT NULL</Text>
+                              ) : null}
                             </View>
                           ))}
-                        </View> : null}
+                        </View>
+                      ) : null}
                     </View>
                   ))}
                 </View>
-              </View> : null}
-            {!checkingOldDatabase && oldDatabaseTables.length === 0 && !oldDatabaseError ? <Text className="py-2 text-sm text-text-tertiary">
+              </View>
+            ) : null}
+            {!checkingOldDatabase && oldDatabaseTables.length === 0 && !oldDatabaseError ? (
+              <Text className="py-2 text-sm text-text-tertiary">
                 Click Check Old Database to see if workoutLoggerDatabase.db exists
+              </Text>
+            ) : null}
+          </View>
+
+          {/* Migration Section */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="flex-row items-center gap-2">
+              <Download size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              <Text className="text-lg font-bold text-text-primary">Data Migration</Text>
+            </View>
+            <Text className="text-sm text-text-secondary">
+              Import data from old database to new WatermelonDB
+            </Text>
+
+            <View className="flex-row gap-2">
+              <Pressable
+                className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
+                  checkingOldDatabase ? 'bg-border-light' : 'bg-accent-primary'
+                }`}
+                onPress={loadMigrationSummary}
+                disabled={checkingOldDatabase}
+              >
+                <Database
+                  size={theme.iconSize.md}
+                  color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.black}
+                />
+                <Text
+                  className={`text-sm font-bold ${
+                    checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
+                  }`}
+                >
+                  Check Migration Data
+                </Text>
+              </Pressable>
+
+              <Pressable
+                className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
+                  migrating ? 'bg-border-light' : 'bg-success-primary'
+                }`}
+                onPress={executeMigration}
+                disabled={migrating || !migrationSummary}
+              >
+                <Download
+                  size={theme.iconSize.md}
+                  color={migrating ? theme.colors.text.tertiary : theme.colors.text.black}
+                />
+                <Text
+                  className={`text-sm font-bold ${
+                    migrating ? 'text-text-tertiary' : 'text-text-black'
+                  }`}
+                >
+                  {migrating ? 'Migrating...' : 'Import Data'}
+                </Text>
+              </Pressable>
+            </View>
+
+            {migrationSummary ? <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <Text className="mb-2 text-sm font-bold text-text-primary">Migration Summary:</Text>
+                <Text className="text-sm text-text-secondary">
+                  • Fitness Goals: {migrationSummary.fitnessGoalsCount} records
+                </Text>
+                <Text className="text-sm text-text-secondary">
+                  • User Metrics: {migrationSummary.userMetricsCount} records
+                </Text>
+                <Text className="text-sm text-text-secondary">
+                  • Tables Found: {migrationSummary.tables.join(', ')}
+                </Text>
+              </View> : null}
+
+            {migrationResult ? <View
+                className={`rounded-lg border p-3 ${
+                  migrationResult.success
+                    ? 'border-status-success bg-bg-success'
+                    : 'border-status-error bg-bg-error'
+                }`}
+            >
+                <Text
+                  className={`mb-2 text-sm font-bold ${
+                    migrationResult.success ? 'text-status-success' : 'text-status-error'
+                  }`}
+                >
+                  {migrationResult.success ? 'Migration Successful!' : 'Migration Failed'}
+                </Text>
+
+                {migrationResult.success ? (
+                  <View>
+                    <Text className="text-status-success text-sm">
+                      • Fitness Goals: {migrationResult.details.fitnessGoalsMigrated} migrated
+                    </Text>
+                    <Text className="text-status-success text-sm">
+                      • User Metrics: {migrationResult.details.userMetricsMigrated} migrated
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-status-error text-sm">Error: {migrationResult.error}</Text>
+                )}
+              </View> : null}
+
+            {!migrationSummary && !checkingOldDatabase ? <Text className="py-2 text-sm text-text-tertiary">
+                Click Check Migration Data to see what can be migrated
               </Text> : null}
           </View>
 
