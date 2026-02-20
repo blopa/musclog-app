@@ -3,6 +3,7 @@ import { BarChart3, Settings, User, X } from 'lucide-react-native';
 import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks/useTheme';
 import { AvatarColor } from '../../types/AvatarColor';
@@ -85,8 +86,9 @@ export function UserMenuModal({
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
         onPress={onClose}
       >
-        <View
+        <SafeAreaView
           className="flex-1 justify-start"
+          edges={['top']}
           style={
             Platform.OS === 'web'
               ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }
@@ -195,7 +197,7 @@ export function UserMenuModal({
             {/* Top safe area spacing */}
             <View className="h-8" />
           </View>
-        </View>
+        </SafeAreaView>
       </Pressable>
     </Modal>
   );
