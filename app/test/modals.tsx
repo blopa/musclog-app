@@ -1112,7 +1112,6 @@ export default function ModalsTestScreen() {
         onClose={() => setIsAdvancedSettingsVisible(false)}
         onExportPress={() => console.log('Export pressed')}
         onImportPress={() => console.log('Import pressed')}
-        onAnonymousBugReportChange={(v) => console.log('Anonymous bug report:', v)}
         onAccountDeletionPress={() => console.log('Account deletion requested')}
       />
 

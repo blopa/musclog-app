@@ -123,7 +123,12 @@ export function FullScreenModal({
           )}
 
           {/* optional footer */}
-          {footer ? <BottomButtonWrapper>{footer}</BottomButtonWrapper> : null}
+          {footer ? (
+            <BottomButtonWrapper>
+              {footer}
+              <View style={{ height: theme.spacing.margin.base }} />
+            </BottomButtonWrapper>
+          ) : null}
         </View>
       </View>
     </Modal>

@@ -18,8 +18,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
+import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
