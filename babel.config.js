@@ -4,8 +4,13 @@ module.exports = function (api) {
     return (
       caller?.platform === 'web' ||
       caller?.name === 'metro-web' ||
+      caller?.name === 'webpack' ||
       process.env.EXPO_PLATFORM === 'web' ||
-      process.env.BABEL_ENV === 'web'
+      process.env.BABEL_ENV === 'web' ||
+      process.env.NODE_ENV === 'web' ||
+      // Check for web-specific environment variables that Expo sets
+      process.env.WEBPACK_DEV_SERVER === 'true' ||
+      process.env.EXPO_WEB === 'true'
     );
   });
 
