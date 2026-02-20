@@ -107,7 +107,10 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
   });
 
   return (
-    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+    <Pressable 
+      className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
+      onPress={onAddPress}
+    >
       {/* Icon/Image */}
       <View
         className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
