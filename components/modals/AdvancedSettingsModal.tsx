@@ -14,11 +14,12 @@ import {
   Upload,
   Utensils,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import packageJson from '../../package.json';
 import { SettingsCard } from '../cards/SettingsCard';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -41,9 +42,6 @@ type AdvancedSettingsModalProps = {
   // Data Portability
   onExportPress?: () => void;
   onImportPress?: () => void;
-  // Privacy & Diagnostics
-  anonymousBugReport?: boolean;
-  onAnonymousBugReportChange?: (value: boolean) => void;
   // Danger Zone
   onAccountDeletionPress?: () => void;
 };
@@ -53,12 +51,24 @@ export function AdvancedSettingsModal({
   onClose,
   onExportPress,
   onImportPress,
-  anonymousBugReport = true,
-  onAnonymousBugReportChange,
   onAccountDeletionPress,
 }: AdvancedSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  // Use debounced settings for instant UI updates
+  const {
+    anonymousBugReport: debouncedAnonymousBugReport,
+    handleAnonymousBugReportChange,
+    flushAllPendingChanges,
+  } = useDebouncedSettings(1500);
+
+  // Flush pending settings changes when modal closes
+  useEffect(() => {
+    if (!visible) {
+      flushAllPendingChanges();
+    }
+  }, [visible, flushAllPendingChanges]);
 
   // Data log modal visibility – each row opens its corresponding modal
   const [showFoodDataModal, setShowFoodDataModal] = useState(false);
@@ -89,8 +99,8 @@ export function AdvancedSettingsModal({
           <Bug size={theme.iconSize.xl} color={theme.colors.status.purple} />
         </View>
       ),
-      value: anonymousBugReport,
-      onValueChange: onAnonymousBugReportChange || (() => {}),
+      value: debouncedAnonymousBugReport,
+      onValueChange: handleAnonymousBugReportChange,
     },
   ];
 

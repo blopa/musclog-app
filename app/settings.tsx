@@ -23,7 +23,6 @@ export default function SettingsScreen() {
     connectHealthData,
     readHealthData,
     writeHealthData,
-    anonymousBugReport,
     googleGeminiApiKey,
     googleGeminiModel,
     openAiApiKey,
@@ -48,10 +47,6 @@ export default function SettingsScreen() {
 
   const handleWriteHealthDataChange = async (value: boolean) => {
     await SettingsService.setWriteHealthData(value);
-  };
-
-  const handleAnonymousBugReportChange = async (value: boolean) => {
-    await SettingsService.setAnonymousBugReport(value);
   };
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
@@ -324,8 +319,6 @@ export default function SettingsScreen() {
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setAdvancedSettingsVisible(false)}
-        anonymousBugReport={anonymousBugReport}
-        onAnonymousBugReportChange={handleAnonymousBugReportChange}
       />
     </MasterLayout>
   );
