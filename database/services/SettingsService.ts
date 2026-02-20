@@ -83,56 +83,56 @@ export class SettingsService {
    * Upsert the connect health data setting
    */
   static async setConnectHealthData(value: boolean) {
-    await this.setBooleanSetting(CONNECT_HEALTH_DATA_SETTING_TYPE, value);
+    await SettingsService.setBooleanSetting(CONNECT_HEALTH_DATA_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the read health data setting
    */
   static async setReadHealthData(value: boolean) {
-    await this.setBooleanSetting(READ_HEALTH_DATA_SETTING_TYPE, value);
+    await SettingsService.setBooleanSetting(READ_HEALTH_DATA_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the write health data setting
    */
   static async setWriteHealthData(value: boolean) {
-    await this.setBooleanSetting(WRITE_HEALTH_DATA_SETTING_TYPE, value);
+    await SettingsService.setBooleanSetting(WRITE_HEALTH_DATA_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the anonymous bug report setting
    */
   static async setAnonymousBugReport(value: boolean) {
-    await this.setBooleanSetting(ANONYMOUS_BUG_REPORT_SETTING_TYPE, value);
+    await SettingsService.setBooleanSetting(ANONYMOUS_BUG_REPORT_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the Google Gemini API key setting
    */
   static async setGoogleGeminiApiKey(value: string) {
-    await this.setStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, value);
+    await SettingsService.setStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the Google Gemini model setting
    */
   static async setGoogleGeminiModel(value: string) {
-    await this.setStringSetting(GOOGLE_GEMINI_MODEL_SETTING_TYPE, value);
+    await SettingsService.setStringSetting(GOOGLE_GEMINI_MODEL_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the OpenAI API key setting
    */
   static async setOpenAiApiKey(value: string) {
-    await this.setStringSetting(OPENAI_API_KEY_SETTING_TYPE, value);
+    await SettingsService.setStringSetting(OPENAI_API_KEY_SETTING_TYPE, value);
   }
 
   /**
    * Upsert the OpenAI model setting
    */
   static async setOpenAiModel(value: string) {
-    await this.setStringSetting(OPENAI_MODEL_SETTING_TYPE, value);
+    await SettingsService.setStringSetting(OPENAI_MODEL_SETTING_TYPE, value);
   }
 
   /**
@@ -140,7 +140,7 @@ export class SettingsService {
    */
   static async setEnableGoogleGemini(value: boolean) {
     try {
-      await this.setBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, value);
+      await SettingsService.setBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setEnableGoogleGemini:', error);
       throw error;
@@ -152,7 +152,7 @@ export class SettingsService {
    */
   static async setEnableOpenAi(value: boolean) {
     try {
-      await this.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
+      await SettingsService.setBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setEnableOpenAi:', error);
       throw error;
@@ -164,7 +164,7 @@ export class SettingsService {
    */
   static async setDailyNutritionInsights(value: boolean) {
     try {
-      await this.setBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, value);
+      await SettingsService.setBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setDailyNutritionInsights:', error);
       throw error;
@@ -176,7 +176,7 @@ export class SettingsService {
    */
   static async setWorkoutInsights(value: boolean) {
     try {
-      await this.setBooleanSetting(WORKOUT_INSIGHTS_SETTING_TYPE, value);
+      await SettingsService.setBooleanSetting(WORKOUT_INSIGHTS_SETTING_TYPE, value);
     } catch (error) {
       console.error('[SettingsService] Error in setWorkoutInsights:', error);
       throw error;
@@ -187,7 +187,7 @@ export class SettingsService {
    * Upsert the notifications setting
    */
   static async setNotifications(value: boolean) {
-    await this.setBooleanSetting(NOTIFICATIONS_SETTING_TYPE, value);
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_SETTING_TYPE, value);
   }
 
   /**

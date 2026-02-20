@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { useDebouncedTheme } from '../../hooks/useDebouncedTheme';
+import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -43,15 +43,25 @@ export function BasicSettingsModal({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  // Use debounced theme for instant UI updates
-  const { theme: themeValue, handleThemeChange, flushPendingChanges } = useDebouncedTheme(1500);
+  // Use debounced settings for instant UI updates
+  const {
+    theme: themeValue,
+    connectHealthData: debouncedConnectHealthData,
+    readHealthData: debouncedReadHealthData,
+    writeHealthData: debouncedWriteHealthData,
+    handleThemeChange,
+    handleConnectHealthDataChange,
+    handleReadHealthDataChange,
+    handleWriteHealthDataChange,
+    flushAllPendingChanges,
+  } = useDebouncedSettings(1500);
 
-  // Flush pending theme changes when modal closes
+  // Flush pending settings changes when modal closes
   useEffect(() => {
     if (!visible) {
-      flushPendingChanges();
+      flushAllPendingChanges();
     }
-  }, [visible, flushPendingChanges]);
+  }, [visible, flushAllPendingChanges]);
 
   // TODO: actually implement light theme OR remove/hide this option
   const themeOptions = [
@@ -91,22 +101,22 @@ export function BasicSettingsModal({
     {
       key: 'connect',
       label: t('settings.basicSettings.connectHealthData'),
-      value: connectHealthData,
-      onValueChange: onConnectHealthDataChange || (() => {}),
+      value: debouncedConnectHealthData,
+      onValueChange: handleConnectHealthDataChange,
     },
-    ...(connectHealthData
+    ...(debouncedConnectHealthData
       ? [
           {
             key: 'read',
             label: t('settings.basicSettings.readHealthData'),
-            value: readHealthData,
-            onValueChange: onReadHealthDataChange || (() => {}),
+            value: debouncedReadHealthData,
+            onValueChange: handleReadHealthDataChange,
           },
           {
             key: 'write',
             label: t('settings.basicSettings.writeHealthData'),
-            value: writeHealthData,
-            onValueChange: onWriteHealthDataChange || (() => {}),
+            value: debouncedWriteHealthData,
+            onValueChange: handleWriteHealthDataChange,
           },
         ]
       : []),
