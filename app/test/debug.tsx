@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
-import { ArrowRight, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
+import { openDatabaseSync } from 'expo-sqlite';
+import { ArrowRight, Database,Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -8,7 +9,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
-import type { MuscleGroup } from '../../database/models/Exercise';
+import type { MuscleGroup } from '../../database/models';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
 
@@ -54,6 +55,9 @@ export default function DebugTestScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [userMetrics, setUserMetrics] = useState<UserMetric[]>([]);
+  const [oldDatabaseTables, setOldDatabaseTables] = useState<string[]>([]);
+  const [oldDatabaseError, setOldDatabaseError] = useState<string | null>(null);
+  const [checkingOldDatabase, setCheckingOldDatabase] = useState(false);
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -159,6 +163,36 @@ export default function DebugTestScreen() {
     }
   };
 
+  const checkOldDatabase = async () => {
+    setCheckingOldDatabase(true);
+    setOldDatabaseError(null);
+    setOldDatabaseTables([]);
+    
+    try {
+      const oldDatabase = openDatabaseSync('workoutLoggerDatabase.db', {
+        enableChangeListener: true,
+        useNewConnection: true,
+      });
+      
+      // Get all table names by querying sqlite_master
+      const result = await oldDatabase.getAllAsync(`
+        SELECT name FROM sqlite_master 
+        WHERE type='table' AND name NOT LIKE 'sqlite_%'
+        ORDER BY name
+      `);
+      
+      const tableNames = result.map((row: any) => row.name);
+      setOldDatabaseTables(tableNames);
+      
+      console.log('Old database tables:', tableNames);
+    } catch (error) {
+      console.error('Error checking old database:', error);
+      setOldDatabaseError(error instanceof Error ? error.message : 'Unknown error');
+    } finally {
+      setCheckingOldDatabase(false);
+    }
+  };
+
   // Group screens by category
   const screensByCategory = APP_SCREENS.reduce(
     (acc, screen) => {
@@ -217,6 +251,64 @@ export default function DebugTestScreen() {
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-lg font-bold text-text-primary">Danger Zone</Text>
             <Button onPress={deleteDatabase} label="Delete Database" size="sm" />
+          </View>
+
+          {/* Old Database Checker */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="flex-row items-center gap-2">
+              <Database size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              <Text className="text-lg font-bold text-text-primary">Old Database Checker</Text>
+            </View>
+            <Text className="text-sm text-text-secondary">
+              Check if the old workoutLoggerDatabase.db exists and view its tables
+            </Text>
+            
+            <Pressable
+              className={`flex-row items-center justify-center gap-2 rounded-lg p-4 ${
+                checkingOldDatabase 
+                  ? 'bg-border-light' 
+                  : 'bg-accent-primary'
+              }`}
+              onPress={checkOldDatabase}
+              disabled={checkingOldDatabase}
+            >
+              <Database 
+                size={theme.iconSize.lg} 
+                color={checkingOldDatabase 
+                  ? theme.colors.text.tertiary 
+                  : theme.colors.text.black
+                } 
+              />
+              <Text className={`font-bold ${
+                checkingOldDatabase 
+                  ? 'text-text-tertiary' 
+                  : 'text-text-black'
+              }`}
+              >
+                {checkingOldDatabase ? 'Checking...' : 'Check Old Database'}
+              </Text>
+            </Pressable>
+
+            {oldDatabaseError ? <View className="rounded-lg border border-status-error bg-bg-error p-3">
+                <Text className="mb-1 text-sm font-bold text-status-error">Error</Text>
+                <Text className="text-sm text-status-error">{oldDatabaseError}</Text>
+              </View> : null}
+
+            {oldDatabaseTables.length > 0 ? <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <Text className="mb-2 text-sm font-bold text-text-primary">
+                  Found {oldDatabaseTables.length} tables:
+                </Text>
+                <View className="gap-1">
+                  {oldDatabaseTables.map((tableName, index) => (
+                    <Text key={index} className="text-sm text-text-secondary">
+                      • {tableName}
+                    </Text>
+                  ))}
+                </View>
+              </View> : null}
+            {!checkingOldDatabase && oldDatabaseTables.length === 0 && !oldDatabaseError ? <Text className="py-2 text-sm text-text-tertiary">
+                Click Check Old Database to see if workoutLoggerDatabase.db exists
+              </Text> : null}
           </View>
 
           {/* Form */}
