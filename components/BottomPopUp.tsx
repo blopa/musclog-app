@@ -178,6 +178,7 @@ export function BottomPopUp({
           </Animated.View>
         </View>
       </View>
+      <View style={{ height: theme.spacing.margin.base }} />
     </Modal>
   );
 }
