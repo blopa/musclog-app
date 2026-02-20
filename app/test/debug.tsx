@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
 import { openDatabaseSync } from 'expo-sqlite';
-import { ArrowRight, Database,Plus, RefreshCw, Trash2 } from 'lucide-react-native';
+import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -58,6 +58,8 @@ export default function DebugTestScreen() {
   const [oldDatabaseTables, setOldDatabaseTables] = useState<string[]>([]);
   const [oldDatabaseError, setOldDatabaseError] = useState<string | null>(null);
   const [checkingOldDatabase, setCheckingOldDatabase] = useState(false);
+  const [tableSchemas, setTableSchemas] = useState<Record<string, {name: string, type: string, notnull: boolean, pk: boolean}[]>>({});
+  const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -167,6 +169,8 @@ export default function DebugTestScreen() {
     setCheckingOldDatabase(true);
     setOldDatabaseError(null);
     setOldDatabaseTables([]);
+    setTableSchemas({});
+    setExpandedTables(new Set());
     
     try {
       const oldDatabase = openDatabaseSync('workoutLoggerDatabase.db', {
@@ -175,22 +179,52 @@ export default function DebugTestScreen() {
       });
       
       // Get all table names by querying sqlite_master
-      const result = await oldDatabase.getAllAsync(`
+      const tablesResult = await oldDatabase.getAllAsync(`
         SELECT name FROM sqlite_master 
         WHERE type='table' AND name NOT LIKE 'sqlite_%'
         ORDER BY name
       `);
       
-      const tableNames = result.map((row: any) => row.name);
+      const tableNames = tablesResult.map((row: any) => row.name);
       setOldDatabaseTables(tableNames);
       
+      // Get schema for each table
+      const schemas: Record<string, {name: string, type: string, notnull: boolean, pk: boolean}[]> = {};
+      
+      for (const tableName of tableNames) {
+        try {
+          const pragmaResult = await oldDatabase.getAllAsync(`PRAGMA table_info(${tableName})`);
+          schemas[tableName] = pragmaResult.map((row: any) => ({
+            name: row.name,
+            type: row.type,
+            notnull: Boolean(row.notnull),
+            pk: Boolean(row.pk)
+          }));
+        } catch (error) {
+          console.error(`Error getting schema for table ${tableName}:`, error);
+          schemas[tableName] = [];
+        }
+      }
+      
+      setTableSchemas(schemas);
       console.log('Old database tables:', tableNames);
+      console.log('Table schemas:', schemas);
     } catch (error) {
       console.error('Error checking old database:', error);
       setOldDatabaseError(error instanceof Error ? error.message : 'Unknown error');
     } finally {
       setCheckingOldDatabase(false);
     }
+  };
+
+  const toggleTableExpansion = (tableName: string) => {
+    const newExpanded = new Set(expandedTables);
+    if (newExpanded.has(tableName)) {
+      newExpanded.delete(tableName);
+    } else {
+      newExpanded.add(tableName);
+    }
+    setExpandedTables(newExpanded);
   };
 
   // Group screens by category
@@ -298,11 +332,39 @@ export default function DebugTestScreen() {
                 <Text className="mb-2 text-sm font-bold text-text-primary">
                   Found {oldDatabaseTables.length} tables:
                 </Text>
-                <View className="gap-1">
+                <View className="gap-2">
                   {oldDatabaseTables.map((tableName, index) => (
-                    <Text key={index} className="text-sm text-text-secondary">
-                      • {tableName}
-                    </Text>
+                    <View key={index} className="rounded-lg border border-border-light bg-bg-overlay p-2">
+                      <Pressable
+                        className="flex-row items-center justify-between"
+                        onPress={() => toggleTableExpansion(tableName)}
+                      >
+                        <Text className="text-sm font-medium text-text-primary">{tableName}</Text>
+                        <ChevronRight 
+                          size={theme.iconSize.sm} 
+                          color={theme.colors.text.secondary}
+                          style={{
+                            transform: [{ rotate: expandedTables.has(tableName) ? '90deg' : '0deg' }]
+                          }}
+                        />
+                      </Pressable>
+                      
+                      {expandedTables.has(tableName) && tableSchemas[tableName] ? <View className="mt-2 gap-1 pl-2">
+                          <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">Columns:</Text>
+                          {tableSchemas[tableName].map((column, colIndex) => (
+                            <View key={colIndex} className="flex-row gap-2">
+                              <Text className="text-xs text-text-secondary">
+                                {column.name}
+                              </Text>
+                              <Text className="text-xs text-text-tertiary">
+                                {column.type}
+                              </Text>
+                              {column.pk ? <Text className="text-xs font-bold text-accent-primary">PK</Text> : null}
+                              {column.notnull && !column.pk ? <Text className="text-xs text-text-tertiary">NOT NULL</Text> : null}
+                            </View>
+                          ))}
+                        </View> : null}
+                    </View>
                   ))}
                 </View>
               </View> : null}
