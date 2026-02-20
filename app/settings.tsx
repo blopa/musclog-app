@@ -27,10 +27,6 @@ export default function SettingsScreen() {
     googleGeminiModel,
     openAiApiKey,
     openAiModel,
-    enableGoogleGemini,
-    enableOpenAi,
-    dailyNutritionInsights,
-    workoutInsights,
     notifications,
   } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
@@ -65,20 +61,12 @@ export default function SettingsScreen() {
     await SettingsService.setOpenAiModel(value);
   };
 
-  const handleEnableGoogleGeminiChange = async (value: boolean) => {
-    await SettingsService.setEnableGoogleGemini(value);
+  const handleConnectGoogleAccount = async () => {
+    // Handle Google account connection
   };
 
-  const handleEnableOpenAiChange = async (value: boolean) => {
-    await SettingsService.setEnableOpenAi(value);
-  };
-
-  const handleDailyNutritionInsightsChange = async (value: boolean) => {
-    await SettingsService.setDailyNutritionInsights(value);
-  };
-
-  const handleWorkoutInsightsChange = async (value: boolean) => {
-    await SettingsService.setWorkoutInsights(value);
+  const handleOpenAiKeyPress = async () => {
+    // Handle OpenAI key press
   };
 
   const handleNotificationsChange = async (value: boolean) => {
@@ -289,8 +277,6 @@ export default function SettingsScreen() {
       <AISettingsModal
         visible={isAISettingsVisible}
         onClose={() => setAISettingsVisible(false)}
-        enableGoogleGemini={enableGoogleGemini}
-        onEnableGoogleGeminiChange={handleEnableGoogleGeminiChange}
         googleGeminiApiKey={googleGeminiApiKey}
         onGoogleGeminiApiKeyChange={handleGoogleGeminiApiKeyChange}
         geminiModel={googleGeminiModel}
@@ -299,12 +285,6 @@ export default function SettingsScreen() {
         onOpenAiApiKeyChange={handleOpenAiApiKeyChange}
         openAiModel={openAiModel}
         onOpenAiModelPress={handleOpenAiModelChange}
-        enableOpenAi={enableOpenAi}
-        onEnableOpenAiChange={handleEnableOpenAiChange}
-        dailyNutritionInsights={dailyNutritionInsights}
-        onDailyNutritionInsightsChange={handleDailyNutritionInsightsChange}
-        workoutInsights={workoutInsights}
-        onWorkoutInsightsChange={handleWorkoutInsightsChange}
       />
       <BasicSettingsModal
         visible={isBasicSettingsVisible}

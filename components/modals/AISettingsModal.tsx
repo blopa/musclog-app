@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
+import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -165,8 +166,6 @@ type AISettingsModalProps = {
   visible: boolean;
   onClose: () => void;
   // Google Gemini
-  enableGoogleGemini?: boolean;
-  onEnableGoogleGeminiChange?: (value: boolean) => void;
   onConnectGoogleAccount?: () => void;
   googleGeminiApiKey?: string;
   onGoogleGeminiApiKeyChange?: (value: string) => void;
@@ -178,20 +177,11 @@ type AISettingsModalProps = {
   onGetOpenAiKeyPress?: () => void;
   openAiModel?: string;
   onOpenAiModelPress?: (model: string) => void;
-  enableOpenAi?: boolean;
-  onEnableOpenAiChange?: (value: boolean) => void;
-  // Insights & Alerts
-  dailyNutritionInsights?: boolean;
-  onDailyNutritionInsightsChange?: (value: boolean) => void;
-  workoutInsights?: boolean;
-  onWorkoutInsightsChange?: (value: boolean) => void;
 };
 
 export function AISettingsModal({
   visible,
   onClose,
-  enableGoogleGemini = true,
-  onEnableGoogleGeminiChange,
   onConnectGoogleAccount,
   googleGeminiApiKey = '',
   onGoogleGeminiApiKeyChange,
@@ -202,18 +192,32 @@ export function AISettingsModal({
   onGetOpenAiKeyPress,
   openAiModel = 'GPT-4o',
   onOpenAiModelPress,
-  enableOpenAi = true,
-  onEnableOpenAiChange,
-  dailyNutritionInsights = true,
-  onDailyNutritionInsightsChange,
-  workoutInsights = false,
-  onWorkoutInsightsChange,
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
+
+  // Use debounced settings for instant UI updates
+  const {
+    enableGoogleGemini: debouncedEnableGoogleGemini,
+    enableOpenAi: debouncedEnableOpenAi,
+    dailyNutritionInsights: debouncedDailyNutritionInsights,
+    workoutInsights: debouncedWorkoutInsights,
+    handleEnableGoogleGeminiChange,
+    handleEnableOpenAiChange,
+    handleDailyNutritionInsightsChange,
+    handleWorkoutInsightsChange,
+    flushAllPendingChanges,
+  } = useDebouncedSettings(1500);
+
+  // Flush pending settings changes when modal closes
+  useEffect(() => {
+    if (!visible) {
+      flushAllPendingChanges();
+    }
+  }, [visible, flushAllPendingChanges]);
 
   // Local state for API keys (to avoid saving on every keystroke)
   const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
@@ -242,8 +246,8 @@ export function AISettingsModal({
     {
       key: 'enable-gemini',
       label: t('settings.aiSettings.enableGoogleGemini'),
-      value: enableGoogleGemini,
-      onValueChange: onEnableGoogleGeminiChange || (() => {}),
+      value: debouncedEnableGoogleGemini,
+      onValueChange: handleEnableGoogleGeminiChange,
       icon: (
         <View
           style={{
@@ -266,8 +270,8 @@ export function AISettingsModal({
       key: 'nutrition-insights',
       label: t('settings.aiSettings.dailyNutritionInsights'),
       subtitle: t('settings.aiSettings.dailyNutritionInsightsSubtitle'),
-      value: dailyNutritionInsights,
-      onValueChange: onDailyNutritionInsightsChange || (() => {}),
+      value: debouncedDailyNutritionInsights,
+      onValueChange: handleDailyNutritionInsightsChange,
       icon: (
         <View
           style={{
@@ -287,8 +291,8 @@ export function AISettingsModal({
       key: 'workout-insights',
       label: t('settings.aiSettings.workoutInsights'),
       subtitle: t('settings.aiSettings.workoutInsightsSubtitle'),
-      value: workoutInsights,
-      onValueChange: onWorkoutInsightsChange || (() => {}),
+      value: debouncedWorkoutInsights,
+      onValueChange: handleWorkoutInsightsChange,
       icon: (
         <View
           style={{
@@ -310,8 +314,8 @@ export function AISettingsModal({
     {
       key: 'enable-openai',
       label: t('settings.aiSettings.enableOpenAi'),
-      value: enableOpenAi,
-      onValueChange: onEnableOpenAiChange || (() => {}),
+      value: debouncedEnableOpenAi,
+      onValueChange: handleEnableOpenAiChange,
       icon: (
         <View
           style={{
@@ -355,7 +359,7 @@ export function AISettingsModal({
           sectionTitle={t('settings.aiSettings.googleGeminiIntegration')}
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
-          enabled={enableGoogleGemini}
+          enabled={debouncedEnableGoogleGemini}
           headerContent={<GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />}
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={localGeminiApiKey}
@@ -374,7 +378,7 @@ export function AISettingsModal({
           sectionTitle={t('settings.aiSettings.openAiIntegration')}
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={openAiToggleItems}
-          enabled={enableOpenAi}
+          enabled={debouncedEnableOpenAi}
           apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
           apiKeyValue={localOpenAiApiKey}
           onApiKeyChange={setLocalOpenAiApiKey}
