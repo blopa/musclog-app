@@ -1,8 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Heart, Moon, Settings, Sun } from 'lucide-react-native';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useDebouncedTheme } from '../../hooks/useDebouncedTheme';
 import { useTheme } from '../../hooks/useTheme';
 import { SettingsCard } from '../cards/SettingsCard';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -14,9 +16,6 @@ type ThemeOption = 'system' | 'light' | 'dark';
 type BasicSettingsModalProps = {
   visible: boolean;
   onClose: () => void;
-  // Theme settings
-  themeValue?: ThemeOption;
-  onThemeChange?: (value: ThemeOption) => void;
   // Language settings
   language?: string;
   onLanguagePress?: () => void;
@@ -32,8 +31,6 @@ type BasicSettingsModalProps = {
 export function BasicSettingsModal({
   visible,
   onClose,
-  themeValue = 'system',
-  onThemeChange,
   language = 'English (US)',
   onLanguagePress,
   connectHealthData = false,
@@ -45,6 +42,16 @@ export function BasicSettingsModal({
 }: BasicSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  // Use debounced theme for instant UI updates
+  const { theme: themeValue, handleThemeChange, flushPendingChanges } = useDebouncedTheme(1500);
+
+  // Flush pending theme changes when modal closes
+  useEffect(() => {
+    if (!visible) {
+      flushPendingChanges();
+    }
+  }, [visible, flushPendingChanges]);
 
   // TODO: actually implement light theme OR remove/hide this option
   const themeOptions = [
@@ -129,7 +136,7 @@ export function BasicSettingsModal({
             <SegmentedControl
               options={themeOptions}
               value={themeValue}
-              onValueChange={(val) => onThemeChange?.(val as ThemeOption)}
+              onValueChange={(val) => handleThemeChange(val as ThemeOption)}
             />
           </View>
         </View>

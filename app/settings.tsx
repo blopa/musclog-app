@@ -20,7 +20,6 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const {
-    theme: themeValue,
     connectHealthData,
     readHealthData,
     writeHealthData,
@@ -38,10 +37,6 @@ export default function SettingsScreen() {
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
-
-  const handleThemeChange = async (newTheme: 'system' | 'light' | 'dark') => {
-    await SettingsService.setTheme(newTheme);
-  };
 
   const handleConnectHealthDataChange = async (value: boolean) => {
     await SettingsService.setConnectHealthData(value);
@@ -319,8 +314,6 @@ export default function SettingsScreen() {
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
-        themeValue={themeValue}
-        onThemeChange={handleThemeChange}
         connectHealthData={connectHealthData}
         onConnectHealthDataChange={handleConnectHealthDataChange}
         readHealthData={readHealthData}
