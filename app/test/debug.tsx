@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -168,6 +169,15 @@ export default function DebugTestScreen() {
     }
   };
 
+  const clearAsyncStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log('AsyncStorage has been cleared successfully.');
+    } catch (error) {
+      console.error('Error clearing AsyncStorage:', error);
+    }
+  };
+
   const checkOldDatabase = async () => {
     setTableSchemas({});
     setExpandedTables(new Set());
@@ -277,7 +287,12 @@ export default function DebugTestScreen() {
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-lg font-bold text-text-primary">Danger Zone</Text>
             <Button onPress={deleteDatabase} label="Delete Database" size="sm" variant="discard" />
-            {/*TODO: also add a button to delete all data from asynstorage*/}
+            <Button
+              onPress={clearAsyncStorage}
+              label="Clear AsyncStorage"
+              size="sm"
+              variant="discard"
+            />
           </View>
 
           {/* Old Database Checker */}
