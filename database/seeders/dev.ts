@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '../../data/exercisesEnUS.json';
 import { database } from '../index';
 import Exercise, {
   type EquipmentType,
@@ -16,144 +15,7 @@ import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { MealService } from '../services';
-
-interface ExerciseJsonData {
-  name: string;
-  muscleGroup: string;
-  type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
-  description: string;
-  targetMuscles?: string[];
-  loadMultiplier?: number;
-}
-
-/**
- * Maps JSON exercise type to Exercise model fields
- */
-function mapExerciseType(type: ExerciseJsonData['type']): {
-  mechanicType: MechanicType;
-  equipmentType: EquipmentType;
-} {
-  let mechanicType: MechanicType = 'compound';
-  let equipmentType: EquipmentType;
-
-  switch (type) {
-    case 'compound':
-      mechanicType = 'compound';
-      // Try to infer equipment from name (will default to barbell)
-      equipmentType = 'barbell';
-      break;
-    case 'isolation':
-      mechanicType = 'isolation';
-      // Try to infer equipment from name (will default to dumbbell for isolation)
-      equipmentType = 'dumbbell';
-      break;
-    case 'machine':
-      mechanicType = 'compound'; // Machine exercises can be compound or isolation, default to compound
-      equipmentType = 'machine';
-      break;
-    case 'bodyweight':
-      mechanicType = 'compound'; // Bodyweight exercises can be compound or isolation, default to compound
-      equipmentType = 'bodyweight';
-      break;
-    case 'cardio':
-      mechanicType = 'compound';
-      equipmentType = 'other'; // Cardio exercises don't have specific equipment type
-      break;
-    case 'plyometric':
-      mechanicType = 'compound';
-      equipmentType = 'other';
-      break;
-    default:
-      mechanicType = 'compound';
-      equipmentType = 'barbell';
-  }
-
-  return { mechanicType, equipmentType };
-}
-
-/**
- * Infers equipment type from exercise name
- * This is a helper to improve accuracy of equipment type mapping
- */
-function inferEquipmentFromName(name: string, defaultEquipment: EquipmentType): EquipmentType {
-  const lowerName = name.toLowerCase();
-
-  if (lowerName.includes('dumbbell') || lowerName.includes('db ')) {
-    return 'dumbbell' as EquipmentType;
-  }
-  if (lowerName.includes('barbell') || lowerName.includes('bb ')) {
-    return 'barbell' as EquipmentType;
-  }
-  if (lowerName.includes('cable')) {
-    return 'cable' as EquipmentType;
-  }
-  if (lowerName.includes('kettlebell')) {
-    return 'kettlebell' as EquipmentType;
-  }
-  if (lowerName.includes('machine') || lowerName.includes(' smith')) {
-    return 'machine' as EquipmentType;
-  }
-
-  return defaultEquipment;
-}
-
-/**
- * Loads exercises from exercisesEnUS.json and populates the Exercise collection
- * Skips exercises that already exist (by name) to allow re-running without duplicates
- */
-async function loadExercisesFromJson(): Promise<{ created: number; skipped: number }> {
-  const exercises = exercisesData as ExerciseJsonData[];
-  const now = Date.now();
-  let created = 0;
-  let skipped = 0;
-
-  await database.write(async () => {
-    // Get all existing exercises to check for duplicates
-    const existingExercises = await database.get<Exercise>('exercises').query().fetch();
-    const existingNames = new Set(
-      existingExercises.map((ex: Exercise) => (ex.name ?? '').toLowerCase())
-    );
-
-    // Prepare all new exercises
-    const exercisesToCreate = exercises
-      .filter((exerciseData) => {
-        // Skip if exercise already exists
-        if (existingNames.has(exerciseData.name.toLowerCase())) {
-          skipped++;
-          return false;
-        }
-        return true;
-      })
-      .map((exerciseData) => {
-        const { mechanicType, equipmentType: defaultEquipment } = mapExerciseType(
-          exerciseData.type
-        );
-        const equipmentType = inferEquipmentFromName(exerciseData.name, defaultEquipment);
-
-        return database.get<Exercise>('exercises').prepareCreate((exercise) => {
-          exercise.name = exerciseData.name;
-          exercise.description = exerciseData.description;
-          exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
-          exercise.equipmentType = equipmentType as EquipmentType;
-          exercise.mechanicType = mechanicType as MechanicType;
-          exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
-          exercise.imageUrl = undefined; // No image URLs in JSON
-          exercise.createdAt = now;
-          exercise.updatedAt = now;
-          exercise.deletedAt = undefined;
-        });
-      });
-
-    // Batch create all new exercises
-    if (exercisesToCreate.length > 0) {
-      await database.batch(...exercisesToCreate);
-      created = exercisesToCreate.length;
-    }
-  });
-
-  return { created, skipped };
-}
+import { ExerciseService, MealService } from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -163,16 +25,16 @@ async function loadExercisesFromJson(): Promise<{ created: number; skipped: numb
 async function seedExercisesIfEmpty(): Promise<boolean> {
   try {
     // Check if there are any exercises in the database
-    const existingExercises = await database.get<Exercise>('exercises').query().fetch();
+    const existingExercises = await ExerciseService.getAllExercises();
 
     // If database already has exercises, skip seeding
     if (existingExercises.length > 0) {
       return false;
     }
 
-    // Database is empty, seed it
-    const result = await loadExercisesFromJson();
-    console.log(`Seeded exercises database: ${result.created} created, ${result.skipped} skipped`);
+    // Database is empty, seed it using the service
+    const createdExercises = await ExerciseService.createCommonExercises();
+    console.log(`Seeded exercises database: ${createdExercises.length} exercises created`);
     return true;
   } catch (error) {
     console.error('Error seeding exercises database:', error);

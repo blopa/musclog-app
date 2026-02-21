@@ -386,23 +386,22 @@ export class ExerciseService {
           });
         });
 
-      // Create all new exercises
+      // Batch create all new exercises (same approach as dev.ts)
       if (exercisesToCreate.length > 0) {
-        for (const exerciseToCreate of exercisesToCreate) {
-          const createdExercise = await database.get<Exercise>('exercises').create((exercise) => {
-            exercise.name = exerciseToCreate.name;
-            exercise.description = exerciseToCreate.description;
-            exercise.muscleGroup = exerciseToCreate.muscleGroup;
-            exercise.equipmentType = exerciseToCreate.equipmentType;
-            exercise.mechanicType = exerciseToCreate.mechanicType;
-            exercise.loadMultiplier = exerciseToCreate.loadMultiplier;
-            exercise.imageUrl = exerciseToCreate.imageUrl;
-            exercise.createdAt = exerciseToCreate.createdAt;
-            exercise.updatedAt = exerciseToCreate.updatedAt;
-            exercise.deletedAt = exerciseToCreate.deletedAt;
-          });
-          exercises.push(createdExercise);
-        }
+        await database.batch(...exercisesToCreate);
+
+        // Fetch the newly created exercises to return them
+        const newlyCreatedNames = new Set(
+          exercisesJson
+            .filter((exerciseData) => !existingNames.has(exerciseData.name.toLowerCase()))
+            .map((exerciseData) => exerciseData.name.toLowerCase())
+        );
+
+        const allExercisesAfter = await database.get<Exercise>('exercises').query().fetch();
+        const newExercises = allExercisesAfter.filter((ex) =>
+          newlyCreatedNames.has((ex.name ?? '').toLowerCase())
+        );
+        exercises.push(...newExercises);
       }
 
       return exercises;
