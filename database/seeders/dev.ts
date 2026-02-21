@@ -437,7 +437,11 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           workoutName: string,
           startedAt: number,
           durationMinutes: number,
-          exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[],
+          exerciseSets: {
+            exercise: Exercise;
+            sets: { weight: number; reps: number }[];
+            groupId?: string;
+          }[],
           caloriesBurned?: number
         ): Promise<WorkoutLog> => {
           const completedAt = startedAt + durationMinutes * 60000;
@@ -471,6 +475,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
                 logSet.restTimeAfter = 60; // 60 seconds rest
                 logSet.difficultyLevel = 7; // RPE 7
                 logSet.isDropSet = false;
+                logSet.groupId = exerciseData.groupId;
                 logSet.setOrder = setOrder;
                 logSet.createdAt = now;
                 logSet.updatedAt = now;
@@ -523,6 +528,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             exerciseSets: [
               {
                 exercise: benchPress,
+                groupId: 'upper-body-1',
                 sets: [
                   { weight: 80, reps: 8 },
                   { weight: 80, reps: 8 },
@@ -531,6 +537,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               },
               {
                 exercise: overheadPress,
+                groupId: 'upper-body-1',
                 sets: [
                   { weight: 50, reps: 10 },
                   { weight: 52.5, reps: 8 },
@@ -539,6 +546,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               },
               {
                 exercise: latPulldown,
+                groupId: undefined,
                 sets: [
                   { weight: 70, reps: 10 },
                   { weight: 72.5, reps: 8 },
@@ -546,6 +554,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               },
               {
                 exercise: bicepCurl,
+                groupId: undefined,
                 sets: [
                   { weight: 15, reps: 12 },
                   { weight: 17.5, reps: 10 },
@@ -561,6 +570,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             exerciseSets: [
               {
                 exercise: benchPress,
+                groupId: 'upper-body-2',
                 sets: [
                   { weight: 78, reps: 8 },
                   { weight: 80, reps: 7 },
@@ -569,6 +579,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               },
               {
                 exercise: overheadPress,
+                groupId: 'upper-body-2',
                 sets: [
                   { weight: 49, reps: 10 },
                   { weight: 51, reps: 8 },
@@ -576,6 +587,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               },
               {
                 exercise: bicepCurl,
+                groupId: undefined,
                 sets: [
                   { weight: 14, reps: 12 },
                   { weight: 16, reps: 10 },
@@ -735,6 +747,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         const pushDaySets = [
           {
             exercise: benchPress,
+            groupId: 'push-group-1',
             sets: [
               { weight: 75, reps: 10 },
               { weight: 80, reps: 8 },
@@ -743,6 +756,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           },
           {
             exercise: overheadPress,
+            groupId: 'push-group-1',
             sets: [
               { weight: 48, reps: 10 },
               { weight: 50, reps: 8 },
@@ -750,6 +764,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           },
           {
             exercise: tricepExtension,
+            groupId: undefined,
             sets: [
               { weight: 20, reps: 12 },
               { weight: 22.5, reps: 10 },
@@ -768,6 +783,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               logSet.restTimeAfter = 60;
               logSet.difficultyLevel = 7;
               logSet.isDropSet = false;
+              logSet.groupId = exerciseData.groupId;
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;
@@ -841,7 +857,11 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
         workoutName: string,
         startedAt: number,
         durationMinutes: number,
-        exerciseSets: { exercise: Exercise; sets: { weight: number; reps: number }[] }[],
+        exerciseSets: {
+          exercise: Exercise;
+          sets: { weight: number; reps: number }[];
+          groupId?: string;
+        }[],
         caloriesBurned?: number
       ): Promise<WorkoutLog> => {
         const completedAt = startedAt + durationMinutes * 60000;
@@ -874,6 +894,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
               logSet.restTimeAfter = 60; // 60 seconds rest
               logSet.difficultyLevel = 7; // RPE 7
               logSet.isDropSet = false;
+              logSet.groupId = exerciseData.groupId;
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;

@@ -19,6 +19,7 @@ export default class WorkoutTemplateSet extends Model {
   @field('rest_time_after') restTimeAfter?: number;
   @field('set_order') setOrder!: number;
   @field('group_id') groupId?: string;
+  @field('is_drop_set') isDropSet!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

@@ -799,6 +799,7 @@ export class WorkoutTemplateService {
           ts.restTimeAfter = set.restTimeAfter;
           ts.setOrder = set.setOrder;
           ts.groupId = set.groupId;
+          ts.isDropSet = set.isDropSet;
           ts.createdAt = now;
           ts.updatedAt = now;
         })

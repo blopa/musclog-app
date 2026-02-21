@@ -162,6 +162,7 @@ export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
     restTimeAfter: 60,
     difficultyLevel: 5,
     isDropSet: false,
+    groupId: undefined,
     setOrder: 1,
     createdAt: Date.now(),
     updatedAt: Date.now(),

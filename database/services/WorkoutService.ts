@@ -277,6 +277,7 @@ export class WorkoutService {
       difficultyLevel?: number;
       isSkipped?: boolean;
       isDropSet?: boolean;
+      groupId?: string;
       isNew?: boolean; // Flag to indicate if this is a new set
       setOrder?: number; // Optional: explicit ordering for the set
     }[],
@@ -321,6 +322,7 @@ export class WorkoutService {
                 logSet.difficultyLevel = update.difficultyLevel ?? 0;
                 logSet.isSkipped = update.isSkipped ?? false;
                 logSet.isDropSet = update.isDropSet ?? false;
+                logSet.groupId = update.groupId;
                 logSet.setOrder = update.setOrder ?? 0; // Caller can provide order
                 logSet.createdAt = Date.now();
                 logSet.updatedAt = Date.now();
@@ -338,6 +340,7 @@ export class WorkoutService {
                   s.difficultyLevel = update.difficultyLevel;
                 if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;
                 if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
+                if (update.groupId !== undefined) s.groupId = update.groupId;
                 if (update.setOrder !== undefined) s.setOrder = update.setOrder;
                 s.updatedAt = Date.now();
               });
@@ -554,6 +557,7 @@ export class WorkoutService {
           set.workoutLogId = newLog.id;
           set.exerciseId = originalSet.exerciseId;
           set.setOrder = originalSet.setOrder;
+          set.groupId = originalSet.groupId;
           set.reps = 0; // Reset actual values
           set.weight = 0;
           set.partials = 0;
