@@ -1,7 +1,7 @@
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { database } from '../database-instance';
-import { NutritionGoal, User, UserMetric } from '../models';
+import { Food, NutritionGoal, NutritionLog, User, UserMetric } from '../models';
 
 export interface MigrationResult {
   success: boolean;
@@ -9,10 +9,14 @@ export interface MigrationResult {
   fitnessGoals: number;
   userMetrics: number;
   users: number;
+  foods: number;
+  nutritionLogs: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
     usersMigrated: number;
+    foodsMigrated: number;
+    nutritionLogsMigrated: number;
     errors: string[];
   };
 }
@@ -257,6 +261,180 @@ export class MigrationService {
   }
 
   /**
+   * Migrate food items from old Food table to new foods table
+   */
+  private async migrateFoods(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldFoods = (await this.oldDB.getAllAsync(`
+      SELECT * FROM Food 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldFood of oldFoods) {
+      try {
+        // Build micros JSON object from old micro fields
+        const micros: Record<string, any> = {};
+
+        // Add micro nutrients if they exist and are not null
+        const microFields = [
+          'zinc',
+          'vitaminK',
+          'vitaminC',
+          'vitaminB12',
+          'vitaminA',
+          'vitaminE',
+          'thiamin',
+          'selenium',
+          'vitaminB6',
+          'pantothenicAcid',
+          'niacin',
+          'calcium',
+          'iodine',
+          'molybdenum',
+          'vitaminD',
+          'manganese',
+          'magnesium',
+          'folicAcid',
+          'copper',
+          'iron',
+          'chromium',
+          'caffeine',
+          'cholesterol',
+          'phosphorus',
+          'chloride',
+          'folate',
+          'biotin',
+          'sodium',
+          'riboflavin',
+          'potassium',
+        ];
+
+        for (const field of microFields) {
+          if (oldFood[field] !== null && oldFood[field] !== undefined) {
+            micros[field] = oldFood[field];
+          }
+        }
+
+        await database.write(async () => {
+          await database.get<Food>('foods').create((newFood) => {
+            newFood.isAiGenerated = false; // Old foods are not AI generated
+            newFood.name = oldFood.name || '';
+            newFood.brand = oldFood.brand || null;
+            newFood.barcode = oldFood.productCode || null; // Map productCode to barcode
+            newFood.calories = Number(oldFood.calories) || 0;
+            newFood.protein = Number(oldFood.protein) || 0;
+            newFood.carbs = Number(oldFood.totalCarbohydrate) || 0; // Map totalCarbohydrate to carbs
+            newFood.fat = Number(oldFood.totalFat) || 0; // Map totalFat to fat
+            newFood.fiber = Number(oldFood.fiber) || 0;
+            newFood.micros = Object.keys(micros).length > 0 ? micros : undefined;
+            newFood.isFavorite = Boolean(oldFood.isFavorite) || false;
+            newFood.source = oldFood.source || 'user'; // Default to user if not specified
+            newFood.imageUrl = undefined; // Not present in old schema
+            newFood.createdAt = this.convertTimestamp(oldFood.createdAt);
+            newFood.updatedAt = this.convertTimestamp(oldFood.createdAt);
+            newFood.deletedAt = oldFood.deletedAt
+              ? this.convertTimestamp(oldFood.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating food:', error, 'Data:', oldFood);
+        throw new Error(
+          `Failed to migrate food: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Migrate nutrition logs from old UserNutrition table to new nutrition_logs table
+   */
+  private async migrateNutritionLogs(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldNutritionLogs = (await this.oldDB.getAllAsync(`
+      SELECT * FROM UserNutrition 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldLog of oldNutritionLogs) {
+      try {
+        // Build micros JSON object from old micro fields
+        const micros: Record<string, any> = {};
+
+        // Add micro nutrients if they exist and are not null
+        const microFields = [
+          'alcohol',
+          'monounsaturatedFat',
+          'polyunsaturatedFat',
+          'saturatedFat',
+          'transFat',
+          'unsaturatedFat',
+        ];
+
+        for (const field of microFields) {
+          if (oldLog[field] !== null && oldLog[field] !== undefined) {
+            micros[field] = oldLog[field];
+          }
+        }
+
+        await database.write(async () => {
+          await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
+            newLog.foodId = oldLog.dataId || ''; // Use dataId as food_id
+            newLog.date = this.convertTimestamp(oldLog.date);
+            newLog.type = this.mapMealType(oldLog.mealType);
+            newLog.amount = Number(oldLog.grams) || 1; // Default to 1 if grams is null
+            newLog.portionId = undefined; // Not present in old schema
+            newLog.loggedFoodName = oldLog.name || '';
+            newLog.loggedCalories = Number(oldLog.calories) || 0;
+            newLog.loggedProtein = Number(oldLog.protein) || 0;
+            newLog.loggedCarbs = Number(oldLog.carbohydrate) || 0;
+            newLog.loggedFat = Number(oldLog.fat) || 0;
+            newLog.loggedFiber = Number(oldLog.fiber) || 0;
+            newLog.loggedMicros = Object.keys(micros).length > 0 ? micros : undefined;
+            newLog.createdAt = this.convertTimestamp(oldLog.createdAt);
+            newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
+            newLog.deletedAt = oldLog.deletedAt
+              ? this.convertTimestamp(oldLog.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating nutrition log:', error, 'Data:', oldLog);
+        throw new Error(
+          `Failed to migrate nutrition log: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Map old meal type to new meal type format
+   */
+  private mapMealType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
+    if (!mealType) return 'other';
+
+    const lowerMealType = mealType.toLowerCase();
+    if (lowerMealType.includes('breakfast')) return 'breakfast';
+    if (lowerMealType.includes('lunch')) return 'lunch';
+    if (lowerMealType.includes('dinner')) return 'dinner';
+    if (lowerMealType.includes('snack')) return 'snack';
+
+    return 'other';
+  }
+
+  /**
    * Map old fitness goals string to new weight goal format
    */
   private mapFitnessGoalToWeightGoal(fitnessGoals: string): 'lose' | 'gain' | 'maintain' {
@@ -293,9 +471,14 @@ export class MigrationService {
       .fetchCount();
     const userMetricsCount = await database.get<UserMetric>('user_metrics').query().fetchCount();
     const usersCount = await database.get<User>('users').query().fetchCount();
+    const foodsCount = await database.get<Food>('foods').query().fetchCount();
+    const nutritionLogsCount = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query()
+      .fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -310,6 +493,14 @@ export class MigrationService {
     if (result.details.usersMigrated > 0 && usersCount === 0) {
       throw new Error('Users migration validation failed');
     }
+
+    if (result.details.foodsMigrated > 0 && foodsCount === 0) {
+      throw new Error('Foods migration validation failed');
+    }
+
+    if (result.details.nutritionLogsMigrated > 0 && nutritionLogsCount === 0) {
+      throw new Error('Nutrition logs migration validation failed');
+    }
   }
 
   /**
@@ -321,10 +512,14 @@ export class MigrationService {
       fitnessGoals: 0,
       userMetrics: 0,
       users: 0,
+      foods: 0,
+      nutritionLogs: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
         usersMigrated: 0,
+        foodsMigrated: 0,
+        nutritionLogsMigrated: 0,
         errors: [],
       },
     };
@@ -352,7 +547,17 @@ export class MigrationService {
       result.details.usersMigrated = await this.migrateUsers();
       result.users = result.details.usersMigrated;
 
-      // Step 5: Validate migration
+      // Step 5: Migrate Foods
+      console.log('Migrating foods...');
+      result.details.foodsMigrated = await this.migrateFoods();
+      result.foods = result.details.foodsMigrated;
+
+      // Step 6: Migrate Nutrition Logs
+      console.log('Migrating nutrition logs...');
+      result.details.nutritionLogsMigrated = await this.migrateNutritionLogs();
+      result.nutritionLogs = result.details.nutritionLogsMigrated;
+
+      // Step 7: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -375,6 +580,8 @@ export class MigrationService {
     fitnessGoalsCount: number;
     userMetricsCount: number;
     usersCount: number;
+    foodsCount: number;
+    nutritionLogsCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
@@ -382,6 +589,8 @@ export class MigrationService {
         fitnessGoalsCount: 0,
         userMetricsCount: 0,
         usersCount: 0,
+        foodsCount: 0,
+        nutritionLogsCount: 0,
         tables: [],
       };
     }
@@ -391,6 +600,8 @@ export class MigrationService {
     let fitnessGoalsCount = 0;
     let userMetricsCount = 0;
     let usersCount = 0;
+    let foodsCount = 0;
+    let nutritionLogsCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -416,6 +627,22 @@ export class MigrationService {
         `)) as { count: number }[];
         usersCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('Food')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM Food 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        foodsCount = result[0]?.count || 0;
+      }
+
+      if (tables.includes('UserNutrition')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM UserNutrition 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        nutritionLogsCount = result[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -424,6 +651,8 @@ export class MigrationService {
       fitnessGoalsCount,
       userMetricsCount,
       usersCount,
+      foodsCount,
+      nutritionLogsCount,
       tables,
     };
   }

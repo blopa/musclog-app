@@ -78,6 +78,12 @@ export const MigrationSection = () => {
             • Users: {migrationSummary.usersCount} records
           </Text>
           <Text className="text-sm text-text-secondary">
+            • Foods: {migrationSummary.foodsCount} records
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            • Nutrition Logs: {migrationSummary.nutritionLogsCount} records
+          </Text>
+          <Text className="text-sm text-text-secondary">
             • Tables Found: {migrationSummary.tables.join(', ')}
           </Text>
         </View>
@@ -109,6 +115,12 @@ export const MigrationSection = () => {
               </Text>
               <Text className="text-status-success text-sm">
                 • Users: {migrationResult.details.usersMigrated} migrated
+              </Text>
+              <Text className="text-status-success text-sm">
+                • Foods: {migrationResult.details.foodsMigrated} migrated
+              </Text>
+              <Text className="text-status-success text-sm">
+                • Nutrition Logs: {migrationResult.details.nutritionLogsMigrated} migrated
               </Text>
             </View>
           ) : (

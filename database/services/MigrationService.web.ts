@@ -80,10 +80,14 @@ export class MigrationService {
         fitnessGoals: 2,
         userMetrics: 5,
         users: 1,
+        foods: 0,
+        nutritionLogs: 0,
         details: {
           fitnessGoalsMigrated: 2,
           userMetricsMigrated: 5,
           usersMigrated: 1,
+          foodsMigrated: 0,
+          nutritionLogsMigrated: 0,
           errors: [],
         },
       };
@@ -93,11 +97,15 @@ export class MigrationService {
         fitnessGoals: 0,
         userMetrics: 0,
         users: 0,
+        foods: 0,
+        nutritionLogs: 0,
         error: 'Mock migration failed for testing purposes',
         details: {
           fitnessGoalsMigrated: 0,
           userMetricsMigrated: 0,
           usersMigrated: 0,
+          foodsMigrated: 0,
+          nutritionLogsMigrated: 0,
           errors: ['Mock migration failed for testing purposes'],
         },
       };
