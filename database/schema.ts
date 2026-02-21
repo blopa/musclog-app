@@ -206,7 +206,7 @@ export const schema = appSchema({
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
 
-        // MAYBE: implement log for the main macros and micros, since the original food might not be available or be changed
+        // TODO: implement log for the main macros and micros, since the original food might not be available or be changed
         // { name: 'logged_calories', type: 'number' },
         // { name: 'logged_protein', type: 'number' },
         // { name: 'logged_carbs', type: 'number' },
