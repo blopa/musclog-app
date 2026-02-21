@@ -10,7 +10,9 @@ import {
   User,
   UserMetric,
   WorkoutLog,
+  WorkoutLogSet,
   WorkoutTemplate,
+  WorkoutTemplateSet,
 } from '../models';
 
 export interface MigrationResult {
@@ -24,6 +26,8 @@ export interface MigrationResult {
   exercises: number;
   workouts: number;
   workoutLogs: number;
+  templateSets: number;
+  workoutLogSets: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
@@ -33,12 +37,21 @@ export interface MigrationResult {
     exercisesMigrated: number;
     workoutsMigrated: number;
     workoutLogsMigrated: number;
+    templateSetsMigrated: number;
+    logSetsMigrated: number;
     errors: string[];
   };
 }
 
 export class MigrationService {
   private oldDB: SQLiteDatabase | null = null;
+
+  /** Old Exercise id (number) → new exercise id (string). Populated during migrateExercises(). */
+  private exerciseIdMap: Map<number, string> = new Map();
+  /** Old Workout id (number) → new workout_templates id (string). Populated during migrateWorkouts(). */
+  private workoutIdToTemplateId: Map<number, string> = new Map();
+  /** Old WorkoutEvent id (number) → new workout_logs id (string). Populated during migrateWorkoutLogs(). */
+  private workoutEventIdToLogId: Map<number, string> = new Map();
 
   constructor() {
     try {
@@ -450,8 +463,8 @@ export class MigrationService {
 
     for (const oldExercise of oldExercises) {
       try {
-        await database.write(async () => {
-          await database.get<Exercise>('exercises').create((newExercise) => {
+        const newEx = await database.write(async () =>
+          database.get<Exercise>('exercises').create((newExercise) => {
             newExercise.name = oldExercise.name || '';
             newExercise.description = oldExercise.description || '';
             newExercise.imageUrl = oldExercise.image || null; // Map image to image_url
@@ -470,8 +483,9 @@ export class MigrationService {
             newExercise.deletedAt = oldExercise.deletedAt
               ? this.convertTimestamp(oldExercise.deletedAt)
               : undefined;
-          });
-        });
+          })
+        );
+        this.exerciseIdMap.set(Number(oldExercise.id), newEx.id);
         migratedCount++;
       } catch (error) {
         console.error('Error migrating exercise:', error, 'Data:', oldExercise);
@@ -582,8 +596,8 @@ export class MigrationService {
 
     for (const oldWorkout of oldWorkouts) {
       try {
-        await database.write(async () => {
-          await database.get<WorkoutTemplate>('workout_templates').create((newWorkout) => {
+        const newTemplate = await database.write(async () =>
+          database.get<WorkoutTemplate>('workout_templates').create((newWorkout) => {
             newWorkout.name = oldWorkout.title || '';
             newWorkout.description = oldWorkout.description || '';
             newWorkout.volumeCalculationType = oldWorkout.volumeCalculationType || 'standard';
@@ -594,8 +608,9 @@ export class MigrationService {
             newWorkout.deletedAt = oldWorkout.deletedAt
               ? this.convertTimestamp(oldWorkout.deletedAt)
               : undefined;
-          });
-        });
+          })
+        );
+        this.workoutIdToTemplateId.set(Number(oldWorkout.id), newTemplate.id);
         migratedCount++;
       } catch (error) {
         console.error('Error migrating workout:', error, 'Data:', oldWorkout);
@@ -645,8 +660,8 @@ export class MigrationService {
 
     for (const oldWorkoutLog of oldWorkoutLogs) {
       try {
-        await database.write(async () => {
-          await database.get<WorkoutLog>('workout_logs').create((newWorkoutLog) => {
+        const newLog = await database.write(async () =>
+          database.get<WorkoutLog>('workout_logs').create((newWorkoutLog) => {
             newWorkoutLog.templateId = oldWorkoutLog.workoutId?.toString() || '';
             newWorkoutLog.workoutName = oldWorkoutLog.title || '';
             newWorkoutLog.startedAt = this.convertTimestamp(oldWorkoutLog.date);
@@ -660,14 +675,136 @@ export class MigrationService {
             newWorkoutLog.deletedAt = oldWorkoutLog.deletedAt
               ? this.convertTimestamp(oldWorkoutLog.deletedAt)
               : undefined;
-          });
-        });
+          })
+        );
+        this.workoutEventIdToLogId.set(Number(oldWorkoutLog.id), newLog.id);
         migratedCount++;
       } catch (error) {
         console.error('Error migrating workout log:', error, 'Data:', oldWorkoutLog);
         throw new Error(
           `Failed to migrate workout log: ${error instanceof Error ? error.message : String(error)}`
         );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Migrate sets from old Set table (where workoutId points to Workout) to workout_template_sets
+   */
+  private async migrateWorkoutTemplateSets(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldWorkouts = (await this.oldDB.getAllAsync(`
+      SELECT * FROM Workout 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldWorkout of oldWorkouts) {
+      const newTemplateId = this.workoutIdToTemplateId.get(Number(oldWorkout.id));
+      if (!newTemplateId) continue;
+
+      const oldSets = (await this.oldDB.getAllAsync(
+        `SELECT * FROM "Set" WHERE workoutId = ? AND (deletedAt IS NULL OR deletedAt = '') ORDER BY setOrder, id`,
+        [oldWorkout.id]
+      )) as Record<string, any>[];
+
+      for (const oldSet of oldSets) {
+        const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
+        if (!newExerciseId) continue;
+
+        try {
+          await database.write(async () => {
+            await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+              ts.templateId = newTemplateId;
+              ts.exerciseId = newExerciseId;
+              ts.targetReps = Number(oldSet.reps) ?? 0;
+              ts.targetWeight = Number(oldSet.weight) ?? 0;
+              ts.restTimeAfter =
+                oldSet.restTime != null && oldSet.restTime !== ''
+                  ? Number(oldSet.restTime)
+                  : undefined;
+              ts.setOrder = Number(oldSet.setOrder) ?? 0;
+              ts.groupId = oldSet.supersetName || undefined;
+              ts.isDropSet = Boolean(oldSet.isDropSet);
+              const createdAt = this.convertTimestamp(oldSet.createdAt);
+              ts.createdAt = createdAt;
+              ts.updatedAt = createdAt;
+              ts.deletedAt = oldSet.deletedAt ? this.convertTimestamp(oldSet.deletedAt) : undefined;
+            });
+          });
+          migratedCount++;
+        } catch (error) {
+          console.error('Error migrating template set:', error, 'Data:', oldSet);
+          throw new Error(
+            `Failed to migrate template set: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Migrate sets from old Set table (where workoutId points to WorkoutEvent) to workout_log_sets
+   */
+  private async migrateWorkoutLogSets(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
+      SELECT * FROM WorkoutEvent 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldEvent of oldWorkoutLogs) {
+      const newLogId = this.workoutEventIdToLogId.get(Number(oldEvent.id));
+      if (!newLogId) continue;
+
+      const oldSets = (await this.oldDB.getAllAsync(
+        `SELECT * FROM "Set" WHERE workoutId = ? AND (deletedAt IS NULL OR deletedAt = '') ORDER BY setOrder, id`,
+        [oldEvent.id]
+      )) as Record<string, any>[];
+
+      for (const oldSet of oldSets) {
+        const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
+        if (!newExerciseId) continue;
+
+        const difficultyLevel = Math.min(10, Math.max(1, Number(oldSet.difficultyLevel) ?? 0));
+
+        try {
+          await database.write(async () => {
+            await database.get<WorkoutLogSet>('workout_log_sets').create((ls) => {
+              ls.workoutLogId = newLogId;
+              ls.exerciseId = newExerciseId;
+              ls.reps = Number(oldSet.reps) ?? 0;
+              ls.weight = Number(oldSet.weight) ?? 0;
+              ls.partials = undefined;
+              ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
+              ls.repsInReserve = 0;
+              ls.difficultyLevel = difficultyLevel;
+              ls.groupId = oldSet.supersetName || undefined;
+              ls.isDropSet = Boolean(oldSet.isDropSet);
+              ls.setOrder = Number(oldSet.setOrder) ?? 0;
+              const createdAt = this.convertTimestamp(oldSet.createdAt);
+              ls.createdAt = createdAt;
+              ls.updatedAt = createdAt;
+              ls.deletedAt = oldSet.deletedAt ? this.convertTimestamp(oldSet.deletedAt) : undefined;
+              ls.isSkipped = undefined;
+            });
+          });
+          migratedCount++;
+        } catch (error) {
+          console.error('Error migrating log set:', error, 'Data:', oldSet);
+          throw new Error(
+            `Failed to migrate log set: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
       }
     }
 
@@ -742,9 +879,14 @@ export class MigrationService {
       .query()
       .fetchCount();
     const workoutLogsCount = await database.get<WorkoutLog>('workout_logs').query().fetchCount();
+    const templateSetsCount = await database
+      .get<WorkoutTemplateSet>('workout_template_sets')
+      .query()
+      .fetchCount();
+    const logSetsCount = await database.get<WorkoutLogSet>('workout_log_sets').query().fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises, ${workoutsCount} workouts, ${workoutLogsCount} workout logs`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises, ${workoutsCount} workouts, ${workoutLogsCount} workout logs, ${templateSetsCount} template sets, ${logSetsCount} log sets`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -779,6 +921,17 @@ export class MigrationService {
     if (result.details.workoutLogsMigrated > 0 && workoutLogsCount === 0) {
       throw new Error('Workout logs migration validation failed');
     }
+
+    if (
+      result.details.templateSetsMigrated > 0 &&
+      templateSetsCount < result.details.templateSetsMigrated
+    ) {
+      throw new Error('Workout template sets migration validation failed');
+    }
+
+    if (result.details.logSetsMigrated > 0 && logSetsCount < result.details.logSetsMigrated) {
+      throw new Error('Workout log sets migration validation failed');
+    }
   }
 
   /**
@@ -795,6 +948,8 @@ export class MigrationService {
       exercises: 0,
       workouts: 0,
       workoutLogs: 0,
+      templateSets: 0,
+      workoutLogSets: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
@@ -804,6 +959,8 @@ export class MigrationService {
         exercisesMigrated: 0,
         workoutsMigrated: 0,
         workoutLogsMigrated: 0,
+        templateSetsMigrated: 0,
+        logSetsMigrated: 0,
         errors: [],
       },
     };
@@ -815,6 +972,10 @@ export class MigrationService {
       }
 
       console.log('Starting migration from old database...');
+
+      this.exerciseIdMap.clear();
+      this.workoutIdToTemplateId.clear();
+      this.workoutEventIdToLogId.clear();
 
       // Step 2: Migrate Fitness Goals
       console.log('Migrating fitness goals...');
@@ -856,7 +1017,17 @@ export class MigrationService {
       result.details.workoutLogsMigrated = await this.migrateWorkoutLogs();
       result.workoutLogs = result.details.workoutLogsMigrated;
 
-      // Step 10: Validate migration
+      // Step 10: Migrate template sets
+      console.log('Migrating workout template sets...');
+      result.details.templateSetsMigrated = await this.migrateWorkoutTemplateSets();
+      result.templateSets = result.details.templateSetsMigrated;
+
+      // Step 11: Migrate log sets
+      console.log('Migrating workout log sets...');
+      result.details.logSetsMigrated = await this.migrateWorkoutLogSets();
+      result.workoutLogSets = result.details.logSetsMigrated;
+
+      // Step 12: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -884,6 +1055,8 @@ export class MigrationService {
     exercisesCount: number;
     workoutsCount: number;
     workoutLogsCount: number;
+    templateSetsCount: number;
+    logSetsCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
@@ -896,6 +1069,8 @@ export class MigrationService {
         exercisesCount: 0,
         workoutsCount: 0,
         workoutLogsCount: 0,
+        templateSetsCount: 0,
+        logSetsCount: 0,
         tables: [],
       };
     }
@@ -910,6 +1085,8 @@ export class MigrationService {
     let exercisesCount = 0;
     let workoutsCount = 0;
     let workoutLogsCount = 0;
+    let templateSetsCount = 0;
+    let logSetsCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -975,6 +1152,22 @@ export class MigrationService {
         `)) as { count: number }[];
         workoutLogsCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('Set')) {
+        const templateResult = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM "Set" s
+          INNER JOIN Workout w ON s.workoutId = w.id
+          WHERE (s.deletedAt IS NULL OR s.deletedAt = '') AND (w.deletedAt IS NULL OR w.deletedAt = '')
+        `)) as { count: number }[];
+        templateSetsCount = templateResult[0]?.count || 0;
+
+        const logResult = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM "Set" s
+          INNER JOIN WorkoutEvent w ON s.workoutId = w.id
+          WHERE (s.deletedAt IS NULL OR s.deletedAt = '') AND (w.deletedAt IS NULL OR w.deletedAt = '')
+        `)) as { count: number }[];
+        logSetsCount = logResult[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -988,6 +1181,8 @@ export class MigrationService {
       exercisesCount,
       workoutsCount,
       workoutLogsCount,
+      templateSetsCount,
+      logSetsCount,
       tables,
     };
   }

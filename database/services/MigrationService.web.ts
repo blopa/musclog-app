@@ -43,14 +43,30 @@ export class MigrationService {
   async getMigrationSummary(): Promise<{
     fitnessGoalsCount: number;
     userMetricsCount: number;
+    usersCount: number;
+    foodsCount: number;
+    nutritionLogsCount: number;
+    exercisesCount: number;
+    workoutsCount: number;
+    workoutLogsCount: number;
+    templateSetsCount: number;
+    logSetsCount: number;
     tables: string[];
   }> {
     // Simulate async operation
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     return {
-      fitnessGoalsCount: 2, // Mock data
-      userMetricsCount: 5, // Mock data
+      fitnessGoalsCount: 2,
+      userMetricsCount: 5,
+      usersCount: 1,
+      foodsCount: 0,
+      nutritionLogsCount: 0,
+      exercisesCount: 0,
+      workoutsCount: 0,
+      workoutLogsCount: 0,
+      templateSetsCount: 0,
+      logSetsCount: 0,
       tables: [
         'FitnessGoals',
         'UserMetrics',
@@ -58,6 +74,7 @@ export class MigrationService {
         'Food',
         'Meal',
         'Workout',
+        'Set',
         'User',
         'Setting',
       ],
@@ -85,6 +102,8 @@ export class MigrationService {
         exercises: 0,
         workouts: 0,
         workoutLogs: 0,
+        templateSets: 0,
+        workoutLogSets: 0,
         details: {
           fitnessGoalsMigrated: 2,
           userMetricsMigrated: 5,
@@ -94,6 +113,8 @@ export class MigrationService {
           exercisesMigrated: 0,
           workoutsMigrated: 0,
           workoutLogsMigrated: 0,
+          templateSetsMigrated: 0,
+          logSetsMigrated: 0,
           errors: [],
         },
       };
@@ -108,6 +129,8 @@ export class MigrationService {
         exercises: 0,
         workouts: 0,
         workoutLogs: 0,
+        templateSets: 0,
+        workoutLogSets: 0,
         error: 'Mock migration failed for testing purposes',
         details: {
           fitnessGoalsMigrated: 0,
@@ -118,6 +141,8 @@ export class MigrationService {
           exercisesMigrated: 0,
           workoutsMigrated: 0,
           workoutLogsMigrated: 0,
+          templateSetsMigrated: 0,
+          logSetsMigrated: 0,
           errors: ['Mock migration failed for testing purposes'],
         },
       };
