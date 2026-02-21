@@ -26,6 +26,9 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
+        // TODO: add these new fields
+        // { name: 'volume_calculation_type', type: 'string' },
+        // { name: 'week_days_json', type: 'string', isOptional: true },
         { name: 'is_archived', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
