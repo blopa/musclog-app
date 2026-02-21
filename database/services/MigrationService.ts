@@ -215,9 +215,9 @@ export class MigrationService {
 
       // Create separate records for each metric type
       const metricTypes = [
-        { field: 'weight', type: 'weight' as const, unit: 'kg' },
-        { field: 'height', type: 'height' as const, unit: 'cm' },
-        { field: 'fatPercentage', type: 'body_fat' as const, unit: '%' },
+        { field: 'weight', type: 'weight' as const, unit: 'kg', convert: (value: number) => value },
+        { field: 'height', type: 'height' as const, unit: 'cm', convert: (value: number) => value * 100 }, // Convert meters to cm
+        { field: 'fatPercentage', type: 'body_fat' as const, unit: '%', convert: (value: number) => value },
       ];
 
       for (const metricType of metricTypes) {
@@ -229,11 +229,13 @@ export class MigrationService {
             const numericValue = parseFloat(decryptedValue);
             
             if (!isNaN(numericValue)) {
-              console.log(`Migrating ${metricType.type}: ${numericValue} from date ${oldMetric.date}`);
+              // Apply conversion function if available
+              const finalValue = metricType.convert(numericValue);
+              console.log(`Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`);
               await database.write(async () => {
                 await database.get<UserMetric>('user_metrics').create((newMetric) => {
                   newMetric.type = metricType.type;
-                  newMetric.value = numericValue;
+                  newMetric.value = finalValue;
                   newMetric.unit = metricType.unit;
                   newMetric.date = dateTimestamp;
                   newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';

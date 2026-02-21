@@ -9,6 +9,8 @@ import { ExerciseService, FoodPortionService, MigrationService } from '../servic
  * Migration reuses existing exercises by name (only adds old exercises that are not already seeded).
  */
 export async function seedProductionData(): Promise<boolean> {
+  // TODO; to avoid this function to being called constantly when on the app boots
+  // let's add a asyncstorage value to flag that this function was called already
   try {
     // 1. Seed common portions if none exist
     const existingPortions = await FoodPortionService.getAllPortions();
