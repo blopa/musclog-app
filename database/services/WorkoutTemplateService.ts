@@ -40,6 +40,8 @@ export interface SaveTemplateData {
   templateId?: string;
   name: string;
   description?: string;
+  volumeCalculationType?: string;
+  weekDaysJson?: string;
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
 }
@@ -214,6 +216,8 @@ export class WorkoutTemplateService {
         template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
+          t.volumeCalculationType = data.volumeCalculationType || 'standard';
+          t.weekDaysJson = data.weekDaysJson || undefined;
           t.isArchived = false; // Default to not archived
           t.createdAt = now;
           t.updatedAt = now;
@@ -777,6 +781,8 @@ export class WorkoutTemplateService {
       const newTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
         t.name = `${template.name} (Copy)`;
         t.description = template.description;
+        t.volumeCalculationType = template.volumeCalculationType || 'standard';
+        t.weekDaysJson = template.weekDaysJson || undefined;
         t.isArchived = false;
         t.createdAt = now;
         t.updatedAt = now;

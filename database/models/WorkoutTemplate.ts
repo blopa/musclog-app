@@ -17,6 +17,8 @@ export default class WorkoutTemplate extends Model {
 
   @field('name') name!: string;
   @field('description') description?: string;
+  @field('volume_calculation_type') volumeCalculationType!: string;
+  @field('week_days_json') weekDaysJson?: string;
   @field('is_archived') isArchived!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
