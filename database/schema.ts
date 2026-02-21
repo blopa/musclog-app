@@ -206,7 +206,6 @@ export const schema = appSchema({
       name: 'nutrition_logs',
       columns: [
         { name: 'food_id', type: 'string', isIndexed: true },
-        { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
         { name: 'type', type: 'string' }, // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
         { name: 'amount', type: 'number' }, // Quantity eaten
@@ -220,7 +219,7 @@ export const schema = appSchema({
         { name: 'logged_fat', type: 'number' },
         { name: 'logged_fiber', type: 'number' },
         { name: 'logged_micros_json', type: 'string', isOptional: true },
-        // { name: 'date', type: 'number', isIndexed: true }, // TODO: add this column to the models, services, etc
+        { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
