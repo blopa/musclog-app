@@ -1,5 +1,5 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { children, field, writer } from '@nozbe/watermelondb/decorators';
+import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
@@ -18,7 +18,10 @@ export default class WorkoutTemplate extends Model {
   @field('name') name!: string;
   @field('description') description?: string;
   @field('volume_calculation_type') volumeCalculationType!: string;
-  @field('week_days_json') weekDaysJson?: string;
+  @json('week_days_json', (data: any) => {
+    // TODO: validate an array of which days of the week this workout
+    // will be repeated on in the format [0, 3, 5] for example for Monday, Thursday and Saturday
+  }) weekDaysJson?: string;
   @field('is_archived') isArchived!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
