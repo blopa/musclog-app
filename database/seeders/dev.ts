@@ -454,6 +454,8 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             log.completedAt = completedAt;
             log.totalVolume = 0; // Will be calculated
             log.caloriesBurned = caloriesBurned;
+            log.exhaustionLevel = undefined;
+            log.workoutScore = undefined;
             log.createdAt = now;
             log.updatedAt = now;
           });
@@ -738,6 +740,8 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           log.completedAt = daysAgo(7) + 60 * 60000;
           log.totalVolume = 0;
           log.caloriesBurned = 450;
+          log.exhaustionLevel = undefined;
+          log.workoutScore = undefined;
           log.createdAt = now;
           log.updatedAt = now;
         });
@@ -873,6 +877,8 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
           log.completedAt = completedAt;
           log.totalVolume = 0; // Will be calculated
           log.caloriesBurned = caloriesBurned;
+          log.exhaustionLevel = undefined;
+          log.workoutScore = undefined;
           log.createdAt = now;
           log.updatedAt = now;
         });

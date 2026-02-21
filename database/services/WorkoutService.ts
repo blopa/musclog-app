@@ -547,6 +547,8 @@ export class WorkoutService {
         log.startedAt = now;
         log.completedAt = undefined; // Not completed yet
         log.totalVolume = 0;
+        log.exhaustionLevel = undefined;
+        log.workoutScore = undefined;
         log.createdAt = now;
         log.updatedAt = now;
       });

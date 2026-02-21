@@ -76,8 +76,8 @@ export const schema = appSchema({
         { name: 'completed_at', type: 'number', isOptional: true },
         { name: 'total_volume', type: 'number', isOptional: true },
         { name: 'calories_burned', type: 'number', isOptional: true },
-        // { name: 'exhaustion_level', type: 'number' }, // TODO: add this new value to model, services, and wherever workout_logs is being edited / added
-        // { name: 'workout_score', type: 'number' }, // TODO: add this new value to model, services, and wherever workout_logs is being edited / added
+        { name: 'exhaustion_level', type: 'number' },
+        { name: 'workout_score', type: 'number' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

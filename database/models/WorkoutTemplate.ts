@@ -60,6 +60,8 @@ export default class WorkoutTemplate extends Model {
       log.workoutName = this.name;
       log.templateId = this.id;
       log.startedAt = now;
+      log.exhaustionLevel = undefined;
+      log.workoutScore = undefined;
       log.createdAt = now;
       log.updatedAt = now;
     });

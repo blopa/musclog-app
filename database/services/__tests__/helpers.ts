@@ -135,6 +135,8 @@ export function createMockWorkoutLog(overrides: Partial<any> = {}) {
     completedAt: null,
     totalVolume: 0,
     caloriesBurned: null,
+    exhaustionLevel: undefined,
+    workoutScore: undefined,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,
