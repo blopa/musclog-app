@@ -1,36 +1,46 @@
-import { ExerciseService, FoodPortionService } from '../services';
+import { ExerciseService, FoodPortionService, MigrationService } from '../services';
 
 /**
  * Seed production data
  * This seeds only the common food portions and exercises that will be available in the production app
  * Foods are NOT seeded in production - users will add them as needed via the app
+ *
+ * Order: seed common portions and exercises first, then run migration from the old database.
+ * Migration reuses existing exercises by name (only adds old exercises that are not already seeded).
  */
 export async function seedProductionData(): Promise<boolean> {
-  // TODO: use the MigrationService here to migrate data from the old database
   try {
-    // Check if portions already exist
+    // 1. Seed common portions if none exist
     const existingPortions = await FoodPortionService.getAllPortions();
 
     if (existingPortions.length > 0) {
       console.log(`Skipping portion seeding: ${existingPortions.length} portions already exist`);
     } else {
-      // Create common portions
       const createdPortions = await FoodPortionService.createCommonPortions();
       console.log(`Seeded ${createdPortions.length} common food portions`);
     }
 
-    // Check if exercises already exist
-    // TODO: first we seed the exercises, then we import the exercises
-    // from the old database that were not seeded - so seed the ones from the JSON
-    // then get the latest ID, then see if the old database has more IDs and add the missing ones
+    // 2. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
     const existingExercises = await ExerciseService.getAllExercises();
 
     if (existingExercises.length > 0) {
       console.log(`Skipping exercise seeding: ${existingExercises.length} exercises already exist`);
     } else {
-      // Create common exercises
       const createdExercises = await ExerciseService.createCommonExercises();
       console.log(`Seeded ${createdExercises.length} common exercises`);
+    }
+
+    // 3. Migrate data from the old database if it exists (e.g. app upgrade)
+    const migrationService = new MigrationService();
+    if (await migrationService.checkOldDatabaseExists()) {
+      const result = await migrationService.migrateAll();
+      if (result.success) {
+        console.log(
+          `Migration completed: ${result.exercises} exercises, ${result.workouts} workouts, ${result.workoutLogs} workout logs, ${result.templateSets} template sets, ${result.workoutLogSets} log sets`
+        );
+      } else {
+        console.warn('Migration from old database failed:', result.error);
+      }
     }
 
     return true;

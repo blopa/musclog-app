@@ -1,3 +1,4 @@
+import { Q } from '@nozbe/watermelondb';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { database } from '../database-instance';
@@ -462,10 +463,23 @@ export class MigrationService {
     let migratedCount = 0;
 
     for (const oldExercise of oldExercises) {
+      const name = (oldExercise.name || '').trim();
       try {
+        // If an exercise with the same name already exists (e.g. from prod seed), reuse it so we only add the missing ones
+        const existing = await database
+          .get<Exercise>('exercises')
+          .query(Q.where('name', name), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        if (existing.length > 0) {
+          this.exerciseIdMap.set(Number(oldExercise.id), existing[0].id);
+          migratedCount++;
+          continue;
+        }
+
         const newEx = await database.write(async () =>
           database.get<Exercise>('exercises').create((newExercise) => {
-            newExercise.name = oldExercise.name || '';
+            newExercise.name = name || '';
             newExercise.description = oldExercise.description || '';
             newExercise.imageUrl = oldExercise.image || null; // Map image to image_url
             newExercise.muscleGroup = oldExercise.muscleGroup || 'other'; // Map muscleGroup to muscle_group
