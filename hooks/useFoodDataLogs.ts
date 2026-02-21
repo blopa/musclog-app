@@ -72,7 +72,11 @@ async function logToDisplayItemWithT(
   t: TFunction
 ): Promise<FoodDataDisplayItem | null> {
   try {
-    const [nutrients, displayName, food] = await Promise.all([log.getNutrients(), log.getDisplayName(), log.food]);
+    const [nutrients, displayName, food] = await Promise.all([
+      log.getNutrients(),
+      log.getDisplayName(),
+      log.food,
+    ]);
     const icon = pickIconForFood(displayName || food?.name);
     const colors = ICON_COLORS[icon] ?? ICON_COLORS.restaurant;
 
