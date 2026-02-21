@@ -261,7 +261,7 @@ export class MigrationService {
             newUser.fullName = oldUser.name || '';
             newUser.email = undefined; // Old schema doesn't have email, set to undefined as it's optional
             newUser.dateOfBirth = this.convertTimestamp(oldUser.birthday);
-            newUser.gender = oldUser.gender || 'other';
+            newUser.gender = this.mapGender(oldUser.gender);
             newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain';
             newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);
             newUser.activityLevel = Number(oldUser.activityLevel) || 3; // Default to moderate
@@ -858,6 +858,22 @@ export class MigrationService {
       return 'gain';
     }
     return 'maintain';
+  }
+
+  /**
+   * Map old gender text to new gender format
+   */
+  private mapGender(gender: string): 'male' | 'female' | 'other' {
+    // TODO: use translation here to be able to match any other language
+    if (!gender) return 'other';
+
+    const lowerGender = gender.toLowerCase().trim();
+    if (lowerGender === 'male') {
+      return 'male';
+    } else if (lowerGender === 'female') {
+      return 'female';
+    }
+    return 'other';
   }
 
   /**
