@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { field, writer } from '@nozbe/watermelondb/decorators';
 
 import { decryptDate, decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 
@@ -44,6 +44,14 @@ export default class UserMetric extends Model {
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    await this.update((record) => {
+      record.deletedAt = Date.now();
+      record.updatedAt = Date.now();
+    });
+  }
 
   /** Decrypt value, unit, date. Use this for display and calculations. */
   async getDecrypted(): Promise<DecryptedUserMetricFields> {

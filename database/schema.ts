@@ -218,8 +218,8 @@ export const schema = appSchema({
         { name: 'logged_carbs', type: 'string' }, // isEncrypted: true
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
-        { name: 'logged_micros_json', type: 'string', isOptional: true },
-        { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
+        { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
+        { name: 'date', type: 'number', isIndexed: true }, // isEncrypted: true
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

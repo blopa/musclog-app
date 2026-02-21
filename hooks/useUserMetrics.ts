@@ -335,11 +335,12 @@ export function useUserMetrics({
       return;
     }
 
-    // Build query based on filters
+    // Observe any change to trigger reload. Do not filter/sort by date — it's encrypted;
+    // date filtering is done in memory in UserMetricService.getMetricsHistory after decrypt.
     let query = database.get<UserMetric>('user_metrics').query(
       Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy('date', Q.desc),
-      Q.take(1) // Only need to know if there are any changes
+      Q.sortBy('created_at', Q.desc),
+      Q.take(1)
     );
 
     if (metricType) {
@@ -348,8 +349,8 @@ export function useUserMetrics({
 
     if (dateRange) {
       query = query.extend(
-        Q.where('date', Q.gte(dateRange.startDate)),
-        Q.where('date', Q.lte(dateRange.endDate))
+        Q.where('created_at', Q.gte(dateRange.startDate)),
+        Q.where('created_at', Q.lte(dateRange.endDate))
       );
     }
 
