@@ -1,5 +1,5 @@
-import { SearchResultProduct } from '../types/openFoodFacts';
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
+import { SearchResultProduct } from '../types/openFoodFacts';
 
 // All possible Open Food Facts nutriment properties
 const NUTRIMENT_PROPERTIES = [

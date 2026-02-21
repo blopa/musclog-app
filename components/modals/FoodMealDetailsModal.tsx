@@ -12,6 +12,7 @@ import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
+import { mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -238,38 +239,19 @@ export function FoodMealDetailsModal({
       };
     }
 
-    // TODO: are we missing to map any other property? maybe use mapOpenFoodFactsProduct here?
+    // Use the comprehensive mapping function for Open Food Facts products
     if (productFromSearch?.nutriments) {
-      const n = productFromSearch.nutriments as Record<string, unknown>;
-      // OFF search returns per-100g values; try main key then _100g / _value (API can use strings)
-      const kcal = toNum(n['energy-kcal'] ?? n['energy-kcal_100g'] ?? n['energy_kcal']);
-      const energyKj = toNum(n['energy'] ?? n['energy_100g']);
+      const mappedProduct = mapOpenFoodFactsProduct(productFromSearch);
       return {
-        calories: kcal > 0 ? kcal : energyKj / 4.184,
-        protein: toNum(n['proteins'] ?? n['proteins_100g'] ?? n['protein']),
-        carbs: toNum(n['carbohydrates'] ?? n['carbohydrates_100g'] ?? n['carbohydrates_value']),
-        fat: toNum(n['fat'] ?? n['fat_100g'] ?? n['fat_value']),
-        fiber: (() => {
-          const f = toNum(n['fiber'] ?? n['fiber_100g']);
-          if (f > 0) return f;
-          return Math.max(
-            0,
-            toNum(n['carbohydrates-total'] ?? n['carbohydrates-total_100g']) -
-              toNum(n['carbohydrates'] ?? n['carbohydrates_100g'])
-          );
-        })(),
-        sugar: toNum(n['sugars'] ?? n['sugars_100g'] ?? n['sugars_value']),
-        saturatedFat: toNum(
-          n['saturated-fat'] ?? n['saturated-fat_100g'] ?? n['saturated-fat_value']
-        ),
-        sodium: toNum(
-          n['sodium'] ??
-            n['sodium_100g'] ??
-            n['sodium_value'] ??
-            n['salt'] ??
-            n['salt_100g'] ??
-            n['salt_value']
-        ),
+        calories: mappedProduct.calories || 0,
+        protein: mappedProduct.protein || 0,
+        carbs: mappedProduct.carbs || 0,
+        fat: mappedProduct.fat || 0,
+        fiber: mappedProduct.fiber || 0,
+        sugar: mappedProduct.nutriments?.macronutrients?.sugars || 0,
+        saturatedFat: mappedProduct.nutriments?.macronutrients?.saturatedFat || 0,
+        sodium:
+          mappedProduct.nutriments?.minerals?.sodium || mappedProduct.nutriments?.other?.salt || 0,
       };
     }
 
