@@ -1,7 +1,15 @@
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { database } from '../database-instance';
-import { Food, NutritionGoal, NutritionLog, User, UserMetric } from '../models';
+import {
+  type EquipmentType,
+  Exercise,
+  Food,
+  NutritionGoal,
+  NutritionLog,
+  User,
+  UserMetric,
+} from '../models';
 
 export interface MigrationResult {
   success: boolean;
@@ -11,12 +19,14 @@ export interface MigrationResult {
   users: number;
   foods: number;
   nutritionLogs: number;
+  exercises: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
     usersMigrated: number;
     foodsMigrated: number;
     nutritionLogsMigrated: number;
+    exercisesMigrated: number;
     errors: string[];
   };
 }
@@ -420,6 +430,123 @@ export class MigrationService {
   }
 
   /**
+   * Migrate exercises from old Exercise table to new exercises table
+   */
+  private async migrateExercises(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldExercises = (await this.oldDB.getAllAsync(`
+      SELECT * FROM Exercise 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldExercise of oldExercises) {
+      try {
+        await database.write(async () => {
+          await database.get<Exercise>('exercises').create((newExercise) => {
+            newExercise.name = oldExercise.name || '';
+            newExercise.description = oldExercise.description || '';
+            newExercise.imageUrl = oldExercise.image || null; // Map image to image_url
+            newExercise.muscleGroup = oldExercise.muscleGroup || 'other'; // Map muscleGroup to muscle_group
+            newExercise.equipmentType = this.mapExerciseType(oldExercise.type); // Map type to equipment_type
+            newExercise.mechanicType = this.determineMechanicType(
+              oldExercise.type,
+              oldExercise.muscleGroup
+            );
+            newExercise.loadMultiplier = this.determineLoadMultiplier(
+              oldExercise.type,
+              oldExercise.muscleGroup
+            );
+            newExercise.createdAt = this.convertTimestamp(oldExercise.createdAt);
+            newExercise.updatedAt = this.convertTimestamp(oldExercise.createdAt);
+            newExercise.deletedAt = oldExercise.deletedAt
+              ? this.convertTimestamp(oldExercise.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating exercise:', error, 'Data:', oldExercise);
+        throw new Error(
+          `Failed to migrate exercise: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Map old exercise type to new equipment type
+   */
+  private mapExerciseType(type: string): EquipmentType {
+    if (!type) return 'bodyweight';
+
+    const lowerType = type.toLowerCase();
+    if (lowerType.includes('dumbbell') || lowerType.includes('dumbell')) return 'dumbbell';
+    if (lowerType.includes('barbell') || lowerType.includes('bar')) return 'barbell';
+    if (lowerType.includes('machine')) return 'machine';
+    if (lowerType.includes('cable')) return 'cable';
+    if (lowerType.includes('kettlebell') || lowerType.includes('kettle')) return 'kettlebell';
+    if (lowerType.includes('band') || lowerType.includes('resistance')) return 'resistance_band';
+    if (lowerType.includes('bodyweight') || lowerType.includes('body')) return 'bodyweight';
+
+    return 'other';
+  }
+
+  /**
+   * Determine mechanic type based on exercise type and muscle group
+   */
+  private determineMechanicType(type: string, muscleGroup: string): 'compound' | 'isolation' {
+    if (!type || !muscleGroup) return 'isolation';
+
+    const lowerType = type.toLowerCase();
+    const lowerMuscleGroup = muscleGroup.toLowerCase();
+
+    // Compound movements typically involve multiple muscle groups
+    const compoundKeywords = [
+      'squat',
+      'deadlift',
+      'bench',
+      'press',
+      'row',
+      'pull',
+      'clean',
+      'snatch',
+    ];
+    const compoundMuscleGroups = ['legs', 'chest', 'back', 'shoulders'];
+
+    const isCompoundType = compoundKeywords.some((keyword) => lowerType.includes(keyword));
+    const isCompoundMuscle = compoundMuscleGroups.some((group) => lowerMuscleGroup.includes(group));
+
+    return isCompoundType || isCompoundMuscle ? 'compound' : 'isolation';
+  }
+
+  /**
+   * Determine load multiplier based on exercise type and muscle group
+   */
+  private determineLoadMultiplier(type: string, muscleGroup: string): number {
+    if (!type || !muscleGroup) return 1.0;
+
+    const lowerType = type.toLowerCase();
+    const lowerMuscleGroup = muscleGroup.toLowerCase();
+
+    // Higher multipliers for heavy compound movements
+    if (lowerType.includes('squat') || lowerType.includes('deadlift')) return 1.5;
+    if (lowerType.includes('bench') || lowerType.includes('press')) return 1.3;
+    if (lowerType.includes('row') || lowerType.includes('pull')) return 1.2;
+
+    // Lower multipliers for isolation exercises
+    if (lowerMuscleGroup.includes('biceps') || lowerMuscleGroup.includes('triceps')) return 0.8;
+    if (lowerMuscleGroup.includes('abs') || lowerMuscleGroup.includes('core')) return 0.7;
+    if (lowerMuscleGroup.includes('calves') || lowerMuscleGroup.includes('forearms')) return 0.6;
+
+    return 1.0; // Default multiplier
+  }
+
+  /**
    * Map old meal type to new meal type format
    */
   private mapMealType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
@@ -476,9 +603,10 @@ export class MigrationService {
       .get<NutritionLog>('nutrition_logs')
       .query()
       .fetchCount();
+    const exercisesCount = await database.get<Exercise>('exercises').query().fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -501,6 +629,10 @@ export class MigrationService {
     if (result.details.nutritionLogsMigrated > 0 && nutritionLogsCount === 0) {
       throw new Error('Nutrition logs migration validation failed');
     }
+
+    if (result.details.exercisesMigrated > 0 && exercisesCount === 0) {
+      throw new Error('Exercises migration validation failed');
+    }
   }
 
   /**
@@ -514,12 +646,14 @@ export class MigrationService {
       users: 0,
       foods: 0,
       nutritionLogs: 0,
+      exercises: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
         usersMigrated: 0,
         foodsMigrated: 0,
         nutritionLogsMigrated: 0,
+        exercisesMigrated: 0,
         errors: [],
       },
     };
@@ -557,7 +691,12 @@ export class MigrationService {
       result.details.nutritionLogsMigrated = await this.migrateNutritionLogs();
       result.nutritionLogs = result.details.nutritionLogsMigrated;
 
-      // Step 7: Validate migration
+      // Step 7: Migrate Exercises
+      console.log('Migrating exercises...');
+      result.details.exercisesMigrated = await this.migrateExercises();
+      result.exercises = result.details.exercisesMigrated;
+
+      // Step 8: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -582,6 +721,7 @@ export class MigrationService {
     usersCount: number;
     foodsCount: number;
     nutritionLogsCount: number;
+    exercisesCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
@@ -591,6 +731,7 @@ export class MigrationService {
         usersCount: 0,
         foodsCount: 0,
         nutritionLogsCount: 0,
+        exercisesCount: 0,
         tables: [],
       };
     }
@@ -602,6 +743,7 @@ export class MigrationService {
     let usersCount = 0;
     let foodsCount = 0;
     let nutritionLogsCount = 0;
+    let exercisesCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -643,6 +785,14 @@ export class MigrationService {
         `)) as { count: number }[];
         nutritionLogsCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('Exercise')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM Exercise 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        exercisesCount = result[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -653,6 +803,7 @@ export class MigrationService {
       usersCount,
       foodsCount,
       nutritionLogsCount,
+      exercisesCount,
       tables,
     };
   }

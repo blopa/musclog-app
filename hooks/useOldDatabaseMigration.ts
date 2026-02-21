@@ -8,6 +8,7 @@ export interface MigrationSummary {
   usersCount: number;
   foodsCount: number;
   nutritionLogsCount: number;
+  exercisesCount: number;
   tables: string[];
 }
 
@@ -63,12 +64,14 @@ export const useOldDatabaseMigration = (): UseOldDatabaseMigrationReturn => {
         users: 0,
         foods: 0,
         nutritionLogs: 0,
+        exercises: 0,
         details: {
           fitnessGoalsMigrated: 0,
           userMetricsMigrated: 0,
           usersMigrated: 0,
           foodsMigrated: 0,
           nutritionLogsMigrated: 0,
+          exercisesMigrated: 0,
           errors: [error instanceof Error ? error.message : 'Unknown error'],
         },
       });
