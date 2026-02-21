@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
+import { decryptDatabaseValue } from '../../utils/encryption';
 import { database } from '../database-instance';
 import {
   type EquipmentType,
@@ -45,14 +46,13 @@ export interface MigrationResult {
   };
 }
 
-const getOldEncryptionKey =  async() => {
-  const existingEncryptionKey = await AsyncStorage.getItem('encryptionKey');
-
-  if (existingEncryptionKey) {
-    return existingEncryptionKey;
+const getOldEncryptionKey = async (): Promise<string | null> => {
+  try {
+    return await AsyncStorage.getItem('encryptionKey');
+  } catch (error) {
+    console.warn('Could not retrieve encryption key:', error);
+    return null;
   }
-
-  return null;
 }
 
 export class MigrationService {
@@ -197,6 +197,11 @@ export class MigrationService {
   private async migrateUserMetrics(): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
+    const encKey = await getOldEncryptionKey();
+    if (encKey) {
+      console.log('MUSCLOG: The encryption key is ', encKey);
+    }
+
     const oldMetrics = (await this.oldDB.getAllAsync(`
       SELECT * FROM UserMetrics 
       WHERE deletedAt IS NULL OR deletedAt = ''
@@ -216,35 +221,41 @@ export class MigrationService {
       ];
 
       for (const metricType of metricTypes) {
-        const value = oldMetric[metricType.field];
-        if (value && value !== '' && value !== null) {
-          console.log(`Migrating ${metricType.type}: ${value} from date ${oldMetric.date}`);
+        const encryptedValue = oldMetric[metricType.field];
+        if (encryptedValue && encryptedValue !== '' && encryptedValue !== null) {
           try {
-            await database.write(async () => {
-              await database.get<UserMetric>('user_metrics').create((newMetric) => {
-                newMetric.type = metricType.type;
-                newMetric.value = Number(value);
-                newMetric.unit = metricType.unit;
-                newMetric.date = dateTimestamp;
-                newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-                newMetric.createdAt = baseTimestamp;
-                newMetric.updatedAt = baseTimestamp;
-                newMetric.deletedAt = oldMetric.deletedAt
-                  ? this.convertTimestamp(oldMetric.deletedAt)
-                  : undefined;
+            // Try to decrypt the value
+            const decryptedValue = await decryptDatabaseValue('encryptionKey', encryptedValue);
+            const numericValue = parseFloat(decryptedValue);
+            
+            if (!isNaN(numericValue)) {
+              console.log(`Migrating ${metricType.type}: ${numericValue} from date ${oldMetric.date}`);
+              await database.write(async () => {
+                await database.get<UserMetric>('user_metrics').create((newMetric) => {
+                  newMetric.type = metricType.type;
+                  newMetric.value = numericValue;
+                  newMetric.unit = metricType.unit;
+                  newMetric.date = dateTimestamp;
+                  newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+                  newMetric.createdAt = baseTimestamp;
+                  newMetric.updatedAt = baseTimestamp;
+                  newMetric.deletedAt = oldMetric.deletedAt
+                    ? this.convertTimestamp(oldMetric.deletedAt)
+                    : undefined;
+                });
               });
-            });
-            migratedCount++;
+              migratedCount++;
+            } else {
+              console.warn(`Could not parse ${metricType.type} value: ${decryptedValue}`);
+            }
           } catch (error) {
             console.error(
-              `Error migrating user metric ${metricType.type}:`,
+              `Error decrypting/migrating user metric ${metricType.type}:`,
               error,
-              'Data:',
-              oldMetric
+              'Encrypted value:',
+              encryptedValue
             );
-            throw new Error(
-              `Failed to migrate user metric ${metricType.type}: ${error instanceof Error ? error.message : String(error)}`
-            );
+            // Continue with other metrics instead of failing completely
           }
         }
       }
@@ -409,22 +420,39 @@ export class MigrationService {
 
     for (const oldLog of oldNutritionLogs) {
       try {
+        // Decrypt all the encrypted fields
+        const name = await decryptDatabaseValue('encryptionKey', oldLog.name);
+        const calories = await decryptDatabaseValue('encryptionKey', oldLog.calories);
+        const protein = await decryptDatabaseValue('encryptionKey', oldLog.protein);
+        const carbohydrate = await decryptDatabaseValue('encryptionKey', oldLog.carbohydrate);
+        const sugar = await decryptDatabaseValue('encryptionKey', oldLog.sugar);
+        const fiber = await decryptDatabaseValue('encryptionKey', oldLog.fiber);
+        const fat = await decryptDatabaseValue('encryptionKey', oldLog.fat);
+        const monounsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.monounsaturatedFat);
+        const polyunsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.polyunsaturatedFat);
+        const saturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.saturatedFat);
+        const transFat = await decryptDatabaseValue('encryptionKey', oldLog.transFat);
+        const unsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.unsaturatedFat);
+        const alcohol = await decryptDatabaseValue('encryptionKey', oldLog.alcohol);
+        const grams = await decryptDatabaseValue('encryptionKey', oldLog.grams);
+        const mealType = await decryptDatabaseValue('encryptionKey', oldLog.mealType);
+
         // Build micros JSON object from old micro fields
         const micros: Record<string, any> = {};
 
-        // Add micro nutrients if they exist and are not null
+        // Add micro nutrients if they exist and are not null after decryption
         const microFields = [
-          'alcohol',
-          'monounsaturatedFat',
-          'polyunsaturatedFat',
-          'saturatedFat',
-          'transFat',
-          'unsaturatedFat',
+          { field: 'alcohol', value: alcohol },
+          { field: 'monounsaturatedFat', value: monounsaturatedFat },
+          { field: 'polyunsaturatedFat', value: polyunsaturatedFat },
+          { field: 'saturatedFat', value: saturatedFat },
+          { field: 'transFat', value: transFat },
+          { field: 'unsaturatedFat', value: unsaturatedFat },
         ];
 
-        for (const field of microFields) {
-          if (oldLog[field] !== null && oldLog[field] !== undefined) {
-            micros[field] = oldLog[field];
+        for (const { field, value } of microFields) {
+          if (value !== null && value !== undefined && value !== '') {
+            micros[field] = parseFloat(value) || 0;
           }
         }
 
@@ -432,15 +460,15 @@ export class MigrationService {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             newLog.foodId = oldLog.dataId || ''; // Use dataId as food_id
             newLog.date = this.convertTimestamp(oldLog.date);
-            newLog.type = this.mapMealType(oldLog.mealType);
-            newLog.amount = Number(oldLog.grams) || 1; // Default to 1 if grams is null
+            newLog.type = this.mapMealType(mealType);
+            newLog.amount = parseFloat(grams) || 1; // Default to 1 if grams is null
             newLog.portionId = undefined; // Not present in old schema
-            newLog.loggedFoodName = oldLog.name || '';
-            newLog.loggedCalories = Number(oldLog.calories) || 0;
-            newLog.loggedProtein = Number(oldLog.protein) || 0;
-            newLog.loggedCarbs = Number(oldLog.carbohydrate) || 0;
-            newLog.loggedFat = Number(oldLog.fat) || 0;
-            newLog.loggedFiber = Number(oldLog.fiber) || 0;
+            newLog.loggedFoodName = name || '';
+            newLog.loggedCalories = parseFloat(calories) || 0;
+            newLog.loggedProtein = parseFloat(protein) || 0;
+            newLog.loggedCarbs = parseFloat(carbohydrate) || 0;
+            newLog.loggedFat = parseFloat(fat) || 0;
+            newLog.loggedFiber = parseFloat(fiber) || 0;
             newLog.loggedMicros = Object.keys(micros).length > 0 ? micros : undefined;
             newLog.createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
@@ -452,9 +480,7 @@ export class MigrationService {
         migratedCount++;
       } catch (error) {
         console.error('Error migrating nutrition log:', error, 'Data:', oldLog);
-        throw new Error(
-          `Failed to migrate nutrition log: ${error instanceof Error ? error.message : String(error)}`
-        );
+        // Continue with other logs instead of failing completely
       }
     }
 
