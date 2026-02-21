@@ -163,6 +163,32 @@ const NUTRIMENT_PROPERTIES = [
   'vitamin-e_serving',
   'vitamin-k_serving',
   'zinc_serving',
+  // Additional properties found in examples
+  'trans-fat',
+  'trans-fat_100g',
+  'trans-fat_serving',
+  'trans-fat_unit',
+  'trans-fat_value',
+  'polyunsaturated-fat_100g',
+  'monounsaturated-fat_100g',
+  'nutrition-score-fr',
+  'nutrition-score-fr_100g',
+  'nutrition-score-fr_serving',
+  'nutrition-score-uk',
+  'nutrition-score-uk_100g',
+  'nutrition-score-uk_serving',
+  'iron_label',
+  'calcium_label',
+  'vitamin-a_label',
+  'vitamin-c_label',
+  'trans-fat_label',
+  'fruits-vegetables-nuts-estimate-from-ingredients_100g',
+  'fruits-vegetables-nuts-estimate-from-ingredients_serving',
+  'fruits-vegetables-legumes-estimate-from-ingredients_100g',
+  'fruits-vegetables-legumes-estimate-from-ingredients_serving',
+  'carbon-footprint-from-known-ingredients_100g',
+  'carbon-footprint-from-known-ingredients_product',
+  'energy-kj_value_computed',
 ];
 
 // Helper function to extract nutriment value with fallback hierarchy
@@ -230,6 +256,22 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const cholesterol = getNutrimentValue(product.nutriments, 'cholesterol');
   const caffeine = getNutrimentValue(product.nutriments, 'caffeine');
   const alcohol = getNutrimentValue(product.nutriments, 'alcohol');
+  
+  // Extract additional fats
+  const transFat = getNutrimentValue(product.nutriments, 'trans-fat');
+  const polyunsaturatedFat = getNutrimentValue(product.nutriments, 'polyunsaturated-fat');
+  const monounsaturatedFat = getNutrimentValue(product.nutriments, 'monounsaturated-fat');
+  
+  // Extract nutrition scores
+  const nutritionScoreFr = getNutrimentValue(product.nutriments, 'nutrition-score-fr');
+  const nutritionScoreUk = getNutrimentValue(product.nutriments, 'nutrition-score-uk');
+  
+  // Extract ingredient estimates
+  const fruitsVegetablesNutsEstimate = getNutrimentValue(product.nutriments, 'fruits-vegetables-nuts-estimate-from-ingredients');
+  const fruitsVegetablesLegumesEstimate = getNutrimentValue(product.nutriments, 'fruits-vegetables-legumes-estimate-from-ingredients');
+  
+  // Extract environmental data
+  const carbonFootprint = getNutrimentValue(product.nutriments, 'carbon-footprint-from-known-ingredients');
 
   return {
     id: product.code || String(Math.random()),
@@ -254,6 +296,9 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
         fiber,
         sugars,
         saturatedFat,
+        transFat,
+        polyunsaturatedFat,
+        monounsaturatedFat,
         alcohol,
       },
       vitamins: {
@@ -269,6 +314,17 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
         potassium,
         zinc,
         sodium,
+      },
+      scores: {
+        nutritionScoreFr,
+        nutritionScoreUk,
+      },
+      estimates: {
+        fruitsVegetablesNutsEstimate,
+        fruitsVegetablesLegumesEstimate,
+      },
+      environmental: {
+        carbonFootprint,
       },
       other: {
         cholesterol,
