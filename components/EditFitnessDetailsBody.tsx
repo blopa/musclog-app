@@ -275,7 +275,7 @@ export function EditFitnessDetailsBody({
             <View className="flex-1">
               <TextInput
                 label={t('editFitnessDetails.currentWeight')}
-                value={weight}
+                value={parseFloat(weight).toFixed(1)}
                 onChangeText={setWeight}
                 placeholder="0.0"
                 keyboardType="numeric"
@@ -290,7 +290,7 @@ export function EditFitnessDetailsBody({
             <View className="flex-1">
               <TextInput
                 label={t('editFitnessDetails.height')}
-                value={height}
+                value={parseFloat(height).toFixed(0)}
                 onChangeText={setHeight}
                 placeholder="0"
                 keyboardType="numeric"
@@ -309,7 +309,7 @@ export function EditFitnessDetailsBody({
               <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
-              <Text className="text-sm font-medium text-text-primary">{fatPercentage}%</Text>
+              <Text className="text-sm font-medium text-text-primary">{fatPercentage.toFixed(1)}%</Text>
             </View>
             <Slider
               value={fatPercentage}
