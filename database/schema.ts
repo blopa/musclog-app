@@ -59,6 +59,7 @@ export const schema = appSchema({
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
         { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        // { name: 'is_drop_set', type: 'boolean' }, // TODO: add these to the Models, services, etc
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -92,6 +93,7 @@ export const schema = appSchema({
         { name: 'partials', type: 'number', isOptional: true }, // Partial reps (defaults to 0)
         { name: 'rest_time_after', type: 'number' },
         { name: 'reps_in_reserve', type: 'number' },
+        // { name: 'group_id', type: 'string', isOptional: true, isIndexed: true }, // TODO: add these to the Models, services, etc
         { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'is_drop_set', type: 'boolean' },
