@@ -170,11 +170,17 @@ export default function DebugTestScreen() {
   };
 
   const clearAsyncStorage = async () => {
+    const existingEncryptionKey = await AsyncStorage.getItem('encryptionKey');
+
     try {
       await AsyncStorage.clear();
       console.log('AsyncStorage has been cleared successfully.');
     } catch (error) {
       console.error('Error clearing AsyncStorage:', error);
+    }
+
+    if (existingEncryptionKey) {
+      await AsyncStorage.setItem('encryptionKey', existingEncryptionKey);
     }
   };
 
