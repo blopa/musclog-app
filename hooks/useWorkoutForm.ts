@@ -189,6 +189,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   }, [
     workoutTitle,
     description,
+    volumeCalc,
     exercises,
     exerciseMetadata,
     selectedDays,
