@@ -276,7 +276,8 @@ export default function DebugTestScreen() {
           {/* Danger Zone */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-lg font-bold text-text-primary">Danger Zone</Text>
-            <Button onPress={deleteDatabase} label="Delete Database" size="sm" />
+            <Button onPress={deleteDatabase} label="Delete Database" size="sm" variant="discard" />
+            {/*TODO: also add a button to delete all data from asynstorage*/}
           </View>
 
           {/* Old Database Checker */}
