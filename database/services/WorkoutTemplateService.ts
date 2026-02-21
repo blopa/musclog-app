@@ -41,7 +41,7 @@ export interface SaveTemplateData {
   name: string;
   description?: string;
   volumeCalculationType?: string;
-  weekDaysJson?: string;
+  weekDaysJson?: number[];
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
 }
