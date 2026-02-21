@@ -122,7 +122,20 @@
     { "name": "createdAt", "notnull": false, "pk": false, "type": "TEXT" },
     { "name": "deletedAt", "notnull": false, "pk": false, "type": "TEXT NULLABLE" }
   ],
-  "Set": [],
+  "Set": [
+    { "name": "id", "notnull": false, "pk": true, "type": "INTEGER" },
+    { "name": "reps", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "weight", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "restTime", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "exerciseId", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "workoutId", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "setOrder", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "supersetName", "notnull": false, "pk": false, "type": "TEXT" },
+    { "name": "difficultyLevel", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "isDropSet", "notnull": false, "pk": false, "type": "INTEGER" },
+    { "name": "createdAt", "notnull": false, "pk": false, "type": "TEXT" },
+    { "name": "deletedAt", "notnull": false, "pk": false, "type": "TEXT NULLABLE" }
+  ],
   "Setting": [
     { "name": "id", "notnull": false, "pk": true, "type": "INTEGER" },
     { "name": "type", "notnull": false, "pk": false, "type": "TEXT" },
