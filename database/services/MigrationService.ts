@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { database } from '../database-instance';
@@ -42,6 +43,16 @@ export interface MigrationResult {
     logSetsMigrated: number;
     errors: string[];
   };
+}
+
+const getOldEncryptionKey =  async() => {
+  const existingEncryptionKey = await AsyncStorage.getItem('encryptionKey');
+
+  if (existingEncryptionKey) {
+    return existingEncryptionKey;
+  }
+
+  return null;
 }
 
 export class MigrationService {
@@ -197,19 +208,6 @@ export class MigrationService {
       const baseTimestamp = this.convertTimestamp(oldMetric.createdAt);
       const dateTimestamp = this.convertTimestamp(oldMetric.date);
 
-      // Parse measurements JSON if it exists
-      let measurements: Record<string, any> = {};
-      try {
-        measurements = oldMetric.measurements ? JSON.parse(oldMetric.measurements) : {};
-      } catch {
-        // If JSON parsing fails, try to access direct fields as fallback
-        measurements = {
-          weight: oldMetric.weight,
-          height: oldMetric.height,
-          fatPercentage: oldMetric.fatPercentage,
-        };
-      }
-
       // Create separate records for each metric type
       const metricTypes = [
         { field: 'weight', type: 'weight' as const, unit: 'kg' },
@@ -218,8 +216,9 @@ export class MigrationService {
       ];
 
       for (const metricType of metricTypes) {
-        const value = measurements[metricType.field];
+        const value = oldMetric[metricType.field];
         if (value && value !== '' && value !== null) {
+          console.log(`Migrating ${metricType.type}: ${value} from date ${oldMetric.date}`);
           try {
             await database.write(async () => {
               await database.get<UserMetric>('user_metrics').create((newMetric) => {
