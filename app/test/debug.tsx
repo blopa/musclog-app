@@ -8,6 +8,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
+import { ENCRYPTION_KEY } from '../../constants/database';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
@@ -170,7 +171,7 @@ export default function DebugTestScreen() {
   };
 
   const clearAsyncStorage = async () => {
-    const existingEncryptionKey = await AsyncStorage.getItem('encryptionKey');
+    const existingEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
 
     try {
       await AsyncStorage.clear();
@@ -180,7 +181,7 @@ export default function DebugTestScreen() {
     }
 
     if (existingEncryptionKey) {
-      await AsyncStorage.setItem('encryptionKey', existingEncryptionKey);
+      await AsyncStorage.setItem(ENCRYPTION_KEY, existingEncryptionKey);
     }
   };
 

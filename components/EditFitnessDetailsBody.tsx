@@ -309,7 +309,9 @@ export function EditFitnessDetailsBody({
               <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
-              <Text className="text-sm font-medium text-text-primary">{fatPercentage.toFixed(1)}%</Text>
+              <Text className="text-sm font-medium text-text-primary">
+                {fatPercentage.toFixed(1)}%
+              </Text>
             </View>
             <Slider
               value={fatPercentage}

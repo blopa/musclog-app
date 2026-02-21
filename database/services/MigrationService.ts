@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
+import { ENCRYPTION_KEY } from '../../constants/database';
 import { decryptDatabaseValue } from '../../utils/encryption';
 import { database } from '../database-instance';
 import {
@@ -48,12 +49,12 @@ export interface MigrationResult {
 
 const getOldEncryptionKey = async (): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem('encryptionKey');
+    return await AsyncStorage.getItem(ENCRYPTION_KEY);
   } catch (error) {
     console.warn('Could not retrieve encryption key:', error);
     return null;
   }
-}
+};
 
 export class MigrationService {
   private oldDB: SQLiteDatabase | null = null;
@@ -216,8 +217,18 @@ export class MigrationService {
       // Create separate records for each metric type
       const metricTypes = [
         { field: 'weight', type: 'weight' as const, unit: 'kg', convert: (value: number) => value },
-        { field: 'height', type: 'height' as const, unit: 'cm', convert: (value: number) => value * 100 }, // Convert meters to cm
-        { field: 'fatPercentage', type: 'body_fat' as const, unit: '%', convert: (value: number) => value },
+        {
+          field: 'height',
+          type: 'height' as const,
+          unit: 'cm',
+          convert: (value: number) => value * 100,
+        }, // Convert meters to cm
+        {
+          field: 'fatPercentage',
+          type: 'body_fat' as const,
+          unit: '%',
+          convert: (value: number) => value,
+        },
       ];
 
       for (const metricType of metricTypes) {
@@ -225,13 +236,15 @@ export class MigrationService {
         if (encryptedValue && encryptedValue !== '' && encryptedValue !== null) {
           try {
             // Try to decrypt the value
-            const decryptedValue = await decryptDatabaseValue('encryptionKey', encryptedValue);
+            const decryptedValue = await decryptDatabaseValue(ENCRYPTION_KEY, encryptedValue);
             const numericValue = parseFloat(decryptedValue);
-            
+
             if (!isNaN(numericValue)) {
               // Apply conversion function if available
               const finalValue = metricType.convert(numericValue);
-              console.log(`Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`);
+              console.log(
+                `Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`
+              );
               await database.write(async () => {
                 await database.get<UserMetric>('user_metrics').create((newMetric) => {
                   newMetric.type = metricType.type;
@@ -423,21 +436,27 @@ export class MigrationService {
     for (const oldLog of oldNutritionLogs) {
       try {
         // Decrypt all the encrypted fields
-        const name = await decryptDatabaseValue('encryptionKey', oldLog.name);
-        const calories = await decryptDatabaseValue('encryptionKey', oldLog.calories);
-        const protein = await decryptDatabaseValue('encryptionKey', oldLog.protein);
-        const carbohydrate = await decryptDatabaseValue('encryptionKey', oldLog.carbohydrate);
-        const sugar = await decryptDatabaseValue('encryptionKey', oldLog.sugar);
-        const fiber = await decryptDatabaseValue('encryptionKey', oldLog.fiber);
-        const fat = await decryptDatabaseValue('encryptionKey', oldLog.fat);
-        const monounsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.monounsaturatedFat);
-        const polyunsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.polyunsaturatedFat);
-        const saturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.saturatedFat);
-        const transFat = await decryptDatabaseValue('encryptionKey', oldLog.transFat);
-        const unsaturatedFat = await decryptDatabaseValue('encryptionKey', oldLog.unsaturatedFat);
-        const alcohol = await decryptDatabaseValue('encryptionKey', oldLog.alcohol);
-        const grams = await decryptDatabaseValue('encryptionKey', oldLog.grams);
-        const mealType = await decryptDatabaseValue('encryptionKey', oldLog.mealType);
+        const name = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.name);
+        const calories = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.calories);
+        const protein = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.protein);
+        const carbohydrate = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.carbohydrate);
+        const sugar = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.sugar); // TODO: why do we not use it?
+        const fiber = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.fiber);
+        const fat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.fat);
+        const monounsaturatedFat = await decryptDatabaseValue(
+          ENCRYPTION_KEY,
+          oldLog.monounsaturatedFat
+        );
+        const polyunsaturatedFat = await decryptDatabaseValue(
+          ENCRYPTION_KEY,
+          oldLog.polyunsaturatedFat
+        );
+        const saturatedFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.saturatedFat);
+        const transFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.transFat);
+        const unsaturatedFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.unsaturatedFat);
+        const alcohol = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.alcohol);
+        const grams = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.grams);
+        const mealType = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.mealType);
 
         // Build micros JSON object from old micro fields
         const micros: Record<string, any> = {};

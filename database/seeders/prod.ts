@@ -1,3 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { SEEDING_COMPLETE_KEY } from '../../constants/database';
 import { ExerciseService, FoodPortionService, MigrationService } from '../services';
 
 /**
@@ -9,9 +12,13 @@ import { ExerciseService, FoodPortionService, MigrationService } from '../servic
  * Migration reuses existing exercises by name (only adds old exercises that are not already seeded).
  */
 export async function seedProductionData(): Promise<boolean> {
-  // TODO; to avoid this function to being called constantly when on the app boots
-  // let's add a asyncstorage value to flag that this function was called already
   try {
+    // Check if seeding has already been completed
+    const seedingComplete = await AsyncStorage.getItem(SEEDING_COMPLETE_KEY);
+    if (seedingComplete === 'true') {
+      console.log('Production data seeding already completed, skipping');
+      return true;
+    }
     // 1. Seed common portions if none exist
     const existingPortions = await FoodPortionService.getAllPortions();
 
@@ -44,6 +51,10 @@ export async function seedProductionData(): Promise<boolean> {
         console.warn('Migration from old database failed:', result.error);
       }
     }
+
+    // Mark seeding as complete
+    await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
+    console.log('Production data seeding completed successfully');
 
     return true;
   } catch (error) {

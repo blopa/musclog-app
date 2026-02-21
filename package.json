@@ -122,6 +122,7 @@
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@testing-library/react": "16.3.2",
+    "@types/crypto-js": "4.2.2",
     "@types/isomorphic-fetch": "0.0.39",
     "@types/jest": "29.5.14",
     "@types/react": "19.1.17",
