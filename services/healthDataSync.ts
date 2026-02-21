@@ -458,7 +458,7 @@ class HealthDataSyncService {
             metric.type = record.type as UserMetricType;
             metric.valueRaw = encrypted.value;
             metric.unitRaw = encrypted.unit;
-            metric.dateRaw = encrypted.date;
+            metric.date = record.date;
             metric.timezone = record.timezone;
             metric.createdAt = Date.now();
             metric.updatedAt = Date.now();
@@ -473,7 +473,6 @@ class HealthDataSyncService {
 
   /**
    * Get existing metrics from database to check for duplicates.
-   * Date is encrypted so we fetch by type and filter by decrypted date in memory.
    */
   private async getExistingMetrics(types: MetricType[], dates: number[]): Promise<UserMetric[]> {
     if (types.length === 0 || dates.length === 0) {
@@ -484,17 +483,15 @@ class HealthDataSyncService {
     const minDate = Math.min(...dates);
     const maxDate = Math.max(...dates);
 
-    const metrics = await database
+    return await database
       .get<UserMetric>('user_metrics')
-      .query(Q.where('type', Q.oneOf(uniqueTypes)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('type', Q.oneOf(uniqueTypes)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.gte(minDate)),
+        Q.where('date', Q.lte(maxDate))
+      )
       .fetch();
-
-    const withDecrypted = await Promise.all(
-      metrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
-    );
-    return withDecrypted
-      .filter((x) => x.decrypted.date >= minDate && x.decrypted.date <= maxDate)
-      .map((x) => x.metric);
   }
 
   /**

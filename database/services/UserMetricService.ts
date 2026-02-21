@@ -6,7 +6,7 @@ import UserMetric, { type UserMetricType } from '../models/UserMetric';
 
 export class UserMetricService {
   /**
-   * Get latest metric value for a specific type (by date; date is encrypted so we decrypt and sort).
+   * Get latest metric value for a specific type (by date).
    */
   static async getLatest(type: UserMetricType | string): Promise<UserMetric | null> {
     const metrics = await database
@@ -14,21 +14,15 @@ export class UserMetricService {
       .query(
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('created_at', Q.desc),
-        Q.take(100)
+        Q.sortBy('date', Q.desc),
+        Q.take(1)
       )
       .fetch();
-    if (metrics.length === 0) return null;
-    const withDecrypted = await Promise.all(
-      metrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
-    );
-    withDecrypted.sort((a, b) => b.decrypted.date - a.decrypted.date);
-    return withDecrypted[0].metric;
+    return metrics[0] ?? null;
   }
 
   /**
    * Get metrics history with pagination support.
-   * Date column is encrypted so when dateRange is used we filter/sort in memory after decrypt.
    */
   static async getMetricsHistory(
     type?: UserMetricType | string,
@@ -38,26 +32,17 @@ export class UserMetricService {
   ): Promise<UserMetric[]> {
     let query = database
       .get<UserMetric>('user_metrics')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc));
 
     if (type) {
       query = query.extend(Q.where('type', type));
     }
 
     if (dateRange) {
-      const metrics = await query.fetch();
-      const withDecrypted = await Promise.all(
-        metrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
+      query = query.extend(
+        Q.where('date', Q.gte(dateRange.startDate)),
+        Q.where('date', Q.lte(dateRange.endDate))
       );
-      let filtered = withDecrypted.filter(
-        (x) => x.decrypted.date >= dateRange.startDate && x.decrypted.date <= dateRange.endDate
-      );
-      filtered.sort((a, b) => b.decrypted.date - a.decrypted.date);
-      if (limit !== undefined) {
-        const start = offset ?? 0;
-        filtered = filtered.slice(start, start + limit);
-      }
-      return filtered.map((x) => x.metric);
     }
 
     if (limit !== undefined && limit > 0) {
@@ -71,7 +56,7 @@ export class UserMetricService {
   }
 
   /**
-   * Create user metric (encrypts value, unit, date).
+   * Create user metric (encrypts value and unit; date stored plain).
    */
   static async createMetric(plain: {
     type: UserMetricType | string;
@@ -90,7 +75,7 @@ export class UserMetricService {
         metric.type = plain.type as UserMetricType;
         metric.valueRaw = encrypted.value;
         metric.unitRaw = encrypted.unit;
-        metric.dateRaw = encrypted.date;
+        metric.date = plain.date;
         metric.timezone = plain.timezone;
         metric.createdAt = Date.now();
         metric.updatedAt = Date.now();
@@ -99,7 +84,7 @@ export class UserMetricService {
   }
 
   /**
-   * Update user metric (encrypts value, unit, date when provided).
+   * Update user metric (encrypts value and unit when provided; date stored plain).
    */
   static async updateMetric(
     id: string,
@@ -118,11 +103,11 @@ export class UserMetricService {
       }
 
       const encrypted =
-        updates.value !== undefined || updates.unit !== undefined || updates.date !== undefined
+        updates.value !== undefined || updates.unit !== undefined
           ? await encryptUserMetricFields({
               value: updates.value ?? (await metric.getDecrypted()).value,
               unit: updates.unit ?? (await metric.getDecrypted()).unit,
-              date: updates.date ?? (await metric.getDecrypted()).date,
+              date: updates.date ?? metric.date,
             })
           : null;
 
@@ -130,8 +115,8 @@ export class UserMetricService {
         if (encrypted) {
           record.valueRaw = encrypted.value;
           record.unitRaw = encrypted.unit;
-          record.dateRaw = encrypted.date;
         }
+        if (updates.date !== undefined) record.date = updates.date;
         if (updates.type !== undefined) record.type = updates.type as UserMetricType;
         record.updatedAt = Date.now();
       });

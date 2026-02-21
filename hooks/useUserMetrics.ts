@@ -291,7 +291,7 @@ export function useUserMetrics({
       return;
     }
 
-    // Observe any change to user_metrics; date is encrypted so we refetch latest via service
+    // Observe any change to user_metrics and refetch latest via service
     const metricsQuery = database
       .get<UserMetric>('user_metrics')
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(1));
@@ -335,13 +335,10 @@ export function useUserMetrics({
       return;
     }
 
-    // Observe any change to trigger reload. Do not filter/sort by date — it's encrypted;
-    // date filtering is done in memory in UserMetricService.getMetricsHistory after decrypt.
-    let query = database.get<UserMetric>('user_metrics').query(
-      Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy('created_at', Q.desc),
-      Q.take(1)
-    );
+    // Observe any change to trigger reload; date filtering is done in DB in UserMetricService.getMetricsHistory.
+    let query = database
+      .get<UserMetric>('user_metrics')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(1));
 
     if (metricType) {
       query = query.extend(Q.where('type', metricType));

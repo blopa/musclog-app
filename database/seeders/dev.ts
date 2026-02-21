@@ -1173,7 +1173,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
           metric.type = 'weight';
           metric.valueRaw = encryptedWeight.value;
           metric.unitRaw = encryptedWeight.unit;
-          metric.dateRaw = encryptedWeight.date;
+          metric.date = data.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -1189,7 +1189,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
           metric.type = 'body_fat';
           metric.valueRaw = encryptedBodyFat.value;
           metric.unitRaw = encryptedBodyFat.unit;
-          metric.dateRaw = encryptedBodyFat.date;
+          metric.date = data.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -1205,7 +1205,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
           metric.type = 'bmi';
           metric.valueRaw = encryptedBmi.value;
           metric.unitRaw = encryptedBmi.unit;
-          metric.dateRaw = encryptedBmi.date;
+          metric.date = data.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -1221,7 +1221,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
           metric.type = 'ffmi';
           metric.valueRaw = encryptedFfmi.value;
           metric.unitRaw = encryptedFfmi.unit;
-          metric.dateRaw = encryptedFfmi.date;
+          metric.date = data.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;

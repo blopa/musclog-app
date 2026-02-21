@@ -255,7 +255,7 @@ export class MigrationService {
                   newMetric.type = metricType.type;
                   newMetric.valueRaw = encrypted.value;
                   newMetric.unitRaw = encrypted.unit;
-                  newMetric.dateRaw = encrypted.date;
+                  newMetric.date = dateTimestamp;
                   newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
                   newMetric.createdAt = baseTimestamp;
                   newMetric.updatedAt = baseTimestamp;

@@ -219,8 +219,8 @@ export const schema = appSchema({
         { name: 'logged_fat', type: 'string' }, // isEncrypted: true
         { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
         { name: 'logged_micros_json', type: 'string', isOptional: true }, // isEncrypted: true
-        { name: 'date', type: 'number', isIndexed: true }, // isEncrypted: true
 
+        { name: 'date', type: 'number', isIndexed: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -235,8 +235,8 @@ export const schema = appSchema({
         // Encrypted at rest (utils/encryption.ts)
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
-        { name: 'date', type: 'string' }, // isEncrypted: true
 
+        { name: 'date', type: 'number', isIndexed: true },
         { name: 'timezone', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

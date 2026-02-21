@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
-import { decryptDate, decryptNumber, decryptOptionalString } from '../encryptionHelpers';
+import { decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 
 export interface DecryptedUserMetricFields {
   value: number;
@@ -39,7 +39,7 @@ export default class UserMetric extends Model {
   @field('type') type!: UserMetricType;
   @field('value') valueRaw!: string;
   @field('unit') unitRaw?: string;
-  @field('date') dateRaw!: string;
+  @field('date') date!: number;
   @field('timezone') timezone!: string;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -53,13 +53,12 @@ export default class UserMetric extends Model {
     });
   }
 
-  /** Decrypt value, unit, date. Use this for display and calculations. */
+  /** Decrypt value and unit. Date is stored plain. Use for display and calculations. */
   async getDecrypted(): Promise<DecryptedUserMetricFields> {
-    const [value, unit, date] = await Promise.all([
+    const [value, unit] = await Promise.all([
       decryptNumber(this.valueRaw),
       decryptOptionalString(this.unitRaw),
-      decryptDate(this.dateRaw),
     ]);
-    return { value, unit: unit || undefined, date };
+    return { value, unit: unit || undefined, date: this.date };
   }
 }

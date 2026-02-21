@@ -175,7 +175,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'weight' as UserMetricType;
           metric.valueRaw = encWeight.value;
           metric.unitRaw = encWeight.unit;
-          metric.dateRaw = encWeight.date;
+          metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -184,7 +184,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'body_fat' as UserMetricType;
           metric.valueRaw = encBodyFat.value;
           metric.unitRaw = encBodyFat.unit;
-          metric.dateRaw = encBodyFat.date;
+          metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -193,7 +193,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'height' as UserMetricType;
           metric.valueRaw = encHeight.value;
           metric.unitRaw = encHeight.unit;
-          metric.dateRaw = encHeight.date;
+          metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -202,7 +202,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'mood' as UserMetricType;
           metric.valueRaw = encMood.value;
           metric.unitRaw = encMood.unit;
-          metric.dateRaw = encMood.date;
+          metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
