@@ -197,6 +197,19 @@ export class MigrationService {
       const baseTimestamp = this.convertTimestamp(oldMetric.createdAt);
       const dateTimestamp = this.convertTimestamp(oldMetric.date);
 
+      // Parse measurements JSON if it exists
+      let measurements: Record<string, any> = {};
+      try {
+        measurements = oldMetric.measurements ? JSON.parse(oldMetric.measurements) : {};
+      } catch {
+        // If JSON parsing fails, try to access direct fields as fallback
+        measurements = {
+          weight: oldMetric.weight,
+          height: oldMetric.height,
+          fatPercentage: oldMetric.fatPercentage,
+        };
+      }
+
       // Create separate records for each metric type
       const metricTypes = [
         { field: 'weight', type: 'weight' as const, unit: 'kg' },
@@ -205,7 +218,7 @@ export class MigrationService {
       ];
 
       for (const metricType of metricTypes) {
-        const value = oldMetric[metricType.field];
+        const value = measurements[metricType.field];
         if (value && value !== '' && value !== null) {
           try {
             await database.write(async () => {
@@ -264,8 +277,8 @@ export class MigrationService {
             newUser.gender = this.mapGender(oldUser.gender);
             newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain';
             newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);
-            newUser.activityLevel = Number(oldUser.activityLevel) || 3; // Default to moderate
-            newUser.liftingExperience = oldUser.liftingExperience || 'beginner';
+            newUser.activityLevel = this.mapActivityLevel(oldUser.activityLevel); // Map text to number
+            newUser.liftingExperience = this.mapLiftingExperience(oldUser.liftingExperience); // Map text to enum
             newUser.avatarIcon = undefined; // Not present in old schema
             newUser.avatarColor = undefined; // Not present in old schema
             newUser.syncId = this.generateUUID(); // Generate new sync ID
@@ -874,6 +887,50 @@ export class MigrationService {
       return 'female';
     }
     return 'other';
+  }
+
+  /**
+   * Map old activity level text to new activity level number
+   */
+  private mapActivityLevel(activityLevel: string): number {
+    if (!activityLevel) return 3; // Default to moderate
+
+    const lowerLevel = activityLevel.toLowerCase().trim();
+    if (lowerLevel === 'sedentary') {
+      return 1;
+    } else if (lowerLevel === 'lightly_active') {
+      return 2;
+    } else if (lowerLevel === 'moderately_active') {
+      return 3;
+    } else if (lowerLevel === 'very_active') {
+      return 4;
+    } else if (lowerLevel === 'super_active') {
+      return 5;
+    }
+
+    // Try to parse as number if no text match
+    const num = parseInt(activityLevel, 10);
+    return isNaN(num) ? 3 : Math.min(5, Math.max(1, num));
+  }
+
+  /**
+   * Map old lifting experience text to new lifting experience enum
+   */
+  private mapLiftingExperience(
+    liftingExperience: string
+  ): 'beginner' | 'intermediate' | 'advanced' {
+    if (!liftingExperience) return 'beginner';
+
+    const lowerExperience = liftingExperience.toLowerCase().trim();
+    if (lowerExperience === 'beginner') {
+      return 'beginner';
+    } else if (lowerExperience === 'intermediate') {
+      return 'intermediate';
+    } else if (lowerExperience === 'advanced') {
+      return 'advanced';
+    }
+
+    return 'beginner'; // Default fallback
   }
 
   /**
