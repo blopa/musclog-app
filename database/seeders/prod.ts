@@ -6,6 +6,7 @@ import { ExerciseService, FoodPortionService } from '../services';
  * Foods are NOT seeded in production - users will add them as needed via the app
  */
 export async function seedProductionData(): Promise<boolean> {
+  // TODO: use the MigrationService here to migrate data from the old database
   try {
     // Check if portions already exist
     const existingPortions = await FoodPortionService.getAllPortions();
@@ -19,6 +20,9 @@ export async function seedProductionData(): Promise<boolean> {
     }
 
     // Check if exercises already exist
+    // TODO: first we seed the exercises, then we import the exercises
+    // from the old database that were not seeded - so seed the ones from the JSON
+    // then get the latest ID, then see if the old database has more IDs and add the missing ones
     const existingExercises = await ExerciseService.getAllExercises();
 
     if (existingExercises.length > 0) {
