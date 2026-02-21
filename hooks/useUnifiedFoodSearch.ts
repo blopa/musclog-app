@@ -3,6 +3,7 @@ import { fetch } from 'expo/fetch';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SearchResultProduct } from '../types/openFoodFacts';
+import { mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
 import { useFoods } from './useFoods';
 
 // Unified search result type
@@ -172,27 +173,7 @@ export function useUnifiedFoodSearch({
   const apiResultsFormatted = useMemo(() => {
     if (!includeAPI) return [];
 
-    return accumulatedApiResults.map((product) => {
-      const kcal = product.nutriments?.['energy-kcal'];
-      const calories = kcal ? Math.round(kcal) : undefined;
-
-      // TODO: map all possible properties and move this to a separate function into a utils file
-      return {
-        id: product.code || String(Math.random()),
-        name: product.product_name || 'Unknown Product',
-        description: `${product.brands || product.generic_name || 'Generic'} • ${calories ? `${calories} kcal` : 'N/A'}`,
-        brand: product.brands,
-        imageUrl: product.image_url,
-        serving_size: product.serving_size,
-        calories,
-        protein: product.nutriments?.proteins,
-        carbs: product.nutriments?.carbohydrates,
-        fat: product.nutriments?.fat,
-        fiber: (product.nutriments as any)?.fiber || 0, // Default to 0 if not available
-        source: 'api' as const,
-        _raw: product,
-      };
-    });
+    return accumulatedApiResults.map((product) => mapOpenFoodFactsProduct(product));
   }, [accumulatedApiResults, includeAPI]);
 
   // Combine and deduplicate results - updates when API completes

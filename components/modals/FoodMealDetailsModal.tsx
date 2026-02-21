@@ -238,7 +238,7 @@ export function FoodMealDetailsModal({
       };
     }
 
-    // TODO: are we missing to map any other property?
+    // TODO: are we missing to map any other property? maybe use mapOpenFoodFactsProduct here?
     if (productFromSearch?.nutriments) {
       const n = productFromSearch.nutriments as Record<string, unknown>;
       // OFF search returns per-100g values; try main key then _100g / _value (API can use strings)
