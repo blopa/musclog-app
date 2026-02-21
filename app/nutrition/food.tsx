@@ -59,10 +59,11 @@ export default function FoodScreen() {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
-    log: any;
-    food: any;
-    nutrients: any;
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
     gramWeight: number;
+    displayName: string;
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
@@ -81,9 +82,10 @@ export default function FoodScreen() {
   const [resolvedLogs, setResolvedLogs] = useState<
     {
       log: NutritionLog;
-      food: Food;
+      food: Food | null;
       nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
       gramWeight: number;
+      displayName: string;
     }[]
   >([]);
   const [isResolvingRelations, setIsResolvingRelations] = useState(false);
@@ -103,24 +105,22 @@ export default function FoodScreen() {
       setResolvedLogs([]);
 
       try {
-        const resolved = (
-          await Promise.all(
-            logs.map(async (log) => {
-              const [food, nutrients, gramWeight] = await Promise.all([
-                log.food,
-                log.getNutrients(),
-                log.getGramWeight(),
-              ]);
-
-              return food ? { log, food, nutrients, gramWeight } : null;
-            })
-          )
-        ).filter((item) => item !== null) as {
-          log: any;
-          food: any;
-          nutrients: any;
-          gramWeight: any;
-        }[];
+        const resolved = await Promise.all(
+          logs.map(async (log) => {
+            let food: Food | null = null;
+            try {
+              food = await log.food;
+            } catch {
+              // Food may be deleted; we still show the log using snapshot name and nutrients
+            }
+            const [nutrients, gramWeight, displayName] = await Promise.all([
+              log.getNutrients(),
+              log.getGramWeight(),
+              log.getDisplayName(),
+            ]);
+            return { log, food, nutrients, gramWeight, displayName };
+          })
+        );
 
         if (!cancelled) {
           setResolvedLogs(resolved);
@@ -230,6 +230,7 @@ export default function FoodScreen() {
     food: any;
     nutrients: any;
     gramWeight: number;
+    displayName: string;
   }) => {
     setSelectedFoodItem(entry);
     setIsFoodMenuVisible(true);
@@ -492,7 +493,7 @@ export default function FoodScreen() {
                   {mealsByType.breakfast.map((entry) => (
                     <FoodItemCard
                       key={entry.log.id}
-                      name={entry.food?.name ?? ''}
+                      name={entry.displayName}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
@@ -520,7 +521,7 @@ export default function FoodScreen() {
                   {mealsByType.lunch.map((entry) => (
                     <FoodItemCard
                       key={entry.log.id}
-                      name={entry.food?.name ?? ''}
+                      name={entry.displayName}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
@@ -548,7 +549,7 @@ export default function FoodScreen() {
                   {mealsByType.dinner.map((entry) => (
                     <FoodItemCard
                       key={entry.log.id}
-                      name={entry.food?.name ?? ''}
+                      name={entry.displayName}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
@@ -576,7 +577,7 @@ export default function FoodScreen() {
                   {mealsByType.snack.map((entry) => (
                     <FoodItemCard
                       key={entry.log.id}
-                      name={entry.food?.name ?? ''}
+                      name={entry.displayName}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
@@ -604,7 +605,7 @@ export default function FoodScreen() {
                   {mealsByType.other.map((entry) => (
                     <FoodItemCard
                       key={entry.log.id}
-                      name={entry.food?.name ?? ''}
+                      name={entry.displayName}
                       description={`${Math.round(entry.gramWeight)} g`}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
@@ -724,7 +725,7 @@ export default function FoodScreen() {
           onConfirm={handleConfirmDelete}
           title={t('food.actions.deleteConfirmTitle')}
           message={t('food.actions.deleteConfirmMessage', {
-            foodName: selectedFoodItem.food?.name,
+            foodName: selectedFoodItem.displayName,
           })}
           confirmLabel={t('common.delete')}
           cancelLabel={t('common.cancel')}
@@ -744,7 +745,7 @@ export default function FoodScreen() {
       <BottomPopUpMenu
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
-        title={selectedFoodItem?.food?.name || ''}
+        title={selectedFoodItem?.displayName ?? ''}
         subtitle={`${Math.round(selectedFoodItem?.gramWeight || 0)}g • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
       />

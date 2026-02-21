@@ -209,7 +209,7 @@ export function FoodMealDetailsModal({
     return 0;
   }, []);
 
-  // Extract nutritional data from meal, barcode lookup, or local food
+  // Extract nutritional data from meal, barcode lookup, local food, or log snapshot
   const getNutritionalData = useCallback(() => {
     // If we have a meal, use its nutrients
     if (meal && mealNutrients) {
@@ -222,6 +222,20 @@ export function FoodMealDetailsModal({
         sugar: 0, // Meals don't track sugar separately
         saturatedFat: 0, // Meals don't track saturated fat separately
         sodium: 0, // Meals don't track sodium separately
+      };
+    }
+
+    // If we have a foodLog but no food (e.g. food deleted), use snapshot per 100g
+    if (foodLog && !food && foodLog.hasSnapshot?.()) {
+      return {
+        calories: foodLog.loggedCalories ?? 0,
+        protein: foodLog.loggedProtein ?? 0,
+        carbs: foodLog.loggedCarbs ?? 0,
+        fat: foodLog.loggedFat ?? 0,
+        fiber: foodLog.loggedFiber ?? 0,
+        sugar: foodLog.loggedMicros?.sugar ?? 0,
+        saturatedFat: foodLog.loggedMicros?.saturatedFat ?? 0,
+        sodium: foodLog.loggedMicros?.sodium ?? 0,
       };
     }
 
@@ -281,11 +295,11 @@ export function FoodMealDetailsModal({
       saturatedFat: 0,
       sodium: 0,
     };
-  }, [productDetails, productFromSearch, food, meal, mealNutrients, toNum]);
+  }, [productDetails, productFromSearch, food, foodLog, meal, mealNutrients]);
 
   const nutritionalData = getNutritionalData();
 
-  // Get product name from meal, barcode lookup, search result, or local food
+  // Get product name from meal, barcode lookup, search result, local food, or log snapshot
   const getProductName = useCallback(() => {
     if (meal) {
       return meal.name || 'Unknown Meal';
@@ -293,6 +307,10 @@ export function FoodMealDetailsModal({
 
     if (food) {
       return food.name || 'Unknown Food';
+    }
+
+    if (foodLog?.loggedFoodName?.trim()) {
+      return foodLog.loggedFoodName.trim();
     }
 
     if (productFromSearch?.product_name) {
@@ -303,7 +321,7 @@ export function FoodMealDetailsModal({
       return productDetails.product.product_name || 'Unknown Food';
     }
     return 'Unknown Food';
-  }, [productDetails, productFromSearch, food, meal]);
+  }, [productDetails, productFromSearch, food, foodLog, meal]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
@@ -313,6 +331,10 @@ export function FoodMealDetailsModal({
 
     if (food) {
       return food.brand || '';
+    }
+
+    if (foodLog && !food) {
+      return '';
     }
 
     if (productFromSearch) {
@@ -339,7 +361,7 @@ export function FoodMealDetailsModal({
       }
     }
     return '';
-  }, [productDetails, productFromSearch, food, meal, t]);
+  }, [productDetails, productFromSearch, food, foodLog, meal, t]);
 
   // Update serving size when product details or search product load
   useEffect(() => {

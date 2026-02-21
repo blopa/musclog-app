@@ -2,12 +2,11 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
 import Food from '../models/Food';
-import FoodPortion from '../models/FoodPortion';
 import NutritionLog, { MealType } from '../models/NutritionLog';
 
 export class NutritionService {
   /**
-   * Log food consumption
+   * Log food consumption. Stores a snapshot of the food's macros/micros per 100g at log time.
    */
   static async logFood(
     foodId: string,
@@ -17,6 +16,7 @@ export class NutritionService {
     portionId?: string
   ): Promise<NutritionLog> {
     return await database.write(async () => {
+      const food = await database.get<Food>('foods').find(foodId);
       const now = Date.now();
       const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 
@@ -26,6 +26,13 @@ export class NutritionService {
         log.type = mealType;
         log.amount = amount;
         log.portionId = portionId;
+        log.loggedFoodName = food.name ?? undefined;
+        log.loggedCalories = food.calories ?? 0;
+        log.loggedProtein = food.protein ?? 0;
+        log.loggedCarbs = food.carbs ?? 0;
+        log.loggedFat = food.fat ?? 0;
+        log.loggedFiber = food.fiber ?? 0;
+        log.loggedMicros = food.micros;
         log.createdAt = now;
         log.updatedAt = now;
       });
@@ -463,13 +470,20 @@ export class NutritionService {
 
       const now = Date.now();
 
-      // Create new nutrition log with same data
+      // Create new nutrition log with same data and snapshot
       return await database.get<NutritionLog>('nutrition_logs').create((log) => {
         log.foodId = originalLog.foodId;
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
-        log.date = originalLog.date; // Same date as original
+        log.date = originalLog.date;
+        log.loggedFoodName = originalLog.loggedFoodName;
+        log.loggedCalories = originalLog.loggedCalories ?? 0;
+        log.loggedProtein = originalLog.loggedProtein ?? 0;
+        log.loggedCarbs = originalLog.loggedCarbs ?? 0;
+        log.loggedFat = originalLog.loggedFat ?? 0;
+        log.loggedFiber = originalLog.loggedFiber ?? 0;
+        log.loggedMicros = originalLog.loggedMicros;
         log.createdAt = now;
         log.updatedAt = now;
       });

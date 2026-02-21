@@ -256,22 +256,31 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const cholesterol = getNutrimentValue(product.nutriments, 'cholesterol');
   const caffeine = getNutrimentValue(product.nutriments, 'caffeine');
   const alcohol = getNutrimentValue(product.nutriments, 'alcohol');
-  
+
   // Extract additional fats
   const transFat = getNutrimentValue(product.nutriments, 'trans-fat');
   const polyunsaturatedFat = getNutrimentValue(product.nutriments, 'polyunsaturated-fat');
   const monounsaturatedFat = getNutrimentValue(product.nutriments, 'monounsaturated-fat');
-  
+
   // Extract nutrition scores
   const nutritionScoreFr = getNutrimentValue(product.nutriments, 'nutrition-score-fr');
   const nutritionScoreUk = getNutrimentValue(product.nutriments, 'nutrition-score-uk');
-  
+
   // Extract ingredient estimates
-  const fruitsVegetablesNutsEstimate = getNutrimentValue(product.nutriments, 'fruits-vegetables-nuts-estimate-from-ingredients');
-  const fruitsVegetablesLegumesEstimate = getNutrimentValue(product.nutriments, 'fruits-vegetables-legumes-estimate-from-ingredients');
-  
+  const fruitsVegetablesNutsEstimate = getNutrimentValue(
+    product.nutriments,
+    'fruits-vegetables-nuts-estimate-from-ingredients'
+  );
+  const fruitsVegetablesLegumesEstimate = getNutrimentValue(
+    product.nutriments,
+    'fruits-vegetables-legumes-estimate-from-ingredients'
+  );
+
   // Extract environmental data
-  const carbonFootprint = getNutrimentValue(product.nutriments, 'carbon-footprint-from-known-ingredients');
+  const carbonFootprint = getNutrimentValue(
+    product.nutriments,
+    'carbon-footprint-from-known-ingredients'
+  );
 
   return {
     id: product.code || String(Math.random()),

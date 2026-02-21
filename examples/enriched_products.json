@@ -121,22 +121,16 @@
         "allergens": "en:gluten",
         "allergens_from_ingredients": "en:gluten, en:gluten, BLE, GLUTEN , BLE, BLE, GLUTEN, BLE",
         "allergens_from_user": "(fr) en:gluten",
-        "allergens_hierarchy": [
-          "en:gluten"
-        ],
+        "allergens_hierarchy": ["en:gluten"],
         "allergens_imported": "Gluten",
         "allergens_lc": "fr",
-        "allergens_tags": [
-          "en:gluten"
-        ],
+        "allergens_tags": ["en:gluten"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Herta",
         "brands_imported": "Herta",
         "brands_old": "Herta",
-        "brands_tags": [
-          "herta"
-        ],
+        "brands_tags": ["herta"],
         "categories": "Aliments et boissons à base de végétaux, Aliments d'origine végétale, Céréales et pommes de terre, Produits de boulangerie, Pâtes à pizza, Pâte à pizza fine, Aides culinaires, en:Baking Mixes, en:Refrigerated baking mixes, en:Frozen baking mixes",
         "categories_hierarchy": [
           "en:plant-based-foods-and-beverages",
@@ -182,9 +176,7 @@
         ],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "7613035648463",
         "codes_tags": [
@@ -237,16 +229,10 @@
           "org-herta-sas"
         ],
         "countries": "France,Luxembourg",
-        "countries_hierarchy": [
-          "en:france",
-          "en:luxembourg"
-        ],
+        "countries_hierarchy": ["en:france", "en:luxembourg"],
         "countries_imported": "France",
         "countries_lc": "fr",
-        "countries_tags": [
-          "en:france",
-          "en:luxembourg"
-        ],
+        "countries_tags": ["en:france", "en:luxembourg"],
         "created_t": 1469959033,
         "creator": "openfoodfacts-contributors",
         "customer_service": "HERTA, 16 bd du Mont d'Est – 93160 Noisy-le-Grand",
@@ -334,9 +320,7 @@
           "database-gdsn",
           "databases"
         ],
-        "debug_param_sorted_langs": [
-          "fr"
-        ],
+        "debug_param_sorted_langs": ["fr"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -350,12 +334,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -796,9 +776,7 @@
         },
         "ecoscore_grade": "b",
         "ecoscore_score": 73,
-        "ecoscore_tags": [
-          "b"
-        ],
+        "ecoscore_tags": ["b"],
         "editors_tags": [
           "beniben",
           "date-limite-app",
@@ -836,19 +814,11 @@
         "emb_codes": "Non indiqué",
         "emb_codes_20141016": "",
         "emb_codes_orig": "",
-        "emb_codes_tags": [
-          "non-indique"
-        ],
-        "entry_dates_tags": [
-          "2016-07-31",
-          "2016-07",
-          "2016"
-        ],
+        "emb_codes_tags": ["non-indique"],
+        "entry_dates_tags": ["2016-07-31", "2016-07", "2016"],
         "expiration_date": "12/03/2021",
         "food_groups": "en:cereals-and-potatoes",
-        "food_groups_tags": [
-          "en:cereals-and-potatoes"
-        ],
+        "food_groups_tags": ["en:cereals-and-potatoes"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "Pâte à pizza",
         "generic_name_fr": "Pâte à pizza",
@@ -1632,15 +1602,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:maybe-vegan": [
-            "en:alcohol"
-          ]
+          "en:maybe-vegan": ["en:alcohol"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:maybe-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:maybe-vegan", "en:vegetarian"],
         "ingredients_debug": [
           "Farine de _blé_",
           ",",
@@ -1760,10 +1724,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 8,
-        "ingredients_n_tags": [
-          "8",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["8", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -1811,9 +1772,7 @@
         "ingredients_with_specified_percent_sum": 0,
         "ingredients_with_unspecified_percent_n": 8,
         "ingredients_with_unspecified_percent_sum": 100,
-        "ingredients_without_ciqual_codes": [
-          "en:wheat-gluten"
-        ],
+        "ingredients_without_ciqual_codes": ["en:wheat-gluten"],
         "ingredients_without_ciqual_codes_n": 1,
         "ingredients_without_ecobalyse_ids": [
           "en:alcohol",
@@ -1852,24 +1811,11 @@
         "languages_codes": {
           "fr": 13
         },
-        "languages_hierarchy": [
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:french",
-          "en:1"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-03",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:french"],
+        "languages_tags": ["en:french", "en:1"],
+        "last_edit_dates_tags": ["2026-02-03", "2026-02", "2026"],
         "last_editor": "org-herta-sas",
-        "last_image_dates_tags": [
-          "2025-10-03",
-          "2025-10",
-          "2025"
-        ],
+        "last_image_dates_tags": ["2025-10-03", "2025-10", "2025"],
         "last_image_t": 1759464058,
         "last_modified_by": "org-herta-sas",
         "last_modified_t": 1770092485,
@@ -1879,9 +1825,7 @@
         "link": "www.herta.fr",
         "main_countries_tags": [],
         "manufacturing_places": "Non indiqué",
-        "manufacturing_places_tags": [
-          "non-indique"
-        ],
+        "manufacturing_places_tags": ["non-indique"],
         "max_imgid": "30",
         "minerals_prev_tags": [],
         "minerals_tags": [],
@@ -1910,22 +1854,10 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:salt"
-            ]
-          ],
-          "4": [
-            [
-              "ingredients",
-              "en:gluten"
-            ]
-          ]
+          "3": [["ingredients", "en:salt"]],
+          "4": [["ingredients", "en:gluten"]]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -2107,11 +2039,7 @@
               "is_water": 0,
               "negative_points": 8,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 3,
               "positive_points_max": 17
             },
@@ -2122,12 +2050,8 @@
             "score": 5
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -2194,11 +2118,7 @@
           "is_water": 0,
           "negative_points": 8,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17,
           "score": 5
@@ -2208,9 +2128,7 @@
         "nutriscore_grade_producer_imported": "b",
         "nutriscore_score": 5,
         "nutriscore_score_opposite": -5,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
@@ -2219,9 +2137,7 @@
         "nutrition_data_prepared_per_imported": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -2283,21 +2199,11 @@
           "fr:dans le BAC DE TRI."
         ],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:baking-paper",
-          "en:cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:baking-paper", "en:cardboard", "en:plastic"],
         "packaging_old": "Plastique, Frais, Paquet, Sous atmosphère protectrice, en:Green dot, Papier de cuisson et film plastique à jeter, Pensez au tri!, Étui carton à recycler",
         "packaging_old_before_taxonomization": "fr:Frais,fr:Plastique,fr:Atmosphère protectrice,fr:Étui carton à recycler,fr:Papier de cuisson et film plastique à jeter,en:Green dot,fr:Pensez au tri!,Frais, paquet",
-        "packaging_recycling_tags": [
-          "en:recycle"
-        ],
-        "packaging_shapes_tags": [
-          "en:bag",
-          "en:card",
-          "en:sheet"
-        ],
+        "packaging_recycling_tags": ["en:recycle"],
+        "packaging_shapes_tags": ["en:bag", "en:card", "en:sheet"],
         "packaging_tags": [
           "en:card",
           "fr:le-tri-plus-facile-sachet-plastique",
@@ -2369,15 +2275,9 @@
           "org-herta-sas"
         ],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 23995000125,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -2600,12 +2500,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "05400,Veynes,France,Aubenas",
-        "purchase_places_tags": [
-          "05400",
-          "veynes",
-          "france",
-          "aubenas"
-        ],
+        "purchase_places_tags": ["05400", "veynes", "france", "aubenas"],
         "quantity": "390 g",
         "quantity_imported": "390 g",
         "removed_countries_tags": [],
@@ -2715,10 +2610,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories",
-              "labels"
-            ],
+            "fields": ["categories", "labels"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1744947818,
@@ -2727,9 +2619,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories"
-            ],
+            "fields": ["categories"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1747195740,
@@ -2819,9 +2709,7 @@
             "url": null
           },
           {
-            "fields": [
-              "nutrients.salt_value"
-            ],
+            "fields": ["nutrients.salt_value"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1768276547,
@@ -2928,43 +2816,23 @@
           "en:photos-uploaded"
         ],
         "stores": "Super U,Magasins U,carrefour.fr,Auchan",
-        "stores_tags": [
-          "super-u",
-          "magasins-u",
-          "carrefour-fr",
-          "auchan"
-        ],
+        "stores_tags": ["super-u", "magasins-u", "carrefour-fr", "auchan"],
         "teams": "feat,shark-attack,specialtiz",
-        "teams_tags": [
-          "feat",
-          "shark-attack",
-          "specialtiz"
-        ],
+        "teams_tags": ["feat", "shark-attack", "specialtiz"],
         "traces": "en:milk,en:mustard,en:soybeans",
         "traces_from_ingredients": "LAIT, SOJA, MOUTARDE, LAIT, SOJA, MOUTARDE",
         "traces_from_user": "(fr) en:milk,en:mustard,en:soybeans",
-        "traces_hierarchy": [
-          "en:milk",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_hierarchy": ["en:milk", "en:mustard", "en:soybeans"],
         "traces_imported": "Lait, Moutarde, Soja",
         "traces_lc": "fr",
-        "traces_tags": [
-          "en:milk",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_tags": ["en:milk", "en:mustard", "en:soybeans"],
         "unique_scans_n": 239,
         "unknown_ingredients_n": 0,
         "unknown_nutrients_tags": [],
         "update_key": "brands",
         "vitamins_prev_tags": [],
         "vitamins_tags": [],
-        "weighers_tags": [
-          "jecrivaine",
-          "jusdekiwi"
-        ]
+        "weighers_tags": ["jecrivaine", "jusdekiwi"]
       },
       "status": 1,
       "status_verbose": "product found"
@@ -3096,22 +2964,16 @@
         "allergens": "en:gluten",
         "allergens_from_ingredients": "en:gluten, en:gluten, BLE, GLUTEN , BLE, BLE, GLUTEN, BLE",
         "allergens_from_user": "(fr) en:gluten",
-        "allergens_hierarchy": [
-          "en:gluten"
-        ],
+        "allergens_hierarchy": ["en:gluten"],
         "allergens_imported": "Gluten",
         "allergens_lc": "fr",
-        "allergens_tags": [
-          "en:gluten"
-        ],
+        "allergens_tags": ["en:gluten"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Herta",
         "brands_imported": "Herta",
         "brands_old": "Herta",
-        "brands_tags": [
-          "herta"
-        ],
+        "brands_tags": ["herta"],
         "categories": "Aliments et boissons à base de végétaux, Aliments d'origine végétale, Céréales et pommes de terre, Produits de boulangerie, Pâtes à pizza, en:Pâtes à pizza, Pâte à pizza fine, Aides culinaires, en:Baking Mixes, en:Refrigerated baking mixes, en:Frozen baking mixes",
         "categories_hierarchy": [
           "en:plant-based-foods-and-beverages",
@@ -3159,9 +3021,7 @@
         ],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "7613035648494",
         "codes_tags": [
@@ -3214,16 +3074,10 @@
         ],
         "countries": "France, en:belgium",
         "countries_beforescanbot": "France",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:france"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:france"],
         "countries_imported": "France",
         "countries_lc": "en",
-        "countries_tags": [
-          "en:belgium",
-          "en:france"
-        ],
+        "countries_tags": ["en:belgium", "en:france"],
         "created_t": 1473889781,
         "creator": "openfoodfacts-contributors",
         "customer_service": "HERTA, 16 bd du Mont d'Est – 93160 Noisy-le-Grand",
@@ -3315,9 +3169,7 @@
           "database-gdsn",
           "databases"
         ],
-        "debug_param_sorted_langs": [
-          "fr"
-        ],
+        "debug_param_sorted_langs": ["fr"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -3331,12 +3183,8 @@
               ],
               "epi_score": 93,
               "epi_value": 4,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:france"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:france"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 57,
@@ -3768,9 +3616,7 @@
         },
         "ecoscore_grade": "a-plus",
         "ecoscore_score": 91,
-        "ecoscore_tags": [
-          "a-plus"
-        ],
+        "ecoscore_tags": ["a-plus"],
         "editors_tags": [
           "additives-app-chakib",
           "asmoth",
@@ -3809,18 +3655,12 @@
         "emb_codes": "",
         "emb_codes_orig": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2016-09-14",
-          "2016-09",
-          "2016"
-        ],
+        "entry_dates_tags": ["2016-09-14", "2016-09", "2016"],
         "environment_impact_level": "",
         "environment_impact_level_tags": [],
         "expiration_date": "2017-08-25",
         "food_groups": "en:cereals-and-potatoes",
-        "food_groups_tags": [
-          "en:cereals-and-potatoes"
-        ],
+        "food_groups_tags": ["en:cereals-and-potatoes"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "Pâte à pizza",
         "generic_name_en": "",
@@ -4561,15 +4401,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:maybe-vegan": [
-            "en:alcohol"
-          ]
+          "en:maybe-vegan": ["en:alcohol"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:maybe-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:maybe-vegan", "en:vegetarian"],
         "ingredients_debug": [
           "Farine de _blé_",
           ",",
@@ -4695,10 +4529,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 8,
-        "ingredients_n_tags": [
-          "8",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["8", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -4748,9 +4579,7 @@
         "ingredients_with_specified_percent_sum": 0,
         "ingredients_with_unspecified_percent_n": 8,
         "ingredients_with_unspecified_percent_sum": 100,
-        "ingredients_without_ciqual_codes": [
-          "en:wheat-gluten"
-        ],
+        "ingredients_without_ciqual_codes": ["en:wheat-gluten"],
         "ingredients_without_ciqual_codes_n": 1,
         "ingredients_without_ecobalyse_ids": [
           "en:alcohol",
@@ -4795,27 +4624,11 @@
           "en": 2,
           "fr": 12
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:english",
-          "en:french",
-          "en:2",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:english", "en:french"],
+        "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2025-03-29",
-          "2025-03",
-          "2025"
-        ],
+        "last_image_dates_tags": ["2025-03-29", "2025-03", "2025"],
         "last_image_t": 1743220844,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771267609,
@@ -4852,22 +4665,10 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:salt"
-            ]
-          ],
-          "4": [
-            [
-              "ingredients",
-              "en:gluten"
-            ]
-          ]
+          "3": [["ingredients", "en:salt"]],
+          "4": [["ingredients", "en:gluten"]]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -5049,11 +4850,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 3,
               "positive_points_max": 17
             },
@@ -5064,12 +4861,8 @@
             "score": 7
           }
         },
-        "nutriscore_2021_tags": [
-          "c"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["c"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -5136,11 +4929,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17,
           "score": 7
@@ -5150,9 +4939,7 @@
         "nutriscore_grade_producer_imported": "b",
         "nutriscore_score": 7,
         "nutriscore_score_opposite": -7,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
@@ -5161,9 +4948,7 @@
         "nutrition_data_prepared_per_imported": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -5177,14 +4962,10 @@
         "origin_en": "",
         "origin_fr": "",
         "origins": "France",
-        "origins_hierarchy": [
-          "en:france"
-        ],
+        "origins_hierarchy": ["en:france"],
         "origins_lc": "fr",
         "origins_old": "",
-        "origins_tags": [
-          "en:france"
-        ],
+        "origins_tags": ["en:france"],
         "other_nutritional_substances_tags": [],
         "owner": "org-herta-sas",
         "owner_fields": {
@@ -5225,31 +5006,14 @@
         "owner_imported": "org-herta-sas",
         "owners_tags": "org-herta-sas",
         "packaging": "Plastique,Frais",
-        "packaging_hierarchy": [
-          "en:plastic",
-          "en:fresh"
-        ],
+        "packaging_hierarchy": ["en:plastic", "en:fresh"],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:paper",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:paper", "en:plastic"],
         "packaging_old": "Plastique, Frais",
         "packaging_old_before_taxonomization": "Frais,plastique",
-        "packaging_recycling_tags": [
-          "en:discard",
-          "en:recycle"
-        ],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sleeve",
-          "en:unknown"
-        ],
-        "packaging_tags": [
-          "en:plastic",
-          "en:fresh"
-        ],
+        "packaging_recycling_tags": ["en:discard", "en:recycle"],
+        "packaging_shapes_tags": ["en:film", "en:sleeve", "en:unknown"],
+        "packaging_tags": ["en:plastic", "en:fresh"],
         "packaging_text": "1 PAPIER DE CUISSON À JETER\r\n1 FILM PLASTIQUE À JETER\r\n1 ÉTUI CARTON À RECYCLER",
         "packaging_text_en": "",
         "packaging_text_fr": "1 PAPIER DE CUISSON À JETER\r\n1 FILM PLASTIQUE À JETER\r\n1 ÉTUI CARTON À RECYCLER",
@@ -5289,15 +5053,9 @@
           "org-herta-sas"
         ],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 24995000212,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -5518,9 +5276,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France",
-        "purchase_places_tags": [
-          "france"
-        ],
+        "purchase_places_tags": ["france"],
         "quantity": "265 g",
         "quantity_imported": "265 g",
         "removed_countries_tags": [],
@@ -5629,9 +5385,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories"
-            ],
+            "fields": ["categories"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1743220841,
@@ -5667,10 +5421,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories",
-              "labels"
-            ],
+            "fields": ["categories", "labels"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1748318095,
@@ -5688,9 +5439,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories"
-            ],
+            "fields": ["categories"],
             "id": "org-herta-sas",
             "images": [],
             "import_t": 1749701244,
@@ -5811,24 +5560,14 @@
           "carrefour-fr"
         ],
         "teams": "pain-au-chocolat",
-        "teams_tags": [
-          "pain-au-chocolat"
-        ],
+        "teams_tags": ["pain-au-chocolat"],
         "traces": "en:milk,en:mustard,en:soybeans",
         "traces_from_ingredients": "LAIT, SOJA, MOUTARDE, LAIT, SOJA, MOUTARDE",
         "traces_from_user": "(fr) en:milk,en:mustard,en:soybeans",
-        "traces_hierarchy": [
-          "en:milk",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_hierarchy": ["en:milk", "en:mustard", "en:soybeans"],
         "traces_imported": "Lait, Moutarde, Soja",
         "traces_lc": "fr",
-        "traces_tags": [
-          "en:milk",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_tags": ["en:milk", "en:mustard", "en:soybeans"],
         "unique_scans_n": 210,
         "unknown_ingredients_n": 0,
         "unknown_nutrients_tags": [],
@@ -5931,14 +5670,7 @@
       "code": "6111184006413",
       "product": {
         "_id": "6111184006413",
-        "_keywords": [
-          "350",
-          "condiment",
-          "grocerie",
-          "pizza",
-          "sauce",
-          "star"
-        ],
+        "_keywords": ["350", "condiment", "grocerie", "pizza", "sauce", "star"],
         "added_countries_tags": [],
         "additives_n": 0,
         "additives_original_tags": [],
@@ -5946,26 +5678,15 @@
         "allergens": "en:celery",
         "allergens_from_ingredients": "céleri",
         "allergens_from_user": "(en) en:celery",
-        "allergens_hierarchy": [
-          "en:celery"
-        ],
+        "allergens_hierarchy": ["en:celery"],
         "allergens_lc": "en",
-        "allergens_tags": [
-          "en:celery"
-        ],
+        "allergens_tags": ["en:celery"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Star",
-        "brands_tags": [
-          "star"
-        ],
+        "brands_tags": ["star"],
         "categories": "Condiments,Sauces,Pizza sauces,Groceries",
-        "categories_hierarchy": [
-          "en:condiments",
-          "en:sauces",
-          "en:pizza-sauces",
-          "en:Groceries"
-        ],
+        "categories_hierarchy": ["en:condiments", "en:sauces", "en:pizza-sauces", "en:Groceries"],
         "categories_lc": "en",
         "categories_old": "Condiments, Sauces, Sauces pour pizzas, en:groceries",
         "categories_properties": {
@@ -5983,17 +5704,10 @@
           "agribalyse-known",
           "agribalyse-25525"
         ],
-        "categories_tags": [
-          "en:condiments",
-          "en:sauces",
-          "en:pizza-sauces",
-          "en:groceries"
-        ],
+        "categories_tags": ["en:condiments", "en:sauces", "en:pizza-sauces", "en:groceries"],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "6111184006413",
         "codes_tags": [
@@ -6021,13 +5735,9 @@
           "un"
         ],
         "countries": "Morocco",
-        "countries_hierarchy": [
-          "en:morocco"
-        ],
+        "countries_hierarchy": ["en:morocco"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:morocco"
-        ],
+        "countries_tags": ["en:morocco"],
         "created_t": 1522263128,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -6112,14 +5822,8 @@
           "en:environmental-score-production-system-no-label"
         ],
         "data_sources": "App - yuka, Apps, App - Open Food Facts",
-        "data_sources_tags": [
-          "app-yuka",
-          "apps",
-          "app-open-food-facts"
-        ],
-        "debug_param_sorted_langs": [
-          "fr"
-        ],
+        "data_sources_tags": ["app-yuka", "apps", "app-open-food-facts"],
+        "debug_param_sorted_langs": ["fr"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -6133,12 +5837,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -6517,9 +6217,7 @@
         },
         "ecoscore_grade": "b",
         "ecoscore_score": 74,
-        "ecoscore_tags": [
-          "b"
-        ],
+        "ecoscore_tags": ["b"],
         "editors_tags": [
           "charlesnepote",
           "foodless",
@@ -6532,17 +6230,10 @@
         ],
         "emb_codes": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2018-03-28",
-          "2018-03",
-          "2018"
-        ],
+        "entry_dates_tags": ["2018-03-28", "2018-03", "2018"],
         "expiration_date": "",
         "food_groups": "en:dressings-and-sauces",
-        "food_groups_tags": [
-          "en:fats-and-sauces",
-          "en:dressings-and-sauces"
-        ],
+        "food_groups_tags": ["en:fats-and-sauces", "en:dressings-and-sauces"],
         "generic_name": "",
         "generic_name_fr": "",
         "id": "6111184006413",
@@ -6777,18 +6468,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:palm-oil-content-unknown": [
-            "fr:amidon-acide-citrique",
-            "fr:modifie"
-          ],
-          "en:vegan-status-unknown": [
-            "fr:amidon-acide-citrique",
-            "fr:modifie"
-          ],
-          "en:vegetarian-status-unknown": [
-            "fr:amidon-acide-citrique",
-            "fr:modifie"
-          ]
+          "en:palm-oil-content-unknown": ["fr:amidon-acide-citrique", "fr:modifie"],
+          "en:vegan-status-unknown": ["fr:amidon-acide-citrique", "fr:modifie"],
+          "en:vegetarian-status-unknown": ["fr:amidon-acide-citrique", "fr:modifie"]
         },
         "ingredients_analysis_tags": [
           "en:palm-oil-free",
@@ -6820,10 +6502,7 @@
         "ingredients_ids_debug": [],
         "ingredients_lc": "fr",
         "ingredients_n": 10,
-        "ingredients_n_tags": [
-          "10",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["10", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:water",
@@ -6898,24 +6577,11 @@
         "languages_codes": {
           "fr": 4
         },
-        "languages_hierarchy": [
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:french",
-          "en:1"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-04",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:french"],
+        "languages_tags": ["en:french", "en:1"],
+        "last_edit_dates_tags": ["2026-02-04", "2026-02", "2026"],
         "last_editor": "foodless",
-        "last_image_dates_tags": [
-          "2025-09-14",
-          "2025-09",
-          "2025"
-        ],
+        "last_image_dates_tags": ["2025-09-14", "2025-09", "2025"],
         "last_image_t": 1757847323,
         "last_modified_by": "foodless",
         "last_modified_t": 1770197339,
@@ -6952,25 +6618,12 @@
         "nova_groups": "4",
         "nova_groups_markers": {
           "3": [
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:sugar"
-            ]
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:sugar"]
           ],
-          "4": [
-            [
-              "ingredients",
-              "en:thickener"
-            ]
-          ]
+          "4": [["ingredients", "en:thickener"]]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -7155,10 +6808,7 @@
               "is_water": 0,
               "negative_points": 11,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
               "positive_points": 0,
               "positive_points_max": 10
             },
@@ -7169,12 +6819,8 @@
             "score": 11
           }
         },
-        "nutriscore_2021_tags": [
-          "c"
-        ],
-        "nutriscore_2023_tags": [
-          "d"
-        ],
+        "nutriscore_2021_tags": ["c"],
+        "nutriscore_2023_tags": ["d"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -7234,10 +6880,7 @@
           "is_water": 0,
           "negative_points": 11,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
           "positive_points": 0,
           "positive_points_max": 10,
           "score": 11
@@ -7245,18 +6888,14 @@
         "nutriscore_grade": "d",
         "nutriscore_score": 11,
         "nutriscore_score_opposite": -11,
-        "nutriscore_tags": [
-          "d"
-        ],
+        "nutriscore_tags": ["d"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "d",
         "nutrition_grades": "d",
-        "nutrition_grades_tags": [
-          "d"
-        ],
+        "nutrition_grades_tags": ["d"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -7278,20 +6917,11 @@
         "packagings": [],
         "packagings_complete": 0,
         "packagings_materials": {},
-        "photographers_tags": [
-          "kiliweb",
-          "foodless"
-        ],
+        "photographers_tags": ["kiliweb", "foodless"],
         "pnns_groups_1": "Fat and sauces",
-        "pnns_groups_1_tags": [
-          "fat-and-sauces",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["fat-and-sauces", "known"],
         "pnns_groups_2": "Dressings and sauces",
-        "pnns_groups_2_tags": [
-          "dressings-and-sauces",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["dressings-and-sauces", "known"],
         "popularity_key": 23995000142,
         "popularity_tags": [
           "bottom-25-percent-scans-2019",
@@ -7399,9 +7029,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "Maroc",
-        "purchase_places_tags": [
-          "maroc"
-        ],
+        "purchase_places_tags": ["maroc"],
         "quantity": "690g",
         "removed_countries_tags": [],
         "rev": 17,
@@ -7477,19 +7105,13 @@
           "en:photos-uploaded"
         ],
         "stores": "Marjane",
-        "stores_tags": [
-          "marjane"
-        ],
+        "stores_tags": ["marjane"],
         "traces": "en:nuts",
         "traces_from_ingredients": "",
         "traces_from_user": "(en) en:nuts",
-        "traces_hierarchy": [
-          "en:nuts"
-        ],
+        "traces_hierarchy": ["en:nuts"],
         "traces_lc": "en",
-        "traces_tags": [
-          "en:nuts"
-        ],
+        "traces_tags": ["en:nuts"],
         "unique_scans_n": 162,
         "unknown_ingredients_n": 2,
         "unknown_nutrients_tags": [],
@@ -7612,34 +7234,18 @@
         ],
         "added_countries_tags": [],
         "additives_n": 3,
-        "additives_original_tags": [
-          "en:e330",
-          "en:e260",
-          "en:e300"
-        ],
-        "additives_tags": [
-          "en:e260",
-          "en:e300",
-          "en:e330"
-        ],
+        "additives_original_tags": ["en:e330", "en:e260", "en:e300"],
+        "additives_tags": ["en:e260", "en:e300", "en:e330"],
         "allergens": "en:gluten,en:milk",
         "allergens_from_ingredients": "en:milk, en:milk, en:milk, en:milk, en:gluten, WEIZENMEHL, KÄSE, MOZZARELLA, EDAMER, SAUERRAHM, WEIZENMEHL, KÄSE, MOZZARELLA, EDAMER, SAUERRAHM",
         "allergens_from_user": "(en) en:gluten,en:milk",
-        "allergens_hierarchy": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:gluten", "en:milk"],
         "allergens_lc": "en",
-        "allergens_tags": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_tags": ["en:gluten", "en:milk"],
         "amino_acids_tags": [],
         "brands": "Dr. Oetker",
         "brands_old": "Dr. Oetker",
-        "brands_tags": [
-          "dr-oetker"
-        ],
+        "brands_tags": ["dr-oetker"],
         "categories": "Meals,Frozen foods,Pizzas pies and quiches,Pizzas,Vegetarian pizzas,Frozen pizzas and pies,Frozen pizzas,Vegetable pizza",
         "categories_hierarchy": [
           "en:frozen-foods",
@@ -7722,17 +7328,9 @@
         ],
         "countries": "France, Germany, en:spain",
         "countries_beforescanbot": "France,Germany",
-        "countries_hierarchy": [
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_hierarchy": ["en:france", "en:germany", "en:spain"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_tags": ["en:france", "en:germany", "en:spain"],
         "created_t": 1644861515,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -7825,12 +7423,7 @@
           "app-macrofactor",
           "app-speisekammer"
         ],
-        "debug_param_sorted_langs": [
-          "en",
-          "de",
-          "fr",
-          "nl"
-        ],
+        "debug_param_sorted_langs": ["en", "de", "fr", "nl"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -7844,12 +7437,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -8282,9 +7871,7 @@
         },
         "ecoscore_grade": "c",
         "ecoscore_score": 53,
-        "ecoscore_tags": [
-          "c"
-        ],
+        "ecoscore_tags": ["c"],
         "editors_tags": [
           "aleene",
           "alexfauquette",
@@ -8312,17 +7899,10 @@
         ],
         "emb_codes": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2022-02-14",
-          "2022-02",
-          "2022"
-        ],
+        "entry_dates_tags": ["2022-02-14", "2022-02", "2022"],
         "expiration_date": "03/2023",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "generic_name": "",
         "generic_name_de": "",
         "generic_name_en": "",
@@ -9451,18 +9031,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:cheese",
-            "en:mozzarella",
-            "en:edam",
-            "en:sour-cream"
-          ]
+          "en:non-vegan": ["en:cheese", "en:mozzarella", "en:edam", "en:sour-cream"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
         "ingredients_from_or_that_may_be_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_tags": [],
@@ -9525,10 +9096,7 @@
         ],
         "ingredients_lc": "de",
         "ingredients_n": 34,
-        "ingredients_n_tags": [
-          "34",
-          "31-40"
-        ],
+        "ingredients_n_tags": ["34", "31-40"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -9708,12 +9276,7 @@
           "fr": 8,
           "nl": 5
         },
-        "languages_hierarchy": [
-          "en:dutch",
-          "en:english",
-          "en:french",
-          "en:german"
-        ],
+        "languages_hierarchy": ["en:dutch", "en:english", "en:french", "en:german"],
         "languages_tags": [
           "en:dutch",
           "en:english",
@@ -9722,17 +9285,9 @@
           "en:4",
           "en:multilingual"
         ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2026-01-20",
-          "2026-01",
-          "2026"
-        ],
+        "last_image_dates_tags": ["2026-01-20", "2026-01", "2026"],
         "last_image_t": 1768912680,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771267840,
@@ -9741,9 +9296,7 @@
         "link": "",
         "main_countries_tags": [],
         "manufacturing_places": "UE",
-        "manufacturing_places_tags": [
-          "ue"
-        ],
+        "manufacturing_places_tags": ["ue"],
         "max_imgid": 22,
         "minerals_tags": [],
         "misc_tags": [
@@ -9775,27 +9328,13 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:sugar"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:sugar"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -9971,11 +9510,7 @@
               "is_water": 0,
               "negative_points": 9,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 3,
               "positive_points_max": 17
             },
@@ -9986,12 +9521,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -10058,11 +9589,7 @@
           "is_water": 0,
           "negative_points": 9,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17,
           "score": 6
@@ -10070,18 +9597,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -10096,37 +9619,17 @@
         "origin_fr": "",
         "origin_nl": "",
         "origins": "fr:Légumes origine UE et non UE",
-        "origins_hierarchy": [
-          "fr:Légumes origine UE et non UE"
-        ],
+        "origins_hierarchy": ["fr:Légumes origine UE et non UE"],
         "origins_lc": "en",
-        "origins_tags": [
-          "fr:legumes-origine-ue-et-non-ue"
-        ],
+        "origins_tags": ["fr:legumes-origine-ue-et-non-ue"],
         "other_nutritional_substances_tags": [],
         "packaging": "Cardboard,Frozen,Sleeve",
-        "packaging_hierarchy": [
-          "en:cardboard",
-          "en:frozen",
-          "en:sleeve"
-        ],
+        "packaging_hierarchy": ["en:cardboard", "en:frozen", "en:sleeve"],
         "packaging_lc": "en",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
-        "packaging_recycling_tags": [
-          "en:recycle-in-sorting-bin"
-        ],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sleeve"
-        ],
-        "packaging_tags": [
-          "en:cardboard",
-          "en:frozen",
-          "en:sleeve"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
+        "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+        "packaging_shapes_tags": ["en:film", "en:sleeve"],
+        "packaging_tags": ["en:cardboard", "en:frozen", "en:sleeve"],
         "packaging_text": "",
         "packaging_text_de": "",
         "packaging_text_en": "",
@@ -10185,15 +9688,9 @@
           "rapa93"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 24995000172,
         "popularity_tags": [
           "top-10000-scans-2022",
@@ -10357,9 +9854,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France",
-        "purchase_places_tags": [
-          "france"
-        ],
+        "purchase_places_tags": ["france"],
         "quantity": "385 g",
         "removed_countries_tags": [],
         "rev": 99,
@@ -10480,34 +9975,21 @@
           "en:photos-uploaded"
         ],
         "stores": "Leclerc",
-        "stores_tags": [
-          "leclerc"
-        ],
+        "stores_tags": ["leclerc"],
         "teams": "pain-au-chocolat,bodysupport",
-        "teams_tags": [
-          "pain-au-chocolat",
-          "bodysupport"
-        ],
+        "teams_tags": ["pain-au-chocolat", "bodysupport"],
         "traces": "en:mustard,en:soybeans",
         "traces_from_ingredients": "SOJA, SENF, SOJA, SENF",
         "traces_from_user": "(en) en:mustard,en:soybeans",
-        "traces_hierarchy": [
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_hierarchy": ["en:mustard", "en:soybeans"],
         "traces_lc": "en",
-        "traces_tags": [
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_tags": ["en:mustard", "en:soybeans"],
         "unique_scans_n": 160,
         "unknown_ingredients_n": 0,
         "unknown_nutrients_tags": [],
         "update_key": "brands",
         "vitamins_tags": [],
-        "weighers_tags": [
-          "rapa93"
-        ]
+        "weighers_tags": ["rapa93"]
       },
       "status": 1,
       "status_verbose": "product found"
@@ -10592,31 +10074,17 @@
         ],
         "added_countries_tags": [],
         "additives_n": 3,
-        "additives_original_tags": [
-          "en:e1510",
-          "en:e575",
-          "en:e300"
-        ],
-        "additives_tags": [
-          "en:e1510",
-          "en:e300",
-          "en:e575"
-        ],
+        "additives_original_tags": ["en:e1510", "en:e575", "en:e300"],
+        "additives_tags": ["en:e1510", "en:e300", "en:e575"],
         "allergens": "",
         "allergens_from_ingredients": "en:gluten, en:gluten, blé, gluten de blé",
         "allergens_from_user": "(fr) ",
-        "allergens_hierarchy": [
-          "en:gluten"
-        ],
-        "allergens_tags": [
-          "en:gluten"
-        ],
+        "allergens_hierarchy": ["en:gluten"],
+        "allergens_tags": ["en:gluten"],
         "amino_acids_tags": [],
         "brands": "Croustipate",
         "brands_old": "Croustipate",
-        "brands_tags": [
-          "croustipate"
-        ],
+        "brands_tags": ["croustipate"],
         "categories": "en:pizza-dough",
         "categories_hierarchy": [
           "en:plant-based-foods-and-beverages",
@@ -10675,12 +10143,8 @@
           "sasa"
         ],
         "countries": "en:fr",
-        "countries_hierarchy": [
-          "en:france"
-        ],
-        "countries_tags": [
-          "en:france"
-        ],
+        "countries_hierarchy": ["en:france"],
+        "countries_tags": ["en:france"],
         "created_t": 1712592545,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -10750,11 +10214,7 @@
           "en:environmental-score-production-system-no-label"
         ],
         "data_sources": "App - Yuka, Apps, App - smoothie-openfoodfacts",
-        "data_sources_tags": [
-          "app-yuka",
-          "apps",
-          "app-smoothie-openfoodfacts"
-        ],
+        "data_sources_tags": ["app-yuka", "apps", "app-smoothie-openfoodfacts"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -10768,12 +10228,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -11217,9 +10673,7 @@
         },
         "ecoscore_grade": "a",
         "ecoscore_score": 82,
-        "ecoscore_tags": [
-          "a"
-        ],
+        "ecoscore_tags": ["a"],
         "editors_tags": [
           "gabgab678",
           "kiliweb",
@@ -11232,19 +10686,11 @@
           "yuka.sY2b0xO6T85zoF3NwEKvlmVdX4XDvhzPCBHfmWakzO7SCp7OUOgo-qjoCqs"
         ],
         "emb_codes": "FR",
-        "emb_codes_tags": [
-          "fr"
-        ],
-        "entry_dates_tags": [
-          "2024-04-08",
-          "2024-04",
-          "2024"
-        ],
+        "emb_codes_tags": ["fr"],
+        "entry_dates_tags": ["2024-04-08", "2024-04", "2024"],
         "expiration_date": "2025-12-19",
         "food_groups": "en:cereals-and-potatoes",
-        "food_groups_tags": [
-          "en:cereals-and-potatoes"
-        ],
+        "food_groups_tags": ["en:cereals-and-potatoes"],
         "id": "3392590205765",
         "image_front_small_url": "https://images.openfoodfacts.org/images/products/339/259/020/5765/front_fr.42.200.jpg",
         "image_front_thumb_url": "https://images.openfoodfacts.org/images/products/339/259/020/5765/front_fr.42.100.jpg",
@@ -11805,11 +11251,7 @@
           }
         ],
         "ingredients_analysis": {},
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:vegan", "en:vegetarian"],
         "ingredients_hierarchy": [
           "en:wheat-flour",
           "en:cereal",
@@ -11839,10 +11281,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 13,
-        "ingredients_n_tags": [
-          "13",
-          "11-20"
-        ],
+        "ingredients_n_tags": ["13", "11-20"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -11923,13 +11362,9 @@
         "interface_version_modified": "20150316.jqm2",
         "known_ingredients_n": 13,
         "labels": "Triman",
-        "labels_hierarchy": [
-          "fr:triman"
-        ],
+        "labels_hierarchy": ["fr:triman"],
         "labels_lc": "fr",
-        "labels_tags": [
-          "fr:triman"
-        ],
+        "labels_tags": ["fr:triman"],
         "lang": "fr",
         "languages": {
           "en:french": 7
@@ -11937,24 +11372,11 @@
         "languages_codes": {
           "fr": 7
         },
-        "languages_hierarchy": [
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:french",
-          "en:1"
-        ],
-        "last_edit_dates_tags": [
-          "2026-01-03",
-          "2026-01",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:french"],
+        "languages_tags": ["en:french", "en:1"],
+        "last_edit_dates_tags": ["2026-01-03", "2026-01", "2026"],
         "last_editor": "roboto-app",
-        "last_image_dates_tags": [
-          "2026-01-03",
-          "2026-01",
-          "2026"
-        ],
+        "last_image_dates_tags": ["2026-01-03", "2026-01", "2026"],
         "last_image_t": 1767439534,
         "last_modified_by": "roboto-app",
         "last_modified_t": 1767440410,
@@ -11963,9 +11385,7 @@
         "link": "www.croustipate.com",
         "main_countries_tags": [],
         "max_imgid": 15,
-        "minerals_tags": [
-          "en:potassium-carbonate"
-        ],
+        "minerals_tags": ["en:potassium-carbonate"],
         "misc_tags": [
           "en:environmental-score-changed",
           "en:environmental-score-computed",
@@ -11990,30 +11410,14 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:salt"
-            ]
-          ],
+          "3": [["ingredients", "en:salt"]],
           "4": [
-            [
-              "ingredients",
-              "en:dextrose"
-            ],
-            [
-              "ingredients",
-              "en:glucose"
-            ],
-            [
-              "ingredients",
-              "en:gluten"
-            ]
+            ["ingredients", "en:dextrose"],
+            ["ingredients", "en:glucose"],
+            ["ingredients", "en:gluten"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "low",
@@ -12183,11 +11587,7 @@
               "is_water": 0,
               "negative_points": 9,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 3,
               "positive_points_max": 17
             },
@@ -12198,12 +11598,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "c"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["c"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -12270,11 +11666,7 @@
           "is_water": 0,
           "negative_points": 9,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17,
           "score": 6
@@ -12282,18 +11674,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -12301,27 +11689,17 @@
         "nutrition_score_warning_fruits_vegetables_nuts_estimate_from_ingredients": 1,
         "nutrition_score_warning_fruits_vegetables_nuts_estimate_from_ingredients_value": 1.16666666666667,
         "origins": "Farine d'origine UE",
-        "origins_hierarchy": [
-          "fr:Farine d'origine UE"
-        ],
+        "origins_hierarchy": ["fr:Farine d'origine UE"],
         "origins_lc": "fr",
-        "origins_tags": [
-          "fr:farine-d-origine-ue"
-        ],
+        "origins_tags": ["fr:farine-d-origine-ue"],
         "other_nutritional_substances_tags": [],
         "packaging_materials_tags": [
           "en:baking-paper",
           "en:non-corrugated-cardboard",
           "en:plastic"
         ],
-        "packaging_recycling_tags": [
-          "en:recycle-in-sorting-bin"
-        ],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sheet",
-          "en:sleeve"
-        ],
+        "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+        "packaging_shapes_tags": ["en:film", "en:sheet", "en:sleeve"],
         "packaging_text": "PAPIER CUISSON + FILM + ÉTUI À déposer dans le BAC DE TRI des recyclables\nSéparez les éléments avant de trier",
         "packaging_text_fr": "PAPIER CUISSON + FILM + ÉTUI À déposer dans le BAC DE TRI des recyclables\nSéparez les éléments avant de trier",
         "packagings": [
@@ -12361,22 +11739,11 @@
           "en:unknown": {}
         },
         "packagings_n": 3,
-        "photographers_tags": [
-          "kiliweb",
-          "gabgab678",
-          "raphael",
-          "sasa"
-        ],
+        "photographers_tags": ["kiliweb", "gabgab678", "raphael", "sasa"],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 23950000051,
         "popularity_tags": [
           "top-50000-scans-2024",
@@ -12534,18 +11901,12 @@
           "en:photos-uploaded"
         ],
         "stores": "Auchan",
-        "stores_tags": [
-          "auchan"
-        ],
+        "stores_tags": ["auchan"],
         "traces": "",
         "traces_from_ingredients": "lait",
         "traces_from_user": "(fr) ",
-        "traces_hierarchy": [
-          "en:milk"
-        ],
-        "traces_tags": [
-          "en:milk"
-        ],
+        "traces_hierarchy": ["en:milk"],
+        "traces_tags": ["en:milk"],
         "unique_scans_n": 156,
         "unknown_ingredients_n": 0,
         "unknown_nutrients_tags": [],
@@ -12673,21 +12034,13 @@
         "allergens": "en:gluten,en:milk",
         "allergens_from_ingredients": "en:milk, en:gluten, WEIZENMEHL, WEIZENMEHL",
         "allergens_from_user": "(de) Gluten,Milch",
-        "allergens_hierarchy": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:gluten", "en:milk"],
         "allergens_lc": "de",
-        "allergens_tags": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_tags": ["en:gluten", "en:milk"],
         "amino_acids_tags": [],
         "brands": "Dr. Oetker Ristorante",
         "brands_old": "Dr. Oetker",
-        "brands_tags": [
-          "dr-oetker-ristorante"
-        ],
+        "brands_tags": ["dr-oetker-ristorante"],
         "categories": "Tiefkühlprodukte,Fertiggerichte,Pizzas - Kuchen und Quiches,Pizzen,en:Vegetarian pizzas,Gefrorene Pizzas und Quiches,Tiefkühlpizza",
         "categories_hierarchy": [
           "en:frozen-foods",
@@ -12778,19 +12131,9 @@
         ],
         "countries": "Belgium, France, Germany, en:spain",
         "countries_beforescanbot": "Frankreich,Deutschland",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:france", "en:germany", "en:spain"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:belgium",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_tags": ["en:belgium", "en:france", "en:germany", "en:spain"],
         "created_t": 1645476600,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -12894,14 +12237,7 @@
           "app-speisekammer",
           "app-caloriecounterapp"
         ],
-        "debug_param_sorted_langs": [
-          "de",
-          "en",
-          "es",
-          "fr",
-          "it",
-          "pt"
-        ],
+        "debug_param_sorted_langs": ["de", "en", "es", "fr", "it", "pt"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -12915,12 +12251,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -13332,9 +12664,7 @@
         },
         "ecoscore_grade": "d",
         "ecoscore_score": 43,
-        "ecoscore_tags": [
-          "d"
-        ],
+        "ecoscore_tags": ["d"],
         "editors_tags": [
           "ayecptn",
           "bodysupport",
@@ -13379,17 +12709,10 @@
         ],
         "emb_codes": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2022-02-21",
-          "2022-02",
-          "2022"
-        ],
+        "entry_dates_tags": ["2022-02-21", "2022-02", "2022"],
         "expiration_date": "",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "generic_name": "",
         "generic_name_de": "",
         "generic_name_en": "",
@@ -14283,26 +13606,12 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:mozzarella"
-          ],
-          "en:palm-oil-content-unknown": [
-            "de:pecorino-hartkäse"
-          ],
-          "en:vegan-status-unknown": [
-            "de:pecorino-hartkäse",
-            "en:fried-onion"
-          ],
-          "en:vegetarian-status-unknown": [
-            "de:pecorino-hartkäse",
-            "en:fried-onion"
-          ]
+          "en:non-vegan": ["en:mozzarella"],
+          "en:palm-oil-content-unknown": ["de:pecorino-hartkäse"],
+          "en:vegan-status-unknown": ["de:pecorino-hartkäse", "en:fried-onion"],
+          "en:vegetarian-status-unknown": ["de:pecorino-hartkäse", "en:fried-onion"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
         "ingredients_from_or_that_may_be_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_tags": [],
@@ -14360,10 +13669,7 @@
         ],
         "ingredients_lc": "de",
         "ingredients_n": 20,
-        "ingredients_n_tags": [
-          "20",
-          "11-20"
-        ],
+        "ingredients_n_tags": ["20", "11-20"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -14461,10 +13767,7 @@
         "ingredients_with_specified_percent_sum": 50.3,
         "ingredients_with_unspecified_percent_n": 16,
         "ingredients_with_unspecified_percent_sum": 50.2257812499999,
-        "ingredients_without_ciqual_codes": [
-          "de:pecorino-hartkäse",
-          "en:fried-onion"
-        ],
+        "ingredients_without_ciqual_codes": ["de:pecorino-hartkäse", "en:fried-onion"],
         "ingredients_without_ciqual_codes_n": 2,
         "ingredients_without_ecobalyse_ids": [
           "de:pecorino-hartkäse",
@@ -14536,17 +13839,9 @@
           "en:6",
           "en:multilingual"
         ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2026-01-23",
-          "2026-01",
-          "2026"
-        ],
+        "last_image_dates_tags": ["2026-01-23", "2026-01", "2026"],
         "last_image_t": 1769194496,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771267909,
@@ -14584,31 +13879,14 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:sugar"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:sugar"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -14794,11 +14072,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 4,
               "positive_points_max": 17
             },
@@ -14809,12 +14083,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "c"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["c"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -14881,11 +14151,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 4,
           "positive_points_max": 17,
           "score": 6
@@ -14893,18 +14159,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -14928,18 +14190,9 @@
         "packaging": "",
         "packaging_hierarchy": [],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
-        "packaging_recycling_tags": [
-          "en:recycle"
-        ],
-        "packaging_shapes_tags": [
-          "en:bag",
-          "en:box",
-          "en:film"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
+        "packaging_recycling_tags": ["en:recycle"],
+        "packaging_shapes_tags": ["en:bag", "en:box", "en:film"],
         "packaging_tags": [],
         "packaging_text": "",
         "packaging_text_de": "",
@@ -14984,15 +14237,9 @@
           "macrofactor"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 24995000164,
         "popularity_tags": [
           "top-5000-scans-2022",
@@ -15289,29 +14536,15 @@
           "en:photos-uploaded"
         ],
         "stores": "Charter,Rewe",
-        "stores_tags": [
-          "charter",
-          "rewe"
-        ],
+        "stores_tags": ["charter", "rewe"],
         "teams": "pain-au-chocolat,chocolatine,la-robe-est-bleue,bodysupport",
-        "teams_tags": [
-          "pain-au-chocolat",
-          "chocolatine",
-          "la-robe-est-bleue",
-          "bodysupport"
-        ],
+        "teams_tags": ["pain-au-chocolat", "chocolatine", "la-robe-est-bleue", "bodysupport"],
         "traces": "en:mustard,en:soybeans",
         "traces_from_ingredients": "SOJA, SENF, SOJA, SENF",
         "traces_from_user": "(de) Senf,Soja",
-        "traces_hierarchy": [
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_hierarchy": ["en:mustard", "en:soybeans"],
         "traces_lc": "de",
-        "traces_tags": [
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_tags": ["en:mustard", "en:soybeans"],
         "unique_scans_n": 152,
         "unknown_ingredients_n": 1,
         "unknown_nutrients_tags": [],
@@ -15428,35 +14661,19 @@
         ],
         "added_countries_tags": [],
         "additives_n": 3,
-        "additives_original_tags": [
-          "en:e250",
-          "en:e451",
-          "en:e316"
-        ],
-        "additives_tags": [
-          "en:e250",
-          "en:e316",
-          "en:e451"
-        ],
+        "additives_original_tags": ["en:e250", "en:e451", "en:e316"],
+        "additives_tags": ["en:e250", "en:e316", "en:e451"],
         "allergens": "en:gluten,en:milk",
         "allergens_from_ingredients": "en:gluten, en:milk, en:gluten, en:gluten, en:gluten, blé, mozzarella, blé",
         "allergens_from_user": "(fr) en:gluten,en:milk",
-        "allergens_hierarchy": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:gluten", "en:milk"],
         "allergens_lc": "fr",
-        "allergens_tags": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_tags": ["en:gluten", "en:milk"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Sodebo",
         "brands_old": "Sodebo",
-        "brands_tags": [
-          "sodebo"
-        ],
+        "brands_tags": ["sodebo"],
         "carbon_footprint_from_known_ingredients_debug": "en:tomato-puree 14% x 2.9 = 40.6 g - ",
         "carbon_footprint_percent_of_known_ingredients": 14,
         "categories": "Pizza au jambon",
@@ -15499,12 +14716,8 @@
         ],
         "category_properties": {},
         "checked": "on",
-        "checkers_tags": [
-          "jniderkorn"
-        ],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "checkers_tags": ["jniderkorn"],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "3242272346050",
         "codes_tags": [
@@ -15674,13 +14887,8 @@
           "app-open-food-facts",
           "app-smoothie-openfoodfacts"
         ],
-        "debug_param_sorted_langs": [
-          "fr",
-          "en"
-        ],
-        "debug_tags": [
-          "43"
-        ],
+        "debug_param_sorted_langs": ["fr", "en"],
+        "debug_tags": ["43"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -15694,12 +14902,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -16126,13 +15330,8 @@
         },
         "ecoscore_grade": "c",
         "ecoscore_score": 54,
-        "ecoscore_tags": [
-          "c"
-        ],
-        "editors": [
-          "mouillerart",
-          "raphael"
-        ],
+        "ecoscore_tags": ["c"],
+        "editors": ["mouillerart", "raphael"],
         "editors_tags": [
           "annelotte",
           "ayeaye",
@@ -16184,19 +15383,12 @@
         "emb_codes_20141016": "",
         "emb_codes_orig": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2014-07-24",
-          "2014-07",
-          "2014"
-        ],
+        "entry_dates_tags": ["2014-07-24", "2014-07", "2014"],
         "environment_impact_level": "",
         "environment_impact_level_tags": [],
         "expiration_date": "06/03/2016",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "recategorisation du product_id 635267 | excatego:251 | exns:B/1",
         "generic_name_en": "Pizza",
@@ -17344,21 +16536,10 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:mozzarella",
-            "en:ham",
-            "en:pork-stock"
-          ],
-          "en:non-vegetarian": [
-            "en:ham",
-            "en:pork-stock"
-          ]
+          "en:non-vegan": ["en:mozzarella", "en:ham", "en:pork-stock"],
+          "en:non-vegetarian": ["en:ham", "en:pork-stock"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:non-vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:non-vegetarian"],
         "ingredients_debug": [
           "Garniture 59% ",
           ":",
@@ -17661,10 +16842,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 26,
-        "ingredients_n_tags": [
-          "26",
-          "21-30"
-        ],
+        "ingredients_n_tags": ["26", "21-30"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "fr:pate-fine-a-pizza",
@@ -17822,36 +17000,14 @@
           "fr": 8,
           "it": 2
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:french",
-          "en:italian"
-        ],
-        "languages_tags": [
-          "en:english",
-          "en:french",
-          "en:italian",
-          "en:3",
-          "en:multilingual"
-        ],
-        "last_check_dates_tags": [
-          "2019-06-20",
-          "2019-06",
-          "2019"
-        ],
+        "languages_hierarchy": ["en:english", "en:french", "en:italian"],
+        "languages_tags": ["en:english", "en:french", "en:italian", "en:3", "en:multilingual"],
+        "last_check_dates_tags": ["2019-06-20", "2019-06", "2019"],
         "last_checked_t": 1561024573,
         "last_checker": "jniderkorn",
-        "last_edit_dates_tags": [
-          "2026-02-04",
-          "2026-02",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-02-04", "2026-02", "2026"],
         "last_editor": "off-replace-bot",
-        "last_image_dates_tags": [
-          "2025-01-31",
-          "2025-01",
-          "2025"
-        ],
+        "last_image_dates_tags": ["2025-01-31", "2025-01", "2025"],
         "last_image_t": 1738354391,
         "last_modified_by": "off-replace-bot",
         "last_modified_t": 1770223593,
@@ -17860,9 +17016,7 @@
         "link": "http://www.sodebo.fr/produits-frais/pizzas/dolce-pizza/dolce-pizza-prosciutto",
         "main_countries_tags": [],
         "manufacturing_places": "Saint George de montaigu",
-        "manufacturing_places_tags": [
-          "saint-george-de-montaigu"
-        ],
+        "manufacturing_places_tags": ["saint-george-de-montaigu"],
         "max_imgid": "38",
         "minerals_prev_tags": [],
         "minerals_tags": [],
@@ -17909,53 +17063,21 @@
         "nova_groups": "4",
         "nova_groups_markers": {
           "3": [
-            [
-              "additives",
-              "en:e250"
-            ],
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:preservative"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["additives", "en:e250"],
+            ["categories", "en:meals"],
+            ["ingredients", "en:preservative"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:cheese"]
           ],
           "4": [
-            [
-              "additives",
-              "en:e451"
-            ],
-            [
-              "ingredients",
-              "en:dextrose"
-            ],
-            [
-              "ingredients",
-              "en:flavouring"
-            ],
-            [
-              "ingredients",
-              "en:glucose"
-            ],
-            [
-              "ingredients",
-              "en:glucose-syrup"
-            ]
+            ["additives", "en:e451"],
+            ["ingredients", "en:dextrose"],
+            ["ingredients", "en:flavouring"],
+            ["ingredients", "en:glucose"],
+            ["ingredients", "en:glucose-syrup"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -18137,11 +17259,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 4,
               "positive_points_max": 17
             },
@@ -18152,12 +17270,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -18224,11 +17338,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 4,
           "positive_points_max": 17,
           "score": 6
@@ -18236,18 +17346,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -18260,14 +17366,10 @@
         "origin_en": "",
         "origin_fr": "",
         "origins": "Porc origine UE",
-        "origins_hierarchy": [
-          "en:Porc origine UE"
-        ],
+        "origins_hierarchy": ["en:Porc origine UE"],
         "origins_lc": "en",
         "origins_old": "",
-        "origins_tags": [
-          "en:porc-origine-ue"
-        ],
+        "origins_tags": ["en:porc-origine-ue"],
         "other_nutritional_substances_tags": [],
         "packaging": "Box,Container,Fresh,In a pasta container,Etui en carton,Film en plastique,Film plastique",
         "packaging_hierarchy": [
@@ -18280,19 +17382,11 @@
           "en:In a pasta container"
         ],
         "packaging_lc": "en",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
         "packaging_old": "Box, Container, Fresh, fr:Etui en carton, fr:Film en plastique, fr:Film plastique",
         "packaging_old_before_taxonomization": "Boite,Carton,Film plastique,Frais,fr:Film en plastique,fr:Etui en carton",
-        "packaging_recycling_tags": [
-          "en:recycle-in-sorting-bin"
-        ],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sleeve"
-        ],
+        "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+        "packaging_shapes_tags": ["en:film", "en:sleeve"],
         "packaging_tags": [
           "en:box",
           "en:fresh",
@@ -18358,15 +17452,9 @@
           "foodvisor"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23995000085,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -18755,12 +17843,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France,Lyon,Paris,Maison-Laffitte",
-        "purchase_places_tags": [
-          "france",
-          "lyon",
-          "paris",
-          "maison-laffitte"
-        ],
+        "purchase_places_tags": ["france", "lyon", "paris", "maison-laffitte"],
         "quantity": "400 g",
         "removed_countries_tags": [],
         "rev": 197,
@@ -18894,11 +17977,7 @@
           "manor"
         ],
         "teams": "stakano,chocolatine,la-robe-est-bleue",
-        "teams_tags": [
-          "stakano",
-          "chocolatine",
-          "la-robe-est-bleue"
-        ],
+        "teams_tags": ["stakano", "chocolatine", "la-robe-est-bleue"],
         "traces": "en:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:eggs\u001f  \u001fen:fish\u001f  \u001fen:mustard\u001f",
         "traces_from_ingredients": "",
         "traces_from_user": "(en) en:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:eggs\u001f  \u001fen:fish\u001f  \u001fen:mustard\u001f",
@@ -18906,18 +17985,14 @@
           "en:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:\u001fen:eggs\u001f  \u001fen:fish\u001f  \u001fen:mustard\u001f"
         ],
         "traces_lc": "en",
-        "traces_tags": [
-          "en:en-en-en-en-en-en-en-en-en-en-eggs-en-fish-en-mustard"
-        ],
+        "traces_tags": ["en:en-en-en-en-en-en-en-en-en-en-eggs-en-fish-en-mustard"],
         "unique_scans_n": 146,
         "unknown_ingredients_n": 1,
         "unknown_nutrients_tags": [],
         "update_key": "brands",
         "vitamins_prev_tags": [],
         "vitamins_tags": [],
-        "weighers_tags": [
-          "omarcoz"
-        ]
+        "weighers_tags": ["omarcoz"]
       },
       "status": 1,
       "status_verbose": "product found"
@@ -19041,9 +18116,7 @@
         "brands": "Panzani",
         "brands_imported": "Panzani",
         "brands_old": "Panzani",
-        "brands_tags": [
-          "panzani"
-        ],
+        "brands_tags": ["panzani"],
         "carbon_footprint_percent_of_known_ingredients": 67,
         "categories": "Condiments, Meals, Pizzas pies and quiches, Pizzas, Sauces, Tomato sauces, Pizza sauces, Topping sauce for pizza, Groceries, fr:Bases culinaires, fr:Sauce tomate origan, Kits repas",
         "categories_hierarchy": [
@@ -19096,9 +18169,7 @@
         ],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "3038352876506",
         "codes_tags": [
@@ -19148,18 +18219,10 @@
         ],
         "countries": "France, Suisse, Germany",
         "countries_beforescanbot": "France",
-        "countries_hierarchy": [
-          "en:france",
-          "en:germany",
-          "en:switzerland"
-        ],
+        "countries_hierarchy": ["en:france", "en:germany", "en:switzerland"],
         "countries_imported": "France",
         "countries_lc": "fr",
-        "countries_tags": [
-          "en:france",
-          "en:germany",
-          "en:switzerland"
-        ],
+        "countries_tags": ["en:france", "en:germany", "en:switzerland"],
         "created_t": 1385988699,
         "creator": "openfoodfacts-contributors",
         "customer_service": "Service consommateurs PANZANI - Laura DUVAL, 37 bis, rue Saint Romain 69008 LYON",
@@ -19221,12 +18284,7 @@
           "app-smoothie-openfoodfacts",
           "app-speisekammer"
         ],
-        "debug_param_sorted_langs": [
-          "en",
-          "de",
-          "fr",
-          "it"
-        ],
+        "debug_param_sorted_langs": ["en", "de", "fr", "it"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -19240,12 +18298,8 @@
               ],
               "epi_score": 68,
               "epi_value": 2,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:italy"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:italy"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 44,
@@ -19642,17 +18696,8 @@
         },
         "ecoscore_grade": "a",
         "ecoscore_score": 85,
-        "ecoscore_tags": [
-          "a"
-        ],
-        "editors": [
-          "",
-          "miles67off",
-          "cdmad",
-          "teolemon",
-          "andre",
-          "stephane"
-        ],
+        "ecoscore_tags": ["a"],
+        "editors": ["", "miles67off", "cdmad", "teolemon", "andre", "stephane"],
         "editors_tags": [
           "andre",
           "cdmad",
@@ -19688,20 +18733,11 @@
         "emb_codes": "tetra pak",
         "emb_codes_20141016": "",
         "emb_codes_orig": "",
-        "emb_codes_tags": [
-          "tetra-pak"
-        ],
-        "entry_dates_tags": [
-          "2013-12-02",
-          "2013-12",
-          "2013"
-        ],
+        "emb_codes_tags": ["tetra-pak"],
+        "entry_dates_tags": ["2013-12-02", "2013-12", "2013"],
         "expiration_date": "29/10/2015",
         "food_groups": "en:dressings-and-sauces",
-        "food_groups_tags": [
-          "en:fats-and-sauces",
-          "en:dressings-and-sauces"
-        ],
+        "food_groups_tags": ["en:fats-and-sauces", "en:dressings-and-sauces"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "",
         "generic_name_de": "",
@@ -20796,18 +19832,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:palm-oil-content-unknown": [
-            "en:of-which-oregano",
-            "en:processed-corn-starch"
-          ],
-          "en:vegan-status-unknown": [
-            "en:of-which-oregano",
-            "en:processed-corn-starch"
-          ],
-          "en:vegetarian-status-unknown": [
-            "en:of-which-oregano",
-            "en:processed-corn-starch"
-          ]
+          "en:palm-oil-content-unknown": ["en:of-which-oregano", "en:processed-corn-starch"],
+          "en:vegan-status-unknown": ["en:of-which-oregano", "en:processed-corn-starch"],
+          "en:vegetarian-status-unknown": ["en:of-which-oregano", "en:processed-corn-starch"]
         },
         "ingredients_analysis_tags": [
           "en:palm-oil-free",
@@ -20904,10 +19931,7 @@
         ],
         "ingredients_lc": "en",
         "ingredients_n": 11,
-        "ingredients_n_tags": [
-          "11",
-          "11-20"
-        ],
+        "ingredients_n_tags": ["11", "11-20"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:tomato-pulp",
@@ -21019,12 +20043,7 @@
           "fr": 13,
           "it": 2
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:french",
-          "en:german",
-          "en:italian"
-        ],
+        "languages_hierarchy": ["en:english", "en:french", "en:german", "en:italian"],
         "languages_tags": [
           "en:english",
           "en:french",
@@ -21033,17 +20052,9 @@
           "en:4",
           "en:multilingual"
         ],
-        "last_edit_dates_tags": [
-          "2025-10-10",
-          "2025-10",
-          "2025"
-        ],
+        "last_edit_dates_tags": ["2025-10-10", "2025-10", "2025"],
         "last_editor": "org-panzani-sa",
-        "last_image_dates_tags": [
-          "2024-07-04",
-          "2024-07",
-          "2024"
-        ],
+        "last_image_dates_tags": ["2024-07-04", "2024-07", "2024"],
         "last_image_t": 1720064336,
         "last_modified_by": "org-panzani-sa",
         "last_modified_t": 1760070196,
@@ -21084,27 +20095,13 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:sugar"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:sugar"],
+            ["ingredients", "en:vegetable-oil"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -21275,11 +20272,7 @@
               "is_water": 0,
               "negative_points": 6,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 5,
               "positive_points_max": 17
             },
@@ -21290,12 +20283,8 @@
             "score": 1
           }
         },
-        "nutriscore_2021_tags": [
-          "a"
-        ],
-        "nutriscore_2023_tags": [
-          "b"
-        ],
+        "nutriscore_2021_tags": ["a"],
+        "nutriscore_2023_tags": ["b"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -21362,11 +20351,7 @@
           "is_water": 0,
           "negative_points": 6,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 5,
           "positive_points_max": 17,
           "score": 1
@@ -21376,9 +20361,7 @@
         "nutriscore_grade_producer_imported": "a",
         "nutriscore_score": 1,
         "nutriscore_score_opposite": -1,
-        "nutriscore_tags": [
-          "b"
-        ],
+        "nutriscore_tags": ["b"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
@@ -21387,9 +20370,7 @@
         "nutrition_data_prepared_per_imported": "100g",
         "nutrition_grade_fr": "b",
         "nutrition_grades": "b",
-        "nutrition_grades_tags": [
-          "b"
-        ],
+        "nutrition_grades_tags": ["b"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -21404,14 +20385,10 @@
         "origin_fr_imported": "Italie",
         "origin_it": "",
         "origins": "Italie",
-        "origins_hierarchy": [
-          "en:italy"
-        ],
+        "origins_hierarchy": ["en:italy"],
         "origins_lc": "fr",
         "origins_old": "transformé en Italie",
-        "origins_tags": [
-          "en:italy"
-        ],
+        "origins_tags": ["en:italy"],
         "other_nutritional_substances_tags": [],
         "owner": "org-panzani-sa",
         "owner_fields": {
@@ -21456,28 +20433,15 @@
         "owner_imported": "org-panzani-sa",
         "owners_tags": "org-panzani-sa",
         "packaging": "Papier,Brique,Brique en carton",
-        "packaging_hierarchy": [
-          "en:paper",
-          "en:brick",
-          "fr:Brique en carton"
-        ],
+        "packaging_hierarchy": ["en:paper", "en:brick", "fr:Brique en carton"],
         "packaging_imported": "Brique",
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard"
-        ],
+        "packaging_materials_tags": ["en:cardboard"],
         "packaging_old": "Papier, Brique, Brique en carton",
         "packaging_old_before_taxonomization": "papier,Brique, fr:Brique en carton",
         "packaging_recycling_tags": [],
-        "packaging_shapes_tags": [
-          "en:brick",
-          "en:container"
-        ],
-        "packaging_tags": [
-          "en:paper",
-          "en:brick",
-          "fr:brique-en-carton"
-        ],
+        "packaging_shapes_tags": ["en:brick", "en:container"],
+        "packaging_tags": ["en:paper", "en:brick", "fr:brique-en-carton"],
         "packaging_text": "",
         "packaging_text_de": "",
         "packaging_text_en": "",
@@ -21517,15 +20481,9 @@
           "minettebis"
         ],
         "pnns_groups_1": "Fat and sauces",
-        "pnns_groups_1_tags": [
-          "fat-and-sauces",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["fat-and-sauces", "known"],
         "pnns_groups_2": "Dressings and sauces",
-        "pnns_groups_2_tags": [
-          "dressings-and-sauces",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["dressings-and-sauces", "known"],
         "popularity_key": 23995000069,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -21799,9 +20757,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France",
-        "purchase_places_tags": [
-          "france"
-        ],
+        "purchase_places_tags": ["france"],
         "quantity": "390 g",
         "quantity_imported": "390 g",
         "removed_countries_tags": [],
@@ -22009,9 +20965,7 @@
             "url": null
           },
           {
-            "fields": [
-              "product_name_fr"
-            ],
+            "fields": ["product_name_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1632198738,
@@ -22020,9 +20974,7 @@
             "url": null
           },
           {
-            "fields": [
-              "origin_fr"
-            ],
+            "fields": ["origin_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1632371470,
@@ -22058,9 +21010,7 @@
             "url": null
           },
           {
-            "fields": [
-              "nutriscore_grade_producer"
-            ],
+            "fields": ["nutriscore_grade_producer"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1642138253,
@@ -22069,9 +21019,7 @@
             "url": null
           },
           {
-            "fields": [
-              "product_name_fr"
-            ],
+            "fields": ["product_name_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1658291840,
@@ -22098,9 +21046,7 @@
             "url": null
           },
           {
-            "fields": [
-              "generic_name_fr"
-            ],
+            "fields": ["generic_name_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1672983086,
@@ -22159,9 +21105,7 @@
             "url": null
           },
           {
-            "fields": [
-              "customer_service_fr"
-            ],
+            "fields": ["customer_service_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1720064333,
@@ -22251,10 +21195,7 @@
             "url": null
           },
           {
-            "fields": [
-              "categories",
-              "labels"
-            ],
+            "fields": ["categories", "labels"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1748408105,
@@ -22272,9 +21213,7 @@
             "url": null
           },
           {
-            "fields": [
-              "customer_service_fr"
-            ],
+            "fields": ["customer_service_fr"],
             "id": "org-panzani-sa",
             "images": [],
             "import_t": 1753503856,
@@ -22346,9 +21285,7 @@
           "en:photos-uploaded"
         ],
         "stores": "Carrefour",
-        "stores_tags": [
-          "carrefour"
-        ],
+        "stores_tags": ["carrefour"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) ",
@@ -22485,45 +21422,19 @@
         ],
         "added_countries_tags": [],
         "additives_n": 5,
-        "additives_original_tags": [
-          "en:e451",
-          "en:e407",
-          "en:e316",
-          "en:e250",
-          "en:e579"
-        ],
-        "additives_tags": [
-          "en:e250",
-          "en:e316",
-          "en:e407",
-          "en:e451",
-          "en:e579"
-        ],
+        "additives_original_tags": ["en:e451", "en:e407", "en:e316", "en:e250", "en:e579"],
+        "additives_tags": ["en:e250", "en:e316", "en:e407", "en:e451", "en:e579"],
         "allergens": "en:gluten,en:lupin,en:milk,en:nuts",
         "allergens_from_ingredients": "en:gluten, en:milk, en:gluten, blé, mozzarella, lactose, oeuf",
         "allergens_from_user": "(fr) en:gluten,en:lupin,en:milk,en:nuts",
-        "allergens_hierarchy": [
-          "en:eggs",
-          "en:gluten",
-          "en:lupin",
-          "en:milk",
-          "en:nuts"
-        ],
+        "allergens_hierarchy": ["en:eggs", "en:gluten", "en:lupin", "en:milk", "en:nuts"],
         "allergens_lc": "fr",
-        "allergens_tags": [
-          "en:eggs",
-          "en:gluten",
-          "en:lupin",
-          "en:milk",
-          "en:nuts"
-        ],
+        "allergens_tags": ["en:eggs", "en:gluten", "en:lupin", "en:milk", "en:nuts"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Sodebo",
         "brands_old": "Sodebo",
-        "brands_tags": [
-          "sodebo"
-        ],
+        "brands_tags": ["sodebo"],
         "carbon_footprint_from_known_ingredients_debug": "en:champignon 15% x 1.9 = 28.5 g - en:rocket 0.6% x 0.8 = 0.48 g - ",
         "carbon_footprint_percent_of_known_ingredients": 15.6,
         "categories": "Viandes et dérivés, Plats préparés, Pizzas tartes salées et quiches, Plats préparés à la viande, Pizzas, Plats au porc, Pizzas au jambon, Pizza au jambon, Pizza jambon fromage",
@@ -22573,9 +21484,7 @@
           "ciqual_food_name:fr": "Pizza -aliment moyen-"
         },
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "pizza-average"
-        ],
+        "ciqual_food_name_tags": ["pizza-average"],
         "cities_tags": [],
         "code": "3242272347552",
         "codes_tags": [
@@ -22629,17 +21538,9 @@
         ],
         "countries": "France,Allemagne,Espagne",
         "countries_beforescanbot": "France,Espagne",
-        "countries_hierarchy": [
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_hierarchy": ["en:france", "en:germany", "en:spain"],
         "countries_lc": "fr",
-        "countries_tags": [
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_tags": ["en:france", "en:germany", "en:spain"],
         "created_t": 1427999932,
         "creator": "openfoodfacts-contributors",
         "data_quality_bugs_tags": [],
@@ -22729,10 +21630,7 @@
           "app-mon-coach-ig-bas",
           "app-macrofactor"
         ],
-        "debug_param_sorted_langs": [
-          "fr",
-          "en"
-        ],
+        "debug_param_sorted_langs": ["fr", "en"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -22746,12 +21644,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -23153,14 +22047,8 @@
         },
         "ecoscore_grade": "d",
         "ecoscore_score": 44,
-        "ecoscore_tags": [
-          "d"
-        ],
-        "editors": [
-          "",
-          "sebleouf",
-          "tacite"
-        ],
+        "ecoscore_tags": ["d"],
+        "editors": ["", "sebleouf", "tacite"],
         "editors_tags": [
           "asmoth",
           "cedagaesse",
@@ -23202,19 +22090,12 @@
         "emb_codes_20141016": "",
         "emb_codes_orig": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2015-04-02",
-          "2015-04",
-          "2015"
-        ],
+        "entry_dates_tags": ["2015-04-02", "2015-04", "2015"],
         "environment_impact_level": "",
         "environment_impact_level_tags": [],
         "expiration_date": "08/02/2022",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "recategorisation du product_id 691671 | excatego:251 | exns:B/1",
         "generic_name_en": "",
@@ -24409,31 +23290,13 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:mozzarella",
-            "en:ham",
-            "en:lactose",
-            "en:pork-stock"
-          ],
-          "en:non-vegetarian": [
-            "en:ham",
-            "en:pork-stock"
-          ],
-          "en:palm-oil-content-unknown": [
-            "fr:chiffonnade-de-jambon-cuit-standard"
-          ],
-          "en:vegan-status-unknown": [
-            "fr:chiffonnade-de-jambon-cuit-standard"
-          ],
-          "en:vegetarian-status-unknown": [
-            "fr:chiffonnade-de-jambon-cuit-standard"
-          ]
+          "en:non-vegan": ["en:mozzarella", "en:ham", "en:lactose", "en:pork-stock"],
+          "en:non-vegetarian": ["en:ham", "en:pork-stock"],
+          "en:palm-oil-content-unknown": ["fr:chiffonnade-de-jambon-cuit-standard"],
+          "en:vegan-status-unknown": ["fr:chiffonnade-de-jambon-cuit-standard"],
+          "en:vegetarian-status-unknown": ["fr:chiffonnade-de-jambon-cuit-standard"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:non-vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:non-vegetarian"],
         "ingredients_debug": [
           "Garniture 61% ",
           ":",
@@ -24803,10 +23666,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 39,
-        "ingredients_n_tags": [
-          "39",
-          "31-40"
-        ],
+        "ingredients_n_tags": ["39", "31-40"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:filling",
@@ -25006,27 +23866,11 @@
           "en": 1,
           "fr": 8
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:english",
-          "en:french",
-          "en:2",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2025-10-29",
-          "2025-10",
-          "2025"
-        ],
+        "languages_hierarchy": ["en:english", "en:french"],
+        "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+        "last_edit_dates_tags": ["2025-10-29", "2025-10", "2025"],
         "last_editor": "foodless",
-        "last_image_dates_tags": [
-          "2024-02-14",
-          "2024-02",
-          "2024"
-        ],
+        "last_image_dates_tags": ["2024-02-14", "2024-02", "2024"],
         "last_image_t": 1707935833,
         "last_modified_by": "foodless",
         "last_modified_t": 1761755177,
@@ -25077,73 +23921,26 @@
         "nova_groups": "4",
         "nova_groups_markers": {
           "3": [
-            [
-              "additives",
-              "en:e250"
-            ],
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:preservative"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ],
-            [
-              "ingredients",
-              "en:sauce"
-            ]
+            ["additives", "en:e250"],
+            ["categories", "en:meals"],
+            ["ingredients", "en:preservative"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"],
+            ["ingredients", "en:sauce"]
           ],
           "4": [
-            [
-              "additives",
-              "en:e407"
-            ],
-            [
-              "additives",
-              "en:e451"
-            ],
-            [
-              "ingredients",
-              "en:dextrose"
-            ],
-            [
-              "ingredients",
-              "en:flavouring"
-            ],
-            [
-              "ingredients",
-              "en:gelling-agent"
-            ],
-            [
-              "ingredients",
-              "en:glucose"
-            ],
-            [
-              "ingredients",
-              "en:glucose-syrup"
-            ],
-            [
-              "ingredients",
-              "en:lactose"
-            ]
+            ["additives", "en:e407"],
+            ["additives", "en:e451"],
+            ["ingredients", "en:dextrose"],
+            ["ingredients", "en:flavouring"],
+            ["ingredients", "en:gelling-agent"],
+            ["ingredients", "en:glucose"],
+            ["ingredients", "en:glucose-syrup"],
+            ["ingredients", "en:lactose"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -25325,11 +24122,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 5,
               "positive_points_max": 17
             },
@@ -25340,12 +24133,8 @@
             "score": 5
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -25412,11 +24201,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 5,
           "positive_points_max": 17,
           "score": 5
@@ -25424,18 +24209,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 5,
         "nutriscore_score_opposite": -5,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -25448,14 +24229,10 @@
         "origin_en": "",
         "origin_fr": "",
         "origins": "Porc origine UE",
-        "origins_hierarchy": [
-          "fr:Porc origine UE"
-        ],
+        "origins_hierarchy": ["fr:Porc origine UE"],
         "origins_lc": "fr",
         "origins_old": "",
-        "origins_tags": [
-          "fr:porc-origine-ue"
-        ],
+        "origins_tags": ["fr:porc-origine-ue"],
         "other_nutritional_substances_tags": [],
         "packaging": "Plastique, Carton, Frais, Etui en carton, Film en plastique",
         "packaging_hierarchy": [
@@ -25466,19 +24243,11 @@
           "fr:Film en plastique"
         ],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:corrugated-cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:corrugated-cardboard", "en:plastic"],
         "packaging_old": "Plastique, Carton, Frais, Etui en carton, Film en plastique",
         "packaging_old_before_taxonomization": "Frais,Carton,Plastique,fr:Film en plastique,fr:Etui en carton",
-        "packaging_recycling_tags": [
-          "en:recycle-in-sorting-bin"
-        ],
-        "packaging_shapes_tags": [
-          "en:bag",
-          "en:sleeve"
-        ],
+        "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+        "packaging_shapes_tags": ["en:bag", "en:sleeve"],
         "packaging_tags": [
           "en:plastic",
           "en:cardboard",
@@ -25542,15 +24311,9 @@
           "moncoachigbas"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23990000064,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -25768,12 +24531,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France,Rennes,Paris,Maison-Laffitte",
-        "purchase_places_tags": [
-          "france",
-          "rennes",
-          "paris",
-          "maison-laffitte"
-        ],
+        "purchase_places_tags": ["france", "rennes", "paris", "maison-laffitte"],
         "quantity": "400 g",
         "removed_countries_tags": [],
         "rev": 159,
@@ -25892,39 +24650,22 @@
           "en:photos-uploaded"
         ],
         "stores": "Carrefour,Franprix,Casino,Magasins U,carrefour.fr",
-        "stores_tags": [
-          "carrefour",
-          "franprix",
-          "casino",
-          "magasins-u",
-          "carrefour-fr"
-        ],
+        "stores_tags": ["carrefour", "franprix", "casino", "magasins-u", "carrefour-fr"],
         "teams": "stakano,chocolatine,pain-au-chocolat,feat",
-        "teams_tags": [
-          "stakano",
-          "chocolatine",
-          "pain-au-chocolat",
-          "feat"
-        ],
+        "teams_tags": ["stakano", "chocolatine", "pain-au-chocolat", "feat"],
         "traces": "en:eggs",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) en:eggs",
-        "traces_hierarchy": [
-          "en:eggs"
-        ],
+        "traces_hierarchy": ["en:eggs"],
         "traces_lc": "fr",
-        "traces_tags": [
-          "en:eggs"
-        ],
+        "traces_tags": ["en:eggs"],
         "unique_scans_n": 136,
         "unknown_ingredients_n": 1,
         "unknown_nutrients_tags": [],
         "update_key": "brands",
         "vitamins_prev_tags": [],
         "vitamins_tags": [],
-        "weighers_tags": [
-          "fgouget"
-        ]
+        "weighers_tags": ["fgouget"]
       },
       "status": 1,
       "status_verbose": "product found"
@@ -26036,25 +24777,13 @@
         "allergens": "en:fish,en:gluten,en:milk,en:soybeans",
         "allergens_from_ingredients": "en:fish, en:fish, en:milk, en:milk, en:milk, en:gluten, WEIZENMEHL, KÄSE, MOZZARELLA, EDAMER, THUNFISCH, WEIZENMEHL, KÄSE, MOZZARELLA, EDAMER, THUNFISCH",
         "allergens_from_user": "(es) en:fish,en:gluten,en:milk,en:soybeans",
-        "allergens_hierarchy": [
-          "en:fish",
-          "en:gluten",
-          "en:milk",
-          "en:soybeans"
-        ],
+        "allergens_hierarchy": ["en:fish", "en:gluten", "en:milk", "en:soybeans"],
         "allergens_lc": "es",
-        "allergens_tags": [
-          "en:fish",
-          "en:gluten",
-          "en:milk",
-          "en:soybeans"
-        ],
+        "allergens_tags": ["en:fish", "en:gluten", "en:milk", "en:soybeans"],
         "amino_acids_tags": [],
         "brands": "Dr. Oetker",
         "brands_old": "Dr. Oetker",
-        "brands_tags": [
-          "dr-oetker"
-        ],
+        "brands_tags": ["dr-oetker"],
         "carbon_footprint_from_known_ingredients_debug": "en:tomato-puree 13% x 2.9 = 37.7 g - en:tuna 9.1% x 4 = 36.4 g - en:tomato-concentrate 6.5% x 0.5 = 3.25 g - en:onion 5.5% x 0.6 = 3.3 g - en:fried-onion 1.8% x 0.6 = 1.08 g - ",
         "carbon_footprint_percent_of_known_ingredients": 35.9,
         "categories": "Congelados,Comidas preparadas,Pizzas - empanadas y quiches,Pizzas,Pizza y tartas congeladas,Pizzas congeladas,Pizzas con atún",
@@ -26141,19 +24870,9 @@
         ],
         "countries": "Austria,Francia,Alemania,España",
         "countries_beforescanbot": "Autriche,France,Allemagne",
-        "countries_hierarchy": [
-          "en:austria",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_hierarchy": ["en:austria", "en:france", "en:germany", "en:spain"],
         "countries_lc": "es",
-        "countries_tags": [
-          "en:austria",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_tags": ["en:austria", "en:france", "en:germany", "en:spain"],
         "created_t": 1644938378,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -26297,12 +25016,8 @@
               ],
               "epi_score": 85,
               "epi_value": 4,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:germany"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:germany"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 32,
@@ -26723,9 +25438,7 @@
         },
         "ecoscore_grade": "b",
         "ecoscore_score": 70,
-        "ecoscore_tags": [
-          "b"
-        ],
+        "ecoscore_tags": ["b"],
         "editors_tags": [
           "adinos",
           "asmoth",
@@ -26757,17 +25470,10 @@
         ],
         "emb_codes": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2022-02-15",
-          "2022-02",
-          "2022"
-        ],
+        "entry_dates_tags": ["2022-02-15", "2022-02", "2022"],
         "expiration_date": "",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "generic_name": "",
         "generic_name_da": "",
         "generic_name_de": "Thunfisch Pizza",
@@ -28895,23 +27601,10 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:cheese",
-            "en:mozzarella",
-            "en:edam",
-            "en:tuna",
-            "en:skipjack-tuna"
-          ],
-          "en:non-vegetarian": [
-            "en:tuna",
-            "en:skipjack-tuna"
-          ]
+          "en:non-vegan": ["en:cheese", "en:mozzarella", "en:edam", "en:tuna", "en:skipjack-tuna"],
+          "en:non-vegetarian": ["en:tuna", "en:skipjack-tuna"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:non-vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:non-vegetarian"],
         "ingredients_from_or_that_may_be_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_tags": [],
@@ -28971,10 +27664,7 @@
         ],
         "ingredients_lc": "de",
         "ingredients_n": 27,
-        "ingredients_n_tags": [
-          "27",
-          "21-30"
-        ],
+        "ingredients_n_tags": ["27", "21-30"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -29185,17 +27875,9 @@
           "en:11",
           "en:multilingual"
         ],
-        "last_edit_dates_tags": [
-          "2026-02-05",
-          "2026-02",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-02-05", "2026-02", "2026"],
         "last_editor": "macrofactor",
-        "last_image_dates_tags": [
-          "2025-07-15",
-          "2025-07",
-          "2025"
-        ],
+        "last_image_dates_tags": ["2025-07-15", "2025-07", "2025"],
         "last_image_t": 1752572967,
         "last_modified_by": "macrofactor",
         "last_modified_t": 1770321972,
@@ -29204,9 +27886,7 @@
         "link": "https://www.oetker.at/at-de/unsere-produkte/ristorante/tonno",
         "main_countries_tags": [],
         "manufacturing_places": "Europe",
-        "manufacturing_places_tags": [
-          "europe"
-        ],
+        "manufacturing_places_tags": ["europe"],
         "max_imgid": "34",
         "minerals_tags": [],
         "misc_tags": [
@@ -29238,31 +27918,14 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:sugar"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:sugar"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -29438,11 +28101,7 @@
               "is_water": 0,
               "negative_points": 8,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 4,
               "positive_points_max": 17
             },
@@ -29453,12 +28112,8 @@
             "score": 4
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -29525,11 +28180,7 @@
           "is_water": 0,
           "negative_points": 8,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 4,
           "positive_points_max": 17,
           "score": 4
@@ -29537,18 +28188,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 4,
         "nutriscore_score_opposite": -4,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -29568,35 +28215,17 @@
         "origin_pt": "",
         "origin_sv": "",
         "origins": "Alemania",
-        "origins_hierarchy": [
-          "en:germany"
-        ],
+        "origins_hierarchy": ["en:germany"],
         "origins_lc": "es",
-        "origins_tags": [
-          "en:germany"
-        ],
+        "origins_tags": ["en:germany"],
         "other_nutritional_substances_tags": [],
         "packaging": "Plastique,Carton,PEBD - Polyéthylène basse densité",
-        "packaging_hierarchy": [
-          "en:plastic",
-          "en:cardboard",
-          "en:ldpe-low-density-polyethylene"
-        ],
+        "packaging_hierarchy": ["en:plastic", "en:cardboard", "en:ldpe-low-density-polyethylene"],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:ldpe-4-low-density-polyethylene"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:ldpe-4-low-density-polyethylene"],
         "packaging_recycling_tags": [],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sleeve"
-        ],
-        "packaging_tags": [
-          "en:plastic",
-          "en:cardboard",
-          "en:ldpe-low-density-polyethylene"
-        ],
+        "packaging_shapes_tags": ["en:film", "en:sleeve"],
+        "packaging_tags": ["en:plastic", "en:cardboard", "en:ldpe-low-density-polyethylene"],
         "packaging_text": "",
         "packaging_text_da": "",
         "packaging_text_de": "",
@@ -29640,15 +28269,9 @@
           "morri"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23995000103,
         "popularity_tags": [
           "top-50000-scans-2022",
@@ -29859,10 +28482,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "Österreich,France",
-        "purchase_places_tags": [
-          "osterreich",
-          "france"
-        ],
+        "purchase_places_tags": ["osterreich", "france"],
         "quantity": "355 gram",
         "removed_countries_tags": [],
         "rev": 168,
@@ -30081,22 +28701,12 @@
           "en:photos-uploaded"
         ],
         "stores": "Billa,Spar,Penny,Leclerc,REWE",
-        "stores_tags": [
-          "billa",
-          "spar",
-          "penny",
-          "leclerc",
-          "rewe"
-        ],
+        "stores_tags": ["billa", "spar", "penny", "leclerc", "rewe"],
         "taxonomies_enhancer_tags": [
           "ingredients-taxonomy-between-passierte-tomaten-id-en-sifted-tomato-and-puree-de-tomate-id-en-tomato-puree-should-be-same-id"
         ],
         "teams": "pain-au-chocolat,feat,bodysupport",
-        "teams_tags": [
-          "pain-au-chocolat",
-          "feat",
-          "bodysupport"
-        ],
+        "teams_tags": ["pain-au-chocolat", "feat", "bodysupport"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(es) ",
@@ -30211,33 +28821,19 @@
         ],
         "added_countries_tags": [],
         "additives_n": 1,
-        "additives_original_tags": [
-          "en:e1105"
-        ],
-        "additives_tags": [
-          "en:e1105"
-        ],
+        "additives_original_tags": ["en:e1105"],
+        "additives_tags": ["en:e1105"],
         "allergens": "en:eggs,en:gluten,en:milk",
         "allergens_from_ingredients": "en:eggs, en:gluten, en:milk, en:milk, en:milk, en:milk, en:milk, en:gluten, en:gluten, en:gluten, BLE , BLE , BLE , MOZZARELLA, GORGONZOLA, GRANA PADANO, PARMIGIANO REGGIANO, BLE, OEUF, BLE, BLE, BLE, MOZZARELLA, GORGONZOLA, GRANA PADANO, PARMIGIANO REGGIANO, BLE, OEUF, fromages",
         "allergens_from_user": "(en) en:eggs,en:gluten,en:milk",
-        "allergens_hierarchy": [
-          "en:eggs",
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:eggs", "en:gluten", "en:milk"],
         "allergens_lc": "en",
-        "allergens_tags": [
-          "en:eggs",
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_tags": ["en:eggs", "en:gluten", "en:milk"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Sodebo",
         "brands_old": "Sodebo",
-        "brands_tags": [
-          "sodebo"
-        ],
+        "brands_tags": ["sodebo"],
         "carbon_footprint_from_known_ingredients_debug": "en:tomato-sauce 37% x 2.9 = 107.3 g - en:rocket 0.8% x 0.8 = 0.64 g - ",
         "carbon_footprint_percent_of_known_ingredients": 37.8,
         "categories": "Meals,Pizzas pies and quiches,Pizzas,Vegetarian pizzas,Cheese pizzas,Four Cheese Pizza",
@@ -30281,9 +28877,7 @@
           "ciqual_food_name:fr": "Pizza 4 fromages"
         },
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "pizza-four-cheeses"
-        ],
+        "ciqual_food_name_tags": ["pizza-four-cheeses"],
         "cities_tags": [],
         "code": "3242272345053",
         "codes_tags": [
@@ -30326,13 +28920,9 @@
           "jbacc"
         ],
         "countries": "France",
-        "countries_hierarchy": [
-          "en:france"
-        ],
+        "countries_hierarchy": ["en:france"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:france"
-        ],
+        "countries_tags": ["en:france"],
         "created_t": 1425246373,
         "creator": "openfoodfacts-contributors",
         "data_quality_bugs_tags": [],
@@ -30413,12 +29003,8 @@
           "apps",
           "app-smoothie-openfoodfacts"
         ],
-        "debug_param_sorted_langs": [
-          "fr"
-        ],
-        "debug_tags": [
-          "43"
-        ],
+        "debug_param_sorted_langs": ["fr"],
+        "debug_tags": ["43"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -30432,12 +29018,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -30862,15 +29444,8 @@
         },
         "ecoscore_grade": "c",
         "ecoscore_score": 49,
-        "ecoscore_tags": [
-          "c"
-        ],
-        "editors": [
-          "",
-          "dimitri",
-          "florianfm",
-          "tacite"
-        ],
+        "ecoscore_tags": ["c"],
+        "editors": ["", "dimitri", "florianfm", "tacite"],
         "editors_tags": [
           "croco42",
           "damienb",
@@ -30903,18 +29478,10 @@
         "emb_codes_20141016": "",
         "emb_codes_orig": "",
         "emb_codes_tags": [],
-        "entry_dates_tags": [
-          "2015-03-01",
-          "2015-03",
-          "2015",
-          "open-food-hunt-2015"
-        ],
+        "entry_dates_tags": ["2015-03-01", "2015-03", "2015", "open-food-hunt-2015"],
         "expiration_date": "13/7/2025",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "Pizza",
         "generic_name_fr": "Pizza",
@@ -31750,11 +30317,7 @@
             "en:lysozyme-from-eggs"
           ]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:maybe-vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:maybe-vegetarian"],
         "ingredients_debug": [
           "Garniture 57% ",
           ":",
@@ -32027,10 +30590,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 24,
-        "ingredients_n_tags": [
-          "24",
-          "21-30"
-        ],
+        "ingredients_n_tags": ["24", "21-30"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "fr:pate-fine-a-pizza",
@@ -32141,16 +30701,10 @@
         "interface_version_modified": "20150316.jqm2",
         "known_ingredients_n": 23,
         "labels": "Nutriscore,Nutriscore Grade B",
-        "labels_hierarchy": [
-          "en:nutriscore",
-          "en:nutriscore-grade-b"
-        ],
+        "labels_hierarchy": ["en:nutriscore", "en:nutriscore-grade-b"],
         "labels_lc": "en",
         "labels_old": "Nutriscore, Nutriscore C",
-        "labels_tags": [
-          "en:nutriscore",
-          "en:nutriscore-grade-b"
-        ],
+        "labels_tags": ["en:nutriscore", "en:nutriscore-grade-b"],
         "lang": "fr",
         "languages": {
           "en:french": 7
@@ -32158,24 +30712,11 @@
         "languages_codes": {
           "fr": 7
         },
-        "languages_hierarchy": [
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:french",
-          "en:1"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-12",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:french"],
+        "languages_tags": ["en:french", "en:1"],
+        "last_edit_dates_tags": ["2026-02-12", "2026-02", "2026"],
         "last_editor": "foodless",
-        "last_image_dates_tags": [
-          "2024-12-30",
-          "2024-12",
-          "2024"
-        ],
+        "last_image_dates_tags": ["2024-12-30", "2024-12", "2024"],
         "last_image_t": 1735569111,
         "last_modified_by": "foodless",
         "last_modified_t": 1770913748,
@@ -32184,10 +30725,7 @@
         "link": "http://www.sodebo.fr/produits-frais/pizzas/dolce-pizza/dolce-pizza-4-formaggi",
         "main_countries_tags": [],
         "manufacturing_places": "VENDÉE,saint georges de montaigu",
-        "manufacturing_places_tags": [
-          "vendee",
-          "saint-georges-de-montaigu"
-        ],
+        "manufacturing_places_tags": ["vendee", "saint-georges-de-montaigu"],
         "max_imgid": "23",
         "minerals_prev_tags": [],
         "minerals_tags": [],
@@ -32215,31 +30753,14 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:preservative"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:preservative"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -32421,11 +30942,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 4,
               "positive_points_max": 17
             },
@@ -32436,12 +30953,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -32508,11 +31021,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 4,
           "positive_points_max": 17,
           "score": 6
@@ -32520,18 +31029,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -32555,17 +31060,11 @@
           "fr:Film en plastique"
         ],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
         "packaging_old": "Plastique, Carton, Frais, Sous-vide, Film en plastique",
         "packaging_old_before_taxonomization": "Carton,Plastique,Sous-vide,Frais, fr:Film en plastique",
         "packaging_recycling_tags": [],
-        "packaging_shapes_tags": [
-          "en:box",
-          "en:film"
-        ],
+        "packaging_shapes_tags": ["en:box", "en:film"],
         "packaging_tags": [
           "en:plastic",
           "en:cardboard",
@@ -32607,15 +31106,9 @@
           "pageeees"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23990000042,
         "popularity_tags": [
           "top-10000-scans-2019",
@@ -32779,11 +31272,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France,Paris,APPRIEU",
-        "purchase_places_tags": [
-          "france",
-          "paris",
-          "apprieu"
-        ],
+        "purchase_places_tags": ["france", "paris", "apprieu"],
         "quantity": "380 g",
         "removed_countries_tags": [],
         "rev": 109,
@@ -32900,27 +31389,13 @@
           "en:photos-uploaded"
         ],
         "stores": "Franprix,Magasins U,carrefour.fr",
-        "stores_tags": [
-          "franprix",
-          "magasins-u",
-          "carrefour-fr"
-        ],
+        "stores_tags": ["franprix", "magasins-u", "carrefour-fr"],
         "traces": "en:fish,en:gluten,en:mustard,en:soybeans",
         "traces_from_ingredients": "moutarde, poisson, soja, gluten",
         "traces_from_user": "(en) en:fish,en:gluten,en:mustard,en:soybeans",
-        "traces_hierarchy": [
-          "en:fish",
-          "en:gluten",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_hierarchy": ["en:fish", "en:gluten", "en:mustard", "en:soybeans"],
         "traces_lc": "en",
-        "traces_tags": [
-          "en:fish",
-          "en:gluten",
-          "en:mustard",
-          "en:soybeans"
-        ],
+        "traces_tags": ["en:fish", "en:gluten", "en:mustard", "en:soybeans"],
         "unique_scans_n": 109,
         "unknown_ingredients_n": 1,
         "unknown_nutrients_tags": [],
@@ -33051,33 +31526,19 @@
         ],
         "added_countries_tags": [],
         "additives_n": 2,
-        "additives_original_tags": [
-          "en:e330",
-          "en:e300"
-        ],
-        "additives_tags": [
-          "en:e300",
-          "en:e330"
-        ],
+        "additives_original_tags": ["en:e330", "en:e300"],
+        "additives_tags": ["en:e300", "en:e330"],
         "allergens": "en:gluten,en:milk",
         "allergens_from_ingredients": "en:milk, en:milk, en:gluten, BLÉ, GLUTEN, LAIT, LAIT, BLÉ, GLUTEN, LAIT, LAIT, emmental*, mozzarella*",
         "allergens_from_user": "(fr) en:gluten,en:milk, en:gluten",
-        "allergens_hierarchy": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:gluten", "en:milk"],
         "allergens_lc": "fr",
-        "allergens_tags": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_tags": ["en:gluten", "en:milk"],
         "amino_acids_prev_tags": [],
         "amino_acids_tags": [],
         "brands": "Picard",
         "brands_old": "Picard",
-        "brands_tags": [
-          "picard"
-        ],
+        "brands_tags": ["picard"],
         "carbon_footprint_from_known_ingredients_debug": "en:grilled-aubergines 6.5% x 6.2 = 40.3 g - en:artichoke 6% x 2.5 = 15 g - en:grilled-courgette 5.8% x 0.7 = 4.06 g - en:emmental 5.2% x 5.6 = 29.12 g - en:tomato-puree 5.1% x 2.9 = 14.79 g - en:tomato-pulp 5.1% x 1.4 = 7.14 g - ",
         "carbon_footprint_percent_of_known_ingredients": 33.7,
         "categories": "Surgelés, Plats préparés, Pizzas tartes salées et quiches, Pizzas, Pizzas végétariennes, Pizzas et tartes surgelées, Pizzas surgelées, Pizzas aux légumes",
@@ -33125,12 +31586,8 @@
           "ciqual_food_name:fr": "Pizza -aliment moyen-"
         },
         "checked": "on",
-        "checkers_tags": [
-          "beniben"
-        ],
-        "ciqual_food_name_tags": [
-          "pizza-average"
-        ],
+        "checkers_tags": ["beniben"],
+        "ciqual_food_name_tags": ["pizza-average"],
         "cities_tags": [],
         "code": "3270160717668",
         "codes_tags": [
@@ -33180,19 +31637,9 @@
         ],
         "countries": "Belgique,France,Allemagne,Espagne",
         "countries_beforescanbot": "France, en:spain",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:france", "en:germany", "en:spain"],
         "countries_lc": "fr",
-        "countries_tags": [
-          "en:belgium",
-          "en:france",
-          "en:germany",
-          "en:spain"
-        ],
+        "countries_tags": ["en:belgium", "en:france", "en:germany", "en:spain"],
         "created_t": 1420741323,
         "creator": "openfoodfacts-contributors",
         "data_quality_bugs_tags": [],
@@ -33277,10 +31724,7 @@
           "app-macrofactor",
           "app-smoothie-openfoodfacts"
         ],
-        "debug_param_sorted_langs": [
-          "fr",
-          "en"
-        ],
+        "debug_param_sorted_langs": ["fr", "en"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -33294,12 +31738,8 @@
               ],
               "epi_score": 0,
               "epi_value": 0,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -33532,10 +31972,7 @@
               "value": -2
             },
             "production_system": {
-              "labels": [
-                "fr:ab-agriculture-biologique",
-                "en:eu-organic"
-              ],
+              "labels": ["fr:ab-agriculture-biologique", "en:eu-organic"],
               "value": 15
             },
             "threatened_species": {}
@@ -33732,15 +32169,8 @@
         },
         "ecoscore_grade": "b",
         "ecoscore_score": 73,
-        "ecoscore_tags": [
-          "b"
-        ],
-        "editors": [
-          "",
-          "silbon",
-          "tacite",
-          "raphael0202"
-        ],
+        "ecoscore_tags": ["b"],
+        "editors": ["", "silbon", "tacite", "raphael0202"],
         "editors_tags": [
           "abc111",
           "beniben",
@@ -33779,20 +32209,11 @@
         "emb_codes": "IT 892 L EC",
         "emb_codes_20141016": "IT 892 L CE",
         "emb_codes_orig": "IT 892 L CE",
-        "emb_codes_tags": [
-          "it-892-l-ec"
-        ],
-        "entry_dates_tags": [
-          "2015-01-08",
-          "2015-01",
-          "2015"
-        ],
+        "emb_codes_tags": ["it-892-l-ec"],
+        "entry_dates_tags": ["2015-01-08", "2015-01", "2015"],
         "expiration_date": "03/04/2018",
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "Pizza",
         "generic_name_en": "",
@@ -34841,16 +33262,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:emmental",
-            "en:mozzarella"
-          ],
-          "en:vegan-status-unknown": [
-            "fr:grilles"
-          ],
-          "en:vegetarian-status-unknown": [
-            "fr:grilles"
-          ]
+          "en:non-vegan": ["en:emmental", "en:mozzarella"],
+          "en:vegan-status-unknown": ["fr:grilles"],
+          "en:vegetarian-status-unknown": ["fr:grilles"]
         },
         "ingredients_analysis_tags": [
           "en:palm-oil-free",
@@ -35124,10 +33538,7 @@
         ],
         "ingredients_lc": "fr",
         "ingredients_n": 28,
-        "ingredients_n_tags": [
-          "28",
-          "21-30"
-        ],
+        "ingredients_n_tags": ["28", "21-30"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -35293,34 +33704,14 @@
           "en": 1,
           "fr": 7
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:english",
-          "en:french",
-          "en:2",
-          "en:multilingual"
-        ],
-        "last_check_dates_tags": [
-          "2018-11-12",
-          "2018-11",
-          "2018"
-        ],
+        "languages_hierarchy": ["en:english", "en:french"],
+        "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+        "last_check_dates_tags": ["2018-11-12", "2018-11", "2018"],
         "last_checked_t": 1542004741,
         "last_checker": "beniben",
-        "last_edit_dates_tags": [
-          "2026-01-03",
-          "2026-01",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-01-03", "2026-01", "2026"],
         "last_editor": "rapa93",
-        "last_image_dates_tags": [
-          "2026-01-03",
-          "2026-01",
-          "2026"
-        ],
+        "last_image_dates_tags": ["2026-01-03", "2026-01", "2026"],
         "last_image_t": 1767469490,
         "last_modified_by": "rapa93",
         "last_modified_t": 1767471646,
@@ -35329,9 +33720,7 @@
         "link": "http://www.picard.fr/produits/pizza-4-saisons-bio/000000000000071766,default,pd.html",
         "main_countries_tags": [],
         "manufacturing_places": "Italie",
-        "manufacturing_places_tags": [
-          "italie"
-        ],
+        "manufacturing_places_tags": ["italie"],
         "max_imgid": 32,
         "minerals_prev_tags": [],
         "minerals_tags": [],
@@ -35373,27 +33762,13 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -35575,11 +33950,7 @@
               "is_water": 0,
               "negative_points": 8,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 3,
               "positive_points_max": 17
             },
@@ -35590,12 +33961,8 @@
             "score": 5
           }
         },
-        "nutriscore_2021_tags": [
-          "b"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["b"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -35662,11 +34029,7 @@
           "is_water": 0,
           "negative_points": 8,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 3,
           "positive_points_max": 17,
           "score": 5
@@ -35674,18 +34037,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 5,
         "nutriscore_score_opposite": -5,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -35696,42 +34055,20 @@
         "origin_en": "",
         "origin_fr": "",
         "origins": "Emmental origine Allemagne",
-        "origins_hierarchy": [
-          "fr:Emmental origine Allemagne"
-        ],
+        "origins_hierarchy": ["fr:Emmental origine Allemagne"],
         "origins_lc": "fr",
         "origins_old": "Allemagne",
-        "origins_tags": [
-          "fr:emmental-origine-allemagne"
-        ],
+        "origins_tags": ["fr:emmental-origine-allemagne"],
         "other_nutritional_substances_tags": [],
         "packaging": "Plastique,Carton,Surgelé,Film en plastique",
-        "packaging_hierarchy": [
-          "en:plastic",
-          "en:cardboard",
-          "en:frozen",
-          "fr:Film en plastique"
-        ],
+        "packaging_hierarchy": ["en:plastic", "en:cardboard", "en:frozen", "fr:Film en plastique"],
         "packaging_lc": "fr",
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
         "packaging_old": "Plastique, Carton, Surgelé, Film en plastique",
         "packaging_old_before_taxonomization": "Surgelé,Carton,Plastique,fr:Film en plastique",
-        "packaging_recycling_tags": [
-          "en:recycle-in-sorting-bin"
-        ],
-        "packaging_shapes_tags": [
-          "en:film",
-          "en:sleeve"
-        ],
-        "packaging_tags": [
-          "en:plastic",
-          "en:cardboard",
-          "en:frozen",
-          "fr:film-en-plastique"
-        ],
+        "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+        "packaging_shapes_tags": ["en:film", "en:sleeve"],
+        "packaging_tags": ["en:plastic", "en:cardboard", "en:frozen", "fr:film-en-plastique"],
         "packaging_text": "",
         "packaging_text_en": "",
         "packaging_text_fr": "",
@@ -35785,15 +34122,9 @@
           "rapa93"
         ],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23990000060,
         "popularity_tags": [
           "top-5000-scans-2019",
@@ -36110,10 +34441,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "France,Nantes",
-        "purchase_places_tags": [
-          "france",
-          "nantes"
-        ],
+        "purchase_places_tags": ["france", "nantes"],
         "quantity": "420 g",
         "removed_countries_tags": [],
         "rev": 106,
@@ -36213,13 +34541,9 @@
           "en:photos-uploaded"
         ],
         "stores": "Picard",
-        "stores_tags": [
-          "picard"
-        ],
+        "stores_tags": ["picard"],
         "teams": "feat",
-        "teams_tags": [
-          "feat"
-        ],
+        "teams_tags": ["feat"],
         "traces": "en:celery,en:crustaceans,en:eggs,en:fish,en:molluscs,en:mustard,en:nuts,en:peanuts,en:sesame-seeds,en:soybeans",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) en:celery,en:crustaceans,en:eggs,en:fish,en:molluscs,en:mustard,en:nuts,en:peanuts,en:sesame-seeds,en:soybeans",
@@ -36254,9 +34578,7 @@
         "update_key": "brands",
         "vitamins_prev_tags": [],
         "vitamins_tags": [],
-        "weighers_tags": [
-          "rapa93"
-        ]
+        "weighers_tags": ["rapa93"]
       },
       "status": 1,
       "status_verbose": "product found"
@@ -36422,9 +34744,7 @@
         "amino_acids_tags": [],
         "brands": "Mutti",
         "brands_old": "Oluf Lorentzen AS,Toveien 22,1540 Vestby,Norwegen",
-        "brands_tags": [
-          "mutti"
-        ],
+        "brands_tags": ["mutti"],
         "carbon_footprint_percent_of_known_ingredients": 99.23,
         "categories": "Saucen,en:Meal sauces,Tomatensaucen,Pizzasoßen",
         "categories_hierarchy": [
@@ -36462,9 +34782,7 @@
         ],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "cities_tags": [],
         "code": "8005110551215",
         "codes_tags": [
@@ -36671,17 +34989,7 @@
           "app-macrofactor",
           "app-caloriecounterapp"
         ],
-        "debug_param_sorted_langs": [
-          "de",
-          "da",
-          "en",
-          "es",
-          "fr",
-          "it",
-          "nb",
-          "ro",
-          "sv"
-        ],
+        "debug_param_sorted_langs": ["de", "da", "en", "es", "fr", "it", "nb", "ro", "sv"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -36695,12 +35003,8 @@
               ],
               "epi_score": 68,
               "epi_value": 2,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:italy"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:italy"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 44,
@@ -37088,12 +35392,8 @@
         },
         "ecoscore_grade": "a",
         "ecoscore_score": 86,
-        "ecoscore_tags": [
-          "a"
-        ],
-        "editors": [
-          "date-limite-app"
-        ],
+        "ecoscore_tags": ["a"],
+        "editors": ["date-limite-app"],
         "editors_tags": [
           "acuario",
           "alia",
@@ -37141,20 +35441,11 @@
         ],
         "emb_codes": "MR1 L-B",
         "emb_codes_20141016": "",
-        "emb_codes_tags": [
-          "mr1-l-b"
-        ],
-        "entry_dates_tags": [
-          "2015-08-23",
-          "2015-08",
-          "2015"
-        ],
+        "emb_codes_tags": ["mr1-l-b"],
+        "entry_dates_tags": ["2015-08-23", "2015-08", "2015"],
         "expiration_date": "",
         "food_groups": "en:dressings-and-sauces",
-        "food_groups_tags": [
-          "en:fats-and-sauces",
-          "en:dressings-and-sauces"
-        ],
+        "food_groups_tags": ["en:fats-and-sauces", "en:dressings-and-sauces"],
         "fruits-vegetables-nuts_100g_estimate": 0,
         "generic_name": "Tomatensoße für Pizza",
         "generic_name_da": "",
@@ -38229,15 +36520,9 @@
           }
         ],
         "ingredients_analysis": {
-          "en:maybe-vegan": [
-            "en:natural-flavouring"
-          ]
+          "en:maybe-vegan": ["en:natural-flavouring"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:maybe-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:maybe-vegan", "en:vegetarian"],
         "ingredients_debug": [
           "tomate 99",
           ",",
@@ -38318,10 +36603,7 @@
         ],
         "ingredients_lc": "de",
         "ingredients_n": 7,
-        "ingredients_n_tags": [
-          "7",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["7", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:tomato",
@@ -38378,9 +36660,7 @@
         "ingredients_with_specified_percent_sum": 82.52,
         "ingredients_with_unspecified_percent_n": 3,
         "ingredients_with_unspecified_percent_sum": 17.48,
-        "ingredients_without_ciqual_codes": [
-          "en:natural-flavouring"
-        ],
+        "ingredients_without_ciqual_codes": ["en:natural-flavouring"],
         "ingredients_without_ciqual_codes_n": 1,
         "ingredients_without_ecobalyse_ids": [
           "en:basil",
@@ -38458,17 +36738,9 @@
           "en:9",
           "en:multilingual"
         ],
-        "last_edit_dates_tags": [
-          "2026-02-03",
-          "2026-02",
-          "2026"
-        ],
+        "last_edit_dates_tags": ["2026-02-03", "2026-02", "2026"],
         "last_editor": "foodless",
-        "last_image_dates_tags": [
-          "2026-01-26",
-          "2026-01",
-          "2026"
-        ],
+        "last_image_dates_tags": ["2026-01-26", "2026-01", "2026"],
         "last_image_t": 1769449621,
         "last_modified_by": "foodless",
         "last_modified_t": 1770148866,
@@ -38549,22 +36821,10 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:salt"
-            ]
-          ],
-          "4": [
-            [
-              "ingredients",
-              "en:flavouring"
-            ]
-          ]
+          "3": [["ingredients", "en:salt"]],
+          "4": [["ingredients", "en:flavouring"]]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_prev_tags": [],
         "nucleotides_tags": [],
         "nutrient_levels": {
@@ -38791,11 +37051,7 @@
               "is_water": 0,
               "negative_points": 4,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 5,
               "positive_points_max": 17
             },
@@ -38806,12 +37062,8 @@
             "score": -1
           }
         },
-        "nutriscore_2021_tags": [
-          "a"
-        ],
-        "nutriscore_2023_tags": [
-          "a"
-        ],
+        "nutriscore_2021_tags": ["a"],
+        "nutriscore_2023_tags": ["a"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -38878,11 +37130,7 @@
           "is_water": 0,
           "negative_points": 4,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 5,
           "positive_points_max": 17,
           "score": -1
@@ -38890,9 +37138,7 @@
         "nutriscore_grade": "a",
         "nutriscore_score": -1,
         "nutriscore_score_opposite": 1,
-        "nutriscore_tags": [
-          "a"
-        ],
+        "nutriscore_tags": ["a"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
@@ -38901,9 +37147,7 @@
         "nutrition_data_prepared_per_imported": "100g",
         "nutrition_grade_fr": "a",
         "nutrition_grades": "a",
-        "nutrition_grades_tags": [
-          "a"
-        ],
+        "nutrition_grades_tags": ["a"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -38924,14 +37168,10 @@
         "origin_ro": "",
         "origin_sv": "",
         "origins": "Italien",
-        "origins_hierarchy": [
-          "en:italy"
-        ],
+        "origins_hierarchy": ["en:italy"],
         "origins_lc": "de",
         "origins_old": "",
-        "origins_tags": [
-          "en:italy"
-        ],
+        "origins_tags": ["en:italy"],
         "other_nutritional_substances_prev_tags": [],
         "other_nutritional_substances_tags": [],
         "packaging": "Metallo,Lattina,en:Canned,Lattina di cibo,de:Dose(n),fr:boite métal",
@@ -38944,15 +37184,11 @@
           "fr:boite métal"
         ],
         "packaging_lc": "it",
-        "packaging_materials_tags": [
-          "en:40"
-        ],
+        "packaging_materials_tags": ["en:40"],
         "packaging_old": "Metall, Dose(n), fr:boite métal",
         "packaging_old_before_taxonomization": "boite métal,dose(n),Metall",
         "packaging_recycling_tags": [],
-        "packaging_shapes_tags": [
-          "en:food-can"
-        ],
+        "packaging_shapes_tags": ["en:food-can"],
         "packaging_tags": [
           "en:metal",
           "en:can",
@@ -39004,15 +37240,9 @@
           "foodsloth"
         ],
         "pnns_groups_1": "Fat and sauces",
-        "pnns_groups_1_tags": [
-          "fat-and-sauces",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["fat-and-sauces", "known"],
         "pnns_groups_2": "Dressings and sauces",
-        "pnns_groups_2_tags": [
-          "dressings-and-sauces",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["dressings-and-sauces", "known"],
         "popularity_key": 23995000095,
         "popularity_tags": [
           "top-50000-scans-2019",
@@ -39426,9 +37656,7 @@
         "product_quantity_unit": "g",
         "product_type": "food",
         "purchase_places": "Deutschland",
-        "purchase_places_tags": [
-          "deutschland"
-        ],
+        "purchase_places_tags": ["deutschland"],
         "quantity": "388g",
         "removed_countries_tags": [],
         "rev": 176,
@@ -39510,11 +37738,7 @@
         "sortkey": 1610224951,
         "sources": [
           {
-            "fields": [
-              "lc",
-              "countries",
-              "data_sources"
-            ],
+            "fields": ["lc", "countries", "data_sources"],
             "id": "org-app-elcoco",
             "images": [],
             "import_t": 1592156345,
@@ -39523,10 +37747,7 @@
             "url": null
           },
           {
-            "fields": [
-              "countries",
-              "data_sources"
-            ],
+            "fields": ["countries", "data_sources"],
             "id": "org-app-foodbowel",
             "images": [],
             "import_t": 1601720097,
@@ -39579,11 +37800,7 @@
           "en:photos-uploaded"
         ],
         "stores": "REWE,Consum,Billa",
-        "stores_tags": [
-          "rewe",
-          "consum",
-          "billa"
-        ],
+        "stores_tags": ["rewe", "consum", "billa"],
         "teams": "onemangroup,weidmann,gmlaa,italy,chocolatine,la-robe-est-bleue,pain-au-chocolat",
         "teams_tags": [
           "onemangroup",
@@ -39713,19 +37930,11 @@
         "allergens": "",
         "allergens_from_ingredients": "en:milk, en:milk, en:milk, en:milk, en:gluten, Wheat Flour, Cheese",
         "allergens_from_user": "(en) ",
-        "allergens_hierarchy": [
-          "en:gluten",
-          "en:milk"
-        ],
-        "allergens_tags": [
-          "en:gluten",
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:gluten", "en:milk"],
+        "allergens_tags": ["en:gluten", "en:milk"],
         "amino_acids_tags": [],
         "brands": "Crosta & Mollica",
-        "brands_tags": [
-          "crosta-mollica"
-        ],
+        "brands_tags": ["crosta-mollica"],
         "categories": "Meals, Pizzas pies and quiches, Pizzas, Vegetarian pizzas, Margherita Pizza, Sourdough",
         "categories_hierarchy": [
           "en:meals",
@@ -39764,9 +37973,7 @@
         ],
         "category_properties": {},
         "checkers_tags": [],
-        "ciqual_food_name_tags": [
-          "unknown"
-        ],
+        "ciqual_food_name_tags": ["unknown"],
         "code": "5060198643156",
         "codes_tags": [
           "code-13",
@@ -39795,12 +38002,8 @@
           "shrey10"
         ],
         "countries": "en:gb",
-        "countries_hierarchy": [
-          "en:united-kingdom"
-        ],
-        "countries_tags": [
-          "en:united-kingdom"
-        ],
+        "countries_hierarchy": ["en:united-kingdom"],
+        "countries_tags": ["en:united-kingdom"],
         "created_t": 1580471989,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -39872,12 +38075,7 @@
           "en:environmental-score-production-system-no-label"
         ],
         "data_sources": "App - yuka, Apps, App - smoothie-openfoodfacts, App - macrofactor",
-        "data_sources_tags": [
-          "app-yuka",
-          "apps",
-          "app-smoothie-openfoodfacts",
-          "app-macrofactor"
-        ],
+        "data_sources_tags": ["app-yuka", "apps", "app-smoothie-openfoodfacts", "app-macrofactor"],
         "ecoscore_data": {
           "adjustments": {
             "origins_of_ingredients": {
@@ -39891,12 +38089,8 @@
               ],
               "epi_score": 68,
               "epi_value": 2,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:italy"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:italy"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 44,
@@ -40319,9 +38513,7 @@
         },
         "ecoscore_grade": "a",
         "ecoscore_score": 85,
-        "ecoscore_tags": [
-          "a"
-        ],
+        "ecoscore_tags": ["a"],
         "editors_tags": [
           "alicelh",
           "anjd",
@@ -40338,16 +38530,9 @@
           "toml",
           "yuka.UnY0N0U2STZoTUlCbC9ZendUSFM1dTVNN1lDNWUxK05jY1VnSVE9PQ"
         ],
-        "entry_dates_tags": [
-          "2020-01-31",
-          "2020-01",
-          "2020"
-        ],
+        "entry_dates_tags": ["2020-01-31", "2020-01", "2020"],
         "food_groups": "en:pizza-pies-and-quiches",
-        "food_groups_tags": [
-          "en:composite-foods",
-          "en:pizza-pies-and-quiches"
-        ],
+        "food_groups_tags": ["en:composite-foods", "en:pizza-pies-and-quiches"],
         "id": "5060198643156",
         "image_front_small_url": "https://images.openfoodfacts.org/images/products/506/019/864/3156/front_en.28.200.jpg",
         "image_front_thumb_url": "https://images.openfoodfacts.org/images/products/506/019/864/3156/front_en.28.100.jpg",
@@ -40806,12 +38991,7 @@
           }
         ],
         "ingredients_analysis": {
-          "en:non-vegan": [
-            "en:mozzarella",
-            "en:cow-s-milk",
-            "en:cheese",
-            "en:cow-s-milk"
-          ],
+          "en:non-vegan": ["en:mozzarella", "en:cow-s-milk", "en:cheese", "en:cow-s-milk"],
           "en:palm-oil-content-unknown": [
             "en:parmigiano-reggiano-d-o-p",
             "en:non-rennet",
@@ -40822,16 +39002,9 @@
             "en:non-rennet",
             "en:sicilian-oregano"
           ],
-          "en:vegetarian-status-unknown": [
-            "en:parmigiano-reggiano-d-o-p",
-            "en:sicilian-oregano"
-          ]
+          "en:vegetarian-status-unknown": ["en:parmigiano-reggiano-d-o-p", "en:sicilian-oregano"]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:non-vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:non-vegetarian"],
         "ingredients_from_or_that_may_be_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_n": 0,
         "ingredients_from_palm_oil_tags": [],
@@ -40864,10 +39037,7 @@
         ],
         "ingredients_lc": "en",
         "ingredients_n": 15,
-        "ingredients_n_tags": [
-          "15",
-          "11-20"
-        ],
+        "ingredients_n_tags": ["15", "11-20"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:wheat-flour",
@@ -40967,27 +39137,11 @@
           "en": 6,
           "it": 1
         },
-        "languages_hierarchy": [
-          "en:english",
-          "en:italian"
-        ],
-        "languages_tags": [
-          "en:english",
-          "en:italian",
-          "en:2",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-04",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:english", "en:italian"],
+        "languages_tags": ["en:english", "en:italian", "en:2", "en:multilingual"],
+        "last_edit_dates_tags": ["2026-02-04", "2026-02", "2026"],
         "last_editor": "macrofactor",
-        "last_image_dates_tags": [
-          "2023-11-17",
-          "2023-11",
-          "2023"
-        ],
+        "last_image_dates_tags": ["2023-11-17", "2023-11", "2023"],
         "last_image_t": 1700228297,
         "last_modified_by": "macrofactor",
         "last_modified_t": 1770190700,
@@ -41022,27 +39176,13 @@
         "nova_groups": "3",
         "nova_groups_markers": {
           "3": [
-            [
-              "categories",
-              "en:meals"
-            ],
-            [
-              "ingredients",
-              "en:salt"
-            ],
-            [
-              "ingredients",
-              "en:vegetable-oil"
-            ],
-            [
-              "ingredients",
-              "en:cheese"
-            ]
+            ["categories", "en:meals"],
+            ["ingredients", "en:salt"],
+            ["ingredients", "en:vegetable-oil"],
+            ["ingredients", "en:cheese"]
           ]
         },
-        "nova_groups_tags": [
-          "en:3-processed-foods"
-        ],
+        "nova_groups_tags": ["en:3-processed-foods"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -41218,11 +39358,7 @@
               "is_water": 0,
               "negative_points": 10,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "proteins",
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
               "positive_points": 4,
               "positive_points_max": 17
             },
@@ -41233,12 +39369,8 @@
             "score": 6
           }
         },
-        "nutriscore_2021_tags": [
-          "c"
-        ],
-        "nutriscore_2023_tags": [
-          "c"
-        ],
+        "nutriscore_2021_tags": ["c"],
+        "nutriscore_2023_tags": ["c"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -41305,11 +39437,7 @@
           "is_water": 0,
           "negative_points": 10,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "proteins",
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
           "positive_points": 4,
           "positive_points_max": 17,
           "score": 6
@@ -41317,18 +39445,14 @@
         "nutriscore_grade": "c",
         "nutriscore_score": 6,
         "nutriscore_score_opposite": -6,
-        "nutriscore_tags": [
-          "c"
-        ],
+        "nutriscore_tags": ["c"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "c",
         "nutrition_grades": "c",
-        "nutrition_grades_tags": [
-          "c"
-        ],
+        "nutrition_grades_tags": ["c"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -41336,26 +39460,16 @@
         "nutrition_score_warning_fruits_vegetables_nuts_estimate_from_ingredients": 1,
         "nutrition_score_warning_fruits_vegetables_nuts_estimate_from_ingredients_value": 16.70625,
         "origins": "Italy",
-        "origins_hierarchy": [
-          "en:italy"
-        ],
+        "origins_hierarchy": ["en:italy"],
         "origins_lc": "en",
-        "origins_tags": [
-          "en:italy"
-        ],
+        "origins_tags": ["en:italy"],
         "other_nutritional_substances_tags": [],
-        "packaging_materials_tags": [
-          "en:cardboard",
-          "en:plastic"
-        ],
+        "packaging_materials_tags": ["en:cardboard", "en:plastic"],
         "packaging_recycling_tags": [
           "en:Box. Recycle.",
           "en:recycle-with-bags-at-large-supermarket"
         ],
-        "packaging_shapes_tags": [
-          "en:box",
-          "en:film"
-        ],
+        "packaging_shapes_tags": ["en:box", "en:film"],
         "packagings": [
           {
             "material": "en:plastic",
@@ -41376,21 +39490,11 @@
           "en:plastic": {}
         },
         "packagings_n": 2,
-        "photographers_tags": [
-          "kiliweb",
-          "alicelh",
-          "ruperth"
-        ],
+        "photographers_tags": ["kiliweb", "alicelh", "ruperth"],
         "pnns_groups_1": "Composite foods",
-        "pnns_groups_1_tags": [
-          "composite-foods",
-          "known"
-        ],
+        "pnns_groups_1_tags": ["composite-foods", "known"],
         "pnns_groups_2": "Pizza pies and quiches",
-        "pnns_groups_2_tags": [
-          "pizza-pies-and-quiches",
-          "known"
-        ],
+        "pnns_groups_2_tags": ["pizza-pies-and-quiches", "known"],
         "popularity_key": 23995000168,
         "popularity_tags": [
           "bottom-25-percent-scans-2022",
@@ -41609,10 +39713,7 @@
           "en:photos-uploaded"
         ],
         "teams": "chocolatine,la-robe-est-bleue",
-        "teams_tags": [
-          "chocolatine",
-          "la-robe-est-bleue"
-        ],
+        "teams_tags": ["chocolatine", "la-robe-est-bleue"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(en) ",

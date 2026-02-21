@@ -1549,6 +1549,13 @@ async function seedFoods(): Promise<{ created: number }> {
           log.type = nl.type;
           log.amount = nl.amount;
           log.portionId = undefined;
+          log.loggedFoodName = f.name ?? 'No named food';
+          log.loggedCalories = f.calories ?? 0;
+          log.loggedProtein = f.protein ?? 0;
+          log.loggedCarbs = f.carbs ?? 0;
+          log.loggedFat = f.fat ?? 0;
+          log.loggedFiber = f.fiber ?? 0;
+          log.loggedMicros = f.micros;
           log.createdAt = now;
           log.updatedAt = now;
         });
