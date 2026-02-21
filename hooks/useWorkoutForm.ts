@@ -60,9 +60,15 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
 
       setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
+      setVolumeCalc(template.volumeCalculationType || 'none');
 
-      const dayIndices = transformScheduleDays(schedule);
-      setSelectedDays(dayIndices);
+      // Load week days from weekDaysJson if available, otherwise use schedule
+      if (template.weekDaysJson && template.weekDaysJson.length > 0) {
+        setSelectedDays(template.weekDaysJson);
+      } else {
+        const dayIndices = transformScheduleDays(schedule);
+        setSelectedDays(dayIndices);
+      }
 
       const exercisesInWorkout = await WorkoutTemplateService.convertSetsToExercises(sets);
 
@@ -161,6 +167,8 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         templateId: isEditMode ? templateId : undefined,
         name: workoutTitle.trim(),
         description: description.trim() || undefined,
+        volumeCalculationType: volumeCalc,
+        weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
         exercises: exercisesInWorkout,
         selectedDays,
       });

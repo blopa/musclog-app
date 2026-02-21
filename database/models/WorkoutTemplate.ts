@@ -22,21 +22,24 @@ export default class WorkoutTemplate extends Model {
     if (data === null || data === undefined) {
       return undefined; // Allow null/undefined (optional field)
     }
-    
+
     if (!Array.isArray(data)) {
       throw new Error('week_days_json must be an array of day indices');
     }
-    
+
     // Validate each day index is a number between 0 and 6
     for (const day of data) {
       if (typeof day !== 'number' || !Number.isInteger(day) || day < 0 || day > 6) {
-        throw new Error('Each day in week_days_json must be an integer between 0 (Monday) and 6 (Sunday)');
+        throw new Error(
+          'Each day in week_days_json must be an integer between 0 (Monday) and 6 (Sunday)'
+        );
       }
     }
-    
+
     // Remove duplicates and sort for consistency
     return [...new Set(data)].sort((a, b) => a - b);
-  }) weekDaysJson?: number[];
+  })
+  weekDaysJson?: number[];
   @field('is_archived') isArchived!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

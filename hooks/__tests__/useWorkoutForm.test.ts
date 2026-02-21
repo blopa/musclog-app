@@ -405,6 +405,8 @@ describe('hooks/useWorkoutForm', () => {
         templateId: undefined,
         name: 'New Workout',
         description: 'Description',
+        volumeCalculationType: 'none',
+        weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],
       });
@@ -457,6 +459,8 @@ describe('hooks/useWorkoutForm', () => {
         expect.objectContaining({
           name: 'Trimmed Title',
           description: 'Trimmed Description',
+          volumeCalculationType: 'none',
+          weekDaysJson: undefined,
         })
       );
       expect(mockRouterBack).toHaveBeenCalled();
@@ -480,6 +484,8 @@ describe('hooks/useWorkoutForm', () => {
         templateId: undefined,
         name: 'Test Workout',
         description: undefined, // Empty trimmed description becomes undefined
+        volumeCalculationType: 'none',
+        weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],
       });
