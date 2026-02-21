@@ -1,11 +1,21 @@
 import { Q } from '@nozbe/watermelondb';
 
+import exercisesData from '../../data/exercisesEnUS.json';
 import { database } from '../index';
 import Exercise, {
   type EquipmentType,
   type MechanicType,
   type MuscleGroup,
 } from '../models/Exercise';
+
+interface ExerciseJsonData {
+  name: string;
+  muscleGroup: string;
+  type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
+  description: string;
+  targetMuscles?: string[];
+  loadMultiplier?: number;
+}
 
 export class ExerciseService {
   /**
@@ -254,6 +264,148 @@ export class ExerciseService {
         exercise.createdAt = now;
         exercise.updatedAt = now;
       });
+    });
+  }
+
+  /**
+   * Maps JSON exercise type to Exercise model fields
+   */
+  private static mapExerciseType(type: ExerciseJsonData['type']): {
+    mechanicType: MechanicType;
+    equipmentType: EquipmentType;
+  } {
+    let mechanicType: MechanicType = 'compound';
+    let equipmentType: EquipmentType;
+
+    switch (type) {
+      case 'compound':
+        mechanicType = 'compound';
+        // Try to infer equipment from name (will default to barbell)
+        equipmentType = 'barbell';
+        break;
+      case 'isolation':
+        mechanicType = 'isolation';
+        // Try to infer equipment from name (will default to dumbbell for isolation)
+        equipmentType = 'dumbbell';
+        break;
+      case 'machine':
+        mechanicType = 'compound'; // Machine exercises can be compound or isolation, default to compound
+        equipmentType = 'machine';
+        break;
+      case 'bodyweight':
+        mechanicType = 'compound'; // Bodyweight exercises can be compound or isolation, default to compound
+        equipmentType = 'bodyweight';
+        break;
+      case 'cardio':
+        mechanicType = 'compound';
+        equipmentType = 'other'; // Cardio exercises don't have specific equipment type
+        break;
+      case 'plyometric':
+        mechanicType = 'compound';
+        equipmentType = 'other';
+        break;
+      default:
+        mechanicType = 'compound';
+        equipmentType = 'barbell';
+    }
+
+    return { mechanicType, equipmentType };
+  }
+
+  /**
+   * Infers equipment type from exercise name
+   * This is a helper to improve accuracy of equipment type mapping
+   */
+  private static inferEquipmentFromName(
+    name: string,
+    defaultEquipment: EquipmentType
+  ): EquipmentType {
+    const lowerName = name.toLowerCase();
+
+    if (lowerName.includes('dumbbell') || lowerName.includes('db ')) {
+      return 'dumbbell' as EquipmentType;
+    }
+    if (lowerName.includes('barbell') || lowerName.includes('bb ')) {
+      return 'barbell' as EquipmentType;
+    }
+    if (lowerName.includes('cable')) {
+      return 'cable' as EquipmentType;
+    }
+    if (lowerName.includes('kettlebell')) {
+      return 'kettlebell' as EquipmentType;
+    }
+    if (lowerName.includes('machine') || lowerName.includes(' smith')) {
+      return 'machine' as EquipmentType;
+    }
+
+    return defaultEquipment;
+  }
+
+  /**
+   * Create common exercises from the exercises JSON data
+   * Returns array of created exercises
+   */
+  static async createCommonExercises(): Promise<Exercise[]> {
+    const exercises: Exercise[] = [];
+    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const now = Date.now();
+
+    return await database.write(async () => {
+      // Get all existing exercises to check for duplicates
+      const existingExercises = await database.get<Exercise>('exercises').query().fetch();
+      const existingNames = new Set(
+        existingExercises.map((ex: Exercise) => (ex.name ?? '').toLowerCase())
+      );
+
+      // Prepare all new exercises
+      const exercisesToCreate = exercisesJson
+        .filter((exerciseData) => {
+          // Skip if exercise already exists
+          if (existingNames.has(exerciseData.name.toLowerCase())) {
+            return false;
+          }
+          return true;
+        })
+        .map((exerciseData) => {
+          const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
+            exerciseData.type
+          );
+          const equipmentType = this.inferEquipmentFromName(exerciseData.name, defaultEquipment);
+
+          return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+            exercise.name = exerciseData.name;
+            exercise.description = exerciseData.description;
+            exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
+            exercise.equipmentType = equipmentType as EquipmentType;
+            exercise.mechanicType = mechanicType as MechanicType;
+            exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
+            exercise.imageUrl = undefined; // No image URLs in JSON
+            exercise.createdAt = now;
+            exercise.updatedAt = now;
+            exercise.deletedAt = undefined;
+          });
+        });
+
+      // Create all new exercises
+      if (exercisesToCreate.length > 0) {
+        for (const exerciseToCreate of exercisesToCreate) {
+          const createdExercise = await database.get<Exercise>('exercises').create((exercise) => {
+            exercise.name = exerciseToCreate.name;
+            exercise.description = exerciseToCreate.description;
+            exercise.muscleGroup = exerciseToCreate.muscleGroup;
+            exercise.equipmentType = exerciseToCreate.equipmentType;
+            exercise.mechanicType = exerciseToCreate.mechanicType;
+            exercise.loadMultiplier = exerciseToCreate.loadMultiplier;
+            exercise.imageUrl = exerciseToCreate.imageUrl;
+            exercise.createdAt = exerciseToCreate.createdAt;
+            exercise.updatedAt = exerciseToCreate.updatedAt;
+            exercise.deletedAt = exerciseToCreate.deletedAt;
+          });
+          exercises.push(createdExercise);
+        }
+      }
+
+      return exercises;
     });
   }
 }
