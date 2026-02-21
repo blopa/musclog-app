@@ -34,6 +34,7 @@ export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
   weight: number; // From WorkoutTemplateSet
   isBodyweight: boolean; // Derived from Exercise.equipmentType
   restTimeAfter?: number; // From WorkoutTemplateSet
+  isDropSet?: boolean; // From WorkoutTemplateSet (true if any set in exercise is a drop set)
 };
 
 export interface SaveTemplateData {
@@ -152,6 +153,7 @@ export class WorkoutTemplateService {
         weight: firstSet.targetWeight ?? 0,
         isBodyweight,
         restTimeAfter: firstSet.restTimeAfter,
+        isDropSet: exerciseSets.some((s) => s.isDropSet),
       });
     });
 
@@ -183,6 +185,9 @@ export class WorkoutTemplateService {
         await template.update((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
+          t.volumeCalculationType =
+            data.volumeCalculationType ?? t.volumeCalculationType ?? 'standard';
+          t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
           t.updatedAt = now;
         });
 
@@ -246,6 +251,7 @@ export class WorkoutTemplateService {
               ts.restTimeAfter = exercise.restTimeAfter ?? 60; // Default to 60 seconds if not provided
               ts.setOrder = currentOrder;
               ts.groupId = exercise.groupId; // Persist groupId from UI
+              ts.isDropSet = exercise.isDropSet ?? false;
               ts.createdAt = now;
               ts.updatedAt = now;
             })

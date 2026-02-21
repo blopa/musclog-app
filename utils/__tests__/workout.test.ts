@@ -476,7 +476,9 @@ describe('utils/workout', () => {
           reps: 10,
           weight: 0,
           isBodyweight: false,
+          restTimeAfter: 60,
           groupId: 'group-1',
+          isDropSet: false,
         });
       });
 

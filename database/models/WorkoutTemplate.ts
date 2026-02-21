@@ -78,7 +78,8 @@ export default class WorkoutTemplate extends Model {
         logSet.restTimeAfter = templateSet.restTimeAfter ?? 0;
         logSet.repsInReserve = 0;
         logSet.difficultyLevel = 0;
-        logSet.isDropSet = false;
+        logSet.groupId = templateSet.groupId;
+        logSet.isDropSet = templateSet.isDropSet;
         logSet.setOrder = templateSet.setOrder;
         logSet.createdAt = now;
         logSet.updatedAt = now;

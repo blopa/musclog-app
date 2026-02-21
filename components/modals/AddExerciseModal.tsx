@@ -105,6 +105,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [reps, setReps] = useState('10');
   const [weight, setWeight] = useState('60');
   const [restTime, setRestTime] = useState('60'); // Rest time in seconds
+  const [isDropSet, setIsDropSet] = useState(false);
 
   // Use the useExercises hook
   const { exercises: allExercises, isLoading } = useExercises({
@@ -184,11 +185,12 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     [t]
   );
 
-  // Reset selection when modal opens
+  // Reset selection and drop-set when modal opens
   useEffect(() => {
     if (visible) {
       setSelectedExerciseId(null);
       selectedExerciseIdRef.current = null;
+      setIsDropSet(false);
     }
   }, [visible]);
 
@@ -272,6 +274,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       weight: parseFloat(weight),
       isBodyweight,
       restTimeAfter: parseInt(restTime) || 60, // Default to 60 if invalid
+      isDropSet,
     });
     onClose();
   };
@@ -462,6 +465,33 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())
                 }
                 onChangeValue={(num) => setRestTime(Math.max(0, Math.round(num)).toString())}
+              />
+            </View>
+            <View
+              style={{
+                height: theme.spacing.gap['1'],
+                backgroundColor: theme.colors.background.white5,
+                marginVertical: theme.spacing.gap.sm,
+              }}
+            />
+            <View className="mb-4 flex-row items-center justify-between">
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.base,
+                  fontWeight: theme.typography.fontWeight.medium,
+                  color: theme.colors.text.primary,
+                }}
+              >
+                {t('workouts.addExercise.dropSet')}
+              </Text>
+              <Switch
+                value={isDropSet}
+                onValueChange={setIsDropSet}
+                trackColor={{
+                  false: theme.colors.background.overlay,
+                  true: theme.colors.accent.primary,
+                }}
+                thumbColor={theme.colors.text.white}
               />
             </View>
           </View>

@@ -167,4 +167,20 @@ export default class WorkoutLog extends Model {
       log.updatedAt = now;
     });
   }
+
+  /**
+   * Update post-workout feedback (exhaustion and score). Call after workout is completed.
+   */
+  @writer
+  async updateFeedback(feedback: {
+    exhaustionLevel?: number;
+    workoutScore?: number;
+  }): Promise<void> {
+    const now = Date.now();
+    await this.update((log) => {
+      if (feedback.exhaustionLevel !== undefined) log.exhaustionLevel = feedback.exhaustionLevel;
+      if (feedback.workoutScore !== undefined) log.workoutScore = feedback.workoutScore;
+      log.updatedAt = now;
+    });
+  }
 }

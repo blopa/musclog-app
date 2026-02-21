@@ -29,6 +29,7 @@ export interface AddExerciseData {
   weight: number;
   isBodyweight: boolean;
   restTimeAfter?: number; // Rest time in seconds after completing this set
+  isDropSet?: boolean;
 }
 
 export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
@@ -131,6 +132,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
             isBodyweight: exerciseData.isBodyweight,
             restTimeAfter: exerciseData.restTimeAfter ?? 60, // Default to 60 seconds if not provided
             groupId: undefined,
+            isDropSet: exerciseData.isDropSet ?? false,
           });
           return updated;
         });

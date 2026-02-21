@@ -586,6 +586,7 @@
       "addToWorkout": "Add to Workout",
       "restTime": "Rest Time",
       "seconds": "sec",
+      "dropSet": "Drop set",
       "muscleGroups": {
         "all": "All",
         "chest": "Chest",

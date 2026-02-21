@@ -191,6 +191,17 @@ export class WorkoutService {
   }
 
   /**
+   * Update workout log feedback (exhaustion level and workout score). Call after user submits session feedback.
+   */
+  static async updateWorkoutLogFeedback(
+    workoutLogId: string,
+    feedback: { exhaustionLevel?: number; workoutScore?: number }
+  ): Promise<void> {
+    const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+    await workoutLog.updateFeedback(feedback);
+  }
+
+  /**
    * Get workout statistics for a timeframe
    */
   static async getWorkoutStatistics(timeframe: { startDate: number; endDate: number }): Promise<{

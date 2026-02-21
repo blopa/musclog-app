@@ -476,9 +476,18 @@ export default function WorkoutSessionScreen() {
             setIsSessionFeedbackModalVisible(false);
             router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
           }}
-          onSubmit={(data) => {
-            console.log('Feedback submitted:', data);
-            router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
+          onSubmit={async (data) => {
+            try {
+              // TODO: cant we have this in a hook?
+              await WorkoutService.updateWorkoutLogFeedback(workoutLog.id, {
+                exhaustionLevel: data.exhaustion,
+                workoutScore: Math.round((data.difficulty + data.exhaustion + data.enjoyment) / 3),
+              });
+            } catch (err) {
+              console.error('Error saving workout feedback:', err);
+            } finally {
+              router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
+            }
           }}
         />
       ) : null}
