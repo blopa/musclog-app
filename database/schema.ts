@@ -212,7 +212,7 @@ export const schema = appSchema({
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
 
-        // Snapshot at log time (per 100g) so values don't change if food is edited or deleted
+        // logged data must be encrypted later on
         { name: 'logged_food_name', type: 'string', isOptional: true },
         { name: 'logged_calories', type: 'number' },
         { name: 'logged_protein', type: 'number' },
@@ -220,6 +220,7 @@ export const schema = appSchema({
         { name: 'logged_fat', type: 'number' },
         { name: 'logged_fiber', type: 'number' },
         { name: 'logged_micros_json', type: 'string', isOptional: true },
+        // { name: 'date', type: 'number', isIndexed: true }, // TODO: add this column to the models, services, etc
 
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -232,9 +233,11 @@ export const schema = appSchema({
       name: 'user_metrics',
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
+        // value, unit and date must be encrypted later on
         { name: 'value', type: 'number' },
         { name: 'unit', type: 'string', isOptional: true },
         { name: 'date', type: 'number', isIndexed: true },
+
         { name: 'timezone', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
