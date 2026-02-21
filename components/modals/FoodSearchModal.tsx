@@ -107,7 +107,7 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
   });
 
   return (
-    <Pressable 
+    <Pressable
       className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
       onPress={onAddPress}
     >
@@ -1101,6 +1101,7 @@ export function FoodSearchModal({
             setSelectedFood(null);
           }}
           barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
+          productFromSearch={selectedFood.source === 'api' ? (selectedFood._raw as any) : undefined}
           food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
           onAddFood={(data) => {
             // Call the original onFoodSelect with the food and additional data

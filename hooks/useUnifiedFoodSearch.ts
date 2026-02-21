@@ -176,6 +176,7 @@ export function useUnifiedFoodSearch({
       const kcal = product.nutriments?.['energy-kcal'];
       const calories = kcal ? Math.round(kcal) : undefined;
 
+      // TODO: map all possible properties and move this to a separate function into a utils file
       return {
         id: product.code || String(Math.random()),
         name: product.product_name || 'Unknown Product',

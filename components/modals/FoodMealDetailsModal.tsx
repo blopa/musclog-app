@@ -11,6 +11,7 @@ import { FoodService, MealService, NutritionService } from '../../database/servi
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
+import type { SearchResultProduct } from '../../types/openFoodFacts';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -25,6 +26,8 @@ type FoodDetailsModalProps = {
   foodLog?: any;
   onClose: () => void;
   barcode?: string | null;
+  /** Preloaded product from OFF search (avoids barcode fetch on mobile) */
+  productFromSearch?: SearchResultProduct | null;
   food?: Food | null;
   meal?: Meal | null;
   initialMealType?: MealType;
@@ -36,6 +39,7 @@ export function FoodMealDetailsModal({
   visible,
   onClose,
   barcode,
+  productFromSearch,
   food,
   meal,
   initialMealType,
@@ -65,12 +69,42 @@ export function FoodMealDetailsModal({
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
 
   // Determine mode: 'food' | 'foodLog' | 'meal' | 'barcode'
-  const mode = meal ? 'meal' : foodLog ? 'foodLog' : food ? 'food' : barcode ? 'barcode' : null;
+  const mode = meal
+    ? 'meal'
+    : foodLog
+      ? 'foodLog'
+      : food
+        ? 'food'
+        : barcode || productFromSearch
+          ? 'barcode'
+          : null;
 
-  // Fetch detailed product data only if barcode is provided and no local food
+  // Fetch detailed product data only when barcode is provided, no local food, and no preloaded search product
   const { data: productDetails } = useFoodProductDetails(
-    barcode && !food && !meal ? barcode : null
+    barcode && !food && !meal && !productFromSearch ? barcode : null
   );
+
+  // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
+  const getDefaultServingSize = useCallback(() => {
+    const servingStr =
+      productFromSearch?.serving_size ??
+      (isSuccessFoodDetailProductState(productDetails)
+        ? productDetails.product.serving_size
+        : null);
+    if (servingStr) {
+      const match = String(servingStr).match(/\((\d+)\s*g\)/);
+      if (match) {
+        const g = parseInt(match[1], 10);
+        if (g > 0) return g;
+      }
+      const num = String(servingStr).match(/(\d+)/);
+      if (num) {
+        const g = parseInt(num[1], 10);
+        if (g > 0) return g;
+      }
+    }
+    return 100; // Default to 100g when missing or "0 g"
+  }, [productDetails, productFromSearch]);
 
   useEffect(() => {
     if (meal) {
@@ -87,6 +121,14 @@ export function FoodMealDetailsModal({
       return;
     }
 
+    // Use preloaded search result (no network fetch) – fixes Android modal not opening
+    if (productFromSearch?.product_name && productFromSearch?.nutriments) {
+      setIsFoodDetailsModalVisible(true);
+      const defaultG = getDefaultServingSize(); // uses 100 when serving_size is "0 g" or invalid
+      setServingSize(defaultG);
+      return;
+    }
+
     if (productDetails) {
       if (productDetails?.status !== 'success') {
         setIsFoodNotFoundModalVisible(true);
@@ -94,7 +136,7 @@ export function FoodMealDetailsModal({
         setIsFoodDetailsModalVisible(true);
       }
     }
-  }, [productDetails, food, meal]);
+  }, [productDetails, productFromSearch, food, meal, getDefaultServingSize]);
 
   // Load meal nutrients when meal is provided
   useEffect(() => {
@@ -159,6 +201,13 @@ export function FoodMealDetailsModal({
     })();
   }, [foodLog]);
 
+  // Coerce OFF nutriment value to number (API can return strings or various keys)
+  const toNum = useCallback((v: unknown): number => {
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+    if (typeof v === 'string') return parseFloat(v) || 0;
+    return 0;
+  }, []);
+
   // Extract nutritional data from meal, barcode lookup, or local food
   const getNutritionalData = useCallback(() => {
     // If we have a meal, use its nutrients
@@ -189,6 +238,41 @@ export function FoodMealDetailsModal({
       };
     }
 
+    // TODO: are we missing to map any other property?
+    if (productFromSearch?.nutriments) {
+      const n = productFromSearch.nutriments as Record<string, unknown>;
+      // OFF search returns per-100g values; try main key then _100g / _value (API can use strings)
+      const kcal = toNum(n['energy-kcal'] ?? n['energy-kcal_100g'] ?? n['energy_kcal']);
+      const energyKj = toNum(n['energy'] ?? n['energy_100g']);
+      return {
+        calories: kcal > 0 ? kcal : energyKj / 4.184,
+        protein: toNum(n['proteins'] ?? n['proteins_100g'] ?? n['protein']),
+        carbs: toNum(n['carbohydrates'] ?? n['carbohydrates_100g'] ?? n['carbohydrates_value']),
+        fat: toNum(n['fat'] ?? n['fat_100g'] ?? n['fat_value']),
+        fiber: (() => {
+          const f = toNum(n['fiber'] ?? n['fiber_100g']);
+          if (f > 0) return f;
+          return Math.max(
+            0,
+            toNum(n['carbohydrates-total'] ?? n['carbohydrates-total_100g']) -
+              toNum(n['carbohydrates'] ?? n['carbohydrates_100g'])
+          );
+        })(),
+        sugar: toNum(n['sugars'] ?? n['sugars_100g'] ?? n['sugars_value']),
+        saturatedFat: toNum(
+          n['saturated-fat'] ?? n['saturated-fat_100g'] ?? n['saturated-fat_value']
+        ),
+        sodium: toNum(
+          n['sodium'] ??
+            n['sodium_100g'] ??
+            n['sodium_value'] ??
+            n['salt'] ??
+            n['salt_100g'] ??
+            n['salt_value']
+        ),
+      };
+    }
+
     if (isSuccessFoodDetailProductState(productDetails)) {
       const nutrients = productDetails.product.nutriments || {};
       return {
@@ -211,16 +295,15 @@ export function FoodMealDetailsModal({
       carbs: 0,
       fat: 0,
       fiber: 0,
-      sugars: 0,
+      sugar: 0,
       saturatedFat: 0,
       sodium: 0,
-      salt: 0,
     };
-  }, [productDetails, food, meal, mealNutrients]);
+  }, [productDetails, productFromSearch, food, meal, mealNutrients, toNum]);
 
   const nutritionalData = getNutritionalData();
 
-  // Get product name from meal, barcode lookup, or local food
+  // Get product name from meal, barcode lookup, search result, or local food
   const getProductName = useCallback(() => {
     if (meal) {
       return meal.name || 'Unknown Meal';
@@ -230,13 +313,17 @@ export function FoodMealDetailsModal({
       return food.name || 'Unknown Food';
     }
 
+    if (productFromSearch?.product_name) {
+      return productFromSearch.product_name;
+    }
+
     if (isSuccessFoodDetailProductState(productDetails)) {
       return productDetails.product.product_name || 'Unknown Food';
     }
     return 'Unknown Food';
-  }, [productDetails, food, meal]);
+  }, [productDetails, productFromSearch, food, meal]);
 
-  // Get product category/brand from meal, barcode lookup, or local food
+  // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
     if (meal) {
       return meal.description || t('meals.customMeal');
@@ -244,6 +331,15 @@ export function FoodMealDetailsModal({
 
     if (food) {
       return food.brand || '';
+    }
+
+    if (productFromSearch) {
+      const brand = productFromSearch.brands;
+      const categories = productFromSearch.categories;
+      if (brand && categories) return `${brand} • ${categories}`;
+      if (brand) return brand;
+      if (categories) return categories;
+      return '';
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
@@ -261,34 +357,15 @@ export function FoodMealDetailsModal({
       }
     }
     return '';
-  }, [productDetails, food, meal, t]);
+  }, [productDetails, productFromSearch, food, meal, t]);
 
-  // Get default serving size from barcode lookup
-  const getDefaultServingSize = useCallback(() => {
-    if (isSuccessFoodDetailProductState(productDetails)) {
-      const servingSize = productDetails.product.serving_size;
-      if (servingSize) {
-        // Extract numeric value from serving size (e.g., "1 loaf (30 g)" -> 30)
-        const match = servingSize.match(/\((\d+)\s*g\)/);
-        if (match) {
-          return parseInt(match[1]);
-        }
-        const numericMatch = servingSize.match(/(\d+)/);
-        if (numericMatch) {
-          return parseInt(numericMatch[1]);
-        }
-      }
-    }
-    return 100; // Default to 100g
-  }, [productDetails]);
-
-  // Update serving size when product details load
+  // Update serving size when product details or search product load
   useEffect(() => {
-    if (productDetails) {
+    if (productFromSearch || productDetails) {
       const defaultSize = getDefaultServingSize();
       setServingSize(defaultSize);
     }
-  }, [productDetails, getDefaultServingSize]);
+  }, [productFromSearch, productDetails, getDefaultServingSize]);
 
   // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
@@ -458,13 +535,16 @@ export function FoodMealDetailsModal({
         return;
       }
 
-      // Handle API food (barcode)
-      if (!isSuccessFoodDetailProductState(productDetails)) {
+      // Handle API food: use preloaded search product or barcode-fetched product
+      const productToSave =
+        productFromSearch ??
+        (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null);
+      if (!productToSave) {
         throw new Error('Product details not loaded');
       }
 
-      // Save barcode product to local database
-      const newFood = await FoodService.createFromV3Product(productDetails.product, {
+      // Save product to local database (search result has same shape as V3 for our usage)
+      const newFood = await FoodService.createFromV3Product(productToSave as any, {
         calories: nutritionalData.calories,
         protein: nutritionalData.protein,
         carbs: nutritionalData.carbs,
@@ -511,6 +591,7 @@ export function FoodMealDetailsModal({
     meal,
     foodLog,
     food,
+    productFromSearch,
     productDetails,
     nutritionalData.calories,
     nutritionalData.protein,
