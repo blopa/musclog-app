@@ -9,6 +9,7 @@ import {
   NutritionLog,
   User,
   UserMetric,
+  WorkoutTemplate,
 } from '../models';
 
 export interface MigrationResult {
@@ -20,6 +21,7 @@ export interface MigrationResult {
   foods: number;
   nutritionLogs: number;
   exercises: number;
+  workouts: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
@@ -27,6 +29,7 @@ export interface MigrationResult {
     foodsMigrated: number;
     nutritionLogsMigrated: number;
     exercisesMigrated: number;
+    workoutsMigrated: number;
     errors: string[];
   };
 }
@@ -562,6 +565,69 @@ export class MigrationService {
   }
 
   /**
+   * Migrate workouts from old Workout table to new workout_templates table
+   */
+  private async migrateWorkouts(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldWorkouts = (await this.oldDB.getAllAsync(`
+      SELECT * FROM Workout 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldWorkout of oldWorkouts) {
+      try {
+        await database.write(async () => {
+          await database.get<WorkoutTemplate>('workout_templates').create((newWorkout) => {
+            newWorkout.name = oldWorkout.title || '';
+            newWorkout.description = oldWorkout.description || '';
+            newWorkout.volumeCalculationType = oldWorkout.volumeCalculationType || 'standard';
+            newWorkout.weekDaysJson = this.mapRecurringOnWeek(oldWorkout.recurringOnWeek);
+            newWorkout.isArchived = false; // Default to false for old workouts
+            newWorkout.createdAt = this.convertTimestamp(oldWorkout.createdAt);
+            newWorkout.updatedAt = this.convertTimestamp(oldWorkout.createdAt);
+            newWorkout.deletedAt = oldWorkout.deletedAt
+              ? this.convertTimestamp(oldWorkout.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating workout:', error, 'Data:', oldWorkout);
+        throw new Error(
+          `Failed to migrate workout: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Map old recurringOnWeek string to new weekDaysJson array
+   */
+  private mapRecurringOnWeek(recurringOnWeek: string): number[] {
+    if (!recurringOnWeek) return [];
+
+    const dayMap: Record<string, number> = {
+      monday: 0,
+      tuesday: 1,
+      wednesday: 2,
+      thursday: 3,
+      friday: 4,
+      saturday: 5,
+      sunday: 6,
+    };
+
+    const lowerDay = recurringOnWeek.toLowerCase().trim();
+    const dayIndex = dayMap[lowerDay];
+
+    return dayIndex !== undefined ? [dayIndex] : [];
+  }
+
+  /**
    * Map old fitness goals string to new weight goal format
    */
   private mapFitnessGoalToWeightGoal(fitnessGoals: string): 'lose' | 'gain' | 'maintain' {
@@ -604,9 +670,13 @@ export class MigrationService {
       .query()
       .fetchCount();
     const exercisesCount = await database.get<Exercise>('exercises').query().fetchCount();
+    const workoutsCount = await database
+      .get<WorkoutTemplate>('workout_templates')
+      .query()
+      .fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises, ${workoutsCount} workouts`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -633,6 +703,10 @@ export class MigrationService {
     if (result.details.exercisesMigrated > 0 && exercisesCount === 0) {
       throw new Error('Exercises migration validation failed');
     }
+
+    if (result.details.workoutsMigrated > 0 && workoutsCount === 0) {
+      throw new Error('Workouts migration validation failed');
+    }
   }
 
   /**
@@ -647,6 +721,7 @@ export class MigrationService {
       foods: 0,
       nutritionLogs: 0,
       exercises: 0,
+      workouts: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
@@ -654,6 +729,7 @@ export class MigrationService {
         foodsMigrated: 0,
         nutritionLogsMigrated: 0,
         exercisesMigrated: 0,
+        workoutsMigrated: 0,
         errors: [],
       },
     };
@@ -696,7 +772,12 @@ export class MigrationService {
       result.details.exercisesMigrated = await this.migrateExercises();
       result.exercises = result.details.exercisesMigrated;
 
-      // Step 8: Validate migration
+      // Step 8: Migrate Workouts
+      console.log('Migrating workouts...');
+      result.details.workoutsMigrated = await this.migrateWorkouts();
+      result.workouts = result.details.workoutsMigrated;
+
+      // Step 9: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -722,6 +803,7 @@ export class MigrationService {
     foodsCount: number;
     nutritionLogsCount: number;
     exercisesCount: number;
+    workoutsCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
@@ -732,6 +814,7 @@ export class MigrationService {
         foodsCount: 0,
         nutritionLogsCount: 0,
         exercisesCount: 0,
+        workoutsCount: 0,
         tables: [],
       };
     }
@@ -744,6 +827,7 @@ export class MigrationService {
     let foodsCount = 0;
     let nutritionLogsCount = 0;
     let exercisesCount = 0;
+    let workoutsCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -793,6 +877,14 @@ export class MigrationService {
         `)) as { count: number }[];
         exercisesCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('Workout')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM Workout 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        workoutsCount = result[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -804,6 +896,7 @@ export class MigrationService {
       foodsCount,
       nutritionLogsCount,
       exercisesCount,
+      workoutsCount,
       tables,
     };
   }
