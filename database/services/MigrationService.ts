@@ -9,6 +9,7 @@ import {
   NutritionLog,
   User,
   UserMetric,
+  WorkoutLog,
   WorkoutTemplate,
 } from '../models';
 
@@ -22,6 +23,7 @@ export interface MigrationResult {
   nutritionLogs: number;
   exercises: number;
   workouts: number;
+  workoutLogs: number;
   details: {
     fitnessGoalsMigrated: number;
     userMetricsMigrated: number;
@@ -30,6 +32,7 @@ export interface MigrationResult {
     nutritionLogsMigrated: number;
     exercisesMigrated: number;
     workoutsMigrated: number;
+    workoutLogsMigrated: number;
     errors: string[];
   };
 }
@@ -628,6 +631,70 @@ export class MigrationService {
   }
 
   /**
+   * Migrate workout logs from old WorkoutEvent table to new workout_logs table
+   */
+  private async migrateWorkoutLogs(): Promise<number> {
+    if (!this.oldDB) throw new Error('Old database not available');
+
+    const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
+      SELECT * FROM WorkoutEvent 
+      WHERE deletedAt IS NULL OR deletedAt = ''
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+
+    for (const oldWorkoutLog of oldWorkoutLogs) {
+      try {
+        await database.write(async () => {
+          await database.get<WorkoutLog>('workout_logs').create((newWorkoutLog) => {
+            newWorkoutLog.templateId = oldWorkoutLog.workoutId?.toString() || '';
+            newWorkoutLog.workoutName = oldWorkoutLog.title || '';
+            newWorkoutLog.startedAt = this.convertTimestamp(oldWorkoutLog.date);
+            newWorkoutLog.completedAt = this.convertTimestamp(oldWorkoutLog.date); // Same as startedAt for old logs
+            newWorkoutLog.totalVolume = this.parseWorkoutVolume(oldWorkoutLog.workoutVolume);
+            newWorkoutLog.caloriesBurned = 0; // Not present in old schema, default to 0
+            newWorkoutLog.exhaustionLevel = oldWorkoutLog.exhaustionLevel || 0;
+            newWorkoutLog.workoutScore = oldWorkoutLog.workoutScore || 0;
+            newWorkoutLog.createdAt = this.convertTimestamp(oldWorkoutLog.createdAt);
+            newWorkoutLog.updatedAt = this.convertTimestamp(oldWorkoutLog.createdAt);
+            newWorkoutLog.deletedAt = oldWorkoutLog.deletedAt
+              ? this.convertTimestamp(oldWorkoutLog.deletedAt)
+              : undefined;
+          });
+        });
+        migratedCount++;
+      } catch (error) {
+        console.error('Error migrating workout log:', error, 'Data:', oldWorkoutLog);
+        throw new Error(
+          `Failed to migrate workout log: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * Parse workout volume from old workoutVolume text field
+   */
+  private parseWorkoutVolume(workoutVolume: string): number {
+    if (!workoutVolume) return 0;
+
+    // Try to parse as JSON first (if it's stored as JSON)
+    try {
+      const parsed = JSON.parse(workoutVolume);
+      if (typeof parsed === 'number') return parsed;
+      if (typeof parsed === 'object' && parsed.total) return parsed.total;
+    } catch {
+      // If not JSON, try to parse as number
+      const num = parseFloat(workoutVolume);
+      return isNaN(num) ? 0 : num;
+    }
+
+    return 0;
+  }
+
+  /**
    * Map old fitness goals string to new weight goal format
    */
   private mapFitnessGoalToWeightGoal(fitnessGoals: string): 'lose' | 'gain' | 'maintain' {
@@ -674,9 +741,10 @@ export class MigrationService {
       .get<WorkoutTemplate>('workout_templates')
       .query()
       .fetchCount();
+    const workoutLogsCount = await database.get<WorkoutLog>('workout_logs').query().fetchCount();
 
     console.log(
-      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises, ${workoutsCount} workouts`
+      `Migration validation: ${nutritionGoalsCount} nutrition goals, ${userMetricsCount} user metrics, ${usersCount} users, ${foodsCount} foods, ${nutritionLogsCount} nutrition logs, ${exercisesCount} exercises, ${workoutsCount} workouts, ${workoutLogsCount} workout logs`
     );
 
     // Basic validation - ensure we have some data if migration succeeded
@@ -707,6 +775,10 @@ export class MigrationService {
     if (result.details.workoutsMigrated > 0 && workoutsCount === 0) {
       throw new Error('Workouts migration validation failed');
     }
+
+    if (result.details.workoutLogsMigrated > 0 && workoutLogsCount === 0) {
+      throw new Error('Workout logs migration validation failed');
+    }
   }
 
   /**
@@ -722,6 +794,7 @@ export class MigrationService {
       nutritionLogs: 0,
       exercises: 0,
       workouts: 0,
+      workoutLogs: 0,
       details: {
         fitnessGoalsMigrated: 0,
         userMetricsMigrated: 0,
@@ -730,6 +803,7 @@ export class MigrationService {
         nutritionLogsMigrated: 0,
         exercisesMigrated: 0,
         workoutsMigrated: 0,
+        workoutLogsMigrated: 0,
         errors: [],
       },
     };
@@ -777,7 +851,12 @@ export class MigrationService {
       result.details.workoutsMigrated = await this.migrateWorkouts();
       result.workouts = result.details.workoutsMigrated;
 
-      // Step 9: Validate migration
+      // Step 9: Migrate Workout Logs
+      console.log('Migrating workout logs...');
+      result.details.workoutLogsMigrated = await this.migrateWorkoutLogs();
+      result.workoutLogs = result.details.workoutLogsMigrated;
+
+      // Step 10: Validate migration
       console.log('Validating migration...');
       await this.validateMigration(result);
 
@@ -804,6 +883,7 @@ export class MigrationService {
     nutritionLogsCount: number;
     exercisesCount: number;
     workoutsCount: number;
+    workoutLogsCount: number;
     tables: string[];
   }> {
     if (!this.oldDB) {
@@ -815,6 +895,7 @@ export class MigrationService {
         nutritionLogsCount: 0,
         exercisesCount: 0,
         workoutsCount: 0,
+        workoutLogsCount: 0,
         tables: [],
       };
     }
@@ -828,6 +909,7 @@ export class MigrationService {
     let nutritionLogsCount = 0;
     let exercisesCount = 0;
     let workoutsCount = 0;
+    let workoutLogsCount = 0;
 
     try {
       if (tables.includes('FitnessGoals')) {
@@ -885,6 +967,14 @@ export class MigrationService {
         `)) as { count: number }[];
         workoutsCount = result[0]?.count || 0;
       }
+
+      if (tables.includes('WorkoutEvent')) {
+        const result = (await this.oldDB.getAllAsync(`
+          SELECT COUNT(*) as count FROM WorkoutEvent 
+          WHERE deletedAt IS NULL OR deletedAt = ''
+        `)) as { count: number }[];
+        workoutLogsCount = result[0]?.count || 0;
+      }
     } catch (error) {
       console.error('Error getting migration summary:', error);
     }
@@ -897,6 +987,7 @@ export class MigrationService {
       nutritionLogsCount,
       exercisesCount,
       workoutsCount,
+      workoutLogsCount,
       tables,
     };
   }
