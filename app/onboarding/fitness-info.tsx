@@ -1,4 +1,3 @@
-import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -13,9 +12,7 @@ import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
-import { database } from '../../database';
-import UserMetric from '../../database/models/UserMetric';
-import { SettingsService, UserService } from '../../database/services';
+import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 
@@ -41,42 +38,22 @@ export default function FitnessInfo() {
       try {
         const user = await UserService.getCurrentUser();
 
-        const weightMetrics = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'weight'),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('date', Q.desc)
-          )
-          .fetch();
-        const latestWeight = weightMetrics.length > 0 ? weightMetrics[0] : null;
+        const latestWeight = await UserMetricService.getLatest('weight');
+        const latestHeight = await UserMetricService.getLatest('height');
+        const latestBodyFat = await UserMetricService.getLatest('body_fat');
 
-        const heightMetrics = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'height'),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('date', Q.desc)
-          )
-          .fetch();
-        const latestHeight = heightMetrics.length > 0 ? heightMetrics[0] : null;
-
-        const bodyFatMetrics = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'body_fat'),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('date', Q.desc)
-          )
-          .fetch();
-        const latestBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0] : null;
+        const [weightDec, heightDec, bodyFatDec] = await Promise.all([
+          latestWeight?.getDecrypted(),
+          latestHeight?.getDecrypted(),
+          latestBodyFat?.getDecrypted(),
+        ]);
 
         if (user) {
           setInitialData({
             units,
-            weight: latestWeight ? String(latestWeight.value) : DEFAULT_WEIGHT,
-            height: latestHeight ? String(latestHeight.value) : DEFAULT_HEIGHT,
-            fatPercentage: latestBodyFat ? latestBodyFat.value : DEFAULT_FAT_PERCENTAGE,
+            weight: weightDec ? String(weightDec.value) : DEFAULT_WEIGHT,
+            height: heightDec ? String(heightDec.value) : DEFAULT_HEIGHT,
+            fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
@@ -85,9 +62,9 @@ export default function FitnessInfo() {
         } else {
           setInitialData({
             units,
-            weight: latestWeight ? String(latestWeight.value) : DEFAULT_WEIGHT,
-            height: latestHeight ? String(latestHeight.value) : DEFAULT_HEIGHT,
-            fatPercentage: latestBodyFat ? latestBodyFat.value : DEFAULT_FAT_PERCENTAGE,
+            weight: weightDec ? String(weightDec.value) : DEFAULT_WEIGHT,
+            height: heightDec ? String(heightDec.value) : DEFAULT_HEIGHT,
+            fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
@@ -165,114 +142,76 @@ export default function FitnessInfo() {
 
       if (data.weight && parseFloat(data.weight) > 0) {
         const weightValue = parseFloat(data.weight);
-
-        // Check if weight metric exists for today
-        const existingWeight = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'weight'),
-            Q.where('date', currentDate),
-            Q.where('deleted_at', Q.eq(null))
-          )
-          .fetch();
-
-        await database.write(async () => {
-          if (existingWeight.length > 0) {
-            // Update existing weight for today
-            await existingWeight[0].update((metric) => {
-              metric.value = weightValue;
-              metric.unit = data.units === 'imperial' ? 'lbs' : 'kg';
-              metric.timezone = timezone;
-              metric.updatedAt = now;
-            });
-          } else {
-            // Create new weight metric with current date
-            await database.get<UserMetric>('user_metrics').create((metric) => {
-              metric.type = 'weight';
-              metric.value = weightValue;
-              metric.unit = data.units === 'imperial' ? 'lbs' : 'kg';
-              metric.date = currentDate;
-              metric.timezone = timezone;
-              metric.createdAt = now;
-              metric.updatedAt = now;
-            });
-          }
-        });
+        const weightUnit = data.units === 'imperial' ? 'lbs' : 'kg';
+        const existingWeight = await UserMetricService.getMetricsHistory(
+          'weight',
+          { startDate: currentDate, endDate: currentDate },
+          1
+        );
+        if (existingWeight.length > 0) {
+          await UserMetricService.updateMetric(existingWeight[0].id, {
+            value: weightValue,
+            unit: weightUnit,
+            date: currentDate,
+          });
+        } else {
+          await UserMetricService.createMetric({
+            type: 'weight',
+            value: weightValue,
+            unit: weightUnit,
+            date: currentDate,
+            timezone,
+          });
+        }
       }
 
       if (data.height && parseFloat(data.height) > 0) {
         const heightValue = parseFloat(data.height);
-
-        // Check if height metric exists for today
-        const existingHeight = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'height'),
-            Q.where('date', currentDate),
-            Q.where('deleted_at', Q.eq(null))
-          )
-          .fetch();
-
-        await database.write(async () => {
-          if (existingHeight.length > 0) {
-            // Update existing height for today
-            await existingHeight[0].update((metric) => {
-              metric.value = heightValue;
-              metric.unit = data.units === 'imperial' ? 'in' : 'cm';
-              metric.timezone = timezone;
-              metric.updatedAt = now;
-            });
-          } else {
-            // Create new height metric with current date
-            await database.get<UserMetric>('user_metrics').create((metric) => {
-              metric.type = 'height';
-              metric.value = heightValue;
-              metric.unit = data.units === 'imperial' ? 'in' : 'cm';
-              metric.date = currentDate;
-              metric.timezone = timezone;
-              metric.createdAt = now;
-              metric.updatedAt = now;
-            });
-          }
-        });
+        const heightUnit = data.units === 'imperial' ? 'in' : 'cm';
+        const existingHeight = await UserMetricService.getMetricsHistory(
+          'height',
+          { startDate: currentDate, endDate: currentDate },
+          1
+        );
+        if (existingHeight.length > 0) {
+          await UserMetricService.updateMetric(existingHeight[0].id, {
+            value: heightValue,
+            unit: heightUnit,
+            date: currentDate,
+          });
+        } else {
+          await UserMetricService.createMetric({
+            type: 'height',
+            value: heightValue,
+            unit: heightUnit,
+            date: currentDate,
+            timezone,
+          });
+        }
       }
 
-      // Save body fat percentage to user_metrics
       if (data.fatPercentage != null && data.fatPercentage > 0) {
         const fatValue = data.fatPercentage;
-
-        // Check if body fat metric exists for today
-        const existingBodyFat = await database
-          .get<UserMetric>('user_metrics')
-          .query(
-            Q.where('type', 'body_fat'),
-            Q.where('date', currentDate),
-            Q.where('deleted_at', Q.eq(null))
-          )
-          .fetch();
-
-        await database.write(async () => {
-          if (existingBodyFat.length > 0) {
-            // Update existing body fat for today
-            await existingBodyFat[0].update((metric) => {
-              metric.value = fatValue;
-              metric.unit = '%';
-              metric.timezone = timezone;
-              metric.updatedAt = now;
-            });
-          } else {
-            // Create new body fat metric with current date
-            await database.get<UserMetric>('user_metrics').create((metric) => {
-              metric.type = 'body_fat';
-              metric.value = fatValue;
-              metric.unit = '%';
-              metric.date = currentDate;
-              metric.timezone = timezone;
-              metric.createdAt = now;
-              metric.updatedAt = now;
-            });
-          }
-        });
+        const existingBodyFat = await UserMetricService.getMetricsHistory(
+          'body_fat',
+          { startDate: currentDate, endDate: currentDate },
+          1
+        );
+        if (existingBodyFat.length > 0) {
+          await UserMetricService.updateMetric(existingBodyFat[0].id, {
+            value: fatValue,
+            unit: '%',
+            date: currentDate,
+          });
+        } else {
+          await UserMetricService.createMetric({
+            type: 'body_fat',
+            value: fatValue,
+            unit: '%',
+            date: currentDate,
+            timezone,
+          });
+        }
       }
 
       // Persist units setting via SettingsService

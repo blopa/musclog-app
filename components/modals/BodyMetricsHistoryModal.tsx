@@ -5,9 +5,9 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import UserMetric from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
 import { GenericCard } from '../cards/GenericCard';
@@ -163,14 +163,16 @@ export default function BodyMetricsHistoryModal({
 
   // Helper to process metrics into history entries
   const processMetricsToEntries = useCallback(
-    (metrics: UserMetric[], unit: string): HistoryEntry[] => {
-      return metrics.map((metric, index) => {
+    (metrics: UserMetricWithDecrypted[], unit: string): HistoryEntry[] => {
+      return metrics.map((item, index) => {
+        const metric = item.metric;
+        const d = item.decrypted;
         const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
         let change: string | null = null;
         let changeType: 'up' | 'down' | null = null;
 
         if (previous) {
-          const diff = metric.value - previous.value;
+          const diff = d.value - previous.decrypted.value;
           const absDiff = Math.abs(diff);
           if (absDiff > 0.01) {
             changeType = diff > 0 ? 'up' : 'down';
@@ -179,10 +181,8 @@ export default function BodyMetricsHistoryModal({
           }
         }
 
-        // Format value with unit
-        const valueStr = `${metric.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+        const valueStr = `${d.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
 
-        // Determine note based on context
         let note = '';
         if (index === metrics.length - 1) {
           note = t('bodyMetrics.history.notes.baseline');
@@ -197,7 +197,7 @@ export default function BodyMetricsHistoryModal({
 
         return {
           id: metric.id,
-          date: formatRelativeDate(metric.date, t),
+          date: formatRelativeDate(d.date, t),
           value: valueStr,
           change,
           changeType,
@@ -234,11 +234,10 @@ export default function BodyMetricsHistoryModal({
       return null;
     }
     const latest = paginatedMetrics[0];
-    const unit = latest.unit || getMetricUnit(selectedMetric);
+    const d = latest.decrypted;
+    const unit = d.unit || getMetricUnit(selectedMetric);
     return {
-      current: latest.value.toFixed(
-        selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2
-      ),
+      current: d.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2),
       unit,
       label: getMetricLabel(selectedMetric),
     };
@@ -250,17 +249,18 @@ export default function BodyMetricsHistoryModal({
       return [];
     }
 
-    // Sort ascending (oldest to newest) for chart
-    const sortedMetrics = [...allMetricsForChart].sort((a, b) => a.date - b.date);
+    const sortedMetrics = [...allMetricsForChart].sort(
+      (a, b) => a.decrypted.date - b.decrypted.date
+    );
 
-    const minValue = Math.min(...sortedMetrics.map((m) => m.value));
-    const maxValue = Math.max(...sortedMetrics.map((m) => m.value));
-    const range = maxValue - minValue || 1; // Avoid division by zero
-    const padding = range * 0.1; // 10% padding
+    const minValue = Math.min(...sortedMetrics.map((m) => m.decrypted.value));
+    const maxValue = Math.max(...sortedMetrics.map((m) => m.decrypted.value));
+    const range = maxValue - minValue || 1;
+    const padding = range * 0.1;
 
     return sortedMetrics.map((metric, index) => {
-      // Normalize y to 0-150 range for chart (matching original design)
-      const normalizedY = ((metric.value - minValue + padding) / (range + padding * 2)) * 150;
+      const normalizedY =
+        ((metric.decrypted.value - minValue + padding) / (range + padding * 2)) * 150;
       // X-axis: distribute evenly across 400 width
       // Handle single data point case
       const normalizedX =

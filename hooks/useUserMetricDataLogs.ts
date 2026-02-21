@@ -79,7 +79,11 @@ function getMetricTypeLabel(type: string, t: TFunction): string {
   return translated;
 }
 
-function metricToDisplayItemWithT(metric: UserMetric, t: TFunction): UserMetricDataDisplayItem {
+function metricToDisplayItem(
+  metric: UserMetric,
+  decrypted: { value: number; unit?: string },
+  t: TFunction
+): UserMetricDataDisplayItem {
   const icon = ICON_BY_TYPE[metric.type as UserMetricType] ?? 'monitor-weight';
   const colors = ICON_COLORS[icon] ?? ICON_COLORS['monitor-weight'];
 
@@ -89,8 +93,8 @@ function metricToDisplayItemWithT(metric: UserMetric, t: TFunction): UserMetricD
     icon,
     iconColor: colors.color,
     iconBgColor: colors.bg,
-    metricValue: metric.value,
-    metricUnit: metric.unit,
+    metricValue: decrypted.value,
+    metricUnit: decrypted.unit,
   };
 }
 
@@ -202,9 +206,10 @@ export function useUserMetricDataLogs({
 
     try {
       const metrics = await UserMetricService.getMetricsHistory(undefined, undefined, batchSize, 0);
-      const results = metrics.map((metric) => ({
-        item: metricToDisplayItemWithT(metric, t),
-        dateTimestamp: metric.date,
+      const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
+      const results = metrics.map((metric, i) => ({
+        item: metricToDisplayItem(metric, decryptedList[i], t),
+        dateTimestamp: decryptedList[i].date,
       }));
       const groups = groupMetricsByDate(results, t);
       setDayGroups(groups);
@@ -237,9 +242,10 @@ export function useUserMetricDataLogs({
         return;
       }
 
-      const results = metrics.map((metric) => ({
-        item: metricToDisplayItemWithT(metric, t),
-        dateTimestamp: metric.date,
+      const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
+      const results = metrics.map((metric, i) => ({
+        item: metricToDisplayItem(metric, decryptedList[i], t),
+        dateTimestamp: decryptedList[i].date,
       }));
 
       setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));

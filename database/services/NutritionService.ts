@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
 import Food from '../models/Food';
 import NutritionLog, { MealType } from '../models/NutritionLog';
@@ -19,6 +20,15 @@ export class NutritionService {
       const food = await database.get<Food>('foods').find(foodId);
       const now = Date.now();
       const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+      const encrypted = await encryptNutritionLogSnapshot({
+        loggedFoodName: food.name ?? undefined,
+        loggedCalories: food.calories ?? 0,
+        loggedProtein: food.protein ?? 0,
+        loggedCarbs: food.carbs ?? 0,
+        loggedFat: food.fat ?? 0,
+        loggedFiber: food.fiber ?? 0,
+        loggedMicros: food.micros,
+      });
 
       return await database.get<NutritionLog>('nutrition_logs').create((log) => {
         log.foodId = foodId;
@@ -26,13 +36,13 @@ export class NutritionService {
         log.type = mealType;
         log.amount = amount;
         log.portionId = portionId;
-        log.loggedFoodName = food.name ?? undefined;
-        log.loggedCalories = food.calories ?? 0;
-        log.loggedProtein = food.protein ?? 0;
-        log.loggedCarbs = food.carbs ?? 0;
-        log.loggedFat = food.fat ?? 0;
-        log.loggedFiber = food.fiber ?? 0;
-        log.loggedMicros = food.micros;
+        log.loggedFoodNameRaw = encrypted.loggedFoodName;
+        log.loggedCaloriesRaw = encrypted.loggedCalories;
+        log.loggedProteinRaw = encrypted.loggedProtein;
+        log.loggedCarbsRaw = encrypted.loggedCarbs;
+        log.loggedFatRaw = encrypted.loggedFat;
+        log.loggedFiberRaw = encrypted.loggedFiber;
+        log.loggedMicrosRaw = encrypted.loggedMicrosJson;
         log.createdAt = now;
         log.updatedAt = now;
       });
@@ -470,20 +480,20 @@ export class NutritionService {
 
       const now = Date.now();
 
-      // Create new nutrition log with same data and snapshot
+      // Create new nutrition log with same data and snapshot (copy ciphertext)
       return await database.get<NutritionLog>('nutrition_logs').create((log) => {
         log.foodId = originalLog.foodId;
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
         log.date = originalLog.date;
-        log.loggedFoodName = originalLog.loggedFoodName;
-        log.loggedCalories = originalLog.loggedCalories ?? 0;
-        log.loggedProtein = originalLog.loggedProtein ?? 0;
-        log.loggedCarbs = originalLog.loggedCarbs ?? 0;
-        log.loggedFat = originalLog.loggedFat ?? 0;
-        log.loggedFiber = originalLog.loggedFiber ?? 0;
-        log.loggedMicros = originalLog.loggedMicros;
+        log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
+        log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
+        log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';
+        log.loggedCarbsRaw = originalLog.loggedCarbsRaw ?? '';
+        log.loggedFatRaw = originalLog.loggedFatRaw ?? '';
+        log.loggedFiberRaw = originalLog.loggedFiberRaw ?? '';
+        log.loggedMicrosRaw = originalLog.loggedMicrosRaw;
         log.createdAt = now;
         log.updatedAt = now;
       });

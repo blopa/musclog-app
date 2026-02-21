@@ -57,7 +57,9 @@ export default function DebugTestScreen() {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [settings, setSettings] = useState<Setting[]>([]);
-  const [userMetrics, setUserMetrics] = useState<UserMetric[]>([]);
+  const [userMetrics, setUserMetrics] = useState<
+    { metric: UserMetric; decrypted: { value: number; unit?: string; date: number } }[]
+  >([]);
   const [tableSchemas, setTableSchemas] = useState<
     Record<string, { name: string; type: string; notnull: boolean; pk: boolean }[]>
   >({});
@@ -92,12 +94,12 @@ export default function DebugTestScreen() {
         .fetch();
       setSettings(allSettings);
 
-      // Fetch user metrics
-      const allMetrics = await database
-        .get<UserMetric>('user_metrics')
-        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
-        .fetch();
-      setUserMetrics(allMetrics);
+      const { UserMetricService } = await import('../../database/services/UserMetricService');
+      const allMetrics = await UserMetricService.getMetricsHistory(undefined, undefined, 100, 0);
+      const withDecrypted = await Promise.all(
+        allMetrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
+      );
+      setUserMetrics(withDecrypted);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -535,17 +537,17 @@ export default function DebugTestScreen() {
               </Text>
               {userMetrics.length > 0 ? (
                 <View className="gap-2">
-                  {userMetrics.slice(0, 10).map((metric) => (
+                  {userMetrics.slice(0, 10).map(({ metric, decrypted }) => (
                     <View
                       key={metric.id}
                       className="rounded-lg border border-border-light bg-bg-primary p-3"
                     >
                       <Text className="text-text-primary">
-                        <Text className="font-bold">{metric.type}:</Text> {metric.value}{' '}
-                        {metric.unit || 'N/A'}
+                        <Text className="font-bold">{metric.type}:</Text> {decrypted.value}{' '}
+                        {decrypted.unit || 'N/A'}
                       </Text>
                       <Text className="text-xs text-text-secondary">
-                        Date: {new Date(metric.date).toLocaleDateString()}
+                        Date: {new Date(decrypted.date).toLocaleDateString()}
                       </Text>
                       <Text className="text-xs text-text-secondary">
                         Timezone: {metric.timezone}

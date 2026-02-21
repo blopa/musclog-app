@@ -626,10 +626,10 @@ export class WorkoutTemplateService {
     // Convert user weight to kg (default to 70 kg if not available)
     let userWeightKg = 70; // Default fallback
     if (weightMetric) {
-      userWeightKg = weightMetric.value;
-      // Convert from lbs to kg if needed
-      if (weightMetric.unit === 'lbs') {
-        userWeightKg = weightMetric.value / 2.20462;
+      const decrypted = await weightMetric.getDecrypted();
+      userWeightKg = decrypted.value;
+      if (decrypted.unit === 'lbs') {
+        userWeightKg = decrypted.value / 2.20462;
       }
     }
 

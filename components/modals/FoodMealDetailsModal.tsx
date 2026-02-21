@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import type { MealType } from '../../database/models';
+import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
 import { FoodService, MealService, NutritionService } from '../../database/services';
@@ -68,6 +68,9 @@ export function FoodMealDetailsModal({
     fiber: number;
   } | null>(null);
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
+  const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
+    null
+  );
 
   // Determine mode: 'food' | 'foodLog' | 'meal' | 'barcode'
   const mode = meal
@@ -168,15 +171,15 @@ export function FoodMealDetailsModal({
     loadMealNutrients();
   }, [meal]);
 
-  // If we are given a foodLog, initialize edit mode values from it
+  // If we are given a foodLog, initialize edit mode values from it and load decrypted snapshot
   useEffect(() => {
     if (!foodLog) {
+      setFoodLogDecrypted(null);
       return;
     }
 
     setIsFoodDetailsModalVisible(true);
 
-    // Initialize meal and date from the log
     try {
       setSelectedMeal(foodLog.type || 'other');
     } catch (e) {
@@ -189,25 +192,26 @@ export function FoodMealDetailsModal({
       setSelectedDate(new Date());
     }
 
-    // Load gram weight from the log (async)
+    let cancelled = false;
+    foodLog.getDecryptedSnapshot().then((snap: DecryptedNutritionLogSnapshot) => {
+      if (!cancelled) setFoodLogDecrypted(snap);
+    });
+
     (async () => {
       try {
         const grams = await foodLog.getGramWeight();
-        if (typeof grams === 'number' && !Number.isNaN(grams)) {
+        if (!cancelled && typeof grams === 'number' && !Number.isNaN(grams)) {
           setServingSize(Math.round(grams));
         }
       } catch (e) {
         // ignore
       }
     })();
-  }, [foodLog]);
 
-  // Coerce OFF nutriment value to number (API can return strings or various keys)
-  const toNum = useCallback((v: unknown): number => {
-    if (typeof v === 'number' && !Number.isNaN(v)) return v;
-    if (typeof v === 'string') return parseFloat(v) || 0;
-    return 0;
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [foodLog]);
 
   // Extract nutritional data from meal, barcode lookup, local food, or log snapshot
   const getNutritionalData = useCallback(() => {
@@ -225,17 +229,21 @@ export function FoodMealDetailsModal({
       };
     }
 
-    // If we have a foodLog but no food (e.g. food deleted), use snapshot per 100g
-    if (foodLog && !food && foodLog.hasSnapshot?.()) {
+    // If we have a foodLog but no food (e.g. food deleted), use decrypted snapshot per 100g
+    const hasSnapshot =
+      foodLogDecrypted &&
+      typeof foodLogDecrypted.loggedCalories === 'number' &&
+      !Number.isNaN(foodLogDecrypted.loggedCalories);
+    if (foodLog && !food && hasSnapshot && foodLogDecrypted) {
       return {
-        calories: foodLog.loggedCalories ?? 0,
-        protein: foodLog.loggedProtein ?? 0,
-        carbs: foodLog.loggedCarbs ?? 0,
-        fat: foodLog.loggedFat ?? 0,
-        fiber: foodLog.loggedFiber ?? 0,
-        sugar: foodLog.loggedMicros?.sugar ?? 0,
-        saturatedFat: foodLog.loggedMicros?.saturatedFat ?? 0,
-        sodium: foodLog.loggedMicros?.sodium ?? 0,
+        calories: foodLogDecrypted.loggedCalories ?? 0,
+        protein: foodLogDecrypted.loggedProtein ?? 0,
+        carbs: foodLogDecrypted.loggedCarbs ?? 0,
+        fat: foodLogDecrypted.loggedFat ?? 0,
+        fiber: foodLogDecrypted.loggedFiber ?? 0,
+        sugar: foodLogDecrypted.loggedMicros?.sugar ?? 0,
+        saturatedFat: foodLogDecrypted.loggedMicros?.saturatedFat ?? 0,
+        sodium: foodLogDecrypted.loggedMicros?.sodium ?? 0,
       };
     }
 
@@ -295,12 +303,13 @@ export function FoodMealDetailsModal({
       saturatedFat: 0,
       sodium: 0,
     };
-  }, [productDetails, productFromSearch, food, foodLog, meal, mealNutrients]);
+  }, [productDetails, productFromSearch, food, foodLog, foodLogDecrypted, meal, mealNutrients]);
 
   const nutritionalData = getNutritionalData();
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
   const getProductName = useCallback(() => {
+    // TODO: translate these
     if (meal) {
       return meal.name || 'Unknown Meal';
     }
@@ -309,8 +318,8 @@ export function FoodMealDetailsModal({
       return food.name || 'Unknown Food';
     }
 
-    if (foodLog?.loggedFoodName?.trim()) {
-      return foodLog.loggedFoodName.trim();
+    if (foodLogDecrypted?.loggedFoodName?.trim()) {
+      return foodLogDecrypted.loggedFoodName.trim();
     }
 
     if (productFromSearch?.product_name) {
@@ -321,7 +330,7 @@ export function FoodMealDetailsModal({
       return productDetails.product.product_name || 'Unknown Food';
     }
     return 'Unknown Food';
-  }, [productDetails, productFromSearch, food, foodLog, meal]);
+  }, [productDetails, productFromSearch, food, foodLogDecrypted, meal]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {

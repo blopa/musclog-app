@@ -211,13 +211,13 @@ export const schema = appSchema({
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
 
-        // TODO: logged data must be encrypted when saving and decrypted when reading using utils/encryption.ts
-        { name: 'logged_food_name', type: 'string', isOptional: true },
-        { name: 'logged_calories', type: 'number' },
-        { name: 'logged_protein', type: 'number' },
-        { name: 'logged_carbs', type: 'number' },
-        { name: 'logged_fat', type: 'number' },
-        { name: 'logged_fiber', type: 'number' },
+        // Encrypted at rest (utils/encryption.ts)
+        { name: 'logged_food_name', type: 'string', isOptional: true }, // isEncrypted: true
+        { name: 'logged_calories', type: 'string' }, // isEncrypted: true
+        { name: 'logged_protein', type: 'string' }, // isEncrypted: true
+        { name: 'logged_carbs', type: 'string' }, // isEncrypted: true
+        { name: 'logged_fat', type: 'string' }, // isEncrypted: true
+        { name: 'logged_fiber', type: 'string' }, // isEncrypted: true
         { name: 'logged_micros_json', type: 'string', isOptional: true },
         { name: 'date', type: 'number', isIndexed: true }, // Midnight timestamp for the day
 
@@ -232,10 +232,10 @@ export const schema = appSchema({
       name: 'user_metrics',
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
-        // TODO: value, unit and date must be encrypted when saving and decrypted when reading using utils/encryption.ts
-        { name: 'value', type: 'number' },
-        { name: 'unit', type: 'string', isOptional: true },
-        { name: 'date', type: 'number', isIndexed: true },
+        // Encrypted at rest (utils/encryption.ts)
+        { name: 'value', type: 'string' }, // isEncrypted: true
+        { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
+        { name: 'date', type: 'string' }, // isEncrypted: true
 
         { name: 'timezone', type: 'string' },
         { name: 'created_at', type: 'number' },

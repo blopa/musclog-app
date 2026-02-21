@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
+import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
 import { useTheme } from '../../hooks/useTheme';
 import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
@@ -162,46 +163,46 @@ export default function AddUserMetricEntryModal({
       combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
       const dateTimestamp = new Date(combinedDate.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
 
+      const [encWeight, encBodyFat, encHeight, encMood] = await Promise.all([
+        encryptUserMetricFields({ value: weight, unit: 'kg', date: dateTimestamp }),
+        encryptUserMetricFields({ value: bodyFat, unit: '%', date: dateTimestamp }),
+        encryptUserMetricFields({ value: height, unit: 'cm', date: dateTimestamp }),
+        encryptUserMetricFields({ value: mood, unit: '', date: dateTimestamp }),
+      ]);
+
       await database.write(async () => {
-        // Save weight metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'weight' as UserMetricType;
-          metric.value = weight;
-          metric.unit = 'kg';
-          metric.date = dateTimestamp;
+          metric.valueRaw = encWeight.value;
+          metric.unitRaw = encWeight.unit;
+          metric.dateRaw = encWeight.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-
-        // Save body fat metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'body_fat' as UserMetricType;
-          metric.value = bodyFat;
-          metric.unit = '%';
-          metric.date = dateTimestamp;
+          metric.valueRaw = encBodyFat.value;
+          metric.unitRaw = encBodyFat.unit;
+          metric.dateRaw = encBodyFat.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-
-        // Save height metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'height' as UserMetricType;
-          metric.value = height;
-          metric.unit = 'cm';
-          metric.date = dateTimestamp;
+          metric.valueRaw = encHeight.value;
+          metric.unitRaw = encHeight.unit;
+          metric.dateRaw = encHeight.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-
-        // Save mood metric
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'mood' as UserMetricType;
-          metric.value = mood;
-          metric.unit = '';
-          metric.date = dateTimestamp;
+          metric.valueRaw = encMood.value;
+          metric.unitRaw = encMood.unit;
+          metric.dateRaw = encMood.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;

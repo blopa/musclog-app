@@ -7,6 +7,7 @@ import { Q } from '@nozbe/watermelondb';
 import type { RecordType } from 'react-native-health-connect';
 
 import { database } from '../database';
+import { encryptUserMetricFields } from '../database/encryptionHelpers';
 import Setting from '../database/models/Setting';
 import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
 import { healthConnectService } from './healthConnect';
@@ -438,22 +439,26 @@ class HealthDataSyncService {
       deduplicated.map((r) => r.date)
     );
 
-    const existingTimestamps = new Set(existingRecords.map((r) => r.date));
+    const existingDates = new Set(
+      await Promise.all(existingRecords.map((r) => r.getDecrypted().then((d) => d.date)))
+    );
 
-    // Filter out records that already exist
-    const newRecords = deduplicated.filter((r) => !existingTimestamps.has(r.date));
+    const newRecords = deduplicated.filter((r) => !existingDates.has(r.date));
     skipped += deduplicated.length - newRecords.length;
 
-    // Batch write to database
     if (newRecords.length > 0) {
       await database.write(async () => {
         for (const record of newRecords) {
+          const encrypted = await encryptUserMetricFields({
+            value: record.value,
+            unit: record.unit,
+            date: record.date,
+          });
           await database.get<UserMetric>('user_metrics').create((metric) => {
-            // Convert MetricType enum value to UserMetricType string
             metric.type = record.type as UserMetricType;
-            metric.value = record.value;
-            metric.unit = record.unit;
-            metric.date = record.date;
+            metric.valueRaw = encrypted.value;
+            metric.unitRaw = encrypted.unit;
+            metric.dateRaw = encrypted.date;
             metric.timezone = record.timezone;
             metric.createdAt = Date.now();
             metric.updatedAt = Date.now();
@@ -467,7 +472,8 @@ class HealthDataSyncService {
   }
 
   /**
-   * Get existing metrics from database to check for duplicates
+   * Get existing metrics from database to check for duplicates.
+   * Date is encrypted so we fetch by type and filter by decrypted date in memory.
    */
   private async getExistingMetrics(types: MetricType[], dates: number[]): Promise<UserMetric[]> {
     if (types.length === 0 || dates.length === 0) {
@@ -478,15 +484,17 @@ class HealthDataSyncService {
     const minDate = Math.min(...dates);
     const maxDate = Math.max(...dates);
 
-    return await database
+    const metrics = await database
       .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', Q.oneOf(uniqueTypes)),
-        Q.where('date', Q.gte(minDate)),
-        Q.where('date', Q.lte(maxDate)),
-        Q.where('deleted_at', Q.eq(null))
-      )
+      .query(Q.where('type', Q.oneOf(uniqueTypes)), Q.where('deleted_at', Q.eq(null)))
       .fetch();
+
+    const withDecrypted = await Promise.all(
+      metrics.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
+    );
+    return withDecrypted
+      .filter((x) => x.decrypted.date >= minDate && x.decrypted.date <= maxDate)
+      .map((x) => x.metric);
   }
 
   /**

@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,10 +13,8 @@ import { LineChart } from '../../components/LineChart';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
-import { database } from '../../database';
 import { type EatingPhase } from '../../database/models';
-import UserMetric from '../../database/models/UserMetric';
-import { NutritionGoalService } from '../../database/services';
+import { NutritionGoalService, UserMetricService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import {
   bmiFromWeightAndHeightM,
@@ -223,37 +220,22 @@ export default function NutritionGoalsResults() {
         let currentBodyFatPercent: number | null = null;
 
         try {
-          const heightMetrics = await database
-            .get<UserMetric>('user_metrics')
-            .query(
-              Q.where('type', 'height'),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('date', Q.desc)
-            )
-            .fetch();
+          const [latestHeight, latestBodyFat] = await Promise.all([
+            UserMetricService.getLatest('height'),
+            UserMetricService.getLatest('body_fat'),
+          ]);
+          const heightDec = await latestHeight?.getDecrypted();
+          const bodyFatDec = await latestBodyFat?.getDecrypted();
 
-          const bodyFatMetrics = await database
-            .get<UserMetric>('user_metrics')
-            .query(
-              Q.where('type', 'body_fat'),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('date', Q.desc)
-            )
-            .fetch();
-
-          if (heightMetrics.length > 0) {
-            const rawHeight = heightMetrics[0].value;
-            const heightUnit = heightMetrics[0].unit;
+          if (heightDec) {
+            const rawHeight = heightDec.value;
+            const heightUnit = heightDec.unit;
             const heightCm = heightUnit === 'in' ? inchesToCm(rawHeight) : rawHeight;
             heightM = heightCm / 100;
           }
 
-          if (
-            bodyFatMetrics.length > 0 &&
-            bodyFatMetrics[0].value >= 1 &&
-            bodyFatMetrics[0].value <= 99
-          ) {
-            currentBodyFatPercent = bodyFatMetrics[0].value;
+          if (bodyFatDec && bodyFatDec.value >= 1 && bodyFatDec.value <= 99) {
+            currentBodyFatPercent = bodyFatDec.value;
           }
         } catch (e) {
           console.warn('Could not fetch height/bodyFat for target metrics:', e);

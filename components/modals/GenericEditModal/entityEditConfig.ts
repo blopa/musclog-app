@@ -1,5 +1,6 @@
 import type { Model } from '@nozbe/watermelondb';
 
+import type UserMetric from '../../../database/models/UserMetric';
 import {
   ExerciseService,
   FoodPortionService,
@@ -451,12 +452,14 @@ export async function getInitialValues(
         icon: recordAny.icon ?? '',
       };
 
-    case 'userMetric':
+    case 'userMetric': {
+      const decrypted = await (record as UserMetric).getDecrypted();
       return {
         type: recordAny.type ?? 'weight',
-        value: recordAny.value ?? 0,
-        date: recordAny.date ?? Date.now(),
+        value: decrypted.value ?? 0,
+        date: decrypted.date ?? Date.now(),
       };
+    }
 
     case 'workoutTemplate':
       return {

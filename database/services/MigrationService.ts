@@ -5,6 +5,7 @@ import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 import { ENCRYPTION_KEY } from '../../constants/database';
 import { decryptDatabaseValue } from '../../utils/encryption';
 import { database } from '../database-instance';
+import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import {
   type EquipmentType,
   Exercise,
@@ -240,17 +241,21 @@ export class MigrationService {
             const numericValue = parseFloat(decryptedValue);
 
             if (!isNaN(numericValue)) {
-              // Apply conversion function if available
               const finalValue = metricType.convert(numericValue);
               console.log(
                 `Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`
               );
+              const encrypted = await encryptUserMetricFields({
+                value: finalValue,
+                unit: metricType.unit,
+                date: dateTimestamp,
+              });
               await database.write(async () => {
                 await database.get<UserMetric>('user_metrics').create((newMetric) => {
                   newMetric.type = metricType.type;
-                  newMetric.value = finalValue;
-                  newMetric.unit = metricType.unit;
-                  newMetric.date = dateTimestamp;
+                  newMetric.valueRaw = encrypted.value;
+                  newMetric.unitRaw = encrypted.unit;
+                  newMetric.dateRaw = encrypted.date;
                   newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
                   newMetric.createdAt = baseTimestamp;
                   newMetric.updatedAt = baseTimestamp;
@@ -443,14 +448,8 @@ export class MigrationService {
         const sugar = await decryptDatabaseValue(oldLog.sugar); // TODO: why do we not use it?
         const fiber = await decryptDatabaseValue(oldLog.fiber);
         const fat = await decryptDatabaseValue(oldLog.fat);
-        const monounsaturatedFat = await decryptDatabaseValue(
-          ENCRYPTION_KEY,
-          oldLog.monounsaturatedFat
-        );
-        const polyunsaturatedFat = await decryptDatabaseValue(
-          ENCRYPTION_KEY,
-          oldLog.polyunsaturatedFat
-        );
+        const monounsaturatedFat = await decryptDatabaseValue(oldLog.monounsaturatedFat);
+        const polyunsaturatedFat = await decryptDatabaseValue(oldLog.polyunsaturatedFat);
         const saturatedFat = await decryptDatabaseValue(oldLog.saturatedFat);
         const transFat = await decryptDatabaseValue(oldLog.transFat);
         const unsaturatedFat = await decryptDatabaseValue(oldLog.unsaturatedFat);
@@ -477,6 +476,16 @@ export class MigrationService {
           }
         }
 
+        const encrypted = await encryptNutritionLogSnapshot({
+          loggedFoodName: name || undefined,
+          loggedCalories: parseFloat(calories) || 0,
+          loggedProtein: parseFloat(protein) || 0,
+          loggedCarbs: parseFloat(carbohydrate) || 0,
+          loggedFat: parseFloat(fat) || 0,
+          loggedFiber: parseFloat(fiber) || 0,
+          loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
+        });
+
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             newLog.foodId = oldLog.dataId || ''; // Use dataId as food_id
@@ -484,13 +493,13 @@ export class MigrationService {
             newLog.type = this.mapMealType(mealType);
             newLog.amount = parseFloat(grams) || 1; // Default to 1 if grams is null
             newLog.portionId = undefined; // Not present in old schema
-            newLog.loggedFoodName = name || '';
-            newLog.loggedCalories = parseFloat(calories) || 0;
-            newLog.loggedProtein = parseFloat(protein) || 0;
-            newLog.loggedCarbs = parseFloat(carbohydrate) || 0;
-            newLog.loggedFat = parseFloat(fat) || 0;
-            newLog.loggedFiber = parseFloat(fiber) || 0;
-            newLog.loggedMicros = Object.keys(micros).length > 0 ? micros : undefined;
+            newLog.loggedFoodNameRaw = encrypted.loggedFoodName;
+            newLog.loggedCaloriesRaw = encrypted.loggedCalories;
+            newLog.loggedProteinRaw = encrypted.loggedProtein;
+            newLog.loggedCarbsRaw = encrypted.loggedCarbs;
+            newLog.loggedFatRaw = encrypted.loggedFat;
+            newLog.loggedFiberRaw = encrypted.loggedFiber;
+            newLog.loggedMicrosRaw = encrypted.loggedMicrosJson;
             newLog.createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
             newLog.deletedAt = oldLog.deletedAt

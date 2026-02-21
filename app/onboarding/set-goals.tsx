@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,10 +15,8 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
-import { database } from '../../database';
 import { type EatingPhase } from '../../database/models';
-import UserMetric from '../../database/models/UserMetric';
-import { UserService } from '../../database/services';
+import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import {
   bmiFromWeightAndHeightM,
@@ -300,28 +297,20 @@ export default function SetGoals() {
       return null;
     }
 
-    const weightMetrics = await database
-      .get<UserMetric>('user_metrics')
-      .query(Q.where('type', 'weight'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
-      .fetch();
+    const [latestWeight, latestHeight, latestBodyFat] = await Promise.all([
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('height'),
+      UserMetricService.getLatest('body_fat'),
+    ]);
+    const [weightDec, heightDec, bodyFatDec] = await Promise.all([
+      latestWeight?.getDecrypted(),
+      latestHeight?.getDecrypted(),
+      latestBodyFat?.getDecrypted(),
+    ]);
 
-    const heightMetrics = await database
-      .get<UserMetric>('user_metrics')
-      .query(Q.where('type', 'height'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
-      .fetch();
-
-    const bodyFatMetrics = await database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', 'body_fat'),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('date', Q.desc)
-      )
-      .fetch();
-
-    const rawWeight = weightMetrics.length > 0 ? weightMetrics[0].value : 0;
-    const rawHeight = heightMetrics.length > 0 ? heightMetrics[0].value : 0;
-    const rawBodyFat = bodyFatMetrics.length > 0 ? bodyFatMetrics[0].value : undefined;
+    const rawWeight = weightDec?.value ?? 0;
+    const rawHeight = heightDec?.value ?? 0;
+    const rawBodyFat = bodyFatDec?.value;
 
     if (rawWeight <= 0 || rawHeight <= 0) {
       return null;

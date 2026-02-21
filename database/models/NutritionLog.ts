@@ -1,20 +1,21 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, json, relation, writer } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import { decryptJson, decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 import type { MicrosData } from './Food';
 import Food from './Food';
 import FoodPortion from './FoodPortion';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
-function parseMicrosData(data: unknown): MicrosData {
-  if (typeof data !== 'object' || data === null) return {};
-  const out: MicrosData = {};
-  for (const k of Object.keys(data)) {
-    const v = (data as Record<string, unknown>)[k];
-    if (typeof v === 'number') out[k] = v;
-  }
-  return out;
+export interface DecryptedNutritionLogSnapshot {
+  loggedFoodName?: string;
+  loggedCalories: number;
+  loggedProtein: number;
+  loggedCarbs: number;
+  loggedFat: number;
+  loggedFiber: number;
+  loggedMicros?: MicrosData;
 }
 
 export default class NutritionLog extends Model {
@@ -32,14 +33,14 @@ export default class NutritionLog extends Model {
   @field('amount') amount!: number; // Quantity eaten
   @field('portion_id') portionId?: string; // Unit used (e.g., linked to food_portions)
 
-  // Snapshot at log time (per 100g) so values don't change if food is edited or deleted (optional for legacy rows)
-  @field('logged_food_name') loggedFoodName?: string;
-  @field('logged_calories') loggedCalories?: number;
-  @field('logged_protein') loggedProtein?: number;
-  @field('logged_carbs') loggedCarbs?: number;
-  @field('logged_fat') loggedFat?: number;
-  @field('logged_fiber') loggedFiber?: number;
-  @json('logged_micros_json', parseMicrosData) loggedMicros?: MicrosData;
+  // Encrypted at rest (ciphertext in DB)
+  @field('logged_food_name') loggedFoodNameRaw?: string;
+  @field('logged_calories') loggedCaloriesRaw?: string;
+  @field('logged_protein') loggedProteinRaw?: string;
+  @field('logged_carbs') loggedCarbsRaw?: string;
+  @field('logged_fat') loggedFatRaw?: string;
+  @field('logged_fiber') loggedFiberRaw?: string;
+  @field('logged_micros_json') loggedMicrosRaw?: string;
 
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -80,6 +81,52 @@ export default class NutritionLog extends Model {
     });
   }
 
+  /** Decrypt snapshot fields (logged_*). Use this for display and calculations. */
+  async getDecryptedSnapshot(): Promise<DecryptedNutritionLogSnapshot> {
+    const [
+      loggedFoodName,
+      loggedCalories,
+      loggedProtein,
+      loggedCarbs,
+      loggedFat,
+      loggedFiber,
+      loggedMicros,
+    ] = await Promise.all([
+      decryptOptionalString(this.loggedFoodNameRaw),
+      decryptNumber(this.loggedCaloriesRaw),
+      decryptNumber(this.loggedProteinRaw),
+      decryptNumber(this.loggedCarbsRaw),
+      decryptNumber(this.loggedFatRaw),
+      decryptNumber(this.loggedFiberRaw),
+      decryptJson(this.loggedMicrosRaw),
+    ]);
+    return {
+      loggedFoodName: loggedFoodName || undefined,
+      loggedCalories,
+      loggedProtein,
+      loggedCarbs,
+      loggedFat,
+      loggedFiber,
+      loggedMicros: Object.keys(loggedMicros).length > 0 ? loggedMicros : undefined,
+    };
+  }
+
+  /**
+   * Whether this log has snapshot data (new logs always do).
+   * Legacy rows without snapshot fall back to resolving the food.
+   */
+  async hasSnapshot(): Promise<boolean> {
+    const s = await this.getDecryptedSnapshot();
+    return (
+      typeof s.loggedCalories === 'number' &&
+      !Number.isNaN(s.loggedCalories) &&
+      typeof s.loggedProtein === 'number' &&
+      typeof s.loggedCarbs === 'number' &&
+      typeof s.loggedFat === 'number' &&
+      typeof s.loggedFiber === 'number'
+    );
+  }
+
   // Get the actual gram weight for this nutrition log entry
   async getGramWeight(): Promise<number> {
     if (this.portionId) {
@@ -93,21 +140,6 @@ export default class NutritionLog extends Model {
     return this.amount;
   }
 
-  /**
-   * Whether this log has snapshot data (new logs always do).
-   * Legacy rows without snapshot fall back to resolving the food.
-   */
-  hasSnapshot(): boolean {
-    return (
-      typeof this.loggedCalories === 'number' &&
-      !Number.isNaN(this.loggedCalories) &&
-      typeof this.loggedProtein === 'number' &&
-      typeof this.loggedCarbs === 'number' &&
-      typeof this.loggedFat === 'number' &&
-      typeof this.loggedFiber === 'number'
-    );
-  }
-
   // Get nutrients for this specific nutrition log entry (uses snapshot when present)
   async getNutrients(): Promise<{
     calories: number;
@@ -118,14 +150,15 @@ export default class NutritionLog extends Model {
   }> {
     const totalGrams = await this.getGramWeight();
     const scale = totalGrams / 100;
-
-    if (this.hasSnapshot()) {
+    const hasSnap = await this.hasSnapshot();
+    if (hasSnap) {
+      const s = await this.getDecryptedSnapshot();
       return {
-        calories: (this.loggedCalories ?? 0) * scale,
-        protein: (this.loggedProtein ?? 0) * scale,
-        carbs: (this.loggedCarbs ?? 0) * scale,
-        fat: (this.loggedFat ?? 0) * scale,
-        fiber: (this.loggedFiber ?? 0) * scale,
+        calories: (s.loggedCalories ?? 0) * scale,
+        protein: (s.loggedProtein ?? 0) * scale,
+        carbs: (s.loggedCarbs ?? 0) * scale,
+        fat: (s.loggedFat ?? 0) * scale,
+        fiber: (s.loggedFiber ?? 0) * scale,
       };
     }
 
@@ -148,8 +181,9 @@ export default class NutritionLog extends Model {
 
   /** Display name: snapshot name when food is missing or deleted. */
   async getDisplayName(): Promise<string> {
-    if (this.loggedFoodName?.trim()) {
-      return this.loggedFoodName.trim();
+    const s = await this.getDecryptedSnapshot();
+    if (s.loggedFoodName?.trim()) {
+      return s.loggedFoodName.trim();
     }
     try {
       const food = await this.food;

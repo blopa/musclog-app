@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
+import type { DecryptedUserMetricFields } from '../database/models';
 import UserMetric from '../database/models/UserMetric';
 import { UserMetricService } from '../database/services';
 import { MetricType } from '../services/healthDataTransform';
@@ -33,10 +34,15 @@ export type UseUserMetricsResultLatest = {
   isLoading: boolean;
 };
 
+export type UserMetricWithDecrypted = {
+  metric: UserMetric;
+  decrypted: DecryptedUserMetricFields;
+};
+
 // Return type for history mode
 export type UseUserMetricsResultHistory = {
-  metrics: UserMetric[]; // Array of UserMetric models
-  latest: UserMetrics | null; // Latest values for convenience
+  metrics: UserMetricWithDecrypted[];
+  latest: UserMetrics | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
@@ -80,28 +86,24 @@ function calculateBMI(
 }
 
 /**
- * Convert UserMetric records to UserMetrics object
+ * Convert decrypted metric fields to UserMetrics object
  */
-function convertMetricsToUserMetrics(
-  weightMetric: UserMetric | null,
-  heightMetric: UserMetric | null,
-  bodyFatMetric: UserMetric | null
+function convertDecryptedToUserMetrics(
+  weightDec: DecryptedUserMetricFields | null,
+  heightDec: DecryptedUserMetricFields | null,
+  bodyFatDec: DecryptedUserMetricFields | null
 ): UserMetrics | null {
-  const weight = weightMetric?.value;
-  const height = heightMetric?.value;
-  const bodyFat = bodyFatMetric?.value;
+  const weight = weightDec?.value;
+  const height = heightDec?.value;
+  const bodyFat = bodyFatDec?.value;
 
-  // Calculate BMI if both weight and height are available
   let bmi: number | undefined;
-  if (weight && height) {
-    // Get units from metric records or use settings
-    const wUnit = (weightMetric?.unit === 'lbs' ? 'lbs' : 'kg') as 'kg' | 'lbs';
-    const hUnit = (heightMetric?.unit === 'in' ? 'in' : 'cm') as 'cm' | 'in';
-
+  if (weight !== undefined && height !== undefined) {
+    const wUnit = (weightDec?.unit === 'lbs' ? 'lbs' : 'kg') as 'kg' | 'lbs';
+    const hUnit = (heightDec?.unit === 'in' ? 'in' : 'cm') as 'cm' | 'in';
     bmi = calculateBMI(weight, height, wUnit, hUnit);
   }
 
-  // Return null if no metrics at all
   if (weight === undefined && height === undefined && bodyFat === undefined) {
     return null;
   }
@@ -139,8 +141,8 @@ export function useUserMetrics({
   const [latestMetrics, setLatestMetrics] = useState<UserMetrics | null>(null);
   const [isLoadingLatest, setIsLoadingLatest] = useState(true);
 
-  // State for history mode
-  const [metrics, setMetrics] = useState<UserMetric[]>([]);
+  // State for history mode (with decrypted for display)
+  const [metrics, setMetrics] = useState<UserMetricWithDecrypted[]>([]);
   const [latestValues, setLatestValues] = useState<UserMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -160,19 +162,12 @@ export function useUserMetrics({
     try {
       let metricsHistory: UserMetric[];
 
-      // Map UI metric types to database types
       const dbMetricType = metricType;
 
       if (getAll) {
-        // Fetch all metrics of the specified type (no pagination)
-        metricsHistory = await UserMetricService.getMetricsHistory(
-          dbMetricType,
-          dateRange
-          // No limit or offset - gets all
-        );
-        setHasMore(false); // No more to load when getAll is true
+        metricsHistory = await UserMetricService.getMetricsHistory(dbMetricType, dateRange);
+        setHasMore(false);
       } else {
-        // Fetch initial batch with pagination
         setHasMore(true);
         metricsHistory = await UserMetricService.getMetricsHistory(
           dbMetricType,
@@ -190,11 +185,9 @@ export function useUserMetrics({
 
         setCurrentOffset(initialLimit);
 
-        // Check if there are more metrics
         if (metricsHistory.length < initialLimit) {
           setHasMore(false);
         } else {
-          // Check if there's a next batch
           const nextBatch = await UserMetricService.getMetricsHistory(
             dbMetricType,
             dateRange,
@@ -212,14 +205,20 @@ export function useUserMetrics({
         return;
       }
 
-      setMetrics(metricsHistory);
+      const withDecrypted: UserMetricWithDecrypted[] = await Promise.all(
+        metricsHistory.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
+      );
+      setMetrics(withDecrypted);
 
-      // Get latest values for convenience
       const weightMetric = await UserMetricService.getLatest('weight');
       const heightMetric = await UserMetricService.getLatest('height');
       const bodyFatMetric = await UserMetricService.getLatest('body_fat');
-      const latest = convertMetricsToUserMetrics(weightMetric, heightMetric, bodyFatMetric);
-      setLatestValues(latest);
+      const [wDec, hDec, bDec] = await Promise.all([
+        weightMetric?.getDecrypted() ?? null,
+        heightMetric?.getDecrypted() ?? null,
+        bodyFatMetric?.getDecrypted() ?? null,
+      ]);
+      setLatestValues(convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null));
     } catch (err) {
       console.error('Error loading user metrics history:', err);
       setMetrics([]);
@@ -257,8 +256,10 @@ export function useUserMetrics({
         return;
       }
 
-      // Append to existing metrics
-      setMetrics((prev) => [...prev, ...metricsHistory]);
+      const withDecrypted: UserMetricWithDecrypted[] = await Promise.all(
+        metricsHistory.map(async (m) => ({ metric: m, decrypted: await m.getDecrypted() }))
+      );
+      setMetrics((prev) => [...prev, ...withDecrypted]);
 
       const newOffset = currentOffset + metricsHistory.length;
       setCurrentOffset(newOffset);
@@ -290,110 +291,35 @@ export function useUserMetrics({
       return;
     }
 
-    // Track individual metric values
-    let weight: number | undefined;
-    let height: number | undefined;
-    let bodyFat: number | undefined;
-    let weightUnitFromMetric: string | undefined;
-    let heightUnitFromMetric: string | undefined;
-    let loadedCount = 0;
-    const totalQueries = 3;
+    // Observe any change to user_metrics; date is encrypted so we refetch latest via service
+    const metricsQuery = database
+      .get<UserMetric>('user_metrics')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(1));
 
-    const updateMetrics = () => {
-      loadedCount++;
-      if (loadedCount === totalQueries) {
-        // Calculate BMI if both weight and height are available
-        let bmi: number | undefined;
-        if (weight && height) {
-          // Get units from metric records or use settings
-          const wUnit = (weightUnitFromMetric === 'lbs' ? 'lbs' : 'kg') as 'kg' | 'lbs';
-          const hUnit = (heightUnitFromMetric === 'in' ? 'in' : 'cm') as 'cm' | 'in';
-
-          bmi = calculateBMI(weight, height, wUnit, hUnit);
-        }
-
-        // Return null if no metrics at all
-        if (weight === undefined && height === undefined && bodyFat === undefined) {
-          setLatestMetrics(null);
-        } else {
-          setLatestMetrics({
-            weight,
-            height,
-            bodyFat,
-            bmi: bmi && bmi > 0 ? bmi : undefined,
-          });
-        }
-        setIsLoadingLatest(false);
-      }
+    const refreshLatest = () => {
+      Promise.all([
+        UserMetricService.getLatest('weight'),
+        UserMetricService.getLatest('height'),
+        UserMetricService.getLatest('body_fat'),
+      ])
+        .then(([w, h, b]) => Promise.all([w?.getDecrypted(), h?.getDecrypted(), b?.getDecrypted()]))
+        .then(([wDec, hDec, bDec]) => {
+          setLatestMetrics(convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null));
+        })
+        .finally(() => setIsLoadingLatest(false));
     };
 
-    // Create separate queries for each metric type
-    const weightQuery = database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', 'weight'),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('date', Q.desc),
-        Q.take(1)
-      );
-
-    const heightQuery = database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', 'height'),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('date', Q.desc),
-        Q.take(1)
-      );
-
-    const bodyFatQuery = database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', 'body_fat'),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('date', Q.desc),
-        Q.take(1)
-      );
-
-    // Subscribe to each query separately
-    const weightSubscription = weightQuery.observe().subscribe({
-      next: (weights) => {
-        weight = weights[0]?.value;
-        weightUnitFromMetric = weights[0]?.unit;
-        updateMetrics();
-      },
+    const subscription = metricsQuery.observe().subscribe({
+      next: refreshLatest,
       error: () => {
-        updateMetrics();
+        refreshLatest();
       },
     });
 
-    const heightSubscription = heightQuery.observe().subscribe({
-      next: (heights) => {
-        height = heights[0]?.value;
-        heightUnitFromMetric = heights[0]?.unit;
-        updateMetrics();
-      },
-      error: () => {
-        updateMetrics();
-      },
-    });
+    refreshLatest();
 
-    const bodyFatSubscription = bodyFatQuery.observe().subscribe({
-      next: (bodyFats) => {
-        bodyFat = bodyFats[0]?.value;
-        updateMetrics();
-      },
-      error: () => {
-        updateMetrics();
-      },
-    });
-
-    return () => {
-      weightSubscription.unsubscribe();
-      heightSubscription.unsubscribe();
-      bodyFatSubscription.unsubscribe();
-    };
-  }, [mode, weightUnit, heightUnit]);
+    return () => subscription.unsubscribe();
+  }, [mode]);
 
   // History mode: Observe for new metrics to trigger reload (reactivity)
   useEffect(() => {

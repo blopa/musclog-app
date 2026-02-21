@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import Exercise, {
   type EquipmentType,
@@ -1163,48 +1164,64 @@ async function seedUserMetrics(): Promise<{ created: number }> {
         const fatFreeMass = data.weight * (1 - data.bodyFat / 100);
         const ffmi = fatFreeMass / heightM2;
 
-        // Weight metric
+        const encryptedWeight = await encryptUserMetricFields({
+          value: data.weight,
+          unit: 'kg',
+          date: data.date,
+        });
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'weight';
-          metric.value = data.weight;
-          metric.unit = 'kg';
-          metric.date = data.date;
+          metric.valueRaw = encryptedWeight.value;
+          metric.unitRaw = encryptedWeight.unit;
+          metric.dateRaw = encryptedWeight.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
         created++;
 
-        // Body Fat metric
+        const encryptedBodyFat = await encryptUserMetricFields({
+          value: data.bodyFat,
+          unit: '%',
+          date: data.date,
+        });
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'body_fat';
-          metric.value = data.bodyFat;
-          metric.unit = '%';
-          metric.date = data.date;
+          metric.valueRaw = encryptedBodyFat.value;
+          metric.unitRaw = encryptedBodyFat.unit;
+          metric.dateRaw = encryptedBodyFat.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
         created++;
 
-        // BMI metric
+        const encryptedBmi = await encryptUserMetricFields({
+          value: bmi,
+          unit: '',
+          date: data.date,
+        });
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'bmi';
-          metric.value = bmi;
-          metric.unit = '';
-          metric.date = data.date;
+          metric.valueRaw = encryptedBmi.value;
+          metric.unitRaw = encryptedBmi.unit;
+          metric.dateRaw = encryptedBmi.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
         created++;
 
-        // FFMI metric
+        const encryptedFfmi = await encryptUserMetricFields({
+          value: ffmi,
+          unit: '',
+          date: data.date,
+        });
         await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'ffmi';
-          metric.value = ffmi;
-          metric.unit = '';
-          metric.date = data.date;
+          metric.valueRaw = encryptedFfmi.value;
+          metric.unitRaw = encryptedFfmi.unit;
+          metric.dateRaw = encryptedFfmi.date;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
@@ -1435,19 +1452,29 @@ async function seedFoods(): Promise<{ created: number }> {
         const f = foodByName.get(nl.name.toLowerCase());
         if (!f) continue;
 
+        const encrypted = await encryptNutritionLogSnapshot({
+          loggedFoodName: f.name ?? 'No named food', // TODO: translate this
+          loggedCalories: f.calories ?? 0,
+          loggedProtein: f.protein ?? 0,
+          loggedCarbs: f.carbs ?? 0,
+          loggedFat: f.fat ?? 0,
+          loggedFiber: f.fiber ?? 0,
+          loggedMicros: f.micros,
+        });
+
         await database.get<any>('nutrition_logs').create((log: any) => {
           log.foodId = f.id;
           log.date = daysAgo(nl.daysAgo);
           log.type = nl.type;
           log.amount = nl.amount;
           log.portionId = undefined;
-          log.loggedFoodName = f.name ?? 'No named food';
-          log.loggedCalories = f.calories ?? 0;
-          log.loggedProtein = f.protein ?? 0;
-          log.loggedCarbs = f.carbs ?? 0;
-          log.loggedFat = f.fat ?? 0;
-          log.loggedFiber = f.fiber ?? 0;
-          log.loggedMicros = f.micros;
+          log.loggedFoodNameRaw = encrypted.loggedFoodName;
+          log.loggedCaloriesRaw = encrypted.loggedCalories;
+          log.loggedProteinRaw = encrypted.loggedProtein;
+          log.loggedCarbsRaw = encrypted.loggedCarbs;
+          log.loggedFatRaw = encrypted.loggedFat;
+          log.loggedFiberRaw = encrypted.loggedFiber;
+          log.loggedMicrosRaw = encrypted.loggedMicrosJson;
           log.createdAt = now;
           log.updatedAt = now;
         });
