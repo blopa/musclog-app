@@ -236,7 +236,7 @@ export class MigrationService {
         if (encryptedValue && encryptedValue !== '' && encryptedValue !== null) {
           try {
             // Try to decrypt the value
-            const decryptedValue = await decryptDatabaseValue(ENCRYPTION_KEY, encryptedValue);
+            const decryptedValue = await decryptDatabaseValue(encryptedValue);
             const numericValue = parseFloat(decryptedValue);
 
             if (!isNaN(numericValue)) {
@@ -436,13 +436,13 @@ export class MigrationService {
     for (const oldLog of oldNutritionLogs) {
       try {
         // Decrypt all the encrypted fields
-        const name = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.name);
-        const calories = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.calories);
-        const protein = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.protein);
-        const carbohydrate = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.carbohydrate);
-        const sugar = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.sugar); // TODO: why do we not use it?
-        const fiber = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.fiber);
-        const fat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.fat);
+        const name = await decryptDatabaseValue(oldLog.name);
+        const calories = await decryptDatabaseValue(oldLog.calories);
+        const protein = await decryptDatabaseValue(oldLog.protein);
+        const carbohydrate = await decryptDatabaseValue(oldLog.carbohydrate);
+        const sugar = await decryptDatabaseValue(oldLog.sugar); // TODO: why do we not use it?
+        const fiber = await decryptDatabaseValue(oldLog.fiber);
+        const fat = await decryptDatabaseValue(oldLog.fat);
         const monounsaturatedFat = await decryptDatabaseValue(
           ENCRYPTION_KEY,
           oldLog.monounsaturatedFat
@@ -451,12 +451,12 @@ export class MigrationService {
           ENCRYPTION_KEY,
           oldLog.polyunsaturatedFat
         );
-        const saturatedFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.saturatedFat);
-        const transFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.transFat);
-        const unsaturatedFat = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.unsaturatedFat);
-        const alcohol = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.alcohol);
-        const grams = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.grams);
-        const mealType = await decryptDatabaseValue(ENCRYPTION_KEY, oldLog.mealType);
+        const saturatedFat = await decryptDatabaseValue(oldLog.saturatedFat);
+        const transFat = await decryptDatabaseValue(oldLog.transFat);
+        const unsaturatedFat = await decryptDatabaseValue(oldLog.unsaturatedFat);
+        const alcohol = await decryptDatabaseValue(oldLog.alcohol);
+        const grams = await decryptDatabaseValue(oldLog.grams);
+        const mealType = await decryptDatabaseValue(oldLog.mealType);
 
         // Build micros JSON object from old micro fields
         const micros: Record<string, any> = {};

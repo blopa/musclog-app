@@ -3,9 +3,14 @@ import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'crypto-js';
 
+import { ENCRYPTION_KEY } from '../constants/database';
+
 let encryptionKey: null | string = null;
 
-export const getEncryptionKey = async (storageKey: string, length = 32): Promise<string> => {
+export const getEncryptionKey = async (
+  length = 32,
+  storageKey: string = ENCRYPTION_KEY
+): Promise<string> => {
   if (encryptionKey) {
     return encryptionKey;
   }
@@ -24,12 +29,16 @@ export const getEncryptionKey = async (storageKey: string, length = 32): Promise
   return encryption;
 };
 
-export const encryptDatabaseValue = async (storageKey: string, text: string): Promise<string> => {
+export const encryptDatabaseValue = async (
+  text: string,
+  length = 32,
+  storageKey: string = ENCRYPTION_KEY
+): Promise<string> => {
   if (!text || parseFloat(text) === 0) {
     return '';
   }
 
-  const encryptionKey = await getEncryptionKey(storageKey);
+  const encryptionKey = await getEncryptionKey(length, storageKey);
   return encrypt(text, encryptionKey);
 };
 
@@ -38,14 +47,15 @@ export const encrypt = async (text: string, encryptionKey: string): Promise<stri
 };
 
 export const decryptDatabaseValue = async (
-  storageKey: string,
-  cipherText: string | undefined
+  cipherText: string | undefined,
+  length = 32,
+  storageKey: string = ENCRYPTION_KEY
 ): Promise<string> => {
   if (!cipherText) {
     return '';
   }
 
-  const encryptionKey = await getEncryptionKey(storageKey);
+  const encryptionKey = await getEncryptionKey(length, storageKey);
   return decrypt(cipherText, encryptionKey);
 };
 
