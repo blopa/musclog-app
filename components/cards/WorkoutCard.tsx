@@ -1,6 +1,6 @@
-import { Archive, Clock } from 'lucide-react-native';
+import { Archive, Clock, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { StartWorkoutButton } from '../StartWorkoutButton';
@@ -14,7 +14,6 @@ type FeaturedWorkoutCardProps = {
   lastCompletedTimestamp?: number;
   exerciseCount: number;
   duration?: string;
-  image: ImageSourcePropType;
   onStart?: () => void;
   onMore?: () => void;
   onArchive?: () => void;
@@ -27,7 +26,6 @@ export function WorkoutCard({
   lastCompletedTimestamp,
   exerciseCount,
   duration,
-  image,
   onStart,
   onMore,
   onArchive,
@@ -86,10 +84,11 @@ export function WorkoutCard({
             </Text>
           </View>
           <View
-            className="ml-4 h-20 w-20 overflow-hidden rounded-2xl"
+            className="ml-4 h-20 w-20 items-center justify-center rounded-2xl"
             style={{ backgroundColor: theme.colors.background.iconDark }}
           >
-            <Image source={image} className="h-full w-full opacity-70" resizeMode="cover" />
+            {/* TODO: instead render the icon from the workout */}
+            <Dumbbell size={theme.iconSize.lg} color={theme.colors.text.secondary} />
           </View>
         </View>
 

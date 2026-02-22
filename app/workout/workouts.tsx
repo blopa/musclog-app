@@ -95,7 +95,6 @@ export default function WorkoutsScreen() {
       lastCompletedTimestamp: featured.lastCompletedTimestamp,
       exerciseCount: featured.exerciseCount,
       duration: featured.duration,
-      image: featured.image,
     };
 
     // Rest are regular workouts
@@ -107,7 +106,6 @@ export default function WorkoutsScreen() {
       lastCompletedTimestamp: template.lastCompletedTimestamp,
       exerciseCount: template.exerciseCount,
       duration: template.duration,
-      image: template.image,
     }));
 
     return {
@@ -404,7 +402,6 @@ export default function WorkoutsScreen() {
                 lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
                 exerciseCount={filteredFeaturedWorkout.exerciseCount}
                 duration={filteredFeaturedWorkout.duration}
-                image={filteredFeaturedWorkout.image}
                 onStart={async () => {
                   if (filteredFeaturedWorkout.id) {
                     await handleStartWorkout(filteredFeaturedWorkout.id);
@@ -430,7 +427,6 @@ export default function WorkoutsScreen() {
                     exerciseCount={workout.exerciseCount}
                     duration={workout.duration}
                     variant="standard"
-                    image={workout.image}
                     onStart={async () => {
                       await handleStartWorkout(workout.id);
                     }}

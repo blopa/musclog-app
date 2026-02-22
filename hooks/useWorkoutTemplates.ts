@@ -2,10 +2,8 @@ import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
-import { database } from '../database';
-import WorkoutTemplate from '../database/models/WorkoutTemplate';
-import { WorkoutTemplateRepository } from '../database/repositories/WorkoutTemplateRepository';
-import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
+import { WorkoutTemplateRepository } from '../database';
+import { WorkoutTemplateService } from '../database/services';
 
 export type WorkoutTemplateWithMetadata = {
   id: string;
@@ -15,7 +13,6 @@ export type WorkoutTemplateWithMetadata = {
   lastCompleted?: string;
   lastCompletedTimestamp?: number;
   duration?: string;
-  image?: any;
 };
 
 // Hook parameters
