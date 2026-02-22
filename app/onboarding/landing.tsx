@@ -180,32 +180,39 @@ export default function LandingScreen() {
                   </Text>
                 ) : null}
                 <ActivityIndicator size="large" color={theme.colors.text.white} />
-                <Text
-                  className="text-center"
-                  style={{
-                    color: theme.colors.text.white,
-                    fontSize: theme.typography.fontSize.lg,
-                  }}
-                >
-                  {initPhase === 'migrating' && initStep
-                    // TODO: dont do IIFEE and create a helper function for this
-                    ? (() => {
-                        const stepLabel = t(`onboarding.landing.migrationSteps.${initStep}`);
-                        const hasCounts =
-                          initProgressTotal != null &&
-                          initProgressTotal > 0 &&
-                          initProgressCurrent != null;
-                        const countText = hasCounts
-                          ? ` ${initProgressCurrent.toLocaleString()} / ${initProgressTotal.toLocaleString()}`
-                          : '';
-                        return t('onboarding.landing.migratingStep', {
-                          step: stepLabel + countText,
-                        });
-                      })()
-                    : initPhase === 'migrating'
-                      ? t('onboarding.landing.migratingData')
-                      : t('onboarding.landing.preparingApp')}
-                </Text>
+                <View className="items-center gap-1">
+                  {initPhase === 'migrating' &&
+                  initStep &&
+                  initProgressTotal != null &&
+                  initProgressTotal > 0 &&
+                  initProgressCurrent != null ? (
+                    <Text
+                      className="text-center font-medium tabular-nums"
+                      style={{
+                        color: theme.colors.text.white,
+                        fontSize: theme.typography.fontSize.xl,
+                      }}
+                    >
+                      {initProgressCurrent.toLocaleString()} / {initProgressTotal.toLocaleString()}
+                    </Text>
+                  ) : null}
+                  <View style={{ height: theme.size.xs }} />
+                  <Text
+                    className="text-center"
+                    style={{
+                      color: theme.colors.text.white,
+                      fontSize: theme.typography.fontSize.lg,
+                    }}
+                  >
+                    {initPhase === 'migrating' && initStep
+                      ? t('onboarding.landing.migratingStep', {
+                          step: t(`onboarding.landing.migrationSteps.${initStep}`),
+                        })
+                      : initPhase === 'migrating'
+                        ? t('onboarding.landing.migratingData')
+                        : t('onboarding.landing.preparingApp')}
+                  </Text>
+                </View>
               </View>
             ) : (
               <>
