@@ -33,6 +33,7 @@ export type WorkoutHistoryModalProps = {
   onStartWorkout?: () => void;
 };
 
+// TODO: if isPreview is true, don't show the PARTIALS column
 export function WorkoutSessionHistoryModal({
   visible,
   onClose,
