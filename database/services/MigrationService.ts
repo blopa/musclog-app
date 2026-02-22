@@ -557,7 +557,7 @@ export class MigrationService {
         // Find the food by looking at the exact same name
         let newFoodId = '';
         let foodMatchMethod = '';
-        
+
         if (name) {
           try {
             const matchingFoods = await database
@@ -574,13 +574,14 @@ export class MigrationService {
               const proteinNum = parseFloat(protein) || 0;
               const carbsNum = parseFloat(carbohydrate) || 0;
               const fatNum = parseFloat(fat) || 0;
-              
-              newFoodId = await this.findFoodByNutritionalProfile(
-                caloriesNum,
-                proteinNum,
-                carbsNum,
-                fatNum
-              ) || '';
+
+              newFoodId =
+                (await this.findFoodByNutritionalProfile(
+                  caloriesNum,
+                  proteinNum,
+                  carbsNum,
+                  fatNum
+                )) || '';
               foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
             }
           } catch (error) {
@@ -589,13 +590,14 @@ export class MigrationService {
             const proteinNum = parseFloat(protein) || 0;
             const carbsNum = parseFloat(carbohydrate) || 0;
             const fatNum = parseFloat(fat) || 0;
-            
-            newFoodId = await this.findFoodByNutritionalProfile(
-              caloriesNum,
-              proteinNum,
-              carbsNum,
-              fatNum
-            ) || '';
+
+            newFoodId =
+              (await this.findFoodByNutritionalProfile(
+                caloriesNum,
+                proteinNum,
+                carbsNum,
+                fatNum
+              )) || '';
             foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
           }
         } else {
@@ -604,31 +606,28 @@ export class MigrationService {
           const proteinNum = parseFloat(protein) || 0;
           const carbsNum = parseFloat(carbohydrate) || 0;
           const fatNum = parseFloat(fat) || 0;
-          
-          newFoodId = await this.findFoodByNutritionalProfile(
-            caloriesNum,
-            proteinNum,
-            carbsNum,
-            fatNum
-          ) || '';
+
+          newFoodId =
+            (await this.findFoodByNutritionalProfile(caloriesNum, proteinNum, carbsNum, fatNum)) ||
+            '';
           foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
         }
 
         // Log nutrition entries that couldn't be matched to foods
-        if (!newFoodId) {
-          // console.log('Nutrition log not migrated - no matching food found:', {
-          //   name: name || 'unnamed',
-          //   calories: parseFloat(calories) || 0,
-          //   protein: parseFloat(protein) || 0,
-          //   carbs: parseFloat(carbohydrate) || 0,
-          //   fat: parseFloat(fat) || 0,
-          //   date: oldLog.date,
-          //   mealType: mealType,
-          //   matchMethod: foodMatchMethod
-          // });
-        } else {
-          console.log('Food found!!!', newFoodId);
-        }
+        // if (!newFoodId) {
+        //   console.log('Nutrition log not migrated - no matching food found:', {
+        //     name: name || 'unnamed',
+        //     calories: parseFloat(calories) || 0,
+        //     protein: parseFloat(protein) || 0,
+        //     carbs: parseFloat(carbohydrate) || 0,
+        //     fat: parseFloat(fat) || 0,
+        //     date: oldLog.date,
+        //     mealType: mealType,
+        //     matchMethod: foodMatchMethod
+        //   });
+        // } else {
+        //   console.log('Food found!!!', newFoodId);
+        // }
 
         if (!newFoodId) {
           continue;
@@ -677,7 +676,8 @@ export class MigrationService {
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
-        const amountToStore = gramsConsumed > 0 ? gramsConsumed : useUnknownGramsConvention ? 100 : 1;
+        const amountToStore =
+          gramsConsumed > 0 ? gramsConsumed : useUnknownGramsConvention ? 100 : 1;
 
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
@@ -1170,6 +1170,7 @@ export class MigrationService {
       ['editPersonalInfo.female', 'female'],
       ['editPersonalInfo.other', 'other'],
     ];
+
     const locales = Object.keys(i18n.options.resources || {});
     for (const lng of locales) {
       for (const [key, canonical] of genderKeys) {
