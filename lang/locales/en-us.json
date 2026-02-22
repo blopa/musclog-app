@@ -385,6 +385,12 @@
     "exercises": "{{count}} Exercises",
     "workoutSequence": "Workout Sequence",
     "skipped": "SKIPPED",
+    "startFromExercise": {
+      "title": "Start from Exercise",
+      "message": "Do you want to start the workout from {{exerciseName}}?",
+      "confirm": "Start from Here",
+      "cancel": "Cancel"
+    },
     "summary": {
       "failedToLoad": "Failed to load",
       "noWorkoutId": "No workout ID",

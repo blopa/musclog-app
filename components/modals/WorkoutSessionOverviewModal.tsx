@@ -19,6 +19,7 @@ import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
@@ -189,28 +190,60 @@ function ExerciseList({
   exercises: ExerciseUIData[];
   onSelectExercise?: (exerciseId: string) => void;
 }) {
-  const theme = useTheme();
   const { t } = useTranslation();
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseUIData | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleExercisePress = (exercise: ExerciseUIData) => {
+    setSelectedExercise(exercise);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmStart = () => {
+    if (selectedExercise) {
+      onSelectExercise?.(selectedExercise.id);
+    }
+    setShowConfirmation(false);
+    setSelectedExercise(null);
+  };
+
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
+    setSelectedExercise(null);
+  };
 
   return (
-    <View className="gap-3">
-      <Text className="px-2 text-xs font-bold uppercase tracking-widest text-text-muted">
-        {t('workout.workoutSequence')}
-      </Text>
+    <>
       <View className="gap-3">
-        {exercises.map((exercise) => (
-          <ExerciseCard
-            key={exercise.id}
-            name={exercise.name}
-            imageUrl={exercise.imageUrl}
-            status={exercise.status}
-            setsCompleted={exercise.setsCompleted}
-            totalSets={exercise.totalSets}
-            onPress={() => onSelectExercise?.(exercise.id)}
-          />
-        ))}
+        <Text className="px-2 text-xs font-bold uppercase tracking-widest text-text-muted">
+          {t('workout.workoutSequence')}
+        </Text>
+        <View className="gap-3">
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              name={exercise.name}
+              imageUrl={exercise.imageUrl}
+              status={exercise.status}
+              setsCompleted={exercise.setsCompleted}
+              totalSets={exercise.totalSets}
+              onPress={() => handleExercisePress(exercise)}
+            />
+          ))}
+        </View>
       </View>
-    </View>
+
+      <ConfirmationModal
+        visible={showConfirmation}
+        onClose={handleCancelConfirmation}
+        onConfirm={handleConfirmStart}
+        title={t('workout.startFromExercise.title')}
+        message={selectedExercise ? t('workout.startFromExercise.message', { exerciseName: selectedExercise.name }) : ''}
+        confirmLabel={t('workout.startFromExercise.confirm')}
+        cancelLabel={t('workout.startFromExercise.cancel')}
+        variant="primary"
+      />
+    </>
   );
 }
 
