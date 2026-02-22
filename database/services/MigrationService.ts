@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
+import i18n from '../../lang/lang';
 import { decryptDatabaseValue } from '../../utils/encryption';
 import { database } from '../database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
@@ -84,6 +85,8 @@ export class MigrationService {
   private workoutIdToTemplateId: Map<number, string> = new Map();
   /** Old WorkoutEvent id (number) → new workout_logs id (string). Populated during migrateWorkoutLogs(). */
   private workoutEventIdToLogId: Map<number, string> = new Map();
+  /** Old Food id (number) → new foods id (string). Populated during migrateFoods(). */
+  private foodIdMap: Map<number, string> = new Map();
 
   constructor() {
     try {
@@ -409,28 +412,29 @@ export class MigrationService {
           }
         }
 
-        await database.write(async () => {
-          await database.get<Food>('foods').create((newFood) => {
-            newFood.isAiGenerated = false; // Old foods are not AI generated
-            newFood.name = oldFood.name || '';
-            newFood.brand = oldFood.brand || null;
-            newFood.barcode = oldFood.productCode || null; // Map productCode to barcode
-            newFood.calories = Number(oldFood.calories) || 0;
-            newFood.protein = Number(oldFood.protein) || 0;
-            newFood.carbs = Number(oldFood.totalCarbohydrate) || 0; // Map totalCarbohydrate to carbs
-            newFood.fat = Number(oldFood.totalFat) || 0; // Map totalFat to fat
-            newFood.fiber = Number(oldFood.fiber) || 0;
-            newFood.micros = Object.keys(micros).length > 0 ? micros : undefined;
-            newFood.isFavorite = Boolean(oldFood.isFavorite) || false;
-            newFood.source = oldFood.source || 'user'; // Default to user if not specified
-            newFood.imageUrl = undefined; // Not present in old schema
-            newFood.createdAt = this.convertTimestamp(oldFood.createdAt);
-            newFood.updatedAt = this.convertTimestamp(oldFood.createdAt);
-            newFood.deletedAt = oldFood.deletedAt
+        const newFood = await database.write(async () =>
+          database.get<Food>('foods').create((newFoodRecord) => {
+            newFoodRecord.isAiGenerated = false; // Old foods are not AI generated
+            newFoodRecord.name = oldFood.name || '';
+            newFoodRecord.brand = oldFood.brand || null;
+            newFoodRecord.barcode = oldFood.productCode || null; // Map productCode to barcode
+            newFoodRecord.calories = Number(oldFood.calories) || 0;
+            newFoodRecord.protein = Number(oldFood.protein) || 0;
+            newFoodRecord.carbs = Number(oldFood.totalCarbohydrate) || 0; // Map totalCarbohydrate to carbs
+            newFoodRecord.fat = Number(oldFood.totalFat) || 0; // Map totalFat to fat
+            newFoodRecord.fiber = Number(oldFood.fiber) || 0;
+            newFoodRecord.micros = Object.keys(micros).length > 0 ? micros : undefined;
+            newFoodRecord.isFavorite = Boolean(oldFood.isFavorite) || false;
+            newFoodRecord.source = oldFood.source || 'user'; // Default to user if not specified
+            newFoodRecord.imageUrl = undefined; // Not present in old schema
+            newFoodRecord.createdAt = this.convertTimestamp(oldFood.createdAt);
+            newFoodRecord.updatedAt = this.convertTimestamp(oldFood.createdAt);
+            newFoodRecord.deletedAt = oldFood.deletedAt
               ? this.convertTimestamp(oldFood.deletedAt)
               : undefined;
-          });
-        });
+          })
+        );
+        this.foodIdMap.set(Number(oldFood.id), newFood.id);
         migratedCount++;
       } catch (error) {
         console.error('Error migrating food:', error, 'Data:', oldFood);
@@ -463,7 +467,7 @@ export class MigrationService {
         const calories = await decryptDatabaseValue(oldLog.calories);
         const protein = await decryptDatabaseValue(oldLog.protein);
         const carbohydrate = await decryptDatabaseValue(oldLog.carbohydrate);
-        const sugar = await decryptDatabaseValue(oldLog.sugar); // TODO: why do we not use it?
+        const sugar = await decryptDatabaseValue(oldLog.sugar);
         const fiber = await decryptDatabaseValue(oldLog.fiber);
         const fat = await decryptDatabaseValue(oldLog.fat);
         const monounsaturatedFat = await decryptDatabaseValue(oldLog.monounsaturatedFat);
@@ -481,6 +485,7 @@ export class MigrationService {
         // Add micro nutrients if they exist and are not null after decryption
         const microFields = [
           { field: 'alcohol', value: alcohol },
+          { field: 'sugar', value: sugar },
           { field: 'monounsaturatedFat', value: monounsaturatedFat },
           { field: 'polyunsaturatedFat', value: polyunsaturatedFat },
           { field: 'saturatedFat', value: saturatedFat },
@@ -494,11 +499,26 @@ export class MigrationService {
           }
         }
 
-        // TODO: in the old database, sometimes grams is null, so we set it to 0
-        // but the other macros are still correct
-        // so to get the grams we need to infer it from the food that this log is for
-        // by getting the calories value and seeing how many grams of that food would be needed to get that many calories
-        const gramsConsumed = parseFloat(grams) || 0;
+        // TODO: dataId is not reliable, instead, find the food by looking at the exact same name
+        const newFoodId =
+          this.foodIdMap.get(Number(oldLog.dataId)) ??
+          (oldLog.dataId != null ? String(oldLog.dataId) : '');
+        let gramsConsumed = parseFloat(grams) || 0;
+
+        // When grams is null in the old DB, infer from the linked food's calories per 100g
+        if (gramsConsumed === 0 && newFoodId) {
+          const loggedCalories = parseFloat(calories) || 0;
+          if (loggedCalories > 0) {
+            try {
+              const food = await database.get<Food>('foods').find(newFoodId);
+              if (food?.calories > 0) {
+                gramsConsumed = (loggedCalories * 100) / food.calories;
+              }
+            } catch {
+              // Food missing or not found; keep gramsConsumed 0
+            }
+          }
+        }
 
         // Convert macros from actual consumed values to per-100g values for the new system
         const caloriesPer100g =
@@ -521,13 +541,15 @@ export class MigrationService {
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
+        const amountToStore = gramsConsumed > 0 ? gramsConsumed : 1;
+
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
-            newLog.foodId = oldLog.dataId || ''; // Use dataId as food_id
+            newLog.foodId = newFoodId;
             newLog.date = this.convertTimestamp(oldLog.date);
             newLog.type = this.mapMealType(mealType, createdAt);
-            newLog.amount = parseFloat(grams) || 1; // Default to 1 if grams is null
+            newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema
             newLog.loggedFoodNameRaw = encrypted.loggedFoodName;
             newLog.loggedCaloriesRaw = encrypted.loggedCalories;
@@ -541,6 +563,8 @@ export class MigrationService {
             newLog.deletedAt = oldLog.deletedAt
               ? this.convertTimestamp(oldLog.deletedAt)
               : undefined;
+
+            console.log('IMPORTING........', newLog);
           });
         });
         migratedCount++;
@@ -692,10 +716,13 @@ export class MigrationService {
     createdAt?: number
   ): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
     if (!mealType) {
-      if (createdAt) {
-        // TODO: infer meal type based on time of day
+      if (createdAt != null) {
+        const hour = new Date(createdAt).getHours();
+        if (hour >= 5 && hour < 11) return 'breakfast';
+        if (hour >= 11 && hour < 14) return 'lunch';
+        if (hour >= 14 && hour < 21) return 'dinner';
+        if (hour >= 21 || hour < 5) return 'snack';
       }
-
       return 'other';
     }
 
@@ -994,19 +1021,48 @@ export class MigrationService {
     return 'maintain';
   }
 
+  /** Lazy-built map: normalized translation string → canonical 'male' | 'female' | 'other'. */
+  private genderReverseMap: Map<string, 'male' | 'female' | 'other'> | null = null;
+
+  private getGenderReverseMap(): Map<string, 'male' | 'female' | 'other'> {
+    if (this.genderReverseMap) return this.genderReverseMap;
+    const map = new Map<string, 'male' | 'female' | 'other'>();
+    const genderKeys: [string, 'male' | 'female' | 'other'][] = [
+      ['onboarding.personalInfo.gender.male', 'male'],
+      ['onboarding.personalInfo.gender.female', 'female'],
+      ['onboarding.personalInfo.gender.other', 'other'],
+      ['editPersonalInfo.male', 'male'],
+      ['editPersonalInfo.female', 'female'],
+      ['editPersonalInfo.other', 'other'],
+    ];
+    const locales = Object.keys(i18n.options.resources || {});
+    for (const lng of locales) {
+      for (const [key, canonical] of genderKeys) {
+        try {
+          const value = i18n.t(key, { lng });
+          if (value && typeof value === 'string' && value !== key) {
+            const normalized = value.trim().toLowerCase();
+            if (normalized) map.set(normalized, canonical);
+          }
+        } catch {
+          // Skip missing keys
+        }
+      }
+    }
+    this.genderReverseMap = map;
+    return map;
+  }
+
   /**
-   * Map old gender text to new gender format
+   * Map old gender text to new gender format (supports any locale via translation lookup).
    */
   private mapGender(gender: string): 'male' | 'female' | 'other' {
-    // TODO: use translation here to be able to match any other language
     if (!gender) return 'other';
 
-    const lowerGender = gender.toLowerCase().trim();
-    if (lowerGender === 'male') {
-      return 'male';
-    } else if (lowerGender === 'female') {
-      return 'female';
-    }
+    const normalized = gender.trim().toLowerCase();
+    const canonical = this.getGenderReverseMap().get(normalized);
+    if (canonical) return canonical;
+
     return 'other';
   }
 
@@ -1185,6 +1241,7 @@ export class MigrationService {
       this.exerciseIdMap.clear();
       this.workoutIdToTemplateId.clear();
       this.workoutEventIdToLogId.clear();
+      this.foodIdMap.clear();
 
       // Step 2: Migrate Fitness Goals
       onProgress?.('fitness_goals');
