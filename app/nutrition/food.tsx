@@ -687,6 +687,7 @@ export default function FoodScreen() {
           visible={isFoodSearchModalVisible}
           onClose={() => setIsFoodSearchModalVisible(false)}
           mealType={selectedMealType}
+          logDate={selectedDate}
           onCreatePress={() => {
             // Open CreateCustomFoodModal
             setIsFoodSearchModalVisible(false);

@@ -37,6 +37,8 @@ type FoodSearchModalProps = {
   visible: boolean;
   onClose: () => void;
   mealType: MealType; // e.g., "Breakfast", "Lunch", etc.
+  /** Date to use when logging food (e.g. the date currently selected on the food screen). */
+  logDate?: Date;
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
@@ -301,6 +303,7 @@ export function FoodSearchModal({
   visible,
   onClose,
   mealType,
+  logDate,
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
@@ -426,7 +429,7 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
-              description: `${f.brand || 'Custom Food'} • ${f.calories || 0} kcal`,
+              description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
               brand: (f as any).brand,
               serving_size: '100 g', // TODO: use the PortionSize model instead
               calories: f.calories,
@@ -506,7 +509,7 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
-              description: `${f.brand || 'Custom Food'} • ${f.calories || 0} kcal`,
+              description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
               brand: f.brand,
               serving_size: '100 g',
               calories: f.calories,
@@ -1024,7 +1027,7 @@ export function FoodSearchModal({
                             ...food,
                             id: food.id,
                             name: food.name ?? '',
-                            description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
+                            description: `${food.brand || 'Custom Food'} • ${Math.round(food.calories || 0)} kcal per 100g`,
                             brand: food.brand,
                             serving_size: '100 g',
                             calories: food.calories,
@@ -1103,6 +1106,8 @@ export function FoodSearchModal({
           barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
           productFromSearch={selectedFood.source === 'api' ? (selectedFood._raw as any) : undefined}
           food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
+          initialMealType={mealType}
+          initialDate={logDate}
           onAddFood={(data) => {
             // Call the original onFoodSelect with the food and additional data
             onFoodSelect?.({
@@ -1128,6 +1133,7 @@ export function FoodSearchModal({
           }}
           meal={selectedMeal}
           initialMealType={mealType}
+          initialDate={logDate}
           onLogMeal={(data) => {
             // Call the original onFoodSelect if provided (for consistency)
             // Note: meals don't have servingSize, so we pass undefined

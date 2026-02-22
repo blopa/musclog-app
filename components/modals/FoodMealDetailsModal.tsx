@@ -32,6 +32,8 @@ type FoodDetailsModalProps = {
   food?: Food | null;
   meal?: Meal | null;
   initialMealType?: MealType;
+  /** When adding food (not editing a log), use this as the default log date (e.g. date from food screen). */
+  initialDate?: Date;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
 };
@@ -44,6 +46,7 @@ export function FoodMealDetailsModal({
   food,
   meal,
   initialMealType,
+  initialDate,
   onAddFood,
   onLogMeal,
   foodLog,
@@ -54,7 +57,9 @@ export function FoodMealDetailsModal({
   const [servingSize, setServingSize] = useState(100);
   const [mealPortionMultiplier, setMealPortionMultiplier] = useState(1);
   const [selectedMeal, setSelectedMeal] = useState<MealType>(initialMealType ?? 'lunch');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    initialDate ? new Date(initialDate) : new Date()
+  );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
@@ -82,6 +87,13 @@ export function FoodMealDetailsModal({
         : barcode || productFromSearch
           ? 'barcode'
           : null;
+
+  // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
+  useEffect(() => {
+    if (visible && initialDate && !foodLog) {
+      setSelectedDate(new Date(initialDate));
+    }
+  }, [visible, initialDate, foodLog]);
 
   // Fetch detailed product data only when barcode is provided, no local food, and no preloaded search product
   const { data: productDetails } = useFoodProductDetails(
