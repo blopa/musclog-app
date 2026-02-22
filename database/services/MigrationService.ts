@@ -494,14 +494,22 @@ export class MigrationService {
           }
         }
 
-        const gramsConsumed = parseFloat(grams) || 1;
-        
+        // TODO: in the old database, sometimes grams is null, so we set it to 0
+        // but the other macros are still correct
+        // so to get the grams we need to infer it from the food that this log is for
+        // by getting the calories value and seeing how many grams of that food would be needed to get that many calories
+        const gramsConsumed = parseFloat(grams) || 0;
+
         // Convert macros from actual consumed values to per-100g values for the new system
-        const caloriesPer100g = gramsConsumed > 0 ? (parseFloat(calories) || 0) * 100 / gramsConsumed : 0;
-        const proteinPer100g = gramsConsumed > 0 ? (parseFloat(protein) || 0) * 100 / gramsConsumed : 0;
-        const carbsPer100g = gramsConsumed > 0 ? (parseFloat(carbohydrate) || 0) * 100 / gramsConsumed : 0;
-        const fatPer100g = gramsConsumed > 0 ? (parseFloat(fat) || 0) * 100 / gramsConsumed : 0;
-        const fiberPer100g = gramsConsumed > 0 ? (parseFloat(fiber) || 0) * 100 / gramsConsumed : 0;
+        const caloriesPer100g =
+          gramsConsumed > 0 ? ((parseFloat(calories) || 0) * 100) / gramsConsumed : 0;
+        const proteinPer100g =
+          gramsConsumed > 0 ? ((parseFloat(protein) || 0) * 100) / gramsConsumed : 0;
+        const carbsPer100g =
+          gramsConsumed > 0 ? ((parseFloat(carbohydrate) || 0) * 100) / gramsConsumed : 0;
+        const fatPer100g = gramsConsumed > 0 ? ((parseFloat(fat) || 0) * 100) / gramsConsumed : 0;
+        const fiberPer100g =
+          gramsConsumed > 0 ? ((parseFloat(fiber) || 0) * 100) / gramsConsumed : 0;
 
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: name || undefined,
@@ -515,9 +523,10 @@ export class MigrationService {
 
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
+            const createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.foodId = oldLog.dataId || ''; // Use dataId as food_id
             newLog.date = this.convertTimestamp(oldLog.date);
-            newLog.type = this.mapMealType(mealType);
+            newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = parseFloat(grams) || 1; // Default to 1 if grams is null
             newLog.portionId = undefined; // Not present in old schema
             newLog.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -527,7 +536,7 @@ export class MigrationService {
             newLog.loggedFatRaw = encrypted.loggedFat;
             newLog.loggedFiberRaw = encrypted.loggedFiber;
             newLog.loggedMicrosRaw = encrypted.loggedMicrosJson;
-            newLog.createdAt = this.convertTimestamp(oldLog.createdAt);
+            newLog.createdAt = createdAt;
             newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
             newLog.deletedAt = oldLog.deletedAt
               ? this.convertTimestamp(oldLog.deletedAt)
@@ -678,27 +687,40 @@ export class MigrationService {
   /**
    * Map old meal type to new meal type format
    */
-  private mapMealType(mealType: string | number): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
+  private mapMealType(
+    mealType: string | number,
+    createdAt?: number
+  ): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
     if (!mealType) {
+      if (createdAt) {
+        // TODO: infer meal type based on time of day
+      }
+
       return 'other';
     }
 
     // Handle numeric values from old database
     const numericMealType = typeof mealType === 'string' ? parseInt(mealType, 10) : mealType;
-    
+
     if (!isNaN(numericMealType)) {
       switch (numericMealType) {
-        case 1: return 'breakfast';
-        case 2: return 'lunch';
-        case 3: return 'dinner';
-        case 4: return 'snack';
+        case 1:
+          return 'breakfast';
+        case 2:
+          return 'lunch';
+        case 3:
+          return 'dinner';
+        case 4:
+          return 'snack';
         case 0:
-        default: return 'other';
+        default:
+          return 'other';
       }
     }
 
     // Fallback to string matching for any non-numeric values
     const lowerMealType = mealType.toString().toLowerCase();
+
     if (lowerMealType.includes('breakfast')) return 'breakfast';
     if (lowerMealType.includes('lunch')) return 'lunch';
     if (lowerMealType.includes('dinner')) return 'dinner';
