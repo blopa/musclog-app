@@ -429,6 +429,7 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
+              // TODO: use translation here for both "Custom food" and for "kcal"
               description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
               brand: (f as any).brand,
               serving_size: '100 g', // TODO: use the PortionSize model instead
@@ -438,7 +439,7 @@ export function FoodSearchModal({
               fat: f.fat,
               fiber: f.fiber,
               source: 'local',
-              icon: '🍽️',
+              icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
               iconColor: theme.colors.accent.primary,
               iconBgColor: theme.colors.accent.primary10,
               _raw: f,
@@ -509,9 +510,10 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
+              // TODO: use translation here for both "Custom food" and for "kcal"
               description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
               brand: f.brand,
-              serving_size: '100 g',
+              serving_size: '100 g', // TODO: use the PortionSize model instead
               calories: f.calories,
               protein: f.protein,
               carbs: f.carbs,
@@ -519,7 +521,7 @@ export function FoodSearchModal({
               fiber: f.fiber,
               source: 'local',
               imageUrl: f.imageUrl ? f.imageUrl : undefined,
-              icon: f.imageUrl ? undefined : '🍽️',
+              icon: f.imageUrl ? undefined : '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
               iconColor: theme.colors.accent.primary,
               iconBgColor: theme.colors.accent.primary10,
               _raw: f,
@@ -652,7 +654,7 @@ export function FoodSearchModal({
     // Convert to FoodItem format
     const foodItem: FoodItem = {
       ...food,
-      icon: food.source === 'local' ? '🍽️' : undefined,
+      icon: food.source === 'local' ? '🍽️' : undefined, // TODO: ideally use an icon name and then load them from lucide icons
       iconColor: food.source === 'local' ? theme.colors.accent.primary : undefined,
       iconBgColor: food.source === 'local' ? theme.colors.accent.primary10 : undefined,
     };
@@ -818,7 +820,7 @@ export function FoodSearchModal({
                                     food={{
                                       ...food,
                                       name: food.name ?? '',
-                                      icon: '🍽️',
+                                      icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
                                       iconColor: theme.colors.accent.primary,
                                       iconBgColor: theme.colors.accent.primary10,
                                     }}
@@ -1037,7 +1039,7 @@ export function FoodSearchModal({
                             fiber: food.fiber,
                             imageUrl: food.imageUrl,
                             source: 'local',
-                            icon: '🍽️',
+                            icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
                             iconColor: theme.colors.accent.primary,
                             iconBgColor: theme.colors.accent.primary10,
                             _raw: food,
