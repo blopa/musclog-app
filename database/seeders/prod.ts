@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { SEEDING_COMPLETE_KEY } from '../../constants/database';
+import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
 import { database } from '../database-instance';
 import {
   ExerciseService,
@@ -20,6 +20,20 @@ export interface SeedProductionDataOptions {
     total?: number;
   }) => void;
 }
+const clearAsyncStorage = async () => {
+  const existingEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
+
+  try {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage has been cleared successfully.');
+  } catch (error) {
+    console.error('Error clearing AsyncStorage:', error);
+  }
+
+  if (existingEncryptionKey) {
+    await AsyncStorage.setItem(ENCRYPTION_KEY, existingEncryptionKey);
+  }
+};
 
 /**
  * Seed production data
@@ -50,6 +64,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     } catch (error) {
       console.error('Error deleting database:', error);
     }
+
+    // Clear async storage
+    await clearAsyncStorage();
 
     // 1. Seed common portions if none exist
     onProgress?.({ phase: 'seeding' });
