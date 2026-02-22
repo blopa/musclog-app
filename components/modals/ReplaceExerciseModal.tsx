@@ -26,6 +26,8 @@ type ReplaceExerciseModalProps = {
   exercises?: ReplaceExerciseData[];
 };
 
+// TODO: load data from the database instead of mocked data. load only 5 exercises at a time, and have a load more button to load another 5 - like we have in other places of the app
+// also, if the filter is set, then we need to refetch 5 filtered ones, and if we load more, we need to load with the filters set too
 const DEFAULT_EXERCISES: ReplaceExerciseData[] = [
   {
     id: '1',
