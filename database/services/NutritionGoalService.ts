@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import { endOfDay } from 'date-fns';
 
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
@@ -19,18 +20,45 @@ export interface NutritionGoalInput {
 
 export class NutritionGoalService {
   /**
-   * Get the current nutrition goals (effective_until IS NULL).
+   * Get the current nutrition goal (effective_until IS NULL).
+   * If multiple exist, returns the most recently created one.
    */
   static async getCurrent(): Promise<NutritionGoal | null> {
     const rows = await database
       .get<NutritionGoal>('nutrition_goals')
-      .query(Q.where('effective_until', Q.eq(null)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('effective_until', Q.eq(null)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('created_at', Q.desc)
+      )
       .fetch();
     return rows.length > 0 ? rows[0] : null;
   }
 
   /**
-   * Save a new snapshot of goals. Supersedes the current one (sets effective_until = now).
+   * Get the nutrition goal that was active on the given date (local timezone).
+   * A goal is active on date D if created_at <= endOfDay(D) and
+   * (effective_until === null || effective_until > endOfDay(D)).
+   * Returns the latest such goal by created_at, or null if none.
+   */
+  static async getGoalForDate(date: Date): Promise<NutritionGoal | null> {
+    const endOfDayTs = endOfDay(date).getTime();
+    const rows = await database
+      .get<NutritionGoal>('nutrition_goals')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('created_at', Q.lte(endOfDayTs)),
+        Q.sortBy('created_at', Q.desc)
+      )
+      .fetch();
+    const active = rows.find(
+      (r) => r.effectiveUntil == null || (r.effectiveUntil != null && r.effectiveUntil > endOfDayTs)
+    );
+    return active ?? null;
+  }
+
+  /**
+   * Save a new snapshot of goals. Supersedes all current goals (sets effective_until = now on each).
    */
   static async saveGoals(data: NutritionGoalInput): Promise<NutritionGoal> {
     const now = Date.now();
@@ -40,8 +68,8 @@ export class NutritionGoalService {
         .query(Q.where('effective_until', Q.eq(null)), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      if (current.length > 0) {
-        await current[0].update((r) => {
+      for (const row of current) {
+        await row.update((r) => {
           r.effectiveUntil = now;
           r.updatedAt = now;
         });

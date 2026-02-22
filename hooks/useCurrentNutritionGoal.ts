@@ -1,14 +1,16 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import NutritionGoal from '../database/models/NutritionGoal';
-import { NutritionGoalService } from '../database/services/NutritionGoalService';
+import { NutritionGoalService } from '../database/services';
 
 // Hook parameters
 export interface UseCurrentNutritionGoalParams {
   mode?: 'current' | 'history'; // Default: 'current'
+  /** When set, resolve the goal active on this date (e.g. Food screen). When omitted, use today. */
+  date?: Date;
   initialLimit?: number; // For history mode, default: 5
   batchSize?: number; // For history mode, default: 5
   enableReactivity?: boolean; // Default: true
@@ -46,6 +48,7 @@ export function useCurrentNutritionGoal(
 
 export function useCurrentNutritionGoal({
   mode = 'current',
+  date,
   initialLimit = 5,
   batchSize = DEFAULT_BATCH_SIZE,
   enableReactivity = true,
@@ -54,6 +57,7 @@ export function useCurrentNutritionGoal({
   // State for current mode
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
   const [isLoadingCurrent, setIsLoadingCurrent] = useState(true);
+  const displayDateRef = useRef<Date>(date ?? new Date());
 
   // State for history mode
   const [goals, setGoals] = useState<NutritionGoal[]>([]);
@@ -149,21 +153,35 @@ export function useCurrentNutritionGoal({
     }
   }, [isLoadingMore, hasMore, visible, currentOffset, batchSize]);
 
-  // Current mode: Observe current goal only
+  // Current mode: Resolve goal for display date (date or today), react to goals and date changes
   useEffect(() => {
     if (mode !== 'current') {
       return;
     }
 
+    displayDateRef.current = date ?? new Date();
+
+    const fetchGoalForDate = () => {
+      NutritionGoalService.getGoalForDate(displayDateRef.current)
+        .then((g) => {
+          setGoal(g);
+          setIsLoadingCurrent(false);
+        })
+        .catch(() => {
+          setGoal(null);
+          setIsLoadingCurrent(false);
+        });
+    };
+
+    setIsLoadingCurrent(true);
+    fetchGoalForDate();
+
     const query = database
       .get<NutritionGoal>('nutrition_goals')
-      .query(Q.where('effective_until', Q.eq(null)), Q.where('deleted_at', Q.eq(null)));
+      .query(Q.where('deleted_at', Q.eq(null)));
 
     const subscription = query.observe().subscribe({
-      next: (goals) => {
-        setGoal(goals.length > 0 ? goals[0] : null);
-        setIsLoadingCurrent(false);
-      },
+      next: () => fetchGoalForDate(),
       error: () => {
         setGoal(null);
         setIsLoadingCurrent(false);
@@ -171,7 +189,7 @@ export function useCurrentNutritionGoal({
     });
 
     return () => subscription.unsubscribe();
-  }, [mode]);
+  }, [date, mode]);
 
   // History mode: Observe for new goals to trigger reload (reactivity)
   useEffect(() => {

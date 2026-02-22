@@ -39,7 +39,7 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
   if (isThisWeek(date)) {
     return format(date, 'EEEE');
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d, yyyy');
 }
 
 function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
@@ -53,7 +53,7 @@ function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
 
 function goalToDisplayItem(goal: NutritionGoal, t: TFunction): NutritionGoalDisplayItem {
   const phaseLabel = getPhaseLabel(goal.eatingPhase, t);
-  const dateLabel = format(new Date(goal.createdAt), 'MMM d');
+  const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy');
   return {
     id: goal.id,
     name: `${phaseLabel} • ${dateLabel}`,

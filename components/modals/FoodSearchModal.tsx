@@ -132,10 +132,7 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
         </Text>
       </View>
       {rightAction ? (
-        <Pressable 
-          onPress={rightAction.onPress}
-          className="p-2 -m-2"
-        >
+        <Pressable onPress={rightAction.onPress} className="-m-2 p-2">
           <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}

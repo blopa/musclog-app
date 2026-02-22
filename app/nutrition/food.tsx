@@ -90,9 +90,10 @@ export default function FoodScreen() {
   >([]);
   const [isResolvingRelations, setIsResolvingRelations] = useState(false);
 
-  // Get current nutrition goal
+  // Get nutrition goal active on the displayed date (so past dates show the correct goal)
   const { goal: nutritionGoal } = useCurrentNutritionGoal({
     mode: 'current',
+    date: selectedDate,
     enableReactivity: true,
     visible: true,
   });
@@ -320,7 +321,7 @@ export default function FoodScreen() {
     } else if (isYesterday) {
       return t('food.header.yesterday');
     } else {
-      return format(selectedDate, 'MMM d', { locale });
+      return format(selectedDate, 'MMM d, yyyy', { locale });
     }
   };
 
