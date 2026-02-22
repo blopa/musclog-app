@@ -499,11 +499,7 @@ export default function FoodScreen() {
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
-                      image={
-                        entry.food?.imageUrl
-                          ? { uri: entry.food.imageUrl }
-                          : require('../../assets/icon.png')
-                      }
+                      image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -527,11 +523,7 @@ export default function FoodScreen() {
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
-                      image={
-                        entry.food?.imageUrl
-                          ? { uri: entry.food.imageUrl }
-                          : require('../../assets/icon.png')
-                      }
+                      image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -555,11 +547,7 @@ export default function FoodScreen() {
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
-                      image={
-                        entry.food?.imageUrl
-                          ? { uri: entry.food.imageUrl }
-                          : require('../../assets/icon.png')
-                      }
+                      image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -583,11 +571,7 @@ export default function FoodScreen() {
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
-                      image={
-                        entry.food?.imageUrl
-                          ? { uri: entry.food.imageUrl }
-                          : require('../../assets/icon.png')
-                      }
+                      image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -611,11 +595,7 @@ export default function FoodScreen() {
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
-                      image={
-                        entry.food?.imageUrl
-                          ? { uri: entry.food.imageUrl }
-                          : require('../../assets/icon.png')
-                      }
+                      image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}

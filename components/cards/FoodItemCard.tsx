@@ -1,3 +1,5 @@
+import { UtensilsCrossed } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
@@ -9,7 +11,7 @@ type FoodItemCardProps = {
   name: string;
   description: string;
   calories: number;
-  image: ImageSourcePropType;
+  image?: ImageSourcePropType;
   onMorePress?: () => void;
   protein?: number;
   carbs?: number;
@@ -28,11 +30,23 @@ export function FoodItemCard({
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const [imageError, setImageError] = useState(false);
 
   const p = Math.round(protein ?? 0);
   const c = Math.round(carbs ?? 0);
   const f = Math.round(fat ?? 0);
   const combinedDescription = `${description} • ${t('food.manageFoodLibrary.macrosFormat', { protein: p, carbs: c, fat: f })}`;
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  // Reset image error state when image prop changes
+  useEffect(() => {
+    if (image) {
+      setImageError(false);
+    }
+  }, [image]);
 
   return (
     <GenericCard variant="default">
@@ -41,7 +55,18 @@ export function FoodItemCard({
           className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl"
           style={{ backgroundColor: theme.colors.background.gray700 }}
         >
-          <Image source={image} className="h-full w-full" resizeMode="cover" />
+          {!image || imageError ? (
+            <View className="flex-1 items-center justify-center">
+              <UtensilsCrossed size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+            </View>
+          ) : (
+            <Image
+              source={image}
+              className="h-full w-full"
+              resizeMode="cover"
+              onError={handleImageError}
+            />
+          )}
         </View>
         <View className="min-w-0 flex-1">
           <Text className="mb-1 text-lg font-semibold text-text-primary">{name}</Text>

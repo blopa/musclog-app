@@ -296,12 +296,35 @@ export default function CardsTestScreen() {
           />
         </TestSection>
 
-        <TestSection title="Food Item" subtitle="Food list item">
+        <TestSection title="Food Item" subtitle="Food list item with image fallback">
           <FoodItemCard
             name="Grilled Salmon"
             description="Atlantic salmon with lemon and herbs"
             calories={280}
-            image={require('../../assets/icon.png')}
+            protein={35}
+            carbs={0}
+            fat={18}
+            image={{ uri: 'https://via.placeholder.com/150' }}
+            onMorePress={() => console.log('More options')}
+          />
+          <FoodItemCard
+            name="Greek Yogurt"
+            description="Plain Greek yogurt with berries"
+            calories={150}
+            protein={20}
+            carbs={12}
+            fat={4}
+            image={undefined}
+            onMorePress={() => console.log('More options')}
+          />
+          <FoodItemCard
+            name="Broken Image Test"
+            description="This should show fallback icon"
+            calories={200}
+            protein={25}
+            carbs={15}
+            fat={8}
+            image={{ uri: 'https://nonexistent-image-url.com/broken.jpg' }}
             onMorePress={() => console.log('More options')}
           />
         </TestSection>
