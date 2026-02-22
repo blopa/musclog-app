@@ -1031,7 +1031,7 @@ export function FoodSearchModal({
                             name: food.name ?? '',
                             description: `${food.brand || 'Custom Food'} • ${Math.round(food.calories || 0)} kcal per 100g`,
                             brand: food.brand,
-                            serving_size: '100 g',
+                            serving_size: '100 g', // TODO: use the PortionSize model instead
                             calories: food.calories,
                             protein: food.protein,
                             carbs: food.carbs,
