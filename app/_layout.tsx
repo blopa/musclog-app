@@ -74,7 +74,8 @@ export default function RootLayout() {
 
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
-    // Verify database tables exist (development only)
+    // TODO: move this logic into the onboarding/landing, and have a loading state
+    // something like "We are preparing the app for you" idk
     if (__DEV__) {
       verifyDatabaseTables()
         .then((result) => {

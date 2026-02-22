@@ -118,7 +118,7 @@ export default function LandingScreen() {
             </View>
           </View>
 
-          {/* Action Section */}
+          {/* TODO: if we're migrating / seeding data, let's show a message with loading state instead of the button block */}
           <View className="gap-3 pb-8 pt-4">
             {/* Primary Button */}
             <Button

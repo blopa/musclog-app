@@ -249,6 +249,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                     {t('goalsManagement.subtitle')}
                   </Text>
                   <Text className="mt-2 text-center text-xs text-text-tertiary">
+                    {/*TODO: add translation here*/}
                     {t('goalsManagement.newGoal')} to get started
                   </Text>
                 </View>
