@@ -331,8 +331,13 @@ export default function FoodScreen() {
         {/* Header with Date Navigation */}
         <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between px-4 py-4">
-            {/* TODO: make the arrow that switch current day to have a bigger area of touch / trigger */}
-            <Pressable onPress={goToPreviousDay}>
+            <Pressable
+              onPress={goToPreviousDay}
+              className="rounded-lg p-3 active:bg-bg-secondary"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+              })}
+            >
               <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
             <Pressable
@@ -342,7 +347,13 @@ export default function FoodScreen() {
               <Text className="text-xl font-semibold text-text-primary">{getDisplayDate()}</Text>
               <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
             </Pressable>
-            <Pressable onPress={goToNextDay}>
+            <Pressable
+              onPress={goToNextDay}
+              className="rounded-lg p-3 active:bg-bg-secondary"
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+              })}
+            >
               <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
           </View>
