@@ -19,11 +19,9 @@ export default function LandingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  // TODO: would be great to show different copies when `isInitializing` is true
-  // - if we're only seeding the static data, show the current copy
-  // - if the user has the old database, show a message saying that the old data is being migrated
-  // - even better if we say exactly which table is being migrated in the copy while we show the progress indicator
   const [isInitializing, setIsInitializing] = useState(true);
+  const [initPhase, setInitPhase] = useState<'seeding' | 'migrating' | null>(null);
+  const [initStep, setInitStep] = useState<string | null>(null);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -37,7 +35,12 @@ export default function LandingScreen() {
           }
         }
 
-        await seedProductionData();
+        await seedProductionData({
+          onProgress: (info) => {
+            setInitPhase(info.phase);
+            setInitStep(info.step ?? null);
+          },
+        });
 
         if (__DEV__) {
           await seedDevData();
@@ -167,7 +170,13 @@ export default function LandingScreen() {
                     fontSize: theme.typography.fontSize.lg,
                   }}
                 >
-                  {t('onboarding.landing.preparingApp') || 'Preparing the app for you...'}
+                  {initPhase === 'migrating' && initStep
+                    ? t('onboarding.landing.migratingStep', {
+                        step: t(`onboarding.landing.migrationSteps.${initStep}`),
+                      })
+                    : initPhase === 'migrating'
+                      ? t('onboarding.landing.migratingData')
+                      : t('onboarding.landing.preparingApp')}
                 </Text>
               </View>
             ) : (

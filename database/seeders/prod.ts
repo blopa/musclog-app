@@ -1,7 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { SEEDING_COMPLETE_KEY } from '../../constants/database';
-import { ExerciseService, FoodPortionService, MigrationService } from '../services';
+import {
+  ExerciseService,
+  FoodPortionService,
+  MigrationService,
+  type MigrationStepKey,
+} from '../services';
+
+export type InitProgressPhase = 'seeding' | 'migrating';
+
+export interface SeedProductionDataOptions {
+  onProgress?: (info: { phase: InitProgressPhase; step?: MigrationStepKey }) => void;
+}
 
 /**
  * Seed production data
@@ -11,7 +22,9 @@ import { ExerciseService, FoodPortionService, MigrationService } from '../servic
  * Order: seed common portions and exercises first, then run migration from the old database.
  * Migration reuses existing exercises by name (only adds old exercises that are not already seeded).
  */
-export async function seedProductionData(): Promise<boolean> {
+export async function seedProductionData(options?: SeedProductionDataOptions): Promise<boolean> {
+  const onProgress = options?.onProgress;
+
   try {
     // Check if seeding has already been completed
     const seedingComplete = await AsyncStorage.getItem(SEEDING_COMPLETE_KEY);
@@ -19,7 +32,9 @@ export async function seedProductionData(): Promise<boolean> {
       console.log('Production data seeding already completed, skipping');
       return true;
     }
+
     // 1. Seed common portions if none exist
+    onProgress?.({ phase: 'seeding' });
     const existingPortions = await FoodPortionService.getAllPortions();
 
     if (existingPortions.length > 0) {
@@ -42,7 +57,9 @@ export async function seedProductionData(): Promise<boolean> {
     // 3. Migrate data from the old database if it exists (e.g. app upgrade)
     const migrationService = new MigrationService();
     if (await migrationService.checkOldDatabaseExists()) {
-      const result = await migrationService.migrateAll();
+      const result = await migrationService.migrateAll({
+        onProgress: (step) => onProgress?.({ phase: 'migrating', step }),
+      });
       if (result.success) {
         console.log(
           `Migration completed: ${result.exercises} exercises, ${result.workouts} workouts, ${result.workoutLogs} workout logs, ${result.templateSets} template sets, ${result.workoutLogSets} log sets`

@@ -9,7 +9,11 @@ export { ExerciseService } from './ExerciseService';
 
 // Export existing services
 export { GoogleAuthService } from './GoogleAuthService';
-export { MigrationService } from './MigrationService';
+export {
+  type MigrateAllOptions,
+  MigrationService,
+  type MigrationStepKey,
+} from './MigrationService';
 export { NutritionGoalService } from './NutritionGoalService';
 export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';

@@ -1165,7 +1165,22 @@
       "tagline": "Lift, Log, Repeat",
       "description": "Track your progress with data-driven insights and crush your fitness goals.",
       "connectGoogle": "View Terms",
-      "preparingApp": "Preparing the app for you..."
+      "preparingApp": "Preparing the app for you...",
+      "migratingData": "Migrating your data...",
+      "migratingStep": "Migrating {{step}}...",
+      "migrationSteps": {
+        "fitness_goals": "nutrition goals",
+        "user_metrics": "body metrics",
+        "users": "profile",
+        "foods": "foods",
+        "nutrition_logs": "nutrition logs",
+        "exercises": "exercises",
+        "workouts": "workout templates",
+        "workout_logs": "workout history",
+        "workout_template_sets": "workout template sets",
+        "workout_log_sets": "workout log sets",
+        "validating": "data"
+      }
     },
     "setGoals": {
       "title": "Smart Goal",

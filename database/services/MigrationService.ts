@@ -20,6 +20,24 @@ import {
   WorkoutTemplateSet,
 } from '../models';
 
+/** Step keys for progress reporting during migration (for landing screen copy). */
+export type MigrationStepKey =
+  | 'fitness_goals'
+  | 'user_metrics'
+  | 'users'
+  | 'foods'
+  | 'nutrition_logs'
+  | 'exercises'
+  | 'workouts'
+  | 'workout_logs'
+  | 'workout_template_sets'
+  | 'workout_log_sets'
+  | 'validating';
+
+export interface MigrateAllOptions {
+  onProgress?: (step: MigrationStepKey) => void;
+}
+
 export interface MigrationResult {
   success: boolean;
   error?: string;
@@ -1079,7 +1097,8 @@ export class MigrationService {
   /**
    * Execute complete migration
    */
-  async migrateAll(): Promise<MigrationResult> {
+  async migrateAll(options?: MigrateAllOptions): Promise<MigrationResult> {
+    const onProgress = options?.onProgress;
     const result: MigrationResult = {
       success: false,
       fitnessGoals: 0,
@@ -1120,56 +1139,67 @@ export class MigrationService {
       this.workoutEventIdToLogId.clear();
 
       // Step 2: Migrate Fitness Goals
+      onProgress?.('fitness_goals');
       console.log('Migrating fitness goals...');
       result.details.fitnessGoalsMigrated = await this.migrateFitnessGoals();
       result.fitnessGoals = result.details.fitnessGoalsMigrated;
 
       // Step 3: Migrate User Metrics
+      onProgress?.('user_metrics');
       console.log('Migrating user metrics...');
       result.details.userMetricsMigrated = await this.migrateUserMetrics();
       result.userMetrics = result.details.userMetricsMigrated;
 
       // Step 4: Migrate Users
+      onProgress?.('users');
       console.log('Migrating users...');
       result.details.usersMigrated = await this.migrateUsers();
       result.users = result.details.usersMigrated;
 
       // Step 5: Migrate Foods
+      onProgress?.('foods');
       console.log('Migrating foods...');
       result.details.foodsMigrated = await this.migrateFoods();
       result.foods = result.details.foodsMigrated;
 
       // Step 6: Migrate Nutrition Logs
+      onProgress?.('nutrition_logs');
       console.log('Migrating nutrition logs...');
       result.details.nutritionLogsMigrated = await this.migrateNutritionLogs();
       result.nutritionLogs = result.details.nutritionLogsMigrated;
 
       // Step 7: Migrate Exercises
+      onProgress?.('exercises');
       console.log('Migrating exercises...');
       result.details.exercisesMigrated = await this.migrateExercises();
       result.exercises = result.details.exercisesMigrated;
 
       // Step 8: Migrate Workouts
+      onProgress?.('workouts');
       console.log('Migrating workouts...');
       result.details.workoutsMigrated = await this.migrateWorkouts();
       result.workouts = result.details.workoutsMigrated;
 
       // Step 9: Migrate Workout Logs
+      onProgress?.('workout_logs');
       console.log('Migrating workout logs...');
       result.details.workoutLogsMigrated = await this.migrateWorkoutLogs();
       result.workoutLogs = result.details.workoutLogsMigrated;
 
       // Step 10: Migrate template sets
+      onProgress?.('workout_template_sets');
       console.log('Migrating workout template sets...');
       result.details.templateSetsMigrated = await this.migrateWorkoutTemplateSets();
       result.templateSets = result.details.templateSetsMigrated;
 
       // Step 11: Migrate log sets
+      onProgress?.('workout_log_sets');
       console.log('Migrating workout log sets...');
       result.details.logSetsMigrated = await this.migrateWorkoutLogSets();
       result.workoutLogSets = result.details.logSetsMigrated;
 
       // Step 12: Validate migration
+      onProgress?.('validating');
       console.log('Validating migration...');
       await this.validateMigration(result);
 
