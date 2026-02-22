@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { SEEDING_COMPLETE_KEY } from '../../constants/database';
+import { database } from '../database-instance';
 import {
   ExerciseService,
   FoodPortionService,
@@ -32,6 +33,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log('Production data seeding already completed, skipping');
       return true;
     }
+
+    // Seeding flag is not set: either first run or app was closed during a previous
+    // migration. Reset the database so we always start a fresh seed + migration.
+    await database.unsafeResetDatabase();
+    console.log('Database reset (clean slate for seeding/migration)');
 
     // 1. Seed common portions if none exist
     onProgress?.({ phase: 'seeding' });
