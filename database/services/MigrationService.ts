@@ -448,7 +448,8 @@ export class MigrationService {
   }
 
   /**
-   * Find a food with similar nutritional profile when exact name match fails
+   * Find a food with similar nutritional profile (by macro percentages) when exact name match fails.
+   * Compares % of calories from protein/carbs/fat so total vs per-100g values can match.
    */
   private async findFoodByNutritionalProfile(
     calories: number,
@@ -457,7 +458,6 @@ export class MigrationService {
     fat: number
   ): Promise<string | null> {
     try {
-      // Only search if we have meaningful nutritional data
       if (calories <= 0) return null;
 
       const allFoods = await database
@@ -465,23 +465,31 @@ export class MigrationService {
         .query(Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const logCalFromProtein = protein * 4;
+      const logCalFromCarbs = carbs * 4;
+      const logCalFromFat = fat * 9;
+      const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
+      const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
+      const logPctFat = calories > 0 ? logCalFromFat / calories : 0;
+
       let bestMatch: Food | null = null;
       let bestScore = Infinity;
 
       for (const food of allFoods) {
-        // Calculate similarity score based on nutritional differences
-        const caloriesDiff = Math.abs(food.calories - calories);
-        const proteinDiff = Math.abs(food.protein - protein);
-        const carbsDiff = Math.abs(food.carbs - carbs);
-        const fatDiff = Math.abs(food.fat - fat);
+        if (food.calories <= 0) continue;
+        const foodCalFromProtein = food.protein * 4;
+        const foodCalFromCarbs = food.carbs * 4;
+        const foodCalFromFat = food.fat * 9;
+        const foodPctProtein = foodCalFromProtein / food.calories;
+        const foodPctCarbs = foodCalFromCarbs / food.calories;
+        const foodPctFat = foodCalFromFat / food.calories;
 
-        // Weighted score - calories is most important, then macros
-        const score = caloriesDiff * 2 + proteinDiff + carbsDiff + fatDiff;
+        const score =
+          Math.abs(foodPctProtein - logPctProtein) +
+          Math.abs(foodPctCarbs - logPctCarbs) +
+          Math.abs(foodPctFat - logPctFat);
 
-        // Consider it a good match if calories are within 20% and overall score is low
-        const caloriesWithinThreshold = caloriesDiff <= calories * 0.2;
-
-        if (caloriesWithinThreshold && score < bestScore) {
+        if (score < bestScore) {
           bestScore = score;
           bestMatch = food;
         }
@@ -602,7 +610,7 @@ export class MigrationService {
 
         let gramsConsumed = parseFloat(grams) || 0;
 
-        // When grams is null in the old DB, infer from the linked food's calories per 100g
+        // When grams is null in the old DB, infer from the linked food's calories per 100g (if we found a food)
         if (gramsConsumed === 0 && newFoodId) {
           const loggedCalories = parseFloat(calories) || 0;
           if (loggedCalories > 0) {
@@ -617,16 +625,21 @@ export class MigrationService {
           }
         }
 
+        // When we still have no grams (e.g. no matching food found), store totals as "per 100g" with amount 100
+        // so the snapshot displays correctly (scale = 1 in getNutrients). Otherwise we'd store zeros.
+        const useUnknownGramsConvention = gramsConsumed === 0;
+        const effectiveGrams = useUnknownGramsConvention ? 100 : gramsConsumed;
+
         // Convert macros from actual consumed values to per-100g values for the new system
         const caloriesPer100g =
-          gramsConsumed > 0 ? ((parseFloat(calories) || 0) * 100) / gramsConsumed : 0;
+          effectiveGrams > 0 ? ((parseFloat(calories) || 0) * 100) / effectiveGrams : 0;
         const proteinPer100g =
-          gramsConsumed > 0 ? ((parseFloat(protein) || 0) * 100) / gramsConsumed : 0;
+          effectiveGrams > 0 ? ((parseFloat(protein) || 0) * 100) / effectiveGrams : 0;
         const carbsPer100g =
-          gramsConsumed > 0 ? ((parseFloat(carbohydrate) || 0) * 100) / gramsConsumed : 0;
-        const fatPer100g = gramsConsumed > 0 ? ((parseFloat(fat) || 0) * 100) / gramsConsumed : 0;
+          effectiveGrams > 0 ? ((parseFloat(carbohydrate) || 0) * 100) / effectiveGrams : 0;
+        const fatPer100g = effectiveGrams > 0 ? ((parseFloat(fat) || 0) * 100) / effectiveGrams : 0;
         const fiberPer100g =
-          gramsConsumed > 0 ? ((parseFloat(fiber) || 0) * 100) / gramsConsumed : 0;
+          effectiveGrams > 0 ? ((parseFloat(fiber) || 0) * 100) / effectiveGrams : 0;
 
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: name || undefined,
@@ -638,7 +651,7 @@ export class MigrationService {
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
-        const amountToStore = gramsConsumed > 0 ? gramsConsumed : 1;
+        const amountToStore = gramsConsumed > 0 ? gramsConsumed : useUnknownGramsConvention ? 100 : 1;
 
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
@@ -660,8 +673,6 @@ export class MigrationService {
             newLog.deletedAt = oldLog.deletedAt
               ? this.convertTimestamp(oldLog.deletedAt)
               : undefined;
-
-            console.log('IMPORTING........', newLog);
           });
         });
         migratedCount++;
@@ -706,7 +717,7 @@ export class MigrationService {
           database.get<Exercise>('exercises').create((newExercise) => {
             newExercise.name = name || '';
             newExercise.description = oldExercise.description || '';
-            newExercise.imageUrl = oldExercise.image || null; // Map image to image_url
+            newExercise.imageUrl = undefined; // dont map image
             newExercise.muscleGroup = oldExercise.muscleGroup || 'other'; // Map muscleGroup to muscle_group
             newExercise.equipmentType = this.mapExerciseType(oldExercise.type); // Map type to equipment_type
             newExercise.mechanicType = this.determineMechanicType(
