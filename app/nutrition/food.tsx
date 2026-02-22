@@ -331,6 +331,7 @@ export default function FoodScreen() {
         {/* Header with Date Navigation */}
         <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between px-4 py-4">
+            {/* TODO: make the arrow that switch current day to have a bigger area of touch / trigger */}
             <Pressable onPress={goToPreviousDay}>
               <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
             </Pressable>
