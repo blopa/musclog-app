@@ -36,8 +36,14 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Seeding flag is not set: either first run or app was closed during a previous
     // migration. Reset the database so we always start a fresh seed + migration.
-    await database.unsafeResetDatabase();
-    console.log('Database reset (clean slate for seeding/migration)');
+    try {
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
+      console.log('Database reset (clean slate for seeding/migration)');
+    } catch (error) {
+      console.error('Error deleting database:', error);
+    }
 
     // 1. Seed common portions if none exist
     onProgress?.({ phase: 'seeding' });

@@ -260,9 +260,9 @@ export class MigrationService {
 
             if (!isNaN(numericValue)) {
               const finalValue = metricType.convert(numericValue);
-              console.log(
-                `Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`
-              );
+              // console.log(
+              //   `Migrating ${metricType.type}: ${finalValue} ${metricType.unit} from date ${oldMetric.date}`
+              // );
               const encrypted = await encryptUserMetricFields({
                 value: finalValue,
                 unit: metricType.unit,
@@ -494,13 +494,22 @@ export class MigrationService {
           }
         }
 
+        const gramsConsumed = parseFloat(grams) || 1;
+        
+        // Convert macros from actual consumed values to per-100g values for the new system
+        const caloriesPer100g = gramsConsumed > 0 ? (parseFloat(calories) || 0) * 100 / gramsConsumed : 0;
+        const proteinPer100g = gramsConsumed > 0 ? (parseFloat(protein) || 0) * 100 / gramsConsumed : 0;
+        const carbsPer100g = gramsConsumed > 0 ? (parseFloat(carbohydrate) || 0) * 100 / gramsConsumed : 0;
+        const fatPer100g = gramsConsumed > 0 ? (parseFloat(fat) || 0) * 100 / gramsConsumed : 0;
+        const fiberPer100g = gramsConsumed > 0 ? (parseFloat(fiber) || 0) * 100 / gramsConsumed : 0;
+
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: name || undefined,
-          loggedCalories: parseFloat(calories) || 0,
-          loggedProtein: parseFloat(protein) || 0,
-          loggedCarbs: parseFloat(carbohydrate) || 0,
-          loggedFat: parseFloat(fat) || 0,
-          loggedFiber: parseFloat(fiber) || 0,
+          loggedCalories: caloriesPer100g,
+          loggedProtein: proteinPer100g,
+          loggedCarbs: carbsPer100g,
+          loggedFat: fatPer100g,
+          loggedFiber: fiberPer100g,
           loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
         });
 
@@ -669,10 +678,27 @@ export class MigrationService {
   /**
    * Map old meal type to new meal type format
    */
-  private mapMealType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
-    if (!mealType) return 'other';
+  private mapMealType(mealType: string | number): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' {
+    if (!mealType) {
+      return 'other';
+    }
 
-    const lowerMealType = mealType.toLowerCase();
+    // Handle numeric values from old database
+    const numericMealType = typeof mealType === 'string' ? parseInt(mealType, 10) : mealType;
+    
+    if (!isNaN(numericMealType)) {
+      switch (numericMealType) {
+        case 1: return 'breakfast';
+        case 2: return 'lunch';
+        case 3: return 'dinner';
+        case 4: return 'snack';
+        case 0:
+        default: return 'other';
+      }
+    }
+
+    // Fallback to string matching for any non-numeric values
+    const lowerMealType = mealType.toString().toLowerCase();
     if (lowerMealType.includes('breakfast')) return 'breakfast';
     if (lowerMealType.includes('lunch')) return 'lunch';
     if (lowerMealType.includes('dinner')) return 'dinner';
