@@ -48,7 +48,8 @@ export default class WorkoutLog extends Model {
       isDropSet?: boolean;
     }
   ): Promise<void> {
-    if (this.completedAt) {
+    const isOnlyRestTimeAfter = Object.keys(data).length === 1 && data.restTimeAfter !== undefined;
+    if (this.completedAt && !isOnlyRestTimeAfter) {
       throw new Error('Cannot update sets in a completed workout');
     }
 

@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Animated, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
 import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
@@ -19,7 +19,7 @@ import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
@@ -244,6 +244,7 @@ export default function RestTimerScreen() {
         {/* Header */}
         <View className="relative z-20">
           <WorkoutTimeTracker
+            // TODO: on close, show the modal asking if the workout should be finished and saved etc, like in the workout/workout-session screen
             onClose={() => router.back()}
             onOptionsPress={() => setIsOptionsModalVisible(true)}
             startTime={workoutLog.startedAt}
