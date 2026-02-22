@@ -22,12 +22,14 @@ type ExerciseItemProps = {
   exercise: ExerciseData;
   isLast: boolean;
   weightUnitKey?: 'workoutSession.kg' | 'workoutSession.lb';
+  isPreview?: boolean;
 };
 
 export function ExerciseItem({
   exercise,
   isLast,
   weightUnitKey = 'workoutSession.kg',
+  isPreview = false,
 }: ExerciseItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -118,20 +120,24 @@ export function ExerciseItem({
                 {t('workoutSession.reps')}
               </Text>
             </View>
-            <View className="flex-1 items-center py-2">
-              <Text
-                className="text-sm font-semibold uppercase tracking-wider"
-                style={{ color: theme.colors.accent.primary }}
-              >
-                {t('workoutSession.partials')}
-              </Text>
-            </View>
+            {!isPreview ? (
+              <View className="flex-1 items-center py-2">
+                <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                  {t('workoutSession.partials')}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
           {/* Sets Rows */}
           <View className="gap-1 p-2">
             {exercise.sets.map((set, index) => (
-              <SetRow key={set.setNumber} set={set} isLast={index === exercise.sets.length - 1} />
+              <SetRow
+                key={set.setNumber}
+                set={set}
+                isLast={index === exercise.sets.length - 1}
+                isPreview={isPreview}
+              />
             ))}
           </View>
 

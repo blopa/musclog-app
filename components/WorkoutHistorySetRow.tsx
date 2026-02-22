@@ -15,9 +15,10 @@ export type SetData = Pick<WorkoutLogSet, 'weight' | 'reps' | 'partials'> & {
 type SetRowProps = {
   set: SetData;
   isLast: boolean;
+  isPreview?: boolean;
 };
 
-export function SetRow({ set }: SetRowProps) {
+export function SetRow({ set, isPreview = false }: SetRowProps) {
   const theme = useTheme();
   const isCurrent = set.isCurrent;
 
@@ -78,21 +79,23 @@ export function SetRow({ set }: SetRowProps) {
       </View>
 
       {/* Partials */}
-      <View className="flex-1 items-center">
-        <Text
-          className="text-sm tabular-nums"
-          style={{
-            color:
-              (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
-            fontWeight:
-              (set.partials ?? 0) > 0
-                ? theme.typography.fontWeight.bold
-                : theme.typography.fontWeight.normal,
-          }}
-        >
-          {(set.partials ?? 0) > 0 ? `+${set.partials}` : '-'}
-        </Text>
-      </View>
+      {!isPreview ? (
+        <View className="flex-1 items-center">
+          <Text
+            className="text-sm tabular-nums"
+            style={{
+              color:
+                (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
+              fontWeight:
+                (set.partials ?? 0) > 0
+                  ? theme.typography.fontWeight.bold
+                  : theme.typography.fontWeight.normal,
+            }}
+          >
+            {(set.partials ?? 0) > 0 ? `+${set.partials}` : '-'}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }
