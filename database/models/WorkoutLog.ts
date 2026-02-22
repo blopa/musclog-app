@@ -79,12 +79,10 @@ export default class WorkoutLog extends Model {
       updatedSet.updatedAt = now;
     });
 
-    // Update parent log using callWriter to avoid nested write conflicts
-    await this.callWriter(() =>
-      this.update((log) => {
-        log.updatedAt = now;
-      })
-    );
+    // Update parent log (we're already inside a @writer, so call this.update directly)
+    await this.update((log) => {
+      log.updatedAt = now;
+    });
   }
 
   @writer
@@ -144,12 +142,10 @@ export default class WorkoutLog extends Model {
 
     await set.markAsDeleted();
 
-    // Update parent log using callWriter to avoid nested write conflicts
-    await this.callWriter(() =>
-      this.update((log) => {
-        log.updatedAt = Date.now();
-      })
-    );
+    // Update parent log (we're already inside a @writer, so call this.update directly)
+    await this.update((log) => {
+      log.updatedAt = Date.now();
+    });
   }
 
   @writer
