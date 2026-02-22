@@ -132,8 +132,10 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
         </Text>
       </View>
       {rightAction ? (
-        // TODO: increase the touchable / trigger size for this button
-        <Pressable onPress={rightAction.onPress}>
+        <Pressable 
+          onPress={rightAction.onPress}
+          className="p-2 -m-2"
+        >
           <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}
