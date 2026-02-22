@@ -1213,7 +1213,7 @@ export function FoodSearchModal({
           />
         ) : null}
 
-        {/* TODO: move this to a separate component */}
+        {/* TODO: move this to a separate component and only load 20 items and then have a load more btn like the other places */}
         <FullScreenModal
           visible={isRecentHistoryModalVisible}
           onClose={() => setIsRecentHistoryModalVisible(false)}
