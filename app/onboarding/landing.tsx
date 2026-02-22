@@ -22,6 +22,8 @@ export default function LandingScreen() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initPhase, setInitPhase] = useState<'seeding' | 'migrating' | null>(null);
   const [initStep, setInitStep] = useState<string | null>(null);
+  const [initProgressCurrent, setInitProgressCurrent] = useState<number | null>(null);
+  const [initProgressTotal, setInitProgressTotal] = useState<number | null>(null);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -39,6 +41,8 @@ export default function LandingScreen() {
           onProgress: (info) => {
             setInitPhase(info.phase);
             setInitStep(info.step ?? null);
+            setInitProgressCurrent(info.current ?? null);
+            setInitProgressTotal(info.total ?? null);
           },
         });
 
@@ -184,9 +188,20 @@ export default function LandingScreen() {
                   }}
                 >
                   {initPhase === 'migrating' && initStep
-                    ? t('onboarding.landing.migratingStep', {
-                        step: t(`onboarding.landing.migrationSteps.${initStep}`),
-                      })
+                    // TODO: dont do IIFEE and create a helper function for this
+                    ? (() => {
+                        const stepLabel = t(`onboarding.landing.migrationSteps.${initStep}`);
+                        const hasCounts =
+                          initProgressTotal != null &&
+                          initProgressTotal > 0 &&
+                          initProgressCurrent != null;
+                        const countText = hasCounts
+                          ? ` ${initProgressCurrent.toLocaleString()} / ${initProgressTotal.toLocaleString()}`
+                          : '';
+                        return t('onboarding.landing.migratingStep', {
+                          step: stepLabel + countText,
+                        });
+                      })()
                     : initPhase === 'migrating'
                       ? t('onboarding.landing.migratingData')
                       : t('onboarding.landing.preparingApp')}

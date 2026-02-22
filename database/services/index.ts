@@ -11,6 +11,7 @@ export { ExerciseService } from './ExerciseService';
 export { GoogleAuthService } from './GoogleAuthService';
 export {
   type MigrateAllOptions,
+  type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
 } from './MigrationService';

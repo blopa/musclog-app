@@ -5,6 +5,7 @@ import { database } from '../database-instance';
 import {
   ExerciseService,
   FoodPortionService,
+  type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
 } from '../services';
@@ -12,7 +13,12 @@ import {
 export type InitProgressPhase = 'seeding' | 'migrating';
 
 export interface SeedProductionDataOptions {
-  onProgress?: (info: { phase: InitProgressPhase; step?: MigrationStepKey }) => void;
+  onProgress?: (info: {
+    phase: InitProgressPhase;
+    step?: MigrationStepKey;
+    current?: number;
+    total?: number;
+  }) => void;
 }
 
 /**
@@ -70,7 +76,13 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     const migrationService = new MigrationService();
     if (await migrationService.checkOldDatabaseExists()) {
       const result = await migrationService.migrateAll({
-        onProgress: (step) => onProgress?.({ phase: 'migrating', step }),
+        onProgress: (info: MigrationProgressInfo) =>
+          onProgress?.({
+            phase: 'migrating',
+            step: info.step,
+            current: info.current,
+            total: info.total,
+          }),
       });
       if (result.success) {
         console.log(

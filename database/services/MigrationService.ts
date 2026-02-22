@@ -35,8 +35,14 @@ export type MigrationStepKey =
   | 'workout_log_sets'
   | 'validating';
 
+export interface MigrationProgressInfo {
+  step: MigrationStepKey;
+  current?: number;
+  total?: number;
+}
+
 export interface MigrateAllOptions {
-  onProgress?: (step: MigrationStepKey) => void;
+  onProgress?: (info: MigrationProgressInfo) => void;
 }
 
 export interface MigrationResult {
@@ -97,6 +103,29 @@ export class MigrationService {
     } catch (error) {
       console.log('Old database not found or not accessible:', error);
     }
+  }
+
+  /**
+   * Returns a progress callback that throttles updates to ~every 1% (or at 0 and total)
+   * so we don't flood the UI on large tables.
+   */
+  private createProgressReporter(
+    step: MigrationStepKey,
+    onProgress: ((info: MigrationProgressInfo) => void) | undefined
+  ): (current: number, total: number) => void {
+    if (!onProgress) return () => {};
+    let lastPercent = -1;
+    return (current: number, total: number) => {
+      if (total <= 0) {
+        onProgress({ step, current: 0, total: 0 });
+        return;
+      }
+      const percent = Math.floor((current / total) * 100);
+      if (current === 0 || current === total || percent !== lastPercent) {
+        lastPercent = percent;
+        onProgress({ step, current, total });
+      }
+    };
   }
 
   /**
@@ -169,7 +198,9 @@ export class MigrationService {
   /**
    * Migrate fitness goals from old FitnessGoals table to new nutrition_goals table
    */
-  private async migrateFitnessGoals(): Promise<number> {
+  private async migrateFitnessGoals(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldGoals = (await this.oldDB.getAllAsync(`
@@ -177,6 +208,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldGoals.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldGoal of oldGoals) {
@@ -203,6 +236,7 @@ export class MigrationService {
           });
         });
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating fitness goal:', error, 'Data:', oldGoal);
         throw new Error(
@@ -217,7 +251,9 @@ export class MigrationService {
   /**
    * Migrate user metrics from old UserMetrics table to new user_metrics table
    */
-  private async migrateUserMetrics(): Promise<number> {
+  private async migrateUserMetrics(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const encKey = await getOldEncryptionKey();
@@ -230,7 +266,10 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldMetrics.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
+    let processedRows = 0;
 
     for (const oldMetric of oldMetrics) {
       const baseTimestamp = this.convertTimestamp(oldMetric.createdAt);
@@ -300,6 +339,8 @@ export class MigrationService {
           }
         }
       }
+      processedRows++;
+      reportProgress?.(processedRows, total);
     }
 
     return migratedCount;
@@ -308,7 +349,9 @@ export class MigrationService {
   /**
    * Migrate user profiles from old User table to new users table
    */
-  private async migrateUsers(): Promise<number> {
+  private async migrateUsers(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldUsers = (await this.oldDB.getAllAsync(`
@@ -316,6 +359,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldUsers.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldUser of oldUsers) {
@@ -343,6 +388,7 @@ export class MigrationService {
           });
         });
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating user:', error, 'Data:', oldUser);
         throw new Error(
@@ -357,7 +403,9 @@ export class MigrationService {
   /**
    * Migrate food items from old Food table to new foods table
    */
-  private async migrateFoods(): Promise<number> {
+  private async migrateFoods(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldFoods = (await this.oldDB.getAllAsync(`
@@ -365,6 +413,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldFoods.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldFood of oldFoods) {
@@ -436,6 +486,7 @@ export class MigrationService {
         );
         this.foodIdMap.set(Number(oldFood.id), newFood.id);
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating food:', error, 'Data:', oldFood);
         throw new Error(
@@ -505,7 +556,9 @@ export class MigrationService {
   /**
    * Migrate nutrition logs from old UserNutrition table to new nutrition_logs table
    */
-  private async migrateNutritionLogs(): Promise<number> {
+  private async migrateNutritionLogs(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldNutritionLogs = (await this.oldDB.getAllAsync(`
@@ -513,7 +566,10 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldNutritionLogs.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
+    let processedRows = 0;
 
     for (const oldLog of oldNutritionLogs) {
       try {
@@ -630,6 +686,8 @@ export class MigrationService {
         // }
 
         if (!newFoodId) {
+          processedRows++;
+          reportProgress?.(processedRows, total);
           continue;
         }
 
@@ -706,6 +764,8 @@ export class MigrationService {
         console.error('Error migrating nutrition log:', error, 'Data:', oldLog);
         // Continue with other logs instead of failing completely
       }
+      processedRows++;
+      reportProgress?.(processedRows, total);
     }
 
     console.log('Migrated', migratedCount, ' out of', oldNutritionLogs.length, 'nutrition logs');
@@ -715,7 +775,9 @@ export class MigrationService {
   /**
    * Migrate exercises from old Exercise table to new exercises table
    */
-  private async migrateExercises(): Promise<number> {
+  private async migrateExercises(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldExercises = (await this.oldDB.getAllAsync(`
@@ -723,6 +785,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldExercises.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldExercise of oldExercises) {
@@ -737,6 +801,7 @@ export class MigrationService {
         if (existing.length > 0) {
           this.exerciseIdMap.set(Number(oldExercise.id), existing[0].id);
           migratedCount++;
+          reportProgress?.(migratedCount, total);
           continue;
         }
 
@@ -764,6 +829,7 @@ export class MigrationService {
         );
         this.exerciseIdMap.set(Number(oldExercise.id), newEx.id);
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating exercise:', error, 'Data:', oldExercise);
         throw new Error(
@@ -894,7 +960,9 @@ export class MigrationService {
   /**
    * Migrate workouts from old Workout table to new workout_templates table
    */
-  private async migrateWorkouts(): Promise<number> {
+  private async migrateWorkouts(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldWorkouts = (await this.oldDB.getAllAsync(`
@@ -902,6 +970,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldWorkouts.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldWorkout of oldWorkouts) {
@@ -922,6 +992,7 @@ export class MigrationService {
         );
         this.workoutIdToTemplateId.set(Number(oldWorkout.id), newTemplate.id);
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating workout:', error, 'Data:', oldWorkout);
         throw new Error(
@@ -958,7 +1029,9 @@ export class MigrationService {
   /**
    * Migrate workout logs from old WorkoutEvent table to new workout_logs table
    */
-  private async migrateWorkoutLogs(): Promise<number> {
+  private async migrateWorkoutLogs(
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
@@ -966,6 +1039,8 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    const total = oldWorkoutLogs.length;
+    reportProgress?.(0, total);
     let migratedCount = 0;
 
     for (const oldWorkoutLog of oldWorkoutLogs) {
@@ -989,6 +1064,7 @@ export class MigrationService {
         );
         this.workoutEventIdToLogId.set(Number(oldWorkoutLog.id), newLog.id);
         migratedCount++;
+        reportProgress?.(migratedCount, total);
       } catch (error) {
         console.error('Error migrating workout log:', error, 'Data:', oldWorkoutLog);
         throw new Error(
@@ -1002,8 +1078,13 @@ export class MigrationService {
 
   /**
    * Migrate sets from old Set table (where workoutId points to Workout) to workout_template_sets
+   * @param totalForProgress Total count from getMigrationSummary() for progress display
+   * @param reportProgress
    */
-  private async migrateWorkoutTemplateSets(): Promise<number> {
+  private async migrateWorkoutTemplateSets(
+    totalForProgress: number,
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldWorkouts = (await this.oldDB.getAllAsync(`
@@ -1011,6 +1092,7 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    reportProgress?.(0, totalForProgress);
     let migratedCount = 0;
 
     for (const oldWorkout of oldWorkouts) {
@@ -1047,6 +1129,7 @@ export class MigrationService {
             });
           });
           migratedCount++;
+          reportProgress?.(migratedCount, totalForProgress);
         } catch (error) {
           console.error('Error migrating template set:', error, 'Data:', oldSet);
           throw new Error(
@@ -1061,8 +1144,13 @@ export class MigrationService {
 
   /**
    * Migrate sets from old Set table (where workoutId points to WorkoutEvent) to workout_log_sets
+   * @param totalForProgress Total count from getMigrationSummary() for progress display
+   * @param reportProgress
    */
-  private async migrateWorkoutLogSets(): Promise<number> {
+  private async migrateWorkoutLogSets(
+    totalForProgress: number,
+    reportProgress?: (current: number, total: number) => void
+  ): Promise<number> {
     if (!this.oldDB) throw new Error('Old database not available');
 
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
@@ -1070,6 +1158,7 @@ export class MigrationService {
       WHERE deletedAt IS NULL OR deletedAt = ''
     `)) as Record<string, any>[];
 
+    reportProgress?.(0, totalForProgress);
     let migratedCount = 0;
 
     for (const oldEvent of oldWorkoutLogs) {
@@ -1109,6 +1198,7 @@ export class MigrationService {
             });
           });
           migratedCount++;
+          reportProgress?.(migratedCount, totalForProgress);
         } catch (error) {
           console.error('Error migrating log set:', error, 'Data:', oldSet);
           throw new Error(
@@ -1374,73 +1464,75 @@ export class MigrationService {
 
       console.log('Starting migration from old database...');
 
+      const summary = await this.getMigrationSummary();
+
       this.exerciseIdMap.clear();
       this.workoutIdToTemplateId.clear();
       this.workoutEventIdToLogId.clear();
       this.foodIdMap.clear();
 
+      const report = (step: MigrationStepKey) => this.createProgressReporter(step, onProgress);
+
       // Step 2: Migrate Fitness Goals
-      onProgress?.('fitness_goals');
       console.log('Migrating fitness goals...');
-      result.details.fitnessGoalsMigrated = await this.migrateFitnessGoals();
+      result.details.fitnessGoalsMigrated = await this.migrateFitnessGoals(report('fitness_goals'));
       result.fitnessGoals = result.details.fitnessGoalsMigrated;
 
       // Step 3: Migrate User Metrics
-      onProgress?.('user_metrics');
       console.log('Migrating user metrics...');
-      result.details.userMetricsMigrated = await this.migrateUserMetrics();
+      result.details.userMetricsMigrated = await this.migrateUserMetrics(report('user_metrics'));
       result.userMetrics = result.details.userMetricsMigrated;
 
       // Step 4: Migrate Users
-      onProgress?.('users');
       console.log('Migrating users...');
-      result.details.usersMigrated = await this.migrateUsers();
+      result.details.usersMigrated = await this.migrateUsers(report('users'));
       result.users = result.details.usersMigrated;
 
       // Step 5: Migrate Foods
-      onProgress?.('foods');
       console.log('Migrating foods...');
-      result.details.foodsMigrated = await this.migrateFoods();
+      result.details.foodsMigrated = await this.migrateFoods(report('foods'));
       result.foods = result.details.foodsMigrated;
 
       // Step 6: Migrate Nutrition Logs
-      onProgress?.('nutrition_logs');
       console.log('Migrating nutrition logs...');
-      result.details.nutritionLogsMigrated = await this.migrateNutritionLogs();
+      result.details.nutritionLogsMigrated = await this.migrateNutritionLogs(
+        report('nutrition_logs')
+      );
       result.nutritionLogs = result.details.nutritionLogsMigrated;
 
       // Step 7: Migrate Exercises
-      onProgress?.('exercises');
       console.log('Migrating exercises...');
-      result.details.exercisesMigrated = await this.migrateExercises();
+      result.details.exercisesMigrated = await this.migrateExercises(report('exercises'));
       result.exercises = result.details.exercisesMigrated;
 
       // Step 8: Migrate Workouts
-      onProgress?.('workouts');
       console.log('Migrating workouts...');
-      result.details.workoutsMigrated = await this.migrateWorkouts();
+      result.details.workoutsMigrated = await this.migrateWorkouts(report('workouts'));
       result.workouts = result.details.workoutsMigrated;
 
       // Step 9: Migrate Workout Logs
-      onProgress?.('workout_logs');
       console.log('Migrating workout logs...');
-      result.details.workoutLogsMigrated = await this.migrateWorkoutLogs();
+      result.details.workoutLogsMigrated = await this.migrateWorkoutLogs(report('workout_logs'));
       result.workoutLogs = result.details.workoutLogsMigrated;
 
       // Step 10: Migrate template sets
-      onProgress?.('workout_template_sets');
       console.log('Migrating workout template sets...');
-      result.details.templateSetsMigrated = await this.migrateWorkoutTemplateSets();
+      result.details.templateSetsMigrated = await this.migrateWorkoutTemplateSets(
+        summary.templateSetsCount,
+        report('workout_template_sets')
+      );
       result.templateSets = result.details.templateSetsMigrated;
 
       // Step 11: Migrate log sets
-      onProgress?.('workout_log_sets');
       console.log('Migrating workout log sets...');
-      result.details.logSetsMigrated = await this.migrateWorkoutLogSets();
+      result.details.logSetsMigrated = await this.migrateWorkoutLogSets(
+        summary.logSetsCount,
+        report('workout_log_sets')
+      );
       result.workoutLogSets = result.details.logSetsMigrated;
 
       // Step 12: Validate migration
-      onProgress?.('validating');
+      onProgress?.({ step: 'validating' });
       console.log('Validating migration...');
       await this.validateMigration(result);
 
