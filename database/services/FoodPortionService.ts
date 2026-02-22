@@ -85,6 +85,22 @@ export class FoodPortionService {
   }
 
   /**
+   * Get the standard 100g portion (from createCommonPortions).
+   * Returns null if it has not been created yet.
+   */
+  static async get100gPortion(): Promise<FoodPortion | null> {
+    const portions = await database
+      .get<FoodPortion>('food_portions')
+      .query(
+        Q.where('name', '100g'),
+        Q.where('gram_weight', 100),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+    return portions.length > 0 ? portions[0] : null;
+  }
+
+  /**
    * Get portion by ID
    */
   static async getPortionById(id: string): Promise<FoodPortion | null> {

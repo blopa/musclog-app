@@ -1,4 +1,4 @@
-import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
+import { Plus, QrCode, Search, Sparkles, UtensilsCrossed } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,7 +14,7 @@ import {
 
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import { NutritionService } from '../../database/services';
+import { FoodPortionService, NutritionService } from '../../database/services';
 import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
@@ -25,7 +25,8 @@ import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji or icon name
+  icon?: string; // Emoji
+  iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
   iconBgColor?: string;
   image?: ImageSourcePropType;
@@ -49,6 +50,23 @@ type UnderlineTabsProps = {
   activeTab: string;
   onTabChange: (tabId: string) => void;
 };
+
+function getMealsTabLabel(options: {
+  searchQuery: string;
+  filteredCount: number;
+  totalCount?: number;
+  t: (key: string) => string;
+}): string {
+  const { searchQuery, filteredCount, totalCount, t } = options;
+  const base = t('foodSearch.filters.meals');
+  if (searchQuery.trim()) {
+    return `${base} (${filteredCount})`;
+  }
+  if (totalCount !== undefined) {
+    return `${base} (${totalCount})`;
+  }
+  return base;
+}
 
 function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
   const theme = useTheme();
@@ -136,6 +154,11 @@ function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
             className="h-full w-full"
             resizeMode="cover"
             style={{ borderRadius: theme.borderRadius.xl }}
+          />
+        ) : food.iconName === 'utensils-crossed' ? (
+          <UtensilsCrossed
+            size={theme.iconSize.lg}
+            color={food.iconColor ?? theme.colors.accent.primary}
           />
         ) : food.icon ? (
           <Text className="text-xl">{food.icon}</Text>
@@ -316,6 +339,20 @@ export function FoodSearchModal({
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
   const [isMealDetailsVisible, setIsMealDetailsVisible] = useState(false);
+  const [portion100gName, setPortion100gName] = useState<string>('100g');
+  const [isRecentHistoryModalVisible, setIsRecentHistoryModalVisible] = useState(false);
+
+  // Load the standard 100g portion name when modal is visible
+  useEffect(() => {
+    if (!visible) return;
+    let mounted = true;
+    FoodPortionService.get100gPortion().then((portion) => {
+      if (mounted) setPortion100gName(portion?.name ?? '100g');
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [visible]);
 
   // Get recent local foods for the "Recent History" section
   const { foods: recentFoods } = useFoods({
@@ -325,6 +362,16 @@ export function FoodSearchModal({
     sortBy: 'updated_at',
     sortOrder: 'desc',
     initialLimit: 5,
+  });
+
+  // Full list for "Recent History" modal (View All)
+  const { foods: recentFoodsAll } = useFoods({
+    mode: 'list',
+    visible: isRecentHistoryModalVisible,
+    enableReactivity: true,
+    sortBy: 'updated_at',
+    sortOrder: 'desc',
+    initialLimit: 50,
   });
 
   // Use unified search for both local and API results
@@ -429,17 +476,19 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
-              // TODO: use translation here for both "Custom food" and for "kcal"
-              description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
+              description: t('foodSearch.foodDescriptionFormat', {
+                brand: f.brand || t('foodSearch.customFoodLabel'),
+                calories: Math.round(f.calories ?? 0),
+              }),
               brand: (f as any).brand,
-              serving_size: '100 g', // TODO: use the PortionSize model instead
+              serving_size: portion100gName,
               calories: f.calories,
               protein: f.protein,
               carbs: f.carbs,
               fat: f.fat,
               fiber: f.fiber,
               source: 'local',
-              icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
+              iconName: 'utensils-crossed',
               iconColor: theme.colors.accent.primary,
               iconBgColor: theme.colors.accent.primary10,
               _raw: f,
@@ -460,7 +509,14 @@ export function FoodSearchModal({
     return () => {
       mounted = false;
     };
-  }, [visible, searchQuery, t, theme.colors.accent.primary, theme.colors.accent.primary10]);
+  }, [
+    visible,
+    searchQuery,
+    t,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    portion100gName,
+  ]);
 
   useEffect(() => {
     let mounted = true;
@@ -510,10 +566,12 @@ export function FoodSearchModal({
             ({
               id: f.id,
               name: f.name ?? '',
-              // TODO: use translation here for both "Custom food" and for "kcal"
-              description: `${f.brand || 'Custom Food'} • ${Math.round(f.calories || 0)} kcal`,
+              description: t('foodSearch.foodDescriptionFormat', {
+                brand: f.brand || t('foodSearch.customFoodLabel'),
+                calories: Math.round(f.calories ?? 0),
+              }),
               brand: f.brand,
-              serving_size: '100 g', // TODO: use the PortionSize model instead
+              serving_size: portion100gName,
               calories: f.calories,
               protein: f.protein,
               carbs: f.carbs,
@@ -521,7 +579,7 @@ export function FoodSearchModal({
               fiber: f.fiber,
               source: 'local',
               imageUrl: f.imageUrl ? f.imageUrl : undefined,
-              icon: f.imageUrl ? undefined : '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
+              iconName: f.imageUrl ? undefined : 'utensils-crossed',
               iconColor: theme.colors.accent.primary,
               iconBgColor: theme.colors.accent.primary10,
               _raw: f,
@@ -548,7 +606,7 @@ export function FoodSearchModal({
     return () => {
       mounted = false;
     };
-  }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10]);
+  }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10, portion100gName, t]);
 
   // Transform meals to card data with nutrients
   useEffect(() => {
@@ -625,12 +683,12 @@ export function FoodSearchModal({
         : []),
       {
         id: 'meals',
-        // TODO: move this into a function
-        label: searchQuery.trim()
-          ? `${t('foodSearch.filters.meals')} (${filteredMealCardsData.length})`
-          : mealsTotalCount !== undefined
-            ? `${t('foodSearch.filters.meals')} (${mealsTotalCount})`
-            : t('foodSearch.filters.meals'),
+        label: getMealsTabLabel({
+          searchQuery,
+          filteredCount: filteredMealCardsData.length,
+          totalCount: mealsTotalCount,
+          t,
+        }),
       },
     ];
   }, [
@@ -654,7 +712,7 @@ export function FoodSearchModal({
     // Convert to FoodItem format
     const foodItem: FoodItem = {
       ...food,
-      icon: food.source === 'local' ? '🍽️' : undefined, // TODO: ideally use an icon name and then load them from lucide icons
+      iconName: food.source === 'local' ? 'utensils-crossed' : undefined,
       iconColor: food.source === 'local' ? theme.colors.accent.primary : undefined,
       iconBgColor: food.source === 'local' ? theme.colors.accent.primary10 : undefined,
     };
@@ -672,485 +730,551 @@ export function FoodSearchModal({
   );
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('food.meals.addFoodTo', {
-        meal: t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`),
-      })}
-      headerRight={headerRight}
-      scrollable={false}
-    >
-      <View className="h-4" />
-      <View className="flex-1 bg-bg-primary">
-        {/* Search Bar */}
-        <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
-          <View className="relative">
-            <View
-              className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3.5"
-              style={{ pointerEvents: 'none' }}
-            >
-              <Search
-                size={theme.iconSize.md}
-                color={searchQuery ? theme.colors.accent.secondary : theme.colors.text.secondary}
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('food.meals.addFoodTo', {
+          meal: t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`),
+        })}
+        headerRight={headerRight}
+        scrollable={false}
+      >
+        <View className="h-4" />
+        <View className="flex-1 bg-bg-primary">
+          {/* Search Bar */}
+          <View className="border-b border-border-light bg-bg-primary px-4 pb-2">
+            <View className="relative">
+              <View
+                className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-3.5"
+                style={{ pointerEvents: 'none' }}
+              >
+                <Search
+                  size={theme.iconSize.md}
+                  color={searchQuery ? theme.colors.accent.secondary : theme.colors.text.secondary}
+                />
+              </View>
+              <TextInput
+                placeholder={t('food.addFoodModal.searchFood.title')}
+                placeholderTextColor={theme.colors.text.secondary}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
+                style={{
+                  backgroundColor: theme.colors.background.secondaryDark,
+                  borderColor: searchQuery
+                    ? theme.colors.accent.secondary31
+                    : theme.colors.border.light,
+                }}
+                autoFocus
               />
+              <Pressable
+                className="absolute inset-y-0 right-0 items-center justify-center pr-2"
+                onPress={onBarcodeScanPress}
+              >
+                <View className="rounded-lg p-1.5">
+                  <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                </View>
+              </Pressable>
             </View>
-            <TextInput
-              placeholder={t('food.addFoodModal.searchFood.title')}
-              placeholderTextColor={theme.colors.text.secondary}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
-              style={{
-                backgroundColor: theme.colors.background.secondaryDark,
-                borderColor: searchQuery
-                  ? theme.colors.accent.secondary31
-                  : theme.colors.border.light,
-              }}
-              autoFocus
-            />
-            <Pressable
-              className="absolute inset-y-0 right-0 items-center justify-center pr-2"
-              onPress={onBarcodeScanPress}
-            >
-              <View className="rounded-lg p-1.5">
-                <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-              </View>
-            </Pressable>
           </View>
-        </View>
 
-        {/* Filter Tabs */}
-        <View className="border-b border-border-light bg-bg-primary">
-          <UnderlineTabs
-            tabs={FILTER_TABS}
-            activeTab={activeFilter}
-            onTabChange={setActiveFilter}
-          />
-        </View>
+          {/* Filter Tabs */}
+          <View className="border-b border-border-light bg-bg-primary">
+            <UnderlineTabs
+              tabs={FILTER_TABS}
+              activeTab={activeFilter}
+              onTabChange={setActiveFilter}
+            />
+          </View>
 
-        {/* Content */}
-        <ScrollView
-          className="flex-1 bg-bg-primary"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
-        >
-          <View className="gap-4 p-4 pb-20">
-            {/* Search Results Section */}
-            {searchQuery ? (
-              <View>
-                {activeFilter === 'meals' ? (
-                  /* Meals tab with search query: filter meals client-side */
-                  <View>
-                    <SectionHeader title={t('foodSearch.filters.meals')} />
-                    <View className="gap-1.5">
-                      {isLoadingMeals ? (
-                        <View className="flex items-center justify-center py-4">
-                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                        </View>
-                      ) : filteredMealCardsData.length > 0 ? (
-                        filteredMealCardsData.map((mealData) => (
-                          <MealSearchCard
-                            key={mealData.meal.id}
-                            mealData={mealData}
-                            onAddPress={() => handleMealSelect(mealData.meal)}
-                          />
-                        ))
-                      ) : (
-                        <View className="py-8">
-                          <Text className="text-center text-text-secondary">
-                            {t('foodSearch.noResultsFor', { query: searchQuery })}
-                          </Text>
-                          <Text className="mt-2 text-center text-sm text-text-tertiary">
-                            {t('foodSearch.trySomethingElse')}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                ) : (
-                  /* All / Favorites / API tabs: food search results */
-                  <View>
-                    <SectionHeader
-                      title={
-                        isInitialLoad
-                          ? t('foodSearch.searching')
-                          : hasLocalResults || hasApiResults || isLoadingAPI
-                            ? t('foodSearch.bestMatches')
-                            : t('foodSearch.noResults')
-                      }
-                    />
-                    <View className="gap-1.5">
-                      {/* Show initial loading state */}
-                      {isInitialLoad ? (
-                        <View className="flex items-center justify-center py-12">
-                          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-                          <Text className="mt-2 text-sm text-text-secondary">
-                            {isLoadingLocal && isLoadingAPI
-                              ? t('foodSearch.searchingLocalAndAPI')
-                              : isLoadingLocal
-                                ? t('foodSearch.searchingLocal')
-                                : t('foodSearch.searchingAPI')}
-                          </Text>
-                        </View>
-                      ) : null}
-
-                      {/* Show results when available */}
-                      {!isInitialLoad && !error && filteredResults.length > 0 ? (
-                        <>
-                          {/* Local Results Section - only show if filter includes local or 'all' */}
-                          {(activeFilter === 'all' || activeFilter === 'myFoods') &&
-                          resultsBySource.local.length > 0 ? (
-                            <View className="mb-4">
-                              <View className="mb-3 flex-row items-center gap-2">
-                                <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                                <View className="flex-row items-center gap-2">
-                                  <Text className="text-xs font-medium uppercase text-accent-primary">
-                                    {t('foodSearch.yourFoods', {
-                                      count: resultsBySource.local.length,
-                                    })}
-                                  </Text>
-                                </View>
-                                <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                              </View>
-                              <View className="gap-1.5">
-                                {(resultsBySource.local || []).map((food) => (
-                                  <FoodItemCard
-                                    key={`local-${food.id}`}
-                                    food={{
-                                      ...food,
-                                      name: food.name ?? '',
-                                      icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
-                                      iconColor: theme.colors.accent.primary,
-                                      iconBgColor: theme.colors.accent.primary10,
-                                    }}
-                                    onAddPress={() =>
-                                      handleFoodClick({ ...food, name: food.name ?? '' })
-                                    }
-                                  />
-                                ))}
-                              </View>
-
-                              {/* Load More Local Button */}
-                              {hasMoreLocal ? (
-                                <View className="py-3">
-                                  <Button
-                                    label={
-                                      isLoadingMoreLocal
-                                        ? t('foodSearch.loadingMore')
-                                        : t('foodSearch.loadMoreLocal')
-                                    }
-                                    onPress={loadMoreLocal}
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={isLoadingMoreLocal}
-                                    loading={isLoadingMoreLocal}
-                                    width="full"
-                                    iconPosition="left"
-                                  />
-                                </View>
-                              ) : null}
-                            </View>
-                          ) : null}
-
-                          {/* API Results Section - only show if filter includes api or 'all' */}
-                          {(activeFilter === 'all' || activeFilter === 'api') &&
-                          resultsBySource.api.length > 0 ? (
-                            <View className="mb-4">
-                              <View className="mb-3 flex-row items-center gap-2">
-                                <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                <View className="flex-row items-center gap-2">
-                                  <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                    {t('foodSearch.openFoodFacts', {
-                                      count: resultsBySource.api.length,
-                                    })}
-                                  </Text>
-                                </View>
-                                <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                              </View>
-                              <View className="gap-1.5">
-                                {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                  <FoodItemCard
-                                    key={`api-${food.id}`}
-                                    food={food}
-                                    onAddPress={() => handleFoodClick(food)}
-                                  />
-                                ))}
-                              </View>
-
-                              {/* Load More API Button */}
-                              {hasMoreAPI ? (
-                                <View className="py-3">
-                                  <Button
-                                    label={
-                                      isLoadingMoreAPI
-                                        ? t('foodSearch.loadingMore')
-                                        : t('foodSearch.loadMoreAPI')
-                                    }
-                                    onPress={loadMoreAPI}
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={isLoadingMoreAPI}
-                                    loading={isLoadingMoreAPI}
-                                    width="full"
-                                    iconPosition="left"
-                                  />
-                                </View>
-                              ) : null}
-                            </View>
-                          ) : null}
-                        </>
-                      ) : null}
-
-                      {!isInitialLoad && isLoadingAPI ? (
-                        <View className="flex items-center justify-center py-4">
-                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                          <Text className="ml-2 text-xs text-text-secondary">
-                            {t('foodSearch.searchingAPI')}
-                          </Text>
-                        </View>
-                      ) : null}
-
-                      {/* Show no results state - only when API is completely done */}
-                      {!isInitialLoad &&
-                      !isLoadingAPI &&
-                      !error &&
-                      filteredResults.length === 0 &&
-                      searchQuery ? (
-                        <View className="py-8 text-center">
-                          <Text className="text-center text-text-secondary">
-                            {t('foodSearch.noResultsFor', { query: searchQuery })}
-                          </Text>
-                          {localCount === 0 && apiCount === 0 ? (
-                            <Text className="mt-2 text-center text-sm text-text-tertiary">
-                              {t('foodSearch.trySomethingElse')}
-                            </Text>
-                          ) : null}
-                        </View>
-                      ) : null}
-                    </View>
-                  </View>
-                )}
-              </View>
-            ) : null}
-
-            {/* Non-search area: show favorites when "myFoods" tab is active, meals when "meals" tab is active, otherwise recent history */}
-            {!searchQuery ? (
-              <View>
-                {activeFilter === 'myFoods' ? (
-                  <View>
-                    <SectionHeader title={t('foodSearch.yourFavoriteFoods')} />
-                    <View className="gap-1.5">
-                      {isLoadingFavorites ? (
-                        <View className="py-4">
-                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                        </View>
-                      ) : favoriteFoods.length > 0 ? (
-                        favoriteFoods.map((food) => (
-                          <FoodItemCard
-                            key={food.id}
-                            food={food}
-                            onAddPress={() => handleFoodClick(food)}
-                          />
-                        ))
-                      ) : (
-                        <View className="py-8 text-center">
-                          <Text className="text-center text-text-tertiary">
-                            {t('foodSearch.noFavoriteFoods')}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                ) : activeFilter === 'meals' ? (
-                  <View>
-                    <SectionHeader title={t('foodSearch.filters.meals')} />
-                    <View className="gap-1.5">
-                      {isLoadingMeals ? (
-                        <View className="py-4">
-                          <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                          <Text className="mt-2 text-center text-sm text-text-secondary">
-                            {t('foodSearch.loadingMeals')}
-                          </Text>
-                        </View>
-                      ) : mealCardsData.length > 0 ? (
-                        <>
-                          {mealCardsData.map((mealData) => (
+          {/* Content */}
+          <ScrollView
+            className="flex-1 bg-bg-primary"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
+          >
+            <View className="gap-4 p-4 pb-20">
+              {/* Search Results Section */}
+              {searchQuery ? (
+                <View>
+                  {activeFilter === 'meals' ? (
+                    /* Meals tab with search query: filter meals client-side */
+                    <View>
+                      <SectionHeader title={t('foodSearch.filters.meals')} />
+                      <View className="gap-1.5">
+                        {isLoadingMeals ? (
+                          <View className="flex items-center justify-center py-4">
+                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                          </View>
+                        ) : filteredMealCardsData.length > 0 ? (
+                          filteredMealCardsData.map((mealData) => (
                             <MealSearchCard
                               key={mealData.meal.id}
                               mealData={mealData}
                               onAddPress={() => handleMealSelect(mealData.meal)}
                             />
-                          ))}
-                          {hasMoreMeals ? (
-                            <View className="py-3">
-                              <Button
-                                label={
-                                  isLoadingMoreMeals
-                                    ? t('foodSearch.loadingMore')
-                                    : t('foodSearch.loadMoreMeals')
-                                }
-                                onPress={loadMoreMeals}
-                                size="sm"
-                                variant="outline"
-                                disabled={isLoadingMoreMeals}
-                                loading={isLoadingMoreMeals}
-                                width="full"
-                                iconPosition="left"
-                              />
-                            </View>
-                          ) : null}
-                        </>
-                      ) : (
-                        <View className="py-8 text-center">
-                          <Text className="text-center text-text-tertiary">
-                            {t('foodSearch.noMeals')}
-                          </Text>
-                        </View>
-                      )}
+                          ))
+                        ) : (
+                          <View className="py-8">
+                            <Text className="text-center text-text-secondary">
+                              {t('foodSearch.noResultsFor', { query: searchQuery })}
+                            </Text>
+                            <Text className="mt-2 text-center text-sm text-text-tertiary">
+                              {t('foodSearch.trySomethingElse')}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
-                  </View>
-                ) : (
-                  <View>
-                    <SectionHeader
-                      title={t('foodSearch.recentHistory')}
-                      rightAction={{
-                        label: t('foodSearch.viewAll'),
-                        onPress: () => {
-                          // TODO: open recent history
-                          console.log('View all clicked');
-                        },
-                      }}
-                    />
-                    <View className="gap-1.5">
-                      {recentFoods.length > 0 ? (
-                        recentFoods.map((food) => {
-                          const foodItem: FoodItem = {
-                            ...food,
-                            id: food.id,
-                            name: food.name ?? '',
-                            description: `${food.brand || 'Custom Food'} • ${Math.round(food.calories || 0)} kcal per 100g`,
-                            brand: food.brand,
-                            serving_size: '100 g', // TODO: use the PortionSize model instead
-                            calories: food.calories,
-                            protein: food.protein,
-                            carbs: food.carbs,
-                            fat: food.fat,
-                            fiber: food.fiber,
-                            imageUrl: food.imageUrl,
-                            source: 'local',
-                            icon: '🍽️', // TODO: ideally use an icon name and then load them from lucide icons
-                            iconColor: theme.colors.accent.primary,
-                            iconBgColor: theme.colors.accent.primary10,
-                            _raw: food,
-                          };
+                  ) : (
+                    /* All / Favorites / API tabs: food search results */
+                    <View>
+                      <SectionHeader
+                        title={
+                          isInitialLoad
+                            ? t('foodSearch.searching')
+                            : hasLocalResults || hasApiResults || isLoadingAPI
+                              ? t('foodSearch.bestMatches')
+                              : t('foodSearch.noResults')
+                        }
+                      />
+                      <View className="gap-1.5">
+                        {/* Show initial loading state */}
+                        {isInitialLoad ? (
+                          <View className="flex items-center justify-center py-12">
+                            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                            <Text className="mt-2 text-sm text-text-secondary">
+                              {isLoadingLocal && isLoadingAPI
+                                ? t('foodSearch.searchingLocalAndAPI')
+                                : isLoadingLocal
+                                  ? t('foodSearch.searchingLocal')
+                                  : t('foodSearch.searchingAPI')}
+                            </Text>
+                          </View>
+                        ) : null}
 
-                          return (
+                        {/* Show results when available */}
+                        {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                          <>
+                            {/* Local Results Section - only show if filter includes local or 'all' */}
+                            {(activeFilter === 'all' || activeFilter === 'myFoods') &&
+                            resultsBySource.local.length > 0 ? (
+                              <View className="mb-4">
+                                <View className="mb-3 flex-row items-center gap-2">
+                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                                  <View className="flex-row items-center gap-2">
+                                    <Text className="text-xs font-medium uppercase text-accent-primary">
+                                      {t('foodSearch.yourFoods', {
+                                        count: resultsBySource.local.length,
+                                      })}
+                                    </Text>
+                                  </View>
+                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
+                                </View>
+                                <View className="gap-1.5">
+                                  {(resultsBySource.local || []).map((food) => (
+                                    <FoodItemCard
+                                      key={`local-${food.id}`}
+                                      food={{
+                                        ...food,
+                                        name: food.name ?? '',
+                                        iconName: 'utensils-crossed',
+                                        iconColor: theme.colors.accent.primary,
+                                        iconBgColor: theme.colors.accent.primary10,
+                                      }}
+                                      onAddPress={() =>
+                                        handleFoodClick({ ...food, name: food.name ?? '' })
+                                      }
+                                    />
+                                  ))}
+                                </View>
+
+                                {/* Load More Local Button */}
+                                {hasMoreLocal ? (
+                                  <View className="py-3">
+                                    <Button
+                                      label={
+                                        isLoadingMoreLocal
+                                          ? t('foodSearch.loadingMore')
+                                          : t('foodSearch.loadMoreLocal')
+                                      }
+                                      onPress={loadMoreLocal}
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isLoadingMoreLocal}
+                                      loading={isLoadingMoreLocal}
+                                      width="full"
+                                      iconPosition="left"
+                                    />
+                                  </View>
+                                ) : null}
+                              </View>
+                            ) : null}
+
+                            {/* API Results Section - only show if filter includes api or 'all' */}
+                            {(activeFilter === 'all' || activeFilter === 'api') &&
+                            resultsBySource.api.length > 0 ? (
+                              <View className="mb-4">
+                                <View className="mb-3 flex-row items-center gap-2">
+                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                  <View className="flex-row items-center gap-2">
+                                    <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                      {t('foodSearch.openFoodFacts', {
+                                        count: resultsBySource.api.length,
+                                      })}
+                                    </Text>
+                                  </View>
+                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                </View>
+                                <View className="gap-1.5">
+                                  {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                    <FoodItemCard
+                                      key={`api-${food.id}`}
+                                      food={food}
+                                      onAddPress={() => handleFoodClick(food)}
+                                    />
+                                  ))}
+                                </View>
+
+                                {/* Load More API Button */}
+                                {hasMoreAPI ? (
+                                  <View className="py-3">
+                                    <Button
+                                      label={
+                                        isLoadingMoreAPI
+                                          ? t('foodSearch.loadingMore')
+                                          : t('foodSearch.loadMoreAPI')
+                                      }
+                                      onPress={loadMoreAPI}
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isLoadingMoreAPI}
+                                      loading={isLoadingMoreAPI}
+                                      width="full"
+                                      iconPosition="left"
+                                    />
+                                  </View>
+                                ) : null}
+                              </View>
+                            ) : null}
+                          </>
+                        ) : null}
+
+                        {!isInitialLoad && isLoadingAPI ? (
+                          <View className="flex items-center justify-center py-4">
+                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                            <Text className="ml-2 text-xs text-text-secondary">
+                              {t('foodSearch.searchingAPI')}
+                            </Text>
+                          </View>
+                        ) : null}
+
+                        {/* Show no results state - only when API is completely done */}
+                        {!isInitialLoad &&
+                        !isLoadingAPI &&
+                        !error &&
+                        filteredResults.length === 0 &&
+                        searchQuery ? (
+                          <View className="py-8 text-center">
+                            <Text className="text-center text-text-secondary">
+                              {t('foodSearch.noResultsFor', { query: searchQuery })}
+                            </Text>
+                            {localCount === 0 && apiCount === 0 ? (
+                              <Text className="mt-2 text-center text-sm text-text-tertiary">
+                                {t('foodSearch.trySomethingElse')}
+                              </Text>
+                            ) : null}
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              ) : null}
+
+              {/* Non-search area: show favorites when "myFoods" tab is active, meals when "meals" tab is active, otherwise recent history */}
+              {!searchQuery ? (
+                <View>
+                  {activeFilter === 'myFoods' ? (
+                    <View>
+                      <SectionHeader title={t('foodSearch.yourFavoriteFoods')} />
+                      <View className="gap-1.5">
+                        {isLoadingFavorites ? (
+                          <View className="py-4">
+                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                          </View>
+                        ) : favoriteFoods.length > 0 ? (
+                          favoriteFoods.map((food) => (
                             <FoodItemCard
                               key={food.id}
-                              food={foodItem}
-                              onAddPress={() => handleFoodClick(foodItem)}
+                              food={food}
+                              onAddPress={() => handleFoodClick(food)}
                             />
-                          );
-                        })
-                      ) : (
-                        <View className="py-8 text-center">
-                          <Text className="text-center text-text-tertiary">
-                            {t('foodSearch.noRecentFoods')}
-                          </Text>
-                        </View>
-                      )}
+                          ))
+                        ) : (
+                          <View className="py-8 text-center">
+                            <Text className="text-center text-text-tertiary">
+                              {t('foodSearch.noFavoriteFoods')}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
+                  ) : activeFilter === 'meals' ? (
+                    <View>
+                      <SectionHeader title={t('foodSearch.filters.meals')} />
+                      <View className="gap-1.5">
+                        {isLoadingMeals ? (
+                          <View className="py-4">
+                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                            <Text className="mt-2 text-center text-sm text-text-secondary">
+                              {t('foodSearch.loadingMeals')}
+                            </Text>
+                          </View>
+                        ) : mealCardsData.length > 0 ? (
+                          <>
+                            {mealCardsData.map((mealData) => (
+                              <MealSearchCard
+                                key={mealData.meal.id}
+                                mealData={mealData}
+                                onAddPress={() => handleMealSelect(mealData.meal)}
+                              />
+                            ))}
+                            {hasMoreMeals ? (
+                              <View className="py-3">
+                                <Button
+                                  label={
+                                    isLoadingMoreMeals
+                                      ? t('foodSearch.loadingMore')
+                                      : t('foodSearch.loadMoreMeals')
+                                  }
+                                  onPress={loadMoreMeals}
+                                  size="sm"
+                                  variant="outline"
+                                  disabled={isLoadingMoreMeals}
+                                  loading={isLoadingMoreMeals}
+                                  width="full"
+                                  iconPosition="left"
+                                />
+                              </View>
+                            ) : null}
+                          </>
+                        ) : (
+                          <View className="py-8 text-center">
+                            <Text className="text-center text-text-tertiary">
+                              {t('foodSearch.noMeals')}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  ) : (
+                    <View>
+                      <SectionHeader
+                        title={t('foodSearch.recentHistory')}
+                        rightAction={{
+                          label: t('foodSearch.viewAll'),
+                          onPress: () => setIsRecentHistoryModalVisible(true),
+                        }}
+                      />
+                      <View className="gap-1.5">
+                        {recentFoods.length > 0 ? (
+                          recentFoods.map((food) => {
+                            const foodItem: FoodItem = {
+                              ...food,
+                              id: food.id,
+                              name: food.name ?? '',
+                              description: t('foodSearch.foodDescriptionPer100g', {
+                                brand: food.brand || t('foodSearch.customFoodLabel'),
+                                calories: Math.round(food.calories ?? 0),
+                              }),
+                              brand: food.brand,
+                              serving_size: portion100gName,
+                              calories: food.calories,
+                              protein: food.protein,
+                              carbs: food.carbs,
+                              fat: food.fat,
+                              fiber: food.fiber,
+                              imageUrl: food.imageUrl,
+                              source: 'local',
+                              iconName: 'utensils-crossed',
+                              iconColor: theme.colors.accent.primary,
+                              iconBgColor: theme.colors.accent.primary10,
+                              _raw: food,
+                            };
+
+                            return (
+                              <FoodItemCard
+                                key={food.id}
+                                food={foodItem}
+                                onAddPress={() => handleFoodClick(foodItem)}
+                              />
+                            );
+                          })
+                        ) : (
+                          <View className="py-8 text-center">
+                            <Text className="text-center text-text-tertiary">
+                              {t('foodSearch.noRecentFoods')}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              ) : null}
+
+              {!searchQuery &&
+              activeFilter !== 'myFoods' &&
+              activeFilter !== 'meals' &&
+              suggestedFoods &&
+              suggestedFoods.length > 0 ? (
+                <View>
+                  <SectionHeader title={suggestedTitle} icon={Sparkles} />
+                  <View className="gap-1.5">
+                    {isLoadingSuggested ? (
+                      <View className="py-4">
+                        <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                      </View>
+                    ) : (
+                      suggestedFoods.map((food) => (
+                        <FoodItemCard
+                          key={food.id}
+                          food={food}
+                          onAddPress={() => {
+                            setSelectedFood(food);
+                            setIsFoodDetailsVisible(true);
+                          }}
+                        />
+                      ))
+                    )}
+                  </View>
+                </View>
+              ) : null}
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Food Details Modal */}
+        {selectedFood ? (
+          <FoodMealDetailsModal
+            visible={isFoodDetailsVisible}
+            onClose={() => {
+              setIsFoodDetailsVisible(false);
+              setSelectedFood(null);
+            }}
+            barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
+            productFromSearch={
+              selectedFood.source === 'api' ? (selectedFood._raw as any) : undefined
+            }
+            food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
+            initialMealType={mealType}
+            initialDate={logDate}
+            onAddFood={(data) => {
+              // Call the original onFoodSelect with the food and additional data
+              onFoodSelect?.({
+                ...selectedFood,
+                servingSize: data.servingSize,
+                meal: data.meal,
+                date: data.date,
+              } as any);
+
+              setIsFoodDetailsVisible(false);
+              setSelectedFood(null);
+            }}
+          />
+        ) : null}
+
+        {/* Meal Details Modal */}
+        {selectedMeal ? (
+          <FoodMealDetailsModal
+            visible={isMealDetailsVisible}
+            onClose={() => {
+              setIsMealDetailsVisible(false);
+              setSelectedMeal(null);
+            }}
+            meal={selectedMeal}
+            initialMealType={mealType}
+            initialDate={logDate}
+            onLogMeal={(data) => {
+              // Call the original onFoodSelect if provided (for consistency)
+              // Note: meals don't have servingSize, so we pass undefined
+              onFoodSelect?.({
+                id: selectedMeal.id,
+                name: selectedMeal.name || '',
+                meal: data.meal,
+                date: data.date,
+              } as any);
+
+              setIsMealDetailsVisible(false);
+              setSelectedMeal(null);
+            }}
+          />
+        ) : null}
+
+        {/* TODO: move this to a separate component */}
+        <FullScreenModal
+          visible={isRecentHistoryModalVisible}
+          onClose={() => setIsRecentHistoryModalVisible(false)}
+          title={t('foodSearch.recentHistory')}
+          scrollable={false}
+        >
+          <View className="flex-1 bg-bg-primary">
+            <ScrollView
+              className="flex-1"
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                padding: 16,
+                paddingBottom: 80,
+                backgroundColor: theme.colors.background.primary,
+              }}
+            >
+              <View className="gap-1.5">
+                {recentFoodsAll.length > 0 ? (
+                  recentFoodsAll.map((food) => {
+                    const foodItem: FoodItem = {
+                      ...food,
+                      id: food.id,
+                      name: food.name ?? '',
+                      description: t('foodSearch.foodDescriptionPer100g', {
+                        brand: food.brand || t('foodSearch.customFoodLabel'),
+                        calories: Math.round(food.calories ?? 0),
+                      }),
+                      brand: food.brand,
+                      serving_size: portion100gName,
+                      calories: food.calories,
+                      protein: food.protein,
+                      carbs: food.carbs,
+                      fat: food.fat,
+                      fiber: food.fiber,
+                      imageUrl: food.imageUrl,
+                      source: 'local',
+                      iconName: 'utensils-crossed',
+                      iconColor: theme.colors.accent.primary,
+                      iconBgColor: theme.colors.accent.primary10,
+                      _raw: food,
+                    };
+                    return (
+                      <FoodItemCard
+                        key={food.id}
+                        food={foodItem}
+                        onAddPress={() => handleFoodClick(foodItem)}
+                      />
+                    );
+                  })
+                ) : (
+                  <View className="py-8 text-center">
+                    <Text className="text-center text-text-tertiary">
+                      {t('foodSearch.noRecentFoods')}
+                    </Text>
                   </View>
                 )}
               </View>
-            ) : null}
-
-            {!searchQuery &&
-            activeFilter !== 'myFoods' &&
-            activeFilter !== 'meals' &&
-            suggestedFoods &&
-            suggestedFoods.length > 0 ? (
-              <View>
-                <SectionHeader title={suggestedTitle} icon={Sparkles} />
-                <View className="gap-1.5">
-                  {isLoadingSuggested ? (
-                    <View className="py-4">
-                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                    </View>
-                  ) : (
-                    suggestedFoods.map((food) => (
-                      <FoodItemCard
-                        key={food.id}
-                        food={food}
-                        onAddPress={() => {
-                          setSelectedFood(food);
-                          setIsFoodDetailsVisible(true);
-                        }}
-                      />
-                    ))
-                  )}
-                </View>
-              </View>
-            ) : null}
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
-
-      {/* Food Details Modal */}
-      {selectedFood ? (
-        <FoodMealDetailsModal
-          visible={isFoodDetailsVisible}
-          onClose={() => {
-            setIsFoodDetailsVisible(false);
-            setSelectedFood(null);
-          }}
-          barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
-          productFromSearch={selectedFood.source === 'api' ? (selectedFood._raw as any) : undefined}
-          food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
-          initialMealType={mealType}
-          initialDate={logDate}
-          onAddFood={(data) => {
-            // Call the original onFoodSelect with the food and additional data
-            onFoodSelect?.({
-              ...selectedFood,
-              servingSize: data.servingSize,
-              meal: data.meal,
-              date: data.date,
-            } as any);
-
-            setIsFoodDetailsVisible(false);
-            setSelectedFood(null);
-          }}
-        />
-      ) : null}
-
-      {/* Meal Details Modal */}
-      {selectedMeal ? (
-        <FoodMealDetailsModal
-          visible={isMealDetailsVisible}
-          onClose={() => {
-            setIsMealDetailsVisible(false);
-            setSelectedMeal(null);
-          }}
-          meal={selectedMeal}
-          initialMealType={mealType}
-          initialDate={logDate}
-          onLogMeal={(data) => {
-            // Call the original onFoodSelect if provided (for consistency)
-            // Note: meals don't have servingSize, so we pass undefined
-            onFoodSelect?.({
-              id: selectedMeal.id,
-              name: selectedMeal.name || '',
-              meal: data.meal,
-              date: data.date,
-            } as any);
-
-            setIsMealDetailsVisible(false);
-            setSelectedMeal(null);
-          }}
-        />
-      ) : null}
-    </FullScreenModal>
+        </FullScreenModal>
+      </FullScreenModal>
+    </>
   );
 }

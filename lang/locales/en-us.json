@@ -751,6 +751,9 @@
     }
   },
   "foodSearch": {
+    "customFoodLabel": "Custom Food",
+    "foodDescriptionFormat": "{{brand}} • {{calories}} kcal",
+    "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
     "commonFoods": "Common foods",
     "commonBreakfastFoods": "Common breakfast foods",
     "commonLunchFoods": "Common lunch foods",
