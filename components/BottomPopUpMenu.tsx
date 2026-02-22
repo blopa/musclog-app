@@ -27,6 +27,8 @@ type BottomPopUpMenuProps = {
   maxHeight?: number | 'auto' | `${number}%`;
   headerIcon?: ReactNode;
   fullWidthItems?: boolean;
+  /** When false, content is not wrapped in ScrollView (e.g. for sticky header + scrollable list) */
+  scrollable?: boolean;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -84,6 +86,7 @@ export function BottomPopUpMenu({
   footer,
   maxHeight,
   headerIcon,
+  scrollable = true,
 }: BottomPopUpMenuProps) {
   return (
     <BottomPopUp
@@ -94,6 +97,7 @@ export function BottomPopUpMenu({
       maxHeight={maxHeight}
       headerIcon={headerIcon}
       footer={footer}
+      scrollable={scrollable}
     >
       {children ||
         (items && (

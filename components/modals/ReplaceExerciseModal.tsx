@@ -112,6 +112,7 @@ export function ReplaceExerciseModal({
       onClose={onClose}
       title={t('replaceExercise.title')}
       maxHeight="85%"
+      scrollable={false}
       footer={
         <View className="flex-row items-stretch gap-3">
           <Button
@@ -132,18 +133,9 @@ export function ReplaceExerciseModal({
         </View>
       }
     >
-      <View>
-        {/* Search and Filters Section */}
-        <View
-          className="gap-3"
-          style={{
-            backgroundColor: theme.colors.background.primary,
-            paddingHorizontal: theme.spacing.padding.xl,
-            paddingTop: theme.spacing.padding.base,
-            paddingBottom: theme.spacing.padding.sm,
-          }}
-        >
-          {/* Search Input */}
+      <View style={{ flex: 1 }}>
+        {/* Sticky: Search and Filters */}
+        <View className="gap-3" style={{ paddingBottom: theme.spacing.padding.sm }}>
           <View className="relative">
             <View
               className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
@@ -182,90 +174,86 @@ export function ReplaceExerciseModal({
           />
         </View>
 
-        {/* Exercise List Section (uses OptionsSelector) */}
+        {/* Scrollable: Exercise list only */}
         <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{
-            backgroundColor: theme.colors.background.primary,
-            paddingHorizontal: theme.spacing.padding.xl,
-          }}
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={true}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             paddingBottom: theme.spacing.padding.xl,
             paddingTop: theme.spacing.padding.sm,
           }}
         >
-          <View>
-            {isLoading && displayList.length === 0 ? (
-              <View className="items-center justify-center py-8">
-                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-              </View>
-            ) : displayList.length === 0 ? (
-              <Text
-                className="py-8 text-center"
-                style={{
-                  color: theme.colors.text.secondary,
-                  fontSize: theme.typography.fontSize.base,
-                }}
-              >
-                {t('replaceExercise.noExercisesMatch', 'No exercises match')}
-              </Text>
-            ) : (
-              <>
-                <OptionsSelector
-                  title={t('replaceExercise.selectExercise')}
-                  options={displayList.map((exercise) => {
-                    const IconComponent = (props: { size: number; color: string }) => {
-                      const size = props.size;
-                      const sx = {
-                        width: size,
-                        height: size,
-                        borderRadius: theme.borderRadius.md,
-                        overflow: 'hidden' as const,
-                        backgroundColor: theme.colors.background.iconDark,
-                      };
-
-                      return exercise.image ? (
-                        <Image source={exercise.image} style={sx} resizeMode="cover" />
-                      ) : (
-                        <View style={sx} />
-                      );
+          {isLoading && displayList.length === 0 ? (
+            <View className="items-center justify-center py-8">
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          ) : displayList.length === 0 ? (
+            <Text
+              className="py-8 text-center"
+              style={{
+                color: theme.colors.text.secondary,
+                fontSize: theme.typography.fontSize.base,
+              }}
+            >
+              {t('replaceExercise.noExercisesMatch', 'No exercises match')}
+            </Text>
+          ) : (
+            <>
+              <OptionsSelector
+                title={t('replaceExercise.selectExercise')}
+                options={displayList.map((exercise) => {
+                  const IconComponent = (props: { size: number; color: string }) => {
+                    const size = props.size;
+                    const sx = {
+                      width: size,
+                      height: size,
+                      borderRadius: theme.borderRadius.md,
+                      overflow: 'hidden' as const,
+                      backgroundColor: theme.colors.background.iconDark,
                     };
 
-                    const option: SelectorOption<string> = {
-                      id: exercise.id,
-                      label: exercise.name,
-                      description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
-                      icon: IconComponent,
-                      iconBgColor: theme.colors.background.iconDark,
-                      iconColor: theme.colors.text.primary,
-                    };
+                    return exercise.image ? (
+                      <Image source={exercise.image} style={sx} resizeMode="cover" />
+                    ) : (
+                      <View style={sx} />
+                    );
+                  };
 
-                    return option;
-                  })}
-                  selectedId={selectedExercise}
-                  onSelect={(id) => setSelectedExercise(id)}
-                />
-                {exercisesProp === undefined && hasMore ? (
-                  <View className="py-4">
-                    <Button
-                      label={
-                        isLoadingMore
-                          ? t('replaceExercise.loadingMore', 'Loading…')
-                          : t('replaceExercise.loadMore', 'Load More')
-                      }
-                      onPress={loadMore}
-                      size="sm"
-                      variant="outline"
-                      disabled={isLoadingMore}
-                      loading={isLoadingMore}
-                      width="full"
-                      iconPosition="left"
-                    />
-                  </View>
-                ) : null}
-              </>
-            )}
-          </View>
+                  const option: SelectorOption<string> = {
+                    id: exercise.id,
+                    label: exercise.name,
+                    description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
+                    icon: IconComponent,
+                    iconBgColor: theme.colors.background.iconDark,
+                    iconColor: theme.colors.text.primary,
+                  };
+
+                  return option;
+                })}
+                selectedId={selectedExercise}
+                onSelect={(id) => setSelectedExercise(id)}
+              />
+              {exercisesProp === undefined && hasMore ? (
+                <View className="py-4">
+                  <Button
+                    label={
+                      isLoadingMore
+                        ? t('replaceExercise.loadingMore', 'Loading…')
+                        : t('replaceExercise.loadMore', 'Load More')
+                    }
+                    onPress={loadMore}
+                    size="sm"
+                    variant="outline"
+                    disabled={isLoadingMore}
+                    loading={isLoadingMore}
+                    width="full"
+                    iconPosition="left"
+                  />
+                </View>
+              ) : null}
+            </>
+          )}
         </ScrollView>
       </View>
     </BottomPopUpMenu>

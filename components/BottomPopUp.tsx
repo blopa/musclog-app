@@ -24,6 +24,8 @@ type BottomPopUpProps = {
   footer?: ReactNode;
   maxHeight?: number | 'auto' | `${number}%`;
   headerIcon?: ReactNode;
+  /** When false, children are not wrapped in ScrollView; use for custom layout with sticky header + scrollable body */
+  scrollable?: boolean;
 };
 
 export function BottomPopUp({
@@ -35,6 +37,7 @@ export function BottomPopUp({
   footer,
   maxHeight,
   headerIcon,
+  scrollable = true,
 }: BottomPopUpProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -150,19 +153,31 @@ export function BottomPopUp({
 
             {/* Content */}
             {children ? (
-              <ScrollView
-                className="p-6"
-                style={
-                  !footer
-                    ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
-                    : undefined
-                }
-                scrollEnabled={true}
-                nestedScrollEnabled={true}
-                keyboardShouldPersistTaps="handled"
-              >
-                {children}
-              </ScrollView>
+              scrollable ? (
+                <ScrollView
+                  className="p-6"
+                  style={
+                    !footer
+                      ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
+                      : undefined
+                  }
+                  scrollEnabled={true}
+                  nestedScrollEnabled={true}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  {children}
+                </ScrollView>
+              ) : (
+                <View
+                  style={{
+                    flex: 1,
+                    paddingHorizontal: theme.spacing.padding.xl,
+                    paddingTop: theme.spacing.padding.xl,
+                  }}
+                >
+                  {children}
+                </View>
+              )
             ) : null}
 
             {/* Footer */}
