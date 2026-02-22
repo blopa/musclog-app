@@ -1,4 +1,4 @@
-import { Plus, QrCode, Search, Sparkles, UtensilsCrossed } from 'lucide-react-native';
+import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,10 +19,11 @@ import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
-import { addOpacityToHex } from '../../theme';
+import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { Button } from '../theme/Button';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
+import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
@@ -108,112 +109,6 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
         );
       })}
     </ScrollView>
-  );
-}
-
-type FoodItemCardProps = {
-  food: FoodItem;
-  onAddPress: () => void;
-};
-
-function FoodItemCard({ food, onAddPress }: FoodItemCardProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-
-  const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(food.protein ?? 0),
-    carbs: Math.round(food.carbs ?? 0),
-    fat: Math.round(food.fat ?? 0),
-  });
-
-  return (
-    <Pressable
-      className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
-      onPress={onAddPress}
-    >
-      {/* Icon/Image */}
-      <View
-        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
-        style={{
-          backgroundColor: food.iconBgColor || theme.colors.background.secondaryDark,
-          borderColor: food.iconColor
-            ? addOpacityToHex(food.iconColor, theme.colors.opacity.subtle)
-            : 'transparent',
-        }}
-      >
-        {food.image ? (
-          <Image
-            source={food.image}
-            className="h-full w-full"
-            resizeMode="cover"
-            style={{ borderRadius: theme.borderRadius.xl }}
-          />
-        ) : food.imageUrl ? (
-          <Image
-            source={{ uri: food.imageUrl }}
-            className="h-full w-full"
-            resizeMode="cover"
-            style={{ borderRadius: theme.borderRadius.xl }}
-          />
-        ) : food.iconName === 'utensils-crossed' ? (
-          <UtensilsCrossed
-            size={theme.iconSize.lg}
-            color={food.iconColor ?? theme.colors.accent.primary}
-          />
-        ) : food.icon ? (
-          <Text className="text-xl">{food.icon}</Text>
-        ) : (
-          <View className="h-full w-full opacity-80" />
-        )}
-      </View>
-
-      {/* Content */}
-      <View className="min-w-0 flex-1">
-        <View className="flex-row items-start justify-between">
-          <Text className="flex-1 truncate pr-2 font-semibold text-text-primary" numberOfLines={1}>
-            {food.name}
-          </Text>
-          {food.grade ? (
-            <View
-              className="rounded border px-1.5 py-0.5"
-              style={{
-                backgroundColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.veryLight)
-                  : theme.colors.accent.primary5,
-                borderColor: food.gradeColor
-                  ? addOpacityToHex(food.gradeColor, theme.colors.opacity.subtle)
-                  : theme.colors.accent.primary20,
-              }}
-            >
-              <Text
-                className="font-bold"
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  color: food.gradeColor || theme.colors.accent.primary,
-                }}
-              >
-                {food.grade}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-        <Text className="truncate text-sm text-text-secondary" numberOfLines={1}>
-          {food.description}
-        </Text>
-        <Text className="mt-0.5 text-xs text-text-secondary">{macroLine}</Text>
-      </View>
-
-      {/* Add Button */}
-      <Pressable
-        className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
-        onPress={onAddPress}
-        style={{
-          backgroundColor: theme.colors.background.secondaryDark,
-        }}
-      >
-        <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-      </Pressable>
-    </Pressable>
   );
 }
 
@@ -340,7 +235,8 @@ export function FoodSearchModal({
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
   const [isMealDetailsVisible, setIsMealDetailsVisible] = useState(false);
   const [portion100gName, setPortion100gName] = useState<string>('100g');
-  const [isRecentHistoryModalVisible, setIsRecentHistoryModalVisible] = useState(false);
+  const [isRecentNutritionHistoryModalVisible, setIsRecentNutritionHistoryModalVisible] =
+    useState(false);
 
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
@@ -362,16 +258,6 @@ export function FoodSearchModal({
     sortBy: 'updated_at',
     sortOrder: 'desc',
     initialLimit: 5,
-  });
-
-  // Full list for "Recent History" modal (View All)
-  const { foods: recentFoodsAll } = useFoods({
-    mode: 'list',
-    visible: isRecentHistoryModalVisible,
-    enableReactivity: true,
-    sortBy: 'updated_at',
-    sortOrder: 'desc',
-    initialLimit: 50,
   });
 
   // Use unified search for both local and API results
@@ -606,7 +492,14 @@ export function FoodSearchModal({
     return () => {
       mounted = false;
     };
-  }, [visible, activeFilter, theme.colors.accent.primary, theme.colors.accent.primary10, portion100gName, t]);
+  }, [
+    visible,
+    activeFilter,
+    theme.colors.accent.primary,
+    theme.colors.accent.primary10,
+    portion100gName,
+    t,
+  ]);
 
   // Transform meals to card data with nutrients
   useEffect(() => {
@@ -874,7 +767,7 @@ export function FoodSearchModal({
                                 </View>
                                 <View className="gap-1.5">
                                   {(resultsBySource.local || []).map((food) => (
-                                    <FoodItemCard
+                                    <FoodSearchItemCard
                                       key={`local-${food.id}`}
                                       food={{
                                         ...food,
@@ -929,7 +822,7 @@ export function FoodSearchModal({
                                 </View>
                                 <View className="gap-1.5">
                                   {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                    <FoodItemCard
+                                    <FoodSearchItemCard
                                       key={`api-${food.id}`}
                                       food={food}
                                       onAddPress={() => handleFoodClick(food)}
@@ -1006,7 +899,7 @@ export function FoodSearchModal({
                           </View>
                         ) : favoriteFoods.length > 0 ? (
                           favoriteFoods.map((food) => (
-                            <FoodItemCard
+                            <FoodSearchItemCard
                               key={food.id}
                               food={food}
                               onAddPress={() => handleFoodClick(food)}
@@ -1075,7 +968,7 @@ export function FoodSearchModal({
                         title={t('foodSearch.recentHistory')}
                         rightAction={{
                           label: t('foodSearch.viewAll'),
-                          onPress: () => setIsRecentHistoryModalVisible(true),
+                          onPress: () => setIsRecentNutritionHistoryModalVisible(true),
                         }}
                       />
                       <View className="gap-1.5">
@@ -1105,7 +998,7 @@ export function FoodSearchModal({
                             };
 
                             return (
-                              <FoodItemCard
+                              <FoodSearchItemCard
                                 key={food.id}
                                 food={foodItem}
                                 onAddPress={() => handleFoodClick(foodItem)}
@@ -1139,7 +1032,7 @@ export function FoodSearchModal({
                       </View>
                     ) : (
                       suggestedFoods.map((food) => (
-                        <FoodItemCard
+                        <FoodSearchItemCard
                           key={food.id}
                           food={food}
                           onAddPress={() => {
@@ -1213,67 +1106,12 @@ export function FoodSearchModal({
           />
         ) : null}
 
-        {/* TODO: move this to a separate component and only load 20 items and then have a load more btn like the other places */}
-        <FullScreenModal
-          visible={isRecentHistoryModalVisible}
-          onClose={() => setIsRecentHistoryModalVisible(false)}
-          title={t('foodSearch.recentHistory')}
-          scrollable={false}
-        >
-          <View className="flex-1 bg-bg-primary">
-            <ScrollView
-              className="flex-1"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
-                padding: 16,
-                paddingBottom: 80,
-                backgroundColor: theme.colors.background.primary,
-              }}
-            >
-              <View className="gap-1.5">
-                {recentFoodsAll.length > 0 ? (
-                  recentFoodsAll.map((food) => {
-                    const foodItem: FoodItem = {
-                      ...food,
-                      id: food.id,
-                      name: food.name ?? '',
-                      description: t('foodSearch.foodDescriptionPer100g', {
-                        brand: food.brand || t('foodSearch.customFoodLabel'),
-                        calories: Math.round(food.calories ?? 0),
-                      }),
-                      brand: food.brand,
-                      serving_size: portion100gName,
-                      calories: food.calories,
-                      protein: food.protein,
-                      carbs: food.carbs,
-                      fat: food.fat,
-                      fiber: food.fiber,
-                      imageUrl: food.imageUrl,
-                      source: 'local',
-                      iconName: 'utensils-crossed',
-                      iconColor: theme.colors.accent.primary,
-                      iconBgColor: theme.colors.accent.primary10,
-                      _raw: food,
-                    };
-                    return (
-                      <FoodItemCard
-                        key={food.id}
-                        food={foodItem}
-                        onAddPress={() => handleFoodClick(foodItem)}
-                      />
-                    );
-                  })
-                ) : (
-                  <View className="py-8 text-center">
-                    <Text className="text-center text-text-tertiary">
-                      {t('foodSearch.noRecentFoods')}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </ScrollView>
-          </View>
-        </FullScreenModal>
+        <RecentNutritionHistoryModal
+          visible={isRecentNutritionHistoryModalVisible}
+          onClose={() => setIsRecentNutritionHistoryModalVisible(false)}
+          onFoodClick={handleFoodClick}
+          portion100gName={portion100gName}
+        />
       </FullScreenModal>
     </>
   );
