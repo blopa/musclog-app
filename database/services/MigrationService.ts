@@ -556,6 +556,8 @@ export class MigrationService {
 
         // Find the food by looking at the exact same name
         let newFoodId = '';
+        let foodMatchMethod = '';
+        
         if (name) {
           try {
             const matchingFoods = await database
@@ -565,6 +567,7 @@ export class MigrationService {
 
             if (matchingFoods.length > 0) {
               newFoodId = matchingFoods[0].id;
+              foodMatchMethod = 'name';
             } else {
               // Fallback: find a food with the same nutritional profile
               const caloriesNum = parseFloat(calories) || 0;
@@ -578,6 +581,7 @@ export class MigrationService {
                 carbsNum,
                 fatNum
               ) || '';
+              foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
             }
           } catch (error) {
             // Fallback: find a food with the same nutritional profile
@@ -592,6 +596,7 @@ export class MigrationService {
               carbsNum,
               fatNum
             ) || '';
+            foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
           }
         } else {
           // Fallback: find a food with the same nutritional profile
@@ -606,6 +611,27 @@ export class MigrationService {
             carbsNum,
             fatNum
           ) || '';
+          foodMatchMethod = newFoodId ? 'nutritional_profile' : 'none';
+        }
+
+        // Log nutrition entries that couldn't be matched to foods
+        if (!newFoodId) {
+          // console.log('Nutrition log not migrated - no matching food found:', {
+          //   name: name || 'unnamed',
+          //   calories: parseFloat(calories) || 0,
+          //   protein: parseFloat(protein) || 0,
+          //   carbs: parseFloat(carbohydrate) || 0,
+          //   fat: parseFloat(fat) || 0,
+          //   date: oldLog.date,
+          //   mealType: mealType,
+          //   matchMethod: foodMatchMethod
+          // });
+        } else {
+          console.log('Food found!!!', newFoodId);
+        }
+
+        if (!newFoodId) {
+          continue;
         }
 
         let gramsConsumed = parseFloat(grams) || 0;
@@ -682,6 +708,7 @@ export class MigrationService {
       }
     }
 
+    console.log('Migrated', migratedCount, ' out of', oldNutritionLogs.length, 'nutrition logs');
     return migratedCount;
   }
 
