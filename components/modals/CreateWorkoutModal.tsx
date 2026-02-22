@@ -408,7 +408,7 @@ export default function CreateWorkoutModal({
               </>
             ) : (
               <View className="items-center justify-center py-8">
-                <Text className="text-center text-text-secondary mb-4">
+                <Text className="mb-4 text-center text-text-secondary">
                   {t('createWorkout.noExercisesPlaceholder')}
                 </Text>
                 <Button

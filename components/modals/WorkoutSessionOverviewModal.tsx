@@ -128,7 +128,7 @@ function ExerciseCard({
     <GenericCard variant="card" size="default" isPressable onPress={onPress}>
       <View className="p-4">
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-4 flex-1">
+          <View className="flex-1 flex-row items-center gap-4">
             <View
               className={`h-16 w-16 overflow-hidden rounded-lg border border-border-default bg-bg-secondary ${
                 isSkipped ? 'opacity-60' : ''
@@ -238,7 +238,11 @@ function ExerciseList({
         onClose={handleCancelConfirmation}
         onConfirm={handleConfirmStart}
         title={t('workout.startFromExercise.title')}
-        message={selectedExercise ? t('workout.startFromExercise.message', { exerciseName: selectedExercise.name }) : ''}
+        message={
+          selectedExercise
+            ? t('workout.startFromExercise.message', { exerciseName: selectedExercise.name })
+            : ''
+        }
         confirmLabel={t('workout.startFromExercise.confirm')}
         cancelLabel={t('workout.startFromExercise.cancel')}
         variant="primary"

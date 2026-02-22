@@ -1,9 +1,10 @@
 import { Repeat, Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TextInput, View } from 'react-native';
 
 import Exercise, { type MechanicType, type MuscleGroup } from '../../database/models/Exercise';
+import { useReplaceExerciseExercises } from '../../hooks/useReplaceExerciseExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
@@ -26,47 +27,69 @@ type ReplaceExerciseModalProps = {
   exercises?: ReplaceExerciseData[];
 };
 
-// TODO: load data from the database instead of mocked data. load only 5 exercises at a time, and have a load more button to load another 5 - like we have in other places of the app
-// also, if the filter is set, then we need to refetch 5 filtered ones, and if we load more, we need to load with the filters set too
-const DEFAULT_EXERCISES: ReplaceExerciseData[] = [
-  {
-    id: '1',
-    name: 'Flat Dumbbell Press',
-    muscleGroup: 'chest' as MuscleGroup,
-    mechanicType: 'compound' as MechanicType,
-  },
-  {
-    id: '2',
-    name: 'Barbell Bench Press',
-    muscleGroup: 'chest' as MuscleGroup,
-    mechanicType: 'compound' as MechanicType,
-  },
-  {
-    id: '3',
-    name: 'Cable Crossover',
-    muscleGroup: 'chest' as MuscleGroup,
-    mechanicType: 'isolation' as MechanicType,
-  },
-  {
-    id: '4',
-    name: 'Dumbbell Flys',
-    muscleGroup: 'chest' as MuscleGroup,
-    mechanicType: 'isolation' as MechanicType,
-  },
-];
+function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
+  return {
+    id: exercise.id,
+    name: exercise.name,
+    muscleGroup: exercise.muscleGroup,
+    mechanicType: exercise.mechanicType,
+    image: undefined,
+  };
+}
 
 export function ReplaceExerciseModal({
   visible,
   onClose,
   onReplace,
   currentExercise,
-  exercises = DEFAULT_EXERCISES,
+  exercises: exercisesProp,
 }: ReplaceExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [selectedExercise, setSelectedExercise] = useState<string>(exercises[0]?.id || '');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
+
+  const muscleGroupForHook =
+    selectedFilter === 'All' ? undefined : (selectedFilter.toLowerCase() as string);
+
+  const {
+    exercises: exercisesFromHook,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  } = useReplaceExerciseExercises({
+    visible: visible && exercisesProp === undefined,
+    muscleGroup: muscleGroupForHook,
+    searchTerm: searchQuery.trim() || undefined,
+    initialLimit: 5,
+    batchSize: 5,
+  });
+
+  const displayList: ReplaceExerciseData[] = useMemo(() => {
+    if (exercisesProp !== undefined) {
+      return exercisesProp.filter((e) => {
+        const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesFilter =
+          selectedFilter === 'All' || e.muscleGroup.toLowerCase() === selectedFilter.toLowerCase();
+        return matchesSearch && matchesFilter;
+      });
+    }
+    return exercisesFromHook.map(exerciseToReplaceData);
+  }, [exercisesProp, exercisesFromHook, searchQuery, selectedFilter]);
+
+  const [selectedExercise, setSelectedExercise] = useState<string>('');
+
+  useEffect(() => {
+    if (displayList.length === 0) {
+      setSelectedExercise('');
+      return;
+    }
+    const ids = new Set(displayList.map((e) => e.id));
+    if (!ids.has(selectedExercise)) {
+      setSelectedExercise(displayList[0].id);
+    }
+  }, [displayList, selectedExercise]);
 
   const MUSCLE_GROUP_TABS = [
     { id: 'All', label: t('replaceExercise.muscleGroups.all') },
@@ -75,16 +98,8 @@ export function ReplaceExerciseModal({
     { id: 'Triceps', label: t('replaceExercise.muscleGroups.triceps') },
   ];
 
-  const filteredExercises = exercises.filter((exercise) => {
-    const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter =
-      selectedFilter === 'All' ||
-      exercise.muscleGroup.toLowerCase() === selectedFilter.toLowerCase();
-    return matchesSearch && matchesFilter;
-  });
-
   const handleReplace = () => {
-    const exercise = exercises.find((e) => e.id === selectedExercise);
+    const exercise = displayList.find((e) => e.id === selectedExercise);
     if (exercise) {
       onReplace(exercise);
       onClose();
@@ -112,6 +127,7 @@ export function ReplaceExerciseModal({
             size="sm"
             width="flex-2"
             onPress={handleReplace}
+            disabled={!selectedExercise}
           />
         </View>
       }
@@ -179,40 +195,76 @@ export function ReplaceExerciseModal({
           }}
         >
           <View>
-            <OptionsSelector
-              title={t('replaceExercise.selectExercise')}
-              options={filteredExercises.map((exercise) => {
-                const IconComponent = (props: { size: number; color: string }) => {
-                  const size = props.size;
-                  const sx = {
-                    width: size,
-                    height: size,
-                    borderRadius: theme.borderRadius.md,
-                    overflow: 'hidden' as const,
-                    backgroundColor: theme.colors.background.iconDark,
-                  };
+            {isLoading && displayList.length === 0 ? (
+              <View className="items-center justify-center py-8">
+                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+              </View>
+            ) : displayList.length === 0 ? (
+              <Text
+                className="py-8 text-center"
+                style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.typography.fontSize.base,
+                }}
+              >
+                {t('replaceExercise.noExercisesMatch', 'No exercises match')}
+              </Text>
+            ) : (
+              <>
+                <OptionsSelector
+                  title={t('replaceExercise.selectExercise')}
+                  options={displayList.map((exercise) => {
+                    const IconComponent = (props: { size: number; color: string }) => {
+                      const size = props.size;
+                      const sx = {
+                        width: size,
+                        height: size,
+                        borderRadius: theme.borderRadius.md,
+                        overflow: 'hidden' as const,
+                        backgroundColor: theme.colors.background.iconDark,
+                      };
 
-                  return exercise.image ? (
-                    <Image source={exercise.image} style={sx} resizeMode="cover" />
-                  ) : (
-                    <View style={sx} />
-                  );
-                };
+                      return exercise.image ? (
+                        <Image source={exercise.image} style={sx} resizeMode="cover" />
+                      ) : (
+                        <View style={sx} />
+                      );
+                    };
 
-                const option: SelectorOption<string> = {
-                  id: exercise.id,
-                  label: exercise.name,
-                  description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
-                  icon: IconComponent,
-                  iconBgColor: theme.colors.background.iconDark,
-                  iconColor: theme.colors.text.primary,
-                };
+                    const option: SelectorOption<string> = {
+                      id: exercise.id,
+                      label: exercise.name,
+                      description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
+                      icon: IconComponent,
+                      iconBgColor: theme.colors.background.iconDark,
+                      iconColor: theme.colors.text.primary,
+                    };
 
-                return option;
-              })}
-              selectedId={selectedExercise}
-              onSelect={(id) => setSelectedExercise(id)}
-            />
+                    return option;
+                  })}
+                  selectedId={selectedExercise}
+                  onSelect={(id) => setSelectedExercise(id)}
+                />
+                {exercisesProp === undefined && hasMore ? (
+                  <View className="py-4">
+                    <Button
+                      label={
+                        isLoadingMore
+                          ? t('replaceExercise.loadingMore', 'Loading…')
+                          : t('replaceExercise.loadMore', 'Load More')
+                      }
+                      onPress={loadMore}
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoadingMore}
+                      loading={isLoadingMore}
+                      width="full"
+                      iconPosition="left"
+                    />
+                  </View>
+                ) : null}
+              </>
+            )}
           </View>
         </ScrollView>
       </View>

@@ -213,6 +213,36 @@ export class ExerciseService {
   }
 
   /**
+   * Get exercises with pagination and optional filters (for Replace Exercise modal).
+   * Ordered by name asc. Supports filter by muscle group and/or search by name.
+   */
+  static async getExercisesPaginatedFiltered(
+    limit: number,
+    offset: number,
+    filters?: { muscleGroup?: string; searchTerm?: string }
+  ): Promise<Exercise[]> {
+    let query = database.get<Exercise>('exercises').query(Q.where('deleted_at', Q.eq(null)));
+
+    if (filters?.muscleGroup) {
+      query = query.extend(Q.where('muscle_group', filters.muscleGroup));
+    }
+    if (filters?.searchTerm?.trim()) {
+      query = query.extend(Q.where('name', Q.like(`%${filters.searchTerm.trim()}%`)));
+    }
+
+    query = query.extend(Q.sortBy('name', Q.asc));
+    if (limit > 0) {
+      if (offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Get frequently used exercises (based on workout logs)
    */
   static async getFrequentlyUsedExercises(limit: number = 10): Promise<Exercise[]> {

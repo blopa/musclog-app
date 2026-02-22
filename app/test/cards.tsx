@@ -73,7 +73,6 @@ export default function CardsTestScreen() {
             exerciseCount={5}
             duration="45 mins"
             variant="featured"
-            image={{ uri: 'https://example.com/workout-image.jpg' }}
             onStart={() => console.log('Start workout')}
             onMore={() => console.log('More options')}
           />
@@ -179,7 +178,6 @@ export default function CardsTestScreen() {
             exerciseCount={6}
             duration="50 mins"
             variant="standard"
-            image={require('../../assets/icon.png')}
             onStart={() => console.log('Start workout')}
             onArchive={() => console.log('Archive workout')}
             onMore={() => console.log('More options')}
