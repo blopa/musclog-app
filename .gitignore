@@ -65,3 +65,4 @@ coverage/
 
 # ignore all files on data/dev
 data/dev/*
+/data/dev/*
