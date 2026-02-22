@@ -127,7 +127,7 @@ function ExerciseCard({
     <GenericCard variant="card" size="default" isPressable onPress={onPress}>
       <View className="p-4">
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-4">
+          <View className="flex-row items-center gap-4 flex-1">
             <View
               className={`h-16 w-16 overflow-hidden rounded-lg border border-border-default bg-bg-secondary ${
                 isSkipped ? 'opacity-60' : ''
@@ -169,11 +169,13 @@ function ExerciseCard({
             </View>
           </View>
 
-          {isCompleted ? (
-            <CheckCircle size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          ) : (
-            <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-          )}
+          <View className="ml-2">
+            {isCompleted ? (
+              <CheckCircle size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+            ) : (
+              <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+            )}
+          </View>
         </View>
       </View>
     </GenericCard>
