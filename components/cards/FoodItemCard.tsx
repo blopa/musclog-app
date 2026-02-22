@@ -1,4 +1,4 @@
-import { UtensilsCrossed } from 'lucide-react-native';
+import { Apple, Coffee, EggFried, Soup, UtensilsCrossed } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
@@ -16,6 +16,7 @@ type FoodItemCardProps = {
   protein?: number;
   carbs?: number;
   fat?: number;
+  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 };
 
 export function FoodItemCard({
@@ -27,10 +28,31 @@ export function FoodItemCard({
   protein,
   carbs,
   fat,
+  mealType,
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
+
+  // Helper function to get the appropriate icon based on meal type
+  const getMealIcon = () => {
+    switch (mealType) {
+      case 'breakfast':
+        return EggFried;
+      case 'lunch':
+        return Soup;
+      case 'dinner':
+        return UtensilsCrossed;
+      case 'snack':
+        return Apple;
+      case 'other':
+        return Coffee;
+      default:
+        return UtensilsCrossed;
+    }
+  };
+
+  const MealIcon = getMealIcon();
 
   const p = Math.round(protein ?? 0);
   const c = Math.round(carbs ?? 0);
@@ -57,7 +79,7 @@ export function FoodItemCard({
         >
           {!image || imageError ? (
             <View className="flex-1 items-center justify-center">
-              <UtensilsCrossed size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+              <MealIcon size={theme.iconSize.lg} color={theme.colors.text.secondary} />
             </View>
           ) : (
             <Image
@@ -78,7 +100,7 @@ export function FoodItemCard({
           </Text>
           <Text className="text-xs text-text-secondary">{t('food.common.kcal')}</Text>
         </View>
-        <MenuButton size="sm" onPress={onMorePress} className="flex-shrink-0" />
+        <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
       </View>
     </GenericCard>
   );

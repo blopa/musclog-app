@@ -500,6 +500,7 @@ export default function FoodScreen() {
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
                       image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                      mealType="breakfast"
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -524,6 +525,7 @@ export default function FoodScreen() {
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
                       image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                      mealType="lunch"
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -548,6 +550,7 @@ export default function FoodScreen() {
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
                       image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                      mealType="dinner"
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -572,6 +575,7 @@ export default function FoodScreen() {
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
                       image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                      mealType="snack"
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}
@@ -596,6 +600,7 @@ export default function FoodScreen() {
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
                       image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                      mealType="other"
                       onMorePress={() => handleFoodMenuPress(entry)}
                     />
                   ))}

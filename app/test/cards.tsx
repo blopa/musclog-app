@@ -296,7 +296,27 @@ export default function CardsTestScreen() {
           />
         </TestSection>
 
-        <TestSection title="Food Item" subtitle="Food list item with image fallback">
+        <TestSection title="Food Item" subtitle="Food list item with meal-specific icons">
+          <FoodItemCard
+            name="Pancakes with Syrup"
+            description="Fluffy pancakes with maple syrup"
+            calories={320}
+            protein={8}
+            carbs={45}
+            fat={12}
+            mealType="breakfast"
+            onMorePress={() => console.log('More options')}
+          />
+          <FoodItemCard
+            name="Caesar Salad"
+            description="Fresh romaine lettuce with parmesan"
+            calories={250}
+            protein={15}
+            carbs={12}
+            fat={18}
+            mealType="lunch"
+            onMorePress={() => console.log('More options')}
+          />
           <FoodItemCard
             name="Grilled Salmon"
             description="Atlantic salmon with lemon and herbs"
@@ -304,27 +324,27 @@ export default function CardsTestScreen() {
             protein={35}
             carbs={0}
             fat={18}
-            image={{ uri: 'https://via.placeholder.com/150' }}
+            mealType="dinner"
             onMorePress={() => console.log('More options')}
           />
           <FoodItemCard
-            name="Greek Yogurt"
-            description="Plain Greek yogurt with berries"
+            name="Apple Slices"
+            description="Fresh apple slices with peanut butter"
             calories={150}
-            protein={20}
-            carbs={12}
-            fat={4}
-            image={undefined}
+            protein={4}
+            carbs={20}
+            fat={8}
+            mealType="snack"
             onMorePress={() => console.log('More options')}
           />
           <FoodItemCard
-            name="Broken Image Test"
-            description="This should show fallback icon"
+            name="Protein Shake"
+            description="Post-workout recovery shake"
             calories={200}
             protein={25}
             carbs={15}
-            fat={8}
-            image={{ uri: 'https://nonexistent-image-url.com/broken.jpg' }}
+            fat={3}
+            mealType="other"
             onMorePress={() => console.log('More options')}
           />
         </TestSection>

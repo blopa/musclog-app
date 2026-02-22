@@ -45,11 +45,13 @@ export function MenuButton({
   const config = sizeConfig[size];
   const iconColor = color || theme.colors.text.secondary;
 
+  // TODO: uses classnames
   const touchableClassName = config.touchableSize
     ? `${config.touchableSize} items-center justify-center ${className}`
     : `items-center justify-center ${className}`;
 
   return (
+    // TODO: can we increase the touchable/trigger area of this button to be bigger than it's visual element?
     <Pressable className={touchableClassName} onPress={onPress} style={style}>
       <Icon size={config.iconSize} color={iconColor} />
     </Pressable>
