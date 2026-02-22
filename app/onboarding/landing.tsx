@@ -1,12 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Dumbbell } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Linking, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Linking, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
+import { seedDevData } from '../../database/seeders/dev';
+import { seedProductionData } from '../../database/seeders/prod';
+import { verifyDatabaseTables } from '../../database/verify';
 import { theme } from '../../theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -14,6 +18,34 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function LandingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        if (__DEV__) {
+          const result = await verifyDatabaseTables();
+          if (!result.success) {
+            console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');
+            console.error('Missing tables:', result.missingTables);
+            console.error('Solution: Uninstall the app completely and reinstall it.');
+          }
+        }
+
+        await seedProductionData();
+
+        if (__DEV__) {
+          await seedDevData();
+        }
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    initializeApp();
+  }, []);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -118,54 +150,74 @@ export default function LandingScreen() {
             </View>
           </View>
 
-          {/* TODO: if we're migrating / seeding data, let's show a message with loading state instead of the button block */}
+          {/* Loading state or button block */}
           <View className="gap-3 pb-8 pt-4">
-            {/* Primary Button */}
-            <Button
-              label={t('onboarding.landing.getStarted')}
-              onPress={() => {
-                // Navigate to home or onboarding
-                router.push('/onboarding/onboarding');
-              }}
-              icon={ArrowRight}
-              iconPosition="right"
-              variant="gradientCta"
-              size="lg"
-              width="full"
-            />
+            {isInitializing ? (
+              <View className="items-center gap-4">
+                <ActivityIndicator
+                  size="large"
+                  color={theme.colors.text.white}
+                />
+                <Text
+                  className="text-center"
+                  style={{
+                    color: theme.colors.text.white,
+                    fontSize: theme.typography.fontSize.lg,
+                  }}
+                >
+                  {t('onboarding.landing.preparingApp') || 'Preparing the app for you...'}
+                </Text>
+              </View>
+            ) : (
+              <>
+                {/* Primary Button */}
+                <Button
+                  label={t('onboarding.landing.getStarted')}
+                  onPress={() => {
+                    // Navigate to home or onboarding
+                    router.push('/onboarding/onboarding');
+                  }}
+                  icon={ArrowRight}
+                  iconPosition="right"
+                  variant="gradientCta"
+                  size="lg"
+                  width="full"
+                />
 
-            {/* Terms / Footer Text */}
-            <View className="mt-2">
-              <Text
-                className="text-center"
-                style={{
-                  color: theme.colors.text.gray500,
-                  fontSize: theme.typography.fontSize.xs,
-                }}
-              >
-                {t('onboarding.landing.termsAndPrivacy')}
-              </Text>
+                {/* Terms / Footer Text */}
+                <View className="mt-2">
+                  <Text
+                    className="text-center"
+                    style={{
+                      color: theme.colors.text.gray500,
+                      fontSize: theme.typography.fontSize.xs,
+                    }}
+                  >
+                    {t('onboarding.landing.termsAndPrivacy')}
+                  </Text>
 
-              <Text
-                accessibilityRole="link"
-                onPress={async () => {
-                  const url = 'https://werules.com/musclog/terms';
-                  try {
-                    await Linking.openURL(url);
-                  } catch (e) {
-                    console.error('Failed to open privacy link', e);
-                  }
-                }}
-                className="mt-1 text-center"
-                style={{
-                  color: theme.colors.accent.primary,
-                  fontSize: theme.typography.fontSize.xs,
-                  textDecorationLine: 'underline',
-                }}
-              >
-                {t('onboarding.landing.connectGoogle')}
-              </Text>
-            </View>
+                  <Text
+                    accessibilityRole="link"
+                    onPress={async () => {
+                      const url = 'https://werules.com/musclog/terms';
+                      try {
+                        await Linking.openURL(url);
+                      } catch (e) {
+                        console.error('Failed to open privacy link', e);
+                      }
+                    }}
+                    className="mt-1 text-center"
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontSize: theme.typography.fontSize.xs,
+                      textDecorationLine: 'underline',
+                    }}
+                  >
+                    {t('onboarding.landing.connectGoogle')}
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
         </View>
       </SafeAreaView>

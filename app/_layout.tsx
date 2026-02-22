@@ -74,37 +74,6 @@ export default function RootLayout() {
 
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
-    // TODO: move this logic into the onboarding/landing, and have a loading state
-    // something like "We are preparing the app for you" idk
-    if (__DEV__) {
-      verifyDatabaseTables()
-        .then((result) => {
-          if (!result.success) {
-            console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');
-            console.error('Missing tables:', result.missingTables);
-            console.error('Solution: Uninstall the app completely and reinstall it.');
-          }
-        })
-        .catch((error) => {
-          console.error('Error verifying database:', error);
-        });
-
-      // Seed production data
-      seedProductionData().catch((error) => {
-        console.error('Error seeding production data:', error);
-      });
-
-      // Seed development data
-      seedDevData().catch((error) => {
-        console.error('Error seeding exercises database:', error);
-      });
-    } else {
-      // Seed production data
-      seedProductionData().catch((error) => {
-        console.error('Error seeding production data:', error);
-      });
-    }
-
     // Cleanup listeners
     return () => subscription.remove();
   }, []);
