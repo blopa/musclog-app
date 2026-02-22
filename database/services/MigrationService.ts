@@ -448,6 +448,53 @@ export class MigrationService {
   }
 
   /**
+   * Find a food with similar nutritional profile when exact name match fails
+   */
+  private async findFoodByNutritionalProfile(
+    calories: number,
+    protein: number,
+    carbs: number,
+    fat: number
+  ): Promise<string | null> {
+    try {
+      // Only search if we have meaningful nutritional data
+      if (calories <= 0) return null;
+
+      const allFoods = await database
+        .get<Food>('foods')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      let bestMatch: Food | null = null;
+      let bestScore = Infinity;
+
+      for (const food of allFoods) {
+        // Calculate similarity score based on nutritional differences
+        const caloriesDiff = Math.abs(food.calories - calories);
+        const proteinDiff = Math.abs(food.protein - protein);
+        const carbsDiff = Math.abs(food.carbs - carbs);
+        const fatDiff = Math.abs(food.fat - fat);
+
+        // Weighted score - calories is most important, then macros
+        const score = caloriesDiff * 2 + proteinDiff + carbsDiff + fatDiff;
+
+        // Consider it a good match if calories are within 20% and overall score is low
+        const caloriesWithinThreshold = caloriesDiff <= calories * 0.2;
+
+        if (caloriesWithinThreshold && score < bestScore) {
+          bestScore = score;
+          bestMatch = food;
+        }
+      }
+
+      return bestMatch?.id || null;
+    } catch (error) {
+      console.error('Error finding food by nutritional profile:', error);
+      return null;
+    }
+  }
+
+  /**
    * Migrate nutrition logs from old UserNutrition table to new nutrition_logs table
    */
   private async migrateNutritionLogs(): Promise<number> {
@@ -511,13 +558,46 @@ export class MigrationService {
             if (matchingFoods.length > 0) {
               newFoodId = matchingFoods[0].id;
             } else {
-              // TODO: fallback to a food with the same nutritional profile
+              // Fallback: find a food with the same nutritional profile
+              const caloriesNum = parseFloat(calories) || 0;
+              const proteinNum = parseFloat(protein) || 0;
+              const carbsNum = parseFloat(carbohydrate) || 0;
+              const fatNum = parseFloat(fat) || 0;
+              
+              newFoodId = await this.findFoodByNutritionalProfile(
+                caloriesNum,
+                proteinNum,
+                carbsNum,
+                fatNum
+              ) || '';
             }
           } catch (error) {
-            // TODO: fallback to a food with the same nutritional profile
+            // Fallback: find a food with the same nutritional profile
+            const caloriesNum = parseFloat(calories) || 0;
+            const proteinNum = parseFloat(protein) || 0;
+            const carbsNum = parseFloat(carbohydrate) || 0;
+            const fatNum = parseFloat(fat) || 0;
+            
+            newFoodId = await this.findFoodByNutritionalProfile(
+              caloriesNum,
+              proteinNum,
+              carbsNum,
+              fatNum
+            ) || '';
           }
         } else {
-          // TODO: fallback to a food with the same nutritional profile
+          // Fallback: find a food with the same nutritional profile
+          const caloriesNum = parseFloat(calories) || 0;
+          const proteinNum = parseFloat(protein) || 0;
+          const carbsNum = parseFloat(carbohydrate) || 0;
+          const fatNum = parseFloat(fat) || 0;
+          
+          newFoodId = await this.findFoodByNutritionalProfile(
+            caloriesNum,
+            proteinNum,
+            carbsNum,
+            fatNum
+          ) || '';
         }
 
         let gramsConsumed = parseFloat(grams) || 0;
