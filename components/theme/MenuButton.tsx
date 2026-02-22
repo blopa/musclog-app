@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { LucideIcon, MoreVertical } from 'lucide-react-native';
 import { Pressable, ViewStyle } from 'react-native';
 
@@ -19,15 +20,18 @@ const getSizeConfig = (theme: Theme) => {
   return {
     sm: {
       iconSize: theme.iconSize.sm,
-      touchableSize: undefined, // No fixed size for smallest
+      touchableSize: undefined,
+      padding: 'p-1',
     },
     md: {
       iconSize: theme.iconSize.md,
       touchableSize: undefined,
+      padding: 'p-1.5',
     },
     lg: {
       iconSize: theme.iconSize.lg,
       touchableSize: 'h-12 w-12',
+      padding: 'p-2',
     },
   };
 };
@@ -45,14 +49,18 @@ export function MenuButton({
   const config = sizeConfig[size];
   const iconColor = color || theme.colors.text.secondary;
 
-  // TODO: uses classnames
-  const touchableClassName = config.touchableSize
-    ? `${config.touchableSize} items-center justify-center ${className}`
-    : `items-center justify-center ${className}`;
-
   return (
-    // TODO: can we increase the touchable/trigger area of this button to be bigger than it's visual element?
-    <Pressable className={touchableClassName} onPress={onPress} style={style}>
+    <Pressable
+      className={classNames(
+        'items-center justify-center',
+        config.touchableSize,
+        config.padding,
+        className
+      )}
+      onPress={onPress}
+      style={style}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+    >
       <Icon size={config.iconSize} color={iconColor} />
     </Pressable>
   );
