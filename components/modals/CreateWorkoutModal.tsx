@@ -75,43 +75,14 @@ export default function CreateWorkoutModal({
       scrollable={false}
       footer={
         <Button
-          label={t('workouts.addExercise.title')}
+          label={t('createWorkout.save')}
           variant="gradientCta"
           size="md"
           width="full"
-          icon={PlusSquare}
-          onPress={() => setAddExerciseVisible(true)}
+          onPress={handleSave}
+          disabled={isSaving}
+          loading={isSaving}
         />
-      }
-      headerRight={
-        <View>
-          {isSaving ? (
-            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-          ) : (
-            <Pressable
-              onPress={handleSave}
-              disabled={isSaving}
-              style={({ pressed }) => [
-                {
-                  paddingHorizontal: theme.spacing.padding.sm,
-                  paddingVertical: theme.spacing.padding.xs,
-                  opacity:
-                    pressed || isSaving ? theme.colors.opacity.strong : theme.colors.opacity.full,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.accent.primary,
-                }}
-              >
-                {t('createWorkout.save')}
-              </Text>
-            </Pressable>
-          )}
-        </View>
       }
     >
       {/* Background Glows */}
@@ -414,20 +385,40 @@ export default function CreateWorkoutModal({
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
               </View>
             ) : exercises.length > 0 ? (
-              <OptionsMultiSelector
-                title={t('createWorkout.exercisesInWorkout')}
-                options={exercises}
-                selectedIds={selectedExercises}
-                onChange={((ids: any) => setSelectedExercises(ids)) as any}
-                onOrderChange={handleExerciseOrderChange as any}
-                onDelete={handleDeleteExercises as any}
-                isEditable={true}
-              />
+              <>
+                <OptionsMultiSelector
+                  title={t('createWorkout.exercisesInWorkout')}
+                  options={exercises}
+                  selectedIds={selectedExercises}
+                  onChange={((ids: any) => setSelectedExercises(ids)) as any}
+                  onOrderChange={handleExerciseOrderChange as any}
+                  onDelete={handleDeleteExercises as any}
+                  isEditable={true}
+                />
+                <View style={{ marginTop: theme.spacing.margin.md }}>
+                  <Button
+                    label={t('workouts.addExercise.title')}
+                    variant="secondary"
+                    size="sm"
+                    width="full"
+                    icon={PlusSquare}
+                    onPress={() => setAddExerciseVisible(true)}
+                  />
+                </View>
+              </>
             ) : (
               <View className="items-center justify-center py-8">
-                <Text className="text-center text-text-secondary">
+                <Text className="text-center text-text-secondary mb-4">
                   {t('createWorkout.noExercisesPlaceholder')}
                 </Text>
+                <Button
+                  label={t('workouts.addExercise.title')}
+                  variant="secondary"
+                  size="sm"
+                  width="auto"
+                  icon={PlusSquare}
+                  onPress={() => setAddExerciseVisible(true)}
+                />
               </View>
             )}
           </View>

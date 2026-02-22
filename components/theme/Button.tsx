@@ -26,7 +26,7 @@ type ThemeButtonProps = {
   iconColor?: string;
   icon?: LucideIcon | ReactNode | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
-  size?: ThemeButtonSize;
+  size?: ThemeButtonSize; // TODO: update the sizes, make them all slightly smaller, and add a new xl variant, that will have the same size as the current lg
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
   disabled?: boolean;
