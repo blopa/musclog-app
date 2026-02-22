@@ -6,7 +6,7 @@ import { ActivityIndicator, Platform, Pressable, Text, View, ViewStyle } from 'r
 import { useTheme } from '../../hooks/useTheme';
 import { Theme } from '../../theme';
 
-type ThemeButtonSize = 'sm' | 'md' | 'lg';
+type ThemeButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
@@ -26,7 +26,7 @@ type ThemeButtonProps = {
   iconColor?: string;
   icon?: LucideIcon | ReactNode | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
-  size?: ThemeButtonSize; // TODO: update the sizes, make them all slightly smaller, and add a new xl variant, that will have the same size as the current lg
+  size?: ThemeButtonSize;
   width?: ThemeButtonWidth;
   variant?: ThemeButtonVariant;
   disabled?: boolean;
@@ -47,7 +47,7 @@ const getSizeConfig = (theme: Theme) => {
       shadow: theme.shadows.md,
     },
     md: {
-      paddingVertical: theme.spacing.padding.lg,
+      paddingVertical: theme.spacing.padding.base,
       borderRadius: theme.borderRadius.xl,
       fontSize: theme.typography.fontSize.base,
       fontWeight: theme.typography.fontWeight.bold,
@@ -56,6 +56,15 @@ const getSizeConfig = (theme: Theme) => {
       shadow: theme.shadows.accentGlow,
     },
     lg: {
+      paddingVertical: theme.spacing.padding.lg,
+      borderRadius: theme.borderRadius['2xl'],
+      fontSize: theme.typography.fontSize.xl,
+      fontWeight: theme.typography.fontWeight.bold,
+      iconSize: theme.iconSize.lg,
+      gap: theme.spacing.gap.md,
+      shadow: theme.shadows.accentGlowLarge,
+    },
+    xl: {
       paddingVertical: theme.spacing.padding.xl,
       borderRadius: theme.borderRadius['2xl'],
       fontSize: theme.typography.fontSize.xl,
