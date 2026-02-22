@@ -18,6 +18,11 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function LandingScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+
+  // TODO: would be great to show different copies when `isInitializing` is true
+  // - if we're only seeding the static data, show the current copy
+  // - if the user has the old database, show a message saying that the old data is being migrated
+  // - even better if we say exactly which table is being migrated in the copy while we show the progress indicator
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -154,10 +159,7 @@ export default function LandingScreen() {
           <View className="gap-3 pb-8 pt-4">
             {isInitializing ? (
               <View className="items-center gap-4">
-                <ActivityIndicator
-                  size="large"
-                  color={theme.colors.text.white}
-                />
+                <ActivityIndicator size="large" color={theme.colors.text.white} />
                 <Text
                   className="text-center"
                   style={{

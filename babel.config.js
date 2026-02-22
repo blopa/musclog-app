@@ -1,25 +1,21 @@
 module.exports = function (api) {
-  // Detect platform from caller BEFORE calling api.cache()
-  const isWeb = api.caller((caller) => {
-    return (
-      caller?.platform === 'web' ||
-      caller?.name === 'metro-web' ||
-      caller?.name === 'webpack' ||
-      process.env.EXPO_PLATFORM === 'web' ||
-      process.env.BABEL_ENV === 'web' ||
-      process.env.NODE_ENV === 'web' ||
-      // Check for web-specific environment variables that Expo sets
-      process.env.WEBPACK_DEV_SERVER === 'true' ||
-      process.env.EXPO_WEB === 'true'
-    );
-  });
+  // Check caller before configuring cache
+  const isWebFromCaller = api.caller(
+    (caller) =>
+      caller?.platform === 'web' || caller?.name === 'metro-web' || caller?.name === 'webpack'
+  );
 
   api.cache(true);
 
+  const isWeb =
+    process.env.EXPO_PLATFORM === 'web' ||
+    process.env.BABEL_ENV === 'web' ||
+    process.env.WEBPACK_DEV_SERVER === 'true' ||
+    isWebFromCaller;
+
   const plugins = [['@babel/plugin-proposal-decorators', { legacy: true }]];
 
-  // Only use loose: true for web platform (required for decorators with definite assignment)
-  // For mobile (iOS/Android), loose: false is required to avoid expo-router errors
+  // Always use loose: true for web to handle definite assignment with decorators
   if (isWeb) {
     plugins.push(
       ['@babel/plugin-transform-class-properties', { loose: true }],
