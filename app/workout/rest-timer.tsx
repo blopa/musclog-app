@@ -244,8 +244,7 @@ export default function RestTimerScreen() {
         {/* Header */}
         <View className="relative z-20">
           <WorkoutTimeTracker
-            // TODO: on close, show the modal asking if the workout should be finished and saved etc, like in the workout/workout-session screen
-            onClose={() => router.back()}
+            onClose={() => setIsEndWorkoutModalVisible(true)}
             onOptionsPress={() => setIsOptionsModalVisible(true)}
             startTime={workoutLog.startedAt}
           />
