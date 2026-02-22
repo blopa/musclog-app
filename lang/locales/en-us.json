@@ -1164,7 +1164,8 @@
       "appName": "Musclog",
       "tagline": "Lift, Log, Repeat",
       "description": "Track your progress with data-driven insights and crush your fitness goals.",
-      "connectGoogle": "View Terms"
+      "connectGoogle": "View Terms",
+      "preparingApp": "Preparing the app for you..."
     },
     "setGoals": {
       "title": "Smart Goal",
