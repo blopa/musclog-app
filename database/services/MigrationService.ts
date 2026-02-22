@@ -499,10 +499,27 @@ export class MigrationService {
           }
         }
 
-        // TODO: dataId is not reliable, instead, find the food by looking at the exact same name
-        const newFoodId =
-          this.foodIdMap.get(Number(oldLog.dataId)) ??
-          (oldLog.dataId != null ? String(oldLog.dataId) : '');
+        // Find the food by looking at the exact same name
+        let newFoodId = '';
+        if (name) {
+          try {
+            const matchingFoods = await database
+              .get<Food>('foods')
+              .query(Q.where('name', name.trim()), Q.where('deleted_at', Q.eq(null)))
+              .fetch();
+
+            if (matchingFoods.length > 0) {
+              newFoodId = matchingFoods[0].id;
+            } else {
+              // TODO: fallback to a food with the same nutritional profile
+            }
+          } catch (error) {
+            // TODO: fallback to a food with the same nutritional profile
+          }
+        } else {
+          // TODO: fallback to a food with the same nutritional profile
+        }
+
         let gramsConsumed = parseFloat(grams) || 0;
 
         // When grams is null in the old DB, infer from the linked food's calories per 100g
