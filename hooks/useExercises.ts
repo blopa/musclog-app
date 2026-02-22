@@ -102,12 +102,27 @@ export function useExercises({
         setCurrentOffset(exercisesList.length);
       } else {
         // List mode
-        if (getAll) {
+        const hasFilters = !!(muscleGroup || searchTerm?.trim());
+        if (hasFilters && !getAll) {
+          // List mode with filters: use paginated filtered query (e.g. Replace Exercise modal)
+          const filters = {
+            muscleGroup: muscleGroup || undefined,
+            searchTerm: searchTerm?.trim() || undefined,
+          };
+          exercisesList = await ExerciseService.getExercisesPaginatedFiltered(
+            initialLimit,
+            0,
+            filters
+          );
+          setHasMore(exercisesList.length >= initialLimit);
+          setCurrentOffset(exercisesList.length);
+          // Service returns name asc; no client sort or totalCount/muscleGroups fetch
+        } else if (getAll) {
           // Fetch all exercises (no pagination)
           exercisesList = await ExerciseService.getAllExercises();
           setHasMore(false);
         } else {
-          // Fetch initial batch - since ExerciseService doesn't have pagination, get all and slice
+          // List mode, no filters: get all and slice
           const allExercises = await ExerciseService.getAllExercises();
           exercisesList = allExercises.slice(0, initialLimit);
           setHasMore(allExercises.length > initialLimit);
@@ -115,33 +130,36 @@ export function useExercises({
         }
       }
 
-      // Apply sorting
-      exercisesList = exercisesList.sort((a, b) => {
-        let aValue: any = a[sortBy as keyof Exercise];
-        let bValue: any = b[sortBy as keyof Exercise];
+      // Apply sorting (skip when list mode with filters - service already returns name asc)
+      const isListWithFilters = mode === 'list' && !!(muscleGroup || searchTerm?.trim());
+      if (!isListWithFilters) {
+        exercisesList = exercisesList.sort((a, b) => {
+          let aValue: any = a[sortBy as keyof Exercise];
+          let bValue: any = b[sortBy as keyof Exercise];
 
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase();
-          bValue = (bValue as string).toLowerCase();
-        }
+          if (typeof aValue === 'string') {
+            aValue = aValue.toLowerCase();
+            bValue = (bValue as string).toLowerCase();
+          }
 
-        if (sortOrder === 'asc') {
-          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-        } else {
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-        }
-      });
+          if (sortOrder === 'asc') {
+            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          } else {
+            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+          }
+        });
+      }
 
       setExercises(exercisesList);
 
-      // Get total count for list mode
-      if (mode === 'list') {
+      // Get total count for list mode (skip when using filtered pagination)
+      if (mode === 'list' && !isListWithFilters) {
         const count = await ExerciseService.getExercisesCount();
         setTotalCount(count);
       }
 
-      // Load muscle groups and equipment types for list mode
-      if (mode === 'list') {
+      // Load muscle groups and equipment types for list mode (skip when using filtered pagination)
+      if (mode === 'list' && !isListWithFilters) {
         const [muscleGroupsList, equipmentTypesList] = await Promise.all([
           ExerciseService.getMuscleGroups(),
           ExerciseService.getEquipmentTypes(),
@@ -171,6 +189,10 @@ export function useExercises({
 
   // Load more exercises (pagination)
   const loadMore = useCallback(async () => {
+    const isListWithFilters = mode === 'list' && !!(muscleGroup || searchTerm?.trim());
+    const canLoadMoreList = mode === 'list' && !getAll && !isListWithFilters;
+    const canLoadMoreFilteredList = isListWithFilters;
+
     if (
       isLoadingMore ||
       !hasMore ||
@@ -180,55 +202,58 @@ export function useExercises({
       mode === 'by-muscle' ||
       mode === 'by-equipment' ||
       mode === 'by-mechanic' ||
-      mode === 'frequent'
+      mode === 'frequent' ||
+      (!canLoadMoreList && !canLoadMoreFilteredList)
     ) {
-      // Don't load more for filtered modes or if getAll is true
       return;
     }
 
     setIsLoadingMore(true);
 
-    // Small delay to ensure React processes the state update and shows loading state
     await new Promise<void>((resolve) => setTimeout(resolve, 10));
 
     try {
-      // Get all exercises and slice the next batch
-      const allExercises = await ExerciseService.getAllExercises();
-      const moreExercises = allExercises.slice(currentOffset, currentOffset + batchSize);
-
-      if (moreExercises.length === 0) {
-        setHasMore(false);
-        setIsLoadingMore(false);
-        return;
-      }
-
-      // Apply sorting to the batch
-      moreExercises.sort((a, b) => {
-        let aValue: any = a[sortBy as keyof Exercise];
-        let bValue: any = b[sortBy as keyof Exercise];
-
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase();
-          bValue = (bValue as string).toLowerCase();
+      if (canLoadMoreFilteredList) {
+        const filters = {
+          muscleGroup: muscleGroup || undefined,
+          searchTerm: searchTerm?.trim() || undefined,
+        };
+        const moreExercises = await ExerciseService.getExercisesPaginatedFiltered(
+          batchSize,
+          currentOffset,
+          filters
+        );
+        if (moreExercises.length === 0) {
+          setHasMore(false);
+          setIsLoadingMore(false);
+          return;
         }
-
-        if (sortOrder === 'asc') {
-          return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-        } else {
-          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-        }
-      });
-
-      // Append to existing exercises
-      setExercises((prev) => [...prev, ...moreExercises]);
-
-      const newOffset = currentOffset + moreExercises.length;
-      setCurrentOffset(newOffset);
-
-      // Check if there are more exercises
-      if (moreExercises.length < batchSize) {
-        setHasMore(false);
+        setExercises((prev) => [...prev, ...moreExercises]);
+        setCurrentOffset((prev) => prev + moreExercises.length);
+        setHasMore(moreExercises.length >= batchSize);
       } else {
+        const allExercises = await ExerciseService.getAllExercises();
+        const moreExercises = allExercises.slice(currentOffset, currentOffset + batchSize);
+        if (moreExercises.length === 0) {
+          setHasMore(false);
+          setIsLoadingMore(false);
+          return;
+        }
+        moreExercises.sort((a, b) => {
+          let aValue: any = a[sortBy as keyof Exercise];
+          let bValue: any = b[sortBy as keyof Exercise];
+          if (typeof aValue === 'string') {
+            aValue = aValue.toLowerCase();
+            bValue = (bValue as string).toLowerCase();
+          }
+          if (sortOrder === 'asc') {
+            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          }
+          return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+        });
+        setExercises((prev) => [...prev, ...moreExercises]);
+        const newOffset = currentOffset + moreExercises.length;
+        setCurrentOffset(newOffset);
         setHasMore(newOffset < allExercises.length);
       }
     } catch (err) {
@@ -237,7 +262,19 @@ export function useExercises({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, mode, getAll, sortBy, sortOrder]);
+  }, [
+    isLoadingMore,
+    hasMore,
+    visible,
+    currentOffset,
+    batchSize,
+    mode,
+    getAll,
+    muscleGroup,
+    searchTerm,
+    sortBy,
+    sortOrder,
+  ]);
 
   // Refresh data
   const refresh = useCallback(async () => {

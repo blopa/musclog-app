@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, ScrollView, Text, TextInput, View } from 'react-native';
 
-import Exercise, { type MechanicType, type MuscleGroup } from '../../database/models/Exercise';
-import { useReplaceExerciseExercises } from '../../hooks/useReplaceExerciseExercises';
+import Exercise from '../../database/models/Exercise';
+import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
@@ -58,12 +58,14 @@ export function ReplaceExerciseModal({
     isLoadingMore,
     hasMore,
     loadMore,
-  } = useReplaceExerciseExercises({
+  } = useExercises({
+    mode: 'list',
     visible: visible && exercisesProp === undefined,
     muscleGroup: muscleGroupForHook,
     searchTerm: searchQuery.trim() || undefined,
     initialLimit: 5,
     batchSize: 5,
+    enableReactivity: false,
   });
 
   const displayList: ReplaceExerciseData[] = useMemo(() => {
