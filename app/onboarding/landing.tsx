@@ -162,6 +162,19 @@ export default function LandingScreen() {
           <View className="gap-3 pb-8 pt-4">
             {isInitializing ? (
               <View className="items-center gap-4">
+                {initPhase === 'migrating' ? (
+                  <Text
+                    className="text-center"
+                    style={{
+                      color: theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
+                      lineHeight: theme.typography.fontSize.sm * 1.4,
+                      paddingHorizontal: theme.size[4],
+                    }}
+                  >
+                    {t('onboarding.landing.migratingPreamble')}
+                  </Text>
+                ) : null}
                 <ActivityIndicator size="large" color={theme.colors.text.white} />
                 <Text
                   className="text-center"

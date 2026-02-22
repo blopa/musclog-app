@@ -1166,6 +1166,7 @@
       "description": "Track your progress with data-driven insights and crush your fitness goals.",
       "connectGoogle": "View Terms",
       "preparingApp": "Preparing the app for you...",
+      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
       "migratingData": "Migrating your data...",
       "migratingStep": "Migrating {{step}}...",
       "migrationSteps": {
