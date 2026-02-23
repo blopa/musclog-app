@@ -104,24 +104,24 @@ describe('calculateTDEE', () => {
 
 describe('calculateTargetCalories', () => {
   it('applies -500 deficit for lose', () => {
-    expect(calculateTargetCalories(2500, 'lose', 70)).toBe(2000);
+    expect(calculateTargetCalories(2500, 'lose')).toBe(2000);
   });
 
   it('maintains TDEE for maintain', () => {
-    expect(calculateTargetCalories(2500, 'maintain', 70)).toBe(2500);
+    expect(calculateTargetCalories(2500, 'maintain')).toBe(2500);
   });
 
   it('applies +250 surplus for gain', () => {
-    expect(calculateTargetCalories(2500, 'gain', 70)).toBe(2750);
+    expect(calculateTargetCalories(2500, 'gain')).toBe(2750);
   });
 
   it('never goes below MIN_CALORIES safety floor', () => {
-    expect(calculateTargetCalories(1500, 'lose', 70)).toBe(MIN_CALORIES);
-    expect(calculateTargetCalories(1200, 'lose', 70)).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(1500, 'lose')).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(1200, 'lose')).toBe(MIN_CALORIES);
   });
 
   it('returns MIN_CALORIES when TDEE itself is at floor', () => {
-    expect(calculateTargetCalories(MIN_CALORIES, 'lose', 70)).toBe(MIN_CALORIES);
+    expect(calculateTargetCalories(MIN_CALORIES, 'lose')).toBe(MIN_CALORIES);
   });
 });
 
