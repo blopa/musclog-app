@@ -282,8 +282,8 @@ export class MigrationService {
           field: 'height',
           type: 'height' as const,
           unit: 'cm',
-          convert: (value: number) => value * 100,
-        }, // Convert meters to cm
+          convert: (value: number) => value < 3 ? value * 100 : value, // height might me in cm or m
+        },
         {
           field: 'fatPercentage',
           type: 'body_fat' as const,

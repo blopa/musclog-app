@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
+import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -60,23 +60,19 @@ export type LineChartProps = {
   className?: string;
 };
 
-/**
- * A reusable line chart component built with Victory Native.
- * Displays a smooth line chart with optional area fill, grid lines, and custom labels.
- *
- * @example
- * ```tsx
- * <LineChart
- *   data={[
- *     { x: 0, y: 50 },
- *     { x: 100, y: 75 },
- *     { x: 200, y: 60 },
- *     { x: 400, y: 90 }
- *   ]}
- *   xAxisLabels={['Jan', 'Feb', 'Mar', 'Apr']}
- * />
- * ```
- */
+const INTERPOLATION_TO_CURVE: Record<
+  NonNullable<LineChartProps['interpolation']>,
+  'linear' | 'monotoneX' | 'natural' | 'step' | 'stepAfter' | 'stepBefore'
+> = {
+  linear: 'linear',
+  monotoneX: 'monotoneX',
+  monotoneY: 'monotoneX',
+  natural: 'natural',
+  step: 'step',
+  stepBefore: 'stepBefore',
+  stepAfter: 'stepAfter',
+};
+
 export function LineChart({
   data,
   height = 192,
@@ -87,14 +83,13 @@ export function LineChart({
   lineWidth = 3,
   showLastPoint = true,
   lastPointSize = 10,
-  lastPointStrokeColor,
-  lastPointStrokeWidth = 2,
+  lastPointStrokeColor, // TODO: use this
+  lastPointStrokeWidth = 2, // TODO: use this
   xDomain,
   yDomain,
   interpolation = 'monotoneX',
   showGridLines = true,
   gridLineColor,
-  gridTickValues,
   xAxisLabels,
   marginTop = 16,
   marginBottom = 16,
@@ -106,97 +101,56 @@ export function LineChart({
     return null;
   }
 
-  // Calculate default grid tick values if not provided
-  const defaultGridTickValues = gridTickValues || [
-    chartHeight * 0.25,
-    chartHeight * 0.5,
-    chartHeight * 0.75,
-  ];
+  const xDomainFinal = xDomain ?? [0, chartWidth];
+  const yDomainFinal = yDomain ?? [0, chartHeight];
+  const curveType = INTERPOLATION_TO_CURVE[interpolation];
+  const lineColorResolved = lineColor ?? theme.colors.accent.primary;
+  const areaColorResolved = areaColor ?? theme.colors.accent.primary30;
 
-  // Use provided domains or default to chart dimensions
-  const xDomainFinal = xDomain || [0, chartWidth];
-  const yDomainFinal = yDomain || [0, chartHeight];
-
-  // Last data point for the circle marker
-  const lastPoint = data[data.length - 1];
+  // CartesianChart expects data with x and y keys; our data already has that shape
+  const chartData = data as { x: number; y: number }[];
 
   return (
-    <View className={className || `relative w-full`} style={{ marginTop }}>
-      <VictoryChart
-        height={height}
-        padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        domain={{ x: xDomainFinal, y: yDomainFinal }}
-        style={{
-          parent: {
-            height,
-            width: '100%',
-          },
-        }}
-      >
-        {/* Grid lines - horizontal dashed lines */}
-        {showGridLines ? (
-          <VictoryAxis
-            dependentAxis
-            style={{
-              axis: { stroke: 'transparent' },
-              grid: {
-                stroke: gridLineColor || theme.colors.border.light,
-                strokeDasharray: '4,4',
-                strokeWidth: 1,
-              },
-              ticks: { stroke: 'transparent' },
-              tickLabels: { fill: 'transparent' },
-            }}
-            tickValues={defaultGridTickValues}
-          />
-        ) : null}
-        {/* Area fill with gradient */}
-        <VictoryArea
-          data={data}
-          interpolation={interpolation}
-          style={{
-            data: {
-              fill: areaColor || theme.colors.accent.primary30,
-            },
+    <View className={className || 'relative w-full'} style={{ marginTop }}>
+      <View style={{ height }}>
+        <CartesianChart
+          data={chartData}
+          xKey="x"
+          yKeys={['y']}
+          domain={{ x: xDomainFinal, y: yDomainFinal }}
+          padding={0}
+          axisOptions={{
+            lineColor: showGridLines ? (gridLineColor ?? theme.colors.border.light) : 'transparent',
+            labelColor: 'transparent',
           }}
-        />
-        {/* Line */}
-        <VictoryLine
-          data={data}
-          interpolation={interpolation}
-          style={{
-            data: {
-              stroke: lineColor || theme.colors.accent.primary,
-              strokeWidth: lineWidth,
-              strokeLinecap: 'round',
-            },
-          }}
-        />
-        {/* Data point circle at the end */}
-        {showLastPoint ? (
-          <VictoryScatter
-            data={[lastPoint]}
-            size={lastPointSize}
-            style={{
-              data: {
-                fill: lineColor || theme.colors.accent.primary,
-                stroke: lastPointStrokeColor || theme.colors.background.card,
-                strokeWidth: lastPointStrokeWidth,
-              },
-            }}
-          />
-        ) : null}
-        {/* Hidden independent axis (x-axis) */}
-        <VictoryAxis
-          style={{
-            axis: { stroke: 'transparent' },
-            grid: { stroke: 'transparent' },
-            ticks: { stroke: 'transparent' },
-            tickLabels: { fill: 'transparent' },
-          }}
-        />
-      </VictoryChart>
-      {/* Custom X-axis labels */}
+        >
+          {({ points }) => (
+            <>
+              <Area
+                points={points.y}
+                y0={yDomainFinal[0]}
+                curveType={curveType}
+                color={areaColorResolved}
+              />
+              <Line
+                points={points.y}
+                curveType={curveType}
+                color={lineColorResolved}
+                strokeWidth={lineWidth}
+                strokeCap="round"
+              />
+              {showLastPoint && points.y.length > 0 ? (
+                <Scatter
+                  points={points.y.slice(-1)}
+                  radius={lastPointSize / 2}
+                  color={lineColorResolved}
+                  style="fill"
+                />
+              ) : null}
+            </>
+          )}
+        </CartesianChart>
+      </View>
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View className="mt-4 flex-row justify-between px-1" style={{ marginTop: marginBottom }}>
           {xAxisLabels.map((label, index) => (
