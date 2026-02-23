@@ -91,15 +91,14 @@ export const MIN_CALORIES = 1200;
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
 
-// TODO: right now we're using a simple linear model to project weight change
-// assuming that only fat is stored and burned. This is not accurate at all
-// and we should use a more complex model that takes into account the fact
-// that muscle tissue is also stored and burned.
-// also the same amount to gain fat vs to lose fat is not the same.
-// same for the muscle gain/loss.
-// we need to make a more complex model that takes into account the fact
-// that muscle tissue is also stored and burned.
-
+// ---------------------------------------------------------------------------
+// Tissue energetics for weight projection (body-composition model)
+// Sources: Research Memorandum (adipose/muscle stored vs build); Wishnofsky (1958) 3500 kcal/lb;
+// Forbes (1999) body composition; Spady et al. (1976) lean tissue synthesis cost;
+// Hall (2008) Int J Obes – energy deficit per kg depends on fat/lean mix.
+// Fat: stored 7730 kcal/kg (released when lost), build 8840 kcal/kg (cost to gain).
+// Muscle: stored 1250 kcal/kg, build 3900 kcal/kg. Gain/loss use different constants.
+// ---------------------------------------------------------------------------
 // https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover - 1% other, 5% water, 8% protein, 86% fat.
 // https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050 - efficiency to build fat is ~77%.
 // Established thermodynamic model for human adipose tissue:
@@ -325,7 +324,7 @@ export function calculateMacros(targetCalories: number, fitnessGoal: FitnessGoal
 }
 
 // ---------------------------------------------------------------------------
-// Step 5 – Weight projection
+// Step 5 – Weight projection (body-composition model)
 // ---------------------------------------------------------------------------
 
 export interface WeightProjection {
@@ -335,15 +334,107 @@ export interface WeightProjection {
 }
 
 /**
- * Project weight change over PROJECTION_DAYS based on the calorie delta.
+ * Options to tune the body-composition mix used for weight projection.
+ * When omitted, conservative defaults are used (typical mixed fat/lean change).
+ */
+export interface WeightProjectionOptions {
+  /** Body fat % (5–60). Higher BF → more fat lost when cutting, less muscle gained when bulking. */
+  bodyFatPercent?: number;
+  /** Fitness goal: hypertrophy/strength favor more muscle preservation (cut) and gain (bulk). */
+  fitnessGoal?: FitnessGoal;
+}
+
+/** Default fraction of weight lost that is fat (rest is lean). With protein + training, ~75–90%. */
+const DEFAULT_FAT_FRACTION_LOSS = 0.75;
+/** Default fraction of weight gained that is muscle (rest is fat). Lean bulk ~30–50%. */
+const DEFAULT_MUSCLE_FRACTION_GAIN = 0.38;
+
+/**
+ * Fraction of weight loss that is fat (0–1). Higher body fat or weight_loss goal → more fat lost.
+ */
+function getFatFractionLoss(options?: WeightProjectionOptions): number {
+  if (!options?.bodyFatPercent && !options?.fitnessGoal) return DEFAULT_FAT_FRACTION_LOSS;
+  let f = DEFAULT_FAT_FRACTION_LOSS;
+  if (
+    options.bodyFatPercent !== undefined &&
+    options.bodyFatPercent >= 5 &&
+    options.bodyFatPercent <= 60
+  ) {
+    // Higher body fat → more of the loss comes from fat (Hall 2008; Forbes).
+    f = 0.62 + (options.bodyFatPercent / 100) * 0.67; // ~0.69 at 10% BF, ~0.82 at 30% BF, ~0.90 at 42% BF
+  }
+  if (options.fitnessGoal === 'hypertrophy' || options.fitnessGoal === 'strength') {
+    f = Math.min(0.9, f + 0.05); // resistance training preserves lean mass
+  }
+  return Math.max(0.5, Math.min(0.95, f));
+}
+
+/**
+ * Fraction of weight gain that is muscle (0–1). Lower body fat / hypertrophy/strength → more muscle.
+ */
+function getMuscleFractionGain(options?: WeightProjectionOptions): number {
+  if (!options?.bodyFatPercent && !options?.fitnessGoal) return DEFAULT_MUSCLE_FRACTION_GAIN;
+  let m = DEFAULT_MUSCLE_FRACTION_GAIN;
+  if (
+    options.bodyFatPercent !== undefined &&
+    options.bodyFatPercent >= 5 &&
+    options.bodyFatPercent <= 60
+  ) {
+    // Lower body fat → better p-ratio (more muscle gain per surplus).
+    if (options.bodyFatPercent < 15) m = 0.45;
+    else if (options.bodyFatPercent > 25) m = 0.3;
+  }
+  if (options.fitnessGoal === 'hypertrophy' || options.fitnessGoal === 'strength') {
+    m = Math.min(0.55, m + 0.07);
+  }
+  return Math.max(0.2, Math.min(0.55, m));
+}
+
+/**
+ * Effective kcal per kg of weight lost: deficit (kcal) = weightLost (kg) * this value.
+ * Uses stored (released) energy: fat 7730, muscle 1250 kcal/kg.
+ */
+function effectiveKcalPerKgLost(fatFraction: number): number {
+  return fatFraction * CALORIES_STORED_KG_FAT + (1 - fatFraction) * CALORIES_STORED_KG_MUSCLE;
+}
+
+/**
+ * Effective kcal per kg of weight gained: surplus (kcal) = weightGained (kg) * this value.
+ * Uses build costs: fat 8840, muscle 3900 kcal/kg (gain is thermodynamically costlier for fat).
+ */
+function effectiveKcalPerKgGained(muscleFraction: number): number {
+  return muscleFraction * CALORIES_BUILD_KG_MUSCLE + (1 - muscleFraction) * CALORIES_BUILD_KG_FAT;
+}
+
+/**
+ * Project weight change over PROJECTION_DAYS using a body-composition model:
+ * - Loss: mix of fat (stored 7730 kcal/kg) and lean (1250 kcal/kg); fraction fat depends on BF% and goal.
+ * - Gain: mix of muscle (build 3900 kcal/kg) and fat (build 8840 kcal/kg); fraction muscle depends on BF% and goal.
+ * Same calorie surplus/deficit produces different total weight change than a fat-only model.
  */
 export function calculateWeightProjection(
   currentWeightKg: number,
   targetCalories: number,
-  tdee: number
+  tdee: number,
+  options?: WeightProjectionOptions
 ): WeightProjection {
   const dailyDelta = targetCalories - tdee;
-  const weeklyWeightChangeKg = (dailyDelta * 7) / CALORIES_STORED_KG_FAT;
+  let weeklyWeightChangeKg: number;
+
+  if (dailyDelta === 0) {
+    weeklyWeightChangeKg = 0;
+  } else if (dailyDelta < 0) {
+    const weeklyDeficitKcal = Math.abs(dailyDelta) * 7;
+    const fatFraction = getFatFractionLoss(options);
+    const kcalPerKg = effectiveKcalPerKgLost(fatFraction);
+    weeklyWeightChangeKg = -weeklyDeficitKcal / kcalPerKg;
+  } else {
+    const weeklySurplusKcal = dailyDelta * 7;
+    const muscleFraction = getMuscleFractionGain(options);
+    const kcalPerKg = effectiveKcalPerKgGained(muscleFraction);
+    weeklyWeightChangeKg = weeklySurplusKcal / kcalPerKg;
+  }
+
   const projectedWeightKg = currentWeightKg + weeklyWeightChangeKg * (PROJECTION_DAYS / 7);
 
   return {
@@ -486,7 +577,7 @@ export function planToInitialGoals(plan: NutritionPlan): Partial<NutritionGoals>
  * - TDEE: Standard Harris-Benedict activity multipliers
  * - Calorie adjustment: ±250–500 kcal depending on goal
  * - Macros: Percentage-split method per goal type
- * - Projection: Linear model based on ~7700 kcal per kg
+ * - Projection: Body-composition model (fat + muscle; stored vs build costs per Hall/Forbes/Wishnofsky)
  *
  * When body fat is provided, a ±4% uncertainty band is applied to produce
  * `minTargetCalories` / `maxTargetCalories` reflecting measurement error.
@@ -519,8 +610,11 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   // Step 4 – Macros (driven by fitness goal for split)
   const macros = calculateMacros(targetCalories, fitnessGoal);
 
-  // Step 5 – Projection
-  const projection = calculateWeightProjection(weightKg, targetCalories, tdee);
+  // Step 5 – Projection (body-composition model: fat vs muscle mix from BF% and fitness goal)
+  const projection = calculateWeightProjection(weightKg, targetCalories, tdee, {
+    bodyFatPercent: bodyFatPercent,
+    fitnessGoal,
+  });
 
   // Goal label key (for i18n) – from weight goal
   const goalLabel = WEIGHT_GOAL_LABELS[weightGoal] ?? 'generalFitness';

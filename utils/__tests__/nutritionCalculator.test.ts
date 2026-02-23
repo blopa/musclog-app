@@ -215,13 +215,33 @@ describe('calculateWeightProjection', () => {
     expect(result.projectedWeightKg).toBe(80);
   });
 
-  it('calculates correct weight change for -500 kcal/day deficit', () => {
-    // -500 * 7 / 7700 ≈ -0.45 kg/week
+  it('calculates correct weight change for -500 kcal/day deficit (body-composition model)', () => {
+    // Default 75% fat / 25% lean: effective 6110 kcal/kg → 3500/6110 ≈ -0.57 kg/week
     const result = calculateWeightProjection(80, 2000, 2500);
-    expect(result.weeklyWeightChangeKg).toBeCloseTo(-0.45, 1);
-    // Over 90 days (~12.86 weeks): -0.45 * 12.86 ≈ -5.8 kg
+    expect(result.weeklyWeightChangeKg).toBeLessThan(0);
+    expect(result.weeklyWeightChangeKg).toBeCloseTo(-0.57, 1);
     const expectedProjected = 80 + result.weeklyWeightChangeKg * (90 / 7);
     expect(result.projectedWeightKg).toBeCloseTo(expectedProjected, 0);
+  });
+
+  it('uses body-composition options: higher fat fraction when cutting with high BF%', () => {
+    const defaultResult = calculateWeightProjection(80, 2000, 2500);
+    const withHighBF = calculateWeightProjection(80, 2000, 2500, { bodyFatPercent: 30 });
+    // More fat in the mix → higher kcal per kg lost → less total kg lost per week
+    expect(Math.abs(withHighBF.weeklyWeightChangeKg)).toBeLessThan(
+      Math.abs(defaultResult.weeklyWeightChangeKg)
+    );
+  });
+
+  it('uses body-composition options: more muscle in gain with hypertrophy goal', () => {
+    const defaultResult = calculateWeightProjection(80, 3000, 2500);
+    const withHypertrophy = calculateWeightProjection(80, 3000, 2500, {
+      fitnessGoal: 'hypertrophy',
+    });
+    // More muscle in the mix → lower kcal per kg gained → more total kg gained per week
+    expect(withHypertrophy.weeklyWeightChangeKg).toBeGreaterThan(
+      defaultResult.weeklyWeightChangeKg
+    );
   });
 });
 
