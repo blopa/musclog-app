@@ -929,32 +929,45 @@ export default function NutritionGoalsResults() {
                     {displayData.estimatedFatChangeKg != null ||
                     displayData.estimatedLeanChangeKg != null ? (
                       <View
-                        className="mt-3 flex-row justify-center gap-4"
+                        className="mt-3 items-center"
                         style={{ marginTop: theme.spacing.margin.sm }}
                       >
+                        <View className="flex-row justify-center gap-4">
+                          <Text
+                            className="text-xs font-medium"
+                            style={{
+                              color: theme.colors.text.secondary,
+                              fontSize: theme.typography.fontSize.xs,
+                              fontWeight: theme.typography.fontWeight.medium,
+                            }}
+                          >
+                            {t('nutritionGoals.results.projectionFat', {
+                              kg: (displayData.estimatedFatChangeKg ?? 0).toFixed(1),
+                            })}
+                          </Text>
+                          <Text
+                            className="text-xs font-medium"
+                            style={{
+                              color: theme.colors.text.secondary,
+                              fontSize: theme.typography.fontSize.xs,
+                              fontWeight: theme.typography.fontWeight.medium,
+                            }}
+                          >
+                            {t('nutritionGoals.results.projectionLean', {
+                              kg: (displayData.estimatedLeanChangeKg ?? 0).toFixed(1),
+                            })}
+                          </Text>
+                        </View>
                         <Text
-                          className="text-xs font-medium"
+                          className="mt-1.5 max-w-[260px] text-center text-[10px]"
                           style={{
-                            color: theme.colors.text.secondary,
-                            fontSize: theme.typography.fontSize.xs,
-                            fontWeight: theme.typography.fontWeight.medium,
+                            color: theme.colors.text.tertiary,
+                            fontSize: theme.typography.fontSize.xxs,
+                            marginTop: theme.spacing.margin.xs,
+                            textAlign: 'center',
                           }}
                         >
-                          {t('nutritionGoals.results.projectionFat', {
-                            kg: (displayData.estimatedFatChangeKg ?? 0).toFixed(1),
-                          })}
-                        </Text>
-                        <Text
-                          className="text-xs font-medium"
-                          style={{
-                            color: theme.colors.text.secondary,
-                            fontSize: theme.typography.fontSize.xs,
-                            fontWeight: theme.typography.fontWeight.medium,
-                          }}
-                        >
-                          {t('nutritionGoals.results.projectionLean', {
-                            kg: (displayData.estimatedLeanChangeKg ?? 0).toFixed(1),
-                          })}
+                          {t('nutritionGoals.results.leanMassClarification')}
                         </Text>
                       </View>
                     ) : null}

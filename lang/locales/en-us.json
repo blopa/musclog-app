@@ -1067,6 +1067,7 @@
       "dailySurplus": "Daily surplus: {{kcal}} kcal",
       "projectionFat": "Fat: {{kg}} kg",
       "projectionLean": "Lean: {{kg}} kg",
+      "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue—not just muscle.",
       "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
       "goalLabels": {
         "moderateWeightLoss": "Moderate Weight Loss Strategy",
