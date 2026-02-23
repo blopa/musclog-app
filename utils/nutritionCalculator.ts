@@ -85,9 +85,60 @@ export interface NutritionPlan {
 // Constants
 // ---------------------------------------------------------------------------
 
-// TODO: this is not truly accurate, because it will depend on gender, age, height, weight, body fat percentage, etc.
-// TODO: improve this to be more accurate based on scientific studies
-export const MIN_CALORIES = 1200;
+/**
+ * Calculate minimum safe calories based on individual characteristics.
+ *
+ * Scientific basis:
+ * - BMR represents the absolute minimum calories needed for basic physiological functions
+ * - Very Low Calorie Diets (VLCD) are defined as ≤800 kcal/day and require medical supervision
+ * - Low calorie diets range from 1000-1200 kcal/day
+ * - For safety, minimum should not go below 80% of BMR to prevent metabolic adaptation
+ * - Absolute minimum of 800 kcal (VLCD threshold) unless under medical supervision
+ * - For most individuals, minimum should be between BMR and 1000-1200 kcal
+ *
+ * @param bmr - Basal Metabolic Rate in calories
+ * @param gender - Biological sex (affects minimum thresholds)
+ * @param age - Age in years (older adults need higher minimums)
+ * @param weightKg - Weight in kilograms
+ * @returns Minimum safe calorie intake
+ */
+export function calculateMinimumCalories(
+  bmr: number,
+  gender: Gender,
+  age: number,
+  weightKg: number
+): number {
+  // Base minimum is 80% of BMR to prevent excessive metabolic adaptation
+  // This aligns with research showing safe deficit levels
+  let minCalories = Math.round(bmr * 0.8);
+
+  // Age-based adjustments: older adults need higher minimum calories
+  if (age >= 65) {
+    minCalories = Math.max(minCalories, 1200); // Higher minimum for older adults
+  } else if (age >= 50) {
+    minCalories = Math.max(minCalories, 1000); // Moderate minimum for middle-aged adults
+  }
+
+  // Gender-based adjustments: males typically have higher BMR and muscle mass
+  // Only apply if not already set by age
+  if (age < 50 && gender === 'male') {
+    minCalories = Math.max(minCalories, 1000); // Higher minimum for males
+  }
+
+  // Weight-based safety: very low weight individuals need higher minimums
+  if (weightKg < 45) {
+    minCalories = Math.max(minCalories, 1200); // Safety threshold for underweight
+  }
+
+  // Standard adult minimum: never go below 800
+  minCalories = Math.max(minCalories, 800);
+
+  // Absolute maximum minimum: never exceed 1200 as this would defeat the purpose
+  // of having a minimum threshold for weight loss
+  minCalories = Math.min(minCalories, 1200);
+
+  return minCalories;
+}
 
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
@@ -281,16 +332,20 @@ export function calculateTDEE(bmr: number, activityLevel: number): number {
 
 /**
  * Calculate the daily calorie target by adjusting TDEE for the weight goal.
- * Applies a safety floor of MIN_CALORIES.
+ * Applies a safety floor based on individual characteristics using calculateMinimumCalories.
  */
 export function calculateTargetCalories(
   tdee: number,
   weightGoal: WeightGoal,
   weightKg: number,
+  bmr: number,
+  gender: Gender,
+  age: number,
   bodyFatPercent?: number
 ): number {
   const adjustment = calculateCalorieAdjustment(weightGoal, weightKg, bodyFatPercent);
-  return Math.max(MIN_CALORIES, Math.round(tdee + adjustment));
+  const minCalories = calculateMinimumCalories(bmr, gender, age, weightKg);
+  return Math.max(minCalories, Math.round(tdee + adjustment));
 }
 
 // ---------------------------------------------------------------------------
@@ -515,7 +570,15 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const tdee = calculateTDEE(bmr, activityLevel);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
-  const targetCalories = calculateTargetCalories(tdee, weightGoal, weightKg, bodyFatPercent);
+  const targetCalories = calculateTargetCalories(
+    tdee,
+    weightGoal,
+    weightKg,
+    bmr,
+    gender,
+    age,
+    bodyFatPercent
+  );
 
   // Step 4 – Macros (driven by fitness goal for split)
   const macros = calculateMacros(targetCalories, fitnessGoal);
@@ -535,13 +598,29 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
     const tdeeLow = calculateTDEE(bmrLow, activityLevel);
-    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, weightKg, highBF);
+    minTargetCalories = calculateTargetCalories(
+      tdeeLow,
+      weightGoal,
+      weightKg,
+      bmrLow,
+      gender,
+      age,
+      highBF
+    );
 
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
     const tdeeHigh = calculateTDEE(bmrHigh, activityLevel);
-    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, weightKg, lowBF);
+    maxTargetCalories = calculateTargetCalories(
+      tdeeHigh,
+      weightGoal,
+      weightKg,
+      bmrHigh,
+      gender,
+      age,
+      lowBF
+    );
   }
 
   return {
