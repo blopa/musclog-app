@@ -137,15 +137,35 @@ const RHO_FAT_KCAL_PER_KG = 39.5 * 239; // ~9440
 const RHO_LEAN_KCAL_PER_KG = 7.6 * 239; // ~1820
 /** Forbes curve parameter (Hall 2007, PMC2376748); used in ΔFFM/ΔBW. */
 const FORBES_C = 10.4;
+
 /**
- * Effective kcal per kg of mixed weight gain for resistance-training users (moderate surplus).
- * Forbes et al. (1986) Br J Nutr: sedentary overfeeding ~38–44% LBM → ~8050 kcal/kg. For RT + moderate
- * surplus, Smith et al. (2020) Int J Exerc Sci and Slater et al. (2023) Sports Med Open show a higher
- * FFM share; we use 50% fat / 50% lean (build costs) as a conservative, evidence-based split.
+ * Fraction of weight gain that is fat (remainder = lean) by lifting experience.
+ * Evidence: untrained show substantially greater hypertrophy effect sizes vs trained (Schoenfeld et al.;
+ * resistance training load meta-analyses). Muscle growth plateau with chronic training (Sports Med.
+ * 2023, “Plateau in Muscle Growth with Resistance Training”). Year-1 gains ~9–11 kg vs advanced ~2–3 kg/yr.
+ * Beginner 40% fat / 60% lean; intermediate 50/50 (Smith et al. 2020, Slater et al. 2023); advanced 60/40.
+ * When experience is undefined, defaults to intermediate (0.5).
  */
-const CALORIES_EFFECTIVE_KG_GAIN =
-  // TODO: this ratio changes depending on how experience the person is at lifting
-  0.5 * CALORIES_BUILD_KG_FAT + 0.5 * CALORIES_BUILD_KG_MUSCLE; // ~6370
+export function getGainFatFraction(liftingExperience?: LiftingExperience): number {
+  switch (liftingExperience) {
+    case 'beginner':
+      return 0.4; // ~60% lean gain
+    case 'advanced':
+      return 0.6; // ~40% lean gain
+    case 'intermediate':
+    default:
+      return 0.5; // 50/50
+  }
+}
+
+/**
+ * Effective kcal per kg of mixed weight gain (RT + moderate surplus), dependent on lifting experience.
+ * Uses memo build costs (8840 fat, 3900 muscle) and getGainFatFraction for the split.
+ */
+export function getEffectiveKcalPerKgGain(liftingExperience?: LiftingExperience): number {
+  const fatFraction = getGainFatFraction(liftingExperience);
+  return fatFraction * CALORIES_BUILD_KG_FAT + (1 - fatFraction) * CALORIES_BUILD_KG_MUSCLE;
+}
 
 /** Principal branch of Lambert W, real arguments. Used for Hall–Forbes weight-loss composition. */
 function lambertW(z: number): number {
@@ -187,22 +207,22 @@ function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg
 const DEFAULT_KCAL_PER_KG_LOSS = 7700;
 
 /**
- * Fat/lean split of a weight change (Hall/Forbes for loss; 60/40 for gain).
+ * Fat/lean split of a weight change (Hall/Forbes for loss; experience-dependent for gain).
  * initialFatMassKg = current fat mass (kg), deltaWeightKg = total weight change (negative for loss).
  */
 export function getWeightChangeComposition(
   initialFatMassKg: number,
-  deltaWeightKg: number
+  deltaWeightKg: number,
+  liftingExperience?: LiftingExperience
 ): { fatChangeKg: number; leanChangeKg: number } {
   if (deltaWeightKg === 0) {
     return { fatChangeKg: 0, leanChangeKg: 0 };
   }
   if (deltaWeightKg > 0) {
-    // Gain: 50% fat / 50% lean (RT + moderate surplus; see CALORIES_EFFECTIVE_KG_GAIN)
+    const fatFraction = getGainFatFraction(liftingExperience);
     return {
-      // TODO: this ratio changes depending on how experience the person is at lifting
-      fatChangeKg: parseFloat((0.5 * deltaWeightKg).toFixed(2)),
-      leanChangeKg: parseFloat((0.5 * deltaWeightKg).toFixed(2)),
+      fatChangeKg: parseFloat((fatFraction * deltaWeightKg).toFixed(2)),
+      leanChangeKg: parseFloat(((1 - fatFraction) * deltaWeightKg).toFixed(2)),
     };
   }
   // Loss: Hall/Forbes ΔFFM/ΔBW
@@ -446,6 +466,7 @@ export interface WeightProjection {
 export interface WeightProjectionOptions {
   bodyFatPercent?: number;
   weightGoal?: WeightGoal;
+  liftingExperience?: LiftingExperience;
 }
 
 /**
@@ -483,8 +504,8 @@ export function calculateWeightProjection(
       kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
     }
   } else {
-    // Surplus: use effective build cost (fat + muscle)
-    kcalPerKg = CALORIES_EFFECTIVE_KG_GAIN;
+    // Surplus: use experience-dependent effective build cost (fat + muscle)
+    kcalPerKg = getEffectiveKcalPerKgGain(options?.liftingExperience);
   }
 
   const weeklyWeightChangeKg = (dailyDelta * 7) / kcalPerKg;
@@ -672,6 +693,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const projection = calculateWeightProjection(weightKg, targetCalories, tdee, {
     bodyFatPercent,
     weightGoal,
+    liftingExperience: input.liftingExperience,
   });
 
   // Goal label key (for i18n) – from weight goal
@@ -714,7 +736,11 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   let estimatedLeanChangeKg: number | undefined;
   if (totalWeightChangeKg !== 0) {
     const initialFatMassKg = useBodyFat ? weightKg * (bodyFatPercent! / 100) : weightKg * 0.25;
-    const comp = getWeightChangeComposition(initialFatMassKg, totalWeightChangeKg);
+    const comp = getWeightChangeComposition(
+      initialFatMassKg,
+      totalWeightChangeKg,
+      input.liftingExperience
+    );
     estimatedFatChangeKg = comp.fatChangeKg;
     estimatedLeanChangeKg = comp.leanChangeKg;
   }
