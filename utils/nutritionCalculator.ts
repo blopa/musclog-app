@@ -137,8 +137,15 @@ const RHO_FAT_KCAL_PER_KG = 39.5 * 239; // ~9440
 const RHO_LEAN_KCAL_PER_KG = 7.6 * 239; // ~1820
 /** Forbes curve parameter (Hall 2007, PMC2376748); used in ΔFFM/ΔBW. */
 const FORBES_C = 10.4;
-/** Effective kcal per kg gained: 60% fat build + 40% muscle build (memo build costs). Used for gain projection only. */
-const CALORIES_EFFECTIVE_KG_GAIN = 0.6 * CALORIES_BUILD_KG_FAT + 0.4 * CALORIES_BUILD_KG_MUSCLE; // ~6864
+/**
+ * Effective kcal per kg of mixed weight gain for resistance-training users (moderate surplus).
+ * Forbes et al. (1986) Br J Nutr: sedentary overfeeding ~38–44% LBM → ~8050 kcal/kg. For RT + moderate
+ * surplus, Smith et al. (2020) Int J Exerc Sci and Slater et al. (2023) Sports Med Open show a higher
+ * FFM share; we use 50% fat / 50% lean (build costs) as a conservative, evidence-based split.
+ */
+const CALORIES_EFFECTIVE_KG_GAIN =
+  // TODO: this ratio changes depending on how experience the person is at lifting
+  0.5 * CALORIES_BUILD_KG_FAT + 0.5 * CALORIES_BUILD_KG_MUSCLE; // ~6370
 
 /** Principal branch of Lambert W, real arguments. Used for Hall–Forbes weight-loss composition. */
 function lambertW(z: number): number {
@@ -191,10 +198,11 @@ export function getWeightChangeComposition(
     return { fatChangeKg: 0, leanChangeKg: 0 };
   }
   if (deltaWeightKg > 0) {
-    // Gain: use same split as build-cost model (60% fat, 40% lean)
+    // Gain: 50% fat / 50% lean (RT + moderate surplus; see CALORIES_EFFECTIVE_KG_GAIN)
     return {
-      fatChangeKg: parseFloat((0.6 * deltaWeightKg).toFixed(2)),
-      leanChangeKg: parseFloat((0.4 * deltaWeightKg).toFixed(2)),
+      // TODO: this ratio changes depending on how experience the person is at lifting
+      fatChangeKg: parseFloat((0.5 * deltaWeightKg).toFixed(2)),
+      leanChangeKg: parseFloat((0.5 * deltaWeightKg).toFixed(2)),
     };
   }
   // Loss: Hall/Forbes ΔFFM/ΔBW
