@@ -91,6 +91,15 @@ export const MIN_CALORIES = 1200;
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
 
+// TODO: right now we're using a simple linear model to project weight change
+// assuming that only fat is stored and burned. This is not accurate at all
+// and we should use a more complex model that takes into account the fact
+// that muscle tissue is also stored and burned.
+// also the same amount to gain fat vs to lose fat is not the same.
+// same for the muscle gain/loss.
+// we need to make a more complex model that takes into account the fact
+// that muscle tissue is also stored and burned.
+
 // https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover
 // 1% other, 5% water, 8% protein, 86% fat.
 // https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050
