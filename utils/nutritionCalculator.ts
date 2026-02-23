@@ -481,13 +481,11 @@ export function calculateWeightProjection(
   options?: WeightProjectionOptions
 ): WeightProjection {
   const dailyDelta = targetCalories - tdee;
-  const weightGoal = options?.weightGoal;
   const useBodyFat = isValidBodyFat(options?.bodyFatPercent);
   const bodyFatPercent = options?.bodyFatPercent ?? 0;
 
   let kcalPerKg: number;
   if (dailyDelta === 0) {
-    const weeklyWeightChangeKg = 0;
     return {
       weeklyWeightChangeKg: 0,
       projectedWeightKg: parseFloat(currentWeightKg.toFixed(1)),
