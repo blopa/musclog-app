@@ -77,6 +77,8 @@ export interface NutritionPlan {
   targetFFMI?: number;
   /** User's lifting experience (for maintenance messaging, e.g. muscle gain potential). */
   liftingExperience?: LiftingExperience;
+  /** Goal date for cut/bulk phases (90 days from start). */
+  goalDate?: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -89,8 +91,19 @@ export const MIN_CALORIES = 1200;
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
 
-/** Approximate kcal per kg of body weight change (mixed fat + lean tissue) */
-const KCAL_PER_KG = 7700;
+// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover
+// 1% other, 5% water, 8% protein, 86% fat.
+// https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050
+// efficiency to build fat is ~77%.
+const CALORIES_STORED_KG_FAT = 7730; // amount of calories stored in 1kg of fat
+const CALORIES_BUILD_KG_FAT = 8840; // amount of calories necessary to build 1kg of fat
+
+// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover
+// 2% fat, 4% other, 24% protein, 70% water.
+// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8387577/#sec-10title
+// efficiency to build muscle is ~48%.
+const CALORIES_STORED_KG_MUSCLE = 1250; // amount of calories stored in 1kg of muscle
+const CALORIES_BUILD_KG_MUSCLE = 3900; // amount of calories necessary to build 1kg of muscle
 
 /**
  * Standard TDEE activity multipliers (Harris-Benedict / Mifflin-St Jeor scale)
@@ -279,7 +292,7 @@ export function calculateWeightProjection(
   tdee: number
 ): WeightProjection {
   const dailyDelta = targetCalories - tdee;
-  const weeklyWeightChangeKg = (dailyDelta * 7) / KCAL_PER_KG;
+  const weeklyWeightChangeKg = (dailyDelta * 7) / CALORIES_STORED_KG_FAT;
   const projectedWeightKg = currentWeightKg + weeklyWeightChangeKg * (PROJECTION_DAYS / 7);
 
   return {

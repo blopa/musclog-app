@@ -360,12 +360,17 @@ export default function SetGoals() {
         ? ffmiFromWeightHeightAndBodyFat(plan.projectedWeightKg, heightM, bodyFatForFfmi)
         : 0;
 
-    // TODO: also set a goal date for 90 days from now if the eatingPhase is either cut or bulk
+    // Set a goal date for 90 days from now if the eatingPhase is either cut or bulk
+    const goalDate = (eatingPhase === 'cut' || eatingPhase === 'bulk') 
+      ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days from now
+      : undefined;
+
     const planWithTargets: NutritionPlan = {
       ...plan,
       targetBodyFat,
       targetBMI,
       targetFFMI,
+      goalDate,
     };
 
     try {
