@@ -85,21 +85,27 @@ export interface NutritionPlan {
 // Constants
 // ---------------------------------------------------------------------------
 
-// TODO: this is not truly accurate, because it will depend on gender, age, height, weight, body fat percentage, etc.
-// TODO: improve this to be more accurate based on scientific studies
+/**
+ * Default minimum calorie floor when gender/BMR are not provided (backward compatibility).
+ * Prefer getMinCalories(gender, bmr) when available.
+ */
 export const MIN_CALORIES = 1200;
+
+/**
+ * Evidence-based minimum daily calorie intake (IOM/National Academies; common practice 1200 female, 1500 male).
+ * Never below 80% of BMR when BMR is provided, to avoid extreme restriction.
+ */
+export function getMinCalories(gender: Gender, bmr?: number): number {
+  const genderFloor = gender === 'female' ? 1200 : gender === 'male' ? 1500 : 1350;
+  const bmrFloor = bmr !== undefined ? bmr * 0.8 : 0;
+  return Math.round(Math.max(genderFloor, bmrFloor));
+}
 
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
 
-// MAYBE: right now we're using a simple linear model to project weight change
-// assuming that only fat is stored and burned. This is not accurate at all,
-// and we should use a more complex model that takes into account the fact
-// that muscle tissue is also stored and burned.
-// also the same amount to gain fat vs to lose fat is not the same.
-// same for the muscle gain/loss.
-// we need to make a more complex model that takes into account the fact
-// that muscle tissue is also stored and burned.
+// Weight projection: loss uses Hall (2008) metabolizable energy of lost tissue (body-composition-aware when body fat % available);
+// gain uses memo build costs (fat + muscle). Do not use build costs for loss or stored costs for gain.
 
 // https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover - 1% other, 5% water, 8% protein, 86% fat.
 // https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050 - efficiency to build fat is ~77%.
@@ -117,6 +123,54 @@ const CALORIES_BUILD_KG_FAT = 8840; // amount of calories necessary to build 1kg
 const CALORIES_STORED_KG_MUSCLE = 1250; // amount of calories stored in 1kg of muscle
 const CALORIES_BUILD_KG_MUSCLE = 3900; // amount of calories necessary to build 1kg of muscle
 
+/** Hall (2008): metabolizable energy density of fat loss (MJ/kg → kcal/kg). Used for loss projection only. */
+const RHO_FAT_KCAL_PER_KG = 39.5 * 239; // ~9440
+/** Hall (2008): metabolizable energy density of lean mass change (MJ/kg → kcal/kg). Used for loss projection only. */
+const RHO_LEAN_KCAL_PER_KG = 7.6 * 239; // ~1820
+/** Forbes curve parameter (Hall 2007, PMC2376748); used in ΔFFM/ΔBW. */
+const FORBES_C = 10.4;
+/** Effective kcal per kg gained: 60% fat build + 40% muscle build (memo build costs). Used for gain projection only. */
+const CALORIES_EFFECTIVE_KG_GAIN = 0.6 * CALORIES_BUILD_KG_FAT + 0.4 * CALORIES_BUILD_KG_MUSCLE; // ~6864
+
+/** Principal branch of Lambert W, real arguments. Used for Hall–Forbes weight-loss composition. */
+function lambertW(z: number): number {
+  if (z < -1 / Math.E) return NaN;
+  if (z === 0) return 0;
+  let w = z < 1 ? z : Math.log(z);
+  for (let i = 0; i < 30; i++) {
+    const ew = Math.exp(w);
+    const f = w * ew - z;
+    if (Math.abs(f) < 1e-10) return w;
+    const fp = ew * (w + 1);
+    w = w - f / fp;
+  }
+  return w;
+}
+
+/**
+ * Effective metabolizable energy (kcal) per kg of weight loss from Hall (2008) + Hall (2007) Forbes extension.
+ * initialFatMassKg = current fat mass (kg), deltaWeightKg = planned weight change (negative for loss).
+ * Returns kcal per kg so that (deficit in kcal) / (this value) = weight loss in kg.
+ */
+function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg: number): number {
+  const dBw = deltaWeightKg;
+  if (dBw >= 0 || initialFatMassKg <= 0) return RHO_FAT_KCAL_PER_KG;
+  const arg =
+    (1 / FORBES_C) *
+    Math.exp(dBw / FORBES_C) *
+    initialFatMassKg *
+    Math.exp(initialFatMassKg / FORBES_C);
+  const w = lambertW(arg);
+  if (Number.isNaN(w)) return 7700; // fallback
+  const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (FORBES_C / dBw) * w;
+  const effective =
+    RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
+  return Math.max(1000, Math.min(9500, effective)); // clamp to plausible range
+}
+
+/** Default kcal per kg for weight loss when body composition unknown (7700 ≈ classic rule). */
+const DEFAULT_KCAL_PER_KG_LOSS = 7700;
+
 /**
  * Standard TDEE activity multipliers (Harris-Benedict / Mifflin-St Jeor scale)
  */
@@ -129,15 +183,33 @@ export const ACTIVITY_MULTIPLIERS: Record<number, number> = {
 };
 
 /**
- * Calorie adjustment (relative to TDEE) per weight goal.
- * Used for target calories; fitnessGoal is used for macro split only.
- * TODO: these must be calculated depending on the weight of the user and if available based on bodyfat too
+ * Default calorie adjustments when weight is not available (backward compatibility).
  */
-const WEIGHT_GOAL_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
+const DEFAULT_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
   lose: -500,
   maintain: 0,
   gain: 250,
 };
+
+/**
+ * Personalized calorie adjustment (relative to TDEE) from weight goal and body weight.
+ * Based on ~0.5% body weight per week for loss, ~0.25% for gain (sustainable rates).
+ * Clamped to safe bounds (deficit 250–750 kcal, surplus 150–400 kcal).
+ */
+export function getCalorieAdjustment(
+  weightGoal: WeightGoal,
+  weightKg: number,
+  _bodyFatPercent?: number
+): number {
+  if (weightGoal === 'maintain') return 0;
+  if (weightGoal === 'lose') {
+    const deficit = 5.5 * weightKg; // 0.005 * weightKg * 7700 / 7
+    return -Math.max(250, Math.min(750, Math.round(deficit)));
+  }
+  // gain
+  const surplus = 2.75 * weightKg; // ~0.25% BW per week
+  return Math.max(150, Math.min(400, Math.round(surplus)));
+}
 
 /**
  * Human-readable i18n label key per weight goal (for results screen).
@@ -244,13 +316,29 @@ export function calculateTDEE(bmr: number, activityLevel: number): number {
 // Step 3 – Calorie target
 // ---------------------------------------------------------------------------
 
+export interface TargetCaloriesOptions {
+  gender?: Gender;
+  bmr?: number;
+  weightKg?: number;
+  bodyFatPercent?: number;
+}
+
 /**
  * Calculate the daily calorie target by adjusting TDEE for the weight goal.
- * Applies a safety floor of MIN_CALORIES.
+ * Applies a safety floor via getMinCalories when gender/bmr provided, else MIN_CALORIES.
  */
-export function calculateTargetCalories(tdee: number, weightGoal: WeightGoal): number {
-  const adjustment = WEIGHT_GOAL_CALORIE_ADJUSTMENTS[weightGoal] ?? 0;
-  return Math.max(MIN_CALORIES, Math.round(tdee + adjustment));
+export function calculateTargetCalories(
+  tdee: number,
+  weightGoal: WeightGoal,
+  options?: TargetCaloriesOptions
+): number {
+  const adjustment =
+    options?.weightKg !== undefined && options.weightKg > 0
+      ? getCalorieAdjustment(weightGoal, options.weightKg, options.bodyFatPercent)
+      : (DEFAULT_CALORIE_ADJUSTMENTS[weightGoal] ?? 0);
+  const floor =
+    options?.gender !== undefined ? getMinCalories(options.gender, options.bmr) : MIN_CALORIES;
+  return Math.max(floor, Math.round(tdee + adjustment));
 }
 
 // ---------------------------------------------------------------------------
@@ -295,16 +383,51 @@ export interface WeightProjection {
   projectionDays: number;
 }
 
+export interface WeightProjectionOptions {
+  bodyFatPercent?: number;
+  weightGoal?: WeightGoal;
+}
+
 /**
  * Project weight change over PROJECTION_DAYS based on the calorie delta.
+ * When body fat % and weight goal are provided: loss uses Hall/Forbes effective kcal per kg (composition-aware);
+ * gain uses effective build cost (fat + muscle). Otherwise uses 7700 kcal/kg for loss, 7730 for gain (legacy).
  */
 export function calculateWeightProjection(
   currentWeightKg: number,
   targetCalories: number,
-  tdee: number
+  tdee: number,
+  options?: WeightProjectionOptions
 ): WeightProjection {
   const dailyDelta = targetCalories - tdee;
-  const weeklyWeightChangeKg = (dailyDelta * 7) / CALORIES_STORED_KG_FAT;
+  const weightGoal = options?.weightGoal;
+  const useBodyFat = isValidBodyFat(options?.bodyFatPercent);
+  const bodyFatPercent = options?.bodyFatPercent ?? 0;
+
+  let kcalPerKg: number;
+  if (dailyDelta === 0) {
+    const weeklyWeightChangeKg = 0;
+    return {
+      weeklyWeightChangeKg: 0,
+      projectedWeightKg: parseFloat(currentWeightKg.toFixed(1)),
+      projectionDays: PROJECTION_DAYS,
+    };
+  }
+  if (dailyDelta < 0) {
+    // Deficit: use composition-aware effective kcal per kg when body fat available (Hall/Forbes)
+    if (useBodyFat) {
+      const initialFatMassKg = currentWeightKg * (bodyFatPercent / 100);
+      const roughDeltaKg = (dailyDelta * 90) / DEFAULT_KCAL_PER_KG_LOSS; // plausible ΔBW over 90 days
+      kcalPerKg = getEffectiveKcalPerKgWeightLoss(initialFatMassKg, roughDeltaKg);
+    } else {
+      kcalPerKg = DEFAULT_KCAL_PER_KG_LOSS;
+    }
+  } else {
+    // Surplus: use effective build cost (fat + muscle)
+    kcalPerKg = CALORIES_EFFECTIVE_KG_GAIN;
+  }
+
+  const weeklyWeightChangeKg = (dailyDelta * 7) / kcalPerKg;
   const projectedWeightKg = currentWeightKg + weeklyWeightChangeKg * (PROJECTION_DAYS / 7);
 
   return {
@@ -475,13 +598,21 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const tdee = calculateTDEE(bmr, activityLevel);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
-  const targetCalories = calculateTargetCalories(tdee, weightGoal);
+  const targetCalories = calculateTargetCalories(tdee, weightGoal, {
+    gender,
+    bmr,
+    weightKg,
+    bodyFatPercent,
+  });
 
   // Step 4 – Macros (driven by fitness goal for split)
   const macros = calculateMacros(targetCalories, fitnessGoal);
 
   // Step 5 – Projection
-  const projection = calculateWeightProjection(weightKg, targetCalories, tdee);
+  const projection = calculateWeightProjection(weightKg, targetCalories, tdee, {
+    bodyFatPercent,
+    weightGoal,
+  });
 
   // Goal label key (for i18n) – from weight goal
   const goalLabel = WEIGHT_GOAL_LABELS[weightGoal] ?? 'generalFitness';
@@ -495,13 +626,23 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
     const tdeeLow = calculateTDEE(bmrLow, activityLevel);
-    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal);
+    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, {
+      gender,
+      bmr: bmrLow,
+      weightKg,
+      bodyFatPercent,
+    });
 
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
     const tdeeHigh = calculateTDEE(bmrHigh, activityLevel);
-    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal);
+    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, {
+      gender,
+      bmr: bmrHigh,
+      weightKg,
+      bodyFatPercent,
+    });
   }
 
   return {

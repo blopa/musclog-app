@@ -11,6 +11,7 @@ import {
   estimateTargetBodyFatWhenCutting,
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
+  getCalorieAdjustment,
   inchesToCm,
   isValidBodyFat,
   lbsToKg,
@@ -336,11 +337,11 @@ describe('calculateNutritionPlan', () => {
 
   it('reproduces the reference example from design (≈2150 kcal for 83kg male)', () => {
     // 10*83 + 6.25*180 - 5*30 + 5 = 1810 BMR; TDEE = 1810 * 1.55 ≈ 2806
-    // Target = 2806 - 500 (lose) = 2306
+    // Target = TDEE + personalized adjustment (lose, 83kg): ~0.5% BW/week → -456 kcal
     const plan = calculateNutritionPlan(baseInput);
     expect(plan.bmr).toBe(1810);
     expect(plan.tdee).toBe(Math.round(1810 * 1.55));
-    expect(plan.targetCalories).toBe(plan.tdee - 500);
+    expect(plan.targetCalories).toBe(plan.tdee + getCalorieAdjustment('lose', 83));
   });
 
   it('produces surplus for gain weight goal', () => {
@@ -526,8 +527,8 @@ describe('calculateNutritionPlan with bodyFatPercent', () => {
 
     expect(plan.minTargetCalories).toBeDefined();
     expect(plan.maxTargetCalories).toBeDefined();
-    // High BF clamped: min(60 + 4, 99) = 64% → still valid
-    expect(plan.maxTargetCalories!).toBeGreaterThan(plan.minTargetCalories!);
+    // High BF clamped: min(60 + 4, 99) = 64% → still valid. Allow >= when both hit floor (1500).
+    expect(plan.maxTargetCalories!).toBeGreaterThanOrEqual(plan.minTargetCalories!);
   });
 
   it('BODY_FAT_UNCERTAINTY constant is 4', () => {
