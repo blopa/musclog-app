@@ -2333,6 +2333,8 @@ const TABLE_NAMES_MAP: { [key: string]: string } = {
     Exercise: 'exercises',
     FitnessGoals: 'fitnessGoals',
     Food: 'food',
+    Meal: 'meal',
+    MealFood: 'mealFood',
     Migrations: 'migrations',
     OneRepMax: 'oneRepMaxes',
     Set: 'sets',
