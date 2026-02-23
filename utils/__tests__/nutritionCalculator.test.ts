@@ -729,3 +729,299 @@ describe('estimateTargetBodyFatWhenCutting', () => {
     expect(estimateTargetBodyFatWhenCutting(80, 79.5, 20)).toBe(19.7);
   });
 });
+
+// ---------------------------------------------------------------------------
+// calculateNutritionPlan – diverse scenarios (height, body comp, gender, age, goal, experience)
+// ---------------------------------------------------------------------------
+
+const BASE_SCENARIO_INPUT: NutritionCalculatorInput = {
+  gender: 'male',
+  weightKg: 75,
+  heightCm: 175,
+  age: 35,
+  activityLevel: 3,
+  weightGoal: 'lose',
+  fitnessGoal: 'general',
+  liftingExperience: 'intermediate',
+};
+
+function scenario(
+  label: string,
+  overrides: Partial<NutritionCalculatorInput>
+): [string, NutritionCalculatorInput] {
+  return [label, { ...BASE_SCENARIO_INPUT, ...overrides }];
+}
+
+const DIVERSE_SCENARIOS: [string, NutritionCalculatorInput][] = [
+  // --- Height: short, average, tall ---
+  scenario('short female 160cm lose', {
+    gender: 'female',
+    heightCm: 160,
+    weightKg: 58,
+    weightGoal: 'lose',
+  }),
+  scenario('short male 158cm maintain', {
+    gender: 'male',
+    heightCm: 158,
+    weightKg: 55,
+    weightGoal: 'maintain',
+  }),
+  scenario('tall female 182cm gain', {
+    gender: 'female',
+    heightCm: 182,
+    weightKg: 78,
+    weightGoal: 'gain',
+  }),
+  scenario('tall male 195cm lose', {
+    gender: 'male',
+    heightCm: 195,
+    weightKg: 98,
+    weightGoal: 'lose',
+  }),
+  scenario('average height 175cm male lose', { heightCm: 175, weightKg: 80, weightGoal: 'lose' }),
+  scenario('average height 170cm female gain', {
+    gender: 'female',
+    heightCm: 170,
+    weightKg: 65,
+    weightGoal: 'gain',
+  }),
+  // --- Body composition: lean/fit vs heavy/higher fat ---
+  scenario('lean male 12% body fat lose', { weightKg: 72, bodyFatPercent: 12, weightGoal: 'lose' }),
+  scenario('lean female 15% body fat maintain', {
+    gender: 'female',
+    weightKg: 58,
+    bodyFatPercent: 15,
+    weightGoal: 'maintain',
+  }),
+  scenario('higher body fat male 32% lose', {
+    weightKg: 95,
+    bodyFatPercent: 32,
+    weightGoal: 'lose',
+  }),
+  scenario('higher body fat female 38% lose', {
+    gender: 'female',
+    weightKg: 82,
+    bodyFatPercent: 38,
+    weightGoal: 'lose',
+  }),
+  scenario('fit male no BF gain', {
+    weightKg: 78,
+    weightGoal: 'gain',
+    liftingExperience: 'beginner',
+  }),
+  scenario('heavy male no BF lose', { weightKg: 110, heightCm: 180, weightGoal: 'lose' }),
+  scenario('light female 52kg maintain', {
+    gender: 'female',
+    weightKg: 52,
+    heightCm: 162,
+    weightGoal: 'maintain',
+  }),
+  scenario('heavy female 90kg lose', {
+    gender: 'female',
+    weightKg: 90,
+    heightCm: 168,
+    weightGoal: 'lose',
+  }),
+  // --- Gender: male, female, other ---
+  scenario('male 30y lose', { gender: 'male', age: 30, weightGoal: 'lose' }),
+  scenario('female 30y lose', { gender: 'female', age: 30, weightGoal: 'lose' }),
+  scenario('other 30y lose', { gender: 'other', age: 30, weightGoal: 'lose' }),
+  scenario('male 30y gain', { gender: 'male', age: 30, weightGoal: 'gain' }),
+  scenario('female 30y gain', { gender: 'female', age: 30, weightGoal: 'gain' }),
+  scenario('other 30y maintain', { gender: 'other', age: 30, weightGoal: 'maintain' }),
+  // --- Age: young, middle, older ---
+  scenario('young male 20y lose', { age: 20, weightGoal: 'lose' }),
+  scenario('young female 22y gain', { gender: 'female', age: 22, weightGoal: 'gain' }),
+  scenario('middle male 45y lose', { age: 45, weightGoal: 'lose' }),
+  scenario('middle female 48y maintain', { gender: 'female', age: 48, weightGoal: 'maintain' }),
+  scenario('older male 58y lose', { age: 58, weightGoal: 'lose' }),
+  scenario('older female 62y lose', {
+    gender: 'female',
+    age: 62,
+    weightKg: 70,
+    weightGoal: 'lose',
+  }),
+  scenario('older male 65y maintain', { age: 65, weightKg: 78, weightGoal: 'maintain' }),
+  scenario('young male 25y gain', { age: 25, weightGoal: 'gain', liftingExperience: 'beginner' }),
+  // --- Weight goal ---
+  scenario('male lose goal', { weightGoal: 'lose' }),
+  scenario('male maintain goal', { weightGoal: 'maintain' }),
+  scenario('male gain goal', { weightGoal: 'gain' }),
+  scenario('female lose goal', { gender: 'female', weightGoal: 'lose' }),
+  scenario('female gain goal', { gender: 'female', weightGoal: 'gain' }),
+  // --- Activity level ---
+  scenario('sedentary male lose', { activityLevel: 1, weightGoal: 'lose' }),
+  scenario('light activity female gain', {
+    gender: 'female',
+    activityLevel: 2,
+    weightGoal: 'gain',
+  }),
+  scenario('moderate activity male maintain', { activityLevel: 3, weightGoal: 'maintain' }),
+  scenario('active male lose', { activityLevel: 4, weightGoal: 'lose' }),
+  scenario('super active female gain', { gender: 'female', activityLevel: 5, weightGoal: 'gain' }),
+  // --- Lifting experience ---
+  scenario('beginner male gain', { weightGoal: 'gain', liftingExperience: 'beginner' }),
+  scenario('intermediate male lose', { weightGoal: 'lose', liftingExperience: 'intermediate' }),
+  scenario('advanced male gain', { weightGoal: 'gain', liftingExperience: 'advanced' }),
+  scenario('beginner female gain', {
+    gender: 'female',
+    weightGoal: 'gain',
+    liftingExperience: 'beginner',
+  }),
+  scenario('advanced female lose', {
+    gender: 'female',
+    weightGoal: 'lose',
+    liftingExperience: 'advanced',
+  }),
+  // --- Combined: tall + fat + lose, short + lean + gain, etc. ---
+  scenario('tall heavy male 100kg 30% BF lose', {
+    heightCm: 190,
+    weightKg: 100,
+    bodyFatPercent: 30,
+    weightGoal: 'lose',
+  }),
+  scenario('short lean female 55kg 14% BF gain', {
+    gender: 'female',
+    heightCm: 158,
+    weightKg: 55,
+    bodyFatPercent: 14,
+    weightGoal: 'gain',
+    liftingExperience: 'beginner',
+  }),
+  scenario('older tall male 60y 90kg maintain', {
+    age: 60,
+    heightCm: 185,
+    weightKg: 90,
+    weightGoal: 'maintain',
+  }),
+  scenario('young short female 20y 50kg gain', {
+    gender: 'female',
+    age: 20,
+    heightCm: 155,
+    weightKg: 50,
+    weightGoal: 'gain',
+  }),
+  scenario('other 40y 70kg body fat 25% lose', {
+    gender: 'other',
+    age: 40,
+    weightKg: 70,
+    bodyFatPercent: 25,
+    weightGoal: 'lose',
+  }),
+  scenario('sedentary older female 65y 68kg lose', {
+    gender: 'female',
+    age: 65,
+    activityLevel: 1,
+    weightKg: 68,
+    weightGoal: 'lose',
+  }),
+  scenario('super active young male 24y 85kg gain', {
+    gender: 'male',
+    age: 24,
+    activityLevel: 5,
+    weightKg: 85,
+    weightGoal: 'gain',
+    liftingExperience: 'beginner',
+  }),
+  scenario('boundary body fat 5% male lose', {
+    weightKg: 70,
+    bodyFatPercent: 5,
+    weightGoal: 'lose',
+  }),
+  scenario('boundary body fat 60% female lose', {
+    gender: 'female',
+    weightKg: 88,
+    bodyFatPercent: 60,
+    weightGoal: 'lose',
+  }),
+  scenario('hypertrophy goal male gain', {
+    weightGoal: 'gain',
+    fitnessGoal: 'hypertrophy',
+    liftingExperience: 'beginner',
+  }),
+  scenario('strength goal female lose', {
+    gender: 'female',
+    weightGoal: 'lose',
+    fitnessGoal: 'strength',
+  }),
+  scenario('endurance goal male maintain', { weightGoal: 'maintain', fitnessGoal: 'endurance' }),
+];
+
+describe('calculateNutritionPlan – diverse scenarios', () => {
+  it.each(DIVERSE_SCENARIOS)('produces valid plan for: %s', (_label, input) => {
+    const plan = calculateNutritionPlan(input);
+    expect(plan.bmr).toBeGreaterThan(0);
+    expect(plan.tdee).toBeGreaterThanOrEqual(plan.bmr);
+    expect(plan.targetCalories).toBeGreaterThanOrEqual(MIN_CALORIES);
+    expect(plan.protein).toBeGreaterThan(0);
+    expect(plan.carbs).toBeGreaterThan(0);
+    expect(plan.fats).toBeGreaterThan(0);
+    expect(plan.proteinPct + plan.carbsPct + plan.fatsPct).toBe(100);
+    expect(plan.currentWeightKg).toBe(input.weightKg);
+    expect(plan.projectionDays).toBe(90);
+    if (input.weightGoal === 'lose') {
+      expect(plan.targetCalories).toBeLessThanOrEqual(plan.tdee);
+      expect(plan.projectedWeightKg).toBeLessThanOrEqual(input.weightKg);
+    }
+    if (input.weightGoal === 'gain') {
+      expect(plan.targetCalories).toBeGreaterThanOrEqual(plan.tdee);
+      expect(plan.projectedWeightKg).toBeGreaterThanOrEqual(input.weightKg);
+    }
+    if (input.weightGoal === 'maintain') {
+      expect(plan.projectedWeightKg).toBeCloseTo(input.weightKg, 0);
+    }
+    if (input.bodyFatPercent != null && input.bodyFatPercent >= 5 && input.bodyFatPercent <= 60) {
+      expect(plan.minTargetCalories).toBeDefined();
+      expect(plan.maxTargetCalories).toBeDefined();
+      expect(plan.minTargetCalories!).toBeLessThanOrEqual(plan.targetCalories);
+      expect(plan.maxTargetCalories!).toBeGreaterThanOrEqual(plan.targetCalories);
+    }
+  });
+
+  it('tall person has higher BMR than short person (same gender, age, weight)', () => {
+    const short = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, heightCm: 160, weightKg: 70 });
+    const tall = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, heightCm: 192, weightKg: 70 });
+    expect(tall.bmr).toBeGreaterThan(short.bmr);
+    expect(tall.tdee).toBeGreaterThan(short.tdee);
+  });
+
+  it('female has lower BMR than male (same height, weight, age)', () => {
+    const male = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, gender: 'male' });
+    const female = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, gender: 'female' });
+    expect(female.bmr).toBeLessThan(male.bmr);
+    expect(female.tdee).toBeLessThan(male.tdee);
+  });
+
+  it('older person has lower BMR than younger (same gender, height, weight)', () => {
+    const young = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, age: 22 });
+    const older = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, age: 58 });
+    expect(older.bmr).toBeLessThan(young.bmr);
+    expect(older.tdee).toBeLessThan(young.tdee);
+  });
+
+  it('heavier person has higher BMR than lighter (same gender, height, age)', () => {
+    const light = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, weightKg: 60 });
+    const heavy = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, weightKg: 95 });
+    expect(heavy.bmr).toBeGreaterThan(light.bmr);
+    expect(heavy.tdee).toBeGreaterThan(light.tdee);
+  });
+
+  it('with body fat (Katch-McArdle) differs from without (Mifflin-St Jeor) for same stats', () => {
+    const without = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT });
+    const withBF = calculateNutritionPlan({ ...BASE_SCENARIO_INPUT, bodyFatPercent: 22 });
+    expect(withBF.bmr).not.toBe(without.bmr);
+  });
+
+  it('beginner gain projects more weight gain than advanced (same surplus)', () => {
+    const base: NutritionCalculatorInput = {
+      ...BASE_SCENARIO_INPUT,
+      weightGoal: 'gain',
+      weightKg: 80,
+      activityLevel: 3,
+    };
+    const beginner = calculateNutritionPlan({ ...base, liftingExperience: 'beginner' });
+    const advanced = calculateNutritionPlan({ ...base, liftingExperience: 'advanced' });
+    // Same TDEE/target → same surplus; beginner has lower effective kcal/kg gain → more kg gained
+    expect(beginner.projectedWeightKg).toBeGreaterThan(advanced.projectedWeightKg);
+  });
+});
