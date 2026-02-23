@@ -2,9 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-
-import { useTheme } from '../hooks/useTheme';
+import { Pressable, Text, View } from 'react-native';
 
 type ErrorFallbackScreenProps = {
   error: unknown;
@@ -14,7 +12,6 @@ type ErrorFallbackScreenProps = {
 export function ErrorFallbackScreen({ error, resetError }: ErrorFallbackScreenProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const theme = useTheme();
 
   const handleReload = useCallback(() => {
     Sentry.captureMessage('User requested reload after error');
@@ -26,57 +23,23 @@ export function ErrorFallbackScreen({ error, resetError }: ErrorFallbackScreenPr
   }, [resetError, router]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background.primary }]}>
-      <Text style={[styles.title, { color: theme.colors.text.primary }]}>
+    <View className="flex-1 items-center justify-center bg-bg-primary p-6">
+      <Text className="mb-2 text-center text-xl font-semibold text-text-primary">
         {t('errors.somethingWentWrong', 'Something went wrong')}
       </Text>
-      <Text style={[styles.message, { color: theme.colors.text.secondary }]}>
+      <Text className="mb-6 text-center text-sm text-text-secondary">
         {error instanceof Error
           ? error.message
           : t('errors.genericDescription', 'An unexpected error occurred.')}
       </Text>
       <Pressable
         onPress={handleReload}
-        style={({ pressed }) => [
-          styles.button,
-          {
-            backgroundColor: theme.colors.accent.primary,
-            opacity: pressed ? 0.8 : 1,
-          },
-        ]}
+        className="rounded-lg bg-accent-primary px-6 py-3 active:opacity-80"
       >
-        <Text style={styles.buttonText}>{t('errors.reload', 'Reload')}</Text>
+        <Text className="text-base font-semibold text-white">
+          {t('errors.reload', 'Reload')}
+        </Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 14,
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  button: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
