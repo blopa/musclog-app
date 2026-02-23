@@ -12,6 +12,7 @@ import {
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useTheme } from '../hooks/useTheme';
 import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../utils/googleAuth';
+import { setSentryUser } from '../utils/sentry';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -39,9 +40,13 @@ export function ConnectGoogleAccountBody({
 
   const getSetUSerInfo = useCallback(async (token: string) => {
     const userInfo = await getGoogleUserInfo(token);
-    if (userInfo?.name) {
-      setUserName(userInfo.name);
-      await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
+    if (userInfo) {
+      if (userInfo.name) {
+        setUserName(userInfo.name);
+        await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
+      }
+
+      setSentryUser({ id: userInfo.id, email: userInfo.email });
     }
   }, []);
 

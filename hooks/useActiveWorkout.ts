@@ -6,6 +6,7 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { WorkoutService } from '../database/services';
+import { captureException } from '../utils/sentry';
 
 export type CurrentSetData = {
   set: WorkoutLogSet;
@@ -241,6 +242,7 @@ export function useActiveWorkout(workoutLogId?: string) {
         })
         .catch((err) => {
           console.error('Error getting active workout:', err);
+          captureException(err);
           setError(err instanceof Error ? err.message : 'Failed to get active workout');
           setIsLoading(false);
         });

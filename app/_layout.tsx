@@ -2,6 +2,7 @@ import '../database';
 import '../lang/lang';
 import '../global.css';
 
+import * as Sentry from '@sentry/react-native';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
@@ -10,11 +11,9 @@ import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
-import { seedDevData } from '../database/seeders/dev';
-import { seedProductionData } from '../database/seeders/prod';
-import { verifyDatabaseTables } from '../database/verify';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,7 +61,7 @@ function AppContent() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   useEffect(() => {
     // 2. Setup Focus Management for Mobile
     // This ensures TanStack Query knows when the app is active/foregrounded
@@ -82,13 +81,24 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <ThemeProvider>
-            <SnackbarProvider>
-              <AppContent />
-            </SnackbarProvider>
-          </ThemeProvider>
+          <Sentry.ErrorBoundary
+            fallback={({ error, resetError }) => (
+              <ErrorFallbackScreen
+                error={error instanceof Error ? error : new Error(String(error))}
+                resetError={resetError}
+              />
+            )}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <AppContent />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </Sentry.ErrorBoundary>
         </SafeAreaProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

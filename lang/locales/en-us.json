@@ -856,7 +856,10 @@
       "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
       "tryAgain": "Try Again"
     },
-    "failedToLoadData": "Failed to load data"
+    "failedToLoadData": "Failed to load data",
+    "somethingWentWrong": "Something went wrong",
+    "genericDescription": "An unexpected error occurred.",
+    "reload": "Reload"
   },
   "snackbar": {
     "view": "VIEW",

@@ -1,3 +1,4 @@
+import './sentry-init';
 import 'expo-router/entry';
 import './lang/lang';
 import './global.css';

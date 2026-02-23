@@ -12,6 +12,7 @@ import {
 } from '../constants/auth';
 import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
+import { captureException, setSentryUser } from './sentry';
 import { showSnackbar } from './snackbarService';
 
 export interface GoogleUserInfo {
@@ -49,6 +50,7 @@ export async function isValidAccessToken(accessToken: string): Promise<boolean> 
     return response.ok;
   } catch (error) {
     console.error('Error validating Google access token:', error);
+    captureException(error);
     return false;
   }
 }
@@ -197,6 +199,7 @@ export const getGoogleUserInfo = async (accessToken: string): Promise<GoogleUser
     return data;
   } catch (error) {
     console.error('Error fetching Google user info:', error);
+    captureException(error);
     return null;
   }
 };
@@ -257,6 +260,7 @@ export const handleGoogleSignIn = async (
  * Delete all stored tokens and user info
  */
 export const deleteAllData = async (): Promise<void> => {
+  setSentryUser(null);
   await GoogleAuthService.clearRefreshToken();
   await GoogleAuthService.setOAuthGeminiEnabled(false);
   await AsyncStorage.multiRemove([GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE]);

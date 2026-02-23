@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from '@sentry/react-native';
 import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -257,6 +258,20 @@ export default function DebugTestScreen() {
           <View>
             <Text className="mb-2 text-2xl font-bold text-text-primary">Database Test</Text>
             <Text className="text-text-secondary">Verify WatermelonDB Read/Write</Text>
+          </View>
+
+          {/* Sentry: verify error reporting */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Sentry</Text>
+            <Text className="mb-2 text-sm text-text-secondary">
+              Send a test exception to verify crash reporting in your Sentry project.
+            </Text>
+            <Button
+              onPress={() => Sentry.captureException(new Error('Test Sentry'))}
+              label="Send test error to Sentry"
+              size="sm"
+              variant="secondary"
+            />
           </View>
 
           {/* Navigation Links Section */}

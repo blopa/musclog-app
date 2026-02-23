@@ -118,6 +118,7 @@ jest.mock('@sentry/react-native', () => ({
 jest.mock('../sentry', () => ({
   captureException: jest.fn(),
   captureMessage: jest.fn(),
+  setSentryUser: jest.fn(),
 }));
 jest.mock('../gemini');
 jest.mock('../../lang/lang', () => {

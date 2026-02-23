@@ -1,8 +1,8 @@
 const path = require('path');
-const { getDefaultConfig } = require('expo/metro-config');
+const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const { withNativeWind } = require('nativewind/metro');
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.
 config.resolver.resolveRequest = (context, moduleName, platform) => {

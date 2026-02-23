@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/react-native';
 import type { CaptureContext, SeverityLevel } from '@sentry/types';
 
 export const captureException = async (
-  exception: any,
+  exception: unknown,
   hint?: ExclusiveEventHintOrCaptureContext
 ) => {
   Sentry.captureException(exception, hint);
@@ -16,3 +16,7 @@ export const captureMessage = async (
 ) => {
   Sentry.captureMessage(message, captureContext);
 };
+
+export function setSentryUser(user: { id: string; email?: string } | null) {
+  Sentry.setUser(user);
+}
