@@ -100,17 +100,19 @@ const PROJECTION_DAYS = 90;
 // we need to make a more complex model that takes into account the fact
 // that muscle tissue is also stored and burned.
 
-// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover
-// 1% other, 5% water, 8% protein, 86% fat.
-// https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050
-// efficiency to build fat is ~77%.
+// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover - 1% other, 5% water, 8% protein, 86% fat.
+// https://www.sciencedirect.com/science/article/pii/S2212877815000599/#sectitle0050 - efficiency to build fat is ~77%.
+// Established thermodynamic model for human adipose tissue:
+// ~13% water/trace, 2% protein, 85% lipid.
+// Thermodynamic efficiency to build fat from a standard dietary surplus is ~87.4% (7730 / 8840).
 const CALORIES_STORED_KG_FAT = 7730; // amount of calories stored in 1kg of fat
 const CALORIES_BUILD_KG_FAT = 8840; // amount of calories necessary to build 1kg of fat
 
-// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover
-// 2% fat, 4% other, 24% protein, 70% water.
-// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8387577/#sec-10title
-// efficiency to build muscle is ~48%.
+// https://www.google.com/books/edition/The_Nutritionist/olIsBgAAQBAJ?hl=en&gbpv=1&pg=PA148&printsec=frontcover - 2% fat, 4% other, 24% protein, 70% water.
+// https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8387577/#sec-10title - efficiency to build muscle is ~48%.
+// Established thermodynamic model for human skeletal muscle:
+// ~75% water/glycogen/trace, 20% protein, 5% intramuscular lipid.
+// Thermodynamic efficiency to build muscle is ~32.05% (1250 / 3900).
 const CALORIES_STORED_KG_MUSCLE = 1250; // amount of calories stored in 1kg of muscle
 const CALORIES_BUILD_KG_MUSCLE = 3900; // amount of calories necessary to build 1kg of muscle
 
