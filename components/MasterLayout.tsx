@@ -59,10 +59,10 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       {showNavigationMenu ? (
         <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">
           <SafeAreaView edges={['bottom']}>
-            <View className="relative flex-row items-center justify-around px-6 py-4">
+            <View className="relative flex-row items-stretch px-6 py-4">
               {/* Home */}
               <Pressable
-                className="items-center gap-1"
+                className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
                   if (!isActive('/')) router.push('/');
                 }}
@@ -89,7 +89,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
                 </Text>
               </Pressable>
               <Pressable
-                className="items-center gap-1"
+                className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
                   if (!isActive('/workout/workouts')) router.push('/workout/workouts');
                 }}
@@ -120,7 +120,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
                 </Text>
               </Pressable>
               <Pressable
-                className="items-center gap-1"
+                className="z-10 flex-1 items-center justify-center gap-1"
                 onPress={() => setIsCameraModalVisible(true)}
               >
                 <View
@@ -146,7 +146,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
                 </View>
               </Pressable>
               <Pressable
-                className="items-center gap-1"
+                className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
                   if (!isFoodActive()) router.push('/nutrition/food');
                 }}
@@ -175,7 +175,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
                 </Text>
               </Pressable>
               <Pressable
-                className="items-center gap-1"
+                className="flex-1 items-center justify-center gap-1"
                 onPress={() => setIsCoachModalVisible(true)}
               >
                 <View className={`h-10 w-16 items-center justify-center rounded-lg`}>
@@ -197,7 +197,9 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
           </SafeAreaView>
         </View>
       ) : null}
-      {showNavigationMenu ? <View style={{ height: theme.spacing.margin['3xl'] }} /> : null}
+      {showNavigationMenu ? (
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
+      ) : null}
     </SafeAreaView>
   );
 }

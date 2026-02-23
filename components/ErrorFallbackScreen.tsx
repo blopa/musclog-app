@@ -36,9 +36,7 @@ export function ErrorFallbackScreen({ error, resetError }: ErrorFallbackScreenPr
         onPress={handleReload}
         className="rounded-lg bg-accent-primary px-6 py-3 active:opacity-80"
       >
-        <Text className="text-base font-semibold text-white">
-          {t('errors.reload', 'Reload')}
-        </Text>
+        <Text className="text-base font-semibold text-white">{t('errors.reload', 'Reload')}</Text>
       </Pressable>
     </View>
   );
