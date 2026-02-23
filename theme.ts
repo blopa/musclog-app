@@ -599,7 +599,9 @@ export const theme = {
       xl: 24,
       '2xl': 32,
       '3xl': 48,
-      '4xl': 120, // Large margin for footer spacing
+      '4xl': 64,
+      '5xl': 96,
+      '6xl': 112,
     },
   },
 

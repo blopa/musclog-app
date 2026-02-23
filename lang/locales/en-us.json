@@ -1063,6 +1063,11 @@
       "projectionMaintenanceMuscleGain": "With consistent training and nutrition, natural muscle gain in {{days}} days is typically {{range}} kg, depending on genetics and experience.",
       "calorieRange": "Range: {{range}} kcal",
       "bodyFatUncertaintyNote": "Range accounts for body fat measurement variation (±4%)",
+      "dailyDeficit": "Daily deficit: {{kcal}} kcal",
+      "dailySurplus": "Daily surplus: {{kcal}} kcal",
+      "projectionFat": "Fat: {{kg}} kg",
+      "projectionLean": "Lean: {{kg}} kg",
+      "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
       "goalLabels": {
         "moderateWeightLoss": "Moderate Weight Loss Strategy",
         "enduranceTraining": "Endurance Training",

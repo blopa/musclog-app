@@ -79,6 +79,14 @@ export interface NutritionPlan {
   liftingExperience?: LiftingExperience;
   /** Goal date for cut/bulk phases (90 days from start). */
   goalDate?: Date;
+  /** Daily calorie deficit (cut); positive number. Undefined when not cutting. */
+  dailyCalorieDeficit?: number;
+  /** Daily calorie surplus (bulk); positive number. Undefined when not bulking. */
+  dailyCalorieSurplus?: number;
+  /** Estimated fat mass change over projection (kg; negative = loss). From Hall/Forbes when body fat available. */
+  estimatedFatChangeKg?: number;
+  /** Estimated lean mass change over projection (kg; negative = loss). From Hall/Forbes when body fat available. */
+  estimatedLeanChangeKg?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -170,6 +178,50 @@ function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg
 
 /** Default kcal per kg for weight loss when body composition unknown (7700 ≈ classic rule). */
 const DEFAULT_KCAL_PER_KG_LOSS = 7700;
+
+/**
+ * Fat/lean split of a weight change (Hall/Forbes for loss; 60/40 for gain).
+ * initialFatMassKg = current fat mass (kg), deltaWeightKg = total weight change (negative for loss).
+ */
+export function getWeightChangeComposition(
+  initialFatMassKg: number,
+  deltaWeightKg: number
+): { fatChangeKg: number; leanChangeKg: number } {
+  if (deltaWeightKg === 0) {
+    return { fatChangeKg: 0, leanChangeKg: 0 };
+  }
+  if (deltaWeightKg > 0) {
+    // Gain: use same split as build-cost model (60% fat, 40% lean)
+    return {
+      fatChangeKg: parseFloat((0.6 * deltaWeightKg).toFixed(2)),
+      leanChangeKg: parseFloat((0.4 * deltaWeightKg).toFixed(2)),
+    };
+  }
+  // Loss: Hall/Forbes ΔFFM/ΔBW
+  const dBw = deltaWeightKg;
+  if (initialFatMassKg <= 0) {
+    return {
+      fatChangeKg: parseFloat((0.75 * deltaWeightKg).toFixed(2)),
+      leanChangeKg: parseFloat((0.25 * deltaWeightKg).toFixed(2)),
+    };
+  }
+  const arg =
+    (1 / FORBES_C) *
+    Math.exp(dBw / FORBES_C) *
+    initialFatMassKg *
+    Math.exp(initialFatMassKg / FORBES_C);
+  const w = lambertW(arg);
+  if (Number.isNaN(w)) {
+    return {
+      fatChangeKg: parseFloat((0.75 * deltaWeightKg).toFixed(2)),
+      leanChangeKg: parseFloat((0.25 * deltaWeightKg).toFixed(2)),
+    };
+  }
+  const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (FORBES_C / dBw) * w;
+  const leanChangeKg = parseFloat((deltaLOverDeltaBW * deltaWeightKg).toFixed(2));
+  const fatChangeKg = parseFloat((deltaWeightKg - leanChangeKg).toFixed(2));
+  return { fatChangeKg, leanChangeKg };
+}
 
 /**
  * Standard TDEE activity multipliers (Harris-Benedict / Mifflin-St Jeor scale)
@@ -645,6 +697,20 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     });
   }
 
+  const dailyDelta = targetCalories - tdee;
+  const dailyCalorieDeficit = dailyDelta < 0 ? Math.abs(dailyDelta) : undefined;
+  const dailyCalorieSurplus = dailyDelta > 0 ? dailyDelta : undefined;
+
+  const totalWeightChangeKg = projection.projectedWeightKg - weightKg;
+  let estimatedFatChangeKg: number | undefined;
+  let estimatedLeanChangeKg: number | undefined;
+  if (totalWeightChangeKg !== 0) {
+    const initialFatMassKg = useBodyFat ? weightKg * (bodyFatPercent! / 100) : weightKg * 0.25;
+    const comp = getWeightChangeComposition(initialFatMassKg, totalWeightChangeKg);
+    estimatedFatChangeKg = comp.fatChangeKg;
+    estimatedLeanChangeKg = comp.leanChangeKg;
+  }
+
   return {
     bmr,
     tdee,
@@ -656,5 +722,9 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     liftingExperience: input.liftingExperience,
     ...(minTargetCalories !== undefined && { minTargetCalories }),
     ...(maxTargetCalories !== undefined && { maxTargetCalories }),
+    ...(dailyCalorieDeficit !== undefined && { dailyCalorieDeficit }),
+    ...(dailyCalorieSurplus !== undefined && { dailyCalorieSurplus }),
+    ...(estimatedFatChangeKg !== undefined && { estimatedFatChangeKg }),
+    ...(estimatedLeanChangeKg !== undefined && { estimatedLeanChangeKg }),
   };
 }

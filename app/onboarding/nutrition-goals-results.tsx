@@ -93,8 +93,12 @@ export default function NutritionGoalsResults() {
   // Resolve display data: prefer parsedPlan (AI), fall back to savedGoal (manual)
   const displayData = useMemo(() => {
     if (parsedPlan) {
+      const weightChange = parseFloat(
+        (parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg).toFixed(1)
+      );
       return {
         targetCalories: parsedPlan.targetCalories,
+        tdee: parsedPlan.tdee,
         minTargetCalories: parsedPlan.minTargetCalories,
         maxTargetCalories: parsedPlan.maxTargetCalories,
         protein: parsedPlan.protein,
@@ -106,11 +110,13 @@ export default function NutritionGoalsResults() {
         goalLabel: parsedPlan.goalLabel,
         startWeight: parsedPlan.currentWeightKg,
         projectedWeight: parsedPlan.projectedWeightKg,
-        weightChange: parseFloat(
-          (parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg).toFixed(1)
-        ),
+        weightChange,
         projectionDays: parsedPlan.projectionDays,
         hasProjection: true,
+        dailyCalorieDeficit: parsedPlan.dailyCalorieDeficit,
+        dailyCalorieSurplus: parsedPlan.dailyCalorieSurplus,
+        estimatedFatChangeKg: parsedPlan.estimatedFatChangeKg,
+        estimatedLeanChangeKg: parsedPlan.estimatedLeanChangeKg,
       };
     }
 
@@ -489,6 +495,28 @@ export default function NutritionGoalsResults() {
                     }}
                   >
                     {t('nutritionGoals.results.bodyFatUncertaintyNote')}
+                  </Text>
+                </View>
+              ) : null}
+
+              {displayData?.dailyCalorieDeficit != null ||
+              displayData?.dailyCalorieSurplus != null ? (
+                <View className="mt-3">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{
+                      color: `${theme.colors.text.white}E6`,
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}
+                  >
+                    {displayData.dailyCalorieDeficit != null
+                      ? t('nutritionGoals.results.dailyDeficit', {
+                          kcal: displayData.dailyCalorieDeficit.toLocaleString(),
+                        })
+                      : t('nutritionGoals.results.dailySurplus', {
+                          kcal: displayData.dailyCalorieSurplus!.toLocaleString(),
+                        })}
                   </Text>
                 </View>
               ) : null}
@@ -897,6 +925,39 @@ export default function NutritionGoalsResults() {
                         days: displayData.projectionDays,
                       })}
                     </Text>
+
+                    {displayData.estimatedFatChangeKg != null ||
+                    displayData.estimatedLeanChangeKg != null ? (
+                      <View
+                        className="mt-3 flex-row justify-center gap-4"
+                        style={{ marginTop: theme.spacing.margin.sm }}
+                      >
+                        <Text
+                          className="text-xs font-medium"
+                          style={{
+                            color: theme.colors.text.secondary,
+                            fontSize: theme.typography.fontSize.xs,
+                            fontWeight: theme.typography.fontWeight.medium,
+                          }}
+                        >
+                          {t('nutritionGoals.results.projectionFat', {
+                            kg: (displayData.estimatedFatChangeKg ?? 0).toFixed(1),
+                          })}
+                        </Text>
+                        <Text
+                          className="text-xs font-medium"
+                          style={{
+                            color: theme.colors.text.secondary,
+                            fontSize: theme.typography.fontSize.xs,
+                            fontWeight: theme.typography.fontWeight.medium,
+                          }}
+                        >
+                          {t('nutritionGoals.results.projectionLean', {
+                            kg: (displayData.estimatedLeanChangeKg ?? 0).toFixed(1),
+                          })}
+                        </Text>
+                      </View>
+                    ) : null}
                   </View>
 
                   {projectionData.length > 0 ? (
@@ -921,11 +982,24 @@ export default function NutritionGoalsResults() {
                       />
                     </View>
                   ) : null}
+
+                  <Text
+                    className="mt-3 text-center text-[10px]"
+                    style={{
+                      color: theme.colors.text.tertiary,
+                      fontSize: theme.typography.fontSize.xxs,
+                      marginTop: theme.spacing.margin.sm,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {t('nutritionGoals.results.formulasBasedOn')}
+                  </Text>
                 </>
               )}
             </GenericCard>
           ) : null}
         </View>
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
       </ScrollView>
 
       {/* Bottom Actions */}
