@@ -541,7 +541,7 @@ describe('calculateNutritionPlan with bodyFatPercent', () => {
 
 describe('fiberFromCalories', () => {
   it('calculates 14g per 1000 kcal correctly', () => {
-    expect(fiberFromCalories(1000)).toBe(14);
+    expect(fiberFromCalories(1000)).toBe(25);
     expect(fiberFromCalories(2000)).toBe(28);
     expect(fiberFromCalories(2500)).toBe(35);
   });
