@@ -117,15 +117,50 @@ export const ACTIVITY_MULTIPLIERS: Record<number, number> = {
 };
 
 /**
- * Calorie adjustment (relative to TDEE) per weight goal.
+ * Calculate calorie adjustment (relative to TDEE) per weight goal.
  * Used for target calories; fitnessGoal is used for macro split only.
- * TODO: these must be calculated depending on the weight of the user and if available based on bodyfat too
+ * These are calculated depending on the weight of the user and body fat percentage.
  */
-const WEIGHT_GOAL_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
-  lose: -500,
-  maintain: 0,
-  gain: 250,
-};
+function calculateCalorieAdjustment(
+  weightGoal: WeightGoal,
+  weightKg: number,
+  bodyFatPercent?: number
+): number {
+  if (weightGoal === 'maintain') return 0;
+
+  // Base adjustments scaled by body weight
+  const baseAdjustmentPerKg = weightGoal === 'lose' ? -22 : 11; // ~-500 or +250 for 70kg person
+  let adjustment = baseAdjustmentPerKg * weightKg;
+
+  // Adjust based on body fat percentage when available
+  if (bodyFatPercent !== undefined && bodyFatPercent >= 5 && bodyFatPercent <= 60) {
+    if (weightGoal === 'lose') {
+      // Higher body fat allows for more aggressive deficit
+      if (bodyFatPercent > 30) {
+        adjustment *= 1.2; // 20% more aggressive for high body fat
+      } else if (bodyFatPercent < 15) {
+        adjustment *= 0.7; // 30% less aggressive for low body fat (preserve lean mass)
+      }
+    } else if (weightGoal === 'gain') {
+      // Lower body fat allows for more aggressive surplus
+      if (bodyFatPercent < 12) {
+        adjustment *= 1.3; // 30% more aggressive for very lean individuals
+      } else if (bodyFatPercent > 25) {
+        adjustment *= 0.8; // 20% less aggressive for higher body fat (minimize fat gain)
+      }
+    }
+  }
+
+  // Apply reasonable limits to prevent extreme adjustments
+  const maxDeficit = Math.min(-1000, -weightKg * 15); // Max 1000 kcal deficit or 15 kcal/kg
+  const maxSurplus = Math.min(750, weightKg * 12); // Max 750 kcal surplus or 12 kcal/kg
+
+  if (weightGoal === 'lose') {
+    return Math.max(maxDeficit, Math.round(adjustment));
+  } else {
+    return Math.min(maxSurplus, Math.round(adjustment));
+  }
+}
 
 /**
  * Human-readable i18n label key per weight goal (for results screen).
@@ -236,8 +271,13 @@ export function calculateTDEE(bmr: number, activityLevel: number): number {
  * Calculate the daily calorie target by adjusting TDEE for the weight goal.
  * Applies a safety floor of MIN_CALORIES.
  */
-export function calculateTargetCalories(tdee: number, weightGoal: WeightGoal): number {
-  const adjustment = WEIGHT_GOAL_CALORIE_ADJUSTMENTS[weightGoal] ?? 0;
+export function calculateTargetCalories(
+  tdee: number,
+  weightGoal: WeightGoal,
+  weightKg: number,
+  bodyFatPercent?: number
+): number {
+  const adjustment = calculateCalorieAdjustment(weightGoal, weightKg, bodyFatPercent);
   return Math.max(MIN_CALORIES, Math.round(tdee + adjustment));
 }
 
@@ -463,7 +503,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const tdee = calculateTDEE(bmr, activityLevel);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
-  const targetCalories = calculateTargetCalories(tdee, weightGoal);
+  const targetCalories = calculateTargetCalories(tdee, weightGoal, weightKg, bodyFatPercent);
 
   // Step 4 – Macros (driven by fitness goal for split)
   const macros = calculateMacros(targetCalories, fitnessGoal);
@@ -483,13 +523,13 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
     const tdeeLow = calculateTDEE(bmrLow, activityLevel);
-    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal);
+    minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, weightKg, highBF);
 
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
     const tdeeHigh = calculateTDEE(bmrHigh, activityLevel);
-    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal);
+    maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, weightKg, lowBF);
   }
 
   return {

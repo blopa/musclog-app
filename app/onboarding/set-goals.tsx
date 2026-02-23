@@ -361,9 +361,10 @@ export default function SetGoals() {
         : 0;
 
     // Set a goal date for 90 days from now if the eatingPhase is either cut or bulk
-    const goalDate = (eatingPhase === 'cut' || eatingPhase === 'bulk') 
-      ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days from now
-      : undefined;
+    const goalDate =
+      eatingPhase === 'cut' || eatingPhase === 'bulk'
+        ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days from now
+        : undefined;
 
     const planWithTargets: NutritionPlan = {
       ...plan,
