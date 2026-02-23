@@ -106,7 +106,7 @@ export const ACTIVITY_MULTIPLIERS: Record<number, number> = {
 /**
  * Calorie adjustment (relative to TDEE) per weight goal.
  * Used for target calories; fitnessGoal is used for macro split only.
- * TODO: these must be calculated depending on the weight of the user
+ * TODO: these must be calculated depending on the weight of the user and if available based on bodyfat too
  */
 const WEIGHT_GOAL_CALORIE_ADJUSTMENTS: Record<WeightGoal, number> = {
   lose: -500,
