@@ -19,6 +19,7 @@ type ConfirmationModalProps = {
   variant?: ConfirmationModalVariant;
   maxWidth?: number;
   isLoading?: boolean;
+  warning?: string | null;
 };
 
 export function ConfirmationModal({
@@ -32,6 +33,7 @@ export function ConfirmationModal({
   variant = 'default',
   maxWidth,
   isLoading = false,
+  warning,
 }: ConfirmationModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -139,6 +141,27 @@ export function ConfirmationModal({
             >
               {message}
             </Text>
+
+            {/* Warning */}
+            {warning ? (
+              <View
+                className="rounded-lg border-l-4 p-3"
+                style={{
+                  backgroundColor: `${theme.colors.status.warning}10`,
+                  borderColor: theme.colors.status.warning,
+                  borderLeftWidth: 4,
+                }}
+              >
+                <Text
+                  className="text-sm font-medium leading-relaxed"
+                  style={{
+                    color: theme.colors.status.warning,
+                  }}
+                >
+                  {warning}
+                </Text>
+              </View>
+            ) : null}
 
             {/* Buttons */}
             <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>

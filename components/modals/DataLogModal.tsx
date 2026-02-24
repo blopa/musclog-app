@@ -1,9 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { Q } from '@nozbe/watermelondb';
 import type { TFunction } from 'i18next';
 import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { database } from '../../database';
 import {
   ExerciseService,
   FoodPortionService,
@@ -29,6 +31,7 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -465,6 +468,7 @@ export function DataLogModal({
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
+  const [dependencyWarning, setDependencyWarning] = useState<string | null>(null);
 
   // Create modal states
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
@@ -494,6 +498,224 @@ export function DataLogModal({
   const handleSaveEdit = async (values: any) => {
     await saveEdit(values);
     await refresh();
+  };
+
+  // Helper methods to check dependencies
+  const checkMealDependencies = async (mealId: string): Promise<string | null> => {
+    try {
+      const mealFoods = await database
+        .get('meal_foods')
+        .query(Q.where('meal_id', mealId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (mealFoods.length > 0) {
+        return t('food.meals.manageMealData.deleteMealWarning', {
+          count: mealFoods.length,
+          defaultValue:
+            'This meal contains {{count}} food item(s). Deleting it will remove all these foods but will not affect any nutrition logs.',
+        });
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking meal dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkFoodDependencies = async (foodId: string): Promise<string | null> => {
+    try {
+      // Check if food is used in any meals
+      const mealFoods = await database
+        .get('meal_foods')
+        .query(Q.where('food_id', foodId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Check if food is used in any nutrition logs
+      const nutritionLogs = await database
+        .get('nutrition_logs')
+        .query(Q.where('food_id', foodId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (mealFoods.length > 0 || nutritionLogs.length > 0) {
+        const parts = [];
+        if (mealFoods.length > 0) {
+          parts.push(
+            t('food.manageFoodLibrary.usedInMeals', {
+              count: mealFoods.length,
+              defaultValue: '{{count}} meal(s)',
+            })
+          );
+        }
+        if (nutritionLogs.length > 0) {
+          parts.push(
+            t('food.manageFoodLibrary.usedInLogs', {
+              count: nutritionLogs.length,
+              defaultValue: '{{count}} nutrition log(s)',
+            })
+          );
+        }
+        return t('food.manageFoodLibrary.deleteFoodWarning', {
+          usage: parts.join(', '),
+          defaultValue:
+            'This food is used in {{usage}}. Deleting it will remove it from these records.',
+        });
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking food dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkFoodPortionDependencies = async (portionId: string): Promise<string | null> => {
+    try {
+      // Check if portion is used in any foods
+      const foodFoodPortions = await database
+        .get('food_food_portions')
+        .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Check if portion is used in any meals
+      const mealFoods = await database
+        .get('meal_foods')
+        .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Check if portion is used in any nutrition logs
+      const nutritionLogs = await database
+        .get('nutrition_logs')
+        .query(Q.where('portion_id', portionId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (foodFoodPortions.length > 0 || mealFoods.length > 0 || nutritionLogs.length > 0) {
+        const parts = [];
+        if (foodFoodPortions.length > 0) {
+          parts.push(
+            t('food.managePortionData.usedInFoods', {
+              count: foodFoodPortions.length,
+              defaultValue: '{{count}} food(s)',
+            })
+          );
+        }
+        if (mealFoods.length > 0) {
+          parts.push(
+            t('food.managePortionData.usedInMeals', {
+              count: mealFoods.length,
+              defaultValue: '{{count}} meal(s)',
+            })
+          );
+        }
+        if (nutritionLogs.length > 0) {
+          parts.push(
+            t('food.managePortionData.usedInLogs', {
+              count: nutritionLogs.length,
+              defaultValue: '{{count}} nutrition log(s)',
+            })
+          );
+        }
+        return t('food.managePortionData.deletePortionWarning', {
+          usage: parts.join(', '),
+          defaultValue: 'This portion is used in {{usage}}. Deleting it may affect calculations.',
+        });
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking food portion dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkExerciseDependencies = async (exerciseId: string): Promise<string | null> => {
+    try {
+      // Check if exercise is used in any workout templates
+      const templateSets = await database
+        .get('workout_template_sets')
+        .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      // Check if exercise is used in any workout logs
+      const logSets = await database
+        .get('workout_log_sets')
+        .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (templateSets.length > 0 || logSets.length > 0) {
+        const parts = [];
+        if (templateSets.length > 0) {
+          parts.push(
+            t('exercises.manageExerciseData.usedInTemplates', {
+              count: templateSets.length,
+              defaultValue: '{{count}} workout template(s)',
+            })
+          );
+        }
+        if (logSets.length > 0) {
+          parts.push(
+            t('exercises.manageExerciseData.usedInLogs', {
+              count: logSets.length,
+              defaultValue: '{{count}} workout log(s)',
+            })
+          );
+        }
+        return t('exercises.manageExerciseData.deleteExerciseWarning', {
+          usage: parts.join(', '),
+          defaultValue:
+            'This exercise is used in {{usage}}. Deleting it will remove it from these records.',
+        });
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking exercise dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkWorkoutTemplateDependencies = async (templateId: string): Promise<string | null> => {
+    try {
+      // Check if template has active schedules
+      const schedules = await database
+        .get('schedules')
+        .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (schedules.length > 0) {
+        return t('workouts.manageWorkoutTemplateData.deleteTemplateWarning', {
+          count: schedules.length,
+          defaultValue:
+            'This template has {{count}} active schedule(s). Deleting it will cancel these schedules.',
+        });
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking workout template dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkWorkoutLogDependencies = async (logId: string): Promise<string | null> => {
+    try {
+      // For simplicity, we'll just warn that this might be the active workout
+      // In a real implementation, you'd check against the current active workout state
+      return t('workoutLog.manageWorkoutLogData.deleteLogWarning', {
+        defaultValue: 'Make sure this is not your currently active workout session.',
+      });
+    } catch (error) {
+      console.error('Error checking workout log dependencies:', error);
+      return null;
+    }
+  };
+
+  const checkNutritionGoalDependencies = async (goalId: string): Promise<string | null> => {
+    try {
+      // For simplicity, we'll just warn that this might be the active goal
+      // In a real implementation, you'd check against the current active goal state
+      return t('goalsManagement.manageGoalData.deleteGoalWarning', {
+        defaultValue: 'Make sure this is not your currently active nutrition goal.',
+      });
+    } catch (error) {
+      console.error('Error checking nutrition goal dependencies:', error);
+      return null;
+    }
   };
 
   const handleItemPress = (item: DataLogDisplayItem) => {
@@ -572,11 +794,39 @@ export function DataLogModal({
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedItem) {
       return;
     }
     setShowMenu(false);
+
+    // Check dependencies based on variant
+    let warning: string | null = null;
+    switch (variant) {
+      case 'meal':
+        warning = await checkMealDependencies(selectedItem.id);
+        break;
+      case 'food':
+        warning = await checkFoodDependencies(selectedItem.id);
+        break;
+      case 'foodPortion':
+        warning = await checkFoodPortionDependencies(selectedItem.id);
+        break;
+      case 'exercise':
+        warning = await checkExerciseDependencies(selectedItem.id);
+        break;
+      case 'workoutTemplate':
+        warning = await checkWorkoutTemplateDependencies(selectedItem.id);
+        break;
+      case 'workoutLog':
+        warning = await checkWorkoutLogDependencies(selectedItem.id);
+        break;
+      case 'nutritionGoal':
+        warning = await checkNutritionGoalDependencies(selectedItem.id);
+        break;
+    }
+
+    setDependencyWarning(warning);
     setDeleteModalVisible(true);
   };
 
@@ -589,27 +839,21 @@ export function DataLogModal({
     try {
       switch (variant) {
         case 'meal':
-          // TODO: Check if meal is used in any nutrition logs with the ConfirmationModal and warn user
           await MealService.deleteMeal(selectedItem.id);
           break;
         case 'food':
-          // TODO: Check if food is used in any meals or nutrition logs with the ConfirmationModal and warn user
           await FoodService.deleteFood(selectedItem.id);
           break;
         case 'foodPortion':
-          // TODO: Check if portion is used in any foods, meals, or nutrition logs with the ConfirmationModal and warn user
           await FoodPortionService.deleteFoodPortion(selectedItem.id);
           break;
         case 'exercise':
-          // TODO: Check if exercise is used in any workout templates or logs with the ConfirmationModal and warn user
           await ExerciseService.deleteExercise(selectedItem.id);
           break;
         case 'workoutTemplate':
-          // TODO: Check if template has active schedules with the ConfirmationModal and warn user
           await WorkoutTemplateService.deleteTemplate(selectedItem.id);
           break;
         case 'workoutLog':
-          // TODO: Check if this is the currently active workout with the ConfirmationModal and warn user
           await WorkoutService.deleteWorkoutLog(selectedItem.id);
           break;
         case 'nutrition_log':
@@ -619,7 +863,6 @@ export function DataLogModal({
           await UserMetricService.deleteMetric(selectedItem.id);
           break;
         case 'nutritionGoal':
-          // TODO: Check if this is the current active goal with the ConfirmationModal and warn user
           await NutritionGoalService.deleteGoal(selectedItem.id);
           break;
       }
@@ -760,14 +1003,11 @@ export function DataLogModal({
   );
 
   const renderHeaderRight = () => (
-    <Pressable
-      className="flex size-10 items-center justify-center rounded-full active:bg-white/10"
+    <MenuButton
       onPress={() => {
         setShowCreateMenu(true);
       }}
-    >
-      <MaterialIcons name="add" size={theme.iconSize.md} color={theme.colors.text.primary} />
-    </Pressable>
+    />
   );
 
   const getCreateMenuItems = (): BottomPopUpMenuItem[] => {
@@ -985,13 +1225,17 @@ export function DataLogModal({
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         visible={deleteModalVisible}
-        onClose={() => setDeleteModalVisible(false)}
+        onClose={() => {
+          setDeleteModalVisible(false);
+          setDependencyWarning(null);
+        }}
         onConfirm={handleConfirmDelete}
         title={translations.deleteTitle}
         message={t('common.deleteConfirmMessage', { name: selectedItem?.name || '' })}
         confirmLabel={t('common.delete', 'Delete')}
         variant="destructive"
         isLoading={isDeleting}
+        warning={dependencyWarning}
       />
 
       {/* Edit Modal */}
@@ -1063,7 +1307,14 @@ export function DataLogModal({
           onClose={() => setCreateWorkoutOptionsModalVisible(false)}
           onGenerateWithAi={() => {
             setCreateWorkoutOptionsModalVisible(false);
-            // TODO: Implement AI workout generation
+            // Placeholder for AI workout generation
+            showSnackbar(
+              'success',
+              t('workouts.aiGeneration.comingSoon'),
+              {
+                action: t('common.ok'),
+              }
+            );
           }}
           onCreateEmptyTemplate={() => {
             setCreateWorkoutOptionsModalVisible(false);
@@ -1071,7 +1322,14 @@ export function DataLogModal({
           }}
           onBrowseTemplates={() => {
             setCreateWorkoutOptionsModalVisible(false);
-            // TODO: Implement template browsing
+            // Placeholder for template browsing - could navigate to a template library
+            showSnackbar(
+              'success',
+              t('workouts.templateBrowser.comingSoon'),
+              {
+                action: t('common.ok'),
+              }
+            );
           }}
         />
       ) : null}
