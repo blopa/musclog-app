@@ -24,7 +24,9 @@ import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodSearchModal } from './FoodSearchModal';
 import { FullScreenModal } from './FullScreenModal';
+import { LogMealModal } from './LogMealModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
@@ -54,6 +56,11 @@ export default function SmartCameraModal({
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isNewCustomFoodModalVisible, setIsNewCustomFoodModalVisible] = useState(false);
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
+  const [aiContext, setAiContext] = useState<{ description: string; tags: string[] } | null>(null);
+  const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
+  const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
+  const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -110,12 +117,31 @@ export default function SmartCameraModal({
         quality: 0.8,
         base64: false,
       });
-      // LATER: Process the photo based on camera mode
-      console.log('Photo taken:', photo);
+      
+      // Process the photo based on camera mode
+      if (cameraMode === 'barcode-scan') {
+        // For barcode mode, try to detect barcodes in the image
+        const barcode = await detectBarcodes(photo.uri);
+        if (barcode) {
+          setDetectedBarcode(barcode);
+        } else {
+          showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+        }
+      } else if (cameraMode === 'ai-meal-photo' || cameraMode === 'ai-label-scan') {
+        // For AI modes, we would process the image with AI
+        // For now, just show a placeholder message
+        console.log('AI processing photo:', photo.uri);
+        showSnackbar('success', t('food.aiCamera.photoCaptured'));
+        
+        // TODO: Implement actual AI processing here
+        // This would involve sending the image to an AI service
+        // and handling the response to show food/nutrition information
+      }
     } catch (error) {
       console.error('Error taking picture:', error);
+      showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, []);
+  }, [cameraMode, t]);
 
   const handleClose = useCallback(() => {
     onClose();
@@ -130,7 +156,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
-    // LATER: Apply context to AI processing
+    setAiContext(context);
     console.log('Context applied:', context);
   }, []);
 
@@ -173,13 +199,12 @@ export default function SmartCameraModal({
   }, []);
 
   const handleTrackCustomMeal = useCallback(() => {
-    // TODO: Opean Meal Track Modal
-    console.log('Track custom meal');
+    setIsLogMealModalVisible(true);
   }, []);
 
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
-    // TODO: select type of meal
-    console.log('Selected meal type:', mealType);
+    setSelectedMealType(mealType);
+    setIsAddFoodModalVisible(false);
   }, []);
 
   const handleAiCameraPress = useCallback(() => {
@@ -191,8 +216,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleSearchFoodPress = useCallback(() => {
-    // TODO: open food search modal
-    console.log('Search food');
+    setIsFoodSearchModalVisible(true);
   }, []);
 
   const handleGalleryPress = useCallback(async () => {
@@ -660,6 +684,34 @@ export default function SmartCameraModal({
             visible={isNewCustomFoodModalVisible}
             onClose={handleNewCustomFoodClose}
             onSave={handleNewCustomFoodSave}
+          />
+        ) : null}
+
+        {/* Food Search Modal */}
+        {isFoodSearchModalVisible ? (
+          <FoodSearchModal
+            visible={isFoodSearchModalVisible}
+            onClose={() => setIsFoodSearchModalVisible(false)}
+            mealType={selectedMealType}
+            onBarcodeScanPress={handleScanBarcodePress}
+            onCreatePress={handleCreateCustomFood}
+          />
+        ) : null}
+
+        {/* Log Meal Modal */}
+        {isLogMealModalVisible && selectedMealForLogging ? (
+          <LogMealModal
+            visible={isLogMealModalVisible}
+            onClose={() => {
+              setIsLogMealModalVisible(false);
+              setSelectedMealForLogging(null);
+            }}
+            meal={selectedMealForLogging}
+            onLogMeal={(date, mealType) => {
+              console.log('Logging meal:', selectedMealForLogging, 'on', date, 'as', mealType);
+              setIsLogMealModalVisible(false);
+              setSelectedMealForLogging(null);
+            }}
           />
         ) : null}
       </View>
