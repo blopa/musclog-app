@@ -448,7 +448,7 @@ export default function WorkoutsScreen() {
                 ))}
 
                 <DashedButton
-                  label={t('workouts.createTemplate')}
+                  label={t('workouts.createTemplate.title')}
                   onPress={() => {
                     setIsCreateOptionsVisible(true);
                   }}

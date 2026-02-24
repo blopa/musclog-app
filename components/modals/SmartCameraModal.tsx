@@ -117,7 +117,7 @@ export default function SmartCameraModal({
         quality: 0.8,
         base64: false,
       });
-      
+
       // Process the photo based on camera mode
       if (cameraMode === 'barcode-scan') {
         // For barcode mode, try to detect barcodes in the image
@@ -132,7 +132,7 @@ export default function SmartCameraModal({
         // For now, just show a placeholder message
         console.log('AI processing photo:', photo.uri);
         showSnackbar('success', t('food.aiCamera.photoCaptured'));
-        
+
         // TODO: Implement actual AI processing here
         // This would involve sending the image to an AI service
         // and handling the response to show food/nutrition information

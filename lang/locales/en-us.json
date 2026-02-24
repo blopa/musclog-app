@@ -1,5 +1,8 @@
 {
   "common": {
+    "saveError": "Failed to save changes",
+    "saveErrorSubtitle": "Please try again",
+    "select": "Select...",
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
@@ -78,6 +81,9 @@
   "food": {
     "unknownFood": "Unknown Food",
     "manageFoodLibrary": {
+      "deleteFoodWarning": "Are you sure you want to delete this food? This action cannot be undone.",
+      "usedInLogs": "Used in {{count}} food log",
+      "usedInMeals": "Used in {{count}} meal",
       "title": "Food Library",
       "searchPlaceholder": "Search foods...",
       "noFoods": "No foods yet",
@@ -103,6 +109,10 @@
       "description": "Add a new food to your library"
     },
     "managePortionData": {
+      "deletePortionWarning": "Are you sure you want to delete this portion? This action cannot be undone.",
+      "usedInFoods": "Used in {{count}} food",
+      "usedInLogs": "Used in {{count}} food log",
+      "usedInMeals": "Used in {{count}} meal",
       "title": "Portion sizes",
       "searchPlaceholder": "Search portions...",
       "noPortions": "No portions yet",
@@ -185,6 +195,7 @@
     },
     "meals": {
       "manageMealData": {
+        "deleteMealWarning": "Are you sure you want to delete this meal? This action cannot be undone.",
         "title": "Manage Meal Data",
         "searchPlaceholder": "Search meals...",
         "mealOptions": "Meal Options",
@@ -206,7 +217,7 @@
       },
       "createMeal": {
         "title": "Create Custom Meal",
-        "description": "Combine foods into a reusable meal"
+        "description": "Create a custom meal by combining foods"
       },
       "breakfast": "Breakfast",
       "lunch": "Lunch",
@@ -483,6 +494,7 @@
   },
   "workoutLog": {
     "manageWorkoutLogData": {
+      "deleteLogWarning": "Are you sure you want to delete this workout log? This action cannot be undone.",
       "title": "Manage Workout Log Data",
       "searchPlaceholder": "Search workout sessions...",
       "noWorkoutLogs": "No workout logs yet",
@@ -662,7 +674,6 @@
         "core": "Core"
       }
     },
-    "createTemplate": "Create New Workout",
     "createWorkoutOptions": {
       "generateWithAi": "Generate with AI",
       "generateWithAiSubtitle": "Let Musclog build a personalized routine based on your goals and equipment.",
@@ -693,6 +704,7 @@
       }
     },
     "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "Are you sure you want to delete this template? This action cannot be undone.",
       "title": "Manage Workout Template Data",
       "searchPlaceholder": "Search templates...",
       "noTemplates": "No workout templates yet",
@@ -1129,6 +1141,9 @@
       "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue—not just muscle.",
       "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
       "goalLabels": {
+        "weight_loss": "Weight Loss",
+        "muscle_gain": "Muscle Gain",
+        "maintenance": "Maintenance",
         "moderateWeightLoss": "Moderate Weight Loss Strategy",
         "enduranceTraining": "Endurance Training",
         "generalFitness": "General Fitness",
@@ -1147,6 +1162,7 @@
     "newGoal": "New Goal",
     "emptyStateMessage": "Create a new goal to get started",
     "manageGoalData": {
+      "deleteGoalWarning": "Are you sure you want to delete this goal? This action cannot be undone.",
       "title": "Nutrition goals",
       "searchPlaceholder": "Search goals...",
       "noGoals": "No goals yet",
@@ -1257,6 +1273,10 @@
       "migratingData": "Migrating your data...",
       "migratingStep": "Migrating {{step}}...",
       "migrationSteps": {
+        "preparing": "Preparing",
+        "downloading": "Downloading",
+        "processing": "Processing",
+        "finalizing": "Finalizing",
         "fitness_goals": "nutrition goals",
         "user_metrics": "body metrics",
         "users": "profile",
@@ -1453,6 +1473,8 @@
       "createButton": "Create Exercise",
       "muscleGroups": {
         "primary": {
+          "abdomen": "Abdomen",
+          "glutes": "Glutes",
           "chest": "Chest",
           "shoulders": "Shoulders",
           "back": "Back",
@@ -1461,6 +1483,13 @@
           "core": "Core"
         },
         "secondary": {
+          "chest": "Chest",
+          "back": "Back",
+          "legs": "Legs",
+          "shoulders": "Shoulders",
+          "arms": "Arms",
+          "core": "Core",
+          "abdomen": "Abdomen",
           "triceps": "Triceps",
           "biceps": "Biceps",
           "abs": "Abs",
@@ -1490,6 +1519,9 @@
       "deleteDescription": "Remove this exercise permanently"
     },
     "manageExerciseData": {
+      "deleteExerciseWarning": "Are you sure you want to delete this exercise? This action cannot be undone.",
+      "usedInLogs": "Used in {{count}} workout log",
+      "usedInTemplates": "Used in {{count}} template",
       "title": "Manage Exercise Data",
       "searchPlaceholder": "Search exercises...",
       "noExercises": "No exercises yet",
@@ -1506,6 +1538,8 @@
       "unknownExercise": "Unknown Exercise"
     },
     "equipmentTypes": {
+      "medicine_ball": "Medicine Ball",
+      "smith_machine": "Smith Machine",
       "dumbbell": "Dumbbell",
       "barbell": "Barbell",
       "bodyweight": "Bodyweight",
@@ -1704,5 +1738,15 @@
   "token_type": "Token type",
   "workout_log_sets": "Workout log sets",
   "workout_logs": "Workout logs",
-  "your_google_auth_expired_reauth": "Your google auth expired reauth"
+  "your_google_auth_expired_reauth": "Your google auth expired reauth",
+  "body_fat": "Body Fat",
+  "food_food_portions": "Food Food Portions",
+  "healthConnect": {
+    "initializeFirst": "Please initialize Health Connect first",
+    "openSettings": "Open Settings",
+    "permissionsDenied": "Health Connect permissions were denied"
+  },
+  "meal_foods": "Meal Foods",
+  "nutrition_logs": "Nutrition Logs",
+  "workout_template_sets": "Workout Template Sets"
 }
