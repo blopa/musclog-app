@@ -572,27 +572,27 @@ export function DataLogModal({
     try {
       switch (variant) {
         case 'meal':
-          // TODO: Check if meal is used in any nutrition logs and warn user
+          // TODO: Check if meal is used in any nutrition logs with the ConfirmationModal and warn user
           await MealService.deleteMeal(selectedItem.id);
           break;
         case 'food':
-          // TODO: Check if food is used in any meals or nutrition logs and warn user
+          // TODO: Check if food is used in any meals or nutrition logs with the ConfirmationModal and warn user
           await FoodService.deleteFood(selectedItem.id);
           break;
         case 'foodPortion':
-          // TODO: Check if portion is used in any foods, meals, or nutrition logs and warn user
+          // TODO: Check if portion is used in any foods, meals, or nutrition logs with the ConfirmationModal and warn user
           await FoodPortionService.deleteFoodPortion(selectedItem.id);
           break;
         case 'exercise':
-          // TODO: Check if exercise is used in any workout templates or logs and warn user
+          // TODO: Check if exercise is used in any workout templates or logs with the ConfirmationModal and warn user
           await ExerciseService.deleteExercise(selectedItem.id);
           break;
         case 'workoutTemplate':
-          // TODO: Check if template has active schedules and warn user
+          // TODO: Check if template has active schedules with the ConfirmationModal and warn user
           await WorkoutTemplateService.deleteTemplate(selectedItem.id);
           break;
         case 'workoutLog':
-          // TODO: Check if this is the currently active workout and warn user
+          // TODO: Check if this is the currently active workout with the ConfirmationModal and warn user
           await WorkoutService.deleteWorkoutLog(selectedItem.id);
           break;
         case 'nutrition_log':
@@ -602,7 +602,7 @@ export function DataLogModal({
           await UserMetricService.deleteMetric(selectedItem.id);
           break;
         case 'nutritionGoal':
-          // TODO: Check if this is the current active goal and warn user
+          // TODO: Check if this is the current active goal with the ConfirmationModal and warn user
           await NutritionGoalService.deleteGoal(selectedItem.id);
           break;
       }
