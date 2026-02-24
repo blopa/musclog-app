@@ -1,9 +1,28 @@
 import convert from 'convert';
+
 import { bmiFromWeightAndHeightM } from './nutritionCalculator';
 
 export interface BMIStatus {
   bmi: number;
   statusKey: string;
+}
+
+/**
+ * Determines the BMI status key based on BMI value.
+ *
+ * @param bmi - BMI value
+ * @returns i18n status key for the BMI category
+ */
+export function getBMIStatusKey(bmi: number): string {
+  if (bmi < 18.5) {
+    return 'profile.bmiStatus.underweight';
+  } else if (bmi < 25) {
+    return 'profile.bmiStatus.normal';
+  } else if (bmi < 30) {
+    return 'profile.bmiStatus.overweight';
+  } else {
+    return 'profile.bmiStatus.obese';
+  }
 }
 
 /**
@@ -38,15 +57,8 @@ export function calculateBMIWithStatus(
   // Calculate BMI using the nutritionCalculator function
   const bmi = bmiFromWeightAndHeightM(weightKg, heightM);
 
-  // Determine BMI status key
-  const statusKey =
-    bmi < 18.5
-      ? 'profile.bmiStatus.underweight'
-      : bmi < 25
-        ? 'profile.bmiStatus.normal'
-        : bmi < 30
-          ? 'profile.bmiStatus.overweight'
-          : 'profile.bmiStatus.obese';
+  // Get the status key using the dedicated function
+  const statusKey = getBMIStatusKey(bmi);
 
   return {
     bmi,
