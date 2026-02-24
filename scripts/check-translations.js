@@ -320,7 +320,8 @@ class TranslationScanner {
 
       for (const key of sortedMissing) {
         const value = this.generateDefaultValue(key);
-        console.log(`  "${key}": "${value}",`);
+        // console.log(`  "${key}": "${value}",`);
+        console.log(`  "${key}": "TODO add this translation",`);
       }
       console.log('}');
 
