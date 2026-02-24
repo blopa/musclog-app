@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert } from 'react-native';
 
+import { useSnackbar } from '../components/SnackbarContext';
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
-import { WorkoutTemplateService } from '../database/services/WorkoutTemplateService';
+import { WorkoutTemplateService } from '../database/services';
 import {
   createExerciseOption,
   type ExerciseMetadata,
@@ -34,6 +34,7 @@ export interface AddExerciseData {
 
 export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const isEditMode = !!templateId;
 
@@ -85,15 +86,11 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       setExerciseMetadata(metadataMap);
     } catch (error) {
       console.error('Error loading template:', error);
-      // TODO: use the snackbar system
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('createWorkout.loadError', 'Failed to load workout template')
-      );
+      showSnackbar('error', t('createWorkout.loadError'));
     } finally {
       setIsLoading(false);
     }
-  }, [isEditMode, templateId, t]);
+  }, [isEditMode, templateId, t, showSnackbar]);
 
   useEffect(() => {
     if (isEditMode) {
@@ -142,24 +139,16 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         setExercises((prev) => [...prev, newExercise]);
       } catch (error) {
         console.error('Error adding exercise:', error);
-        // TODO: use the snackbar system
-        Alert.alert(
-          t('common.error', 'Error'),
-          t('createWorkout.addExerciseError', 'Failed to add exercise')
-        );
+        showSnackbar('error', t('createWorkout.addExerciseError'));
       }
     },
-    [t]
+    [t, showSnackbar]
   );
 
   const handleSave = useCallback(async () => {
     const titleValidation = validateWorkoutTitle(workoutTitle);
     if (!titleValidation.valid) {
-      // TODO: use the snackbar system
-      Alert.alert(
-        t('createWorkout.validation.titleRequired', 'Title Required'),
-        t('createWorkout.validation.titleRequiredMessage', 'Please enter a workout title')
-      );
+      showSnackbar('error', t('createWorkout.validation.titleRequiredMessage'));
       return;
     }
 
@@ -180,11 +169,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       router.back();
     } catch (error) {
       console.error('Error saving template:', error);
-      // TODO: use the snackbar system
-      Alert.alert(
-        t('common.error', 'Error'),
-        t('createWorkout.saveError', 'Failed to save workout template')
-      );
+      showSnackbar('error', t('createWorkout.saveError'));
     } finally {
       setIsSaving(false);
     }
@@ -199,6 +184,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     templateId,
     router,
     t,
+    showSnackbar,
   ]);
 
   const handleExerciseOrderChange = useCallback((reorderedExercises: SelectorOption<string>[]) => {
