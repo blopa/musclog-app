@@ -5,6 +5,7 @@ import type { SelectorOption } from '../components/theme/OptionsMultiSelector/ut
 import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
+import i18n from '../lang/lang';
 import { theme } from '../theme';
 
 // ============================================================================
@@ -73,8 +74,7 @@ export function getExerciseIconConfig(isBodyweight: boolean): ExerciseIconConfig
  * Format exercise description from sets and reps
  */
 export function formatExerciseDescription(sets: number, reps: number): string {
-  // TODO: use i18n for localization
-  return `${sets} sets × ${reps} reps`;
+  return i18n.t('workouts.addExercise.exerciseDescription', { sets, reps });
 }
 
 // ============================================================================

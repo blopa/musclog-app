@@ -603,7 +603,8 @@
       },
       "searchPlaceholderAll": "Search exercises...",
       "noExercisesFound": "No exercises found matching \"{{query}}\"",
-      "noExercisesAvailable": "No exercises available for {{muscle}}"
+      "noExercisesAvailable": "No exercises available for {{muscle}}",
+      "exerciseDescription": "{{sets}} sets × {{reps}} reps"
     },
     "filterWorkouts": {
       "title": "Filter Workouts",

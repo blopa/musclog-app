@@ -36,7 +36,7 @@ export interface RefreshTokenResponse {
  * Validate if an access token is valid by making a test API call
  */
 export async function isValidAccessToken(accessToken: string): Promise<boolean> {
-  // TODO: use getGoogleUserInfo here
+  // TODO: use getGoogleUserInfo here since it's basically the same code
   if (!accessToken) {
     return false;
   }
