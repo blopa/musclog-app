@@ -115,6 +115,7 @@ export default function ProfileScreen() {
     // BMI stat
     if (metrics?.bmi !== undefined) {
       // TODO: properly implement BMI logic later
+      // probably use the existing BMI logic from nutritionCalculator
       const bmiStatusKey =
         metrics.bmi < 18.5
           ? 'profile.bmiStatus.underweight'
