@@ -35,6 +35,7 @@ import { FullScreenModal } from './FullScreenModal';
 import { GenericEditModal } from './GenericEditModal';
 import { getEditFields } from './GenericEditModal/entityEditConfig';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
+import { useSnackbar } from '../SnackbarContext';
 
 export type DataLogModalVariant =
   | 'meal'
@@ -449,6 +450,7 @@ export function DataLogModal({
 }: DataLogModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -610,7 +612,9 @@ export function DataLogModal({
       setDeleteModalVisible(false);
     } catch (error) {
       console.error('Delete failed:', error);
-      // TODO: Show error toast to user
+      showSnackbar('error', t('common.deleteFailed'), {
+        action: t('common.ok'),
+      });
     } finally {
       setIsDeleting(false);
     }
