@@ -286,15 +286,33 @@ export class FoodService {
       }
 
       await food.update((record) => {
-        if (updates.name !== undefined) record.name = updates.name;
-        if (updates.brand !== undefined) record.brand = updates.brand;
-        if (updates.barcode !== undefined) record.barcode = updates.barcode;
-        if (updates.calories !== undefined) record.calories = updates.calories;
-        if (updates.protein !== undefined) record.protein = updates.protein;
-        if (updates.carbs !== undefined) record.carbs = updates.carbs;
-        if (updates.fat !== undefined) record.fat = updates.fat;
-        if (updates.fiber !== undefined) record.fiber = updates.fiber;
-        if (updates.micros !== undefined) record.micros = updates.micros;
+        if (updates.name !== undefined) {
+          record.name = updates.name;
+        }
+        if (updates.brand !== undefined) {
+          record.brand = updates.brand;
+        }
+        if (updates.barcode !== undefined) {
+          record.barcode = updates.barcode;
+        }
+        if (updates.calories !== undefined) {
+          record.calories = updates.calories;
+        }
+        if (updates.protein !== undefined) {
+          record.protein = updates.protein;
+        }
+        if (updates.carbs !== undefined) {
+          record.carbs = updates.carbs;
+        }
+        if (updates.fat !== undefined) {
+          record.fat = updates.fat;
+        }
+        if (updates.fiber !== undefined) {
+          record.fiber = updates.fiber;
+        }
+        if (updates.micros !== undefined) {
+          record.micros = updates.micros;
+        }
         record.updatedAt = Date.now();
       });
 

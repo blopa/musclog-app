@@ -18,7 +18,9 @@ module.exports = {
 
     return {
       'JSXExpressionContainer > LogicalExpression'(node) {
-        if (node.operator !== '&&') return;
+        if (node.operator !== '&&') {
+          return;
+        }
 
         context.report({
           node,

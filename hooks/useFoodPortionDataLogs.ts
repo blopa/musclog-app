@@ -46,7 +46,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
 }
 
 function mapPortionIconToMaterial(icon?: string): string {
-  if (!icon) return 'scale';
+  if (!icon) {
+    return 'scale';
+  }
   const m: Record<string, string> = {
     scale: 'scale',
     egg: 'egg',
@@ -106,7 +108,9 @@ function mergeIntoDayGroups(
   });
 
   newItemsWithDates.forEach(({ item, dateTimestamp }) => {
-    if (existingIds.has(item.id)) return;
+    if (existingIds.has(item.id)) {
+      return;
+    }
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
@@ -128,7 +132,9 @@ function filterDayGroupsBySearch(
   groups: FoodPortionDayGroup[],
   searchQuery: string
 ): FoodPortionDayGroup[] {
-  if (!searchQuery.trim()) return groups;
+  if (!searchQuery.trim()) {
+    return groups;
+  }
 
   return groups
     .map((g) => ({
@@ -196,7 +202,9 @@ export function useFoodPortionDataLogs({
   }, [visible, batchSize, t]);
 
   const loadMore = useCallback(async () => {
-    if (!visible || isLoadingMore || !hasMore) return;
+    if (!visible || isLoadingMore || !hasMore) {
+      return;
+    }
 
     setIsLoadingMore(true);
 
@@ -225,12 +233,16 @@ export function useFoodPortionDataLogs({
   }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
 
   const refresh = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     await loadInitial();
   }, [loadInitial, isLoading]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
     loadInitial();
   }, [visible, loadInitial]);
 

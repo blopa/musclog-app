@@ -251,7 +251,9 @@ export function useActiveWorkout(workoutLogId?: string) {
 
   // Observe sets for real-time updates
   useEffect(() => {
-    if (!workoutLog?.id) return;
+    if (!workoutLog?.id) {
+      return;
+    }
 
     const query = database
       .get<WorkoutLogSet>('workout_log_sets')

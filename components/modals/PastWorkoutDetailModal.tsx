@@ -444,7 +444,9 @@ export default function PastWorkoutDetailModal({
           <ExercisesSection
             exercises={workout.exercises}
             onEdit={(exerciseId?: string) => {
-              if (!exerciseId) return;
+              if (!exerciseId) {
+                return;
+              }
               setEditingExerciseId(exerciseId);
               setIsEditModalVisible(true);
             }}

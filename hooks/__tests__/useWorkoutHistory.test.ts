@@ -137,7 +137,9 @@ jest.mock('../../utils/workoutHistory', () => ({
     return Array.from(grouped.entries()).map(([month, workouts]) => ({ month, workouts }));
   }),
   filterWorkoutsBySearch: jest.fn((sections: any[], query: string) => {
-    if (!query) return sections;
+    if (!query) {
+      return sections;
+    }
     return sections
       .map((section) => ({
         ...section,

@@ -44,7 +44,9 @@ export type ExportDump = {
 
 function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   const raw = (record as { _raw?: Record<string, unknown> })._raw;
-  if (!raw || typeof raw !== 'object') return {};
+  if (!raw || typeof raw !== 'object') {
+    return {};
+  }
   return { ...raw };
 }
 
@@ -156,13 +158,17 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   const mapId = (table: string, oldId: string | undefined): string | undefined => {
-    if (!oldId) return undefined;
+    if (!oldId) {
+      return undefined;
+    }
     return idMaps[table]?.[oldId];
   };
 
   for (const tableName of RESTORE_ORDER) {
     const rows = dbData[tableName];
-    if (!Array.isArray(rows)) continue;
+    if (!Array.isArray(rows)) {
+      continue;
+    }
 
     const collection = database.get(tableName as any);
 
@@ -173,7 +179,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       for (const row of rows) {
         const raw = row as Record<string, unknown>;
         const oldId = raw.id as string | undefined;
-        if (!oldId) continue;
+        if (!oldId) {
+          continue;
+        }
 
         if (tableName === 'user_metrics') {
           const value = Number(raw.value);
@@ -189,7 +197,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.timezone = timezone;
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
-            if (raw.deleted_at != null) rec.deletedAt = Number(raw.deleted_at);
+            if (raw.deleted_at != null) {
+              rec.deletedAt = Number(raw.deleted_at);
+            }
           });
           idMaps[tableName][oldId] = created.id;
           continue;
@@ -236,7 +246,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.date = Number(raw.date);
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
-            if (raw.deleted_at != null) rec.deletedAt = Number(raw.deleted_at);
+            if (raw.deleted_at != null) {
+              rec.deletedAt = Number(raw.deleted_at);
+            }
           });
           idMaps[tableName][oldId] = created.id;
           continue;
@@ -244,9 +256,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
         const created = await collection.create((rec: any) => {
           for (const key of Object.keys(raw)) {
-            if (key === 'id' || key === '_decrypted') continue;
+            if (key === 'id' || key === '_decrypted') {
+              continue;
+            }
             const value = raw[key];
-            if (value === undefined) continue;
+            if (value === undefined) {
+              continue;
+            }
             const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
             if (
               key === 'template_id' &&
@@ -255,28 +271,46 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
                 tableName === 'workout_logs')
             ) {
               const mapped = mapId('workout_templates', value as string);
-              if (mapped != null) (rec as any).templateId = mapped;
-              else (rec as any).templateId = value;
+              if (mapped != null) {
+                (rec as any).templateId = mapped;
+              } else {
+                (rec as any).templateId = value;
+              }
             } else if (key === 'exercise_id') {
               const mapped = mapId('exercises', value as string);
-              if (mapped != null) (rec as any).exerciseId = mapped;
-              else (rec as any).exerciseId = value;
+              if (mapped != null) {
+                (rec as any).exerciseId = mapped;
+              } else {
+                (rec as any).exerciseId = value;
+              }
             } else if (key === 'workout_log_id') {
               const mapped = mapId('workout_logs', value as string);
-              if (mapped != null) (rec as any).workoutLogId = mapped;
-              else (rec as any).workoutLogId = value;
+              if (mapped != null) {
+                (rec as any).workoutLogId = mapped;
+              } else {
+                (rec as any).workoutLogId = value;
+              }
             } else if (key === 'food_id') {
               const mapped = mapId('foods', value as string);
-              if (mapped != null) (rec as any).foodId = mapped;
-              else (rec as any).foodId = value;
+              if (mapped != null) {
+                (rec as any).foodId = mapped;
+              } else {
+                (rec as any).foodId = value;
+              }
             } else if (key === 'food_portion_id') {
               const mapped = mapId('food_portions', value as string);
-              if (mapped != null) (rec as any).foodPortionId = mapped;
-              else (rec as any).foodPortionId = value;
+              if (mapped != null) {
+                (rec as any).foodPortionId = mapped;
+              } else {
+                (rec as any).foodPortionId = value;
+              }
             } else if (key === 'meal_id') {
               const mapped = mapId('meals', value as string);
-              if (mapped != null) (rec as any).mealId = mapped;
-              else (rec as any).mealId = value;
+              if (mapped != null) {
+                (rec as any).mealId = mapped;
+              } else {
+                (rec as any).mealId = value;
+              }
             } else if (key === 'portion_id') {
               const mapped = mapId('food_portions', value as string);
               (rec as any).portionId = mapped ?? value;

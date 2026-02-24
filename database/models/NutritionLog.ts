@@ -165,7 +165,9 @@ export default class NutritionLog extends Model {
     // Fallback for legacy rows without snapshot
     try {
       const food = await this.food;
-      if (!food) throw new Error('Food not found for nutrition log');
+      if (!food) {
+        throw new Error('Food not found for nutrition log');
+      }
       return food.getNutrientsForAmount(totalGrams);
     } catch (error) {
       console.error('Error getting nutrients for nutrition log:', error);

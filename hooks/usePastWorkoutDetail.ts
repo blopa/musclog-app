@@ -21,7 +21,9 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
   const [isLoading, setIsLoading] = useState(false);
 
   const loadWorkoutData = useCallback(async () => {
-    if (!workoutId) return;
+    if (!workoutId) {
+      return;
+    }
 
     setIsLoading(true);
     try {

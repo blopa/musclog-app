@@ -111,12 +111,16 @@ export function FoodMealDetailsModal({
       const match = String(servingStr).match(/\((\d+)\s*g\)/);
       if (match) {
         const g = parseInt(match[1], 10);
-        if (g > 0) return g;
+        if (g > 0) {
+          return g;
+        }
       }
       const num = String(servingStr).match(/(\d+)/);
       if (num) {
         const g = parseInt(num[1], 10);
-        if (g > 0) return g;
+        if (g > 0) {
+          return g;
+        }
       }
     }
     return 100; // Default to 100g when missing or "0 g"
@@ -206,7 +210,9 @@ export function FoodMealDetailsModal({
 
     let cancelled = false;
     foodLog.getDecryptedSnapshot().then((snap: DecryptedNutritionLogSnapshot) => {
-      if (!cancelled) setFoodLogDecrypted(snap);
+      if (!cancelled) {
+        setFoodLogDecrypted(snap);
+      }
     });
 
     (async () => {
@@ -361,9 +367,15 @@ export function FoodMealDetailsModal({
     if (productFromSearch) {
       const brand = productFromSearch.brands;
       const categories = productFromSearch.categories;
-      if (brand && categories) return `${brand} • ${categories}`;
-      if (brand) return brand;
-      if (categories) return categories;
+      if (brand && categories) {
+        return `${brand} • ${categories}`;
+      }
+      if (brand) {
+        return brand;
+      }
+      if (categories) {
+        return categories;
+      }
       return '';
     }
 

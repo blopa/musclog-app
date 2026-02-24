@@ -103,7 +103,9 @@ export default function WorkoutSessionScreen() {
   }, [isLoading, initialExerciseId, setCurrentExercise]);
 
   const handleCompleteSet = async (rpe: number) => {
-    if (!currentSetData || !workoutLog) return;
+    if (!currentSetData || !workoutLog) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -146,7 +148,9 @@ export default function WorkoutSessionScreen() {
   };
 
   const handleSkipSet = async () => {
-    if (!currentSetData || !workoutLog) return;
+    if (!currentSetData || !workoutLog) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -181,7 +185,9 @@ export default function WorkoutSessionScreen() {
     partials: number;
     repsInReserve: number;
   }) => {
-    if (!currentSetData || !workoutLog) return;
+    if (!currentSetData || !workoutLog) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -205,7 +211,9 @@ export default function WorkoutSessionScreen() {
   };
 
   const handleReplaceExercise = async (exercise: ReplaceExerciseData) => {
-    if (!currentSetData || !workoutLog) return;
+    if (!currentSetData || !workoutLog) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -237,7 +245,9 @@ export default function WorkoutSessionScreen() {
   };
 
   const handleFinishWorkout = async () => {
-    if (!workoutLog) return;
+    if (!workoutLog) {
+      return;
+    }
 
     try {
       setIsSaving(true);
@@ -262,11 +272,17 @@ export default function WorkoutSessionScreen() {
 
   // Get exercise category string
   const getExerciseCategory = () => {
-    if (!currentSetData) return '';
+    if (!currentSetData) {
+      return '';
+    }
     const exercise = currentSetData.exercise;
     const parts = [];
-    if (exercise.muscleGroup) parts.push(exercise.muscleGroup);
-    if (exercise.equipmentType) parts.push(exercise.equipmentType);
+    if (exercise.muscleGroup) {
+      parts.push(exercise.muscleGroup);
+    }
+    if (exercise.equipmentType) {
+      parts.push(exercise.equipmentType);
+    }
     return parts.join(' • ') || 'Exercise';
   };
 

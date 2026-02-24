@@ -33,7 +33,9 @@ export default function NutritionGoalsScreen() {
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(TEMP_NUTRITION_PLAN);
-        if (!raw || !isMounted) return;
+        if (!raw || !isMounted) {
+          return;
+        }
         const parsed = JSON.parse(raw) as NutritionPlan;
         if (isMounted && parsed?.targetCalories != null) {
           setStoredPlanGoals(planToInitialGoals(parsed));

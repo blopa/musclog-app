@@ -209,7 +209,9 @@ function getNutrimentUnit(nutriments: any, baseName: string): string | undefined
 
 // Map all nutriments to a comprehensive object
 function mapAllNutriments(nutriments: any): Record<string, any> {
-  if (!nutriments) return {};
+  if (!nutriments) {
+    return {};
+  }
 
   const mappedNutriments: Record<string, any> = {};
 

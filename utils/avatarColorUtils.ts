@@ -2,7 +2,9 @@ import { theme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 
 export function getAvatarColor(avatarColor?: AvatarColor | null) {
-  if (!avatarColor) return theme.colors.accent.primary;
+  if (!avatarColor) {
+    return theme.colors.accent.primary;
+  }
 
   const colorMap = {
     emerald: theme.colors.avatar.emerald,
@@ -19,7 +21,9 @@ export function getAvatarColor(avatarColor?: AvatarColor | null) {
 }
 
 export function getAvatarBackgroundColor(avatarColor?: AvatarColor | null) {
-  if (!avatarColor) return theme.colors.accent.primary20;
+  if (!avatarColor) {
+    return theme.colors.accent.primary20;
+  }
 
   const bgColorMap = {
     emerald: theme.colors.avatarBg.emerald,

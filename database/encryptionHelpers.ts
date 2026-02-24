@@ -12,35 +12,47 @@ import {
 
 /** Encrypt a string (optional). Empty/undefined returns ''. */
 export async function encryptOptionalString(value: string | undefined | null): Promise<string> {
-  if (value === undefined || value === null) return '';
+  if (value === undefined || value === null) {
+    return '';
+  }
   const trimmed = String(value).trim();
-  if (!trimmed) return '';
+  if (!trimmed) {
+    return '';
+  }
   return encryptDatabaseValue(trimmed);
 }
 
 /** Decrypt to string. Empty cipher returns ''. */
 export async function decryptOptionalString(cipher: string | undefined | null): Promise<string> {
-  if (!cipher || !String(cipher).trim()) return '';
+  if (!cipher || !String(cipher).trim()) {
+    return '';
+  }
   return decryptDatabaseValue(cipher);
 }
 
 /** Encrypt a number (including 0). */
 export async function encryptNumber(value: number): Promise<string> {
   const text = String(value);
-  if (text === '' || (text !== '0' && Number.isNaN(Number(text)))) return '';
+  if (text === '' || (text !== '0' && Number.isNaN(Number(text)))) {
+    return '';
+  }
   const key = await getEncryptionKey();
   return encrypt(text, key);
 }
 
 /** Decrypt to number. Returns 0 if empty or invalid. Handles legacy plaintext in DB. */
 export async function decryptNumber(cipher: string | undefined | null): Promise<number> {
-  if (!cipher || String(cipher).trim() === '') return 0;
+  if (!cipher || String(cipher).trim() === '') {
+    return 0;
+  }
   const trimmed = String(cipher).trim();
   // Try decrypt first (encrypted payload)
   const decrypted = await decryptDatabaseValue(cipher);
   if (decrypted && decrypted.trim()) {
     const n = parseFloat(decrypted);
-    if (!Number.isNaN(n)) return n;
+    if (!Number.isNaN(n)) {
+      return n;
+    }
   }
   // Legacy: value may be stored as plain number string (e.g. after schema migration)
   const asNum = parseFloat(trimmed);
@@ -61,7 +73,9 @@ export async function decryptDate(cipher: string | undefined | null): Promise<nu
 export async function encryptJson(
   value: Record<string, number | undefined> | undefined | null
 ): Promise<string> {
-  if (value === undefined || value === null || Object.keys(value).length === 0) return '';
+  if (value === undefined || value === null || Object.keys(value).length === 0) {
+    return '';
+  }
   const text = JSON.stringify(value);
   return encryptDatabaseValue(text);
 }
@@ -70,16 +84,22 @@ export async function encryptJson(
 export async function decryptJson(
   cipher: string | undefined | null
 ): Promise<Record<string, number>> {
-  if (!cipher || String(cipher).trim() === '') return {};
+  if (!cipher || String(cipher).trim() === '') {
+    return {};
+  }
   const trimmed = String(cipher).trim();
   const tryParse = (s: string): Record<string, number> => {
     try {
       const parsed = JSON.parse(s);
-      if (typeof parsed !== 'object' || parsed === null) return {};
+      if (typeof parsed !== 'object' || parsed === null) {
+        return {};
+      }
       const out: Record<string, number> = {};
       for (const k of Object.keys(parsed)) {
         const v = parsed[k];
-        if (typeof v === 'number' && !Number.isNaN(v)) out[k] = v;
+        if (typeof v === 'number' && !Number.isNaN(v)) {
+          out[k] = v;
+        }
       }
       return out;
     } catch {
@@ -87,7 +107,9 @@ export async function decryptJson(
     }
   };
   const decrypted = await decryptDatabaseValue(cipher);
-  if (decrypted && decrypted.trim()) return tryParse(decrypted);
+  if (decrypted && decrypted.trim()) {
+    return tryParse(decrypted);
+  }
   return tryParse(trimmed);
 }
 

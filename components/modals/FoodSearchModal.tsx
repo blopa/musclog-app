@@ -240,10 +240,14 @@ export function FoodSearchModal({
 
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
     let mounted = true;
     FoodPortionService.get100gPortion().then((portion) => {
-      if (mounted) setPortion100gName(portion?.name ?? '100g');
+      if (mounted) {
+        setPortion100gName(portion?.name ?? '100g');
+      }
     });
     return () => {
       mounted = false;
@@ -316,7 +320,9 @@ export function FoodSearchModal({
 
     const loadSuggestions = async () => {
       if (!visible || searchQuery) {
-        if (mounted) setSuggestedFoods(null);
+        if (mounted) {
+          setSuggestedFoods(null);
+        }
         return;
       }
 
@@ -381,12 +387,18 @@ export function FoodSearchModal({
             }) as FoodItem
         );
 
-        if (mounted) setSuggestedFoods(mapped);
+        if (mounted) {
+          setSuggestedFoods(mapped);
+        }
       } catch (err) {
         console.error('Error loading suggested foods:', err);
-        if (mounted) setSuggestedFoods([]);
+        if (mounted) {
+          setSuggestedFoods([]);
+        }
       } finally {
-        if (mounted) setIsLoadingSuggested(false);
+        if (mounted) {
+          setIsLoadingSuggested(false);
+        }
       }
     };
 
@@ -440,7 +452,9 @@ export function FoodSearchModal({
 
     const loadFavorites = async () => {
       if (!visible || activeFilter !== 'myFoods') {
-        if (mounted) setFavoriteFoods([]);
+        if (mounted) {
+          setFavoriteFoods([]);
+        }
         return;
       }
 

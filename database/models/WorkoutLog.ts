@@ -64,19 +64,33 @@ export default class WorkoutLog extends Model {
 
     // Update the set first
     await set.update((updatedSet: WorkoutLogSet) => {
-      if (data.reps !== undefined) updatedSet.reps = data.reps;
-      if (data.weight !== undefined) updatedSet.weight = data.weight;
-      if (data.partials !== undefined) updatedSet.partials = data.partials;
-      if (data.restTimeAfter !== undefined) updatedSet.restTimeAfter = data.restTimeAfter;
-      if (data.repsInReserve !== undefined) updatedSet.repsInReserve = data.repsInReserve;
-      if (data.isSkipped !== undefined) updatedSet.isSkipped = data.isSkipped;
+      if (data.reps !== undefined) {
+        updatedSet.reps = data.reps;
+      }
+      if (data.weight !== undefined) {
+        updatedSet.weight = data.weight;
+      }
+      if (data.partials !== undefined) {
+        updatedSet.partials = data.partials;
+      }
+      if (data.restTimeAfter !== undefined) {
+        updatedSet.restTimeAfter = data.restTimeAfter;
+      }
+      if (data.repsInReserve !== undefined) {
+        updatedSet.repsInReserve = data.repsInReserve;
+      }
+      if (data.isSkipped !== undefined) {
+        updatedSet.isSkipped = data.isSkipped;
+      }
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
           throw new Error('Difficulty level must be between1 and 10');
         }
         updatedSet.difficultyLevel = data.difficultyLevel;
       }
-      if (data.isDropSet !== undefined) updatedSet.isDropSet = data.isDropSet;
+      if (data.isDropSet !== undefined) {
+        updatedSet.isDropSet = data.isDropSet;
+      }
       updatedSet.updatedAt = now;
     });
 
@@ -175,8 +189,12 @@ export default class WorkoutLog extends Model {
   }): Promise<void> {
     const now = Date.now();
     await this.update((log) => {
-      if (feedback.exhaustionLevel !== undefined) log.exhaustionLevel = feedback.exhaustionLevel;
-      if (feedback.workoutScore !== undefined) log.workoutScore = feedback.workoutScore;
+      if (feedback.exhaustionLevel !== undefined) {
+        log.exhaustionLevel = feedback.exhaustionLevel;
+      }
+      if (feedback.workoutScore !== undefined) {
+        log.workoutScore = feedback.workoutScore;
+      }
       log.updatedAt = now;
     });
   }

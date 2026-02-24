@@ -104,7 +104,9 @@ function mergeIntoDayGroups(
   });
 
   newItemsWithDates.forEach(({ item, dateTimestamp }) => {
-    if (existingIds.has(item.id)) return;
+    if (existingIds.has(item.id)) {
+      return;
+    }
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
@@ -126,7 +128,9 @@ function filterDayGroupsBySearch(
   groups: ExerciseDataDayGroup[],
   searchQuery: string
 ): ExerciseDataDayGroup[] {
-  if (!searchQuery.trim()) return groups;
+  if (!searchQuery.trim()) {
+    return groups;
+  }
 
   return groups
     .map((g) => ({
@@ -194,7 +198,9 @@ export function useExerciseDataLogs({
   }, [visible, batchSize, t]);
 
   const loadMore = useCallback(async () => {
-    if (!visible || isLoadingMore || !hasMore) return;
+    if (!visible || isLoadingMore || !hasMore) {
+      return;
+    }
 
     setIsLoadingMore(true);
 
@@ -223,12 +229,16 @@ export function useExerciseDataLogs({
   }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
 
   const refresh = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     await loadInitial();
   }, [loadInitial, isLoading]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
     loadInitial();
   }, [visible, loadInitial]);
 

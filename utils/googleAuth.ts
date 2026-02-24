@@ -37,7 +37,9 @@ export interface RefreshTokenResponse {
  */
 export async function isValidAccessToken(accessToken: string): Promise<boolean> {
   // TODO: use getGoogleUserInfo here
-  if (!accessToken) return false;
+  if (!accessToken) {
+    return false;
+  }
 
   try {
     const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {

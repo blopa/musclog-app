@@ -275,9 +275,15 @@ export class NutritionService {
       }
 
       await log.update((record) => {
-        if (updates.amount !== undefined) record.amount = updates.amount;
-        if (updates.mealType !== undefined) record.type = updates.mealType;
-        if (updates.portionId !== undefined) record.portionId = updates.portionId;
+        if (updates.amount !== undefined) {
+          record.amount = updates.amount;
+        }
+        if (updates.mealType !== undefined) {
+          record.type = updates.mealType;
+        }
+        if (updates.portionId !== undefined) {
+          record.portionId = updates.portionId;
+        }
         record.updatedAt = Date.now();
       });
 
@@ -332,7 +338,9 @@ export class NutritionService {
    * Get favorite foods
    */
   static async getFavoriteFoods(limit: number = 10): Promise<Food[]> {
-    if (!database) return [];
+    if (!database) {
+      return [];
+    }
 
     return await database
       .get<Food>('foods')
@@ -344,7 +352,9 @@ export class NutritionService {
    * Get favorite foods count
    */
   static async getFavoriteFoodsCount(): Promise<number> {
-    if (!database) return 0;
+    if (!database) {
+      return 0;
+    }
 
     const favoriteFoods = await database
       .get<Food>('foods')
@@ -439,7 +449,9 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
       .fetch();
 
-    if (logs.length === 0) return 0;
+    if (logs.length === 0) {
+      return 0;
+    }
 
     const uniqueDates = [...new Set(logs.map((log) => log.date ?? 0))].sort(
       (a, b) => (b ?? 0) - (a ?? 0)

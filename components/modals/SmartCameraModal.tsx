@@ -109,7 +109,9 @@ export default function SmartCameraModal({
   }, [permission, requestPermission]);
 
   const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current) {
+      return;
+    }
 
     try {
       const photo = await cameraRef.current.takePictureAsync({

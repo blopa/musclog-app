@@ -16,7 +16,9 @@ function scanDir(dir) {
 
   const files = fs.readdirSync(dir, { withFileTypes: true });
   for (const file of files) {
-    if (IGNORED_DIRS.includes(file.name)) continue;
+    if (IGNORED_DIRS.includes(file.name)) {
+      continue;
+    }
 
     const fullPath = path.join(dir, file.name);
     if (file.isDirectory()) {
@@ -44,7 +46,9 @@ const colorOccurrences = [];
 
 for (const file of allFiles) {
   const result = findColorsInFile(file);
-  if (result) colorOccurrences.push(result);
+  if (result) {
+    colorOccurrences.push(result);
+  }
 }
 
 // --- REPORT ---

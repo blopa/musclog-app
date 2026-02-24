@@ -135,8 +135,12 @@ export class MealService {
       }
 
       await meal.update((record) => {
-        if (updates.name !== undefined) record.name = updates.name;
-        if (updates.description !== undefined) record.description = updates.description;
+        if (updates.name !== undefined) {
+          record.name = updates.name;
+        }
+        if (updates.description !== undefined) {
+          record.description = updates.description;
+        }
         record.updatedAt = Date.now();
       });
 

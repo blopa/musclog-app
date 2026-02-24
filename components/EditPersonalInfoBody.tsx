@@ -67,7 +67,9 @@ export function EditPersonalInfoBody({
 
   // Helper function to convert DOB string to Date object
   const parseDobToDate = (dobString: string): Date => {
-    if (!dobString) return new Date();
+    if (!dobString) {
+      return new Date();
+    }
     const parts = dobString.split('/');
     if (parts.length === 3) {
       const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed

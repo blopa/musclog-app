@@ -196,19 +196,29 @@ class TranslationScanner {
   // Check if a key is a valid translation key
   isValidTranslationKey(key) {
     // Exclude empty strings, single characters, obvious non-keys
-    if (!key || key.length < 2) return false;
+    if (!key || key.length < 2) {
+      return false;
+    }
 
     // Exclude keys that look like file paths, URLs, or code
-    if (key.includes('/') || key.includes('node_modules') || key.includes('.d.ts')) return false;
+    if (key.includes('/') || key.includes('node_modules') || key.includes('.d.ts')) {
+      return false;
+    }
 
     // Exclude keys that are just symbols or numbers
-    if (/^[^a-zA-Z]+$/.test(key) && key.length < 3) return false;
+    if (/^[^a-zA-Z]+$/.test(key) && key.length < 3) {
+      return false;
+    }
 
     // Exclude obvious code patterns
-    if (key.includes('function') || key.includes('const') || key.includes('return')) return false;
+    if (key.includes('function') || key.includes('const') || key.includes('return')) {
+      return false;
+    }
 
     // Exclude boundary strings and form data
-    if (['------', 'content-disposition'].some((s) => key.includes(s))) return false;
+    if (['------', 'content-disposition'].some((s) => key.includes(s))) {
+      return false;
+    }
 
     return true;
   }

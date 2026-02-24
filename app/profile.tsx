@@ -175,8 +175,12 @@ export default function ProfileScreen() {
   ]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
-    if (stat.id === 'weight') return weightUnit;
-    if (stat.id === 'height') return heightUnit;
+    if (stat.id === 'weight') {
+      return weightUnit;
+    }
+    if (stat.id === 'height') {
+      return heightUnit;
+    }
     return stat.unit;
   };
 

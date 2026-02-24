@@ -30,7 +30,9 @@ export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
 export async function importDatabase(decryptionPhrase?: string): Promise<void> {
   try {
     const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
-    if (result.canceled || !result.assets?.[0]) return;
+    if (result.canceled || !result.assets?.[0]) {
+      return;
+    }
     const { uri } = result.assets[0];
     const dbDump = await readAsStringAsync(uri);
     await restoreDatabase(dbDump, decryptionPhrase);

@@ -41,7 +41,9 @@ export class WorkoutAnalytics {
    * Calculate estimated 1RM using Epley formula: weight × (1 + reps/30)
    */
   static calculateEstimated1RM(weight: number, reps: number): number {
-    if (reps === 0) return 0;
+    if (reps === 0) {
+      return 0;
+    }
     return weight * (1 + reps / 30);
   }
 

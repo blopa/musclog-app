@@ -282,7 +282,9 @@ export class DataValidator {
    * Returns true if value is likely an error (more than 3 standard deviations from mean)
    */
   static isOutlier(value: number, recentValues: number[]): boolean {
-    if (recentValues.length < 3) return false; // Need enough data points
+    if (recentValues.length < 3) {
+      return false;
+    } // Need enough data points
 
     const mean = recentValues.reduce((sum, v) => sum + v, 0) / recentValues.length;
     const variance =

@@ -169,13 +169,19 @@ export function getEffectiveKcalPerKgGain(liftingExperience?: LiftingExperience)
 
 /** Principal branch of Lambert W, real arguments. Used for Hall–Forbes weight-loss composition. */
 function lambertW(z: number): number {
-  if (z < -1 / Math.E) return NaN;
-  if (z === 0) return 0;
+  if (z < -1 / Math.E) {
+    return NaN;
+  }
+  if (z === 0) {
+    return 0;
+  }
   let w = z < 1 ? z : Math.log(z);
   for (let i = 0; i < 30; i++) {
     const ew = Math.exp(w);
     const f = w * ew - z;
-    if (Math.abs(f) < 1e-10) return w;
+    if (Math.abs(f) < 1e-10) {
+      return w;
+    }
     const fp = ew * (w + 1);
     w = w - f / fp;
   }
@@ -189,14 +195,18 @@ function lambertW(z: number): number {
  */
 function getEffectiveKcalPerKgWeightLoss(initialFatMassKg: number, deltaWeightKg: number): number {
   const dBw = deltaWeightKg;
-  if (dBw >= 0 || initialFatMassKg <= 0) return RHO_FAT_KCAL_PER_KG;
+  if (dBw >= 0 || initialFatMassKg <= 0) {
+    return RHO_FAT_KCAL_PER_KG;
+  }
   const arg =
     (1 / FORBES_C) *
     Math.exp(dBw / FORBES_C) *
     initialFatMassKg *
     Math.exp(initialFatMassKg / FORBES_C);
   const w = lambertW(arg);
-  if (Number.isNaN(w)) return 7700; // fallback
+  if (Number.isNaN(w)) {
+    return 7700;
+  } // fallback
   const deltaLOverDeltaBW = 1 + initialFatMassKg / dBw - (FORBES_C / dBw) * w;
   const effective =
     RHO_FAT_KCAL_PER_KG * (1 - deltaLOverDeltaBW) + RHO_LEAN_KCAL_PER_KG * deltaLOverDeltaBW;
@@ -281,7 +291,9 @@ export function getCalorieAdjustment(
   weightKg: number,
   _bodyFatPercent?: number
 ): number {
-  if (weightGoal === 'maintain') return 0;
+  if (weightGoal === 'maintain') {
+    return 0;
+  }
   if (weightGoal === 'lose') {
     const deficit = 5.5 * weightKg; // 0.005 * weightKg * 7700 / 7
     return -Math.max(250, Math.min(750, Math.round(deficit)));
@@ -373,8 +385,12 @@ export function calculateBMR(
 ): number {
   const base = 10 * weightKg + 6.25 * heightCm - 5 * age;
 
-  if (gender === 'male') return Math.round(base + 5);
-  if (gender === 'female') return Math.round(base - 161);
+  if (gender === 'male') {
+    return Math.round(base + 5);
+  }
+  if (gender === 'female') {
+    return Math.round(base - 161);
+  }
 
   // 'other': average of male and female = base + (5 + -161) / 2 = base - 78
   return Math.round(base - 78);
@@ -536,11 +552,19 @@ export function inchesToCm(inches: number): number {
  * Normalize weight goal for backward compatibility (e.g. missing DB column).
  */
 export function normalizeWeightGoal(raw: string | undefined): WeightGoal {
-  if (!raw) return 'maintain';
+  if (!raw) {
+    return 'maintain';
+  }
   const lower = raw.toLowerCase();
-  if (lower === 'lose') return 'lose';
-  if (lower === 'gain') return 'gain';
-  if (lower === 'maintain') return 'maintain';
+  if (lower === 'lose') {
+    return 'lose';
+  }
+  if (lower === 'gain') {
+    return 'gain';
+  }
+  if (lower === 'maintain') {
+    return 'maintain';
+  }
   return 'maintain';
 }
 
@@ -551,11 +575,21 @@ export function normalizeWeightGoal(raw: string | undefined): WeightGoal {
 export function normalizeFitnessGoal(raw: string): FitnessGoal {
   const lower = raw.toLowerCase();
 
-  if (lower.includes('hypertrophy') || lower.includes('build muscle')) return 'hypertrophy';
-  if (lower.includes('strength') || lower.includes('lift heavier')) return 'strength';
-  if (lower.includes('endurance') || lower.includes('stamina')) return 'endurance';
-  if (lower.includes('weight loss') || lower.includes('burn fat')) return 'weight_loss';
-  if (lower.includes('general') || lower.includes('fitness')) return 'general';
+  if (lower.includes('hypertrophy') || lower.includes('build muscle')) {
+    return 'hypertrophy';
+  }
+  if (lower.includes('strength') || lower.includes('lift heavier')) {
+    return 'strength';
+  }
+  if (lower.includes('endurance') || lower.includes('stamina')) {
+    return 'endurance';
+  }
+  if (lower.includes('weight loss') || lower.includes('burn fat')) {
+    return 'weight_loss';
+  }
+  if (lower.includes('general') || lower.includes('fitness')) {
+    return 'general';
+  }
 
   // Check if it's already a valid key
   const validKeys: FitnessGoal[] = [
@@ -565,7 +599,9 @@ export function normalizeFitnessGoal(raw: string): FitnessGoal {
     'weight_loss',
     'general',
   ];
-  if (validKeys.includes(raw as FitnessGoal)) return raw as FitnessGoal;
+  if (validKeys.includes(raw as FitnessGoal)) {
+    return raw as FitnessGoal;
+  }
 
   return 'general';
 }
@@ -578,7 +614,9 @@ export function fiberFromCalories(targetCalories: number): number {
 
 /** BMI = weight (kg) / height (m)². */
 export function bmiFromWeightAndHeightM(weightKg: number, heightM: number): number {
-  if (heightM <= 0) return 0;
+  if (heightM <= 0) {
+    return 0;
+  }
   return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
 }
 
@@ -588,7 +626,9 @@ export function ffmiFromWeightHeightAndBodyFat(
   heightM: number,
   bodyFatPercent: number
 ): number {
-  if (heightM <= 0) return 0;
+  if (heightM <= 0) {
+    return 0;
+  }
   const ffm = weightKg * (1 - bodyFatPercent / 100);
   return parseFloat((ffm / (heightM * heightM)).toFixed(1));
 }

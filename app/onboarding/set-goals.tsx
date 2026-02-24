@@ -43,7 +43,9 @@ function OrbitalIllustration() {
     (e: { nativeEvent: { layout: { width: number; height: number } } }) => {
       const { width, height } = e.nativeEvent.layout;
       const size = Math.min(width, height);
-      if (size > 0) setLayoutSize(size);
+      if (size > 0) {
+        setLayoutSize(size);
+      }
     },
     []
   );

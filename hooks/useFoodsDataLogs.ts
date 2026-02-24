@@ -51,11 +51,18 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
 
 function pickIconForFoodName(name: string): string {
   const lower = name.toLowerCase();
-  if (lower.includes('egg')) return 'egg';
-  if (lower.includes('pizza')) return 'local-pizza';
-  if (lower.includes('protein') || lower.includes('shake') || lower.includes('whey'))
+  if (lower.includes('egg')) {
+    return 'egg';
+  }
+  if (lower.includes('pizza')) {
+    return 'local-pizza';
+  }
+  if (lower.includes('protein') || lower.includes('shake') || lower.includes('whey')) {
     return 'fitness-center';
-  if (lower.includes('yogurt') || lower.includes('berry')) return 'restaurant-menu';
+  }
+  if (lower.includes('yogurt') || lower.includes('berry')) {
+    return 'restaurant-menu';
+  }
   return 'restaurant';
 }
 
@@ -113,7 +120,9 @@ function mergeIntoDayGroups(
   });
 
   newItemsWithDates.forEach(({ item, dateTimestamp }) => {
-    if (existingIds.has(item.id)) return;
+    if (existingIds.has(item.id)) {
+      return;
+    }
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
@@ -135,7 +144,9 @@ function filterDayGroupsBySearch(
   groups: FoodLibraryDayGroup[],
   searchQuery: string
 ): FoodLibraryDayGroup[] {
-  if (!searchQuery.trim()) return groups;
+  if (!searchQuery.trim()) {
+    return groups;
+  }
 
   return groups
     .map((g) => ({
@@ -203,7 +214,9 @@ export function useFoodsDataLogs({
   }, [visible, batchSize, t]);
 
   const loadMore = useCallback(async () => {
-    if (!visible || isLoadingMore || !hasMore) return;
+    if (!visible || isLoadingMore || !hasMore) {
+      return;
+    }
 
     setIsLoadingMore(true);
 
@@ -232,12 +245,16 @@ export function useFoodsDataLogs({
   }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
 
   const refresh = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     await loadInitial();
   }, [loadInitial, isLoading]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
     loadInitial();
   }, [visible, loadInitial]);
 

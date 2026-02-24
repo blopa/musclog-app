@@ -131,9 +131,15 @@ export class FoodPortionService {
       }
 
       await portion.update((record) => {
-        if (updates.name !== undefined) record.name = updates.name;
-        if (updates.gramWeight !== undefined) record.gramWeight = updates.gramWeight;
-        if (updates.icon !== undefined) record.icon = updates.icon;
+        if (updates.name !== undefined) {
+          record.name = updates.name;
+        }
+        if (updates.gramWeight !== undefined) {
+          record.gramWeight = updates.gramWeight;
+        }
+        if (updates.icon !== undefined) {
+          record.icon = updates.icon;
+        }
         record.updatedAt = Date.now();
       });
 

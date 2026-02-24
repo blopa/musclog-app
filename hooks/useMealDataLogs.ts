@@ -53,13 +53,23 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
 }
 
 function pickIconForMeal(name: string, isAiGenerated: boolean): MealDataDisplayItem['icon'] {
-  if (isAiGenerated) return 'fastfood';
+  if (isAiGenerated) {
+    return 'fastfood';
+  }
 
   const lower = name.toLowerCase();
-  if (lower.includes('breakfast') || lower.includes('morning')) return 'local-dining';
-  if (lower.includes('lunch') || lower.includes('midday')) return 'lunch-dining';
-  if (lower.includes('dinner') || lower.includes('evening')) return 'dinner-dining';
-  if (lower.includes('snack') || lower.includes('quick')) return 'fastfood';
+  if (lower.includes('breakfast') || lower.includes('morning')) {
+    return 'local-dining';
+  }
+  if (lower.includes('lunch') || lower.includes('midday')) {
+    return 'lunch-dining';
+  }
+  if (lower.includes('dinner') || lower.includes('evening')) {
+    return 'dinner-dining';
+  }
+  if (lower.includes('snack') || lower.includes('quick')) {
+    return 'fastfood';
+  }
   return 'restaurant';
 }
 
@@ -129,7 +139,9 @@ function mergeIntoDayGroups(
   });
 
   newItemsWithDates.forEach(({ item, dateTimestamp }) => {
-    if (existingIds.has(item.id)) return;
+    if (existingIds.has(item.id)) {
+      return;
+    }
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
@@ -151,7 +163,9 @@ function filterDayGroupsBySearch(
   groups: MealDataDayGroup[],
   searchQuery: string
 ): MealDataDayGroup[] {
-  if (!searchQuery.trim()) return groups;
+  if (!searchQuery.trim()) {
+    return groups;
+  }
 
   return groups
     .map((g) => ({
@@ -225,7 +239,9 @@ export function useMealDataLogs({
   }, [visible, batchSize, t]);
 
   const loadMore = useCallback(async () => {
-    if (!visible || isLoadingMore || !hasMore) return;
+    if (!visible || isLoadingMore || !hasMore) {
+      return;
+    }
 
     setIsLoadingMore(true);
 
@@ -260,12 +276,16 @@ export function useMealDataLogs({
   }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
 
   const refresh = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     await loadInitial();
   }, [loadInitial, isLoading]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
     loadInitial();
   }, [visible, loadInitial]);
 

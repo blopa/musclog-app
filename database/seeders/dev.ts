@@ -1450,7 +1450,9 @@ async function seedFoods(): Promise<{ created: number }> {
 
       for (const nl of nutritionLogs) {
         const f = foodByName.get(nl.name.toLowerCase());
-        if (!f) continue;
+        if (!f) {
+          continue;
+        }
 
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: f.name ?? 'No named food', // TODO: translate this

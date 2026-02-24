@@ -92,7 +92,9 @@ export function WorkoutSessionHistoryModal({
 
       exerciseOrder.forEach((exerciseId, index) => {
         const exercise = exerciseMap.get(exerciseId);
-        if (!exercise) return;
+        if (!exercise) {
+          return;
+        }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
 
@@ -154,7 +156,9 @@ export function WorkoutSessionHistoryModal({
 
       exerciseOrder.forEach((exerciseId, index) => {
         const exercise = exerciseMap.get(exerciseId);
-        if (!exercise) return;
+        if (!exercise) {
+          return;
+        }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
 

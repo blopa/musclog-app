@@ -116,8 +116,12 @@ export class UserMetricService {
           record.valueRaw = encrypted.value;
           record.unitRaw = encrypted.unit;
         }
-        if (updates.date !== undefined) record.date = updates.date;
-        if (updates.type !== undefined) record.type = updates.type as UserMetricType;
+        if (updates.date !== undefined) {
+          record.date = updates.date;
+        }
+        if (updates.type !== undefined) {
+          record.type = updates.type as UserMetricType;
+        }
         record.updatedAt = Date.now();
       });
 

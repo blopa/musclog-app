@@ -235,7 +235,9 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>, theme: Theme) => {
 const renderAvatar = (props: any, theme: Theme) => {
   const styles = getStyles(theme);
 
-  if (props.currentMessage?.user._id === 1) return null;
+  if (props.currentMessage?.user._id === 1) {
+    return null;
+  }
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
   }
@@ -243,7 +245,9 @@ const renderAvatar = (props: any, theme: Theme) => {
 };
 
 const renderDay = (props: any, t: TFunction, theme: Theme) => {
-  if (!props.currentMessage?.createdAt) return null;
+  if (!props.currentMessage?.createdAt) {
+    return null;
+  }
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();

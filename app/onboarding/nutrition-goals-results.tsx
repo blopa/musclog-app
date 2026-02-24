@@ -59,7 +59,9 @@ export default function NutritionGoalsResults() {
           if (raw) {
             try {
               const parsed = JSON.parse(raw) as NutritionPlan;
-              if (isMounted) setStoredPlan(parsed);
+              if (isMounted) {
+                setStoredPlan(parsed);
+              }
               return;
             } catch {
               // ignore parse errors and fall back to params

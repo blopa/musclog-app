@@ -24,19 +24,25 @@ import Setting from '../database/models/Setting';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 function parseUnitsFromSettings(settings: Setting[]): Units {
-  if (settings.length === 0) return 'metric';
+  if (settings.length === 0) {
+    return 'metric';
+  }
   const value = settings[0].value;
   return value === '1' ? 'imperial' : 'metric';
 }
 
 function parseThemeFromSettings(settings: Setting[]): ThemeOption {
-  if (settings.length === 0) return 'system';
+  if (settings.length === 0) {
+    return 'system';
+  }
   const value = settings[0].value;
   return value === 'light' || value === 'dark' ? value : 'system';
 }
 
 function parseBooleanFromSettings(settings: Setting[]): boolean {
-  if (settings.length === 0) return false;
+  if (settings.length === 0) {
+    return false;
+  }
   // If multiple settings exist, use the most recent one
   const mostRecent = settings.reduce((latest, current) =>
     current.updatedAt > latest.updatedAt ? current : latest
@@ -45,7 +51,9 @@ function parseBooleanFromSettings(settings: Setting[]): boolean {
 }
 
 function parseStringFromSettings(settings: Setting[]): string {
-  if (settings.length === 0) return '';
+  if (settings.length === 0) {
+    return '';
+  }
   // If multiple settings exist, use the most recent one
   const mostRecent = settings.reduce((latest, current) =>
     current.updatedAt > latest.updatedAt ? current : latest

@@ -136,16 +136,27 @@ export class ExerciseService {
       }
 
       await exercise.update((record) => {
-        if (updates.name !== undefined) record.name = updates.name;
-        if (updates.description !== undefined) record.description = updates.description;
-        if (updates.imageUrl !== undefined) record.imageUrl = updates.imageUrl;
-        if (updates.muscleGroup !== undefined)
+        if (updates.name !== undefined) {
+          record.name = updates.name;
+        }
+        if (updates.description !== undefined) {
+          record.description = updates.description;
+        }
+        if (updates.imageUrl !== undefined) {
+          record.imageUrl = updates.imageUrl;
+        }
+        if (updates.muscleGroup !== undefined) {
           record.muscleGroup = updates.muscleGroup as MuscleGroup;
-        if (updates.equipmentType !== undefined)
+        }
+        if (updates.equipmentType !== undefined) {
           record.equipmentType = updates.equipmentType as EquipmentType;
-        if (updates.mechanicType !== undefined)
+        }
+        if (updates.mechanicType !== undefined) {
           record.mechanicType = updates.mechanicType as MechanicType;
-        if (updates.loadMultiplier !== undefined) record.loadMultiplier = updates.loadMultiplier;
+        }
+        if (updates.loadMultiplier !== undefined) {
+          record.loadMultiplier = updates.loadMultiplier;
+        }
         record.updatedAt = Date.now();
       });
 

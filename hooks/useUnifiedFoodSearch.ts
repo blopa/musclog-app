@@ -171,7 +171,9 @@ export function useUnifiedFoodSearch({
 
   // Convert API results to unified format
   const apiResultsFormatted = useMemo(() => {
-    if (!includeAPI) return [];
+    if (!includeAPI) {
+      return [];
+    }
 
     return accumulatedApiResults.map((product) => mapOpenFoodFactsProduct(product));
   }, [accumulatedApiResults, includeAPI]);
@@ -226,12 +228,16 @@ export function useUnifiedFoodSearch({
 
   // Load more functions
   const loadMoreLocal = useCallback(async () => {
-    if (isLoadingMoreFoods) return;
+    if (isLoadingMoreFoods) {
+      return;
+    }
     await loadMoreFoods();
   }, [isLoadingMoreFoods, loadMoreFoods]);
 
   const loadMoreAPI = useCallback(async () => {
-    if (isLoadingMoreAPI) return;
+    if (isLoadingMoreAPI) {
+      return;
+    }
 
     setIsLoadingMoreAPI(true);
     setApiOffset((prev) => prev + apiLimit);

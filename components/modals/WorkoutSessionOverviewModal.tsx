@@ -118,9 +118,15 @@ function ExerciseCard({
   const isInProgress = status === 'in-progress';
 
   const titleClassName = useMemo(() => {
-    if (isCompleted) return 'text-text-primary';
-    if (isInProgress) return 'text-text-primary';
-    if (isSkipped) return 'text-text-muted';
+    if (isCompleted) {
+      return 'text-text-primary';
+    }
+    if (isInProgress) {
+      return 'text-text-primary';
+    }
+    if (isSkipped) {
+      return 'text-text-muted';
+    }
     return 'text-text-secondary';
   }, [isCompleted, isInProgress, isSkipped]);
 
@@ -288,7 +294,9 @@ export default function WorkoutSessionOverviewModal({
 
   // Transform database models to UI format
   const exerciseData = useMemo(() => {
-    if (!sets || !dbExercises || sets.length === 0) return [];
+    if (!sets || !dbExercises || sets.length === 0) {
+      return [];
+    }
 
     // Group sets by exercise
     const exerciseGroups = new Map<string, WorkoutLogSet[]>();
@@ -304,7 +312,9 @@ export default function WorkoutSessionOverviewModal({
     const exerciseList: ExerciseUIData[] = [];
     exerciseGroups.forEach((exerciseSets, exerciseId) => {
       const exercise = dbExercises.find((ex) => ex.id === exerciseId);
-      if (!exercise) return;
+      if (!exercise) {
+        return;
+      }
 
       const completedSets = exerciseSets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
       const skippedSets = exerciseSets.filter((set) => set.isSkipped).length;

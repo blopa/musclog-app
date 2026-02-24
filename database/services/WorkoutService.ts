@@ -342,17 +342,36 @@ export class WorkoutService {
               // Update an existing set
               const setModel = await logSetsCollection.find(update.setId);
               await setModel.update((s: WorkoutLogSet) => {
-                if (update.reps !== undefined) s.reps = update.reps;
-                if (update.weight !== undefined) s.weight = update.weight;
-                if (update.partials !== undefined) s.partials = update.partials;
-                if (update.restTimeAfter !== undefined) s.restTimeAfter = update.restTimeAfter;
-                if (update.repsInReserve !== undefined) s.repsInReserve = update.repsInReserve;
-                if (update.difficultyLevel !== undefined)
+                if (update.reps !== undefined) {
+                  s.reps = update.reps;
+                }
+                if (update.weight !== undefined) {
+                  s.weight = update.weight;
+                }
+                if (update.partials !== undefined) {
+                  s.partials = update.partials;
+                }
+                if (update.restTimeAfter !== undefined) {
+                  s.restTimeAfter = update.restTimeAfter;
+                }
+                if (update.repsInReserve !== undefined) {
+                  s.repsInReserve = update.repsInReserve;
+                }
+                if (update.difficultyLevel !== undefined) {
                   s.difficultyLevel = update.difficultyLevel;
-                if (update.isSkipped !== undefined) s.isSkipped = update.isSkipped;
-                if (update.isDropSet !== undefined) s.isDropSet = update.isDropSet;
-                if (update.groupId !== undefined) s.groupId = update.groupId;
-                if (update.setOrder !== undefined) s.setOrder = update.setOrder;
+                }
+                if (update.isSkipped !== undefined) {
+                  s.isSkipped = update.isSkipped;
+                }
+                if (update.isDropSet !== undefined) {
+                  s.isDropSet = update.isDropSet;
+                }
+                if (update.groupId !== undefined) {
+                  s.groupId = update.groupId;
+                }
+                if (update.setOrder !== undefined) {
+                  s.setOrder = update.setOrder;
+                }
                 s.updatedAt = Date.now();
               });
             }

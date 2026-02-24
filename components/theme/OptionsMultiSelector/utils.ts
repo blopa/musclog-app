@@ -49,7 +49,9 @@ export function getGroupPosition<T extends string | number>(
   index: number
 ): GroupPosition {
   const item = options[index];
-  if (!item?.groupId) return 'none';
+  if (!item?.groupId) {
+    return 'none';
+  }
 
   const prevItem = index > 0 ? options[index - 1] : null;
   const nextItem = index < options.length - 1 ? options[index + 1] : null;
@@ -57,9 +59,15 @@ export function getGroupPosition<T extends string | number>(
   const hasPrevInGroup = prevItem?.groupId === item.groupId;
   const hasNextInGroup = nextItem?.groupId === item.groupId;
 
-  if (!hasPrevInGroup && !hasNextInGroup) return 'only';
-  if (!hasPrevInGroup && hasNextInGroup) return 'first';
-  if (hasPrevInGroup && !hasNextInGroup) return 'last';
+  if (!hasPrevInGroup && !hasNextInGroup) {
+    return 'only';
+  }
+  if (!hasPrevInGroup && hasNextInGroup) {
+    return 'first';
+  }
+  if (hasPrevInGroup && !hasNextInGroup) {
+    return 'last';
+  }
   return 'middle';
 }
 

@@ -258,7 +258,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
   // Get the selected exercise data for display
   const selectedExercise = useMemo(() => {
-    if (!selectedExerciseId) return null;
+    if (!selectedExerciseId) {
+      return null;
+    }
     const allExercises = Object.values(exercises).flat();
     return allExercises.find((ex) => ex.id === selectedExerciseId) || null;
   }, [selectedExerciseId, exercises]);

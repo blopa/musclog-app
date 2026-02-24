@@ -113,7 +113,9 @@ export class MigrationService {
     step: MigrationStepKey,
     onProgress: ((info: MigrationProgressInfo) => void) | undefined
   ): (current: number, total: number) => void {
-    if (!onProgress) return () => {};
+    if (!onProgress) {
+      return () => {};
+    }
     let lastPercent = -1;
     return (current: number, total: number) => {
       if (total <= 0) {
@@ -132,7 +134,9 @@ export class MigrationService {
    * Check if old database exists and is accessible
    */
   async checkOldDatabaseExists(): Promise<boolean> {
-    if (!this.oldDB) return false;
+    if (!this.oldDB) {
+      return false;
+    }
 
     try {
       await this.oldDB.getAllAsync('SELECT 1 FROM sqlite_master LIMIT 1');
@@ -147,7 +151,9 @@ export class MigrationService {
    * Get table names from old database
    */
   async getOldDatabaseTables(): Promise<string[]> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const result = await this.oldDB.getAllAsync(`
       SELECT name FROM sqlite_master 
@@ -164,7 +170,9 @@ export class MigrationService {
   async getTableSchema(
     tableName: string
   ): Promise<{ name: string; type: string; notnull: boolean; pk: boolean }[]> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const pragmaResult = await this.oldDB.getAllAsync(`PRAGMA table_info(${tableName})`);
     return pragmaResult.map((row: any) => ({
@@ -179,7 +187,9 @@ export class MigrationService {
    * Convert TEXT timestamp to Unix timestamp (number)
    */
   private convertTimestamp(textTimestamp: string | null): number {
-    if (!textTimestamp) return Date.now();
+    if (!textTimestamp) {
+      return Date.now();
+    }
 
     try {
       // Handle ISO format and other common timestamp formats
@@ -201,7 +211,9 @@ export class MigrationService {
   private async migrateFitnessGoals(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldGoals = (await this.oldDB.getAllAsync(`
       SELECT * FROM FitnessGoals 
@@ -254,7 +266,9 @@ export class MigrationService {
   private async migrateUserMetrics(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const encKey = await getOldEncryptionKey();
     if (encKey) {
@@ -352,7 +366,9 @@ export class MigrationService {
   private async migrateUsers(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldUsers = (await this.oldDB.getAllAsync(`
       SELECT * FROM User 
@@ -406,7 +422,9 @@ export class MigrationService {
   private async migrateFoods(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldFoods = (await this.oldDB.getAllAsync(`
       SELECT * FROM Food 
@@ -509,7 +527,9 @@ export class MigrationService {
     fat: number
   ): Promise<string | null> {
     try {
-      if (calories <= 0) return null;
+      if (calories <= 0) {
+        return null;
+      }
 
       const allFoods = await database
         .get<Food>('foods')
@@ -527,7 +547,9 @@ export class MigrationService {
       let bestScore = Infinity;
 
       for (const food of allFoods) {
-        if (food.calories <= 0) continue;
+        if (food.calories <= 0) {
+          continue;
+        }
         const foodCalFromProtein = food.protein * 4;
         const foodCalFromCarbs = food.carbs * 4;
         const foodCalFromFat = food.fat * 9;
@@ -559,7 +581,9 @@ export class MigrationService {
   private async migrateNutritionLogs(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldNutritionLogs = (await this.oldDB.getAllAsync(`
       SELECT * FROM UserNutrition 
@@ -778,7 +802,9 @@ export class MigrationService {
   private async migrateExercises(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldExercises = (await this.oldDB.getAllAsync(`
       SELECT * FROM Exercise 
@@ -845,16 +871,32 @@ export class MigrationService {
    * Map old exercise type to new equipment type
    */
   private mapExerciseType(type: string): EquipmentType {
-    if (!type) return 'bodyweight';
+    if (!type) {
+      return 'bodyweight';
+    }
 
     const lowerType = type.toLowerCase();
-    if (lowerType.includes('dumbbell') || lowerType.includes('dumbell')) return 'dumbbell';
-    if (lowerType.includes('barbell') || lowerType.includes('bar')) return 'barbell';
-    if (lowerType.includes('machine')) return 'machine';
-    if (lowerType.includes('cable')) return 'cable';
-    if (lowerType.includes('kettlebell') || lowerType.includes('kettle')) return 'kettlebell';
-    if (lowerType.includes('band') || lowerType.includes('resistance')) return 'resistance_band';
-    if (lowerType.includes('bodyweight') || lowerType.includes('body')) return 'bodyweight';
+    if (lowerType.includes('dumbbell') || lowerType.includes('dumbell')) {
+      return 'dumbbell';
+    }
+    if (lowerType.includes('barbell') || lowerType.includes('bar')) {
+      return 'barbell';
+    }
+    if (lowerType.includes('machine')) {
+      return 'machine';
+    }
+    if (lowerType.includes('cable')) {
+      return 'cable';
+    }
+    if (lowerType.includes('kettlebell') || lowerType.includes('kettle')) {
+      return 'kettlebell';
+    }
+    if (lowerType.includes('band') || lowerType.includes('resistance')) {
+      return 'resistance_band';
+    }
+    if (lowerType.includes('bodyweight') || lowerType.includes('body')) {
+      return 'bodyweight';
+    }
 
     return 'other';
   }
@@ -863,7 +905,9 @@ export class MigrationService {
    * Determine mechanic type based on exercise type and muscle group
    */
   private determineMechanicType(type: string, muscleGroup: string): 'compound' | 'isolation' {
-    if (!type || !muscleGroup) return 'isolation';
+    if (!type || !muscleGroup) {
+      return 'isolation';
+    }
 
     const lowerType = type.toLowerCase();
     const lowerMuscleGroup = muscleGroup.toLowerCase();
@@ -891,20 +935,34 @@ export class MigrationService {
    * Determine load multiplier based on exercise type and muscle group
    */
   private determineLoadMultiplier(type: string, muscleGroup: string): number {
-    if (!type || !muscleGroup) return 1.0;
+    if (!type || !muscleGroup) {
+      return 1.0;
+    }
 
     const lowerType = type.toLowerCase();
     const lowerMuscleGroup = muscleGroup.toLowerCase();
 
     // Higher multipliers for heavy compound movements
-    if (lowerType.includes('squat') || lowerType.includes('deadlift')) return 1.5;
-    if (lowerType.includes('bench') || lowerType.includes('press')) return 1.3;
-    if (lowerType.includes('row') || lowerType.includes('pull')) return 1.2;
+    if (lowerType.includes('squat') || lowerType.includes('deadlift')) {
+      return 1.5;
+    }
+    if (lowerType.includes('bench') || lowerType.includes('press')) {
+      return 1.3;
+    }
+    if (lowerType.includes('row') || lowerType.includes('pull')) {
+      return 1.2;
+    }
 
     // Lower multipliers for isolation exercises
-    if (lowerMuscleGroup.includes('biceps') || lowerMuscleGroup.includes('triceps')) return 0.8;
-    if (lowerMuscleGroup.includes('abs') || lowerMuscleGroup.includes('core')) return 0.7;
-    if (lowerMuscleGroup.includes('calves') || lowerMuscleGroup.includes('forearms')) return 0.6;
+    if (lowerMuscleGroup.includes('biceps') || lowerMuscleGroup.includes('triceps')) {
+      return 0.8;
+    }
+    if (lowerMuscleGroup.includes('abs') || lowerMuscleGroup.includes('core')) {
+      return 0.7;
+    }
+    if (lowerMuscleGroup.includes('calves') || lowerMuscleGroup.includes('forearms')) {
+      return 0.6;
+    }
 
     return 1.0; // Default multiplier
   }
@@ -919,10 +977,18 @@ export class MigrationService {
     if (!mealType) {
       if (createdAt != null) {
         const hour = new Date(createdAt).getHours();
-        if (hour >= 5 && hour < 11) return 'breakfast';
-        if (hour >= 11 && hour < 14) return 'lunch';
-        if (hour >= 14 && hour < 21) return 'dinner';
-        if (hour >= 21 || hour < 5) return 'snack';
+        if (hour >= 5 && hour < 11) {
+          return 'breakfast';
+        }
+        if (hour >= 11 && hour < 14) {
+          return 'lunch';
+        }
+        if (hour >= 14 && hour < 21) {
+          return 'dinner';
+        }
+        if (hour >= 21 || hour < 5) {
+          return 'snack';
+        }
       }
       return 'other';
     }
@@ -949,10 +1015,18 @@ export class MigrationService {
     // Fallback to string matching for any non-numeric values
     const lowerMealType = mealType.toString().toLowerCase();
 
-    if (lowerMealType.includes('breakfast')) return 'breakfast';
-    if (lowerMealType.includes('lunch')) return 'lunch';
-    if (lowerMealType.includes('dinner')) return 'dinner';
-    if (lowerMealType.includes('snack')) return 'snack';
+    if (lowerMealType.includes('breakfast')) {
+      return 'breakfast';
+    }
+    if (lowerMealType.includes('lunch')) {
+      return 'lunch';
+    }
+    if (lowerMealType.includes('dinner')) {
+      return 'dinner';
+    }
+    if (lowerMealType.includes('snack')) {
+      return 'snack';
+    }
 
     return 'other';
   }
@@ -963,7 +1037,9 @@ export class MigrationService {
   private async migrateWorkouts(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldWorkouts = (await this.oldDB.getAllAsync(`
       SELECT * FROM Workout 
@@ -1008,7 +1084,9 @@ export class MigrationService {
    * Map old recurringOnWeek string to new weekDaysJson array
    */
   private mapRecurringOnWeek(recurringOnWeek: string): number[] {
-    if (!recurringOnWeek) return [];
+    if (!recurringOnWeek) {
+      return [];
+    }
 
     const dayMap: Record<string, number> = {
       monday: 0,
@@ -1032,7 +1110,9 @@ export class MigrationService {
   private async migrateWorkoutLogs(
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
       SELECT * FROM WorkoutEvent 
@@ -1085,7 +1165,9 @@ export class MigrationService {
     totalForProgress: number,
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldWorkouts = (await this.oldDB.getAllAsync(`
       SELECT * FROM Workout 
@@ -1097,7 +1179,9 @@ export class MigrationService {
 
     for (const oldWorkout of oldWorkouts) {
       const newTemplateId = this.workoutIdToTemplateId.get(Number(oldWorkout.id));
-      if (!newTemplateId) continue;
+      if (!newTemplateId) {
+        continue;
+      }
 
       const oldSets = (await this.oldDB.getAllAsync(
         `SELECT * FROM "Set" WHERE workoutId = ? AND (deletedAt IS NULL OR deletedAt = '') ORDER BY setOrder, id`,
@@ -1106,7 +1190,9 @@ export class MigrationService {
 
       for (const oldSet of oldSets) {
         const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
-        if (!newExerciseId) continue;
+        if (!newExerciseId) {
+          continue;
+        }
 
         try {
           await database.write(async () => {
@@ -1151,7 +1237,9 @@ export class MigrationService {
     totalForProgress: number,
     reportProgress?: (current: number, total: number) => void
   ): Promise<number> {
-    if (!this.oldDB) throw new Error('Old database not available');
+    if (!this.oldDB) {
+      throw new Error('Old database not available');
+    }
 
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
       SELECT * FROM WorkoutEvent 
@@ -1163,7 +1251,9 @@ export class MigrationService {
 
     for (const oldEvent of oldWorkoutLogs) {
       const newLogId = this.workoutEventIdToLogId.get(Number(oldEvent.id));
-      if (!newLogId) continue;
+      if (!newLogId) {
+        continue;
+      }
 
       const oldSets = (await this.oldDB.getAllAsync(
         `SELECT * FROM "Set" WHERE workoutId = ? AND (deletedAt IS NULL OR deletedAt = '') ORDER BY setOrder, id`,
@@ -1172,7 +1262,9 @@ export class MigrationService {
 
       for (const oldSet of oldSets) {
         const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
-        if (!newExerciseId) continue;
+        if (!newExerciseId) {
+          continue;
+        }
 
         const difficultyLevel = Math.min(10, Math.max(1, Number(oldSet.difficultyLevel) ?? 0));
 
@@ -1215,13 +1307,19 @@ export class MigrationService {
    * Parse workout volume from old workoutVolume text field
    */
   private parseWorkoutVolume(workoutVolume: string): number {
-    if (!workoutVolume) return 0;
+    if (!workoutVolume) {
+      return 0;
+    }
 
     // Try to parse as JSON first (if it's stored as JSON)
     try {
       const parsed = JSON.parse(workoutVolume);
-      if (typeof parsed === 'number') return parsed;
-      if (typeof parsed === 'object' && parsed.total) return parsed.total;
+      if (typeof parsed === 'number') {
+        return parsed;
+      }
+      if (typeof parsed === 'object' && parsed.total) {
+        return parsed.total;
+      }
     } catch {
       // If not JSON, try to parse as number
       const num = parseFloat(workoutVolume);
@@ -1235,7 +1333,9 @@ export class MigrationService {
    * Map old fitness goals string to new weight goal format
    */
   private mapFitnessGoalToWeightGoal(fitnessGoals: string): 'lose' | 'gain' | 'maintain' {
-    if (!fitnessGoals) return 'maintain';
+    if (!fitnessGoals) {
+      return 'maintain';
+    }
 
     const lowerGoals = fitnessGoals.toLowerCase();
     if (lowerGoals.includes('lose') || lowerGoals.includes('cut')) {
@@ -1250,7 +1350,9 @@ export class MigrationService {
   private genderReverseMap: Map<string, 'male' | 'female' | 'other'> | null = null;
 
   private getGenderReverseMap(): Map<string, 'male' | 'female' | 'other'> {
-    if (this.genderReverseMap) return this.genderReverseMap;
+    if (this.genderReverseMap) {
+      return this.genderReverseMap;
+    }
     const map = new Map<string, 'male' | 'female' | 'other'>();
     const genderKeys: [string, 'male' | 'female' | 'other'][] = [
       ['onboarding.personalInfo.gender.male', 'male'],
@@ -1268,7 +1370,9 @@ export class MigrationService {
           const value = i18n.t(key, { lng });
           if (value && typeof value === 'string' && value !== key) {
             const normalized = value.trim().toLowerCase();
-            if (normalized) map.set(normalized, canonical);
+            if (normalized) {
+              map.set(normalized, canonical);
+            }
           }
         } catch {
           // Skip missing keys
@@ -1283,11 +1387,15 @@ export class MigrationService {
    * Map old gender text to new gender format (supports any locale via translation lookup).
    */
   private mapGender(gender: string): 'male' | 'female' | 'other' {
-    if (!gender) return 'other';
+    if (!gender) {
+      return 'other';
+    }
 
     const normalized = gender.trim().toLowerCase();
     const canonical = this.getGenderReverseMap().get(normalized);
-    if (canonical) return canonical;
+    if (canonical) {
+      return canonical;
+    }
 
     return 'other';
   }
@@ -1296,7 +1404,9 @@ export class MigrationService {
    * Map old activity level text to new activity level number
    */
   private mapActivityLevel(activityLevel: string): number {
-    if (!activityLevel) return 3; // Default to moderate
+    if (!activityLevel) {
+      return 3;
+    } // Default to moderate
 
     const lowerLevel = activityLevel.toLowerCase().trim();
     if (lowerLevel === 'sedentary') {
@@ -1322,7 +1432,9 @@ export class MigrationService {
   private mapLiftingExperience(
     liftingExperience: string
   ): 'beginner' | 'intermediate' | 'advanced' {
-    if (!liftingExperience) return 'beginner';
+    if (!liftingExperience) {
+      return 'beginner';
+    }
 
     const lowerExperience = liftingExperience.toLowerCase().trim();
     if (lowerExperience === 'beginner') {

@@ -116,7 +116,9 @@ export class WorkoutTemplateService {
     const exercisesInWorkout: ExerciseInWorkout[] = [];
     exerciseGroups.forEach((exerciseSets, exerciseId) => {
       const exercise = exerciseMap.get(exerciseId);
-      if (!exercise) return; // Skip if exercise not found
+      if (!exercise) {
+        return;
+      } // Skip if exercise not found
 
       // Get the first set's data (all sets for same exercise should have same reps/weight)
       const firstSet = exerciseSets[0];
@@ -320,8 +322,12 @@ export class WorkoutTemplateService {
     // Sort by last completed (most recent first), then by creation date
     templatesWithMetadata.sort((a, b) => {
       // If one has lastCompleted and other doesn't, prioritize the one with lastCompleted
-      if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) return -1;
-      if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) return 1;
+      if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
+        return -1;
+      }
+      if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
+        return 1;
+      }
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
@@ -485,8 +491,12 @@ export class WorkoutTemplateService {
     // Sort by last completed (most recent first), then by creation date
     templatesWithMetadata.sort((a, b) => {
       // If one has lastCompleted and other doesn't, prioritize the one with lastCompleted
-      if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) return -1;
-      if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) return 1;
+      if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
+        return -1;
+      }
+      if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
+        return 1;
+      }
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
@@ -904,13 +914,21 @@ export class WorkoutTemplateService {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     // TODO: add translations
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30)
+    if (diffDays === 0) {
+      return 'Today';
+    }
+    if (diffDays === 1) {
+      return 'Yesterday';
+    }
+    if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    }
+    if (diffDays < 30) {
       return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
-    if (diffDays < 365)
+    }
+    if (diffDays < 365) {
       return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+    }
     return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
   }
 
@@ -964,9 +982,15 @@ export class WorkoutTemplateService {
       }
 
       await template.update((record) => {
-        if (updates.name !== undefined) record.name = updates.name;
-        if (updates.description !== undefined) record.description = updates.description;
-        if (updates.isArchived !== undefined) record.isArchived = updates.isArchived;
+        if (updates.name !== undefined) {
+          record.name = updates.name;
+        }
+        if (updates.description !== undefined) {
+          record.description = updates.description;
+        }
+        if (updates.isArchived !== undefined) {
+          record.isArchived = updates.isArchived;
+        }
         record.updatedAt = Date.now();
       });
 

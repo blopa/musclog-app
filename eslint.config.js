@@ -19,6 +19,8 @@ module.exports = defineConfig([
     rules: {
       'react/display-name': 'off',
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
+      // Enforce curly braces for all control statements (fixable)
+      curly: ['warn', 'all'],
       // Disallow using `&&` inside JSX expression containers (fixable)
       'local/no-jsx-logical-expression': 'error',
       // Require lazy imports for conditionally rendered components (fixable)

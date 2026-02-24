@@ -90,9 +90,13 @@ export function OptionsMultiSelector<T extends string | number>({
   }, [orderedOptions, selectedIds]);
 
   const allSelectedInSameGroup = useMemo(() => {
-    if (selectedItems.length < 2) return false;
+    if (selectedItems.length < 2) {
+      return false;
+    }
     const firstGroupId = selectedItems[0]?.groupId;
-    if (!firstGroupId) return false;
+    if (!firstGroupId) {
+      return false;
+    }
     return selectedItems.every((item) => item.groupId === firstGroupId);
   }, [selectedItems]);
 
@@ -103,7 +107,9 @@ export function OptionsMultiSelector<T extends string | number>({
 
   // Handle grouping/ungrouping
   const handleGroupAction = () => {
-    if (!canGroup) return;
+    if (!canGroup) {
+      return;
+    }
 
     // Generate groupId ONCE before mapping (not inside the map)
     const newGroupId = allSelectedInSameGroup ? undefined : generateGroupId();
@@ -132,7 +138,9 @@ export function OptionsMultiSelector<T extends string | number>({
 
   // Handle delete
   const handleDelete = () => {
-    if (!canDelete || !onDelete) return;
+    if (!canDelete || !onDelete) {
+      return;
+    }
 
     onDelete(selectedIds);
     // Selection is cleared by the onDelete handler

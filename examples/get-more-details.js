@@ -20,7 +20,9 @@ async function enrichProductData() {
     // Using a for...of loop to avoid overwhelming the API and handle errors gracefully
     for (const product of products) {
       const code = product.code;
-      if (!code) continue;
+      if (!code) {
+        continue;
+      }
 
       const url = `${BASE_URL}${code}.json`;
       console.log(`Fetching details for: ${code}...`);

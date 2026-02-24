@@ -485,7 +485,9 @@ export function DataLogModal({
   };
 
   const handleToggleFavorite = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
     setShowMenu(false);
 
     try {
@@ -511,7 +513,9 @@ export function DataLogModal({
   };
 
   const handleDuplicate = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
     setShowMenu(false);
     setIsDuplicating(true);
 
@@ -552,13 +556,17 @@ export function DataLogModal({
   };
 
   const handleDelete = () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
     setShowMenu(false);
     setDeleteModalVisible(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem) {
+      return;
+    }
     setIsDeleting(true);
 
     try {

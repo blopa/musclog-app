@@ -116,7 +116,9 @@ export class HealthConnectError extends Error {
    * Get recommended retry delay in milliseconds
    */
   getRetryDelay(attemptNumber: number): number {
-    if (!this.retryable) return 0;
+    if (!this.retryable) {
+      return 0;
+    }
 
     // Exponential backoff: 1s, 2s, 4s, 8s, 16s (max)
     const baseDelay = 1000;

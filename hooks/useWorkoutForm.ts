@@ -52,7 +52,9 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   );
 
   const loadTemplate = useCallback(async () => {
-    if (!isEditMode || !templateId) return;
+    if (!isEditMode || !templateId) {
+      return;
+    }
 
     setIsLoading(true);
     try {

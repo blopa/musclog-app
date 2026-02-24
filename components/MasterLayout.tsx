@@ -64,7 +64,9 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
               <Pressable
                 className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
-                  if (!isActive('/')) router.push('/');
+                  if (!isActive('/')) {
+                    router.push('/');
+                  }
                 }}
               >
                 <View
@@ -91,7 +93,9 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
               <Pressable
                 className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
-                  if (!isActive('/workout/workouts')) router.push('/workout/workouts');
+                  if (!isActive('/workout/workouts')) {
+                    router.push('/workout/workouts');
+                  }
                 }}
               >
                 <View
@@ -148,7 +152,9 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
               <Pressable
                 className="flex-1 items-center justify-center gap-1"
                 onPress={() => {
-                  if (!isFoodActive()) router.push('/nutrition/food');
+                  if (!isFoodActive()) {
+                    router.push('/nutrition/food');
+                  }
                 }}
               >
                 <View
