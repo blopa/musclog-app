@@ -1,3 +1,4 @@
+import convert from 'convert';
 import { bmiFromWeightAndHeightM } from './nutritionCalculator';
 
 export interface BMIStatus {
@@ -23,15 +24,15 @@ export function calculateBMIWithStatus(
   // Convert weight to kg if needed
   let weightKg = weight;
   if (weightUnit === 'lbs') {
-    weightKg = weight / 2.20462; // TODO: use the convert package for this
+    weightKg = convert(weight, 'lbs').to('kg');
   }
 
   // Convert height to meters if needed
   let heightM = height;
   if (heightUnit === 'cm') {
-    heightM = height / 100; // TODO: use the convert package for this
+    heightM = convert(height, 'cm').to('m');
   } else if (heightUnit === 'in') {
-    heightM = height * 0.0254; // TODO: use the convert package for this
+    heightM = convert(height, 'in').to('m');
   }
 
   // Calculate BMI using the nutritionCalculator function
