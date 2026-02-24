@@ -931,6 +931,7 @@ export class WorkoutTemplateService {
       if (weeks === 1) {
         return i18n.t('common.oneWeekAgo');
       }
+
       return i18n.t('common.weeksAgo', { count: weeks });
     }
 
