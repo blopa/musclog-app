@@ -5,6 +5,7 @@ import { database } from '../database';
 import { encryptUserMetricFields } from '../database/encryptionHelpers';
 import Setting from '../database/models/Setting';
 import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
+import i18n from '../lang/lang';
 import { healthConnectService } from './healthConnect';
 import {
   HealthConnectError,
@@ -229,7 +230,7 @@ class HealthDataSyncService {
       if (!hasAnyPermission) {
         throw new HealthConnectError(
           HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
-          'No Health Connect permissions granted', // TODO: use i18n
+          i18n.t('snackbar.healthConnect.noPermissionsGranted'),
           { retryable: false }
         );
       }
