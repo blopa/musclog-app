@@ -1,4 +1,3 @@
-
 Here’s a concise comparison and what’s still missing in **musclog-new**.
 
 ---
@@ -12,15 +11,15 @@ Here’s a concise comparison and what’s still missing in **musclog-new**.
 
 ## What’s implemented in musclog-new (and where it lives)
 
-| Area | musclog-new status |
-|------|--------------------|
-| **Workouts** | Workout list, session, rest timer, summary, create/edit template, add/replace exercise, history modals, analytics (volume, estimated 1RM, PRs). |
-| **Nutrition** | Daily food log by date (`/nutrition/food`), meal sections, add food, search, barcode scan, custom food, my meals, nutrition goals (onboarding + modal). |
-| **User & body** | Profile, edit personal/fitness, body metrics (weight, body fat, height, etc.) via `UserMetricService`, add/edit in modals, BodyMetricsHistoryModal, DataLogModal (metrics + food data). |
-| **Exercises** | Exercise library in modals (ExercisesModal, AddExerciseModal, CreateExerciseModal, ReplaceExerciseModal, DataLogModal). No standalone “list exercises” screen. |
-| **Settings** | Basic, advanced (export/import, account deletion), AI settings (API keys, models). Export/import use `database/exportImport.ts` and `utils/file` (platform-specific). |
-| **Onboarding** | Landing, personal info, fitness info, Health Connect, Google connect, set goals, nutrition goals + results. |
-| **Health Connect** | Hooks and sync services exist; onboarding step for connecting. |
+| Area               | musclog-new status                                                                                                                                                                      |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Workouts**       | Workout list, session, rest timer, summary, create/edit template, add/replace exercise, history modals, analytics (volume, estimated 1RM, PRs).                                         |
+| **Nutrition**      | Daily food log by date (`/nutrition/food`), meal sections, add food, search, barcode scan, custom food, my meals, nutrition goals (onboarding + modal).                                 |
+| **User & body**    | Profile, edit personal/fitness, body metrics (weight, body fat, height, etc.) via `UserMetricService`, add/edit in modals, BodyMetricsHistoryModal, DataLogModal (metrics + food data). |
+| **Exercises**      | Exercise library in modals (ExercisesModal, AddExerciseModal, CreateExerciseModal, ReplaceExerciseModal, DataLogModal). No standalone “list exercises” screen.                          |
+| **Settings**       | Basic, advanced (export/import, account deletion), AI settings (API keys, models). Export/import use `database/exportImport.ts` and `utils/file` (platform-specific).                   |
+| **Onboarding**     | Landing, personal info, fitness info, Health Connect, Google connect, set goals, nutrition goals + results.                                                                             |
+| **Health Connect** | Hooks and sync services exist; onboarding step for connecting.                                                                                                                          |
 
 ---
 
@@ -118,20 +117,20 @@ Here’s a concise comparison and what’s still missing in **musclog-new**.
 
 ## Summary table
 
-| Feature | musclog-app | musclog-new |
-|--------|-------------|-------------|
-| Progress route | — | **Missing** (link exists, no screen) |
-| User metrics **charts** screen | ✅ userMetricsCharts | ❌ (only profile + modals) |
-| One-rep max **screen** | ✅ oneRepMaxes | ❌ (only estimated 1RM in analytics) |
-| AI Chat (real backend) | ✅ Chat + sendChatMessage | ❌ CoachModal mock only |
-| AI workout generation | ✅ generateWorkoutPlan | ❌ “Coming soon” |
-| AI meal/label photo | ✅ | ❌ TODO in SmartCameraModal |
-| Retrospective nutrition | ✅ | ❌ |
-| Fitness goals **history** | ✅ list/create screens | ⚠️ User goal + nutrition goals only |
-| Schedule / upcoming workouts | ✅ (data + dashboard) | ❌ Schema only, no UI |
-| Scheduled notifications | ✅ expo-notifications | ❌ Toggle + UI only |
-| List foods / list meals screens | ✅ | ⚠️ Via search/modals (optional) |
-| List exercises screen | ✅ | ⚠️ In modals only (optional) |
+| Feature                         | musclog-app               | musclog-new                          |
+| ------------------------------- | ------------------------- | ------------------------------------ |
+| Progress route                  | —                         | **Missing** (link exists, no screen) |
+| User metrics **charts** screen  | ✅ userMetricsCharts      | ❌ (only profile + modals)           |
+| One-rep max **screen**          | ✅ oneRepMaxes            | ❌ (only estimated 1RM in analytics) |
+| AI Chat (real backend)          | ✅ Chat + sendChatMessage | ❌ CoachModal mock only              |
+| AI workout generation           | ✅ generateWorkoutPlan    | ❌ “Coming soon”                     |
+| AI meal/label photo             | ✅                        | ❌ TODO in SmartCameraModal          |
+| Retrospective nutrition         | ✅                        | ❌                                   |
+| Fitness goals **history**       | ✅ list/create screens    | ⚠️ User goal + nutrition goals only  |
+| Schedule / upcoming workouts    | ✅ (data + dashboard)     | ❌ Schema only, no UI                |
+| Scheduled notifications         | ✅ expo-notifications     | ❌ Toggle + UI only                  |
+| List foods / list meals screens | ✅                        | ⚠️ Via search/modals (optional)      |
+| List exercises screen           | ✅                        | ⚠️ In modals only (optional)         |
 
 ---
 

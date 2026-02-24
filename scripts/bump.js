@@ -54,10 +54,7 @@ function updateVersion(filePath) {
     data.packages[''].version = newVersion;
   }
 
-  fs.writeFileSync(
-    filePath,
-    JSON.stringify(data, null, 2)
-  );
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   console.log(`${path.relative(DIRNAME, filePath)}: ${oldVersion} → ${newVersion}`);
 }
 
