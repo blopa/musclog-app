@@ -1,5 +1,53 @@
 import Quagga from '@ericblade/quagga2';
 
+import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+
+function getExportFileName(): string {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  return `${timestamp}-musclog-export.json`;
+}
+
+export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
+  const dbDump = await dumpDatabase(encryptionPhrase);
+  const fileName = getExportFileName();
+  const blob = new Blob([dbDump], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export async function importDatabase(decryptionPhrase?: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        resolve();
+        return;
+      }
+      try {
+        const dbDump = await new Promise<string>((res, rej) => {
+          const reader = new FileReader();
+          reader.onload = () => res(String(reader.result ?? ''));
+          reader.onerror = () => rej(reader.error);
+          reader.readAsText(file);
+        });
+        await restoreDatabase(dbDump, decryptionPhrase);
+        window.location.reload();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    };
+    input.click();
+  });
+}
+
 export async function resizeImage(photoUri: string, width: number = 256): Promise<string> {
   try {
     const image = new Image();

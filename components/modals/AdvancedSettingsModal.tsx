@@ -14,15 +14,19 @@ import {
   Upload,
   Utensils,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
+import { exportDatabase, importDatabase } from '../../utils/file';
 import { SettingsCard } from '../cards/SettingsCard';
+import { Button } from '../theme/Button';
+import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { CenteredModal } from './CenteredModal';
 import {
   ExerciseDataModal,
   FoodDataModal,
@@ -69,6 +73,47 @@ export function AdvancedSettingsModal({
       flushAllPendingChanges();
     }
   }, [visible, flushAllPendingChanges]);
+
+  // Export / Import modals and state
+  const [exportModalVisible, setExportModalVisible] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [encryptionPhrase, setEncryptionPhrase] = useState('');
+  const [decryptionPhrase, setDecryptionPhrase] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleExportConfirm = useCallback(async () => {
+    setLoading(true);
+    try {
+      await exportDatabase(encryptionPhrase || undefined);
+      setExportModalVisible(false);
+      setEncryptionPhrase('');
+    } catch (err) {
+      console.error('Export failed:', err);
+      Alert.alert(
+        t('settings.advancedSettings.exportFailedTitle'),
+        t('settings.advancedSettings.exportFailedMessage')
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [encryptionPhrase, t]);
+
+  const handleImportConfirm = useCallback(async () => {
+    setLoading(true);
+    try {
+      await importDatabase(decryptionPhrase || undefined);
+      setImportModalVisible(false);
+      setDecryptionPhrase('');
+    } catch (err) {
+      console.error('Import failed:', err);
+      Alert.alert(
+        t('settings.advancedSettings.importFailedTitle'),
+        t('settings.advancedSettings.importFailedMessage')
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [decryptionPhrase, t]);
 
   // Data log modal visibility – each row opens its corresponding modal
   const [showFoodDataModal, setShowFoodDataModal] = useState(false);
@@ -120,7 +165,6 @@ export function AdvancedSettingsModal({
             >
               {t('settings.advancedSettings.dataPortability')}
             </Text>
-            {/* TODO: make import and export work */}
             <SettingsCard
               icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               iconContainerStyle={{
@@ -131,7 +175,7 @@ export function AdvancedSettingsModal({
               }}
               title={t('settings.advancedSettings.exportFitnessData')}
               subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
-              onPress={onExportPress || (() => {})}
+              onPress={() => setExportModalVisible(true)}
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
@@ -146,7 +190,7 @@ export function AdvancedSettingsModal({
               }}
               title={t('settings.advancedSettings.importFitnessData')}
               subtitle={t('settings.advancedSettings.importFitnessDataSubtitle')}
-              onPress={onImportPress || (() => {})}
+              onPress={() => setImportModalVisible(true)}
               rightIcon={
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
@@ -344,6 +388,100 @@ export function AdvancedSettingsModal({
           </View>
         </View>
       </FullScreenModal>
+
+      {/* Export confirmation modal */}
+      <CenteredModal
+        visible={exportModalVisible}
+        onClose={() => {
+          if (!loading) {
+            setExportModalVisible(false);
+            setEncryptionPhrase('');
+          }
+        }}
+        title={t('settings.advancedSettings.confirmExport')}
+        subtitle={t('settings.advancedSettings.exportConfirmationSubtitle')}
+        footer={
+          <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+            <Button
+              label={t('common.cancel')}
+              variant="outline"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                setExportModalVisible(false);
+                setEncryptionPhrase('');
+              }}
+              disabled={loading}
+            />
+            <Button
+              label={t('common.confirm')}
+              variant="accent"
+              size="sm"
+              width="flex-1"
+              onPress={handleExportConfirm}
+              disabled={loading}
+              loading={loading}
+            />
+          </View>
+        }
+      >
+        <View className="gap-4">
+          <TextInput
+            label={t('settings.advancedSettings.enterEncryptionPhrase')}
+            value={encryptionPhrase}
+            onChangeText={setEncryptionPhrase}
+            placeholder={t('settings.advancedSettings.encryptionPhrasePlaceholder')}
+            secureTextEntry
+          />
+        </View>
+      </CenteredModal>
+
+      {/* Import confirmation modal */}
+      <CenteredModal
+        visible={importModalVisible}
+        onClose={() => {
+          if (!loading) {
+            setImportModalVisible(false);
+            setDecryptionPhrase('');
+          }
+        }}
+        title={t('settings.advancedSettings.confirmImport')}
+        subtitle={t('settings.advancedSettings.importConfirmationSubtitle')}
+        footer={
+          <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+            <Button
+              label={t('common.cancel')}
+              variant="outline"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                setImportModalVisible(false);
+                setDecryptionPhrase('');
+              }}
+              disabled={loading}
+            />
+            <Button
+              label={t('common.confirm')}
+              variant="accent"
+              size="sm"
+              width="flex-1"
+              onPress={handleImportConfirm}
+              disabled={loading}
+              loading={loading}
+            />
+          </View>
+        }
+      >
+        <View className="gap-4">
+          <TextInput
+            label={t('settings.advancedSettings.enterDecryptionPhrase')}
+            value={decryptionPhrase}
+            onChangeText={setDecryptionPhrase}
+            placeholder={t('settings.advancedSettings.decryptionPhrasePlaceholder')}
+            secureTextEntry
+          />
+        </View>
+      </CenteredModal>
 
       {/* Data log modals – opened from the Data Management rows */}
       <FoodDataModal visible={showFoodDataModal} onClose={() => setShowFoodDataModal(false)} />
