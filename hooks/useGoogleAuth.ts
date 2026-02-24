@@ -2,10 +2,10 @@ import { fetch } from 'expo/fetch';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
 import { getGoogleClientId } from '../utils/googleAuth';
+import { showSnackbar } from '../utils/snackbarService';
 
 // This is required for the OAuth flow to work correctly on mobile
 WebBrowser.maybeCompleteAuthSession();
@@ -60,8 +60,7 @@ export const exchangeCodeForToken = async (code: string, redirectUri: string) =>
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
-    // TODO: use snackbar here instead
-    Alert.alert('Error', 'Failed to sign in with Google.');
+    showSnackbar('error', 'Failed to sign in with Google.'); // TODO: use i18n
     throw error;
   }
 };
@@ -131,8 +130,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
         // User canceled the auth flow
       }
     } catch (_error) {
-      // TODO: use the snackbar system
-      Alert.alert('Error', 'Failed to initiate Google sign-in.');
+      showSnackbar('error', 'Failed to initiate Google sign-in.'); // TODO: use i18n
     }
   };
 
