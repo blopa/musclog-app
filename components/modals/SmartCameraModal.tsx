@@ -44,7 +44,7 @@ export default function SmartCameraModal({
   visible,
   onClose,
   mode = 'barcode-scan',
-  hideCameraModePicker = false, // TODO: implement the usage of this
+  hideCameraModePicker = false,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();

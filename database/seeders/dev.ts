@@ -1455,7 +1455,7 @@ async function seedFoods(): Promise<{ created: number }> {
         }
 
         const encrypted = await encryptNutritionLogSnapshot({
-          loggedFoodName: f.name ?? 'No named food', // TODO: translate this
+          loggedFoodName: f.name ?? 'No named food', // this is sev so whatever
           loggedCalories: f.calories ?? 0,
           loggedProtein: f.protein ?? 0,
           loggedCarbs: f.carbs ?? 0,

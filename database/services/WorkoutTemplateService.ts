@@ -913,22 +913,27 @@ export class WorkoutTemplateService {
     const diffMs = now - timestamp;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    // TODO: add translations
     if (diffDays === 0) {
+      // TODO: add translations
       return 'Today';
     }
     if (diffDays === 1) {
+      // TODO: add translations
       return 'Yesterday';
     }
     if (diffDays < 7) {
+      // TODO: add translations
       return `${diffDays} days ago`;
     }
     if (diffDays < 30) {
+      // TODO: add translations
       return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
     }
     if (diffDays < 365) {
+      // TODO: add translations
       return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
     }
+    // TODO: add translations
     return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
   }
 
