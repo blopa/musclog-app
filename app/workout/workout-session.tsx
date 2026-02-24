@@ -27,9 +27,9 @@ import { WorkoutActionButton } from '../../components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { WorkoutService } from '../../database/services';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useSettings } from '../../hooks/useSettings';
+import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -55,6 +55,7 @@ export default function WorkoutSessionScreen() {
     setCurrentExercise,
     refresh,
   } = useActiveWorkout(workoutLogId);
+  const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
@@ -251,7 +252,7 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
-      await WorkoutService.completeWorkout(workoutLog.id);
+      await completeWorkout(workoutLog.id);
       setIsEndWorkoutModalVisible(false);
       setIsSessionFeedbackModalVisible(true);
     } catch (err) {
@@ -494,11 +495,7 @@ export default function WorkoutSessionScreen() {
           }}
           onSubmit={async (data) => {
             try {
-              // TODO: cant we have this in a hook?
-              await WorkoutService.updateWorkoutLogFeedback(workoutLog.id, {
-                exhaustionLevel: data.exhaustion,
-                workoutScore: Math.round((data.difficulty + data.exhaustion + data.enjoyment) / 3),
-              });
+              await submitFeedback(workoutLog.id, data);
             } catch (err) {
               console.error('Error saving workout feedback:', err);
             } finally {
