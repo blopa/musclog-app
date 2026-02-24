@@ -40,7 +40,8 @@
     "eatingPhase": "Eating Phase",
     "loadMultiplier": "Load Multiplier",
     "close": "Close",
-    "datePickerNotImplemented": "Date picker not yet implemented"
+    "datePickerNotImplemented": "Date picker not yet implemented",
+    "install": "Install"
   },
   "emptyState": {
     "workout": {
@@ -1189,7 +1190,10 @@
       "initializing": "Initializing Health Connect...",
       "syncing": "Syncing health data...",
       "processing": "Processing...",
-      "continue": "Continue"
+      "continue": "Continue",
+      "initializeFirst": "Please initialize Health Connect first.",
+      "permissionsDenied": "The following permissions were not granted: {{types}}. Some features may not work correctly.",
+      "openSettings": "Open Settings"
     },
     "landing": {
       "getStarted": "Get Started",

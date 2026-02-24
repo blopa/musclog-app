@@ -1,11 +1,8 @@
-/**
- * useHealthConnect Hook
- * React hook for managing Health Connect state, initialization, and permissions
- */
-
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
+import { useSnackbar } from '../components/SnackbarContext';
 import { healthConnectService, HealthConnectStatus } from '../services/healthConnect';
 import { HealthConnectError } from '../services/healthConnectErrors';
 
@@ -45,6 +42,8 @@ export interface UseHealthConnectResult {
  * Hook for managing Health Connect lifecycle
  */
 export const useHealthConnect = (): UseHealthConnectResult => {
+  const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [status, setStatus] = useState<HealthConnectStatus>(HealthConnectStatus.NOT_INITIALIZED);
   const [hasAllPermissions, setHasAllPermissions] = useState(false);
   const [hasAnyPermission, setHasAnyPermission] = useState(false);
@@ -80,24 +79,15 @@ export const useHealthConnect = (): UseHealthConnectResult => {
 
       // Show user-friendly error
       if (hcError.code === 'SDK_NOT_AVAILABLE') {
-        // TODO: use the snackbar system and translations
-        Alert.alert('Health Connect Not Available', hcError.getUserMessage(), [
-          { text: 'OK', style: 'default' },
-          {
-            text: 'Install',
-            style: 'default',
-            onPress: () => {
-              // Open Play Store to install Health Connect
-              // This would require Linking.openURL with the Play Store link
-              console.log('Open Play Store to install Health Connect');
-            },
-          },
-        ]);
+        showSnackbar('error', hcError.getUserMessage(), {
+          action: t('common.install'),
+          duration: 0, // Don't auto-dismiss
+        });
       }
 
       return false;
     }
-  }, []);
+  }, [showSnackbar, t]);
 
   /**
    * Check current permissions status
@@ -155,11 +145,7 @@ export const useHealthConnect = (): UseHealthConnectResult => {
    */
   const requestPermissions = useCallback(async (): Promise<boolean> => {
     if (!isAvailable) {
-      // TODO: use the snackbar system and translations
-      Alert.alert('Health Connect Not Available', 'Please initialize Health Connect first.', [
-        { text: 'OK' },
-      ]);
-
+      showSnackbar('error', t('healthConnect.initializeFirst'));
       return false;
     }
 
@@ -172,19 +158,10 @@ export const useHealthConnect = (): UseHealthConnectResult => {
 
       if (!allGranted && result.denied.length > 0) {
         const deniedTypes = result.denied.map((p) => p.recordType).join(', ');
-        // TODO: use the snackbar system and translations
-        Alert.alert(
-          'Permissions Required',
-          `The following permissions were not granted: ${deniedTypes}. Some features may not work correctly.`,
-          [
-            { text: 'OK', style: 'default' },
-            {
-              text: 'Open Settings',
-              style: 'default',
-              onPress: () => openSettings(),
-            },
-          ]
-        );
+        showSnackbar('error', t('healthConnect.permissionsDenied', { types: deniedTypes }), {
+          action: t('healthConnect.openSettings'),
+          duration: 0, // Don't auto-dismiss
+        });
       }
 
       return allGranted;
@@ -192,11 +169,10 @@ export const useHealthConnect = (): UseHealthConnectResult => {
       const hcError = err as HealthConnectError;
       console.error('Error requesting permissions:', hcError);
       setError(hcError);
-      // TODO: use the snackbar system
-      Alert.alert('Permission Error', hcError.getUserMessage(), [{ text: 'OK' }]);
+      showSnackbar('error', hcError.getUserMessage());
       return false;
     }
-  }, [isAvailable, openSettings]);
+  }, [isAvailable, showSnackbar, t]);
 
   /**
    * Open Health Connect data management
