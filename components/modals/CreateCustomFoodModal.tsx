@@ -654,27 +654,33 @@ export default function CreateCustomFoodModal({
               {t('food.newCustomFood.portionSizes')}
             </Text>
             <Pressable
-              className="flex-row items-center justify-between rounded-lg border border-border bg-background p-4"
+              className="min-h-12 flex-row items-center justify-between rounded-lg border p-3"
+              style={{
+                backgroundColor: theme.colors.background.secondary,
+                borderColor: theme.colors.background.white20,
+                borderWidth: 1,
+              }}
               onPress={() => setShowPortionPicker(true)}
             >
-              <View className="flex-1">
+              <View className="flex-1 flex-row flex-wrap items-center gap-2">
                 {selectedPortionIds.length > 0 ? (
-                  <View className="flex-row flex-wrap gap-2">
-                    {selectedPortionIds.map((id) => {
-                      const portion = portions.find((p) => p.id === id);
-                      return portion ? (
-                        <View
-                          key={id}
-                          className="rounded-full px-3 py-1"
-                          style={{ backgroundColor: theme.colors.accent.primary10 }}
+                  selectedPortionIds.map((id) => {
+                    const portion = portions.find((p) => p.id === id);
+                    return portion ? (
+                      <View
+                        key={id}
+                        className="rounded-full px-3 py-1.5"
+                        style={{ backgroundColor: theme.colors.status.emerald }}
+                      >
+                        <Text
+                          className="text-sm font-medium"
+                          style={{ color: theme.colors.text.white }}
                         >
-                          <Text className="text-sm font-medium text-accent-primary">
-                            {portion.name} ({portion.gramWeight}g)
-                          </Text>
-                        </View>
-                      ) : null;
-                    })}
-                  </View>
+                          {portion.name} ({portion.gramWeight}g)
+                        </Text>
+                      </View>
+                    ) : null;
+                  })
                 ) : (
                   <Text className="text-text-tertiary">
                     {t('food.newCustomFood.selectPortionSizes')}
