@@ -4,6 +4,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 
 import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplatesModal';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
+import i18n from '../../lang/lang';
 import { theme } from '../../theme';
 import { getWeightUnit } from '../../utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
@@ -914,27 +915,32 @@ export class WorkoutTemplateService {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      // TODO: add translations
-      return 'Today';
+      return i18n.t('common.today');
     }
+
     if (diffDays === 1) {
-      // TODO: add translations
-      return 'Yesterday';
+      return i18n.t('common.yesterday');
     }
+
     if (diffDays < 7) {
-      // TODO: add translations
-      return `${diffDays} days ago`;
+      return i18n.t('common.daysAgo', { count: diffDays });
     }
+
     if (diffDays < 30) {
-      // TODO: add translations
-      return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''} ago`;
+      const weeks = Math.floor(diffDays / 7);
+      if (weeks === 1) {
+        return i18n.t('common.oneWeekAgo');
+      }
+      return i18n.t('common.weeksAgo', { count: weeks });
     }
+
     if (diffDays < 365) {
-      // TODO: add translations
-      return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? 's' : ''} ago`;
+      const months = Math.floor(diffDays / 30);
+      return i18n.t('common.monthsAgo', { count: months });
     }
-    // TODO: add translations
-    return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(diffDays / 365);
+    return i18n.t('common.yearsAgo', { count: years });
   }
 
   /**
