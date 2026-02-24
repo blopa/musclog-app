@@ -1308,13 +1308,9 @@ export function DataLogModal({
           onGenerateWithAi={() => {
             setCreateWorkoutOptionsModalVisible(false);
             // Placeholder for AI workout generation
-            showSnackbar(
-              'success',
-              t('workouts.aiGeneration.comingSoon'),
-              {
-                action: t('common.ok'),
-              }
-            );
+            showSnackbar('success', t('workouts.aiGeneration.comingSoon'), {
+              action: t('common.ok'),
+            });
           }}
           onCreateEmptyTemplate={() => {
             setCreateWorkoutOptionsModalVisible(false);
@@ -1323,13 +1319,9 @@ export function DataLogModal({
           onBrowseTemplates={() => {
             setCreateWorkoutOptionsModalVisible(false);
             // Placeholder for template browsing - could navigate to a template library
-            showSnackbar(
-              'success',
-              t('workouts.templateBrowser.comingSoon'),
-              {
-                action: t('common.ok'),
-              }
-            );
+            showSnackbar('success', t('workouts.templateBrowser.comingSoon'), {
+              action: t('common.ok'),
+            });
           }}
         />
       ) : null}

@@ -83,6 +83,7 @@ export class HealthConnectError extends Error {
    * Get user-friendly error message for display
    */
   getUserMessage(): string {
+    // TODO: use i18n.t('message') here
     switch (this.code) {
       case HealthConnectErrorCode.SDK_NOT_AVAILABLE:
         return 'Health Connect is not available on this device. Please install it from the Play Store.';

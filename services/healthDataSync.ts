@@ -1,8 +1,3 @@
-/**
- * Health Data Sync Service
- * Orchestrates bi-directional sync between Health Connect and local database
- */
-
 import { Q } from '@nozbe/watermelondb';
 import type { RecordType } from 'react-native-health-connect';
 

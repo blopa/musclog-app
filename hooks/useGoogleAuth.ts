@@ -2,8 +2,10 @@ import { fetch } from 'expo/fetch';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
+import i18n from '../lang/lang';
 import { getGoogleClientId } from '../utils/googleAuth';
 import { showSnackbar } from '../utils/snackbarService';
 
@@ -60,7 +62,7 @@ export const exchangeCodeForToken = async (code: string, redirectUri: string) =>
     return data;
   } catch (error) {
     console.error('Token exchange failed:', error);
-    showSnackbar('error', 'Failed to sign in with Google.'); // TODO: use i18n
+    showSnackbar('error', i18n.t('snackbar.googleAuth.failedToSignIn'));
     throw error;
   }
 };
@@ -68,6 +70,7 @@ export const exchangeCodeForToken = async (code: string, redirectUri: string) =>
 export const useGoogleAuth = (shouldExchangeCode = false) => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!shouldExchangeCode) {
@@ -102,7 +105,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
         subscription.remove();
       }
     };
-  }, [shouldExchangeCode]);
+  }, [shouldExchangeCode, t]);
 
   const promptAsync = async (shouldExchangeCode = false) => {
     try {
@@ -130,7 +133,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
         // User canceled the auth flow
       }
     } catch (_error) {
-      showSnackbar('error', 'Failed to initiate Google sign-in.'); // TODO: use i18n
+      showSnackbar('error', t('snackbar.googleAuth.failedToInitiateSignIn'));
     }
   };
 

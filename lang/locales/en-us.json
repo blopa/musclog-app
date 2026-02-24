@@ -120,6 +120,18 @@
       "title": "Create Portion Size",
       "description": "Add a custom portion size for foods"
     },
+    "portions": {
+      "slice": "Slice",
+      "twoSlices": "2 Slices",
+      "cup": "Cup",
+      "tbsp": "Tbsp",
+      "tsp": "Tsp",
+      "oz": "Oz",
+      "100g": "100g",
+      "50g": "50g",
+      "200g": "200g",
+      "250g": "250g"
+    },
     "manageFoodData": {
       "title": "Manage Food Data",
       "searchPlaceholder": "Search food logs...",
@@ -900,7 +912,15 @@
     "noNewData": "No new data to sync.",
     "failedToEnableSync": "Failed to enable Health Connect sync.",
     "failedToDisableSync": "Failed to disable Health Connect sync.",
-    "syncDisabledMessage": "Health Connect sync has been disabled."
+    "syncDisabledMessage": "Health Connect sync has been disabled.",
+    "googleAuth": {
+      "failedToSignIn": "Failed to sign in with Google.",
+      "failedToInitiateSignIn": "Failed to initiate Google sign-in.",
+      "signInError": "Failed to sign in with Google: {{error}}"
+    },
+    "healthConnect": {
+      "noPermissionsGranted": "No Health Connect permissions granted"
+    }
   },
   "optionsSelector": {
     "link": "Link",

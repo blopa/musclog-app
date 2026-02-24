@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import i18n from '../../lang/lang';
 import { database } from '../index';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
@@ -165,17 +166,16 @@ export class FoodPortionService {
 
     // Standard portions (global, not tied to any specific food)
     const commonPortions = [
-      // TODO: use i18n
-      { name: 'Slice', gramWeight: 25, icon: 'egg' },
-      { name: '2 Slices', gramWeight: 50, icon: 'egg' },
-      { name: 'Cup', gramWeight: 240, icon: 'cup' },
-      { name: 'Tbsp', gramWeight: 15, icon: 'droplet' },
-      { name: 'Tsp', gramWeight: 5, icon: 'droplet' },
-      { name: 'Oz', gramWeight: 28.35, icon: 'scale' },
-      { name: '100g', gramWeight: 100, icon: 'scale' },
-      { name: '50g', gramWeight: 50, icon: 'scale' },
-      { name: '200g', gramWeight: 200, icon: 'scale' },
-      { name: '250g', gramWeight: 250, icon: 'scale' },
+      { name: i18n.t('food.portions.slice'), gramWeight: 25, icon: 'egg' },
+      { name: i18n.t('food.portions.twoSlices'), gramWeight: 50, icon: 'egg' },
+      { name: i18n.t('food.portions.cup'), gramWeight: 240, icon: 'cup' },
+      { name: i18n.t('food.portions.tbsp'), gramWeight: 15, icon: 'droplet' },
+      { name: i18n.t('food.portions.tsp'), gramWeight: 5, icon: 'droplet' },
+      { name: i18n.t('food.portions.oz'), gramWeight: 28.35, icon: 'scale' },
+      { name: i18n.t('food.portions.100g'), gramWeight: 100, icon: 'scale' },
+      { name: i18n.t('food.portions.50g'), gramWeight: 50, icon: 'scale' },
+      { name: i18n.t('food.portions.200g'), gramWeight: 200, icon: 'scale' },
+      { name: i18n.t('food.portions.250g'), gramWeight: 250, icon: 'scale' },
     ];
 
     return await database.write(async () => {

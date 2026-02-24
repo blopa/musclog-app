@@ -8,6 +8,7 @@
 
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GOOGLE_SCOPES } from '../constants/auth';
 import { getGoogleClientId } from '../utils/googleAuth';
@@ -75,6 +76,7 @@ const parseTokenFromUrl = (url: string): GoogleAuthData | null => {
 export const useGoogleAuth = () => {
   const [authData, setAuthData] = useState<GoogleAuthData | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if we're returning from OAuth redirect with token in URL fragment
@@ -144,7 +146,7 @@ export const useGoogleAuth = () => {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      showSnackbar('error', `Failed to sign in with Google: ${errorMessage}`); // TODO: use i18n
+      showSnackbar('error', t('snackbar.googleAuth.signInError', { error: errorMessage }));
     } finally {
       setIsSigningIn(false);
     }
