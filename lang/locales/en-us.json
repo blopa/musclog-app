@@ -314,6 +314,8 @@
       "galleryPermissionRequired": "Gallery access required to upload photos",
       "noBarcodeDetected": "No barcode detected",
       "noBarcodeFound": "No barcode found",
+      "photoCaptured": "Photo captured successfully",
+      "cameraError": "Camera error. Please try again.",
       "uploadFromGallery": "Choose from gallery"
     },
     "aiNutritionContext": {
