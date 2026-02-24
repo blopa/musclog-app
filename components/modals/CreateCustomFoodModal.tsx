@@ -33,6 +33,7 @@ import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import Food from '../../database/models/Food';
 import { FoodService } from '../../database/services';
+import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useTheme } from '../../hooks/useTheme';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
@@ -42,6 +43,7 @@ import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
+import { PortionSizesPickerModal } from './PortionSizesPickerModal';
 
 type MeasurementUnit = '100g' | 'serving' | 'container';
 
@@ -115,7 +117,15 @@ export default function CreateCustomFoodModal({
     potassium: '',
   });
   const [microOpen, setMicroOpen] = useState(false);
+  const [showPortionPicker, setShowPortionPicker] = useState(false);
+  const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
   const { t } = useTranslation();
+
+  // Load food portions
+  const { portions, isLoading: portionsLoading } = useFoodPortions({
+    mode: 'all',
+    visible: visible,
+  });
 
   const isSaveDisabled = !foodName.trim();
 
@@ -148,10 +158,18 @@ export default function CreateCustomFoodModal({
           fiber: parseFloat(fiber || '0') || 0,
         };
 
-        // Determine serving amount/unit
+        // Determine serving amount/unit based on selected portion
         let servingAmount = 100;
         let servingUnit = 'g';
-        if (measurementUnit === '100g') {
+        
+        if (selectedPortionIds.length > 0) {
+          // Use the first selected portion as the default serving size
+          const selectedPortion = portions.find(p => selectedPortionIds.includes(p.id));
+          if (selectedPortion) {
+            servingAmount = selectedPortion.gramWeight;
+            servingUnit = selectedPortion.name.toLowerCase();
+          }
+        } else if (measurementUnit === '100g') {
           servingAmount = 100;
           servingUnit = 'g';
         } else if (measurementUnit === 'serving') {
@@ -630,7 +648,47 @@ export default function CreateCustomFoodModal({
             ]}
           />
 
-          {/* TODO: change this from measurement unit to portion, by loading all portion sizes in the PortionSizesPickerModal */}
+          {/* Portion Sizes */}
+          <View>
+            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+              {t('food.newCustomFood.portionSizes')}
+            </Text>
+            <Pressable
+              className="flex-row items-center justify-between rounded-lg border border-border bg-background p-4"
+              onPress={() => setShowPortionPicker(true)}
+            >
+              <View className="flex-1">
+                {selectedPortionIds.length > 0 ? (
+                  <View className="flex-row flex-wrap gap-2">
+                    {selectedPortionIds.map((id) => {
+                      const portion = portions.find((p) => p.id === id);
+                      return portion ? (
+                        <View
+                          key={id}
+                          className="rounded-full px-3 py-1"
+                          style={{ backgroundColor: theme.colors.accent.primary10 }}
+                        >
+                          <Text className="text-sm font-medium text-accent-primary">
+                            {portion.name} ({portion.gramWeight}g)
+                          </Text>
+                        </View>
+                      ) : null;
+                    })}
+                  </View>
+                ) : (
+                  <Text className="text-text-tertiary">
+                    {t('food.newCustomFood.selectPortionSizes')}
+                  </Text>
+                )}
+              </View>
+              <ChevronDown
+                size={theme.iconSize.md}
+                color={theme.colors.text.tertiary}
+              />
+            </Pressable>
+          </View>
+
+          {/* Legacy Measurement Unit (fallback) */}
           <View>
             <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
               {t('food.newCustomFood.measurementUnit')}
@@ -775,6 +833,15 @@ export default function CreateCustomFoodModal({
           food={createdFood}
         />
       ) : null}
+      <PortionSizesPickerModal
+        visible={showPortionPicker}
+        onClose={() => setShowPortionPicker(false)}
+        onConfirm={(selectedIds) => {
+          setSelectedPortionIds(selectedIds);
+          setShowPortionPicker(false);
+        }}
+        selectedIds={selectedPortionIds}
+      />
     </FullScreenModal>
   );
 }

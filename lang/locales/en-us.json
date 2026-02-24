@@ -329,7 +329,9 @@
       "brand": "Brand",
       "brandPlaceholder": "e.g. Kellogg's",
       "imageUrl": "Image URL",
-      "imageUrlPlaceholder": "Paste image URL"
+      "imageUrlPlaceholder": "Paste image URL",
+      "portionSizes": "Portion Sizes",
+      "selectPortionSizes": "Select portion sizes..."
     },
     "errors": {
       "refreshFailed": "Refresh Failed"
