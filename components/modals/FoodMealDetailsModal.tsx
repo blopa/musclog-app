@@ -327,13 +327,12 @@ export function FoodMealDetailsModal({
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
   const getProductName = useCallback(() => {
-    // TODO: translate these
     if (meal) {
-      return meal.name || 'Unknown Meal';
+      return meal.name || t('meals.history.unknownMeal');
     }
 
     if (food) {
-      return food.name || 'Unknown Food';
+      return food.name || t('food.unknownFood');
     }
 
     if (foodLogDecrypted?.loggedFoodName?.trim()) {
@@ -345,10 +344,10 @@ export function FoodMealDetailsModal({
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
-      return productDetails.product.product_name || 'Unknown Food';
+      return productDetails.product.product_name || t('food.unknownFood');
     }
-    return 'Unknown Food';
-  }, [productDetails, productFromSearch, food, foodLogDecrypted, meal]);
+    return t('food.unknownFood');
+  }, [productDetails, productFromSearch, food, foodLogDecrypted, meal, t]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {

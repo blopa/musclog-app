@@ -76,6 +76,7 @@
     }
   },
   "food": {
+    "unknownFood": "Unknown Food",
     "manageFoodLibrary": {
       "title": "Food Library",
       "searchPlaceholder": "Search foods...",
@@ -1174,7 +1175,10 @@
     "customMeal": "Custom Meal",
     "createdByYou": "Created by you",
     "logMeal": "Log Meal",
-    "mealType": "Meal Type"
+    "mealType": "Meal Type",
+    "history": {
+      "unknownMeal": "Unknown Meal"
+    }
   },
   "onboarding": {
     "skip": "Skip",
