@@ -63,16 +63,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a1f1a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "124"
+      "buildNumber": "125"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.werules.logger",
-      "versionCode": 124,
+      "versionCode": 125,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
