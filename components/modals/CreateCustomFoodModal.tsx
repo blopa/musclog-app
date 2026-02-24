@@ -37,15 +37,12 @@ import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useTheme } from '../../hooks/useTheme';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
-import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
-
-type MeasurementUnit = '100g' | 'serving' | 'container';
 
 type NewCustomFoodModalProps = {
   visible: boolean;
@@ -70,7 +67,6 @@ export default function CreateCustomFoodModal({
   const [imageUrl, setImageUrl] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
-  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('100g');
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
   const [carbs, setCarbs] = useState('');
@@ -136,7 +132,6 @@ export default function CreateCustomFoodModal({
       barcode,
       imageUrl,
       isFavorite,
-      measurementUnit,
       calories,
       protein,
       carbs,
@@ -169,15 +164,6 @@ export default function CreateCustomFoodModal({
             servingAmount = selectedPortion.gramWeight;
             servingUnit = selectedPortion.name.toLowerCase();
           }
-        } else if (measurementUnit === '100g') {
-          servingAmount = 100;
-          servingUnit = 'g';
-        } else if (measurementUnit === 'serving') {
-          servingAmount = 1;
-          servingUnit = 'serving';
-        } else if (measurementUnit === 'container') {
-          servingAmount = 1;
-          servingUnit = 'container';
         }
 
         const newFood = await FoodService.createCustomFood(
@@ -239,11 +225,6 @@ export default function CreateCustomFoodModal({
     setShowBarcodeScanner(true);
   };
 
-  const measurementOptions = [
-    { label: t('food.newCustomFood.measurementOptions.per100g'), value: '100g' },
-    { label: t('food.newCustomFood.measurementOptions.perServing'), value: 'serving' },
-    { label: t('food.newCustomFood.measurementOptions.container'), value: 'container' },
-  ];
 
   const micronutrientsData = [
     {
@@ -694,18 +675,6 @@ export default function CreateCustomFoodModal({
             </Pressable>
           </View>
 
-          {/* Legacy Measurement Unit (fallback) */}
-          <View>
-            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-              {t('food.newCustomFood.measurementUnit')}
-            </Text>
-            <SegmentedControl
-              options={measurementOptions}
-              value={measurementUnit}
-              onValueChange={(value) => setMeasurementUnit(value as MeasurementUnit)}
-              variant="elevated"
-            />
-          </View>
 
           {/* Macronutrients Header */}
           <View className="flex-row items-center gap-2">

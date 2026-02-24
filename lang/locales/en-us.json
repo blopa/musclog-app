@@ -308,7 +308,6 @@
       "foodNamePlaceholder": "e.g., Homemade Chicken Salad",
       "barcode": "Barcode",
       "barcodePlaceholder": "Scan or enter barcode",
-      "measurementUnit": "Measurement Unit",
       "measurementOptions": {
         "per100g": "Per 100g",
         "perServing": "Per Serving",
