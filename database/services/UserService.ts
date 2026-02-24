@@ -2,6 +2,11 @@ import { Q } from '@nozbe/watermelondb';
 
 import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
+import {
+  clearCurrentUserSyncId,
+  getCurrentUserSyncId,
+  setCurrentUserSyncId,
+} from '../../utils/currentUserStorage';
 import { generateUUID } from '../../utils/uuid';
 import { database } from '../index';
 import User, {
@@ -14,16 +19,42 @@ import User, {
 
 export class UserService {
   /**
-   * Get the current user (single user per device)
+   * Get the current user (single user per device).
+   * Uses stored sync_id from AsyncStorage so "current user" is stable across
+   * DB recreates and future sync (Firebase / WatermelonDB sync).
    */
   static async getCurrentUser(): Promise<User | null> {
+    const storedSyncId = await getCurrentUserSyncId();
+
+    if (storedSyncId) {
+      const users = await database
+        .get<User>('users')
+        .query(Q.where('sync_id', storedSyncId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      if (users.length > 0) {
+        return users[0];
+      }
+
+      // Stored ID no longer exists (e.g. DB reset / sync removed user) — clear and fall through
+      await clearCurrentUserSyncId();
+    }
+
+    // Fallback: first non-deleted user (e.g. first launch or migration)
     const users = await database
       .get<User>('users')
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    // TODO: use userId? maybe saved on AsyncStorage
-    return users.length > 0 ? users[0] : null;
+    if (users.length === 0) {
+      return null;
+    }
+
+    const user = users[0];
+
+    // Persist so next time we resolve by sync_id
+    await setCurrentUserSyncId(user.syncId);
+    return user;
   }
 
   /**
@@ -67,7 +98,7 @@ export class UserService {
     const now = Date.now();
     const syncId = generateUUID(); // Generate UUID for cloud sync
 
-    return await database.write(async () => {
+    const user = await database.write(async () => {
       return await database.get<User>('users').create((u) => {
         u.fullName = initialData.fullName;
         u.email = initialData.email ?? '';
@@ -84,6 +115,9 @@ export class UserService {
         u.updatedAt = now;
       });
     });
+
+    await setCurrentUserSyncId(user.syncId);
+    return user;
   }
 
   /**

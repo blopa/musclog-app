@@ -36,3 +36,6 @@ export const ONBOARDING_CURRENT_STEP = 'onboardingCurrentStep';
 
 // Temporary storage key used to pass an AI-generated nutrition plan between screens
 export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
+
+// Current user (sync_id) for multi-user / future sync support
+export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
