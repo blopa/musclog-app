@@ -1,11 +1,7 @@
-/**
- * useSyncTracking Hook
- * React hook for managing Health Connect data sync operations and status
- */
-
 import { useCallback, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
+import { useSnackbar } from '../components/SnackbarContext';
 import { HealthConnectError } from '../services/healthConnectErrors';
 import { healthDataSyncService, SyncResult, SyncStatus } from '../services/healthDataSync';
 
@@ -31,6 +27,8 @@ export interface UseSyncTrackingResult {
  * Hook for tracking Health Connect sync operations
  */
 export const useSyncTracking = (): UseSyncTrackingResult => {
+  const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSyncEnabled, setIsSyncEnabled] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(0);
@@ -75,12 +73,10 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
           if (result.recordsWritten > 0 || result.recordsSkipped > 0) {
             const message =
               result.recordsWritten > 0
-                ? // TODO: use translations here
-                  `Synced ${result.recordsWritten} health record${result.recordsWritten !== 1 ? 's' : ''}.`
-                : 'No new data to sync.';
+                ? t('snackbar.syncedRecords', { count: result.recordsWritten })
+                : t('snackbar.noNewData');
 
-            // TODO: use the snackbar system
-            Alert.alert('Sync Complete', message, [{ text: 'OK' }]);
+            showSnackbar('success', message);
           }
         } else if (result.status === SyncStatus.ERROR && result.errors.length > 0) {
           // Show first error to user (but only if it's a real error, not missing permission)
@@ -90,8 +86,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
             firstError.code !== 'INSUFFICIENT_PERMISSIONS' &&
             firstError.code !== 'PERMISSION_DENIED'
           ) {
-            // TODO: use the snackbar system
-            Alert.alert('Sync Error', firstError.getUserMessage(), [{ text: 'OK' }]);
+            showSnackbar('error', firstError.getUserMessage());
             setError(firstError);
           }
         }
@@ -118,8 +113,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
         }
 
         setError(hcError);
-        // TODO: use the snackbar system
-        Alert.alert('Sync Failed', hcError.getUserMessage(), [{ text: 'OK' }]);
+        showSnackbar('error', hcError.getUserMessage());
 
         // Return error result
         const errorResult: SyncResult = {
@@ -139,7 +133,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
         await refreshSyncStatus();
       }
     },
-    [refreshSyncStatus]
+    [refreshSyncStatus, showSnackbar, t]
   );
 
   /**
@@ -157,10 +151,9 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       const hcError = err as HealthConnectError;
       console.error('Error enabling sync:', hcError);
       setError(hcError);
-      // TODO: use the snackbar system
-      Alert.alert('Error', 'Failed to enable Health Connect sync.', [{ text: 'OK' }]);
+      showSnackbar('error', t('snackbar.failedToEnableSync'));
     }
-  }, [syncNow]);
+  }, [showSnackbar, syncNow, t]);
 
   /**
    * Disable automatic syncing
@@ -170,16 +163,14 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       setError(null);
       await healthDataSyncService.disableSync();
       setIsSyncEnabled(false);
-      // TODO: use the snackbar system
-      Alert.alert('Sync Disabled', 'Health Connect sync has been disabled.', [{ text: 'OK' }]);
+      showSnackbar('success', t('snackbar.syncDisabledMessage'));
     } catch (err) {
       const hcError = err as HealthConnectError;
       console.error('Error disabling sync:', hcError);
       setError(hcError);
-      // TODO: use the snackbar system
-      Alert.alert('Error', 'Failed to disable Health Connect sync.', [{ text: 'OK' }]);
+      showSnackbar('error', t('snackbar.failedToDisableSync'));
     }
-  }, []);
+  }, [showSnackbar, t]);
 
   /**
    * Clear error state

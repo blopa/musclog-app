@@ -866,7 +866,17 @@
   "snackbar": {
     "view": "VIEW",
     "retry": "RETRY",
-    "ok": "OK"
+    "ok": "OK",
+    "syncComplete": "Sync Complete",
+    "syncError": "Sync Error",
+    "syncFailed": "Sync Failed",
+    "syncDisabled": "Sync Disabled",
+    "error": "Error",
+    "syncedRecords": "Synced {{count}} health record{{count, plural, one {} other {s}}}.",
+    "noNewData": "No new data to sync.",
+    "failedToEnableSync": "Failed to enable Health Connect sync.",
+    "failedToDisableSync": "Failed to disable Health Connect sync.",
+    "syncDisabledMessage": "Health Connect sync has been disabled."
   },
   "optionsSelector": {
     "link": "Link",
