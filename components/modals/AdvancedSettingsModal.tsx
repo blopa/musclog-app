@@ -16,13 +16,14 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Linking, Platform, Text, View } from 'react-native';
+import { Linking, Platform, Text, View } from 'react-native';
 
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import packageJson from '../../package.json';
 import { exportDatabase, importDatabase } from '../../utils/file';
 import { SettingsCard } from '../cards/SettingsCard';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -59,6 +60,7 @@ export function AdvancedSettingsModal({
 }: AdvancedSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
 
   // Use debounced settings for instant UI updates
   const {
@@ -89,14 +91,11 @@ export function AdvancedSettingsModal({
       setEncryptionPhrase('');
     } catch (err) {
       console.error('Export failed:', err);
-      Alert.alert(
-        t('settings.advancedSettings.exportFailedTitle'),
-        t('settings.advancedSettings.exportFailedMessage')
-      );
+      showSnackbar('error', t('settings.advancedSettings.exportFailedMessage'));
     } finally {
       setLoading(false);
     }
-  }, [encryptionPhrase, t]);
+  }, [encryptionPhrase, t, showSnackbar]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
@@ -106,30 +105,24 @@ export function AdvancedSettingsModal({
       setDecryptionPhrase('');
     } catch (err) {
       console.error('Import failed:', err);
-      Alert.alert(
-        t('settings.advancedSettings.importFailedTitle'),
-        t('settings.advancedSettings.importFailedMessage')
-      );
+      showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
     } finally {
       setLoading(false);
     }
-  }, [decryptionPhrase, t]);
+  }, [decryptionPhrase, t, showSnackbar]);
 
   const handleOpenAppSettings = useCallback(async () => {
     if (Platform.OS === 'android') {
       try {
         await Linking.openSettings();
       } catch (err) {
-        // TODO: use the snackbar system
-        Alert.alert(
-          t('settings.advancedSettings.openSettingsFailedTitle'),
-          t('settings.advancedSettings.openSettingsFailedMessage')
-        );
+        console.error('Failed to open settings:', err);
+        showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
       }
     } else {
       console.log('Clear app data settings - only available on Android');
     }
-  }, [t]);
+  }, [t, showSnackbar]);
 
   // Data log modal visibility – each row opens its corresponding modal
   const [showFoodDataModal, setShowFoodDataModal] = useState(false);
