@@ -16,7 +16,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Linking, Platform, Text, View } from 'react-native';
 
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -114,6 +114,22 @@ export function AdvancedSettingsModal({
       setLoading(false);
     }
   }, [decryptionPhrase, t]);
+
+  const handleOpenAppSettings = useCallback(async () => {
+    if (Platform.OS === 'android') {
+      try {
+        await Linking.openSettings();
+      } catch (err) {
+        // TODO: use the snackbar system
+        Alert.alert(
+          t('settings.advancedSettings.openSettingsFailedTitle'),
+          t('settings.advancedSettings.openSettingsFailedMessage')
+        );
+      }
+    } else {
+      console.log('Clear app data settings - only available on Android');
+    }
+  }, [t]);
 
   // Data log modal visibility – each row opens its corresponding modal
   const [showFoodDataModal, setShowFoodDataModal] = useState(false);
@@ -353,7 +369,21 @@ export function AdvancedSettingsModal({
             />
           </View>
 
-          {/* TODO: simply open the Android cache and data settings from the app, since all data is stored locally */}
+          {/* Clear App Data - Android only */}
+          <SettingsCard
+            icon={<Database size={theme.iconSize.xl} color={theme.colors.status.error} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.status.error20,
+            }}
+            title={t('settings.advancedSettings.clearAppData')}
+            subtitle={t('settings.advancedSettings.clearAppDataSubtitle')}
+            titleColor={theme.colors.status.error}
+            onPress={handleOpenAppSettings}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />}
+          />
           <View style={{ paddingTop: theme.spacing.padding['2xl'] }}>
             <Text
               className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
