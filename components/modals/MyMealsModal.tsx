@@ -6,10 +6,11 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
-import { useMeals } from '../../hooks/useMeals';
+import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
+import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { TextInput } from '../theme/TextInput';
 import { AddMealModal } from './AddMealModal';
@@ -96,13 +97,15 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
 
-  // TODO: load only 10 and have an option to load more, like the other places where this hook is being used
-  const { meals, isLoading, refresh } = useMeals({
+  // Load only 10 meals initially with pagination
+  const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
     mode: 'list',
-    getAll: true,
+    initialLimit: 10,
+    batchSize: 10,
+    getAll: false,
     sortBy: 'name',
     sortOrder: 'asc',
-  }) as { meals: Meal[]; isLoading: boolean; refresh: () => Promise<void> };
+  }) as UseMealsResultBasic;
 
   // State to store transformed meal data with nutrients
   const [mealCardsData, setMealCardsData] = useState<MealCardData[]>([]);
@@ -358,6 +361,20 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   onTrackPress={() => handleTrackMeal(meal.id)}
                 />
               ))}
+              {/* Load More Button */}
+              {hasMore ? (
+                <View className="py-4">
+                  <Button
+                    label={isLoadingMore ? 'Loading more...' : 'Load More'}
+                    onPress={loadMore}
+                    size="sm"
+                    variant="outline"
+                    disabled={isLoadingMore}
+                    loading={isLoadingMore}
+                    width="full"
+                  />
+                </View>
+              ) : null}
               {/* Bottom spacing for FAB and TabBar */}
               <View style={{ height: theme.size['120'] }} />
             </>
