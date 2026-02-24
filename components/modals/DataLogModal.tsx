@@ -138,15 +138,11 @@ export function getDataLogModalTranslations(
       formatItemSubtitle: (item) => {
         // Normalize muscle group: ensure lowercase for translation keys
         const muscleGroupRaw = (item.muscleGroup ?? 'other').toLowerCase();
-        const muscleGroup = t(`exercises.muscleGroups.${muscleGroupRaw}`, {
-          defaultValue: muscleGroupRaw,
-        });
+        const muscleGroup = t(`exercises.muscleGroups.${muscleGroupRaw}`);
 
         // Normalize equipment type: ensure lowercase for translation keys
         const equipmentTypeRaw = (item.equipmentType ?? 'other').toLowerCase();
-        const equipmentType = t(`exercises.equipmentTypes.${equipmentTypeRaw}`, {
-          defaultValue: equipmentTypeRaw,
-        });
+        const equipmentType = t(`exercises.equipmentTypes.${equipmentTypeRaw}`);
 
         return t('exercises.manageExerciseData.detailFormat', {
           muscleGroup,
@@ -222,11 +218,8 @@ export function getDataLogModalTranslations(
     return {
       title: t('bodyMetrics.manageMetricData.title'),
       searchPlaceholder: t('bodyMetrics.manageMetricData.searchPlaceholder'),
-      noItemsText: t('bodyMetrics.manageMetricData.noEntries', 'No metric entries yet'),
-      noItemsDesc: t(
-        'bodyMetrics.manageMetricData.noEntriesDesc',
-        'Add body metric entries to see them here'
-      ),
+      noItemsText: t('bodyMetrics.manageMetricData.noEntries'),
+      noItemsDesc: t('bodyMetrics.manageMetricData.noEntriesDesc'),
       endOfHistoryText: t('bodyMetrics.manageMetricData.endOfHistory'),
       menuTitle: t('bodyMetrics.manageMetricData.metricOptions'),
       favoriteAddTitle: '',
@@ -252,11 +245,8 @@ export function getDataLogModalTranslations(
     return {
       title: t('nutrition.manageFoodData.title'),
       searchPlaceholder: t('nutrition.manageFoodData.searchPlaceholder'),
-      noItemsText: t('nutrition.manageFoodData.noLogs', 'No food logs yet'),
-      noItemsDesc: t(
-        'nutrition.manageFoodData.noLogsDesc',
-        'Start tracking your meals to see them here'
-      ),
+      noItemsText: t('nutrition.manageFoodData.noLogs'),
+      noItemsDesc: t('nutrition.manageFoodData.noLogsDesc'),
       endOfHistoryText: t('nutrition.manageFoodData.endOfHistory'),
       menuTitle: t('nutrition.manageFoodData.foodOptions'),
       favoriteAddTitle: '',
@@ -277,11 +267,8 @@ export function getDataLogModalTranslations(
     return {
       title: t('food.manageFoodLibrary.title'),
       searchPlaceholder: t('food.manageFoodLibrary.searchPlaceholder'),
-      noItemsText: t('food.manageFoodLibrary.noFoods', 'No foods yet'),
-      noItemsDesc: t(
-        'food.manageFoodLibrary.noFoodsDesc',
-        'Add custom foods or scan products to see them here'
-      ),
+      noItemsText: t('food.manageFoodLibrary.noFoods'),
+      noItemsDesc: t('food.manageFoodLibrary.noFoodsDesc'),
       endOfHistoryText: t('food.manageFoodLibrary.endOfHistory'),
       menuTitle: t('food.manageFoodLibrary.foodOptions'),
       favoriteAddTitle: t('food.manageFoodLibrary.addToFavorites'),
@@ -302,11 +289,8 @@ export function getDataLogModalTranslations(
     return {
       title: t('food.managePortionData.title'),
       searchPlaceholder: t('food.managePortionData.searchPlaceholder'),
-      noItemsText: t('food.managePortionData.noPortions', 'No portions yet'),
-      noItemsDesc: t(
-        'food.managePortionData.noPortionsDesc',
-        'Create custom portion sizes to see them here'
-      ),
+      noItemsText: t('food.managePortionData.noPortions'),
+      noItemsDesc: t('food.managePortionData.noPortionsDesc'),
       endOfHistoryText: t('food.managePortionData.endOfHistory'),
       menuTitle: t('food.managePortionData.portionOptions'),
       favoriteAddTitle: '',
@@ -331,11 +315,8 @@ export function getDataLogModalTranslations(
     return {
       title: t('goalsManagement.manageGoalData.title'),
       searchPlaceholder: t('goalsManagement.manageGoalData.searchPlaceholder'),
-      noItemsText: t('goalsManagement.manageGoalData.noGoals', 'No goals yet'),
-      noItemsDesc: t(
-        'goalsManagement.manageGoalData.noGoalsDesc',
-        'Set nutrition goals to see them here'
-      ),
+      noItemsText: t('goalsManagement.manageGoalData.noGoals'),
+      noItemsDesc: t('goalsManagement.manageGoalData.noGoalsDesc'),
       endOfHistoryText: t('goalsManagement.manageGoalData.endOfHistory'),
       menuTitle: t('goalsManagement.manageGoalData.goalOptions'),
       favoriteAddTitle: '',
@@ -511,8 +492,6 @@ export function DataLogModal({
       if (mealFoods.length > 0) {
         return t('food.meals.manageMealData.deleteMealWarning', {
           count: mealFoods.length,
-          defaultValue:
-            'This meal contains {{count}} food item(s). Deleting it will remove all these foods but will not affect any nutrition logs.',
         });
       }
       return null;
@@ -542,7 +521,6 @@ export function DataLogModal({
           parts.push(
             t('food.manageFoodLibrary.usedInMeals', {
               count: mealFoods.length,
-              defaultValue: '{{count}} meal(s)',
             })
           );
         }
@@ -550,14 +528,11 @@ export function DataLogModal({
           parts.push(
             t('food.manageFoodLibrary.usedInLogs', {
               count: nutritionLogs.length,
-              defaultValue: '{{count}} nutrition log(s)',
             })
           );
         }
         return t('food.manageFoodLibrary.deleteFoodWarning', {
           usage: parts.join(', '),
-          defaultValue:
-            'This food is used in {{usage}}. Deleting it will remove it from these records.',
         });
       }
       return null;
@@ -593,7 +568,6 @@ export function DataLogModal({
           parts.push(
             t('food.managePortionData.usedInFoods', {
               count: foodFoodPortions.length,
-              defaultValue: '{{count}} food(s)',
             })
           );
         }
@@ -601,7 +575,6 @@ export function DataLogModal({
           parts.push(
             t('food.managePortionData.usedInMeals', {
               count: mealFoods.length,
-              defaultValue: '{{count}} meal(s)',
             })
           );
         }
@@ -609,13 +582,11 @@ export function DataLogModal({
           parts.push(
             t('food.managePortionData.usedInLogs', {
               count: nutritionLogs.length,
-              defaultValue: '{{count}} nutrition log(s)',
             })
           );
         }
         return t('food.managePortionData.deletePortionWarning', {
           usage: parts.join(', '),
-          defaultValue: 'This portion is used in {{usage}}. Deleting it may affect calculations.',
         });
       }
       return null;
@@ -645,7 +616,6 @@ export function DataLogModal({
           parts.push(
             t('exercises.manageExerciseData.usedInTemplates', {
               count: templateSets.length,
-              defaultValue: '{{count}} workout template(s)',
             })
           );
         }
@@ -653,14 +623,11 @@ export function DataLogModal({
           parts.push(
             t('exercises.manageExerciseData.usedInLogs', {
               count: logSets.length,
-              defaultValue: '{{count}} workout log(s)',
             })
           );
         }
         return t('exercises.manageExerciseData.deleteExerciseWarning', {
           usage: parts.join(', '),
-          defaultValue:
-            'This exercise is used in {{usage}}. Deleting it will remove it from these records.',
         });
       }
       return null;
@@ -681,8 +648,6 @@ export function DataLogModal({
       if (schedules.length > 0) {
         return t('workouts.manageWorkoutTemplateData.deleteTemplateWarning', {
           count: schedules.length,
-          defaultValue:
-            'This template has {{count}} active schedule(s). Deleting it will cancel these schedules.',
         });
       }
       return null;
@@ -696,9 +661,7 @@ export function DataLogModal({
     try {
       // For simplicity, we'll just warn that this might be the active workout
       // In a real implementation, you'd check against the current active workout state
-      return t('workoutLog.manageWorkoutLogData.deleteLogWarning', {
-        defaultValue: 'Make sure this is not your currently active workout session.',
-      });
+      return t('workoutLog.manageWorkoutLogData.deleteLogWarning');
     } catch (error) {
       console.error('Error checking workout log dependencies:', error);
       return null;
@@ -709,9 +672,7 @@ export function DataLogModal({
     try {
       // For simplicity, we'll just warn that this might be the active goal
       // In a real implementation, you'd check against the current active goal state
-      return t('goalsManagement.manageGoalData.deleteGoalWarning', {
-        defaultValue: 'Make sure this is not your currently active nutrition goal.',
-      });
+      return t('goalsManagement.manageGoalData.deleteGoalWarning');
     } catch (error) {
       console.error('Error checking nutrition goal dependencies:', error);
       return null;

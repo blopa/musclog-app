@@ -95,7 +95,7 @@ export function GenericEditModal({
 
       // Try to get a description from translation keys
       const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
-      const description = t(descriptionKey, { defaultValue: '' });
+      const description = t(descriptionKey);
 
       return {
         icon: Circle,
