@@ -110,7 +110,7 @@ export default function SmartCameraModal({
         quality: 0.8,
         base64: false,
       });
-      // TODO: LATER: Process the photo based on camera mode
+      // LATER: Process the photo based on camera mode
       console.log('Photo taken:', photo);
     } catch (error) {
       console.error('Error taking picture:', error);
@@ -130,7 +130,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
-    // TODO: LATER: Apply context to AI processing
+    // LATER: Apply context to AI processing
     console.log('Context applied:', context);
   }, []);
 
@@ -173,12 +173,12 @@ export default function SmartCameraModal({
   }, []);
 
   const handleTrackCustomMeal = useCallback(() => {
-    // TODO: Navigate to custom meal tracking
+    // TODO: Opean Meal Track Modal
     console.log('Track custom meal');
   }, []);
 
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
-    // TODO: do something with this
+    // TODO: select type of meal
     console.log('Selected meal type:', mealType);
   }, []);
 
@@ -191,7 +191,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleSearchFoodPress = useCallback(() => {
-    // TODO: Navigate to food search
+    // TODO: open food search modal
     console.log('Search food');
   }, []);
 
