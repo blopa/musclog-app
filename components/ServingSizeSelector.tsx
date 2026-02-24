@@ -1,7 +1,9 @@
 import { Minus, Plus } from 'lucide-react-native';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useTheme } from '../hooks/useTheme';
 
 type ServingSizeSelectorProps = {
@@ -14,15 +16,20 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   const theme = useTheme();
   const { t } = useTranslation();
 
-  // TODO: load from database instead
-  const defaultQuickSizes = [
-    { label: `50${t('food.foodDetails.unitGrams')}`, value: 50 },
-    { label: `100${t('food.foodDetails.unitGrams')}`, value: 100 },
-    { label: `200${t('food.foodDetails.unitGrams')}`, value: 200 },
-    { label: `1 ${t('food.foodDetails.unitCup')}`, value: 240 },
-  ];
+  // Load food portions from database
+  const { portions, isLoading } = useFoodPortions({
+    mode: 'all',
+  });
 
-  const effectiveQuickSizes = quickSizes || defaultQuickSizes;
+  // Transform database portions to quick sizes format
+  const databaseQuickSizes = useMemo(() => {
+    return portions.map((portion) => ({
+      label: `${portion.name} (${portion.gramWeight}${t('food.foodDetails.unitGrams')})`,
+      value: portion.gramWeight,
+    }));
+  }, [portions, t]);
+
+  const effectiveQuickSizes = quickSizes || databaseQuickSizes;
 
   const handleDecrease = () => {
     onChange(Math.max(0, value - 10));
