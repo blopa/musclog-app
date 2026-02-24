@@ -1122,6 +1122,7 @@
     "active": "Active",
     "history": "GOALS HISTORY",
     "newGoal": "New Goal",
+    "emptyStateMessage": "Create a new goal to get started",
     "manageGoalData": {
       "title": "Nutrition goals",
       "searchPlaceholder": "Search goals...",
