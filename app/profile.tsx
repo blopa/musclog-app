@@ -24,6 +24,7 @@ import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+import { calculateBMIWithStatus } from '../utils/bmiHelper';
 
 const MANAGEMENT_ITEMS = [
   {
@@ -113,21 +114,20 @@ export default function ProfileScreen() {
     }
 
     // BMI stat
-    if (metrics?.bmi !== undefined) {
-      // TODO: properly implement BMI logic later
-      // probably use the existing BMI logic from nutritionCalculator
-      const bmiStatusKey =
-        metrics.bmi < 18.5
-          ? 'profile.bmiStatus.underweight'
-          : metrics.bmi < 25
-            ? 'profile.bmiStatus.normal'
-            : metrics.bmi < 30
-              ? 'profile.bmiStatus.overweight'
-              : 'profile.bmiStatus.obese';
+    if (metrics?.weight !== undefined && metrics?.height !== undefined) {
+      // Calculate BMI and get status using helper function
+      const bmiResult = calculateBMIWithStatus(
+        metrics.weight,
+        metrics.height,
+        weightUnit,
+        heightUnit
+      );
+      const calculatedBMI = bmiResult.bmi;
+      const bmiStatusKey = bmiResult.statusKey;
       statsArray.push({
         id: 'bmi',
         titleKey: 'profile.stats.bmi',
-        value: metrics.bmi.toFixed(1),
+        value: calculatedBMI.toFixed(1),
         status: t(bmiStatusKey),
         statusColor: theme.colors.status.info,
         icon: User,
@@ -164,16 +164,7 @@ export default function ProfileScreen() {
     }
 
     return statsArray;
-  }, [
-    metrics?.weight,
-    metrics?.height,
-    metrics?.bodyFat,
-    metrics?.bmi,
-    dbUser,
-    weightUnit,
-    heightUnit,
-    t,
-  ]);
+  }, [metrics?.weight, metrics?.height, metrics?.bodyFat, dbUser, weightUnit, heightUnit, t]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') {
