@@ -254,6 +254,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
+      // TODO: use snackbar system here
       Alert.alert(t('food.createMeal.error'), t('food.createMeal.mealNameRequired'), [
         { text: t('common.ok') },
       ]);
@@ -262,6 +263,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
 
     // Validate ingredients
     if (ingredients.length === 0) {
+      // TODO: use snackbar system here
       Alert.alert(t('food.createMeal.error'), t('food.createMeal.ingredientsRequired'), [
         { text: t('common.ok') },
       ]);
@@ -291,6 +293,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
+      // TODO: use snackbar system here
       Alert.alert(t('food.createMeal.error'), t('food.createMeal.saveFailed'), [
         { text: t('common.ok') },
       ]);
