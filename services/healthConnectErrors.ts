@@ -3,6 +3,8 @@
  * Comprehensive error handling for all Health Connect scenarios
  */
 
+import i18n from '../lang/lang';
+
 export enum HealthConnectErrorCode {
   // Initialization & SDK Errors
   SDK_NOT_AVAILABLE = 'SDK_NOT_AVAILABLE',
@@ -83,26 +85,25 @@ export class HealthConnectError extends Error {
    * Get user-friendly error message for display
    */
   getUserMessage(): string {
-    // TODO: use i18n.t('message') here
     switch (this.code) {
       case HealthConnectErrorCode.SDK_NOT_AVAILABLE:
-        return 'Health Connect is not available on this device. Please install it from the Play Store.';
+        return i18n.t('snackbar.healthConnect.sdkNotAvailable');
       case HealthConnectErrorCode.PERMISSION_DENIED:
-        return 'Health Connect permissions were denied. Please grant permissions to sync health data.';
+        return i18n.t('snackbar.healthConnect.permissionDenied');
       case HealthConnectErrorCode.PERMISSION_REVOKED:
-        return 'Health Connect permissions were revoked. Please re-enable them in settings.';
+        return i18n.t('snackbar.healthConnect.permissionRevoked');
       case HealthConnectErrorCode.OFFLINE:
-        return 'No internet connection. Health data will sync when you are back online.';
+        return i18n.t('snackbar.healthConnect.offline');
       case HealthConnectErrorCode.SYNC_CONFLICT:
-        return 'Health data conflict detected. Using most recent data.';
+        return i18n.t('snackbar.healthConnect.syncConflict');
       case HealthConnectErrorCode.INVALID_VALUE_RANGE:
-        return 'Invalid health data value. Please check your input.';
+        return i18n.t('snackbar.healthConnect.invalidValueRange');
       case HealthConnectErrorCode.RATE_LIMIT_EXCEEDED:
-        return 'Too many requests. Please wait a moment and try again.';
+        return i18n.t('snackbar.healthConnect.rateLimitExceeded');
       case HealthConnectErrorCode.SYNC_IN_PROGRESS:
-        return 'Sync already in progress. Please wait for it to complete.';
+        return i18n.t('snackbar.healthConnect.syncInProgress');
       default:
-        return 'An error occurred while syncing health data. Please try again.';
+        return i18n.t('snackbar.healthConnect.unknownError');
     }
   }
 
