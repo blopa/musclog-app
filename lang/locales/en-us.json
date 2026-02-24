@@ -41,7 +41,8 @@
     "loadMultiplier": "Load Multiplier",
     "close": "Close",
     "datePickerNotImplemented": "Date picker not yet implemented",
-    "install": "Install"
+    "install": "Install",
+    "createNew": "Create New"
   },
   "emptyState": {
     "workout": {
@@ -96,6 +97,10 @@
       "macrosFormat": "{{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "unknownFood": "Unknown"
     },
+    "createFood": {
+      "title": "Create Custom Food",
+      "description": "Add a new food to your library"
+    },
     "managePortionData": {
       "title": "Portion sizes",
       "searchPlaceholder": "Search portions...",
@@ -110,6 +115,10 @@
       "deletePortion": "Delete portion",
       "deletePortionDesc": "Remove this portion from your list",
       "gramWeightFormat": "{{grams}} g"
+    },
+    "createPortion": {
+      "title": "Create Portion Size",
+      "description": "Add a custom portion size for foods"
     },
     "manageFoodData": {
       "title": "Manage Food Data",
@@ -181,6 +190,10 @@
         "unknownMeal": "Unknown Meal",
         "noMeals": "No meals yet",
         "noMealsDesc": "Create custom meals to see them here"
+      },
+      "createMeal": {
+        "title": "Create Custom Meal",
+        "description": "Combine foods into a reusable meal"
       },
       "breakfast": "Breakfast",
       "lunch": "Lunch",
@@ -680,6 +693,10 @@
       "noDescription": "No description",
       "unknownTemplate": "Unknown Template"
     },
+    "createTemplate": {
+      "title": "Create Workout Template",
+      "description": "Build a reusable workout routine"
+    },
     "createWorkoutOptionsModal": {
       "header": "Create Workout",
       "title": "How do you want to build your routine?",
@@ -691,6 +708,12 @@
       "confirm": "Create Workouts",
       "cancel": "Cancel",
       "successMessage": "Workouts created successfully"
+    },
+    "aiGeneration": {
+      "comingSoon": "AI workout generation coming soon!"
+    },
+    "templateBrowser": {
+      "comingSoon": "Template browser coming soon!"
     }
   },
   "createWorkout": {
@@ -1388,6 +1411,7 @@
     "emptyGroupMessage": "Tap to view {{muscleGroup}} exercises.",
     "createExercise": {
       "title": "Create exercise",
+      "description": "Add a new exercise to your library",
       "exerciseName": "Exercise Name",
       "exerciseNamePlaceholder": "e.g. Incline Dumbbell Press",
       "muscleTarget": "Muscle Target",
