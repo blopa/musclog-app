@@ -112,7 +112,7 @@ export class FoodService {
       // Convert serving amount to grams
       let gramWeight = servingAmount;
       if (servingUnit === 'oz') {
-        gramWeight = servingAmount * 28.3495; // TODO: use convert package here
+        gramWeight = convert(servingAmount, 'oz').to('g');
       } else if (servingUnit === 'ml') {
         // For ml, assume 1:1 with grams
         gramWeight = servingAmount;
