@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DIRNAME = path.dirname('./');
+const DIRNAME = path.resolve(process.cwd());
 
 function bumpBuildNumber(buildNumber) {
   return (parseInt(buildNumber, 10) + 1).toString();
@@ -58,21 +58,20 @@ function updateVersion(filePath) {
     filePath,
     JSON.stringify(data, null, 2)
   );
-  console.log(`${path.relative(path.resolve(DIRNAME, '..'), filePath)}: ${oldVersion} → ${newVersion}`);
+  console.log(`${path.relative(DIRNAME, filePath)}: ${oldVersion} → ${newVersion}`);
 }
 
 const doTask = () => {
-  const rootDir = path.resolve(DIRNAME, '..');
-  const packageJsonPath = path.join(rootDir, 'package.json');
-  const packageLockJsonPath = path.join(rootDir, 'package-lock.json');
-  const appJsonPath = path.join(rootDir, 'app.json');
+  const packageJsonPath = path.join(DIRNAME, 'package.json');
+  const packageLockJsonPath = path.join(DIRNAME, 'package-lock.json');
+  const appJsonPath = path.join(DIRNAME, 'app.json');
 
   updateVersion(packageJsonPath);
 
   if (fs.existsSync(packageLockJsonPath)) {
     updateVersion(packageLockJsonPath);
   } else {
-    console.log(`${path.relative(rootDir, packageLockJsonPath)} not found, skipping`);
+    console.log(`${path.relative(DIRNAME, packageLockJsonPath)} not found, skipping`);
   }
 
   updateVersion(appJsonPath);
