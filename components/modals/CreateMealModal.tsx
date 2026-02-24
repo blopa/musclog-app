@@ -1,11 +1,12 @@
 import { Apple, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 
 import Food from '../../database/models/Food';
 import { MealService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
@@ -231,6 +232,7 @@ const MealMacrosSummary = ({
 export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -239,7 +241,7 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
 
   // Calculate total macros from ingredients
   const totalMacros = useMemo(() => {
-    const totals = ingredients.reduce(
+    return ingredients.reduce(
       (acc, ingredient) => ({
         calories: acc.calories + ingredient.calories,
         protein: acc.protein + ingredient.protein,
@@ -248,25 +250,22 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       }),
       { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
-    return totals;
   }, [ingredients]);
 
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
-      // TODO: use snackbar system here
-      Alert.alert(t('food.createMeal.error'), t('food.createMeal.mealNameRequired'), [
-        { text: t('common.ok') },
-      ]);
+      showSnackbar('error', t('food.createMeal.mealNameRequired'), {
+        action: t('common.ok'),
+      });
       return;
     }
 
     // Validate ingredients
     if (ingredients.length === 0) {
-      // TODO: use snackbar system here
-      Alert.alert(t('food.createMeal.error'), t('food.createMeal.ingredientsRequired'), [
-        { text: t('common.ok') },
-      ]);
+      showSnackbar('error', t('food.createMeal.ingredientsRequired'), {
+        action: t('common.ok'),
+      });
       return;
     }
 
@@ -293,10 +292,9 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
-      // TODO: use snackbar system here
-      Alert.alert(t('food.createMeal.error'), t('food.createMeal.saveFailed'), [
-        { text: t('common.ok') },
-      ]);
+      showSnackbar('error', t('food.createMeal.saveFailed'), {
+        action: t('common.ok'),
+      });
     } finally {
       setIsSaving(false);
     }
