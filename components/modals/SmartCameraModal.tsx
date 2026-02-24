@@ -13,7 +13,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Alert,
   Animated,
   Dimensions,
   Pressable,
@@ -27,6 +26,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { type MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { detectBarcodes } from '../../utils/file';
+import { showSnackbar } from '../../utils/snackbarService';
 import { CameraView, useCameraPermissions } from '../CameraView';
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
@@ -209,11 +209,7 @@ export default function SmartCameraModal({
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (!permissionResult.granted) {
-        // TODO: use snackbar here instead
-        Alert.alert(t('common.permissionRequired'), t('food.aiCamera.galleryPermissionRequired'), [
-          { text: t('common.ok') },
-        ]);
-
+        showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
         return;
       }
 
@@ -235,17 +231,13 @@ export default function SmartCameraModal({
           if (barcode) {
             setDetectedBarcode(barcode);
           } else {
-            // TODO: use snackbar here instead
-            Alert.alert(t('common.noBarcode'), t('food.aiCamera.noBarcodeFound'), [
-              { text: t('common.ok') },
-            ]);
+            showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
           }
         }
       }
     } catch (error) {
       console.error('Error picking image from gallery:', error);
-      // TODO: use snackbar here instead
-      Alert.alert(t('common.error'), t('food.aiCamera.galleryError'), [{ text: t('common.ok') }]);
+      showSnackbar('error', t('food.aiCamera.galleryError'));
     }
   }, [cameraMode, t]);
 
