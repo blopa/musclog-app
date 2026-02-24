@@ -27,15 +27,21 @@ import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { ConfirmationModal } from './ConfirmationModal';
+import CreateCustomFoodModal from './CreateCustomFoodModal';
+import CreateExerciseModal from './CreateExerciseModal';
+import { CreateFoodPortionModal } from './CreateFoodPortionModal';
+import { CreateMealModal } from './CreateMealModal';
+import CreateWorkoutModal from './CreateWorkoutModal';
+import { CreateWorkoutOptionsModal } from './CreateWorkoutOptionsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericEditModal } from './GenericEditModal';
 import { getEditFields } from './GenericEditModal/entityEditConfig';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
-import { useSnackbar } from '../SnackbarContext';
 
 export type DataLogModalVariant =
   | 'meal'
@@ -453,11 +459,20 @@ export function DataLogModal({
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
+
+  // Create modal states
+  const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
+  const [createFoodModalVisible, setCreateFoodModalVisible] = useState(false);
+  const [createExerciseModalVisible, setCreateExerciseModalVisible] = useState(false);
+  const [createFoodPortionModalVisible, setCreateFoodPortionModalVisible] = useState(false);
+  const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
+  const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
 
   const translations = getDataLogModalTranslations(variant, t);
 
@@ -748,13 +763,100 @@ export function DataLogModal({
     <Pressable
       className="flex size-10 items-center justify-center rounded-full active:bg-white/10"
       onPress={() => {
-        // TODO: show a BottomPopUpMenu showing options to create new
-        console.log('More options pressed');
+        setShowCreateMenu(true);
       }}
     >
-      <MaterialIcons name="more-vert" size={theme.iconSize.md} color={theme.colors.text.primary} />
+      <MaterialIcons name="add" size={theme.iconSize.md} color={theme.colors.text.primary} />
     </Pressable>
   );
+
+  const getCreateMenuItems = (): BottomPopUpMenuItem[] => {
+    const CreateIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="add" {...props} />
+    );
+
+    const menuItems: BottomPopUpMenuItem[] = [];
+
+    switch (variant) {
+      case 'meal':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('food.createMeal.title'),
+          description: t('food.createMeal.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateMealModalVisible(true);
+          },
+        });
+        break;
+      case 'food':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('food.createFood.title'),
+          description: t('food.createFood.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateFoodModalVisible(true);
+          },
+        });
+        break;
+      case 'foodPortion':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('food.createPortion.title'),
+          description: t('food.createPortion.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateFoodPortionModalVisible(true);
+          },
+        });
+        break;
+      case 'exercise':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('exercises.createExercise.title'),
+          description: t('exercises.createExercise.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateExerciseModalVisible(true);
+          },
+        });
+        break;
+      case 'workoutTemplate':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('workouts.createTemplate.title'),
+          description: t('workouts.createTemplate.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateWorkoutOptionsModalVisible(true);
+          },
+        });
+        break;
+      case 'userMetric':
+        // User metrics are typically added from the main metrics screen, not here
+        break;
+      case 'nutrition_log':
+      case 'nutritionGoal':
+        // These are typically created from other flows
+        break;
+      case 'workoutLog':
+        // Workout logs are created from active workout sessions
+        break;
+    }
+
+    return menuItems;
+  };
 
   // Unify load more button to size="md" and consistent labels
   const loadingLabel = isLoadingMore
@@ -903,6 +1005,83 @@ export function DataLogModal({
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
       />
+
+      {/* Create Menu */}
+      {showCreateMenu ? (
+        <BottomPopUpMenu
+          visible={showCreateMenu}
+          onClose={() => setShowCreateMenu(false)}
+          title={t('common.createNew')}
+          items={getCreateMenuItems()}
+        />
+      ) : null}
+
+      {/* Create Modals */}
+      {createMealModalVisible ? (
+        <CreateMealModal
+          visible={createMealModalVisible}
+          onClose={() => setCreateMealModalVisible(false)}
+          onSave={() => {
+            refresh();
+            setCreateMealModalVisible(false);
+          }}
+        />
+      ) : null}
+
+      {createFoodModalVisible ? (
+        <CreateCustomFoodModal
+          visible={createFoodModalVisible}
+          onClose={() => setCreateFoodModalVisible(false)}
+          onSave={() => {
+            refresh();
+            setCreateFoodModalVisible(false);
+          }}
+        />
+      ) : null}
+
+      {createExerciseModalVisible ? (
+        <CreateExerciseModal
+          visible={createExerciseModalVisible}
+          onClose={() => setCreateExerciseModalVisible(false)}
+        />
+      ) : null}
+
+      {createFoodPortionModalVisible ? (
+        <CreateFoodPortionModal
+          visible={createFoodPortionModalVisible}
+          onClose={() => setCreateFoodPortionModalVisible(false)}
+          onCreatePortion={() => {
+            refresh();
+            setCreateFoodPortionModalVisible(false);
+          }}
+        />
+      ) : null}
+
+      {createWorkoutOptionsModalVisible ? (
+        <CreateWorkoutOptionsModal
+          visible={createWorkoutOptionsModalVisible}
+          onClose={() => setCreateWorkoutOptionsModalVisible(false)}
+          onGenerateWithAi={() => {
+            setCreateWorkoutOptionsModalVisible(false);
+            // TODO: Implement AI workout generation
+          }}
+          onCreateEmptyTemplate={() => {
+            setCreateWorkoutOptionsModalVisible(false);
+            setCreateWorkoutModalVisible(true);
+          }}
+          onBrowseTemplates={() => {
+            setCreateWorkoutOptionsModalVisible(false);
+            // TODO: Implement template browsing
+          }}
+        />
+      ) : null}
+
+      {createWorkoutModalVisible ? (
+        <CreateWorkoutModal
+          visible={createWorkoutModalVisible}
+          onClose={() => setCreateWorkoutModalVisible(false)}
+        />
+      ) : null}
     </>
   );
 }

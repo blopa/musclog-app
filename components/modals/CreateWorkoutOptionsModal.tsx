@@ -1,6 +1,6 @@
 import { Library, PlusCircle, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { NewWorkoutCard } from '../cards/NewWorkoutCard';

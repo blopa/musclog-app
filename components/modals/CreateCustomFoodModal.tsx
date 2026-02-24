@@ -156,10 +156,10 @@ export default function CreateCustomFoodModal({
         // Determine serving amount/unit based on selected portion
         let servingAmount = 100;
         let servingUnit = 'g';
-        
+
         if (selectedPortionIds.length > 0) {
           // Use the first selected portion as the default serving size
-          const selectedPortion = portions.find(p => selectedPortionIds.includes(p.id));
+          const selectedPortion = portions.find((p) => selectedPortionIds.includes(p.id));
           if (selectedPortion) {
             servingAmount = selectedPortion.gramWeight;
             servingUnit = selectedPortion.name.toLowerCase();
@@ -224,7 +224,6 @@ export default function CreateCustomFoodModal({
   const openBarcodeScanner = () => {
     setShowBarcodeScanner(true);
   };
-
 
   const micronutrientsData = [
     {
@@ -668,13 +667,9 @@ export default function CreateCustomFoodModal({
                   </Text>
                 )}
               </View>
-              <ChevronDown
-                size={theme.iconSize.md}
-                color={theme.colors.text.tertiary}
-              />
+              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
-
 
           {/* Macronutrients Header */}
           <View className="flex-row items-center gap-2">
