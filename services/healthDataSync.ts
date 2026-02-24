@@ -234,7 +234,7 @@ class HealthDataSyncService {
       if (!hasAnyPermission) {
         throw new HealthConnectError(
           HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
-          'No Health Connect permissions granted', // TODO: use translatons here
+          'No Health Connect permissions granted', // TODO: use i18n
           { retryable: false }
         );
       }

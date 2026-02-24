@@ -165,7 +165,7 @@ export class FoodPortionService {
 
     // Standard portions (global, not tied to any specific food)
     const commonPortions = [
-      // TODO: use translations here
+      // TODO: use i18n
       { name: 'Slice', gramWeight: 25, icon: 'egg' },
       { name: '2 Slices', gramWeight: 50, icon: 'egg' },
       { name: 'Cup', gramWeight: 240, icon: 'cup' },
