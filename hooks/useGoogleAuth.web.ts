@@ -8,10 +8,10 @@
 
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 
 import { GOOGLE_SCOPES } from '../constants/auth';
 import { getGoogleClientId } from '../utils/googleAuth';
+import { showSnackbar } from '../utils/snackbarService';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 
@@ -144,8 +144,7 @@ export const useGoogleAuth = () => {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      // TODO: use the snackbar system
-      Alert.alert('Error', `Failed to sign in with Google: ${errorMessage}`);
+      showSnackbar('error', `Failed to sign in with Google: ${errorMessage}`); // TODO: use i18n
     } finally {
       setIsSigningIn(false);
     }
