@@ -128,6 +128,7 @@ export default function SmartCameraModal({
           const barcode = await detectBarcodes(photo.uri);
           if (barcode) {
             setDetectedBarcode(barcode);
+            setIsFoodDetailsModalVisible(true);
             // Keep loading visible until food details modal is shown (cleared in useEffect above)
           } else {
             showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
@@ -257,14 +258,13 @@ export default function SmartCameraModal({
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedAsset = result.assets[0];
-        console.log('Image selected from gallery:', selectedAsset.uri);
-
         if (cameraMode === 'barcode-scan') {
           setIsSearchingBarcode(true);
           try {
             const barcode = await detectBarcodes(selectedAsset.uri);
             if (barcode) {
               setDetectedBarcode(barcode);
+              setIsFoodDetailsModalVisible(true);
               // Keep loading visible until food details modal is shown (cleared in useEffect above)
             } else {
               showSnackbar('error', t('food.aiCamera.noBarcodeFound'));

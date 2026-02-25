@@ -103,6 +103,14 @@ export function FoodMealDetailsModal({
     barcode && !food && !meal && !productFromSearch ? barcode : null
   );
 
+  // When opened with barcode only (no product yet), show modal immediately so it's visible on Android
+  // while productDetails loads. Otherwise the inner FullScreenModal stays hidden until the effect below runs.
+  useEffect(() => {
+    if (visible && barcode && !food && !meal && !productFromSearch) {
+      setIsFoodDetailsModalVisible(true);
+    }
+  }, [visible, barcode, food, meal, productFromSearch]);
+
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
   const getDefaultServingSize = useCallback(() => {
     const servingStr =
