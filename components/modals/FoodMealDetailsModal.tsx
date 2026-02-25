@@ -36,6 +36,8 @@ type FoodDetailsModalProps = {
   initialDate?: Date;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
+  /** Called when barcode lookup has finished (product found or not). Used to hide camera loading overlay. */
+  onBarcodeLookupComplete?: () => void;
 };
 
 export function FoodMealDetailsModal({
@@ -50,6 +52,7 @@ export function FoodMealDetailsModal({
   onAddFood,
   onLogMeal,
   foodLog,
+  onBarcodeLookupComplete,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -146,6 +149,7 @@ export function FoodMealDetailsModal({
       setIsFoodDetailsModalVisible(true);
       const defaultG = getDefaultServingSize(); // uses 100 when serving_size is "0 g" or invalid
       setServingSize(defaultG);
+      onBarcodeLookupComplete?.();
       return;
     }
 
@@ -155,8 +159,16 @@ export function FoodMealDetailsModal({
       } else {
         setIsFoodDetailsModalVisible(true);
       }
+      onBarcodeLookupComplete?.();
     }
-  }, [productDetails, productFromSearch, food, meal, getDefaultServingSize]);
+  }, [
+    productDetails,
+    productFromSearch,
+    food,
+    meal,
+    getDefaultServingSize,
+    onBarcodeLookupComplete,
+  ]);
 
   // Load meal nutrients when meal is provided
   useEffect(() => {

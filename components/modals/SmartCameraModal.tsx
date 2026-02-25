@@ -236,13 +236,14 @@ export default function SmartCameraModal({
           const barcode = await detectBarcodes(photo.uri);
           if (barcode) {
             setDetectedBarcode(barcode);
+            // Keep loading visible until food details modal is shown (cleared in useEffect above)
           } else {
             showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+            setIsSearchingBarcode(false);
           }
         } catch (error) {
           console.error('Error detecting barcode:', error);
           showSnackbar('error', t('food.aiCamera.cameraError'));
-        } finally {
           setIsSearchingBarcode(false);
         }
       } else if (cameraMode === 'ai-meal-photo' || cameraMode === 'ai-label-scan') {
@@ -281,11 +282,17 @@ export default function SmartCameraModal({
   const handleFoodDetailsClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
+    setIsSearchingBarcode(false);
   }, []);
 
   const handleFoodNotFoundClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
+    setIsSearchingBarcode(false);
+  }, []);
+
+  const handleBarcodeLookupComplete = useCallback(() => {
+    setIsSearchingBarcode(false);
   }, []);
 
   const handleTryAiScan = useCallback(() => {
@@ -366,13 +373,14 @@ export default function SmartCameraModal({
             const barcode = await detectBarcodes(selectedAsset.uri);
             if (barcode) {
               setDetectedBarcode(barcode);
+              // Keep loading visible until food details modal is shown (cleared in useEffect above)
             } else {
               showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+              setIsSearchingBarcode(false);
             }
           } catch (error) {
             console.error('Error detecting barcode from gallery:', error);
             showSnackbar('error', t('food.aiCamera.cameraError'));
-          } finally {
             setIsSearchingBarcode(false);
           }
         }
@@ -797,6 +805,7 @@ export default function SmartCameraModal({
             visible={isFoodDetailsModalVisible}
             onClose={handleFoodDetailsClose}
             barcode={detectedBarcode}
+            onBarcodeLookupComplete={handleBarcodeLookupComplete}
           />
         ) : null}
 
