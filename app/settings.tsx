@@ -213,7 +213,7 @@ export default function SettingsScreen() {
           ]}
         />
 
-        {/* Legal & About */}
+        {/* TODO: move this into a separate component file */}
         <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%' }}>
           <GenericCard variant="default" size="sm" containerStyle={{ width: '100%' }}>
             <View
