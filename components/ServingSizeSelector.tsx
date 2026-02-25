@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useTheme } from '../hooks/useTheme';
@@ -90,7 +90,12 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
         </View>
-        <View className="flex-row justify-center gap-2 pb-2">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 8 }}
+          className="flex-row gap-4 pb-2"
+        >
           {effectiveQuickSizes.map((size) => (
             <Pressable
               key={size.label}
@@ -101,6 +106,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
               }`}
               style={{
                 paddingVertical: theme.spacing.padding['1half'],
+                marginHorizontal: 4,
                 borderColor:
                   value === size.value
                     ? theme.colors.accent.primary20
@@ -117,7 +123,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
               </Text>
             </Pressable>
           ))}
-        </View>
+        </ScrollView>
       </View>
     </View>
   );
