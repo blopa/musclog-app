@@ -80,7 +80,7 @@ export function FoodMealDetailsModal({
     null
   );
 
-  // Determine mode: 'food' | 'foodLog' | 'meal' | 'barcode'
+  // TODO: move this to a helper function to avoid nested ternary
   const mode = meal
     ? 'meal'
     : foodLog
@@ -99,17 +99,8 @@ export function FoodMealDetailsModal({
   }, [visible, initialDate, foodLog]);
 
   // Fetch detailed product data only when barcode is provided, no local food, and no preloaded search product
-  const { data: productDetails } = useFoodProductDetails(
-    barcode && !food && !meal && !productFromSearch ? barcode : null
-  );
-
-  // When opened with barcode only (no product yet), show modal immediately so it's visible on Android
-  // while productDetails loads. Otherwise the inner FullScreenModal stays hidden until the effect below runs.
-  useEffect(() => {
-    if (visible && barcode && !food && !meal && !productFromSearch) {
-      setIsFoodDetailsModalVisible(true);
-    }
-  }, [visible, barcode, food, meal, productFromSearch]);
+  const barcodeForHook = barcode && !food && !meal && !productFromSearch ? barcode : null;
+  const { data: productDetails } = useFoodProductDetails(barcodeForHook);
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
   const getDefaultServingSize = useCallback(() => {

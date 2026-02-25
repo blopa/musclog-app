@@ -621,10 +621,7 @@ export default function SmartCameraModal({
                 }}
                 onPress={handleGalleryPress}
               >
-                <Images
-                  size={theme.iconSize.lg}
-                  color={theme.colors.text.primary}
-                />
+                <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
               </Pressable>
 
               {/* Shutter Button */}
