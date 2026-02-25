@@ -41,6 +41,10 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
   const theme = useTheme();
   const { t } = useTranslation();
 
+  // When any macro goal is 3 digits, use compact text on all cards so "/ XXXg" fits and cards stay aligned
+  const useCompactMacros =
+    macros.protein.goal >= 100 || macros.carbs.goal >= 100 || macros.fat.goal >= 100;
+
   return (
     <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
       <View className="p-6">
@@ -88,6 +92,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             goal={macros.protein.goal}
             color={macros.protein.color}
             progressColor={macros.protein.progressColor}
+            compact={useCompactMacros}
           />
           <MacroCard
             name={t('food.macros.carbs')}
@@ -96,6 +101,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             goal={macros.carbs.goal}
             color={macros.carbs.color}
             progressColor={macros.carbs.progressColor}
+            compact={useCompactMacros}
           />
           <MacroCard
             name={t('food.macros.fat')}
@@ -104,6 +110,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             goal={macros.fat.goal}
             color={macros.fat.color}
             progressColor={macros.fat.progressColor}
+            compact={useCompactMacros}
           />
         </View>
       </View>

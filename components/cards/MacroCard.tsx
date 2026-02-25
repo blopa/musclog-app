@@ -10,9 +10,19 @@ type MacroCardProps = {
   goal: number;
   color: string;
   progressColor: string;
+  /** When true, uses smaller text so "amount / goal" fits in one line (used when any macro has large goal) */
+  compact?: boolean;
 };
 
-export function MacroCard({ name, percentage, amount, goal, color, progressColor }: MacroCardProps) {
+export function MacroCard({
+  name,
+  percentage,
+  amount,
+  goal,
+  color,
+  progressColor,
+  compact = false,
+}: MacroCardProps) {
   const theme = useTheme();
   return (
     <GenericCard variant="default" size="sm">
@@ -23,9 +33,20 @@ export function MacroCard({ name, percentage, amount, goal, color, progressColor
             {percentage}%
           </Text>
         </View>
-        <View className="mb-3 flex-row items-baseline gap-1">
-          <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
-          <Text className="text-sm text-text-secondary">/ {goal}g</Text>
+        <View className="mb-3 flex-row flex-nowrap items-baseline gap-1">
+          <Text
+            className={compact ? 'text-xl font-bold text-text-primary' : 'text-2xl font-bold text-text-primary'}
+            numberOfLines={1}
+          >
+            {amount}
+          </Text>
+          <Text
+            className={compact ? 'text-xs text-text-secondary' : 'text-sm text-text-secondary'}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            / {goal}g
+          </Text>
         </View>
         <View
           className="h-1.5 overflow-hidden rounded-full"
