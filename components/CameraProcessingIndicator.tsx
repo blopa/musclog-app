@@ -4,7 +4,7 @@ import { Path, Svg } from 'react-native-svg';
 
 import { useTheme } from '../hooks/useTheme';
 
-export const CameraProcessingIndicator = () => {
+export const CameraProcessingIndicator = ({ isAi = false }: { isAi: boolean }) => {
   const theme = useTheme();
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -98,6 +98,7 @@ export const CameraProcessingIndicator = () => {
           className="text-center text-xl font-semibold"
           style={{ color: theme.colors.text.white }}
         >
+          {/*TODO: use translation for this and change copy depending on `isAi`*/}
           AI is analyzing your meal...
         </Text>
 
@@ -105,6 +106,7 @@ export const CameraProcessingIndicator = () => {
           className="mt-2 text-center text-xs uppercase tracking-widest"
           style={{ color: '#34d399' }}
         >
+          {/*TODO: use translation for this and change copy depending on `isAi`*/}
           Processing nutrients
         </Text>
       </View>
