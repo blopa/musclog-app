@@ -13,6 +13,7 @@ import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -151,15 +152,15 @@ export default function NewExerciseTransitionScreen() {
     }
   };
 
-  const formatTotalTime = (startTime: Date) => {
-    const now = new Date();
-    const diff = now.getTime() - startTime.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
+  // Live-updating session time (same approach as rest-timer, workout-session, rest-over)
+  const sessionTime = useSessionTotalTime({
+    startTime: workoutLog?.startedAt,
+    initialTime: { hours: 0, minutes: 0, seconds: 0 },
+  });
+  const totalTimeFormatted =
+    workoutLog?.startedAt != null
+      ? `${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`
+      : '00:00:00';
 
   if (isLoading) {
     return (
@@ -206,9 +207,7 @@ export default function NewExerciseTransitionScreen() {
     <MasterLayout showNavigationMenu={false}>
       <StatusBar style="light" />
       <ExerciseTransitionScreen
-        totalTime={
-          workoutLog.startedAt ? formatTotalTime(new Date(workoutLog.startedAt)) : '00:00:00'
-        }
+        totalTime={totalTimeFormatted}
         completedExercise={completedExerciseName}
         completedMessage={t('exerciseTransition.completedMessage')}
         nextExercise={nextExercise}

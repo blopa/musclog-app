@@ -476,7 +476,7 @@
     "rest": "REST",
     "sec": "sec",
     "equipment": "EQUIPMENT",
-    "startNextExercise": "START NEXT EXERCISE",
+    "startNextExercise": "Start next exercise",
     "loadingNextExercise": "Loading next exercise...",
     "errorTitle": "Workout not found",
     "errorDescription": "Unable to load exercise transition screen. Please try again.",
