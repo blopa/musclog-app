@@ -92,10 +92,19 @@ export default function NewExerciseTransitionScreen() {
         const restTime = firstSet?.restTimeAfter ?? 60;
         const targetReps =
           firstSet?.reps != null && firstSet.reps > 0 ? String(firstSet.reps) : '—';
-        const targetWeight =
-          firstSet?.weight != null && firstSet.weight > 0
-            ? `${firstSet.weight} ${t(weightUnitKey)}`
-            : '—';
+
+        const weights = sets
+          .map((s) => s.weight)
+          .filter((w): w is number => w != null && w > 0);
+        const unit = t(weightUnitKey);
+        let targetWeight: string;
+        if (weights.length === 0) {
+          targetWeight = '—';
+        } else {
+          const minW = Math.min(...weights);
+          const maxW = Math.max(...weights);
+          targetWeight = minW === maxW ? `${minW} ${unit}` : `${minW}~${maxW} ${unit}`;
+        }
 
         const muscleGroupRaw = (nextEx.muscleGroup ?? 'other').toLowerCase();
         const muscleGroup = t(`exercises.muscleGroups.${muscleGroupRaw}`);
