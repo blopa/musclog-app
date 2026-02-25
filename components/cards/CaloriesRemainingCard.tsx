@@ -16,18 +16,21 @@ type CaloriesRemainingCardProps = {
     protein: {
       percentage: number;
       amount: string;
+      goal: number;
       color: string;
       progressColor: string;
     };
     carbs: {
       percentage: number;
       amount: string;
+      goal: number;
       color: string;
       progressColor: string;
     };
     fat: {
       percentage: number;
       amount: string;
+      goal: number;
       color: string;
       progressColor: string;
     };
@@ -82,6 +85,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             name={t('food.macros.protein')}
             percentage={macros.protein.percentage}
             amount={macros.protein.amount}
+            goal={macros.protein.goal}
             color={macros.protein.color}
             progressColor={macros.protein.progressColor}
           />
@@ -89,6 +93,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             name={t('food.macros.carbs')}
             percentage={macros.carbs.percentage}
             amount={macros.carbs.amount}
+            goal={macros.carbs.goal}
             color={macros.carbs.color}
             progressColor={macros.carbs.progressColor}
           />
@@ -96,6 +101,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             name={t('food.macros.fat')}
             percentage={macros.fat.percentage}
             amount={macros.fat.amount}
+            goal={macros.fat.goal}
             color={macros.fat.color}
             progressColor={macros.fat.progressColor}
           />

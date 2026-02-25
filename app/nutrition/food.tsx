@@ -165,18 +165,21 @@ export default function FoodScreen() {
       protein: {
         percentage: Math.round(((dailyNutrients?.protein || 0) / totalProtein) * 100),
         amount: `${Math.round(dailyNutrients?.protein || 0)}g`,
+        goal: totalProtein,
         color: theme.colors.macros.protein.text,
         progressColor: theme.colors.macros.protein.bg,
       },
       carbs: {
         percentage: Math.round(((dailyNutrients?.carbs || 0) / totalCarbs) * 100),
         amount: `${Math.round(dailyNutrients?.carbs || 0)}g`,
+        goal: totalCarbs,
         color: theme.colors.macros.carbs.text,
         progressColor: theme.colors.macros.carbs.bg,
       },
       fat: {
         percentage: Math.round(((dailyNutrients?.fat || 0) / totalFat) * 100),
         amount: `${Math.round(dailyNutrients?.fat || 0)}g`,
+        goal: totalFat,
         color: theme.colors.macros.fat.text,
         progressColor: theme.colors.macros.fat.bg,
       },
