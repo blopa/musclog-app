@@ -1,10 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, ExternalLink } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { GenericCard } from '../components/cards/GenericCard';
 import { SettingsCard } from '../components/cards/SettingsCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
@@ -15,6 +17,9 @@ import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
 import packageJson from '../package.json';
 import { theme } from '../theme';
+
+const buildNumber =
+  Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode ?? null;
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
@@ -208,68 +213,133 @@ export default function SettingsScreen() {
           ]}
         />
 
-        {/* Info Links */}
-        <View
-          style={{
-            marginBottom: theme.spacing.padding.sm,
-          }}
-        >
-          <Pressable
-            style={({ pressed }) => [
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderRadius: theme.borderRadius.md,
-                paddingVertical: theme.spacing.padding.md,
+        {/* Legal & About */}
+        <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%' }}>
+          <GenericCard variant="default" size="sm" containerStyle={{ width: '100%' }}>
+            <View
+              style={{
+                width: '100%',
                 paddingHorizontal: theme.spacing.padding.base,
-                backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-              },
-            ]}
-            onPress={() => {}}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.medium,
+                paddingTop: theme.spacing.padding.sm,
+                paddingBottom: theme.spacing.padding.sm,
               }}
             >
-              {t('settings.aboutMusclog')}
-            </Text>
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.secondary,
-              }}
-            >
-              {packageJson.version}
-            </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              {
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderRadius: theme.borderRadius.md,
-                paddingVertical: theme.spacing.padding.md,
-                paddingHorizontal: theme.spacing.padding.base,
-                backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-              },
-            ]}
-            onPress={() => {}}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.sm,
-                color: theme.colors.text.primary,
-                fontWeight: theme.typography.fontWeight.medium,
-              }}
-            >
-              {t('settings.privacyPolicy')}
-            </Text>
-          </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: theme.spacing.padding.md,
+                    paddingRight: theme.size.xl + theme.spacing.padding.sm,
+                    paddingHorizontal: 0,
+                    paddingLeft: 0,
+                    backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
+                    borderRadius: theme.borderRadius.sm,
+                  },
+                ]}
+                onPress={() => Linking.openURL('https://werules.com/musclog/terms')}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    color: theme.colors.text.primary,
+                  }}
+                  numberOfLines={1}
+                >
+                  {t('settings.termsOfService')}
+                </Text>
+                <View
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: theme.size.xl,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  pointerEvents="none"
+                >
+                  <ExternalLink size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                </View>
+              </Pressable>
+
+              <View
+                style={{
+                  height: theme.borderWidth.thin,
+                  backgroundColor: theme.colors.border.light,
+                  marginVertical: theme.spacing.padding.sm,
+                }}
+              />
+
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingVertical: theme.spacing.padding.md,
+                    paddingRight: theme.size.xl + theme.spacing.padding.sm,
+                    paddingHorizontal: 0,
+                    paddingLeft: 0,
+                    backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
+                    borderRadius: theme.borderRadius.sm,
+                  },
+                ]}
+                onPress={() => Linking.openURL('https://werules.com/musclog/privacy')}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    color: theme.colors.text.primary,
+                  }}
+                  numberOfLines={1}
+                >
+                  {t('settings.privacyPolicy')}
+                </Text>
+                <View
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: theme.size.xl,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  pointerEvents="none"
+                >
+                  <ExternalLink size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                </View>
+              </Pressable>
+
+              <View
+                style={{
+                  height: theme.borderWidth.thin,
+                  backgroundColor: theme.colors.border.light,
+                  marginVertical: theme.spacing.padding.sm,
+                }}
+              />
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingVertical: theme.spacing.padding.md,
+                  paddingHorizontal: 0,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    color: theme.colors.text.secondary,
+                  }}
+                >
+                  Musclog v{packageJson.version}
+                  {buildNumber != null ? ` (Build ${buildNumber})` : ''}
+                </Text>
+              </View>
+            </View>
+          </GenericCard>
         </View>
         <View style={{ height: theme.size['8'] }} />
       </ScrollView>

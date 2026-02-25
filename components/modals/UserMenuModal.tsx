@@ -181,17 +181,19 @@ export function UserMenuModal({
                   onClose();
                 }}
               />
-              {onDebugMenuPress ? <Pressable
+              {onDebugMenuPress ? (
+                <Pressable
                   className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
                   onPress={() => {
                     onDebugMenuPress?.();
                     onClose();
                   }}
-              >
+                >
                   <Text className="flex-1 text-lg font-semibold text-text-primary">
                     {t('userMenu.debugPage')}
                   </Text>
-                </Pressable> : null}
+                </Pressable>
+              ) : null}
             </View>
 
             {/* Top safe area spacing */}
