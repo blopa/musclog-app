@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 
@@ -6,6 +7,7 @@ import { useTheme } from '../hooks/useTheme';
 
 export const CameraProcessingIndicator = ({ isAi = false }: { isAi: boolean }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -98,16 +100,20 @@ export const CameraProcessingIndicator = ({ isAi = false }: { isAi: boolean }) =
           className="text-center text-xl font-semibold"
           style={{ color: theme.colors.text.white }}
         >
-          {/*TODO: use translation for this and change copy depending on `isAi`*/}
-          AI is analyzing your meal...
+          {isAi 
+            ? t('camera.processing.aiAnalyzingMeal')
+            : t('camera.processing.analyzingImage')
+          }
         </Text>
 
         <Text
           className="mt-2 text-center text-xs uppercase tracking-widest"
           style={{ color: '#34d399' }}
         >
-          {/*TODO: use translation for this and change copy depending on `isAi`*/}
-          Processing nutrients
+          {isAi 
+            ? t('camera.processing.processingNutrients')
+            : t('camera.processing.processingData')
+          }
         </Text>
       </View>
     </View>

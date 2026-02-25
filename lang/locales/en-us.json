@@ -1689,7 +1689,13 @@
     "title": "Add Meal"
   },
   "camera": {
-    "title": "Title"
+    "title": "Title",
+    "processing": {
+      "aiAnalyzingMeal": "AI is analyzing your meal...",
+      "processingNutrients": "Processing nutrients",
+      "analyzingImage": "Analyzing barcode...",
+      "processingData": "Processing data"
+    }
   },
   "dailySummaryCard": {
     "carbs": "Carbs",
