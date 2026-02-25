@@ -6,8 +6,8 @@ import { Pressable, Text, View } from 'react-native';
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
-import packageJson from '../../package.json';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
 import { SecretInput } from '../theme/SecretInput';
@@ -402,47 +402,7 @@ export function AISettingsModal({
           <ToggleInput items={insightsItems} />
         </View>
 
-        {/* Footer Help */}
-        <View
-          style={{
-            marginTop: theme.spacing.padding.base,
-            paddingHorizontal: theme.spacing.padding.base,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              color: theme.colors.text.tertiary,
-              textAlign: 'center',
-              lineHeight: theme.typography.lineHeight.relaxed * theme.typography.fontSize.xs,
-            }}
-          >
-            {t('settings.aiSettings.apiKeyHelp')}{' '}
-            <Text
-              style={{
-                color: theme.colors.accent.primary,
-                textDecorationLine: 'underline',
-                textDecorationStyle: 'dotted',
-              }}
-              onPress={() => {
-                // Handle setup guide link
-              }}
-            >
-              {t('settings.aiSettings.setupGuide')}
-            </Text>
-            .
-          </Text>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              color: theme.colors.text.tertiary,
-              textAlign: 'center',
-              marginTop: theme.spacing.padding['6'],
-            }}
-          >
-            {t('settings.aiSettings.version', { version: packageJson.version })}
-          </Text>
-        </View>
+        <LegalLinksCard />
 
         {/* Model Selection Menus */}
         <BottomPopUpMenu

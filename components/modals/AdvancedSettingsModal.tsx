@@ -20,8 +20,8 @@ import { Linking, Platform, Text, View } from 'react-native';
 
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
-import packageJson from '../../package.json';
 import { exportDatabase, importDatabase } from '../../utils/file';
+import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { SettingsCard } from '../cards/SettingsCard';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
@@ -401,13 +401,7 @@ export function AdvancedSettingsModal({
               }
             />
 
-            {/* Version Info */}
-            <Text
-              className="mt-3 px-4 text-center text-xs"
-              style={{ color: theme.colors.text.tertiary }}
-            >
-              {t('settings.advancedSettings.version', { version: packageJson.version })}
-            </Text>
+            <LegalLinksCard />
           </View>
         </View>
       </FullScreenModal>
