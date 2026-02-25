@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowRight, Check } from 'lucide-react-native';
-import { Image, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Image, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 import { GenericCard } from './cards/GenericCard';
@@ -10,51 +11,61 @@ type ExerciseTransitionScreenProps = {
   totalTime?: string;
   completedExercise?: string;
   completedMessage?: string;
-  nextExercise?: {
+  nextExercise: {
     name: string;
     muscleGroups: string;
     imageUri: string;
     targetSets: number;
     targetReps: string;
+    targetWeight: string;
     restTime: number;
     equipment: string[];
   } | null;
   onStartNextExercise?: () => void;
 };
 
+const defaultPlaceholderImage = require('../assets/icon.png');
+
 export function ExerciseTransitionScreen({
-  totalTime = '00:48:22',
-  completedExercise = 'Incline Press',
-  completedMessage = 'Great effort. Catch your breath.',
-  nextExercise = null,
+  totalTime = '00:00:00',
+  completedExercise = '',
+  completedMessage,
+  nextExercise,
   onStartNextExercise,
 }: ExerciseTransitionScreenProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
+  const imageSource =
+    nextExercise?.imageUri && nextExercise.imageUri.trim() !== ''
+      ? { uri: nextExercise.imageUri }
+      : defaultPlaceholderImage;
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
-      {/* Header */}
-      <View className="z-10 flex items-center justify-center px-4 py-6">
-        <View className="flex flex-col items-center">
-          <Text
-            className="text-3xl font-bold tabular-nums leading-none tracking-tight text-gray-900 dark:text-white"
-            style={{ color: theme.colors.text.primary }}
-          >
-            {totalTime}
-          </Text>
-          <Text
-            className="text-primary mt-1 text-xs font-medium uppercase tracking-widest opacity-90"
-            style={{ color: theme.colors.accent.primary }}
-          >
-            Total Time
-          </Text>
-        </View>
+      {/* Header: Total Time */}
+      <View className="z-10 flex items-center justify-center px-4 pb-2 pt-6">
+        <Text
+          className="text-4xl font-bold tabular-nums leading-none tracking-tight"
+          style={{ color: theme.colors.text.primary }}
+        >
+          {totalTime}
+        </Text>
+        <Text
+          className="mt-1.5 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: theme.colors.accent.primary }}
+        >
+          {t('exerciseTransition.totalTime')}
+        </Text>
       </View>
 
-      {/* Main Content */}
-      <View className="flex flex-1 flex-col gap-6 overflow-y-auto px-5 pb-6">
+      {/* Main Content - scrollable to avoid broken layout on small screens */}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingBottom: 24 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Completion Status */}
-        <View className="flex flex-col items-center justify-center py-2">
+        <View className="items-center justify-center py-4">
           <View
             className="mb-3 rounded-full p-3"
             style={{ backgroundColor: theme.colors.accent.primary + '20' }}
@@ -62,60 +73,63 @@ export function ExerciseTransitionScreen({
             <Check size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
           </View>
           <Text
-            className="text-center text-2xl font-bold text-gray-900 dark:text-white"
+            className="text-center text-2xl font-bold"
             style={{ color: theme.colors.text.primary }}
           >
-            {completedExercise} Complete!
+            {completedExercise} {t('exerciseTransition.completeSuffix')}
           </Text>
-          <Text
-            className="text-center text-sm text-gray-500 dark:text-gray-400"
-            style={{ color: theme.colors.text.secondary }}
-          >
-            {completedMessage}
+          <Text className="mt-1 text-center text-sm" style={{ color: theme.colors.text.secondary }}>
+            {completedMessage ?? t('exerciseTransition.completedMessage')}
           </Text>
         </View>
 
         {/* Up Next Divider */}
-        <View className="mt-2 flex items-center gap-4">
+        <View className="mt-2 flex-row items-center gap-4">
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
-          <Text className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-            Up Next
+          <Text
+            className="text-xs font-bold uppercase tracking-widest"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('exerciseTransition.upNext')}
           </Text>
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
         </View>
 
         {/* Next Exercise Card */}
         {nextExercise ? (
-          <GenericCard variant="card">
+          <GenericCard
+            variant="card"
+            containerStyle={{ marginTop: 16, overflow: 'hidden' as const }}
+          >
             <View className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200 dark:bg-gray-800">
               <Image
-                source={{ uri: nextExercise.imageUri }}
+                source={imageSource}
                 className="absolute inset-0 h-full w-full"
                 resizeMode="cover"
               />
               <LinearGradient
-                colors={['rgba(0,0,0,0.8)', 'rgba(0,0,0,0.3)', 'transparent']}
+                colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.4)', 'transparent']}
                 locations={[0, 0.5, 1]}
                 start={{ x: 0, y: 1 }}
                 end={{ x: 0, y: 0 }}
                 className="absolute inset-0"
               />
-              <View className="absolute bottom-0 left-0 flex w-full flex-col items-start gap-1 p-5">
+              <View className="absolute bottom-0 left-0 right-0 flex flex-col items-start gap-1 p-5">
                 <Text
-                  className="text-3xl font-bold leading-tight text-white shadow-black drop-shadow-lg"
+                  className="text-2xl font-bold leading-tight text-white"
                   style={{
-                    textShadowColor: 'rgba(0,0,0,0.8)',
-                    textShadowOffset: { width: 0, height: 2 },
-                    textShadowRadius: 4,
+                    textShadowColor: 'rgba(0,0,0,0.9)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 3,
                   }}
                 >
                   {nextExercise.name}
                 </Text>
                 <Text
-                  className="text-primary text-sm font-semibold uppercase tracking-wide drop-shadow-md"
+                  className="text-sm font-semibold uppercase tracking-wide"
                   style={{
                     color: theme.colors.accent.primary,
-                    textShadowColor: 'rgba(0,0,0,0.5)',
+                    textShadowColor: 'rgba(0,0,0,0.6)',
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 2,
                   }}
@@ -125,57 +139,75 @@ export function ExerciseTransitionScreen({
               </View>
             </View>
 
-            <View className="flex flex-col gap-4 p-5">
-              {/* Target and Rest */}
-              <View className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-white/5">
+            <View
+              className="flex flex-col gap-4 p-5"
+              style={{ backgroundColor: theme.colors.background.primary }}
+            >
+              {/* Target and Rest - same row as design */}
+              <View
+                className="flex-row items-start justify-between border-b pb-4"
+                style={{ borderBottomColor: theme.colors.border.default }}
+              >
                 <View className="flex flex-col">
-                  <Text className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                    Target
+                  <Text
+                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    style={{ color: theme.colors.text.secondary }}
+                  >
+                    {t('exerciseTransition.target')}
                   </Text>
-                  <View className="flex items-baseline gap-1">
+                  <View className="flex-row flex-wrap items-baseline gap-1">
                     <Text
-                      className="text-xl font-bold text-gray-900 dark:text-white"
+                      className="text-xl font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
                       {nextExercise.targetSets}
                     </Text>
-                    <Text
-                      className="text-sm text-gray-500 dark:text-gray-400"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      Sets
+                    <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                      {t('exerciseTransition.sets')}
                     </Text>
-                    <Text className="mx-1 text-gray-300 dark:text-gray-600">•</Text>
+                    <Text className="mx-1" style={{ color: theme.colors.text.secondary }}>
+                      •
+                    </Text>
                     <Text
-                      className="text-xl font-bold text-gray-900 dark:text-white"
+                      className="text-xl font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
                       {nextExercise.targetReps}
                     </Text>
-                    <Text
-                      className="text-sm text-gray-500 dark:text-gray-400"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      Reps
+                    <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                      {t('exerciseTransition.reps')}
                     </Text>
+                    {nextExercise.targetWeight !== '—' ? (
+                      <>
+                        <Text className="mx-1" style={{ color: theme.colors.text.secondary }}>
+                          •
+                        </Text>
+                        <Text
+                          className="text-xl font-bold"
+                          style={{ color: theme.colors.text.primary }}
+                        >
+                          {nextExercise.targetWeight}
+                        </Text>
+                      </>
+                    ) : null}
                   </View>
                 </View>
                 <View className="flex flex-col items-end">
-                  <Text className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                    Rest
+                  <Text
+                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    style={{ color: theme.colors.text.secondary }}
+                  >
+                    {t('exerciseTransition.rest')}
                   </Text>
-                  <View className="flex items-baseline gap-1">
+                  <View className="flex-row items-baseline gap-1">
                     <Text
-                      className="text-xl font-bold text-gray-900 dark:text-white"
+                      className="text-xl font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
                       {nextExercise.restTime}
                     </Text>
-                    <Text
-                      className="text-sm text-gray-500 dark:text-gray-400"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      sec
+                    <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                      {t('exerciseTransition.sec')}
                     </Text>
                   </View>
                 </View>
@@ -183,19 +215,29 @@ export function ExerciseTransitionScreen({
 
               {/* Equipment */}
               <View className="flex flex-col gap-2">
-                <Text className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                  Equipment
+                <Text
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('exerciseTransition.equipment')}
                 </Text>
                 <View className="flex flex-wrap gap-2">
                   {nextExercise.equipment.map((item, index) => (
                     <View
                       key={index}
-                      className="flex items-center gap-1.5 rounded-md border border-transparent bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 dark:border-white/5 dark:bg-white/5 dark:text-gray-300"
+                      className="flex-row items-center gap-1.5 rounded-lg border px-3 py-2"
+                      style={{
+                        borderColor: theme.colors.border.default,
+                        backgroundColor:
+                          theme.colors.background.secondary ?? theme.colors.background.primary,
+                      }}
                     >
-                      <Text className="text-[16px]">{item.includes('Barbell') ? '🏋️' : '🪑'}</Text>
+                      <Text className="text-base">
+                        {item.toLowerCase().includes('barbell') ? '🏋️' : '🪑'}
+                      </Text>
                       <Text
                         className="text-xs font-medium"
-                        style={{ color: theme.colors.text.secondary }}
+                        style={{ color: theme.colors.text.primary }}
                       >
                         {item}
                       </Text>
@@ -206,15 +248,15 @@ export function ExerciseTransitionScreen({
             </View>
           </GenericCard>
         ) : (
-          <View className="flex items-center justify-center py-8">
-            <Text className="text-center text-gray-500 dark:text-gray-400">
-              Loading next exercise...
+          <View className="items-center justify-center py-8">
+            <Text className="text-center" style={{ color: theme.colors.text.secondary }}>
+              {t('exerciseTransition.loadingNextExercise')}
             </Text>
           </View>
         )}
-      </View>
+      </ScrollView>
 
-      {/* Footer */}
+      {/* Footer - gradient CTA per design */}
       <View
         className="z-10 w-full px-5 pb-8 pt-4"
         style={{
@@ -224,7 +266,7 @@ export function ExerciseTransitionScreen({
         }}
       >
         <Button
-          label="Start Next Exercise"
+          label={t('exerciseTransition.startNextExercise')}
           icon={ArrowRight}
           iconPosition="right"
           variant="gradientCta"

@@ -51,6 +51,7 @@ export default function RestTimerScreen() {
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const rotationAnim = useRef(new Animated.Value(0)).current;
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load workout data
   useEffect(() => {
@@ -121,28 +122,70 @@ export default function RestTimerScreen() {
     loadData();
   }, [workoutLogId, completedSetOrder]);
 
-  // Rest timer countdown
-  useEffect(() => {
-    if (restTime > 0 && !isLoading) {
-      const interval = setInterval(() => {
-        setRestTime((prev) => {
-          if (prev <= 0) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  // Navigate to exercise-transition when next set is a different exercise, else workout-session
+  const navigateToNextScreen = () => {
+    if (!workoutLogId) {
+      router.back();
+      return;
+    }
+    if (!nextSet) {
+      router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+      return;
+    }
+    if (completedSet && nextSet.exercise.id !== completedSet.exercise.id) {
+      router.replace(
+        `/workout/exercise-transition?workoutLogId=${workoutLogId}&completedExerciseId=${completedSet.exercise.id}&nextExerciseId=${nextSet.exercise.id}`
+      );
+      return;
+    }
+    router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+  };
 
-      return () => clearInterval(interval);
-    } else if (restTime === 0 && !isLoading && workoutLogId) {
-      // Auto-navigate to next set when timer reaches 0
+  // Rest timer countdown: run one interval when loading finishes and restTime > 0.
+  // Do NOT depend on restTime so we don't clear/recreate the interval every second.
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+    if (restTime <= 0) {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      return;
+    }
+    if (countdownIntervalRef.current) {
+      return;
+    } // Already running
+    countdownIntervalRef.current = setInterval(() => {
+      setRestTime((prev) => {
+        if (prev <= 0) {
+          if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+    };
+  }, [isLoading]); // Only when loading finishes; omit restTime so interval is not recreated every second
+
+  // Navigate when countdown reaches 0
+  useEffect(() => {
+    if (restTime === 0 && !isLoading && workoutLogId) {
       const timer = setTimeout(() => {
-        router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+        navigateToNextScreen();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [restTime, isLoading, workoutLogId, router]);
+  }, [restTime, isLoading, workoutLogId, completedSet, nextSet, router]);
 
   // Spinning loader animation
   useEffect(() => {
@@ -190,7 +233,7 @@ export default function RestTimerScreen() {
 
   const handleSkipRest = () => {
     if (workoutLogId) {
-      router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+      navigateToNextScreen();
     } else {
       router.back();
     }
@@ -299,8 +342,7 @@ export default function RestTimerScreen() {
                 itemThree: { value: `${nextSet.set.reps ?? 0} reps`, icon: ChevronRight },
               }}
               onPress={() => {
-                // Navigate to next set
-                router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+                navigateToNextScreen();
               }}
               ctaLabel={<UpNextLabel />}
             />

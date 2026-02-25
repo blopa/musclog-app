@@ -444,6 +444,7 @@
     "kg": "kg",
     "totalTime": "TOTAL TIME",
     "setOf": "SET {{current}} OF {{total}}",
+    "lastSetForExercise": "Last set for this exercise",
     "weight": "WEIGHT",
     "reps": "REPS",
     "partials": "PARTIALS",
@@ -463,6 +464,25 @@
     "notFoundDescription": "Unable to load workout session. Please try again.",
     "goBack": "Go Back",
     "bodyweight": "Bodyweight"
+  },
+  "exerciseTransition": {
+    "totalTime": "TOTAL TIME",
+    "completeSuffix": "Complete!",
+    "completedMessage": "Great effort. Catch your breath.",
+    "upNext": "UP NEXT",
+    "target": "TARGET",
+    "sets": "Sets",
+    "reps": "Reps",
+    "rest": "REST",
+    "sec": "sec",
+    "equipment": "EQUIPMENT",
+    "startNextExercise": "START NEXT EXERCISE",
+    "loadingNextExercise": "Loading next exercise...",
+    "errorTitle": "Workout not found",
+    "errorDescription": "Unable to load exercise transition screen. Please try again.",
+    "goBack": "Go Back",
+    "noWorkoutId": "No workout ID provided",
+    "loadFailed": "Failed to load workout data"
   },
   "logSetPerformance": {
     "title": "Log Set Performance",

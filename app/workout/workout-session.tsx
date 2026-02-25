@@ -354,7 +354,7 @@ export default function WorkoutSessionScreen() {
             <Text className="mb-3 text-5xl font-bold text-text-primary">
               {currentSetData.exercise.name ?? ''}
             </Text>
-            <View className="mb-2 flex-row items-center gap-3">
+            <View className="mb-2 flex-row flex-wrap items-center gap-3">
               <View className="rounded-full bg-accent-primary px-4 py-1.5">
                 <Text className="text-sm font-bold text-text-black">
                   {t('workoutSession.setOf', {
@@ -363,6 +363,11 @@ export default function WorkoutSessionScreen() {
                   })}
                 </Text>
               </View>
+              {currentSetData.setNumber === currentSetData.totalSetsInExercise ? (
+                <Text className="text-sm font-medium text-accent-primary">
+                  {t('workoutSession.lastSetForExercise')}
+                </Text>
+              ) : null}
               <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
           </View>
