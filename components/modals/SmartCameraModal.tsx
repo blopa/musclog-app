@@ -352,7 +352,7 @@ export default function SmartCameraModal({
               ref={cameraRef}
               style={StyleSheet.absoluteFill}
               facing="back"
-              flash={flashEnabled ? 'on' : 'off'}
+              enableTorch={flashEnabled}
               active={visible}
             />
             {/* Gradient Overlay */}
