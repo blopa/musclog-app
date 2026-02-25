@@ -112,7 +112,7 @@ export function ExerciseItem({
             </View>
             <View className="flex-1 items-center py-2">
               <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
-                {t(weightUnitKey)}
+                {t('workoutSession.weight')}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
@@ -137,6 +137,7 @@ export function ExerciseItem({
                 set={set}
                 isLast={index === exercise.sets.length - 1}
                 isPreview={isPreview}
+                weightUnitSuffix={t(weightUnitKey)}
               />
             ))}
           </View>

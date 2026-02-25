@@ -362,6 +362,12 @@ export function AdvancedSettingsModal({
             />
           </View>
 
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.status.error }}
+          >
+            {t('settings.advancedSettings.dangerZone')}
+          </Text>
           {/* Clear App Data - Android only */}
           <SettingsCard
             icon={<Database size={theme.iconSize.xl} color={theme.colors.status.error} />}
@@ -377,32 +383,7 @@ export function AdvancedSettingsModal({
             onPress={handleOpenAppSettings}
             rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />}
           />
-          <View style={{ paddingTop: theme.spacing.padding['2xl'] }}>
-            <Text
-              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.status.error }}
-            >
-              {t('settings.advancedSettings.dangerZone')}
-            </Text>
-            <SettingsCard
-              icon={<Trash2 size={theme.iconSize.xl} color={theme.colors.status.error} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.status.error20,
-              }}
-              title={t('settings.advancedSettings.requestAccountDeletion')}
-              subtitle={t('settings.advancedSettings.requestAccountDeletionSubtitle')}
-              titleColor={theme.colors.status.error}
-              onPress={onAccountDeletionPress || (() => {})}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />
-              }
-            />
-
-            <LegalLinksCard />
-          </View>
+          <LegalLinksCard />
         </View>
       </FullScreenModal>
 

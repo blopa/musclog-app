@@ -16,9 +16,10 @@ type SetRowProps = {
   set: SetData;
   isLast: boolean;
   isPreview?: boolean;
+  weightUnitSuffix?: string;
 };
 
-export function SetRow({ set, isPreview = false }: SetRowProps) {
+export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps) {
   const theme = useTheme();
   const isCurrent = set.isCurrent;
 
@@ -63,6 +64,7 @@ export function SetRow({ set, isPreview = false }: SetRowProps) {
           }}
         >
           {set.weight}
+          {weightUnitSuffix ?? ''}
         </Text>
       </View>
 

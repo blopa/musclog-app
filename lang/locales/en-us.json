@@ -1380,8 +1380,6 @@
       "openSettingsFailedTitle": "Settings Unavailable",
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",
       "dangerZone": "DANGER ZONE",
-      "requestAccountDeletion": "Request Account Deletion",
-      "requestAccountDeletionSubtitle": "Permanently remove all data",
       "version": "Version {{version}}"
     },
     "aiSettings": {
@@ -1404,7 +1402,6 @@
       "selectModel": "Select a model",
       "apiKeyHelp": "Need help finding your API keys?",
       "setupGuide": "Read the setup guide",
-      "version": "Musclog AI {{version}}",
       "selectGeminiModel": "Select Gemini Model",
       "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
       "selectOpenAiModel": "Select OpenAI model",
