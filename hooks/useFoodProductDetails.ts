@@ -1,12 +1,61 @@
-import { OpenFoodFacts } from '@openfoodfacts/openfoodfacts-nodejs';
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
-import { SearchResultProduct } from '../types/openFoodFacts';
+import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
 
-const getClient = () => {
-  return new OpenFoodFacts(fetch as any);
-};
+/**
+ * WORKAROUND: We do not use @openfoodfacts/openfoodfacts-nodejs for product-by-barcode
+ * on React Native because it hangs on Android.
+ *
+ * That client uses openapi-fetch, which calls fetch(new Request(url, init)). On Android,
+ * expo/fetch does not handle the Request object correctly and the promise never resolves.
+ * See: https://github.com/expo/expo/issues/43193 (and related Request/URL input handling).
+ *
+ * Once expo/fetch properly supports Request (and URL) input on Android, we can switch
+ * back to: new OpenFoodFacts(fetch).getProductV3(barcode) and remove fetchProductByBarcode below.
+ */
+const OFF_API_BASE = 'https://world.openfoodfacts.org';
+const PRODUCT_V3_PATH = '/api/v3/product';
+const REQUEST_TIMEOUT_MS = 20_000;
+
+type ProductV3Result =
+  | { data: ProductState; error?: undefined }
+  | { data?: undefined; error: { message: string } };
+
+/** Response type for useFoodProductDetails (success, error, or null when disabled). */
+export type ProductDetailsQueryData =
+  | ProductState
+  | { status: 'error'; error: { message: string } }
+  | null;
+
+async function fetchProductByBarcode(barcode: string): Promise<ProductV3Result> {
+  const url = `${OFF_API_BASE}${PRODUCT_V3_PATH}/${encodeURIComponent(barcode)}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: 'application/json' },
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      return { error: { message: `HTTP ${res.status}` } };
+    }
+
+    const data = (await res.json()) as ProductState;
+    return { data };
+  } catch (e: unknown) {
+    clearTimeout(timeoutId);
+    const err = e as { name?: string };
+    if (err?.name === 'AbortError') {
+      return { error: { message: 'Request timed out' } };
+    }
+
+    return { error: { message: (e as Error)?.message ?? 'Network error' } };
+  }
+}
 
 /** @deprecated */
 export function useFoodSearch(searchTerm: string) {
@@ -47,23 +96,17 @@ export function useFoodSearch(searchTerm: string) {
 export function useFoodProductDetails(barcode: string | null) {
   return useQuery({
     queryKey: ['product-details', barcode],
-    queryFn: async () => {
+    queryFn: async (): Promise<ProductDetailsQueryData> => {
       if (!barcode) {
         return null;
       }
 
-      const client = getClient();
-      const { data, error } = await client.getProductV3(barcode);
-
-      if (error) {
-        console.error('Failed to fetch product details', error);
-        return {
-          status: 'error',
-          error,
-        };
+      const result = await fetchProductByBarcode(barcode);
+      if (result.error) {
+        return { status: 'error', error: result.error };
       }
 
-      return data;
+      return result.data;
     },
     enabled: Boolean(barcode),
     staleTime: 1000 * 60 * 10,

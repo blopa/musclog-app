@@ -22,6 +22,39 @@ import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
 
+/** Read numeric value from OFF v3 nutrient (e.g. { value: 123 } or { value_per_100g: 123 }). */
+function v3NutrientValue(n: unknown): number {
+  if (n == null) {
+    return 0;
+  }
+
+  const v =
+    (n as { value?: number; value_per_100g?: number }).value ??
+    (n as { value_per_100g?: number }).value_per_100g;
+
+  return typeof v === 'number' && !Number.isNaN(v) ? v : 0;
+}
+
+/** Get flat nutriments from OFF v3 product.nutrition (aggregated_set or first input_set). */
+function getNutrimentsFromV3Nutrition(product: any): Record<string, number> {
+  const set = product?.nutrition?.aggregated_set ?? product?.nutrition?.input_sets?.[0];
+  if (!set) {
+    return {};
+  }
+
+  return {
+    'energy-kcal': v3NutrientValue(set['energy-kcal']),
+    proteins: v3NutrientValue(set.proteins),
+    carbohydrates: v3NutrientValue(set.carbohydrates),
+    fat: v3NutrientValue(set.fat),
+    'carbohydrates-total': v3NutrientValue(set['carbohydrates-total']),
+    sugars: v3NutrientValue(set.sugars),
+    'saturated-fat': v3NutrientValue(set['saturated-fat']),
+    sodium: v3NutrientValue(set.sodium),
+    salt: v3NutrientValue(set.salt),
+  };
+}
+
 type FoodDetailsModalProps = {
   visible: boolean;
   foodLog?: any;
@@ -307,18 +340,22 @@ export function FoodMealDetailsModal({
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
-      const nutrients = productDetails.product.nutriments || {};
+      const product = productDetails.product;
+      const nutrients =
+        product.nutriments && Object.keys(product.nutriments).length > 0
+          ? product.nutriments
+          : getNutrimentsFromV3Nutrition(product);
       return {
-        calories: (nutrients['energy-kcal'] as number) || 0,
-        protein: (nutrients['proteins'] as number) || 0,
-        carbs: (nutrients['carbohydrates'] as number) || 0,
-        fat: (nutrients['fat'] as number) || 0,
+        calories: (nutrients['energy-kcal'] as number) ?? 0,
+        protein: (nutrients['proteins'] as number) ?? 0,
+        carbs: (nutrients['carbohydrates'] as number) ?? 0,
+        fat: (nutrients['fat'] as number) ?? 0,
         fiber:
-          (nutrients['carbohydrates-total'] as number) - (nutrients['carbohydrates'] as number) ||
-          0,
-        sugar: (nutrients['sugars'] as number) || 0,
-        saturatedFat: (nutrients['saturated-fat'] as number) || 0,
-        sodium: (nutrients['sodium'] as number) || (nutrients['salt'] as number) || 0, // salt contains sodium, use sodium if available, otherwise salt
+          ((nutrients['carbohydrates-total'] as number) ?? 0) -
+            ((nutrients['carbohydrates'] as number) ?? 0) || 0,
+        sugar: (nutrients['sugars'] as number) ?? 0,
+        saturatedFat: (nutrients['saturated-fat'] as number) ?? 0,
+        sodium: (nutrients['sodium'] as number) ?? (nutrients['salt'] as number) ?? 0,
       };
     }
 
