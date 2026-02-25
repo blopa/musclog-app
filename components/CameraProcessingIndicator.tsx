@@ -5,7 +5,7 @@ import { Path, Svg } from 'react-native-svg';
 
 import { useTheme } from '../hooks/useTheme';
 
-export const CameraProcessingIndicator = ({ isAi = false }: { isAi: boolean }) => {
+export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const spinAnim = useRef(new Animated.Value(0)).current;
