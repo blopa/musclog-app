@@ -23,6 +23,15 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      animation: {
+        'spin-slow': 'spin-slow 2s linear infinite',
+      },
+      keyframes: {
+        'spin-slow': {
+          from: { transform: 'rotate(0deg)' },
+          to: { transform: 'rotate(360deg)' },
+        },
+      },
       colors: {
         // Background colors
         bg: {
