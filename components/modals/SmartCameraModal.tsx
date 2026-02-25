@@ -64,6 +64,7 @@ export default function SmartCameraModal({
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
+  const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
@@ -110,6 +111,18 @@ export default function SmartCameraModal({
     }
   }, [permission, requestPermission]);
 
+  // Handle automatic barcode detection
+  const handleBarcodeScanned = useCallback(
+    ({ data }: { data: string }) => {
+      if (cameraMode === 'barcode-scan' && !isSearchingBarcode) {
+        setIsSearchingBarcode(true);
+        setDetectedBarcode(data);
+        // TODO: add Vibration feedback
+      }
+    },
+    [cameraMode, isSearchingBarcode]
+  );
+
   const handleTakePicture = useCallback(async () => {
     if (!cameraRef.current) {
       return;
@@ -123,7 +136,7 @@ export default function SmartCameraModal({
 
       // Process the photo based on camera mode
       if (cameraMode === 'barcode-scan') {
-        // For barcode mode, try to detect barcodes in the image
+        // For barcode mode, try to detect barcodes in the image (fallback)
         setIsSearchingBarcode(true);
         try {
           const barcode = await detectBarcodes(photo.uri);
@@ -354,6 +367,19 @@ export default function SmartCameraModal({
               facing="back"
               enableTorch={flashEnabled}
               active={visible}
+              onBarcodeScanned={isBarcodeScanning ? handleBarcodeScanned : undefined}
+              barcodeScannerSettings={{
+                barcodeTypes: [
+                  'qr',
+                  'ean13',
+                  'ean8',
+                  'upc_a',
+                  'upc_e',
+                  'code128',
+                  'code39',
+                  'code93',
+                ],
+              }}
             />
             {/* Gradient Overlay */}
             <LinearGradient
@@ -455,7 +481,7 @@ export default function SmartCameraModal({
                 ? t('food.aiCamera.mealInstruction')
                 : cameraMode === 'ai-label-scan'
                   ? t('food.aiCamera.labelInstruction')
-                  : t('food.aiCamera.barcodeInstruction')}
+                  : t('food.aiCamera.barcodeAutoInstruction')}
             </Text>
           </View>
 

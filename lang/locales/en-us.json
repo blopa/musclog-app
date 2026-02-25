@@ -316,6 +316,7 @@
       "mealInstruction": "Point at your meal for instant estimation",
       "labelInstruction": "Point at food label or nutrition facts",
       "barcodeInstruction": "Align the barcode inside the frame to scan",
+      "barcodeAutoInstruction": "Automatically scanning for barcodes...",
       "modes": {
         "mealPhoto": "AI Meal",
         "labelScan": "AI Label",
