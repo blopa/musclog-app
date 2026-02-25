@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   FileText,
+  Images,
   Lightbulb,
   LightbulbOff,
   MessageSquareText,
@@ -612,23 +613,18 @@ export default function SmartCameraModal({
             {/* Camera Controls */}
             <View className="flex-row items-center justify-between px-2">
               <Pressable
-                className="h-12 w-12 items-center justify-center overflow-hidden rounded-lg"
+                className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
                 style={{
                   backgroundColor: theme.colors.background.darkGray50,
                   borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white10,
+                  borderColor: theme.colors.background.white20,
                 }}
                 onPress={handleGalleryPress}
               >
-                <View className="h-full w-full p-1">
-                  <View
-                    className="h-full w-full rounded"
-                    style={{
-                      backgroundColor: theme.colors.background.white10,
-                      opacity: theme.colors.opacity.strong,
-                    }}
-                  />
-                </View>
+                <Images
+                  size={theme.iconSize.lg}
+                  color={theme.colors.text.primary}
+                />
               </Pressable>
 
               {/* Shutter Button */}
