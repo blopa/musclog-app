@@ -13,7 +13,15 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
@@ -26,6 +34,7 @@ import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
 import CreateCustomFoodModal from './CreateCustomFoodModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
+import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FoodSearchModal } from './FoodSearchModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';
@@ -64,6 +73,7 @@ export default function SmartCameraModal({
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
+  const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -140,6 +150,7 @@ export default function SmartCameraModal({
         setIsSearchingBarcode(true);
         try {
           const barcode = await detectBarcodes(photo.uri);
+
           if (barcode) {
             setDetectedBarcode(barcode);
             setIsFoodDetailsModalVisible(true);
@@ -147,6 +158,8 @@ export default function SmartCameraModal({
           } else {
             showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
             setIsSearchingBarcode(false);
+            // Show food not found modal instead of food details modal
+            setIsFoodNotFoundModalVisible(true);
           }
         } catch (error) {
           console.error('Error detecting barcode:', error);
@@ -272,10 +285,12 @@ export default function SmartCameraModal({
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedAsset = result.assets[0];
+
         if (cameraMode === 'barcode-scan') {
           setIsSearchingBarcode(true);
           try {
             const barcode = await detectBarcodes(selectedAsset.uri);
+
             if (barcode) {
               setDetectedBarcode(barcode);
               setIsFoodDetailsModalVisible(true);
@@ -283,6 +298,8 @@ export default function SmartCameraModal({
             } else {
               showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
               setIsSearchingBarcode(false);
+              // Show food not found modal instead of food details modal
+              setIsFoodNotFoundModalVisible(true);
             }
           } catch (error) {
             console.error('Error detecting barcode from gallery:', error);
@@ -717,6 +734,17 @@ export default function SmartCameraModal({
             onClose={handleFoodDetailsClose}
             barcode={detectedBarcode}
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
+          />
+        ) : null}
+
+        {/* Food Not Found Modal */}
+        {isFoodNotFoundModalVisible ? (
+          <FoodNotFoundModal
+            visible={isFoodNotFoundModalVisible}
+            onClose={() => setIsFoodNotFoundModalVisible(false)}
+            onTryAiScan={handleTryAiScan}
+            onSearchAgain={handleSearchAgain}
+            onCreateCustom={handleCreateCustomFood}
           />
         ) : null}
 
