@@ -1,4 +1,5 @@
 import '../database';
+import '../sentry-init';
 import '../lang/lang';
 import '../global.css';
 
