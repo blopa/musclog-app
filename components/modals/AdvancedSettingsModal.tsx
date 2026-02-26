@@ -175,7 +175,7 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.dataPortability')}
             </Text>
             <SettingsCard
-              icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               iconContainerStyle={{
                 width: theme.size['16'],
                 height: theme.size['16'],
@@ -190,7 +190,7 @@ export function AdvancedSettingsModal({
               }
             />
             <SettingsCard
-              icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               iconContainerStyle={{
                 width: theme.size['16'],
                 height: theme.size['16'],
