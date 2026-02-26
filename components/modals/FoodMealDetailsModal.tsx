@@ -90,16 +90,28 @@ export function FoodMealDetailsModal({
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
 
-  // TODO: move this to a helper function to avoid nested ternary
-  const mode = meal
-    ? 'meal'
-    : foodLog
-      ? 'foodLog'
-      : food
-        ? 'food'
-        : barcode || productFromSearch
-          ? 'barcode'
-          : null;
+  // Helper function to determine the mode based on available data
+  const getMode = (): 'meal' | 'foodLog' | 'food' | 'barcode' | null => {
+    if (meal) {
+      return 'meal';
+    }
+
+    if (foodLog) {
+      return 'foodLog';
+    }
+
+    if (food) {
+      return 'food';
+    }
+
+    if (barcode || productFromSearch) {
+      return 'barcode';
+    }
+
+    return null;
+  };
+
+  const mode = getMode();
 
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
