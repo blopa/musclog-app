@@ -1,5 +1,5 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
-import { SearchResultProduct } from '../types/openFoodFacts';
+import { SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
 
 // All possible Open Food Facts nutriment properties
 const NUTRIMENT_PROPERTIES = [
@@ -163,7 +163,6 @@ const NUTRIMENT_PROPERTIES = [
   'vitamin-e_serving',
   'vitamin-k_serving',
   'zinc_serving',
-  // Additional properties found in examples
   'trans-fat',
   'trans-fat_100g',
   'trans-fat_serving',
@@ -191,15 +190,79 @@ const NUTRIMENT_PROPERTIES = [
   'energy-kj_value_computed',
 ];
 
-// Helper function to extract nutriment value with fallback hierarchy
-function getNutrimentValue(nutriments: any, baseName: string): number | undefined {
+type NutrimentsWithEstimated = SuccessFoodProductState['product']['nutriments'] & {
+  isEstimated: boolean;
+};
+
+// Helper function to get nutriments with fallback to nutriments_estimated
+export function getNutrimentsWithFallback(
+  product: SuccessFoodProductState['product'] | SearchResultProduct
+): NutrimentsWithEstimated | null {
+  if (!product?.nutriments && !product?.nutriments_estimated) {
+    const v3 = getNutrimentsFromV3Nutrition(product);
+    return v3 ? (v3 as NutrimentsWithEstimated) : null;
+  }
+
+  const estimated =
+    product?.nutriments_estimated && typeof product.nutriments_estimated === 'object'
+      ? product.nutriments_estimated
+      : {};
+
+  const nutriments =
+    product?.nutriments && typeof product.nutriments === 'object' ? product.nutriments : {};
+
+  return {
+    ...estimated,
+    ...nutriments,
+    isEstimated: !!(product?.nutriments_estimated && !product?.nutriments),
+  } as NutrimentsWithEstimated;
+}
+
+/** Read numeric value from OFF v3 nutrient (e.g. { value: 123 } or { value_per_100g: 123 }). */
+function v3NutrientValue(n: unknown): number {
+  if (n == null) {
+    return 0;
+  }
+
+  const v =
+    (n as { value?: number; value_per_100g?: number }).value ??
+    (n as { value_per_100g?: number }).value_per_100g;
+
+  return typeof v === 'number' && !Number.isNaN(v) ? v : 0;
+}
+
+/** Get flat nutriments from OFF v3 product.nutrition (aggregated_set or first input_set). */
+export function getNutrimentsFromV3Nutrition(product: any): Record<string, number> | null {
+  const set = product?.nutrition?.aggregated_set ?? product?.nutrition?.input_sets?.[0];
+  if (!set) {
+    return null;
+  }
+
+  return {
+    'energy-kcal': v3NutrientValue(set['energy-kcal']),
+    proteins: v3NutrientValue(set.proteins),
+    carbohydrates: v3NutrientValue(set.carbohydrates),
+    fat: v3NutrientValue(set.fat),
+    'carbohydrates-total': v3NutrientValue(set['carbohydrates-total']),
+    sugars: v3NutrientValue(set.sugars),
+    'saturated-fat': v3NutrientValue(set['saturated-fat']),
+    sodium: v3NutrientValue(set.sodium),
+    salt: v3NutrientValue(set.salt),
+    // TODO: add missing nutriments
+  };
+}
+
+// Helper function to extract nutriment value with fallback hierarchy (exported for use in modals)
+export function getNutrimentValue(nutriments: any, baseName: string): number | undefined {
   // Priority order: _100g > _serving > base name > _value
   const value100g = nutriments[`${baseName}_100g`];
   const valueServing = nutriments[`${baseName}_serving`];
   const baseValue = nutriments[baseName];
   const valueField = nutriments[`${baseName}_value`];
 
-  return value100g ?? valueServing ?? baseValue ?? valueField;
+  const raw = value100g ?? valueServing ?? baseValue ?? valueField;
+  const num = typeof raw === 'number' && !Number.isNaN(raw) ? raw : undefined;
+  return num;
 }
 
 // Helper function to get nutriment unit
@@ -227,62 +290,60 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
 export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFoodResult {
-  const kcal = product.nutriments?.['energy-kcal'];
+  const nutriments = getNutrimentsWithFallback(product);
+  const kcal = nutriments?.['energy-kcal'];
   const calories = kcal ? Math.round(kcal) : undefined;
 
   // Map all comprehensive nutriments
-  const allNutriments = mapAllNutriments(product.nutriments);
+  const allNutriments = mapAllNutriments(nutriments);
 
   // Extract key macronutrients with proper fallback
-  const protein = getNutrimentValue(product.nutriments, 'proteins');
-  const carbs = getNutrimentValue(product.nutriments, 'carbohydrates');
-  const fat = getNutrimentValue(product.nutriments, 'fat');
-  const fiber = getNutrimentValue(product.nutriments, 'fiber') || 0;
-  const sugars = getNutrimentValue(product.nutriments, 'sugars');
-  const saturatedFat = getNutrimentValue(product.nutriments, 'saturated-fat');
-  const sodium = getNutrimentValue(product.nutriments, 'sodium');
-  const salt = getNutrimentValue(product.nutriments, 'salt');
+  const protein = getNutrimentValue(nutriments, 'proteins');
+  const carbs = getNutrimentValue(nutriments, 'carbohydrates');
+  const fat = getNutrimentValue(nutriments, 'fat');
+  const fiber = getNutrimentValue(nutriments, 'fiber') || 0;
+  const sugars = getNutrimentValue(nutriments, 'sugars');
+  const saturatedFat = getNutrimentValue(nutriments, 'saturated-fat');
+  const sodium = getNutrimentValue(nutriments, 'sodium');
+  const salt = getNutrimentValue(nutriments, 'salt');
 
   // Extract vitamins and minerals
-  const vitaminA = getNutrimentValue(product.nutriments, 'vitamin-a');
-  const vitaminC = getNutrimentValue(product.nutriments, 'vitamin-c');
-  const vitaminE = getNutrimentValue(product.nutriments, 'vitamin-e');
-  const vitaminK = getNutrimentValue(product.nutriments, 'vitamin-k');
-  const calcium = getNutrimentValue(product.nutriments, 'calcium');
-  const iron = getNutrimentValue(product.nutriments, 'iron');
-  const magnesium = getNutrimentValue(product.nutriments, 'magnesium');
-  const potassium = getNutrimentValue(product.nutriments, 'potassium');
-  const zinc = getNutrimentValue(product.nutriments, 'zinc');
+  const vitaminA = getNutrimentValue(nutriments, 'vitamin-a');
+  const vitaminC = getNutrimentValue(nutriments, 'vitamin-c');
+  const vitaminE = getNutrimentValue(nutriments, 'vitamin-e');
+  const vitaminK = getNutrimentValue(nutriments, 'vitamin-k');
+  const calcium = getNutrimentValue(nutriments, 'calcium');
+  const iron = getNutrimentValue(nutriments, 'iron');
+  const magnesium = getNutrimentValue(nutriments, 'magnesium');
+  const potassium = getNutrimentValue(nutriments, 'potassium');
+  const zinc = getNutrimentValue(nutriments, 'zinc');
 
   // Extract other compounds
-  const cholesterol = getNutrimentValue(product.nutriments, 'cholesterol');
-  const caffeine = getNutrimentValue(product.nutriments, 'caffeine');
-  const alcohol = getNutrimentValue(product.nutriments, 'alcohol');
+  const cholesterol = getNutrimentValue(nutriments, 'cholesterol');
+  const caffeine = getNutrimentValue(nutriments, 'caffeine');
+  const alcohol = getNutrimentValue(nutriments, 'alcohol');
 
   // Extract additional fats
-  const transFat = getNutrimentValue(product.nutriments, 'trans-fat');
-  const polyunsaturatedFat = getNutrimentValue(product.nutriments, 'polyunsaturated-fat');
-  const monounsaturatedFat = getNutrimentValue(product.nutriments, 'monounsaturated-fat');
+  const transFat = getNutrimentValue(nutriments, 'trans-fat');
+  const polyunsaturatedFat = getNutrimentValue(nutriments, 'polyunsaturated-fat');
+  const monounsaturatedFat = getNutrimentValue(nutriments, 'monounsaturated-fat');
 
   // Extract nutrition scores
-  const nutritionScoreFr = getNutrimentValue(product.nutriments, 'nutrition-score-fr');
-  const nutritionScoreUk = getNutrimentValue(product.nutriments, 'nutrition-score-uk');
+  const nutritionScoreFr = getNutrimentValue(nutriments, 'nutrition-score-fr');
+  const nutritionScoreUk = getNutrimentValue(nutriments, 'nutrition-score-uk');
 
   // Extract ingredient estimates
   const fruitsVegetablesNutsEstimate = getNutrimentValue(
-    product.nutriments,
+    nutriments,
     'fruits-vegetables-nuts-estimate-from-ingredients'
   );
   const fruitsVegetablesLegumesEstimate = getNutrimentValue(
-    product.nutriments,
+    nutriments,
     'fruits-vegetables-legumes-estimate-from-ingredients'
   );
 
   // Extract environmental data
-  const carbonFootprint = getNutrimentValue(
-    product.nutriments,
-    'carbon-footprint-from-known-ingredients'
-  );
+  const carbonFootprint = getNutrimentValue(nutriments, 'carbon-footprint-from-known-ingredients');
 
   return {
     id: product.code || String(Math.random()),

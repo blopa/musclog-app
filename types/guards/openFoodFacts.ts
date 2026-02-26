@@ -1,4 +1,9 @@
-import { SuccessFoodProductState } from '../openFoodFacts';
+import { MappedNutriments, SuccessFoodProductState } from '../openFoodFacts';
+
+/** Type guard for nutriments shaped by mapOpenFoodFactsProduct (has macronutrients, minerals, other). */
+export function isMappedNutriments(n: unknown): n is MappedNutriments {
+  return n != null && typeof n === 'object' && 'macronutrients' in n;
+}
 
 /** OFF API can return 'success' | 'success_with_warnings' | 'success_with_errors'; all indicate a found product. */
 const isSuccessStatus = (s: unknown) =>
@@ -7,6 +12,7 @@ const isSuccessStatus = (s: unknown) =>
 /** V3 API may use product.nutrition (aggregated_set/input_sets) instead of product.nutriments. */
 const hasNutritionData = (p: any) =>
   p?.nutriments !== undefined ||
+  p?.nutriments_estimated !== undefined ||
   p?.nutrition?.aggregated_set !== undefined ||
   (Array.isArray(p?.nutrition?.input_sets) && p.nutrition.input_sets.length > 0);
 

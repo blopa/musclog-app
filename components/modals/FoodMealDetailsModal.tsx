@@ -10,9 +10,17 @@ import Meal from '../../database/models/Meal';
 import { FoodService, MealService, NutritionService } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
-import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
+import {
+  isMappedNutriments,
+  isSuccessFoodDetailProductState,
+} from '../../types/guards/openFoodFacts';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
-import { mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
+import {
+  getNutrimentsFromV3Nutrition,
+  getNutrimentsWithFallback,
+  getNutrimentValue,
+  mapOpenFoodFactsProduct,
+} from '../../utils/openFoodFactsMapper';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -21,39 +29,6 @@ import { Button } from '../theme/Button';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
-
-/** Read numeric value from OFF v3 nutrient (e.g. { value: 123 } or { value_per_100g: 123 }). */
-function v3NutrientValue(n: unknown): number {
-  if (n == null) {
-    return 0;
-  }
-
-  const v =
-    (n as { value?: number; value_per_100g?: number }).value ??
-    (n as { value_per_100g?: number }).value_per_100g;
-
-  return typeof v === 'number' && !Number.isNaN(v) ? v : 0;
-}
-
-/** Get flat nutriments from OFF v3 product.nutrition (aggregated_set or first input_set). */
-function getNutrimentsFromV3Nutrition(product: any): Record<string, number> {
-  const set = product?.nutrition?.aggregated_set ?? product?.nutrition?.input_sets?.[0];
-  if (!set) {
-    return {};
-  }
-
-  return {
-    'energy-kcal': v3NutrientValue(set['energy-kcal']),
-    proteins: v3NutrientValue(set.proteins),
-    carbohydrates: v3NutrientValue(set.carbohydrates),
-    fat: v3NutrientValue(set.fat),
-    'carbohydrates-total': v3NutrientValue(set['carbohydrates-total']),
-    sugars: v3NutrientValue(set.sugars),
-    'saturated-fat': v3NutrientValue(set['saturated-fat']),
-    sodium: v3NutrientValue(set.sodium),
-    salt: v3NutrientValue(set.salt),
-  };
-}
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -176,8 +151,9 @@ export function FoodMealDetailsModal({
       return;
     }
 
+    const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
-    if (productFromSearch?.product_name && productFromSearch?.nutriments) {
+    if (productFromSearch?.product_name && nutriments) {
       setIsFoodDetailsModalVisible(true);
       const defaultG = getDefaultServingSize(); // uses 100 when serving_size is "0 g" or invalid
       setServingSize(defaultG);
@@ -323,39 +299,76 @@ export function FoodMealDetailsModal({
       };
     }
 
-    // Use the comprehensive mapping function for Open Food Facts products
-    if (productFromSearch?.nutriments) {
-      const mappedProduct = mapOpenFoodFactsProduct(productFromSearch);
-      return {
-        calories: mappedProduct.calories || 0,
-        protein: mappedProduct.protein || 0,
-        carbs: mappedProduct.carbs || 0,
-        fat: mappedProduct.fat || 0,
-        fiber: mappedProduct.fiber || 0,
-        sugar: mappedProduct.nutriments?.macronutrients?.sugars || 0,
-        saturatedFat: mappedProduct.nutriments?.macronutrients?.saturatedFat || 0,
-        sodium:
-          mappedProduct.nutriments?.minerals?.sodium || mappedProduct.nutriments?.other?.salt || 0,
-      };
+    if (productFromSearch) {
+      const nutriments = getNutrimentsWithFallback(productFromSearch);
+      // Use the comprehensive mapping function for Open Food Facts products
+      if (nutriments) {
+        const mappedProduct = mapOpenFoodFactsProduct(productFromSearch);
+        const nut = mappedProduct.nutriments;
+        let sugar = 0,
+          saturatedFat = 0,
+          sodium = 0;
+        if (isMappedNutriments(nut)) {
+          sugar = nut.macronutrients?.sugars ?? 0;
+          saturatedFat = nut.macronutrients?.saturatedFat ?? 0;
+          sodium = nut.minerals?.sodium ?? nut.other?.salt ?? 0;
+        }
+
+        return {
+          calories: mappedProduct.calories || 0,
+          protein: mappedProduct.protein || 0,
+          carbs: mappedProduct.carbs || 0,
+          fat: mappedProduct.fat || 0,
+          fiber: mappedProduct.fiber || 0,
+          sugar,
+          saturatedFat,
+          sodium,
+        };
+      }
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
-      const nutrients =
-        product.nutriments && Object.keys(product.nutriments).length > 0
-          ? product.nutriments
-          : getNutrimentsFromV3Nutrition(product);
+      const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
+      if (!nutrients) {
+        return {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          fiber: 0,
+          sugar: 0,
+          saturatedFat: 0,
+          sodium: 0,
+        };
+      }
+
+      // Map OFF nutriment keys (aligned with NUTRIMENT_PROPERTIES) to display values via getNutrimentValue
+      const offKeys = {
+        calories: 'energy-kcal',
+        protein: 'proteins',
+        carbs: 'carbohydrates',
+        fat: 'fat',
+        sugar: 'sugars',
+        saturatedFat: 'saturated-fat',
+      } as const;
+      const getNum = (key: keyof typeof offKeys) =>
+        (getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number;
+      const fiberRaw =
+        (getNutrimentValue(nutrients, 'carbohydrates-total') ?? 0) -
+        (getNutrimentValue(nutrients, 'carbohydrates') ?? 0);
+      const sodium =
+        getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+
       return {
-        calories: (nutrients['energy-kcal'] as number) ?? 0,
-        protein: (nutrients['proteins'] as number) ?? 0,
-        carbs: (nutrients['carbohydrates'] as number) ?? 0,
-        fat: (nutrients['fat'] as number) ?? 0,
-        fiber:
-          ((nutrients['carbohydrates-total'] as number) ?? 0) -
-            ((nutrients['carbohydrates'] as number) ?? 0) || 0,
-        sugar: (nutrients['sugars'] as number) ?? 0,
-        saturatedFat: (nutrients['saturated-fat'] as number) ?? 0,
-        sodium: (nutrients['sodium'] as number) ?? (nutrients['salt'] as number) ?? 0,
+        calories: getNum('calories'),
+        protein: getNum('protein'),
+        carbs: getNum('carbs'),
+        fat: getNum('fat'),
+        fiber: (Number.isFinite(fiberRaw) ? fiberRaw : 0) || 0,
+        sugar: getNum('sugar'),
+        saturatedFat: getNum('saturatedFat'),
+        sodium: Number.isFinite(sodium) ? sodium : 0,
       };
     }
 

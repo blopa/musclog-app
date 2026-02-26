@@ -2,8 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { SearchResultProduct } from '../types/openFoodFacts';
-import { mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
+import {
+  MappedNutriments,
+  SearchResultProduct,
+  SuccessFoodProductState,
+} from '../types/openFoodFacts';
+import {
+  getNutrimentsFromV3Nutrition,
+  getNutrimentsWithFallback,
+  mapOpenFoodFactsProduct,
+} from '../utils/openFoodFactsMapper';
 import { useFoods } from './useFoods';
 
 // Unified search result type
@@ -14,7 +22,8 @@ export type UnifiedFoodResult = {
   brand?: string;
   imageUrl?: string;
   serving_size?: string;
-  nutriments?: any;
+  nutriments?: SuccessFoodProductState['product']['nutriments'] | MappedNutriments;
+  nutriments_estimated?: SuccessFoodProductState['product']['nutriments'] | MappedNutriments;
   calories?: number;
   protein?: number;
   carbs?: number;
@@ -178,7 +187,8 @@ export function useUnifiedFoodSearch({
 
     return accumulatedApiResults
       .map((product) => {
-        if (!product?.nutriments) {
+        const nutriments = getNutrimentsWithFallback(product);
+        if (!nutriments) {
           return null;
         }
 
