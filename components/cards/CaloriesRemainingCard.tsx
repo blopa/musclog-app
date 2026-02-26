@@ -37,6 +37,14 @@ type CaloriesRemainingCardProps = {
   };
 };
 
+// Helper function to estimate if text will truncate
+const willTruncate = (amount: string, goal: number, compact: boolean): boolean => {
+  // Rough character limits based on testing
+  const maxChars = compact ? 8 : 6;
+  const totalChars = amount.length + goal.toString().length + 3; // +3 for " / g"
+  return totalChars > maxChars;
+};
+
 export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -44,6 +52,12 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
   // When any macro goal is 3 digits, use compact text on all cards so "/ XXXg" fits and cards stay aligned
   const useCompactMacros =
     macros.protein.goal >= 100 || macros.carbs.goal >= 100 || macros.fat.goal >= 100;
+
+  // Check if ANY macro would truncate - if so, use vertical layout for ALL
+  const needsVerticalLayout = 
+    willTruncate(macros.protein.amount, macros.protein.goal, useCompactMacros) ||
+    willTruncate(macros.carbs.amount, macros.carbs.goal, useCompactMacros) ||
+    willTruncate(macros.fat.amount, macros.fat.goal, useCompactMacros);
 
   return (
     <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
@@ -93,6 +107,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             color={macros.protein.color}
             progressColor={macros.protein.progressColor}
             compact={useCompactMacros}
+            forceVertical={needsVerticalLayout}
           />
           <MacroCard
             name={t('food.macros.carbs')}
@@ -102,6 +117,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             color={macros.carbs.color}
             progressColor={macros.carbs.progressColor}
             compact={useCompactMacros}
+            forceVertical={needsVerticalLayout}
           />
           <MacroCard
             name={t('food.macros.fat')}
@@ -111,6 +127,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
             color={macros.fat.color}
             progressColor={macros.fat.progressColor}
             compact={useCompactMacros}
+            forceVertical={needsVerticalLayout}
           />
         </View>
       </View>

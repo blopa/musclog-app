@@ -107,6 +107,7 @@ export function useUnifiedFoodSearch({
   } = useQuery({
     queryKey: ['food-search-api', debouncedSearchTerm, apiOffset],
     queryFn: async () => {
+      // TODO: implement debounce in a way that it will cancel the previous request if the user types more while the request is still pending
       if (!includeAPI || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
         return [];
       }
