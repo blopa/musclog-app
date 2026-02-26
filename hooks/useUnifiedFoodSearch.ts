@@ -175,7 +175,15 @@ export function useUnifiedFoodSearch({
       return [];
     }
 
-    return accumulatedApiResults.map((product) => mapOpenFoodFactsProduct(product));
+    return accumulatedApiResults
+      .map((product) => {
+        if (!product?.nutriments) {
+          return null;
+        }
+
+        return mapOpenFoodFactsProduct(product);
+      })
+      .filter((product) => product) as UnifiedFoodResult[];
   }, [accumulatedApiResults, includeAPI]);
 
   // Combine and deduplicate results - updates when API completes
