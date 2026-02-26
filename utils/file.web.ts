@@ -80,20 +80,24 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
 }
 
 export async function detectBarcodes(imageUri: string) {
-  let result: any = null;
-
-  await Quagga.decodeSingle(
-    {
-      decoder: { readers: ['ean_reader', 'ean_8_reader'] },
-      inputStream: { size: 800 },
-      src: imageUri,
+  const quaggaResult = await Quagga.decodeSingle({
+    src: imageUri,
+    numOfWorkers: 0,
+    decoder: { readers: ['ean_reader', 'ean_8_reader'] },
+    inputStream: {
+      size: 800,
+      area: {
+        top: '10%',
+        right: '5%',
+        left: '5%',
+        bottom: '10%',
+      },
     },
-    async (quaggaResult) => {
-      if (quaggaResult?.codeResult?.code) {
-        result = quaggaResult.codeResult.code;
-      }
-    }
-  );
+    locator: {
+      patchSize: 'large',
+      halfSample: true,
+    },
+  });
 
-  return result;
+  return quaggaResult?.codeResult?.code ?? null;
 }
