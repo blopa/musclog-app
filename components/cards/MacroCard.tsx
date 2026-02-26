@@ -35,7 +35,7 @@ export function MacroCard({
   forceVertical = false,
 }: MacroCardProps) {
   const theme = useTheme();
-  
+
   // Determine if we need to use vertical layout to prevent truncation
   const needsVerticalLayout = forceVertical || willTruncate(amount, goal, compact);
 
@@ -48,7 +48,7 @@ export function MacroCard({
             {percentage}%
           </Text>
         </View>
-        
+
         {/* Smart layout: horizontal if it fits, vertical if it would truncate */}
         {needsVerticalLayout ? (
           <View className="mb-3">

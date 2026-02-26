@@ -20,27 +20,17 @@
         ],
         "added_countries_tags": [],
         "additives_n": 1,
-        "additives_original_tags": [
-          "en:e452"
-        ],
-        "additives_tags": [
-          "en:e452"
-        ],
+        "additives_original_tags": ["en:e452"],
+        "additives_tags": ["en:e452"],
         "allergens": "",
         "allergens_from_ingredients": "en:milk, en:milk, en:milk, MELK, BOTER, MELK, BOTER",
         "allergens_from_user": "(fr) ",
-        "allergens_hierarchy": [
-          "en:milk"
-        ],
-        "allergens_tags": [
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:milk"],
+        "allergens_tags": ["en:milk"],
         "amino_acids_tags": [],
         "brands": "La Vache Qui Rit",
         "brands_old": "La vache qui rit",
-        "brands_tags": [
-          "la-vache-qui-rit"
-        ],
+        "brands_tags": ["la-vache-qui-rit"],
         "categories": "Kaas, Smeerkaas, roomkaas, cottage cheese, Smeerkaas",
         "categories_hierarchy": [
           "en:dairies",
@@ -89,23 +79,12 @@
         "compared_to_category": "en:cottage-cheeses",
         "complete": 0,
         "completeness": 0.675,
-        "correctors_tags": [
-          "macrofactor",
-          "plantcheck",
-          "louisdeconinck",
-          "scanbot"
-        ],
+        "correctors_tags": ["macrofactor", "plantcheck", "louisdeconinck", "scanbot"],
         "countries": "Belgium, en:netherlands",
         "countries_beforescanbot": "Belgium",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:netherlands"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_tags": ["en:belgium", "en:netherlands"],
         "created_t": 1676576397,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -215,12 +194,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -476,9 +451,7 @@
           "status": "unknown"
         },
         "ecoscore_grade": "unknown",
-        "ecoscore_tags": [
-          "unknown"
-        ],
+        "ecoscore_tags": ["unknown"],
         "editors_tags": [
           "annelotte",
           "kiliweb",
@@ -488,11 +461,7 @@
           "scanbot",
           "yuka.sY2b0xO6T85zoF3NwEKvlmUcTd_nuyzEJRDhnlC1_NvULaHLR9QuzabcGqo"
         ],
-        "entry_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "entry_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "food_groups_tags": [],
         "id": "3073781195972",
         "image_front_small_url": "https://images.openfoodfacts.org/images/products/307/378/119/5972/front_fr.3.200.jpg",
@@ -687,11 +656,7 @@
             "en:milk-proteins"
           ]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
         "ingredients_hierarchy": [
           "en:milk",
           "en:dairy",
@@ -707,10 +672,7 @@
         ],
         "ingredients_lc": "nl",
         "ingredients_n": 7,
-        "ingredients_n_tags": [
-          "7",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["7", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:milk",
@@ -762,13 +724,9 @@
         "interface_version_modified": "20150316.jqm2",
         "known_ingredients_n": 7,
         "labels": "en:vegetarian",
-        "labels_hierarchy": [
-          "en:vegetarian"
-        ],
+        "labels_hierarchy": ["en:vegetarian"],
         "labels_lc": "nl",
-        "labels_tags": [
-          "en:vegetarian"
-        ],
+        "labels_tags": ["en:vegetarian"],
         "lang": "fr",
         "languages": {
           "en:dutch": 2,
@@ -780,29 +738,11 @@
           "fr": 3,
           "nl": 2
         },
-        "languages_hierarchy": [
-          "en:dutch",
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:dutch",
-          "en:english",
-          "en:french",
-          "en:3",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:dutch", "en:english", "en:french"],
+        "languages_tags": ["en:dutch", "en:english", "en:french", "en:3", "en:multilingual"],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "last_image_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "last_image_t": 1676576401,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771272685,
@@ -832,26 +772,13 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:butter"
-            ]
-          ],
+          "3": [["ingredients", "en:butter"]],
           "4": [
-            [
-              "additives",
-              "en:e452"
-            ],
-            [
-              "ingredients",
-              "en:milk-proteins"
-            ]
+            ["additives", "en:e452"],
+            ["ingredients", "en:milk-proteins"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -1015,10 +942,7 @@
               "is_water": 0,
               "negative_points": 33,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
               "positive_points": 0,
               "positive_points_max": 10
             },
@@ -1029,12 +953,8 @@
             "score": 33
           }
         },
-        "nutriscore_2021_tags": [
-          "e"
-        ],
-        "nutriscore_2023_tags": [
-          "e"
-        ],
+        "nutriscore_2021_tags": ["e"],
+        "nutriscore_2023_tags": ["e"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -1094,10 +1014,7 @@
           "is_water": 0,
           "negative_points": 33,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
           "positive_points": 0,
           "positive_points_max": 10,
           "score": 33
@@ -1105,18 +1022,14 @@
         "nutriscore_grade": "e",
         "nutriscore_score": 33,
         "nutriscore_score_opposite": -33,
-        "nutriscore_tags": [
-          "e"
-        ],
+        "nutriscore_tags": ["e"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "e",
         "nutrition_grades": "e",
-        "nutrition_grades_tags": [
-          "e"
-        ],
+        "nutrition_grades_tags": ["e"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -1130,19 +1043,11 @@
         "packaging_shapes_tags": [],
         "packagings": [],
         "packagings_materials": {},
-        "photographers_tags": [
-          "kiliweb"
-        ],
+        "photographers_tags": ["kiliweb"],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 24900000011,
         "popularity_tags": [
           "top-75-percent-scans-2023",
@@ -1269,9 +1174,7 @@
           "en:photos-uploaded"
         ],
         "stores": "Albert Heijn",
-        "stores_tags": [
-          "albert-heijn"
-        ],
+        "stores_tags": ["albert-heijn"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) ",
@@ -1313,27 +1216,17 @@
         ],
         "added_countries_tags": [],
         "additives_n": 1,
-        "additives_original_tags": [
-          "en:e452"
-        ],
-        "additives_tags": [
-          "en:e452"
-        ],
+        "additives_original_tags": ["en:e452"],
+        "additives_tags": ["en:e452"],
         "allergens": "",
         "allergens_from_ingredients": "en:milk, en:milk, en:milk, MELK, BOTER, MELK, BOTER",
         "allergens_from_user": "(fr) ",
-        "allergens_hierarchy": [
-          "en:milk"
-        ],
-        "allergens_tags": [
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:milk"],
+        "allergens_tags": ["en:milk"],
         "amino_acids_tags": [],
         "brands": "La Vache Qui Rit",
         "brands_old": "La vache qui rit",
-        "brands_tags": [
-          "la-vache-qui-rit"
-        ],
+        "brands_tags": ["la-vache-qui-rit"],
         "categories": "Kaas, Smeerkaas, roomkaas, cottage cheese, Smeerkaas",
         "categories_hierarchy": [
           "en:dairies",
@@ -1382,23 +1275,12 @@
         "compared_to_category": "en:cottage-cheeses",
         "complete": 0,
         "completeness": 0.675,
-        "correctors_tags": [
-          "macrofactor",
-          "plantcheck",
-          "louisdeconinck",
-          "scanbot"
-        ],
+        "correctors_tags": ["macrofactor", "plantcheck", "louisdeconinck", "scanbot"],
         "countries": "Belgium, en:netherlands",
         "countries_beforescanbot": "Belgium",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:netherlands"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_tags": ["en:belgium", "en:netherlands"],
         "created_t": 1676576397,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -1508,12 +1390,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -1769,9 +1647,7 @@
           "status": "unknown"
         },
         "ecoscore_grade": "unknown",
-        "ecoscore_tags": [
-          "unknown"
-        ],
+        "ecoscore_tags": ["unknown"],
         "editors_tags": [
           "annelotte",
           "kiliweb",
@@ -1781,11 +1657,7 @@
           "scanbot",
           "yuka.sY2b0xO6T85zoF3NwEKvlmUcTd_nuyzEJRDhnlC1_NvULaHLR9QuzabcGqo"
         ],
-        "entry_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "entry_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "food_groups_tags": [],
         "id": "3073781195972",
         "image_front_small_url": "https://images.openfoodfacts.org/images/products/307/378/119/5972/front_fr.3.200.jpg",
@@ -1975,11 +1847,7 @@
             "en:milk-proteins"
           ]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
         "ingredients_hierarchy": [
           "en:milk",
           "en:dairy",
@@ -1995,10 +1863,7 @@
         ],
         "ingredients_lc": "nl",
         "ingredients_n": 7,
-        "ingredients_n_tags": [
-          "7",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["7", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:milk",
@@ -2050,13 +1915,9 @@
         "interface_version_modified": "20150316.jqm2",
         "known_ingredients_n": 7,
         "labels": "en:vegetarian",
-        "labels_hierarchy": [
-          "en:vegetarian"
-        ],
+        "labels_hierarchy": ["en:vegetarian"],
         "labels_lc": "nl",
-        "labels_tags": [
-          "en:vegetarian"
-        ],
+        "labels_tags": ["en:vegetarian"],
         "lang": "fr",
         "languages": {
           "en:dutch": 2,
@@ -2068,29 +1929,11 @@
           "fr": 3,
           "nl": 2
         },
-        "languages_hierarchy": [
-          "en:dutch",
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:dutch",
-          "en:english",
-          "en:french",
-          "en:3",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:dutch", "en:english", "en:french"],
+        "languages_tags": ["en:dutch", "en:english", "en:french", "en:3", "en:multilingual"],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "last_image_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "last_image_t": 1676576401,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771272685,
@@ -2120,26 +1963,13 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:butter"
-            ]
-          ],
+          "3": [["ingredients", "en:butter"]],
           "4": [
-            [
-              "additives",
-              "en:e452"
-            ],
-            [
-              "ingredients",
-              "en:milk-proteins"
-            ]
+            ["additives", "en:e452"],
+            ["ingredients", "en:milk-proteins"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -2303,10 +2133,7 @@
               "is_water": 0,
               "negative_points": 33,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
               "positive_points": 0,
               "positive_points_max": 10
             },
@@ -2317,12 +2144,8 @@
             "score": 33
           }
         },
-        "nutriscore_2021_tags": [
-          "e"
-        ],
-        "nutriscore_2023_tags": [
-          "e"
-        ],
+        "nutriscore_2021_tags": ["e"],
+        "nutriscore_2023_tags": ["e"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -2382,10 +2205,7 @@
           "is_water": 0,
           "negative_points": 33,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
           "positive_points": 0,
           "positive_points_max": 10,
           "score": 33
@@ -2393,18 +2213,14 @@
         "nutriscore_grade": "e",
         "nutriscore_score": 33,
         "nutriscore_score_opposite": -33,
-        "nutriscore_tags": [
-          "e"
-        ],
+        "nutriscore_tags": ["e"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "e",
         "nutrition_grades": "e",
-        "nutrition_grades_tags": [
-          "e"
-        ],
+        "nutrition_grades_tags": ["e"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -2418,19 +2234,11 @@
         "packaging_shapes_tags": [],
         "packagings": [],
         "packagings_materials": {},
-        "photographers_tags": [
-          "kiliweb"
-        ],
+        "photographers_tags": ["kiliweb"],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 24900000011,
         "popularity_tags": [
           "top-75-percent-scans-2023",
@@ -2557,9 +2365,7 @@
           "en:photos-uploaded"
         ],
         "stores": "Albert Heijn",
-        "stores_tags": [
-          "albert-heijn"
-        ],
+        "stores_tags": ["albert-heijn"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) ",
@@ -2586,13 +2392,7 @@
       "products": [
         {
           "_id": "6111028001222",
-          "_keywords": [
-            "cheese",
-            "la",
-            "qui",
-            "rit",
-            "vache"
-          ],
+          "_keywords": ["cheese", "la", "qui", "rit", "vache"],
           "added_countries_tags": [],
           "additives_n": 0,
           "additives_original_tags": [],
@@ -2650,19 +2450,10 @@
           "compared_to_category": "en:cheeses",
           "complete": 0,
           "completeness": 0.4625,
-          "correctors_tags": [
-            "smoothie-app",
-            "judo",
-            "latifaxz",
-            "foodless"
-          ],
+          "correctors_tags": ["smoothie-app", "judo", "latifaxz", "foodless"],
           "countries": "en:Morocco",
-          "countries_hierarchy": [
-            "en:morocco"
-          ],
-          "countries_tags": [
-            "en:morocco"
-          ],
+          "countries_hierarchy": ["en:morocco"],
+          "countries_tags": ["en:morocco"],
           "created_t": 1731754472,
           "creator": "smoothie-app",
           "data_quality_bugs_tags": [],
@@ -2748,10 +2539,7 @@
             "en:environmental-score-production-system-no-label"
           ],
           "data_sources": "App - smoothie-openfoodfacts, Apps",
-          "data_sources_tags": [
-            "app-smoothie-openfoodfacts",
-            "apps"
-          ],
+          "data_sources_tags": ["app-smoothie-openfoodfacts", "apps"],
           "ecoscore_data": {
             "adjustments": {
               "origins_of_ingredients": {
@@ -2765,12 +2553,8 @@
                 ],
                 "epi_score": 0,
                 "epi_value": -5,
-                "origins_from_categories": [
-                  "en:unknown"
-                ],
-                "origins_from_origins_field": [
-                  "en:unknown"
-                ],
+                "origins_from_categories": ["en:unknown"],
+                "origins_from_origins_field": ["en:unknown"],
                 "transportation_score": 0,
                 "transportation_scores": {
                   "ad": 0,
@@ -3156,9 +2940,7 @@
           },
           "ecoscore_grade": "d",
           "ecoscore_score": 34,
-          "ecoscore_tags": [
-            "d"
-          ],
+          "ecoscore_tags": ["d"],
           "editors_tags": [
             "foodiq",
             "foodless",
@@ -3169,16 +2951,9 @@
             "openfoodfacts-contributors",
             "smoothie-app"
           ],
-          "entry_dates_tags": [
-            "2024-11-16",
-            "2024-11",
-            "2024"
-          ],
+          "entry_dates_tags": ["2024-11-16", "2024-11", "2024"],
           "food_groups": "en:cheese",
-          "food_groups_tags": [
-            "en:milk-and-dairy-products",
-            "en:cheese"
-          ],
+          "food_groups_tags": ["en:milk-and-dairy-products", "en:cheese"],
           "id": "6111028001222",
           "image_front_small_url": "https://images.openfoodfacts.org/images/products/611/102/800/1222/front_en.5.200.jpg",
           "image_front_thumb_url": "https://images.openfoodfacts.org/images/products/611/102/800/1222/front_en.5.100.jpg",
@@ -3569,10 +3344,7 @@
           ],
           "ingredients_lc": "ar",
           "ingredients_n": 14,
-          "ingredients_n_tags": [
-            "14",
-            "11-20"
-          ],
+          "ingredients_n_tags": ["14", "11-20"],
           "ingredients_non_nutritive_sweeteners_n": 0,
           "ingredients_original_tags": [
             "ar:lait-écrémé",
@@ -3666,29 +3438,11 @@
             "en": 3,
             "fr": 2
           },
-          "languages_hierarchy": [
-            "en:arabic",
-            "en:english",
-            "en:french"
-          ],
-          "languages_tags": [
-            "en:arabic",
-            "en:english",
-            "en:french",
-            "en:3",
-            "en:multilingual"
-          ],
-          "last_edit_dates_tags": [
-            "2026-01-25",
-            "2026-01",
-            "2026"
-          ],
+          "languages_hierarchy": ["en:arabic", "en:english", "en:french"],
+          "languages_tags": ["en:arabic", "en:english", "en:french", "en:3", "en:multilingual"],
+          "last_edit_dates_tags": ["2026-01-25", "2026-01", "2026"],
           "last_editor": "foodless",
-          "last_image_dates_tags": [
-            "2025-04-25",
-            "2025-04",
-            "2025"
-          ],
+          "last_image_dates_tags": ["2025-04-25", "2025-04", "2025"],
           "last_image_t": 1745592336,
           "last_modified_by": "foodless",
           "last_modified_t": 1769347421,
@@ -3720,9 +3474,7 @@
           ],
           "nova_group_debug": "no nova group if too many ingredients are unknown: 14 out of 14",
           "nova_group_error": "too_many_unknown_ingredients",
-          "nova_groups_tags": [
-            "unknown"
-          ],
+          "nova_groups_tags": ["unknown"],
           "nucleotides_tags": [],
           "nutrient_levels": {
             "fat": "high",
@@ -3888,11 +3640,7 @@
                 "is_water": 0,
                 "negative_points": 30,
                 "negative_points_max": 55,
-                "positive_nutrients": [
-                  "proteins",
-                  "fiber",
-                  "fruits_vegetables_legumes"
-                ],
+                "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
                 "positive_points": 5,
                 "positive_points_max": 17
               },
@@ -3903,12 +3651,8 @@
               "score": 25
             }
           },
-          "nutriscore_2021_tags": [
-            "e"
-          ],
-          "nutriscore_2023_tags": [
-            "e"
-          ],
+          "nutriscore_2021_tags": ["e"],
+          "nutriscore_2023_tags": ["e"],
           "nutriscore_data": {
             "components": {
               "negative": [
@@ -3975,11 +3719,7 @@
             "is_water": 0,
             "negative_points": 30,
             "negative_points_max": 55,
-            "positive_nutrients": [
-              "proteins",
-              "fiber",
-              "fruits_vegetables_legumes"
-            ],
+            "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
             "positive_points": 5,
             "positive_points_max": 17,
             "score": 25
@@ -3987,18 +3727,14 @@
           "nutriscore_grade": "e",
           "nutriscore_score": 25,
           "nutriscore_score_opposite": -25,
-          "nutriscore_tags": [
-            "e"
-          ],
+          "nutriscore_tags": ["e"],
           "nutriscore_version": "2023",
           "nutrition_data": "on",
           "nutrition_data_per": "100g",
           "nutrition_data_prepared_per": "100g",
           "nutrition_grade_fr": "e",
           "nutrition_grades": "e",
-          "nutrition_grades_tags": [
-            "e"
-          ],
+          "nutrition_grades_tags": ["e"],
           "nutrition_score_beverage": 0,
           "nutrition_score_debug": "",
           "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -4013,21 +3749,11 @@
           "packagings": [],
           "packagings_complete": 1,
           "packagings_materials": {},
-          "photographers_tags": [
-            "smoothie-app",
-            "judo",
-            "foodless"
-          ],
+          "photographers_tags": ["smoothie-app", "judo", "foodless"],
           "pnns_groups_1": "Milk and dairy products",
-          "pnns_groups_1_tags": [
-            "milk-and-dairy-products",
-            "known"
-          ],
+          "pnns_groups_1_tags": ["milk-and-dairy-products", "known"],
           "pnns_groups_2": "Cheese",
-          "pnns_groups_2_tags": [
-            "cheese",
-            "known"
-          ],
+          "pnns_groups_2_tags": ["cheese", "known"],
           "popularity_key": 23999000199,
           "popularity_tags": [
             "top-1000-scans-2024",
@@ -4220,14 +3946,10 @@
           "allergens": "en:milk",
           "allergens_from_ingredients": "en:milk, _fromage",
           "allergens_from_user": "(en) en:milk",
-          "allergens_hierarchy": [
-            "en:milk"
-          ],
+          "allergens_hierarchy": ["en:milk"],
           "allergens_imported": "Lait",
           "allergens_lc": "en",
-          "allergens_tags": [
-            "en:milk"
-          ],
+          "allergens_tags": ["en:milk"],
           "amino_acids_prev_tags": [],
           "amino_acids_tags": [],
           "brand_owner": "Laïta",
@@ -4235,9 +3957,7 @@
           "brands": "Paysan Breton",
           "brands_imported": "Le Fromage Fouetté Madame Loïk",
           "brands_old": "Paysan Breton, Le Fromage Fouetté Madame Loïk",
-          "brands_tags": [
-            "paysan-breton"
-          ],
+          "brands_tags": ["paysan-breton"],
           "carbon_footprint_from_known_ingredients_debug": "en:garlic 2% x 0.3 = 0.6 g - ",
           "carbon_footprint_percent_of_known_ingredients": 2,
           "categories": "Produits laitiers, Produits fermentés, Produits laitiers fermentés, Produits à tartiner, Fromages, Produits à tartiner salés, Fromages de vache, Frais, Fromages de France, Fromages pasteurisés, Fromages à tartiner, Fromages à la crème, Fromages industriels, en:uncured-soft-cheese-spreadable-around-30-40-fat-flavoured, Fromage fouetté",
@@ -4298,15 +4018,11 @@
             "ciqual_food_name:fr": "Fromage -aliment moyen-"
           },
           "checked": "on",
-          "checkers_tags": [
-            "aleene"
-          ],
+          "checkers_tags": ["aleene"],
           "ciqual_food_name_tags": [
             "uncured-soft-cheese-spreadable-around-30-40-fat-flavoured-ex-garlic-and-herbs"
           ],
-          "cities_tags": [
-            "crehen-cotes-d-armor-france"
-          ],
+          "cities_tags": ["crehen-cotes-d-armor-france"],
           "code": "3412290071801",
           "codes_tags": [
             "code-13",
@@ -4359,18 +4075,10 @@
           ],
           "countries": "Belgium, France, en:morocco",
           "countries_beforescanbot": "Belgium,France",
-          "countries_hierarchy": [
-            "en:belgium",
-            "en:france",
-            "en:morocco"
-          ],
+          "countries_hierarchy": ["en:belgium", "en:france", "en:morocco"],
           "countries_imported": "France",
           "countries_lc": "en",
-          "countries_tags": [
-            "en:belgium",
-            "en:france",
-            "en:morocco"
-          ],
+          "countries_tags": ["en:belgium", "en:france", "en:morocco"],
           "created_t": 1376417262,
           "creator": "pom445",
           "customer_service": "0 800 003 136",
@@ -4459,9 +4167,7 @@
             "app-infood",
             "app-macrofactor"
           ],
-          "debug_param_sorted_langs": [
-            "fr"
-          ],
+          "debug_param_sorted_langs": ["fr"],
           "ecoscore_data": {
             "adjustments": {
               "origins_of_ingredients": {
@@ -4475,12 +4181,8 @@
                 ],
                 "epi_score": 93,
                 "epi_value": 4,
-                "origins_from_categories": [
-                  "en:unknown"
-                ],
-                "origins_from_origins_field": [
-                  "en:france"
-                ],
+                "origins_from_categories": ["en:unknown"],
+                "origins_from_origins_field": ["en:france"],
                 "transportation_score": 0,
                 "transportation_scores": {
                   "ad": 57,
@@ -4915,16 +4617,8 @@
           },
           "ecoscore_grade": "c",
           "ecoscore_score": 56,
-          "ecoscore_tags": [
-            "c"
-          ],
-          "editors": [
-            "tacite",
-            "manu1400",
-            "pom445",
-            "jacob80",
-            "morganesh"
-          ],
+          "ecoscore_tags": ["c"],
+          "editors": ["tacite", "manu1400", "pom445", "jacob80", "morganesh"],
           "editors_tags": [
             "aleene",
             "alexg",
@@ -4960,22 +4654,13 @@
           "emb_codes_20141016": "FR 22.049.001 CE",
           "emb_codes_imported": "FR 22.049.001 EC",
           "emb_codes_orig": "FR 22.049.001 EC",
-          "emb_codes_tags": [
-            "fr-22-049-001-ec"
-          ],
-          "entry_dates_tags": [
-            "2013-08-13",
-            "2013-08",
-            "2013"
-          ],
+          "emb_codes_tags": ["fr-22-049-001-ec"],
+          "entry_dates_tags": ["2013-08-13", "2013-08", "2013"],
           "environment_impact_level": "",
           "environment_impact_level_tags": [],
           "expiration_date": "4 sep. 2019",
           "food_groups": "en:salty-and-fatty-products",
-          "food_groups_tags": [
-            "en:salty-snacks",
-            "en:salty-and-fatty-products"
-          ],
+          "food_groups_tags": ["en:salty-snacks", "en:salty-and-fatty-products"],
           "fruits-vegetables-nuts_100g_estimate": 0,
           "generic_name": "Fromage fouetté Ail & fines Herbes",
           "generic_name_fr": "Fromage fouetté Ail & fines Herbes",
@@ -5823,19 +5508,10 @@
             }
           ],
           "ingredients_analysis": {
-            "en:maybe-vegetarian": [
-              "en:soft-white-cheese",
-              "en:natural-garlic-flavouring"
-            ],
-            "en:non-vegan": [
-              "en:soft-white-cheese"
-            ]
+            "en:maybe-vegetarian": ["en:soft-white-cheese", "en:natural-garlic-flavouring"],
+            "en:non-vegan": ["en:soft-white-cheese"]
           },
-          "ingredients_analysis_tags": [
-            "en:palm-oil-free",
-            "en:non-vegan",
-            "en:maybe-vegetarian"
-          ],
+          "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:maybe-vegetarian"],
           "ingredients_debug": [
             "Fromage frais",
             ",",
@@ -5924,10 +5600,7 @@
           ],
           "ingredients_lc": "fr",
           "ingredients_n": 7,
-          "ingredients_n_tags": [
-            "7",
-            "1-10"
-          ],
+          "ingredients_n_tags": ["7", "1-10"],
           "ingredients_non_nutritive_sweeteners_n": 0,
           "ingredients_original_tags": [
             "en:soft-white-cheese",
@@ -5971,10 +5644,7 @@
           "ingredients_with_specified_percent_sum": 2,
           "ingredients_with_unspecified_percent_n": 5,
           "ingredients_with_unspecified_percent_sum": 98,
-          "ingredients_without_ciqual_codes": [
-            "en:herb",
-            "en:natural-garlic-flavouring"
-          ],
+          "ingredients_without_ciqual_codes": ["en:herb", "en:natural-garlic-flavouring"],
           "ingredients_without_ciqual_codes_n": 2,
           "ingredients_without_ecobalyse_ids": [
             "en:chives",
@@ -6021,34 +5691,14 @@
             "en": 2,
             "fr": 12
           },
-          "languages_hierarchy": [
-            "en:english",
-            "en:french"
-          ],
-          "languages_tags": [
-            "en:english",
-            "en:french",
-            "en:2",
-            "en:multilingual"
-          ],
-          "last_check_dates_tags": [
-            "2019-07-16",
-            "2019-07",
-            "2019"
-          ],
+          "languages_hierarchy": ["en:english", "en:french"],
+          "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+          "last_check_dates_tags": ["2019-07-16", "2019-07", "2019"],
           "last_checked_t": 1563262676,
           "last_checker": "aleene",
-          "last_edit_dates_tags": [
-            "2026-02-16",
-            "2026-02",
-            "2026"
-          ],
+          "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
           "last_editor": "scanbot",
-          "last_image_dates_tags": [
-            "2026-01-04",
-            "2026-01",
-            "2026"
-          ],
+          "last_image_dates_tags": ["2026-01-04", "2026-01", "2026"],
           "last_image_t": 1767549392,
           "last_modified_by": "scanbot",
           "last_modified_t": 1771267042,
@@ -6095,29 +5745,13 @@
           "nova_groups": "4",
           "nova_groups_markers": {
             "3": [
-              [
-                "categories",
-                "en:cheeses"
-              ],
-              [
-                "ingredients",
-                "en:salt"
-              ],
-              [
-                "ingredients",
-                "en:cheese"
-              ]
+              ["categories", "en:cheeses"],
+              ["ingredients", "en:salt"],
+              ["ingredients", "en:cheese"]
             ],
-            "4": [
-              [
-                "ingredients",
-                "en:flavouring"
-              ]
-            ]
+            "4": [["ingredients", "en:flavouring"]]
           },
-          "nova_groups_tags": [
-            "en:4-ultra-processed-food-and-drink-products"
-          ],
+          "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
           "nucleotides_prev_tags": [],
           "nucleotides_tags": [],
           "nutrient_levels": {
@@ -6294,11 +5928,7 @@
                 "is_water": 0,
                 "negative_points": 19,
                 "negative_points_max": 55,
-                "positive_nutrients": [
-                  "proteins",
-                  "fiber",
-                  "fruits_vegetables_legumes"
-                ],
+                "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
                 "positive_points": 2,
                 "positive_points_max": 17
               },
@@ -6309,12 +5939,8 @@
               "score": 17
             }
           },
-          "nutriscore_2021_tags": [
-            "d"
-          ],
-          "nutriscore_2023_tags": [
-            "d"
-          ],
+          "nutriscore_2021_tags": ["d"],
+          "nutriscore_2023_tags": ["d"],
           "nutriscore_data": {
             "components": {
               "negative": [
@@ -6381,11 +6007,7 @@
             "is_water": 0,
             "negative_points": 19,
             "negative_points_max": 55,
-            "positive_nutrients": [
-              "proteins",
-              "fiber",
-              "fruits_vegetables_legumes"
-            ],
+            "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
             "positive_points": 2,
             "positive_points_max": 17,
             "score": 17
@@ -6393,9 +6015,7 @@
           "nutriscore_grade": "d",
           "nutriscore_score": 17,
           "nutriscore_score_opposite": -17,
-          "nutriscore_tags": [
-            "d"
-          ],
+          "nutriscore_tags": ["d"],
           "nutriscore_version": "2023",
           "nutrition_data": "on",
           "nutrition_data_per": "100g",
@@ -6404,9 +6024,7 @@
           "nutrition_data_prepared_per_imported": "100g",
           "nutrition_grade_fr": "d",
           "nutrition_grades": "d",
-          "nutrition_grades_tags": [
-            "d"
-          ],
+          "nutrition_grades_tags": ["d"],
           "nutrition_score_beverage": 0,
           "nutrition_score_debug": "",
           "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -6421,21 +6039,11 @@
           "origin_fr": "Lait : Bretagne Pays de la Loire France, ail : France, fines herbes (persil, ciboulette) : France",
           "origin_fr_imported": "Lait : Bretagne Pays de la Loire France, ail : France, fines herbes (persil, ciboulette) : France",
           "origins": "Lait,Bretagne,Pays de la Loire,France",
-          "origins_hierarchy": [
-            "en:france",
-            "en:brittany",
-            "fr:Lait",
-            "fr:Pays de la Loire"
-          ],
+          "origins_hierarchy": ["en:france", "en:brittany", "fr:Lait", "fr:Pays de la Loire"],
           "origins_imported": "France",
           "origins_lc": "fr",
           "origins_old": "Lait,Bretagne,Pays de la Loire,France",
-          "origins_tags": [
-            "en:france",
-            "en:brittany",
-            "fr:lait",
-            "fr:pays-de-la-loire"
-          ],
+          "origins_tags": ["en:france", "en:brittany", "fr:lait", "fr:pays-de-la-loire"],
           "other_nutritional_substances_tags": [],
           "owner": "org-laita",
           "owner_fields": {
@@ -6490,20 +6098,11 @@
           ],
           "packaging_imported": "Pot carton,couvercle carton,opercule métal",
           "packaging_lc": "en",
-          "packaging_materials_tags": [
-            "en:cardboard",
-            "en:metal"
-          ],
+          "packaging_materials_tags": ["en:cardboard", "en:metal"],
           "packaging_old": "Frais, Opercule métal - étui - pot et son couvercle carton à recycler, Pensez au tri!, Point vert, Pot carton, Couvercle carton, Opercule métal",
           "packaging_old_before_taxonomization": "fr:Frais,fr:Opercule métal - étui - pot et son couvercle carton à recycler,fr:Point vert,fr:Pensez au tri!, Frais, Pot carton, couvercle carton, opercule métal",
-          "packaging_recycling_tags": [
-            "en:recycle"
-          ],
-          "packaging_shapes_tags": [
-            "en:lid",
-            "en:pot",
-            "en:seal"
-          ],
+          "packaging_recycling_tags": ["en:recycle"],
+          "packaging_shapes_tags": ["en:lid", "en:pot", "en:seal"],
           "packaging_tags": [
             "en:fresh",
             "fr:couvercle-carton",
@@ -6553,9 +6152,7 @@
           ],
           "periods_after_opening_imported": "A consommer dans la semaine qui suit l'ouverture",
           "periods_after_opening_lc": "fr",
-          "periods_after_opening_tags": [
-            "fr:a-consommer-dans-la-semaine-qui-suit-l-ouverture"
-          ],
+          "periods_after_opening_tags": ["fr:a-consommer-dans-la-semaine-qui-suit-l-ouverture"],
           "photographers_tags": [
             "pom445",
             "jacob80",
@@ -6571,15 +6168,9 @@
             "philippe59650"
           ],
           "pnns_groups_1": "Salty snacks",
-          "pnns_groups_1_tags": [
-            "salty-snacks",
-            "known"
-          ],
+          "pnns_groups_1_tags": ["salty-snacks", "known"],
           "pnns_groups_2": "Salty and fatty products",
-          "pnns_groups_2_tags": [
-            "salty-and-fatty-products",
-            "known"
-          ],
+          "pnns_groups_2_tags": ["salty-and-fatty-products", "known"],
           "popularity_key": 24999000325,
           "popularity_tags": [
             "top-5000-scans-2019",
@@ -7029,22 +6620,14 @@
             "carrefour-fr"
           ],
           "teams": "pain-au-chocolat",
-          "teams_tags": [
-            "pain-au-chocolat"
-          ],
+          "teams_tags": ["pain-au-chocolat"],
           "traces": "en:fish,en:nuts",
           "traces_from_ingredients": "",
           "traces_from_user": "(fr) en:fish,en:nuts",
-          "traces_hierarchy": [
-            "en:fish",
-            "en:nuts"
-          ],
+          "traces_hierarchy": ["en:fish", "en:nuts"],
           "traces_imported": "Poisson, Fruits à coque",
           "traces_lc": "fr",
-          "traces_tags": [
-            "en:fish",
-            "en:nuts"
-          ],
+          "traces_tags": ["en:fish", "en:nuts"],
           "unique_scans_n": 314,
           "unknown_ingredients_n": 0,
           "unknown_nutrients_tags": [],
@@ -7077,16 +6660,8 @@
           ],
           "added_countries_tags": [],
           "additives_n": 3,
-          "additives_original_tags": [
-            "en:e450",
-            "en:e341",
-            "en:e452"
-          ],
-          "additives_tags": [
-            "en:e341",
-            "en:e450",
-            "en:e452"
-          ],
+          "additives_original_tags": ["en:e450", "en:e341", "en:e452"],
+          "additives_tags": ["en:e341", "en:e450", "en:e452"],
           "allergens": "",
           "allergens_from_ingredients": "",
           "allergens_from_user": "(fr) ",
@@ -7097,9 +6672,7 @@
           "amino_acids_tags": [],
           "brands": "La Hollandaise",
           "brands_old": "La Hollandaise",
-          "brands_tags": [
-            "la-hollandaise"
-          ],
+          "brands_tags": ["la-hollandaise"],
           "categories": "Produits laitiers,Produits fermentés,Produits laitiers fermentés,Fromages,Fromages de vache,Fromages du Royaume-Uni,Fromages d'Angleterre,Cheddars,Produits à tartiner,Fromages à tartiner",
           "categories_hierarchy": [
             "en:dairies",
@@ -7151,9 +6724,7 @@
             "ciqual_food_name:fr": "Fromage -aliment moyen-"
           },
           "checkers_tags": [],
-          "ciqual_food_name_tags": [
-            "cheese-average"
-          ],
+          "ciqual_food_name_tags": ["cheese-average"],
           "cities_tags": [],
           "code": "6111203005779",
           "codes_tags": [
@@ -7190,15 +6761,9 @@
           ],
           "countries": "en:france, en:morocco",
           "countries_beforescanbot": "France,Maroc",
-          "countries_hierarchy": [
-            "en:france",
-            "en:morocco"
-          ],
+          "countries_hierarchy": ["en:france", "en:morocco"],
           "countries_lc": "en",
-          "countries_tags": [
-            "en:france",
-            "en:morocco"
-          ],
+          "countries_tags": ["en:france", "en:morocco"],
           "created_t": 1482997425,
           "creator": "openfoodfacts-contributors",
           "data_quality_bugs_tags": [],
@@ -7284,17 +6849,8 @@
             "en:environmental-score-production-system-no-label"
           ],
           "data_sources": "App - yuka, Apps, App - InFood, App - smoothie-openfoodfacts",
-          "data_sources_tags": [
-            "app-yuka",
-            "apps",
-            "app-infood",
-            "app-smoothie-openfoodfacts"
-          ],
-          "debug_param_sorted_langs": [
-            "ar",
-            "en",
-            "fr"
-          ],
+          "data_sources_tags": ["app-yuka", "apps", "app-infood", "app-smoothie-openfoodfacts"],
+          "debug_param_sorted_langs": ["ar", "en", "fr"],
           "ecoscore_data": {
             "adjustments": {
               "origins_of_ingredients": {
@@ -7308,12 +6864,8 @@
                 ],
                 "epi_score": 0,
                 "epi_value": -5,
-                "origins_from_categories": [
-                  "en:united-kingdom"
-                ],
-                "origins_from_origins_field": [
-                  "en:morocco"
-                ],
+                "origins_from_categories": ["en:united-kingdom"],
+                "origins_from_origins_field": ["en:morocco"],
                 "transportation_score": 0,
                 "transportation_scores": {
                   "ad": 19,
@@ -7718,9 +7270,7 @@
           },
           "ecoscore_grade": "e",
           "ecoscore_score": 23,
-          "ecoscore_tags": [
-            "e"
-          ],
+          "ecoscore_tags": ["e"],
           "editors_tags": [
             "bot-tags-and-languages",
             "foodless",
@@ -7743,20 +7293,11 @@
           ],
           "emb_codes": "2521",
           "emb_codes_orig": "",
-          "emb_codes_tags": [
-            "2521"
-          ],
-          "entry_dates_tags": [
-            "2016-12-29",
-            "2016-12",
-            "2016"
-          ],
+          "emb_codes_tags": ["2521"],
+          "entry_dates_tags": ["2016-12-29", "2016-12", "2016"],
           "expiration_date": "",
           "food_groups": "en:salty-and-fatty-products",
-          "food_groups_tags": [
-            "en:salty-snacks",
-            "en:salty-and-fatty-products"
-          ],
+          "food_groups_tags": ["en:salty-snacks", "en:salty-and-fatty-products"],
           "generic_name": "",
           "generic_name_ar": "",
           "generic_name_en": "",
@@ -8217,17 +7758,10 @@
             "en:e341",
             "en:e452"
           ],
-          "ingredients_ids_debug": [
-            "e452",
-            "e341",
-            "e450"
-          ],
+          "ingredients_ids_debug": ["e452", "e341", "e450"],
           "ingredients_lc": "ar",
           "ingredients_n": 10,
-          "ingredients_n_tags": [
-            "10",
-            "1-10"
-          ],
+          "ingredients_n_tags": ["10", "1-10"],
           "ingredients_non_nutritive_sweeteners_n": 0,
           "ingredients_original_tags": [
             "ar:حليب-خالي-من-الدسم-مشكل",
@@ -8302,14 +7836,10 @@
           "interface_version_modified": "20150316.jqm2",
           "known_ingredients_n": 3,
           "labels": "en:la mega protion",
-          "labels_hierarchy": [
-            "en:la mega protion"
-          ],
+          "labels_hierarchy": ["en:la mega protion"],
           "labels_lc": "fr",
           "labels_old": "en:la mega protion",
-          "labels_tags": [
-            "en:la-mega-protion"
-          ],
+          "labels_tags": ["en:la-mega-protion"],
           "lang": "ar",
           "languages": {
             "en:arabic": 4,
@@ -8321,29 +7851,11 @@
             "en": 2,
             "fr": 5
           },
-          "languages_hierarchy": [
-            "en:arabic",
-            "en:english",
-            "en:french"
-          ],
-          "languages_tags": [
-            "en:arabic",
-            "en:english",
-            "en:french",
-            "en:3",
-            "en:multilingual"
-          ],
-          "last_edit_dates_tags": [
-            "2026-02-04",
-            "2026-02",
-            "2026"
-          ],
+          "languages_hierarchy": ["en:arabic", "en:english", "en:french"],
+          "languages_tags": ["en:arabic", "en:english", "en:french", "en:3", "en:multilingual"],
+          "last_edit_dates_tags": ["2026-02-04", "2026-02", "2026"],
           "last_editor": "off-replace-bot",
-          "last_image_dates_tags": [
-            "2023-04-19",
-            "2023-04",
-            "2023"
-          ],
+          "last_image_dates_tags": ["2023-04-19", "2023-04", "2023"],
           "last_image_t": 1681917923,
           "last_modified_by": "off-replace-bot",
           "last_modified_t": 1770224581,
@@ -8352,9 +7864,7 @@
           "link": "",
           "main_countries_tags": [],
           "manufacturing_places": "25/07/2019",
-          "manufacturing_places_tags": [
-            "25-07-2019"
-          ],
+          "manufacturing_places_tags": ["25-07-2019"],
           "max_imgid": "8",
           "minerals_prev_tags": [],
           "minerals_tags": [],
@@ -8382,26 +7892,13 @@
           "nova_group_debug": "",
           "nova_groups": "4",
           "nova_groups_markers": {
-            "3": [
-              [
-                "categories",
-                "en:cheeses"
-              ]
-            ],
+            "3": [["categories", "en:cheeses"]],
             "4": [
-              [
-                "additives",
-                "en:e450"
-              ],
-              [
-                "additives",
-                "en:e452"
-              ]
+              ["additives", "en:e450"],
+              ["additives", "en:e452"]
             ]
           },
-          "nova_groups_tags": [
-            "en:4-ultra-processed-food-and-drink-products"
-          ],
+          "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
           "nucleotides_prev_tags": [],
           "nucleotides_tags": [],
           "nutrient_levels": {
@@ -8568,11 +8065,7 @@
                 "is_water": 0,
                 "negative_points": 14,
                 "negative_points_max": 55,
-                "positive_nutrients": [
-                  "proteins",
-                  "fiber",
-                  "fruits_vegetables_legumes"
-                ],
+                "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
                 "positive_points": 4,
                 "positive_points_max": 17
               },
@@ -8583,12 +8076,8 @@
               "score": 10
             }
           },
-          "nutriscore_2021_tags": [
-            "c"
-          ],
-          "nutriscore_2023_tags": [
-            "c"
-          ],
+          "nutriscore_2021_tags": ["c"],
+          "nutriscore_2023_tags": ["c"],
           "nutriscore_data": {
             "components": {
               "negative": [
@@ -8655,11 +8144,7 @@
             "is_water": 0,
             "negative_points": 14,
             "negative_points_max": 55,
-            "positive_nutrients": [
-              "proteins",
-              "fiber",
-              "fruits_vegetables_legumes"
-            ],
+            "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
             "positive_points": 4,
             "positive_points_max": 17,
             "score": 10
@@ -8667,18 +8152,14 @@
           "nutriscore_grade": "c",
           "nutriscore_score": 10,
           "nutriscore_score_opposite": -10,
-          "nutriscore_tags": [
-            "c"
-          ],
+          "nutriscore_tags": ["c"],
           "nutriscore_version": "2023",
           "nutrition_data": "on",
           "nutrition_data_per": "100g",
           "nutrition_data_prepared_per": "100g",
           "nutrition_grade_fr": "c",
           "nutrition_grades": "c",
-          "nutrition_grades_tags": [
-            "c"
-          ],
+          "nutrition_grades_tags": ["c"],
           "nutrition_score_beverage": 0,
           "nutrition_score_debug": "",
           "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -8690,14 +8171,10 @@
           "origin_en": "",
           "origin_fr": "",
           "origins": "fr:maroc",
-          "origins_hierarchy": [
-            "en:morocco"
-          ],
+          "origins_hierarchy": ["en:morocco"],
           "origins_lc": "en",
           "origins_old": "",
-          "origins_tags": [
-            "en:morocco"
-          ],
+          "origins_tags": ["en:morocco"],
           "other_nutritional_substances_tags": [],
           "packaging": "جبنة شيدار غنية بالكالسيوم وفيتامينات تمكنكم من تحضير سندويتشات شهية بمذاق الشيدار الحقيقي لمتعة لا تقاوم",
           "packaging_hierarchy": [
@@ -8718,21 +8195,11 @@
           "packagings": [],
           "packagings_complete": 0,
           "packagings_materials": {},
-          "photographers_tags": [
-            "openfoodfacts-contributors",
-            "kiliweb",
-            "foodless"
-          ],
+          "photographers_tags": ["openfoodfacts-contributors", "kiliweb", "foodless"],
           "pnns_groups_1": "Salty snacks",
-          "pnns_groups_1_tags": [
-            "salty-snacks",
-            "known"
-          ],
+          "pnns_groups_1_tags": ["salty-snacks", "known"],
           "pnns_groups_2": "Salty and fatty products",
-          "pnns_groups_2_tags": [
-            "salty-and-fatty-products",
-            "known"
-          ],
+          "pnns_groups_2_tags": ["salty-and-fatty-products", "known"],
           "popularity_key": 23999000176,
           "popularity_tags": [
             "top-100000-scans-2019",
@@ -8875,9 +8342,7 @@
           "product_quantity_unit": "g",
           "product_type": "food",
           "purchase_places": "morocco",
-          "purchase_places_tags": [
-            "morocco"
-          ],
+          "purchase_places_tags": ["morocco"],
           "quantity": "100g",
           "removed_countries_tags": [],
           "rev": 51,
@@ -8942,23 +8407,15 @@
             "en:photos-uploaded"
           ],
           "stores": "la hollandaise cheddar",
-          "stores_tags": [
-            "la-hollandaise-cheddar"
-          ],
+          "stores_tags": ["la-hollandaise-cheddar"],
           "teams": "gmlaa",
-          "teams_tags": [
-            "gmlaa"
-          ],
+          "teams_tags": ["gmlaa"],
           "traces": "en:lait cheddar",
           "traces_from_ingredients": "",
           "traces_from_user": "(fr) en:lait cheddar",
-          "traces_hierarchy": [
-            "en:lait cheddar"
-          ],
+          "traces_hierarchy": ["en:lait cheddar"],
           "traces_lc": "fr",
-          "traces_tags": [
-            "en:lait-cheddar"
-          ],
+          "traces_tags": ["en:lait-cheddar"],
           "unique_scans_n": 310,
           "unknown_ingredients_n": 7,
           "unknown_nutrients_tags": [],
@@ -9019,19 +8476,13 @@
           "allergens": "en:milk",
           "allergens_from_ingredients": "en:milk, en:milk, en:milk, lait, ferments lactiques, lait",
           "allergens_from_user": "(fr) en:milk, en:milk, en:milk",
-          "allergens_hierarchy": [
-            "en:milk"
-          ],
+          "allergens_hierarchy": ["en:milk"],
           "allergens_lc": "fr",
-          "allergens_tags": [
-            "en:milk"
-          ],
+          "allergens_tags": ["en:milk"],
           "amino_acids_tags": [],
           "brands": "Les 2 Vaches",
           "brands_old": "Les 2 Vaches",
-          "brands_tags": [
-            "les-2-vaches"
-          ],
+          "brands_tags": ["les-2-vaches"],
           "carbon_footprint_from_known_ingredients_debug": "en:pasteurized-semi-skimmed-milk 79.6% x 1.2 = 95.52 g - en:cane-sugar 8% x 1.3 = 10.4 g - en:cream 4.5% x 4.2 = 18.9 g - ",
           "carbon_footprint_percent_of_known_ingredients": 92.1,
           "categories": "Produits laitiers, Produits fermentés, Desserts, Produits laitiers fermentés, Desserts lactés, Desserts lactés fermentés, Yaourts, Desserts lactés fermentés aromatisés, Yaourts sucrés, Yaourts au lait de vache, Yaourts aromatisés",
@@ -9081,10 +8532,7 @@
             "en:flavoured-yogurts"
           ],
           "checkers_tags": [],
-          "cities_tags": [
-            "molay-littry-calvados-france",
-            "molay-littry-calvados-france"
-          ],
+          "cities_tags": ["molay-littry-calvados-france", "molay-littry-calvados-france"],
           "code": "3661344688339",
           "codes_tags": [
             "code-13",
@@ -9120,13 +8568,9 @@
             "lwii"
           ],
           "countries": "France",
-          "countries_hierarchy": [
-            "en:france"
-          ],
+          "countries_hierarchy": ["en:france"],
           "countries_lc": "fr",
-          "countries_tags": [
-            "en:france"
-          ],
+          "countries_tags": ["en:france"],
           "created_t": 1610021545,
           "creator": "kiliweb",
           "data_quality_bugs_tags": [],
@@ -9202,9 +8646,7 @@
             "app-open-food-facts",
             "app-smoothie-openfoodfacts"
           ],
-          "debug_param_sorted_langs": [
-            "fr"
-          ],
+          "debug_param_sorted_langs": ["fr"],
           "ecoscore_data": {
             "adjustments": {
               "origins_of_ingredients": {
@@ -9230,9 +8672,7 @@
                 ],
                 "epi_score": 0,
                 "epi_value": 0,
-                "origins_from_categories": [
-                  "en:unknown"
-                ],
+                "origins_from_categories": ["en:unknown"],
                 "origins_from_origins_field": [
                   "en:france",
                   "en:european-union-and-non-european-union",
@@ -9465,10 +8905,7 @@
                 "value": -11
               },
               "production_system": {
-                "labels": [
-                  "fr:ab-agriculture-biologique",
-                  "en:eu-organic"
-                ],
+                "labels": ["fr:ab-agriculture-biologique", "en:eu-organic"],
                 "value": 15
               },
               "threatened_species": {}
@@ -9633,9 +9070,7 @@
           },
           "ecoscore_grade": "a-plus",
           "ecoscore_score": 97,
-          "ecoscore_tags": [
-            "a-plus"
-          ],
+          "ecoscore_tags": ["a-plus"],
           "editors_tags": [
             "baudichouxd-1237",
             "driveoff",
@@ -9659,21 +9094,11 @@
             "yuka.sY2b0xO6T85zoF3NwEKvlmt2DISEhCv5FTfvi2qon-qTB8bWMNBuyLXmbao"
           ],
           "emb_codes": "FR 14.370.001 CE,FR 14.370.001 EC",
-          "emb_codes_tags": [
-            "fr-14-370-001-ec",
-            "fr-14-370-001-ec"
-          ],
-          "entry_dates_tags": [
-            "2021-01-07",
-            "2021-01",
-            "2021"
-          ],
+          "emb_codes_tags": ["fr-14-370-001-ec", "fr-14-370-001-ec"],
+          "entry_dates_tags": ["2021-01-07", "2021-01", "2021"],
           "expiration_date": "22/09/2022",
           "food_groups": "en:milk-and-yogurt",
-          "food_groups_tags": [
-            "en:milk-and-dairy-products",
-            "en:milk-and-yogurt"
-          ],
+          "food_groups_tags": ["en:milk-and-dairy-products", "en:milk-and-yogurt"],
           "generic_name": "Yaourt bio, sucré, à la vanille",
           "generic_name_fr": "Yaourt bio, sucré, à la vanille",
           "id": "3661344688339",
@@ -10219,11 +9644,7 @@
               "en:skimmed-milk-powder"
             ]
           },
-          "ingredients_analysis_tags": [
-            "en:palm-oil-free",
-            "en:non-vegan",
-            "en:vegetarian"
-          ],
+          "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
           "ingredients_from_or_that_may_be_from_palm_oil_n": 0,
           "ingredients_from_palm_oil_n": 0,
           "ingredients_from_palm_oil_tags": [],
@@ -10256,10 +9677,7 @@
           ],
           "ingredients_lc": "fr",
           "ingredients_n": 8,
-          "ingredients_n_tags": [
-            "8",
-            "1-10"
-          ],
+          "ingredients_n_tags": ["8", "1-10"],
           "ingredients_non_nutritive_sweeteners_n": 0,
           "ingredients_original_tags": [
             "en:pasteurized-semi-skimmed-milk",
@@ -10310,9 +9728,7 @@
           "ingredients_with_specified_percent_sum": 87.6,
           "ingredients_with_unspecified_percent_n": 6,
           "ingredients_with_unspecified_percent_sum": 12.4,
-          "ingredients_without_ciqual_codes": [
-            "en:lactic-ferments"
-          ],
+          "ingredients_without_ciqual_codes": ["en:lactic-ferments"],
           "ingredients_without_ciqual_codes_n": 1,
           "ingredients_without_ecobalyse_ids": [
             "en:concentrated-lemon-juice",
@@ -10365,24 +9781,11 @@
           "languages_codes": {
             "fr": 9
           },
-          "languages_hierarchy": [
-            "en:french"
-          ],
-          "languages_tags": [
-            "en:french",
-            "en:1"
-          ],
-          "last_edit_dates_tags": [
-            "2025-12-09",
-            "2025-12",
-            "2025"
-          ],
+          "languages_hierarchy": ["en:french"],
+          "languages_tags": ["en:french", "en:1"],
+          "last_edit_dates_tags": ["2025-12-09", "2025-12", "2025"],
           "last_editor": "foodless",
-          "last_image_dates_tags": [
-            "2024-07-26",
-            "2024-07",
-            "2024"
-          ],
+          "last_image_dates_tags": ["2024-07-26", "2024-07", "2024"],
           "last_image_t": 1721982045,
           "last_modified_by": "foodless",
           "last_modified_t": 1765272761,
@@ -10391,10 +9794,7 @@
           "link": "",
           "main_countries_tags": [],
           "manufacturing_places": "Molay-Littry,Calvados",
-          "manufacturing_places_tags": [
-            "molay-littry",
-            "calvados"
-          ],
+          "manufacturing_places_tags": ["molay-littry", "calvados"],
           "max_imgid": "19",
           "minerals_tags": [],
           "misc_tags": [
@@ -10420,23 +9820,12 @@
           "nova_groups": "3",
           "nova_groups_markers": {
             "3": [
-              [
-                "ingredients",
-                "en:starch"
-              ],
-              [
-                "ingredients",
-                "en:sugar"
-              ],
-              [
-                "ingredients",
-                "en:milk-powder"
-              ]
+              ["ingredients", "en:starch"],
+              ["ingredients", "en:sugar"],
+              ["ingredients", "en:milk-powder"]
             ]
           },
-          "nova_groups_tags": [
-            "en:3-processed-foods"
-          ],
+          "nova_groups_tags": ["en:3-processed-foods"],
           "nucleotides_tags": [],
           "nutrient_levels": {
             "fat": "low",
@@ -10617,11 +10006,7 @@
                 "is_water": 0,
                 "negative_points": 5,
                 "negative_points_max": 55,
-                "positive_nutrients": [
-                  "proteins",
-                  "fiber",
-                  "fruits_vegetables_legumes"
-                ],
+                "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
                 "positive_points": 1,
                 "positive_points_max": 17
               },
@@ -10632,12 +10017,8 @@
               "score": 4
             }
           },
-          "nutriscore_2021_tags": [
-            "b"
-          ],
-          "nutriscore_2023_tags": [
-            "c"
-          ],
+          "nutriscore_2021_tags": ["b"],
+          "nutriscore_2023_tags": ["c"],
           "nutriscore_data": {
             "components": {
               "negative": [
@@ -10704,11 +10085,7 @@
             "is_water": 0,
             "negative_points": 5,
             "negative_points_max": 55,
-            "positive_nutrients": [
-              "proteins",
-              "fiber",
-              "fruits_vegetables_legumes"
-            ],
+            "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
             "positive_points": 1,
             "positive_points_max": 17,
             "score": 4
@@ -10716,18 +10093,14 @@
           "nutriscore_grade": "c",
           "nutriscore_score": 4,
           "nutriscore_score_opposite": -4,
-          "nutriscore_tags": [
-            "c"
-          ],
+          "nutriscore_tags": ["c"],
           "nutriscore_version": "2023",
           "nutrition_data": "on",
           "nutrition_data_per": "100g",
           "nutrition_data_prepared_per": "100g",
           "nutrition_grade_fr": "c",
           "nutrition_grades": "c",
-          "nutrition_grades_tags": [
-            "c"
-          ],
+          "nutrition_grades_tags": ["c"],
           "nutrition_score_beverage": 0,
           "nutrition_score_debug": "",
           "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -10763,16 +10136,9 @@
             "fr:Pot en plastique"
           ],
           "packaging_lc": "en",
-          "packaging_materials_tags": [
-            "en:plastic"
-          ],
-          "packaging_recycling_tags": [
-            "en:discard"
-          ],
-          "packaging_shapes_tags": [
-            "en:pot",
-            "en:seal"
-          ],
+          "packaging_materials_tags": ["en:plastic"],
+          "packaging_recycling_tags": ["en:discard"],
+          "packaging_shapes_tags": ["en:pot", "en:seal"],
           "packaging_tags": [
             "en:plastic",
             "en:pot",
@@ -10815,15 +10181,9 @@
             "foodvisor"
           ],
           "pnns_groups_1": "Milk and dairy products",
-          "pnns_groups_1_tags": [
-            "milk-and-dairy-products",
-            "known"
-          ],
+          "pnns_groups_1_tags": ["milk-and-dairy-products", "known"],
           "pnns_groups_2": "Milk and yogurt",
-          "pnns_groups_2_tags": [
-            "milk-and-yogurt",
-            "known"
-          ],
+          "pnns_groups_2_tags": ["milk-and-yogurt", "known"],
           "popularity_key": 23995000124,
           "popularity_tags": [
             "top-5000-scans-2021",
@@ -10968,10 +10328,7 @@
           "product_quantity_unit": "g",
           "product_type": "food",
           "purchase_places": "Versailles,France",
-          "purchase_places_tags": [
-            "versailles",
-            "france"
-          ],
+          "purchase_places_tags": ["versailles", "france"],
           "quantity": "460 g",
           "removed_countries_tags": [],
           "rev": 70,
@@ -11103,31 +10460,19 @@
           ],
           "added_countries_tags": [],
           "additives_n": 2,
-          "additives_original_tags": [
-            "en:e412",
-            "en:e330"
-          ],
-          "additives_tags": [
-            "en:e330",
-            "en:e412"
-          ],
+          "additives_original_tags": ["en:e412", "en:e330"],
+          "additives_tags": ["en:e330", "en:e412"],
           "allergens": "en:milk",
           "allergens_from_ingredients": "en:milk, en:milk, en:milk, LAIT , LAIT, LAIT, LAIT, LAIT, LAIT, CRÈME",
           "allergens_from_user": "(fr) en:milk, en:milk",
-          "allergens_hierarchy": [
-            "en:milk"
-          ],
+          "allergens_hierarchy": ["en:milk"],
           "allergens_lc": "fr",
-          "allergens_tags": [
-            "en:milk"
-          ],
+          "allergens_tags": ["en:milk"],
           "amino_acids_prev_tags": [],
           "amino_acids_tags": [],
           "brands": "Philadelphia",
           "brands_old": "Philadelphia,Kraft,Kraft Foods,Mondelèz International",
-          "brands_tags": [
-            "philadelphia"
-          ],
+          "brands_tags": ["philadelphia"],
           "categories": "Produits laitiers, Produits fermentés, Produits laitiers fermentés, Produits à tartiner, Fromages, Produits à tartiner salés, Fromages de vache, Frais, Fromages pasteurisés, Fromages à tartiner, Fromages à la crème",
           "categories_hierarchy": [
             "en:dairies",
@@ -11177,9 +10522,7 @@
             "ciqual_food_name:fr": "Fromage -aliment moyen-"
           },
           "checkers_tags": [],
-          "ciqual_food_name_tags": [
-            "cheese-average"
-          ],
+          "ciqual_food_name_tags": ["cheese-average"],
           "cities_tags": [],
           "code": "7622300685782",
           "codes_tags": [
@@ -11226,19 +10569,9 @@
           ],
           "countries": "Belgium, France, Switzerland, en:morocco",
           "countries_beforescanbot": "Belgique,France,Suisse",
-          "countries_hierarchy": [
-            "en:belgium",
-            "en:france",
-            "en:morocco",
-            "en:switzerland"
-          ],
+          "countries_hierarchy": ["en:belgium", "en:france", "en:morocco", "en:switzerland"],
           "countries_lc": "en",
-          "countries_tags": [
-            "en:belgium",
-            "en:france",
-            "en:morocco",
-            "en:switzerland"
-          ],
+          "countries_tags": ["en:belgium", "en:france", "en:morocco", "en:switzerland"],
           "created_t": 1401380673,
           "creator": "openfoodfacts-contributors",
           "data_quality_bugs_tags": [],
@@ -11322,9 +10655,7 @@
             "app-macrofactor",
             "app-caloriecounterapp"
           ],
-          "debug_param_sorted_langs": [
-            "fr"
-          ],
+          "debug_param_sorted_langs": ["fr"],
           "ecoscore_data": {
             "adjustments": {
               "origins_of_ingredients": {
@@ -11338,12 +10669,8 @@
                 ],
                 "epi_score": 0,
                 "epi_value": -5,
-                "origins_from_categories": [
-                  "en:unknown"
-                ],
-                "origins_from_origins_field": [
-                  "en:unknown"
-                ],
+                "origins_from_categories": ["en:unknown"],
+                "origins_from_origins_field": ["en:unknown"],
                 "transportation_score": 0,
                 "transportation_scores": {
                   "ad": 0,
@@ -11783,17 +11110,8 @@
           },
           "ecoscore_grade": "d",
           "ecoscore_score": 39,
-          "ecoscore_tags": [
-            "d"
-          ],
-          "editors": [
-            "",
-            "remilk",
-            "tacite",
-            "ana",
-            "jacob80",
-            "naudinsylvain"
-          ],
+          "ecoscore_tags": ["d"],
+          "editors": ["", "remilk", "tacite", "ana", "jacob80", "naudinsylvain"],
           "editors_tags": [
             "ana",
             "date-limite-app",
@@ -11830,20 +11148,11 @@
           "emb_codes": "DE NI 12060 EC",
           "emb_codes_20141016": "DE NI 060 EG",
           "emb_codes_orig": "DE NI 12060 EC",
-          "emb_codes_tags": [
-            "de-ni-12060-ec"
-          ],
-          "entry_dates_tags": [
-            "2014-05-29",
-            "2014-05",
-            "2014"
-          ],
+          "emb_codes_tags": ["de-ni-12060-ec"],
+          "entry_dates_tags": ["2014-05-29", "2014-05", "2014"],
           "expiration_date": "05/05/2015",
           "food_groups": "en:cheese",
-          "food_groups_tags": [
-            "en:milk-and-dairy-products",
-            "en:cheese"
-          ],
+          "food_groups_tags": ["en:milk-and-dairy-products", "en:cheese"],
           "fruits-vegetables-nuts_100g_estimate": 0,
           "generic_name": "Fromage à pâte fraîche, au lait pasteurisé de vache, à tartiner et cuisiner",
           "generic_name_fr": "Fromage à pâte fraîche, au lait pasteurisé de vache, à tartiner et cuisiner",
@@ -12637,17 +11946,9 @@
             }
           ],
           "ingredients_analysis": {
-            "en:non-vegan": [
-              "en:whole-milk",
-              "en:cream",
-              "en:whey-permeate"
-            ],
-            "en:vegan-status-unknown": [
-              "fr:preparation-de-proteines-de-lait"
-            ],
-            "en:vegetarian-status-unknown": [
-              "fr:preparation-de-proteines-de-lait"
-            ]
+            "en:non-vegan": ["en:whole-milk", "en:cream", "en:whey-permeate"],
+            "en:vegan-status-unknown": ["fr:preparation-de-proteines-de-lait"],
+            "en:vegetarian-status-unknown": ["fr:preparation-de-proteines-de-lait"]
           },
           "ingredients_analysis_tags": [
             "en:palm-oil-free",
@@ -12743,10 +12044,7 @@
           ],
           "ingredients_lc": "fr",
           "ingredients_n": 9,
-          "ingredients_n_tags": [
-            "9",
-            "1-10"
-          ],
+          "ingredients_n_tags": ["9", "1-10"],
           "ingredients_non_nutritive_sweeteners_n": 0,
           "ingredients_original_tags": [
             "en:whole-milk",
@@ -12835,27 +12133,11 @@
             "en": 2,
             "fr": 7
           },
-          "languages_hierarchy": [
-            "en:english",
-            "en:french"
-          ],
-          "languages_tags": [
-            "en:english",
-            "en:french",
-            "en:2",
-            "en:multilingual"
-          ],
-          "last_edit_dates_tags": [
-            "2026-02-25",
-            "2026-02",
-            "2026"
-          ],
+          "languages_hierarchy": ["en:english", "en:french"],
+          "languages_tags": ["en:english", "en:french", "en:2", "en:multilingual"],
+          "last_edit_dates_tags": ["2026-02-25", "2026-02", "2026"],
           "last_editor": "municorn-calorie-counter-app",
-          "last_image_dates_tags": [
-            "2025-03-10",
-            "2025-03",
-            "2025"
-          ],
+          "last_image_dates_tags": ["2025-03-10", "2025-03", "2025"],
           "last_image_t": 1741605346,
           "last_modified_by": "municorn-calorie-counter-app",
           "last_modified_t": 1771994478,
@@ -12900,29 +12182,15 @@
           "nova_groups": "4",
           "nova_groups_markers": {
             "3": [
-              [
-                "categories",
-                "en:cheeses"
-              ],
-              [
-                "ingredients",
-                "en:salt"
-              ]
+              ["categories", "en:cheeses"],
+              ["ingredients", "en:salt"]
             ],
             "4": [
-              [
-                "additives",
-                "en:e412"
-              ],
-              [
-                "ingredients",
-                "en:whey"
-              ]
+              ["additives", "en:e412"],
+              ["ingredients", "en:whey"]
             ]
           },
-          "nova_groups_tags": [
-            "en:4-ultra-processed-food-and-drink-products"
-          ],
+          "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
           "nucleotides_prev_tags": [],
           "nucleotides_tags": [],
           "nutrient_levels": {
@@ -13116,11 +12384,7 @@
                 "is_water": 0,
                 "negative_points": 16,
                 "negative_points_max": 55,
-                "positive_nutrients": [
-                  "proteins",
-                  "fiber",
-                  "fruits_vegetables_legumes"
-                ],
+                "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
                 "positive_points": 2,
                 "positive_points_max": 17
               },
@@ -13133,12 +12397,8 @@
               "score": 14
             }
           },
-          "nutriscore_2021_tags": [
-            "d"
-          ],
-          "nutriscore_2023_tags": [
-            "d"
-          ],
+          "nutriscore_2021_tags": ["d"],
+          "nutriscore_2023_tags": ["d"],
           "nutriscore_data": {
             "components": {
               "negative": [
@@ -13205,11 +12465,7 @@
             "is_water": 0,
             "negative_points": 16,
             "negative_points_max": 55,
-            "positive_nutrients": [
-              "proteins",
-              "fiber",
-              "fruits_vegetables_legumes"
-            ],
+            "positive_nutrients": ["proteins", "fiber", "fruits_vegetables_legumes"],
             "positive_points": 2,
             "positive_points_max": 17,
             "score": 14
@@ -13217,18 +12473,14 @@
           "nutriscore_grade": "d",
           "nutriscore_score": 14,
           "nutriscore_score_opposite": -14,
-          "nutriscore_tags": [
-            "d"
-          ],
+          "nutriscore_tags": ["d"],
           "nutriscore_version": "2023",
           "nutrition_data": "on",
           "nutrition_data_per": "100g",
           "nutrition_data_prepared_per": "100g",
           "nutrition_grade_fr": "d",
           "nutrition_grades": "d",
-          "nutrition_grades_tags": [
-            "d"
-          ],
+          "nutrition_grades_tags": ["d"],
           "nutrition_score_beverage": 0,
           "nutrition_score_debug": "",
           "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -13247,35 +12499,14 @@
           "other_nutritional_substances_prev_tags": [],
           "other_nutritional_substances_tags": [],
           "packaging": "Plastique,Frais,Couvercle,Opercule,Barquette",
-          "packaging_hierarchy": [
-            "en:plastic",
-            "en:fresh",
-            "en:lid",
-            "en:seal",
-            "en:tray"
-          ],
+          "packaging_hierarchy": ["en:plastic", "en:fresh", "en:lid", "en:seal", "en:tray"],
           "packaging_lc": "fr",
-          "packaging_materials_tags": [
-            "en:aluminium",
-            "en:pp-5-polypropylene"
-          ],
+          "packaging_materials_tags": ["en:aluminium", "en:pp-5-polypropylene"],
           "packaging_old": "Plastique, Frais, Couvercle, Opercule, Barquette",
           "packaging_old_before_taxonomization": "Frais,Barquette,Couvercle,Plastique,Opercule,frais",
-          "packaging_recycling_tags": [
-            "en:recycle-in-sorting-bin"
-          ],
-          "packaging_shapes_tags": [
-            "en:lid",
-            "en:seal",
-            "en:tray"
-          ],
-          "packaging_tags": [
-            "en:plastic",
-            "en:fresh",
-            "en:lid",
-            "en:seal",
-            "en:tray"
-          ],
+          "packaging_recycling_tags": ["en:recycle-in-sorting-bin"],
+          "packaging_shapes_tags": ["en:lid", "en:seal", "en:tray"],
+          "packaging_tags": ["en:plastic", "en:fresh", "en:lid", "en:seal", "en:tray"],
           "packaging_text": "",
           "packaging_text_fr": "",
           "packagings": [
@@ -13336,15 +12567,9 @@
             "epfoodeye"
           ],
           "pnns_groups_1": "Milk and dairy products",
-          "pnns_groups_1_tags": [
-            "milk-and-dairy-products",
-            "known"
-          ],
+          "pnns_groups_1_tags": ["milk-and-dairy-products", "known"],
           "pnns_groups_2": "Cheese",
-          "pnns_groups_2_tags": [
-            "cheese",
-            "known"
-          ],
+          "pnns_groups_2_tags": ["cheese", "known"],
           "popularity_key": 24999000294,
           "popularity_tags": [
             "top-5000-scans-2019",
@@ -13774,10 +12999,7 @@
           "product_quantity_unit": "g",
           "product_type": "food",
           "purchase_places": "Lyon,France",
-          "purchase_places_tags": [
-            "lyon",
-            "france"
-          ],
+          "purchase_places_tags": ["lyon", "france"],
           "quantity": "300 g",
           "removed_countries_tags": [],
           "rev": 146,
@@ -13843,11 +13065,7 @@
             "en:photos-uploaded"
           ],
           "stores": "Super U,Magasins U,carrefour.fr",
-          "stores_tags": [
-            "super-u",
-            "magasins-u",
-            "carrefour-fr"
-          ],
+          "stores_tags": ["super-u", "magasins-u", "carrefour-fr"],
           "taxonomies_enhancer_tags": [
             "ingredients-taxonomy-between-carob-seed-flour-id-en-carob-seed-flour-and-gomme-guar-id-en-e412-should-be-same-id"
           ],
@@ -13864,12 +13082,8 @@
           "url": "https://world.openfoodfacts.org/product/7622300685782/philadephia-original-philadelphia",
           "vitamins_prev_tags": [],
           "vitamins_tags": [],
-          "weighers_tags": [
-            "tacite"
-          ],
-          "weighters_tags": [
-            "tacite"
-          ]
+          "weighers_tags": ["tacite"],
+          "weighters_tags": ["tacite"]
         }
       ],
       "skip": 0
@@ -13897,27 +13111,17 @@
         ],
         "added_countries_tags": [],
         "additives_n": 1,
-        "additives_original_tags": [
-          "en:e452"
-        ],
-        "additives_tags": [
-          "en:e452"
-        ],
+        "additives_original_tags": ["en:e452"],
+        "additives_tags": ["en:e452"],
         "allergens": "",
         "allergens_from_ingredients": "en:milk, en:milk, en:milk, MELK, BOTER, MELK, BOTER",
         "allergens_from_user": "(fr) ",
-        "allergens_hierarchy": [
-          "en:milk"
-        ],
-        "allergens_tags": [
-          "en:milk"
-        ],
+        "allergens_hierarchy": ["en:milk"],
+        "allergens_tags": ["en:milk"],
         "amino_acids_tags": [],
         "brands": "La Vache Qui Rit",
         "brands_old": "La vache qui rit",
-        "brands_tags": [
-          "la-vache-qui-rit"
-        ],
+        "brands_tags": ["la-vache-qui-rit"],
         "categories": "Kaas, Smeerkaas, roomkaas, cottage cheese, Smeerkaas",
         "categories_hierarchy": [
           "en:dairies",
@@ -13966,23 +13170,12 @@
         "compared_to_category": "en:cottage-cheeses",
         "complete": 0,
         "completeness": 0.675,
-        "correctors_tags": [
-          "macrofactor",
-          "plantcheck",
-          "louisdeconinck",
-          "scanbot"
-        ],
+        "correctors_tags": ["macrofactor", "plantcheck", "louisdeconinck", "scanbot"],
         "countries": "Belgium, en:netherlands",
         "countries_beforescanbot": "Belgium",
-        "countries_hierarchy": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_hierarchy": ["en:belgium", "en:netherlands"],
         "countries_lc": "en",
-        "countries_tags": [
-          "en:belgium",
-          "en:netherlands"
-        ],
+        "countries_tags": ["en:belgium", "en:netherlands"],
         "created_t": 1676576397,
         "creator": "kiliweb",
         "data_quality_bugs_tags": [],
@@ -14092,12 +13285,8 @@
               ],
               "epi_score": 0,
               "epi_value": -5,
-              "origins_from_categories": [
-                "en:unknown"
-              ],
-              "origins_from_origins_field": [
-                "en:unknown"
-              ],
+              "origins_from_categories": ["en:unknown"],
+              "origins_from_origins_field": ["en:unknown"],
               "transportation_score": 0,
               "transportation_scores": {
                 "ad": 0,
@@ -14353,9 +13542,7 @@
           "status": "unknown"
         },
         "ecoscore_grade": "unknown",
-        "ecoscore_tags": [
-          "unknown"
-        ],
+        "ecoscore_tags": ["unknown"],
         "editors_tags": [
           "annelotte",
           "kiliweb",
@@ -14365,11 +13552,7 @@
           "scanbot",
           "yuka.sY2b0xO6T85zoF3NwEKvlmUcTd_nuyzEJRDhnlC1_NvULaHLR9QuzabcGqo"
         ],
-        "entry_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "entry_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "food_groups_tags": [],
         "id": "3073781195972",
         "image_front_small_url": "https://images.openfoodfacts.org/images/products/307/378/119/5972/front_fr.3.200.jpg",
@@ -14559,11 +13742,7 @@
             "en:milk-proteins"
           ]
         },
-        "ingredients_analysis_tags": [
-          "en:palm-oil-free",
-          "en:non-vegan",
-          "en:vegetarian"
-        ],
+        "ingredients_analysis_tags": ["en:palm-oil-free", "en:non-vegan", "en:vegetarian"],
         "ingredients_hierarchy": [
           "en:milk",
           "en:dairy",
@@ -14579,10 +13758,7 @@
         ],
         "ingredients_lc": "nl",
         "ingredients_n": 7,
-        "ingredients_n_tags": [
-          "7",
-          "1-10"
-        ],
+        "ingredients_n_tags": ["7", "1-10"],
         "ingredients_non_nutritive_sweeteners_n": 0,
         "ingredients_original_tags": [
           "en:milk",
@@ -14634,13 +13810,9 @@
         "interface_version_modified": "20150316.jqm2",
         "known_ingredients_n": 7,
         "labels": "en:vegetarian",
-        "labels_hierarchy": [
-          "en:vegetarian"
-        ],
+        "labels_hierarchy": ["en:vegetarian"],
         "labels_lc": "nl",
-        "labels_tags": [
-          "en:vegetarian"
-        ],
+        "labels_tags": ["en:vegetarian"],
         "lang": "fr",
         "languages": {
           "en:dutch": 2,
@@ -14652,29 +13824,11 @@
           "fr": 3,
           "nl": 2
         },
-        "languages_hierarchy": [
-          "en:dutch",
-          "en:english",
-          "en:french"
-        ],
-        "languages_tags": [
-          "en:dutch",
-          "en:english",
-          "en:french",
-          "en:3",
-          "en:multilingual"
-        ],
-        "last_edit_dates_tags": [
-          "2026-02-16",
-          "2026-02",
-          "2026"
-        ],
+        "languages_hierarchy": ["en:dutch", "en:english", "en:french"],
+        "languages_tags": ["en:dutch", "en:english", "en:french", "en:3", "en:multilingual"],
+        "last_edit_dates_tags": ["2026-02-16", "2026-02", "2026"],
         "last_editor": "scanbot",
-        "last_image_dates_tags": [
-          "2023-02-16",
-          "2023-02",
-          "2023"
-        ],
+        "last_image_dates_tags": ["2023-02-16", "2023-02", "2023"],
         "last_image_t": 1676576401,
         "last_modified_by": "scanbot",
         "last_modified_t": 1771272685,
@@ -14704,26 +13858,13 @@
         "nova_group_debug": "",
         "nova_groups": "4",
         "nova_groups_markers": {
-          "3": [
-            [
-              "ingredients",
-              "en:butter"
-            ]
-          ],
+          "3": [["ingredients", "en:butter"]],
           "4": [
-            [
-              "additives",
-              "en:e452"
-            ],
-            [
-              "ingredients",
-              "en:milk-proteins"
-            ]
+            ["additives", "en:e452"],
+            ["ingredients", "en:milk-proteins"]
           ]
         },
-        "nova_groups_tags": [
-          "en:4-ultra-processed-food-and-drink-products"
-        ],
+        "nova_groups_tags": ["en:4-ultra-processed-food-and-drink-products"],
         "nucleotides_tags": [],
         "nutrient_levels": {
           "fat": "moderate",
@@ -14887,10 +14028,7 @@
               "is_water": 0,
               "negative_points": 33,
               "negative_points_max": 55,
-              "positive_nutrients": [
-                "fiber",
-                "fruits_vegetables_legumes"
-              ],
+              "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
               "positive_points": 0,
               "positive_points_max": 10
             },
@@ -14901,12 +14039,8 @@
             "score": 33
           }
         },
-        "nutriscore_2021_tags": [
-          "e"
-        ],
-        "nutriscore_2023_tags": [
-          "e"
-        ],
+        "nutriscore_2021_tags": ["e"],
+        "nutriscore_2023_tags": ["e"],
         "nutriscore_data": {
           "components": {
             "negative": [
@@ -14966,10 +14100,7 @@
           "is_water": 0,
           "negative_points": 33,
           "negative_points_max": 55,
-          "positive_nutrients": [
-            "fiber",
-            "fruits_vegetables_legumes"
-          ],
+          "positive_nutrients": ["fiber", "fruits_vegetables_legumes"],
           "positive_points": 0,
           "positive_points_max": 10,
           "score": 33
@@ -14977,18 +14108,14 @@
         "nutriscore_grade": "e",
         "nutriscore_score": 33,
         "nutriscore_score_opposite": -33,
-        "nutriscore_tags": [
-          "e"
-        ],
+        "nutriscore_tags": ["e"],
         "nutriscore_version": "2023",
         "nutrition_data": "on",
         "nutrition_data_per": "100g",
         "nutrition_data_prepared_per": "100g",
         "nutrition_grade_fr": "e",
         "nutrition_grades": "e",
-        "nutrition_grades_tags": [
-          "e"
-        ],
+        "nutrition_grades_tags": ["e"],
         "nutrition_score_beverage": 0,
         "nutrition_score_debug": "",
         "nutrition_score_warning_fruits_vegetables_legumes_estimate_from_ingredients": 1,
@@ -15002,19 +14129,11 @@
         "packaging_shapes_tags": [],
         "packagings": [],
         "packagings_materials": {},
-        "photographers_tags": [
-          "kiliweb"
-        ],
+        "photographers_tags": ["kiliweb"],
         "pnns_groups_1": "unknown",
-        "pnns_groups_1_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_1_tags": ["unknown", "missing-association"],
         "pnns_groups_2": "unknown",
-        "pnns_groups_2_tags": [
-          "unknown",
-          "missing-association"
-        ],
+        "pnns_groups_2_tags": ["unknown", "missing-association"],
         "popularity_key": 24900000011,
         "popularity_tags": [
           "top-75-percent-scans-2023",
@@ -15141,9 +14260,7 @@
           "en:photos-uploaded"
         ],
         "stores": "Albert Heijn",
-        "stores_tags": [
-          "albert-heijn"
-        ],
+        "stores_tags": ["albert-heijn"],
         "traces": "",
         "traces_from_ingredients": "",
         "traces_from_user": "(fr) ",

@@ -572,7 +572,10 @@ export function FoodMealDetailsModal({
             selectedDate.getFullYear(),
             selectedDate.getMonth(),
             selectedDate.getDate(),
-            0, 0, 0, 0
+            0,
+            0,
+            0,
+            0
           );
 
           await Promise.all([

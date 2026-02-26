@@ -54,7 +54,7 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
     macros.protein.goal >= 100 || macros.carbs.goal >= 100 || macros.fat.goal >= 100;
 
   // Check if ANY macro would truncate - if so, use vertical layout for ALL
-  const needsVerticalLayout = 
+  const needsVerticalLayout =
     willTruncate(macros.protein.amount, macros.protein.goal, useCompactMacros) ||
     willTruncate(macros.carbs.amount, macros.carbs.goal, useCompactMacros) ||
     willTruncate(macros.fat.amount, macros.fat.goal, useCompactMacros);

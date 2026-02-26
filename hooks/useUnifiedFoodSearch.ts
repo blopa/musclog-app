@@ -1,17 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   MappedNutriments,
   SearchResultProduct,
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
-import {
-  getNutrimentsFromV3Nutrition,
-  getNutrimentsWithFallback,
-  mapOpenFoodFactsProduct,
-} from '../utils/openFoodFactsMapper';
+import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
 import { useFoods } from './useFoods';
 
 // Unified search result type
@@ -44,7 +40,6 @@ export interface UseUnifiedFoodSearchProps {
   debounceMs?: number;
 }
 
-// TODO: gracefully fail this hook
 export function useUnifiedFoodSearch({
   searchTerm,
   enabled = true,
@@ -56,6 +51,7 @@ export function useUnifiedFoodSearch({
 }: UseUnifiedFoodSearchProps) {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // API pagination states
   const [apiOffset, setApiOffset] = useState(0);
@@ -107,31 +103,52 @@ export function useUnifiedFoodSearch({
   } = useQuery({
     queryKey: ['food-search-api', debouncedSearchTerm, apiOffset],
     queryFn: async () => {
-      // TODO: implement debounce in a way that it will cancel the previous request if the user types more while the request is still pending
-      if (!includeAPI || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
-        return [];
+      // Cancel previous request if still pending
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
 
-      // v2 API doesn't support text search, so we use the v1 search endpoint directly
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+      // Create new abort controller for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
 
-      const response = await fetch(url);
+      try {
+        if (!includeAPI || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
+          return [];
+        }
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch from Open Food Facts');
+        // v2 API doesn't support text search, so we use the v1 search endpoint directly
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+
+        const response = await fetch(url, { signal: abortController.signal });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch from Open Food Facts');
+        }
+
+        const result = await response.json();
+
+        if (!result.products || result.products.length === 0) {
+          return [];
+        }
+
+        const products: SearchResultProduct[] = result.products.filter(
+          (product: SearchResultProduct) => product.product_name
+        );
+
+        return products;
+      } catch (error) {
+        // Don't throw error for aborted requests
+        if (error instanceof Error && error.name === 'AbortError') {
+          return [];
+        }
+        throw error;
+      } finally {
+        // Clean up abort controller if this is the current request
+        if (abortControllerRef.current === abortController) {
+          abortControllerRef.current = null;
+        }
       }
-
-      const result = await response.json();
-
-      if (!result.products || result.products.length === 0) {
-        return [];
-      }
-
-      const products: SearchResultProduct[] = result.products.filter(
-        (product: SearchResultProduct) => product.product_name
-      );
-
-      return products;
     },
     enabled:
       enabled && includeAPI && Boolean(debouncedSearchTerm && debouncedSearchTerm.length >= 2),
@@ -271,6 +288,15 @@ export function useUnifiedFoodSearch({
   const isLoading = isLoadingLocal; // Only show loading for local search
   const isApiLoading = isLoadingAPI;
   const hasApiResults = apiResultsFormatted.length > 0;
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return {
     results: combinedResults,
