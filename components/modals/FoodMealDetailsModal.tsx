@@ -88,6 +88,7 @@ export function FoodMealDetailsModal({
     null
   );
   const [localFood, setLocalFood] = useState<Food | null>(null);
+  const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
 
   // TODO: move this to a helper function to avoid nested ternary
   const mode = meal
@@ -109,6 +110,10 @@ export function FoodMealDetailsModal({
 
   // Check local database for food with barcode first
   useEffect(() => {
+    // Reset checking state when barcode changes
+    setHasCheckedLocalFood(false);
+    setLocalFood(null);
+
     const checkLocalFood = async () => {
       if (barcode && !food && !meal && !productFromSearch) {
         try {
@@ -123,14 +128,17 @@ export function FoodMealDetailsModal({
       } else {
         setLocalFood(null);
       }
+      setHasCheckedLocalFood(true);
     };
 
     checkLocalFood();
   }, [barcode, food, meal, productFromSearch, onBarcodeLookupComplete]);
 
-  // Fetch detailed product data only when barcode is provided, no local food, and no preloaded search product
+  // Fetch detailed product data only when barcode is provided, no local food, no preloaded search product, and we've checked local DB
   const barcodeForHook =
-    barcode && !food && !meal && !productFromSearch && !localFood ? barcode : null;
+    barcode && !food && !meal && !productFromSearch && !localFood && hasCheckedLocalFood
+      ? barcode
+      : null;
   const { data: productDetails } = useFoodProductDetails(barcodeForHook);
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
