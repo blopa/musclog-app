@@ -49,6 +49,7 @@ import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { MealEstimationModal } from '../../components/MealEstimationModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
@@ -222,6 +223,9 @@ export default function ModalsTestScreen() {
 
   // Nutrition Goal Data Modal
   const [isNutritionGoalDataVisible, setIsNutritionGoalDataVisible] = useState(false);
+
+  // Meal Estimation Modal
+  const [isMealEstimationVisible, setIsMealEstimationVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1074,6 +1078,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Meal Estimation Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Meal Estimation Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for displaying AI-powered meal estimation with identified food items and nutritional breakdown.
+            </Text>
+            <Button
+              label="Open Meal Estimation Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsMealEstimationVisible(true)}
+            />
+          </View>
+
           {/* Nutrition Goal Data Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -1580,6 +1598,12 @@ export default function ModalsTestScreen() {
       <NutritionGoalDataModal
         visible={isNutritionGoalDataVisible}
         onClose={() => setIsNutritionGoalDataVisible(false)}
+      />
+
+      <MealEstimationModal
+        visible={isMealEstimationVisible}
+        onClose={() => setIsMealEstimationVisible(false)}
+        mealImage="https://example.com/meal.jpg"
       />
     </SafeAreaView>
   );

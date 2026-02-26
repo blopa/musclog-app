@@ -331,6 +331,12 @@
       "cameraError": "Camera error. Please try again.",
       "uploadFromGallery": "Choose from gallery"
     },
+    "mealEstimation": {
+      "identifiedItems": "Identified Items",
+      "addItem": "Add Item",
+      "confirmAndLog": "Confirm & Log Meal",
+      "retake": "Retake"
+    },
     "aiNutritionContext": {
       "title": "Add Context for AI",
       "describeYourMeal": "DESCRIBE YOUR MEAL",
