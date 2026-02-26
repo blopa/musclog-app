@@ -33,15 +33,12 @@ export async function decryptOptionalString(cipher: string | undefined | null): 
 /** Encrypt a number (including 0). */
 export async function encryptNumber(value: number): Promise<string> {
   const text = String(value);
-  console.log('encryptNumber - input value:', value, 'as text:', text);
   if (text === '' || (text !== '0' && Number.isNaN(Number(text)))) {
-    console.log('encryptNumber - returning empty string for:', text);
     return '';
   }
+
   const key = await getEncryptionKey();
-  const result = encrypt(text, key);
-  console.log('encryptNumber - encrypted result for', text, ':', result);
-  return result;
+  return encrypt(text, key);
 }
 
 /** Decrypt to number. Returns 0 if empty or invalid. Handles legacy plaintext in DB. */

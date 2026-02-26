@@ -94,9 +94,7 @@ export default function NewExerciseTransitionScreen() {
         const targetReps =
           firstSet?.reps != null && firstSet.reps > 0 ? String(firstSet.reps) : '—';
 
-        const weights = sets
-          .map((s) => s.weight)
-          .filter((w): w is number => w != null && w > 0);
+        const weights = sets.map((s) => s.weight).filter((w): w is number => w != null && w > 0);
         const unit = t(weightUnitKey);
         let targetWeight: string;
         if (weights.length === 0) {

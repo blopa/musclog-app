@@ -152,18 +152,21 @@ export default function CardsTestScreen() {
               protein: {
                 percentage: 40,
                 amount: '120g',
+                goal: 150,
                 color: theme.colors.status.emeraldLight,
                 progressColor: theme.colors.status.indigo,
               },
               carbs: {
                 percentage: 50,
                 amount: '200g',
+                goal: 250,
                 color: theme.colors.status.indigo,
                 progressColor: theme.colors.status.emeraldLight,
               },
               fat: {
                 percentage: 10,
                 amount: '50g',
+                goal: 80,
                 color: theme.colors.status.error,
                 progressColor: theme.colors.status.error,
               },
@@ -235,6 +238,7 @@ export default function CardsTestScreen() {
               name="Protein"
               percentage={40}
               amount="120g"
+              goal={150}
               color={theme.colors.macros.protein.text}
               progressColor={theme.colors.macros.protein.bg}
             />
@@ -242,6 +246,7 @@ export default function CardsTestScreen() {
               name="Carbs"
               percentage={45}
               amount="200g"
+              goal={250}
               color={theme.colors.macros.carbs.text}
               progressColor={theme.colors.macros.carbs.bg}
             />
@@ -249,6 +254,7 @@ export default function CardsTestScreen() {
               name="Fat"
               percentage={15}
               amount="50g"
+              goal={80}
               color={theme.colors.macros.fat.text}
               progressColor={theme.colors.macros.fat.bg}
             />

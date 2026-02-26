@@ -35,7 +35,11 @@ export function MacroCard({
         </View>
         <View className="mb-3 flex-row flex-nowrap items-baseline gap-1">
           <Text
-            className={compact ? 'text-xl font-bold text-text-primary' : 'text-2xl font-bold text-text-primary'}
+            className={
+              compact
+                ? 'text-xl font-bold text-text-primary'
+                : 'text-2xl font-bold text-text-primary'
+            }
             numberOfLines={1}
           >
             {amount}

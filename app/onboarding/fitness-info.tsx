@@ -96,8 +96,6 @@ export default function FitnessInfo() {
   const handleSave = async (data: FitnessDetails) => {
     setIsSaving(true);
     try {
-      console.log('handleSave - starting with data:', data);
-      
       // Get or ensure user exists
       let user = await UserService.getCurrentUser();
       if (!user) {
@@ -136,20 +134,13 @@ export default function FitnessInfo() {
         });
       }
 
-      // Save weight and height to user_metrics (if provided)
-      // Use current date/time for the metric date
-      const now = Date.now();
       const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
-
-      console.log('handleSave - saving weight:', data.weight, 'height:', data.height);
 
       if (data.weight && parseFloat(data.weight) > 0) {
         const weightValue = parseFloat(data.weight);
         const weightUnit = data.units === 'imperial' ? 'lbs' : 'kg';
-        console.log('handleSave - weightValue:', weightValue, 'weightUnit:', weightUnit);
-        console.log('handleSave - weightValue type:', typeof weightValue, 'isNaN:', Number.isNaN(weightValue));
-        
+
         const existingWeight = await UserMetricService.getMetricsHistory(
           'weight',
           { startDate: currentDate, endDate: currentDate },
@@ -161,20 +152,14 @@ export default function FitnessInfo() {
             unit: weightUnit,
             date: currentDate,
           });
-          console.log('handleSave - updated existing weight metric');
         } else {
-          const createdWeight = await UserMetricService.createMetric({
+          await UserMetricService.createMetric({
             type: 'weight',
             value: weightValue,
             unit: weightUnit,
             date: currentDate,
             timezone,
           });
-          console.log('handleSave - created new weight metric:', createdWeight);
-          
-          // Immediately try to decrypt it to verify
-          const decrypted = await createdWeight.getDecrypted();
-          console.log('handleSave - decrypted weight after creation:', decrypted);
         }
       }
 
@@ -192,7 +177,6 @@ export default function FitnessInfo() {
             unit: heightUnit,
             date: currentDate,
           });
-          console.log('handleSave - updated existing height metric');
         } else {
           await UserMetricService.createMetric({
             type: 'height',
@@ -201,7 +185,6 @@ export default function FitnessInfo() {
             date: currentDate,
             timezone,
           });
-          console.log('handleSave - created new height metric');
         }
       }
 
@@ -249,30 +232,27 @@ export default function FitnessInfo() {
 
   const handleFloatingSave = async () => {
     // Use currentFormData if available and complete, otherwise fall back to initialData
-    const dataToSave = currentFormData && 
+    const dataToSave =
+      currentFormData &&
       currentFormData.units &&
       currentFormData.weight &&
       currentFormData.height &&
       currentFormData.fitnessGoal &&
       currentFormData.activityLevel &&
       currentFormData.experience
-        ? currentFormData 
+        ? currentFormData
         : initialData;
 
-    console.log('handleFloatingSave - dataToSave:', dataToSave);
-    console.log('handleFloatingSave - currentFormData:', currentFormData);
-    console.log('handleFloatingSave - initialData:', initialData);
-
-    if (dataToSave && 
-        dataToSave.units &&
-        dataToSave.weight &&
-        dataToSave.height &&
-        dataToSave.fitnessGoal &&
-        dataToSave.activityLevel &&
-        dataToSave.experience) {
+    if (
+      dataToSave &&
+      dataToSave.units &&
+      dataToSave.weight &&
+      dataToSave.height &&
+      dataToSave.fitnessGoal &&
+      dataToSave.activityLevel &&
+      dataToSave.experience
+    ) {
       await handleSave(dataToSave as FitnessDetails);
-    } else {
-      console.log('handleFloatingSave - insufficient data to save');
     }
   };
 
