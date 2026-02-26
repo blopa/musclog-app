@@ -87,6 +87,7 @@ export function FoodMealDetailsModal({
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
   );
+  const [localFood, setLocalFood] = useState<Food | null>(null);
 
   // TODO: move this to a helper function to avoid nested ternary
   const mode = meal
@@ -106,8 +107,30 @@ export function FoodMealDetailsModal({
     }
   }, [visible, initialDate, foodLog]);
 
+  // Check local database for food with barcode first
+  useEffect(() => {
+    const checkLocalFood = async () => {
+      if (barcode && !food && !meal && !productFromSearch) {
+        try {
+          const foundFood = await FoodService.getFoodByBarcode(barcode);
+          if (foundFood) {
+            setLocalFood(foundFood);
+            onBarcodeLookupComplete?.();
+          }
+        } catch (error) {
+          console.error('Error checking local food by barcode:', error);
+        }
+      } else {
+        setLocalFood(null);
+      }
+    };
+
+    checkLocalFood();
+  }, [barcode, food, meal, productFromSearch, onBarcodeLookupComplete]);
+
   // Fetch detailed product data only when barcode is provided, no local food, and no preloaded search product
-  const barcodeForHook = barcode && !food && !meal && !productFromSearch ? barcode : null;
+  const barcodeForHook =
+    barcode && !food && !meal && !productFromSearch && !localFood ? barcode : null;
   const { data: productDetails } = useFoodProductDetails(barcodeForHook);
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
@@ -151,6 +174,14 @@ export function FoodMealDetailsModal({
       return;
     }
 
+    if (localFood) {
+      // Local food found by barcode lookup, show details
+      setIsFoodDetailsModalVisible(true);
+      setServingSize(100);
+      setIsFavorite(localFood.isFavorite);
+      return;
+    }
+
     const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
     if (productFromSearch?.product_name && nutriments) {
@@ -173,6 +204,7 @@ export function FoodMealDetailsModal({
     productDetails,
     productFromSearch,
     food,
+    localFood,
     meal,
     getDefaultServingSize,
     onBarcodeLookupComplete,
@@ -286,16 +318,17 @@ export function FoodMealDetailsModal({
     }
 
     // If we have a local food, use its data directly
-    if (food) {
+    if (food || localFood) {
+      const foodData = food || localFood;
       return {
-        calories: food.calories || 0,
-        protein: food.protein || 0,
-        carbs: food.carbs || 0,
-        fat: food.fat || 0,
-        fiber: food.fiber || 0,
-        sugar: food.micros?.sugar || 0,
-        saturatedFat: food.micros?.saturatedFat || 0,
-        sodium: food.micros?.sodium || 0,
+        calories: foodData!.calories || 0,
+        protein: foodData!.protein || 0,
+        carbs: foodData!.carbs || 0,
+        fat: foodData!.fat || 0,
+        fiber: foodData!.fiber || 0,
+        sugar: foodData!.micros?.sugar || 0,
+        saturatedFat: foodData!.micros?.saturatedFat || 0,
+        sodium: foodData!.micros?.sodium || 0,
       };
     }
 
@@ -382,7 +415,16 @@ export function FoodMealDetailsModal({
       saturatedFat: 0,
       sodium: 0,
     };
-  }, [productDetails, productFromSearch, food, foodLog, foodLogDecrypted, meal, mealNutrients]);
+  }, [
+    productDetails,
+    productFromSearch,
+    food,
+    localFood,
+    foodLog,
+    foodLogDecrypted,
+    meal,
+    mealNutrients,
+  ]);
 
   const nutritionalData = getNutritionalData();
 
@@ -392,8 +434,9 @@ export function FoodMealDetailsModal({
       return meal.name || t('meals.history.unknownMeal');
     }
 
-    if (food) {
-      return food.name || t('food.unknownFood');
+    if (food || localFood) {
+      const foodData = food || localFood;
+      return foodData!.name || t('food.unknownFood');
     }
 
     if (foodLogDecrypted?.loggedFoodName?.trim()) {
@@ -408,7 +451,7 @@ export function FoodMealDetailsModal({
       return productDetails.product.product_name || t('food.unknownFood');
     }
     return t('food.unknownFood');
-  }, [productDetails, productFromSearch, food, foodLogDecrypted, meal, t]);
+  }, [productDetails, productFromSearch, food, localFood, foodLogDecrypted, meal, t]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
@@ -416,8 +459,9 @@ export function FoodMealDetailsModal({
       return meal.description || t('meals.customMeal');
     }
 
-    if (food) {
-      return food.brand || '';
+    if (food || localFood) {
+      const foodData = food || localFood;
+      return foodData!.brand || '';
     }
 
     if (foodLog && !food) {
@@ -454,7 +498,7 @@ export function FoodMealDetailsModal({
       }
     }
     return '';
-  }, [productDetails, productFromSearch, food, foodLog, meal, t]);
+  }, [productDetails, productFromSearch, food, localFood, foodLog, meal, t]);
 
   // Update serving size when product details or search product load
   useEffect(() => {
@@ -606,10 +650,11 @@ export function FoodMealDetailsModal({
         return;
       }
       // Handle local food
-      if (food) {
+      if (food || localFood) {
+        const foodData = food || localFood;
         // Create nutrition log with local food
         const logFoodPromise = NutritionService.logFood(
-          food.id,
+          foodData!.id,
           selectedDate,
           selectedMeal,
           servingSize
@@ -617,8 +662,8 @@ export function FoodMealDetailsModal({
         let foodUpdatePromise = null;
 
         // Update favorite status if needed
-        if (isFavorite && !food.isFavorite) {
-          foodUpdatePromise = food.update((record: any) => {
+        if (isFavorite && !foodData!.isFavorite) {
+          foodUpdatePromise = foodData!.update((record: any) => {
             record.isFavorite = true;
           });
         }
@@ -700,6 +745,7 @@ export function FoodMealDetailsModal({
     meal,
     foodLog,
     food,
+    localFood,
     productFromSearch,
     productDetails,
     nutritionalData.calories,
