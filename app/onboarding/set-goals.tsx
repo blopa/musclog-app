@@ -296,6 +296,7 @@ export default function SetGoals() {
   const calculateAndStorePlan = useCallback(async () => {
     const user = await UserService.getCurrentUser();
     if (!user) {
+      console.log('calculateAndStorePlan - no user found');
       return null;
     }
 
@@ -310,11 +311,19 @@ export default function SetGoals() {
       latestBodyFat?.getDecrypted(),
     ]);
 
+    console.log('calculateAndStorePlan - latestWeight:', latestWeight);
+    console.log('calculateAndStorePlan - latestHeight:', latestHeight);
+    console.log('calculateAndStorePlan - weightDec:', weightDec);
+    console.log('calculateAndStorePlan - heightDec:', heightDec);
+
     const rawWeight = weightDec?.value ?? 0;
     const rawHeight = heightDec?.value ?? 0;
     const rawBodyFat = bodyFatDec?.value;
 
+    console.log('calculateAndStorePlan - rawWeight:', rawWeight, 'rawHeight:', rawHeight);
+
     if (rawWeight <= 0 || rawHeight <= 0) {
+      console.log('calculateAndStorePlan - insufficient weight/height data, returning null');
       return null;
     }
 

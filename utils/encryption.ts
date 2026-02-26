@@ -11,11 +11,14 @@ export const getEncryptionKey = async (
   length = 32,
   storageKey: string = ENCRYPTION_KEY
 ): Promise<string> => {
+  console.log('getEncryptionKey - called, existing key:', encryptionKey ? 'exists' : 'null');
   if (encryptionKey) {
+    console.log('getEncryptionKey - returning cached key');
     return encryptionKey;
   }
 
   const existingEncryptionKey = await AsyncStorage.getItem(storageKey);
+  console.log('getEncryptionKey - key from storage:', existingEncryptionKey ? 'exists' : 'null');
   if (existingEncryptionKey) {
     encryptionKey = existingEncryptionKey;
     return existingEncryptionKey;
@@ -25,6 +28,7 @@ export const getEncryptionKey = async (
   const encryption = CryptoJS.enc.Hex.stringify(randomWords);
   await AsyncStorage.setItem(storageKey, encryption);
   encryptionKey = encryption;
+  console.log('getEncryptionKey - created new key:', encryption);
 
   return encryption;
 };
@@ -34,12 +38,16 @@ export const encryptDatabaseValue = async (
   length = 32,
   storageKey: string = ENCRYPTION_KEY
 ): Promise<string> => {
+  console.log('encryptDatabaseValue - input:', text, 'type:', typeof text);
   if (!text || parseFloat(text) === 0) {
+    console.log('encryptDatabaseValue - returning empty string for:', text);
     return '';
   }
 
   const encryptionKey = await getEncryptionKey(length, storageKey);
-  return encrypt(text, encryptionKey);
+  const result = await encrypt(text, encryptionKey);
+  console.log('encryptDatabaseValue - encrypted result:', result);
+  return result;
 };
 
 export const encrypt = async (text: string, encryptionKey: string): Promise<string> => {
@@ -51,12 +59,16 @@ export const decryptDatabaseValue = async (
   length = 32,
   storageKey: string = ENCRYPTION_KEY
 ): Promise<string> => {
+  console.log('decryptDatabaseValue - input:', cipherText);
   if (!cipherText) {
+    console.log('decryptDatabaseValue - returning empty string, no cipherText');
     return '';
   }
 
   const encryptionKey = await getEncryptionKey(length, storageKey);
-  return decrypt(cipherText, encryptionKey);
+  const result = await decrypt(cipherText, encryptionKey);
+  console.log('decryptDatabaseValue - decrypted result:', result);
+  return result;
 };
 
 export const decrypt = async (
