@@ -35,6 +35,7 @@ export interface UseUnifiedFoodSearchProps {
   debounceMs?: number;
 }
 
+// TODO: gracefully fail this hook
 export function useUnifiedFoodSearch({
   searchTerm,
   enabled = true,
