@@ -81,6 +81,14 @@ export default class NutritionLog extends Model {
     });
   }
 
+  @writer
+  async updateDate(date: number): Promise<void> {
+    await this.update((record) => {
+      record.date = date;
+      record.updatedAt = Date.now();
+    });
+  }
+
   /** Decrypt snapshot fields (logged_*). Use this for display and calculations. */
   async getDecryptedSnapshot(): Promise<DecryptedNutritionLogSnapshot> {
     const [
