@@ -86,7 +86,7 @@ export function DailySummaryCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {calories.consumed.toLocaleString()}
+                {calories.consumed}
               </Text>
 
               <View className="flex-col">
@@ -98,7 +98,7 @@ export function DailySummaryCard({
                     marginTop: theme.spacing.margin.md,
                   }}
                 >
-                  {`/ ${calories.goal.toLocaleString()}`}
+                  {`/ ${calories.goal}`}
                 </Text>
                 <Text
                   className="font-bold uppercase"

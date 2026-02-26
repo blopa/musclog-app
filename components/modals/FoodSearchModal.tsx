@@ -15,6 +15,7 @@ import {
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { FoodPortionService, NutritionService } from '../../database/services';
+import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
 import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
@@ -294,9 +295,21 @@ export function FoodSearchModal({
   const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
   const [suggestedTitle, setSuggestedTitle] = useState('');
-  const [favoriteFoods, setFavoriteFoods] = useState<FoodItem[]>([]);
-  const [favoriteFoodsCount, setFavoriteFoodsCount] = useState(0);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
+
+  const {
+    foods: favoriteFoodsRaw,
+    isLoading: isLoadingFavorites,
+    isLoadingMore: isLoadingMoreFavorites,
+    hasMore: hasMoreFavoriteFoods,
+    loadMore: loadMoreFavoriteFoods,
+    totalCount: favoriteFoodsCount,
+    error: favoriteFoodsError,
+  } = useFavoriteFoods({
+    visible: visible && !searchQuery, // Always load count, but only load foods when not searching
+    initialLimit: 10,
+    batchSize: 10,
+    enableReactivity: true,
+  });
   const {
     meals,
     isLoading: isLoadingMeals,
@@ -416,103 +429,38 @@ export function FoodSearchModal({
     portion100gName,
   ]);
 
-  useEffect(() => {
-    let mounted = true;
-
-    const loadFavoriteFoodsCount = async () => {
-      if (!visible) {
-        if (mounted) {
-          setFavoriteFoodsCount(0);
-        }
-        return;
-      }
-
-      try {
-        const count = await NutritionService.getFavoriteFoodsCount();
-        if (mounted) {
-          setFavoriteFoodsCount(count);
-        }
-      } catch (err) {
-        console.error('Error loading favorite foods count:', err);
-        if (mounted) {
-          setFavoriteFoodsCount(0);
-        }
-      }
-    };
-
-    loadFavoriteFoodsCount();
-
-    return () => {
-      mounted = false;
-    };
-  }, [visible]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const loadFavorites = async () => {
-      if (!visible || activeFilter !== 'myFoods') {
-        if (mounted) {
-          setFavoriteFoods([]);
-        }
-        return;
-      }
-
-      setIsLoadingFavorites(true);
-      try {
-        const favs = await NutritionService.getFavoriteFoods();
-        const mapped = favs.map(
-          (f) =>
-            ({
-              id: f.id,
-              name: f.name ?? '',
-              description: t('foodSearch.foodDescriptionFormat', {
-                brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: Math.round(f.calories ?? 0),
-              }),
-              brand: f.brand,
-              serving_size: portion100gName,
-              calories: f.calories,
-              protein: f.protein,
-              carbs: f.carbs,
-              fat: f.fat,
-              fiber: f.fiber,
-              source: 'local',
-              imageUrl: f.imageUrl ? f.imageUrl : undefined,
-              iconName: f.imageUrl ? undefined : 'utensils-crossed',
-              iconColor: theme.colors.accent.primary,
-              iconBgColor: theme.colors.accent.primary10,
-              _raw: f,
-            }) as FoodItem
-        );
-
-        if (mounted) {
-          setFavoriteFoods(mapped);
-        }
-      } catch (err) {
-        console.error('Error loading favorite foods:', err);
-        if (mounted) {
-          setFavoriteFoods([]);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoadingFavorites(false);
-        }
-      }
-    };
-
-    loadFavorites();
-
-    return () => {
-      mounted = false;
-    };
+  // Memoized mapping of favorite foods to FoodItem format
+  const favoriteFoods = useMemo(() => {
+    return favoriteFoodsRaw.map(
+      (f) =>
+        ({
+          id: f.id,
+          name: f.name ?? '',
+          description: t('foodSearch.foodDescriptionFormat', {
+            brand: f.brand || t('foodSearch.customFoodLabel'),
+            calories: Math.round(f.calories ?? 0),
+          }),
+          brand: f.brand,
+          serving_size: portion100gName,
+          calories: f.calories,
+          protein: f.protein,
+          carbs: f.carbs,
+          fat: f.fat,
+          fiber: f.fiber,
+          source: 'local',
+          imageUrl: f.imageUrl ? f.imageUrl : undefined,
+          iconName: f.imageUrl ? undefined : 'utensils-crossed',
+          iconColor: theme.colors.accent.primary,
+          iconBgColor: theme.colors.accent.primary10,
+          _raw: f,
+        }) as FoodItem
+    );
   }, [
-    visible,
-    activeFilter,
+    favoriteFoodsRaw,
+    t,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
     portion100gName,
-    t,
   ]);
 
   // Transform meals to card data with nutrients
@@ -568,6 +516,11 @@ export function FoodSearchModal({
     );
   }, [mealCardsData, searchQuery]);
 
+  // Helper function to format count with "99+" limit
+  const formatCount = (count: number): string => {
+    return count > 99 ? '99+' : count.toString();
+  };
+
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {
     switch (activeFilter) {
@@ -584,7 +537,10 @@ export function FoodSearchModal({
   const FILTER_TABS = useMemo(() => {
     return [
       { id: 'all', label: `${t('foodSearch.filters.allResults')} (${resultsBySource.all.length})` },
-      { id: 'myFoods', label: `${t('foodSearch.filters.favorites')} (${favoriteFoodsCount})` },
+      {
+        id: 'myFoods',
+        label: `${t('foodSearch.filters.favorites')} (${formatCount(favoriteFoodsCount)})`,
+      },
       ...(apiCount > 0
         ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
         : []),
@@ -602,6 +558,7 @@ export function FoodSearchModal({
     t,
     resultsBySource.all.length,
     favoriteFoodsCount,
+    formatCount,
     apiCount,
     mealsTotalCount,
     searchQuery,
@@ -912,13 +869,33 @@ export function FoodSearchModal({
                             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                           </View>
                         ) : favoriteFoods.length > 0 ? (
-                          favoriteFoods.map((food) => (
-                            <FoodSearchItemCard
-                              key={food.id}
-                              food={food}
-                              onAddPress={() => handleFoodClick(food)}
-                            />
-                          ))
+                          <>
+                            {favoriteFoods.map((food) => (
+                              <FoodSearchItemCard
+                                key={food.id}
+                                food={food}
+                                onAddPress={() => handleFoodClick(food)}
+                              />
+                            ))}
+                            {hasMoreFavoriteFoods ? (
+                              <View className="py-3">
+                                <Button
+                                  label={
+                                    isLoadingMoreFavorites
+                                      ? t('foodSearch.loadingMore')
+                                      : t('foodSearch.loadMoreFavorites')
+                                  }
+                                  onPress={loadMoreFavoriteFoods}
+                                  size="sm"
+                                  variant="outline"
+                                  disabled={isLoadingMoreFavorites}
+                                  loading={isLoadingMoreFavorites}
+                                  width="full"
+                                  iconPosition="left"
+                                />
+                              </View>
+                            ) : null}
+                          </>
                         ) : (
                           <View className="py-8 text-center">
                             <Text className="text-center text-text-tertiary">

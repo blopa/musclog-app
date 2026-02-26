@@ -74,7 +74,7 @@ export default function HomeScreen() {
   // Calculate daily summary from real data
   const dailySummary = useMemo(() => {
     const caloriesGoal = nutritionGoal?.totalCalories;
-    const caloriesConsumed = dailyNutrients.calories;
+    const caloriesConsumed = Math.round(dailyNutrients.calories);
     const caloriesRemaining = Math.max(0, (caloriesGoal ?? 0) - caloriesConsumed);
 
     return {
