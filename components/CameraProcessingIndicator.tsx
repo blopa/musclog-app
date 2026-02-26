@@ -55,17 +55,19 @@ export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) 
         {/* Static faint ring */}
         <View
           className="absolute inset-0 rounded-full border-4"
-          style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+          style={{
+            borderColor: theme.colors.overlay.white90,
+          }}
         />
 
         {/* Gradient spinning ring */}
         <Animated.View
           className="absolute inset-0 rounded-full border-4"
           style={{
-            borderTopColor: '#34d399',
-            borderRightColor: '#6366f1',
-            borderBottomColor: '#6366f1',
-            borderLeftColor: '#34d399',
+            borderTopColor: theme.colors.accent.secondary,
+            borderRightColor: theme.colors.status.indigo,
+            borderBottomColor: theme.colors.status.indigo,
+            borderLeftColor: theme.colors.accent.secondary,
             transform: [{ rotate: spin }],
           }}
         />
@@ -80,7 +82,7 @@ export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) 
               width={32}
               height={32}
               fill="none"
-              stroke="#34d399"
+              stroke={theme.colors.accent.secondary}
               strokeWidth={1.8}
               viewBox="0 0 24 24"
             >
@@ -105,7 +107,7 @@ export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) 
 
         <Text
           className="mt-2 text-center text-xs uppercase tracking-widest"
-          style={{ color: '#34d399' }}
+          style={{ color: theme.colors.accent.secondary }}
         >
           {isAi
             ? t('camera.processing.processingNutrients')
