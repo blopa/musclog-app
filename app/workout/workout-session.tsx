@@ -135,7 +135,7 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      // Navigate to rest timer (always show rest timer since we default to 60 seconds)
+      // Always show rest timer between sets (including between exercises in a superset)
       setIsLogSetModalVisible(false);
       router.push(
         `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
@@ -171,7 +171,10 @@ export default function WorkoutSessionScreen() {
       if (isWorkoutComplete()) {
         router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       } else {
-        router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+        // Always show rest before next set (use skipped set's order so rest-timer finds next set)
+        router.push(
+          `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
+        );
       }
     } catch (err) {
       console.error('Error skipping set:', err);

@@ -7,6 +7,11 @@ import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { WorkoutService } from '../database/services';
 import { captureException } from '../utils/sentry';
+import {
+  getEffectiveOrder,
+  getFirstUnloggedInEffectiveOrder,
+  getNextSetInEffectiveOrder,
+} from '../utils/workoutSupersetOrder';
 
 export type CurrentSetData = {
   set: WorkoutLogSet;
@@ -91,8 +96,8 @@ export function useActiveWorkout(workoutLogId?: string) {
       const skippedSets = workoutSets.filter((set) => set.isSkipped).length;
       const totalSets = workoutSets.length;
 
-      // Find the current set - one that is neither completed nor skipped
-      const currentSet = workoutSets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+      // Current set = first unlogged, non-skipped in superset-effective order
+      const currentSet = getFirstUnloggedInEffectiveOrder(workoutSets);
 
       // Workout is complete only if ALL sets are either completed or skipped
       const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
@@ -112,29 +117,31 @@ export function useActiveWorkout(workoutLogId?: string) {
     }
   }, []);
 
-  // Recalculate current set when targetExerciseId changes
+  // Recalculate current set when targetExerciseId changes (using superset-effective order)
   const recalculateCurrentSet = useCallback(() => {
     if (!sets || sets.length === 0 || !exercises || exercises.length === 0) {
       setCurrentSetData(null);
       return;
     }
 
-    // Find current set based on target exercise or first unlogged, non-skipped set
+    const effectiveOrder = getEffectiveOrder(sets);
+
+    // Current: first unlogged in effective order, or first unlogged for target exercise in effective order
     let currentSet: WorkoutLogSet | undefined;
 
     if (targetExerciseId) {
-      // Find first unlogged, non-skipped set for the target exercise
-      currentSet = sets.find(
-        (set) => set.exerciseId === targetExerciseId && set.difficultyLevel === 0 && !set.isSkipped
+      currentSet = effectiveOrder.find(
+        (set) =>
+          set.exerciseId === targetExerciseId &&
+          (set.difficultyLevel ?? 0) === 0 &&
+          !(set.isSkipped ?? false)
       );
 
-      // If no unlogged, non-skipped sets for target exercise, fall back to any unlogged, non-skipped set
       if (!currentSet) {
-        currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+        currentSet = getFirstUnloggedInEffectiveOrder(sets) ?? undefined;
       }
     } else {
-      // Default behavior: find first unlogged, non-skipped set
-      currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+      currentSet = getFirstUnloggedInEffectiveOrder(sets) ?? undefined;
     }
 
     if (!currentSet) {
@@ -171,31 +178,32 @@ export function useActiveWorkout(workoutLogId?: string) {
     const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet.id) + 1;
     const totalSetsInExercise = currentExerciseSets.length;
 
-    // Calculate exercise number (order of first appearance in workout)
-    const exerciseOrder = Array.from(exerciseGroups.keys());
-    const exerciseNumber = exerciseOrder.indexOf(currentSet.exerciseId ?? '') + 1;
+    // Exercise number = order of first appearance in effective order
+    const exerciseOrder = [...new Set(effectiveOrder.map((s) => s.exerciseId).filter(Boolean))];
+    const exerciseNumber =
+      exerciseOrder.indexOf(currentSet.exerciseId ?? '') >= 0
+        ? exerciseOrder.indexOf(currentSet.exerciseId ?? '') + 1
+        : 1;
 
-    // Find previous set (last completed set before current set)
+    // Previous set = last completed set before current in effective order
     let previousSet: CurrentSetData['previousSet'] | undefined;
-    const previousSets = sets.filter(
-      (set) => (set.setOrder ?? 0) < (currentSet.setOrder ?? 0) && (set.difficultyLevel ?? 0) > 0
-    );
-    if (previousSets.length > 0) {
-      const lastPreviousSet = previousSets[previousSets.length - 1];
-      previousSet = {
-        weight: lastPreviousSet.weight ?? 0,
-        reps: lastPreviousSet.reps ?? 0,
-        exerciseId: lastPreviousSet.exerciseId ?? '',
-      };
+    const currentIdx = effectiveOrder.findIndex((s) => s.id === currentSet.id);
+    if (currentIdx > 0) {
+      for (let i = currentIdx - 1; i >= 0; i--) {
+        const s = effectiveOrder[i];
+        if ((s.difficultyLevel ?? 0) > 0) {
+          previousSet = {
+            weight: s.weight ?? 0,
+            reps: s.reps ?? 0,
+            exerciseId: s.exerciseId ?? '',
+          };
+          break;
+        }
+      }
     }
 
-    // Find next set that is not skipped
-    const nextSet = sets.find(
-      (set) =>
-        (set.setOrder ?? 0) > (currentSet.setOrder ?? 0) &&
-        (set.difficultyLevel ?? 0) === 0 &&
-        !set.isSkipped
-    );
+    // Next set = next unlogged in effective order
+    const nextSet = getNextSetInEffectiveOrder(sets, currentSet.setOrder ?? 0);
     let nextSetData: CurrentSetData['nextSet'] | undefined;
     if (nextSet) {
       const nextExercise = exerciseMap.get(nextSet.exerciseId ?? '');

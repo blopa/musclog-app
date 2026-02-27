@@ -5,6 +5,10 @@ import {
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
 } from '../../utils/activeWorkoutStorage';
+import {
+  getFirstUnloggedInEffectiveOrder,
+  getNextSetInEffectiveOrder,
+} from '../../utils/workoutSupersetOrder';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
@@ -427,7 +431,7 @@ export class WorkoutService {
   }
 
   /**
-   * Get the current set (first unlogged set) for a workout
+   * Get the current set (first unlogged set in superset-effective order) for a workout
    */
   static async getCurrentSet(workoutLogId: string): Promise<{
     set: WorkoutLogSet;
@@ -442,8 +446,7 @@ export class WorkoutService {
       )
       .fetch();
 
-    // Find first set with difficultyLevel === 0 (unlogged) and not skipped
-    const currentSet = sets.find((set) => (set.difficultyLevel ?? 0) === 0 && !set.isSkipped);
+    const currentSet = getFirstUnloggedInEffectiveOrder(sets);
     if (!currentSet) {
       return null;
     }
@@ -453,7 +456,7 @@ export class WorkoutService {
   }
 
   /**
-   * Get the next set after the current set order
+   * Get the next set (in superset-effective order) after the set with the given set_order
    */
   static async getNextSet(
     workoutLogId: string,
@@ -471,12 +474,7 @@ export class WorkoutService {
       )
       .fetch();
 
-    // Find next unlogged, non-skipped set after current set order
-    const nextSet = sets.find(
-      (set) =>
-        (set.setOrder ?? 0) > currentSetOrder && (set.difficultyLevel ?? 0) === 0 && !set.isSkipped
-    );
-
+    const nextSet = getNextSetInEffectiveOrder(sets, currentSetOrder);
     if (!nextSet) {
       return null;
     }
@@ -486,7 +484,7 @@ export class WorkoutService {
   }
 
   /**
-   * Get workout progress metadata
+   * Get workout progress metadata (current set = first unlogged in superset-effective order)
    */
   static async getWorkoutProgress(workoutLogId: string): Promise<{
     totalSets: number;
@@ -505,7 +503,7 @@ export class WorkoutService {
 
     const totalSets = sets.length;
     const completedSets = sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
-    const currentSet = sets.find((set) => set.difficultyLevel === 0 && !set.isSkipped);
+    const currentSet = getFirstUnloggedInEffectiveOrder(sets);
     const currentSetOrder = currentSet?.setOrder ?? null;
 
     // Group sets by exercise

@@ -83,8 +83,8 @@ export const EN_US = 'en-US';
 // export const PT_BR = 'pt-BR';
 
 const resources = {
-  [EN_US]: { 
-    translation: { 
+  [EN_US]: {
+    translation: {
       ...enUsCommon,
       ...enUsAccessToken,
       ...enUsAddMeal,
@@ -150,7 +150,7 @@ const resources = {
       ...enUsYourGoogleAuthExpiredReauth,
       ...enUsConnectGoogleAccount,
       ...enUsDatePicker,
-    } 
+    },
   },
   // [ES_ES]: { translation: es },
   // [NL_NL]: { translation: nl },

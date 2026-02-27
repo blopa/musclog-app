@@ -24,6 +24,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { getFirstUnloggedInEffectiveOrder } from '../../utils/workoutSupersetOrder';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -99,10 +100,8 @@ export default function RestTimerScreen() {
         setRestTime(restTimeValue);
         setInitialRestTime(restTimeValue);
 
-        // Find the next set to be done (first unlogged, non-skipped set in workout order)
-        const next = sets
-          .filter((s) => (s.difficultyLevel ?? 0) === 0 && !s.isSkipped)
-          .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))[0];
+        // Next set = first unlogged, non-skipped in superset-effective order
+        const next = getFirstUnloggedInEffectiveOrder(sets);
 
         if (next) {
           const nextExercise = await database
@@ -122,7 +121,7 @@ export default function RestTimerScreen() {
     loadData();
   }, [workoutLogId, completedSetOrder]);
 
-  // Navigate to exercise-transition when next set is a different exercise, else workout-session
+  // Navigate after rest: skip exercise-transition when next set is in same superset group
   const navigateToNextScreen = () => {
     if (!workoutLogId) {
       router.back();
@@ -132,13 +131,26 @@ export default function RestTimerScreen() {
       router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
       return;
     }
-    if (completedSet && nextSet.exercise.id !== completedSet.exercise.id) {
+    const sameSupersetGroup =
+      completedSet &&
+      nextSet.set.groupId &&
+      completedSet.set.groupId &&
+      nextSet.set.groupId === completedSet.set.groupId;
+
+    const differentExercise = completedSet && nextSet.exercise.id !== completedSet.exercise.id;
+
+    // Only show exercise-transition when switching to a different exercise that is NOT in the same superset
+    if (differentExercise && !sameSupersetGroup) {
       router.replace(
         `/workout/exercise-transition?workoutLogId=${workoutLogId}&completedExerciseId=${completedSet.exercise.id}&nextExerciseId=${nextSet.exercise.id}`
       );
+
       return;
     }
-    router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
+
+    router.replace(
+      `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
+    );
   };
 
   // Rest timer countdown: run one interval when loading finishes and restTime > 0.
