@@ -446,16 +446,19 @@ export default function WorkoutsScreen() {
                     }}
                   />
                 ))}
-
-                <DashedButton
-                  label={t('workouts.createTemplate.title')}
-                  onPress={() => {
-                    setIsCreateOptionsVisible(true);
-                  }}
-                  size="lg"
-                  icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
-                />
               </>
+            ) : null}
+
+            {/* Create Template Button - Always show */}
+            {!isLoading && !error ? (
+              <DashedButton
+                label={t('workouts.createTemplate.title')}
+                onPress={() => {
+                  setIsCreateOptionsVisible(true);
+                }}
+                size="lg"
+                icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
+              />
             ) : null}
           </View>
           <View className="h-32" />

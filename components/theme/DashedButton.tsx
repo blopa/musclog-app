@@ -31,7 +31,8 @@ export default function DashedButton({
         className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed"
         style={{
           borderColor: theme.colors.border.gray600,
-          padding: theme.spacing.padding['4xl'] / 15 || theme.spacing.padding.lg, // approximate p-8
+          padding: theme.spacing.padding.sm,
+          paddingVertical: theme.spacing.padding.lg,
           backgroundColor: isPressed
             ? theme.colors.background.cardElevated
             : theme.colors.background.card,
