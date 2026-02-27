@@ -110,6 +110,10 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       }
     }
 
+    // TODO: detect device language and save it into the settings for language
+
+    // TODO: set the anonymousBugReport setting to true by default
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');

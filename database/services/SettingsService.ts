@@ -108,6 +108,27 @@ export class SettingsService {
   }
 
   /**
+   * Get the anonymous bug report setting
+   */
+  static async getAnonymousBugReport(): Promise<boolean> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', ANONYMOUS_BUG_REPORT_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (settings.length === 0) {
+      return true; // Default to true for existing users
+    }
+
+    // If multiple settings exist, use the most recent one
+    const mostRecent = settings.reduce((latest, current) =>
+      current.updatedAt > latest.updatedAt ? current : latest
+    );
+
+    return mostRecent.value === 'true';
+  }
+
+  /**
    * Upsert the Google Gemini API key setting
    */
   static async setGoogleGeminiApiKey(value: string) {

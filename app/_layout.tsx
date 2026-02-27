@@ -1,5 +1,4 @@
 import '../database';
-import '../sentry-init';
 import '../lang/lang';
 import '../global.css';
 
@@ -15,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
+import { captureException } from '../utils/sentry';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +83,16 @@ function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
           <Sentry.ErrorBoundary
+            onError={(error, errorInfo) => {
+              // Use our consent-aware captureException
+              captureException(error, {
+                contexts: {
+                  react: {
+                    componentStack: errorInfo,
+                  },
+                },
+              });
+            }}
             fallback={({ error, resetError }) => (
               <ErrorFallbackScreen
                 error={error instanceof Error ? error : new Error(String(error))}
@@ -102,4 +112,4 @@ function RootLayout() {
   );
 }
 
-export default Sentry.wrap(RootLayout);
+export default RootLayout;

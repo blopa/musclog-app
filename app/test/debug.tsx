@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Sentry from '@sentry/react-native';
 import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -16,6 +15,7 @@ import type { MuscleGroup } from '../../database/models';
 import { MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { theme } from '../../theme';
+import { captureException } from '../../utils/sentry';
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -267,7 +267,7 @@ export default function DebugTestScreen() {
               Send a test exception to verify crash reporting in your Sentry project.
             </Text>
             <Button
-              onPress={() => Sentry.captureException(new Error('Test Sentry'))}
+              onPress={() => captureException(new Error('Test Sentry'))}
               label="Send test error to Sentry"
               size="sm"
               variant="secondary"

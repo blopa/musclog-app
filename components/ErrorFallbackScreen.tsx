@@ -1,8 +1,9 @@
-import * as Sentry from '@sentry/react-native';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
+
+import { captureMessage } from '../utils/sentry';
 
 type ErrorFallbackScreenProps = {
   error: unknown;
@@ -14,7 +15,7 @@ export function ErrorFallbackScreen({ error, resetError }: ErrorFallbackScreenPr
   const router = useRouter();
 
   const handleReload = useCallback(() => {
-    Sentry.captureMessage('User requested reload after error');
+    captureMessage('User requested reload after error');
     if (resetError) {
       resetError();
     } else {
