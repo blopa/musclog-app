@@ -1,4 +1,3 @@
-import { Q } from '@nozbe/watermelondb';
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import {
@@ -34,7 +33,6 @@ import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { database } from '../../database';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
 import { NutritionService } from '../../database/services';
@@ -74,7 +72,7 @@ export default function FoodScreen() {
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
 
-  const { logs, dailyNutrients, isLoading, refresh } = useNutritionLogs({
+  const { logs, dailyNutrients, isLoading, refresh, totalCount } = useNutritionLogs({
     mode: 'daily',
     date: selectedDate,
     enableReactivity: true,
@@ -91,25 +89,6 @@ export default function FoodScreen() {
     }[]
   >([]);
   const [isResolvingRelations, setIsResolvingRelations] = useState(false);
-  const [hasAnyFoodEver, setHasAnyFoodEver] = useState<boolean | null>(null); // null = not checked yet
-
-  // Check if there's any food tracked in the database at all
-  useEffect(() => {
-    const checkAnyFoodEver = async () => {
-      try {
-        const allLogsCount = await database
-          .get<NutritionLog>('nutrition_logs')
-          .query(Q.where('deleted_at', Q.eq(null)))
-          .fetchCount();
-        setHasAnyFoodEver(allLogsCount > 0);
-      } catch (error) {
-        console.error('Error checking for any food:', error);
-        setHasAnyFoodEver(false);
-      }
-    };
-
-    checkAnyFoodEver();
-  }, []);
 
   // Get nutrition goal active on the displayed date (so past dates show the correct goal)
   const { goal: nutritionGoal } = useCurrentNutritionGoal({
@@ -227,7 +206,7 @@ export default function FoodScreen() {
   }, [resolvedLogs]);
 
   // Check if all meals are empty AND no food has ever been tracked
-  const hasNoFood = !isScreenLoading && hasAnyFoodEver === false && logs.length === 0;
+  const hasNoFood = !isScreenLoading && totalCount === 0;
 
   // Date navigation functions
   const goToPreviousDay = () => {

@@ -62,6 +62,7 @@ export type UseNutritionLogsResultDaily = {
   };
   isLoading: boolean;
   refresh: () => Promise<void>;
+  totalCount?: number;
 };
 
 // Return type for range mode (with nutrients)
@@ -202,6 +203,13 @@ export function useNutritionLogs({
         // Calculate daily nutrients
         const nutrients = await NutritionService.getDailyNutrients(date);
         setDailyNutrients(nutrients);
+
+        // Get total count of all logs in database
+        const allLogsCount = await database
+          .get<NutritionLog>('nutrition_logs')
+          .query(Q.where('deleted_at', Q.eq(null)))
+          .fetchCount();
+        setTotalCount(allLogsCount);
       } else if (mode === 'range' && startDate && endDate) {
         // Range mode
         logsList = await NutritionService.getNutritionLogsForDateRange(startDate, endDate);
@@ -433,8 +441,9 @@ export function useNutritionLogs({
       dailyNutrients,
       isLoading,
       refresh,
+      totalCount,
     }),
-    [logs, dailyNutrients, isLoading, refresh]
+    [logs, dailyNutrients, isLoading, refresh, totalCount]
   );
 
   // Memoized result for range mode
