@@ -10,11 +10,11 @@ import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import enUs from './locales/en-us.json';
+import enUs from './locales/en-us/common.json';
 // TODO: implement other languages
-import es from './locales/en-us.json';
-import nl from './locales/en-us.json';
-import ptBR from './locales/en-us.json';
+import es from './locales/en-us/common.json';
+import nl from './locales/en-us/common.json';
+import ptBR from './locales/en-us/common.json';
 
 export const EN_US = 'en-US';
 export const ES_ES = 'es-ES';
