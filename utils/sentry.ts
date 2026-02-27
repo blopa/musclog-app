@@ -1,7 +1,5 @@
-// @ts-ignore
-import type { ExclusiveEventHintOrCaptureContext } from '@sentry/core/build/types/utils/prepareEvent';
+import type { CaptureContext, EventHint, SeverityLevel } from '@sentry/core';
 import * as Sentry from '@sentry/react-native';
-import type { CaptureContext, SeverityLevel } from '@sentry/types';
 
 import { SettingsService } from '../database/services/SettingsService';
 import { initializeSentry, isSentryInitialized } from '../sentry-init';
@@ -27,10 +25,7 @@ async function checkConsentAndInitialize(): Promise<boolean> {
   }
 }
 
-export const captureException = async (
-  exception: unknown,
-  hint?: ExclusiveEventHintOrCaptureContext
-) => {
+export const captureException = async (exception: unknown, hint?: EventHint) => {
   const hasConsent = await checkConsentAndInitialize();
   if (hasConsent) {
     Sentry.captureException(exception, hint);
