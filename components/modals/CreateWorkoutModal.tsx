@@ -415,7 +415,7 @@ export default function CreateWorkoutModal({
                   label={t('workouts.addExercise.title')}
                   variant="secondary"
                   size="sm"
-                  width="auto"
+                  width="full"
                   icon={PlusSquare}
                   onPress={() => setAddExerciseVisible(true)}
                 />
