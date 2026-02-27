@@ -1,0 +1,19 @@
+{
+  "meals": {
+    "title": "My Meals",
+    "filters": {
+      "all": "All",
+      "highProtein": "High Protein",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch"
+    },
+    "untitledMeal": "Untitled Meal",
+    "customMeal": "Custom Meal",
+    "createdByYou": "Created by you",
+    "logMeal": "Log Meal",
+    "mealType": "Meal Type",
+    "history": {
+      "unknownMeal": "Unknown Meal"
+    }
+  }
+}

@@ -432,9 +432,9 @@ export default function FoodScreen() {
             {!isScreenLoading && hasNoFood ? (
               <EmptyStateCard
                 icon={UtensilsCrossed}
-                title={t('emptyStates.food.title')}
-                description={t('emptyStates.food.description')}
-                buttonLabel={t('emptyStates.food.buttonLabel')}
+                title={t('emptyStates.foods.title')}
+                description={t('emptyStates.foods.description')}
+                buttonLabel={t('emptyStates.foods.buttonLabel')}
                 buttonVariant="secondary"
                 onButtonPress={() => setIsAddFoodModalVisible(true)}
               />

@@ -19,17 +19,17 @@ const getConfig = (type: EmptyStateType, t: TFunction) => {
     case 'workout':
       return {
         icon: Dumbbell,
-        title: t('emptyState.workout.title'),
-        description: t('emptyState.workout.description'),
-        buttonLabel: t('emptyState.workout.button'),
+        title: t('emptyStates.workout.title'),
+        description: t('emptyStates.workout.description'),
+        buttonLabel: t('emptyStates.workout.button'),
         buttonVariant: 'outline' as const,
       };
     case 'food':
       return {
         icon: Utensils,
-        title: t('emptyState.food.title'),
-        description: t('emptyState.food.description'),
-        buttonLabel: t('emptyState.food.button'),
+        title: t('emptyStates.food.title'),
+        description: t('emptyStates.food.description'),
+        buttonLabel: t('emptyStates.food.button'),
         buttonVariant: 'outline' as const,
       };
   }

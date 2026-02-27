@@ -1,0 +1,11 @@
+{
+  "goalHistoryCard": {
+    "kcal": "KCAL",
+    "proteinPrefix": "P",
+    "carbsPrefix": "C",
+    "fatPrefix": "F",
+    "g": "g",
+    "kg": "kg",
+    "bf": "BF"
+  }
+}

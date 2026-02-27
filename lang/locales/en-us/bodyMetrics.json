@@ -1,0 +1,86 @@
+{
+  "bodyMetrics": {
+    "header": {
+      "title": "Body Metrics",
+      "newMetric": "New Metric"
+    },
+    "metrics": {
+      "weight": "Weight",
+      "bodyFat": "Body Fat",
+      "body_fat": "Body Fat",
+      "muscle_mass": "Muscle Mass",
+      "lean_body_mass": "Lean Body Mass",
+      "basal_metabolic_rate": "Basal Metabolic Rate",
+      "total_calories_burned": "Total Calories Burned",
+      "active_calories_burned": "Active Calories Burned",
+      "bmi": "BMI",
+      "height": "Height",
+      "chest": "Chest",
+      "waist": "Waist",
+      "hips": "Hips",
+      "arms": "Arms",
+      "thighs": "Thighs",
+      "calves": "Calves",
+      "neck": "Neck",
+      "shoulders": "Shoulders",
+      "mood": "Mood",
+      "ffmi": "FFMI",
+      "nutrition": "Nutrition",
+      "exercise": "Exercise",
+      "other": "Other"
+    },
+    "current": {
+      "label": "CURRENT"
+    },
+    "history": {
+      "title": "History",
+      "filter": "Filter",
+      "loadMore": "Load More",
+      "loadingMore": "Loading...",
+      "notes": {
+        "baseline": "Baseline",
+        "noChange": "No change",
+        "decreased": "Decreased",
+        "increased": "Increased"
+      }
+    },
+    "dateFormats": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "noDataAvailable": "No data available",
+    "noHistoryDataAvailable": "No history data available",
+    "manageMetricData": {
+      "title": "Metric History",
+      "searchPlaceholder": "Search by metric type...",
+      "noEntries": "No metric entries yet",
+      "noEntriesDesc": "Add body metric entries to see them here",
+      "endOfHistory": "End of metric history",
+      "metricOptions": "Metric options",
+      "editEntry": "Edit entry",
+      "editEntryDesc": "Change value and date",
+      "duplicateEntry": "Duplicate entry",
+      "duplicateEntryDesc": "Create a copy with a new date",
+      "deleteEntry": "Delete entry",
+      "deleteEntryDesc": "Remove this metric entry"
+    },
+    "addEntry": {
+      "title": "Add Entry",
+      "enterWeight": "Enter Weight",
+      "enterBodyFat": "Enter Body Fat",
+      "enterHeight": "Enter Height",
+      "date": "Date",
+      "time": "Time",
+      "moodQuestion": "How do you feel today?",
+      "moods": {
+        "0": "Poor",
+        "1": "Low",
+        "2": "Okay",
+        "3": "Good",
+        "4": "Great"
+      },
+      "saveEntry": "Save Entry",
+      "errorSaving": "Error Saving"
+    }
+  }
+}

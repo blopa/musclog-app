@@ -1,0 +1,11 @@
+{
+  "restTimer": {
+    "resting": "Resting...",
+    "minus5s": "- 5s",
+    "plus5s": "+ 5s",
+    "skipRest": "SKIP REST",
+    "done": "Done",
+    "reps": "reps",
+    "upNext": "UP NEXT"
+  }
+}

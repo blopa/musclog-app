@@ -1,0 +1,24 @@
+{
+  "workoutDetail": {
+    "totalTime": "Total Time",
+    "volume": "Volume",
+    "calories": "Calories",
+    "volumeTrend": "Volume Trend",
+    "volumeTrendPercentage": "+{{percentage}}% vs avg",
+    "exercisesCount": "Exercises ({{count}})",
+    "minsSpent": "{{minutes}} mins spent",
+    "set": "SET",
+    "weight": "WEIGHT",
+    "reps": "REPS",
+    "partial": "PARTIAL",
+    "editSetsTitle": "Edit Sets",
+    "addSet": "Add New Set",
+    "setLabel": "Set {{index}}",
+    "remove": "Remove",
+    "rir": "RIR (Reps in Reserve)",
+    "inputs": {
+      "weightKg": "Weight (kg)",
+      "restSec": "Rest (sec)"
+    }
+  }
+}

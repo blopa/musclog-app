@@ -2,39 +2,36 @@ import 'intl-pluralrules';
 
 import {
   enUS as localeEnUS,
-  es as localeEs,
-  nl as localeNl,
-  ptBR as localePtBR,
+  // es as localeEs,
+  // nl as localeNl,
+  // ptBR as localePtBR,
 } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import enUs from './locales/en-us/common.json';
-// TODO: implement other languages
-import es from './locales/en-us/common.json';
-import nl from './locales/en-us/common.json';
-import ptBR from './locales/en-us/common.json';
+// en-us
+import enUsCommon from './locales/en-us/common.json';
 
 export const EN_US = 'en-US';
-export const ES_ES = 'es-ES';
-export const NL_NL = 'nl-NL';
-export const PT_BR = 'pt-BR';
+// export const ES_ES = 'es-ES';
+// export const NL_NL = 'nl-NL';
+// export const PT_BR = 'pt-BR';
 
 const resources = {
-  [EN_US]: { translation: enUs },
-  [ES_ES]: { translation: es },
-  [NL_NL]: { translation: nl },
-  [PT_BR]: { translation: ptBR },
+  [EN_US]: { translation: { ...enUsCommon } },
+  // [ES_ES]: { translation: es },
+  // [NL_NL]: { translation: nl },
+  // [PT_BR]: { translation: ptBR },
 };
 
 export type LanguageKeys = keyof typeof resources;
 
 export const LOCALE_MAP = {
   [EN_US]: localeEnUS,
-  [ES_ES]: localeEs,
-  [NL_NL]: localeNl,
-  [PT_BR]: localePtBR,
+  // [ES_ES]: localeEs,
+  // [NL_NL]: localeNl,
+  // [PT_BR]: localePtBR,
 };
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];

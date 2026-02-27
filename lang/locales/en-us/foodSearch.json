@@ -1,0 +1,42 @@
+{
+  "foodSearch": {
+    "customFoodLabel": "Custom Food",
+    "foodDescriptionFormat": "{{brand}} • {{calories}} kcal",
+    "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
+    "commonFoods": "Common foods",
+    "commonBreakfastFoods": "Common breakfast foods",
+    "commonLunchFoods": "Common lunch foods",
+    "commonDinnerFoods": "Common dinner foods",
+    "commonSnackFoods": "Common snack foods",
+    "recentHistory": "Recent History",
+    "viewAll": "View All",
+    "yourFoods": "🍽️ Your Foods ({{count}}) 🍽️",
+    "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
+    "filters": {
+      "allResults": "All Results",
+      "openFoodFacts": "Open Food Facts",
+      "meals": "Meals",
+      "recipes": "Recipes",
+      "favorites": "Favorites"
+    },
+    "searching": "SEARCHING...",
+    "bestMatches": "BEST MATCHES",
+    "noResults": "NO RESULTS",
+    "searchingLocalAndAPI": "Searching local foods and Open Food Facts...",
+    "searchingLocal": "Searching local foods...",
+    "searchingAPI": "Searching Open Food Facts...",
+    "loadingMore": "Loading more...",
+    "loadMoreLocal": "Load more local foods",
+    "loadMoreAPI": "Load more from Open Food Facts",
+    "loadMoreMeals": "Load more meals",
+    "loadMoreFavorites": "Load more favorite foods",
+    "loadingMeals": "Loading meals...",
+    "noResultsFor": "No results found for \"{{query}}\"",
+    "trySomethingElse": "Try searching for something else or create a custom food",
+    "noRecentFoods": "No recent foods found. Start searching or add custom foods!",
+    "createFood": "Create Food",
+    "noFavoriteFoods": "No Favorite Foods",
+    "yourFavoriteFoods": "Your Favorite Foods",
+    "noMeals": "No meals yet. Create one from the Meals screen."
+  }
+}

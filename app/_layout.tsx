@@ -86,7 +86,7 @@ function RootLayout() {
             onError={(error, errorInfo) => {
               // Use our consent-aware captureException
               captureException(error, {
-                contexts: {
+                data: {
                   react: {
                     componentStack: errorInfo,
                   },

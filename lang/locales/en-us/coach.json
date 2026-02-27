@@ -1,0 +1,13 @@
+{
+  "coach": {
+    "title": "AI Coach",
+    "status": "Online",
+    "placeholder": "Type a message...",
+    "todayAt": "Today, {{time}}",
+    "actions": {
+      "createWorkout": "Create Workout",
+      "analyzeProgress": "Analyze Progress",
+      "nutritionCheck": "Nutrition Check"
+    }
+  }
+}

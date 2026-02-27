@@ -1,0 +1,30 @@
+{
+  "goalsManagement": {
+    "title": "Goals Management",
+    "subtitle": "Track your progress and history.",
+    "currentGoals": "CURRENT GOALS",
+    "active": "Active",
+    "history": "GOALS HISTORY",
+    "newGoal": "New Goal",
+    "emptyStateMessage": "Create a new goal to get started",
+    "manageGoalData": {
+      "deleteGoalWarning": "Are you sure you want to delete this goal? This action cannot be undone.",
+      "title": "Nutrition goals",
+      "searchPlaceholder": "Search goals...",
+      "noGoals": "No goals yet",
+      "noGoalsDesc": "Set nutrition goals to see them here",
+      "endOfHistory": "End of goals history",
+      "goalOptions": "Goal options",
+      "editGoal": "Edit goal",
+      "editGoalDesc": "Change calories, macros, and targets",
+      "duplicateGoal": "Duplicate goal",
+      "duplicateGoalDesc": "Create a copy to use as a new goal",
+      "deleteGoal": "Delete goal",
+      "deleteGoalDesc": "Remove this goal from history",
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} kg",
+      "phaseCut": "Cut",
+      "phaseMaintain": "Maintain",
+      "phaseBulk": "Bulk"
+    }
+  }
+}

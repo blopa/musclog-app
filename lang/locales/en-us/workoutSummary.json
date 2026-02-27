@@ -1,0 +1,11 @@
+{
+  "workoutSummary": {
+    "totalTime": "Total Time",
+    "volume": "Volume",
+    "personalRecords": "Personal Records",
+    "goHome": "Go Home",
+    "youCrushedIt": "You Crushed It!",
+    "feedbackSubmitted": "Workout feedback submitted successfully.",
+    "shareSummary": "Share Summary"
+  }
+}

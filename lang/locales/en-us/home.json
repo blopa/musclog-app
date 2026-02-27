@@ -1,0 +1,21 @@
+{
+  "home": {
+    "greeting": {
+      "goodEvening": "Good Evening"
+    },
+    "actions": {
+      "startWorkout": "Start\nWorkout",
+      "trackFood": "Track\nFood"
+    },
+    "sections": {
+      "recentWorkouts": "Recent Workouts",
+      "recentFoods": "Recent Foods"
+    },
+    "navigation": {
+      "home": "Home",
+      "workouts": "Workouts",
+      "food": "Food",
+      "coach": "Coach"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "nutrition": {
+    "createCustom": "Create Custom",
+    "createCustomDesc": "Manually add nutrition details",
+    "foodNotFound": "Food Not Found",
+    "searchAgain": "Search Again",
+    "searchAgainDesc": "Try a different search term",
+    "tryAICamera": "Try AI Camera",
+    "tryAICameraDesc": "Scan your meal for instant identification",
+    "manageFoodData": {
+      "title": "Nutrition Log",
+      "searchPlaceholder": "Search food logs...",
+      "noLogs": "No food logs yet",
+      "noLogsDesc": "Start tracking your meals to see them here",
+      "endOfHistory": "End of food log history",
+      "foodOptions": "Food Options",
+      "editFoodEntry": "Edit Food Entry",
+      "editFoodEntryDesc": "Modify the food details",
+      "duplicateEntry": "Duplicate Entry",
+      "duplicateEntryDesc": "Create a copy of this entry",
+      "deleteEntry": "Delete Entry",
+      "deleteEntryDesc": "Remove this food entry"
+    }
+  }
+}
