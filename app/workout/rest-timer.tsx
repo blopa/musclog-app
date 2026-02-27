@@ -1,8 +1,7 @@
-import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
@@ -15,16 +14,12 @@ import { RestTimer } from '../../components/RestTimer';
 import { RestTimerControls } from '../../components/RestTimerControls';
 import { UpNextLabel } from '../../components/UpNextLabel';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
-import { database } from '../../database';
-import Exercise from '../../database/models/Exercise';
-import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getWeightUnitI18nKey } from '../../utils/units';
-import { getFirstUnloggedInEffectiveOrder } from '../../utils/workoutSupersetOrder';
 
 export default function RestTimerScreen() {
   const { t } = useTranslation();
@@ -34,92 +29,81 @@ export default function RestTimerScreen() {
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const workoutLogId = params.workoutLogId;
-  const completedSetOrder = params.completedSetOrder
-    ? parseInt(params.completedSetOrder, 10)
-    : null;
+  const completedSetOrder =
+    params.completedSetOrder != null ? parseInt(params.completedSetOrder, 10) : null;
 
-  const [restTime, setRestTime] = useState(90); // Will be updated from database
+  const sessionState = useWorkoutSessionState(
+    workoutLogId && completedSetOrder !== null ? workoutLogId : undefined
+  );
+  const {
+    workoutLog,
+    sets,
+    exercises,
+    currentSet: nextSetFromHook,
+    isLoading: sessionLoading,
+    error: sessionError,
+  } = sessionState;
+
+  const completedSet = useMemo(() => {
+    if (completedSetOrder === null || sets.length === 0) {
+      return null;
+    }
+
+    const set = sets.find((s) => (s.setOrder ?? 0) === completedSetOrder);
+    if (!set) {
+      return null;
+    }
+
+    const exercise = exercises.find((e) => e.id === set.exerciseId);
+    if (!exercise) {
+      return null;
+    }
+
+    return { set, exercise };
+  }, [sets, exercises, completedSetOrder]);
+
+  const nextSet = useMemo(() => {
+    if (!nextSetFromHook) {
+      return null;
+    }
+
+    const exercise = exercises.find((e) => e.id === nextSetFromHook.exerciseId);
+    if (!exercise) {
+      return null;
+    }
+
+    return { set: nextSetFromHook, exercise };
+  }, [nextSetFromHook, exercises]);
+
+  const [restTime, setRestTime] = useState(90);
   const [initialRestTime, setInitialRestTime] = useState(90);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
-  const [completedSet, setCompletedSet] = useState<{
-    set: WorkoutLogSet;
-    exercise: Exercise;
-  } | null>(null);
-  const [nextSet, setNextSet] = useState<{ set: WorkoutLogSet; exercise: Exercise } | null>(null);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const rotationAnim = useRef(new Animated.Value(0)).current;
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load workout data
+  const hasRequiredParams = Boolean(workoutLogId && completedSetOrder !== null);
+  const isLoading = hasRequiredParams ? sessionLoading : false;
+  const error = !hasRequiredParams
+    ? 'Missing workout data' // TODO: use translation
+    : (sessionError ??
+      (!sessionLoading && sets.length > 0 && !completedSet ? 'Completed set not found' : null));
+
+  // Sync rest time from completed set when session data is ready
   useEffect(() => {
-    const loadData = async () => {
-      if (!workoutLogId || completedSetOrder === null) {
-        setError('Missing workout data');
-        setIsLoading(false);
-        return;
-      }
+    if (!completedSet) {
+      return;
+    }
 
-      try {
-        setIsLoading(true);
-        setError(null);
+    const value =
+      completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
+        ? completedSet.set.restTimeAfter
+        : 60;
 
-        // Load workout log
-        const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
-        setWorkoutLog(log);
-
-        // Load all sets
-        const sets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(
-            Q.where('workout_log_id', workoutLogId),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('set_order', Q.asc)
-          )
-          .fetch();
-
-        // Find completed set
-        const completed = sets.find((s) => (s.setOrder ?? 0) === completedSetOrder);
-        if (!completed) {
-          throw new Error('Completed set not found');
-        }
-
-        // Load exercise for completed set
-        const completedExercise = await database
-          .get<Exercise>('exercises')
-          .find(completed.exerciseId ?? '');
-
-        setCompletedSet({ set: completed, exercise: completedExercise });
-
-        // Get rest time from completed set, default to 60 seconds if not set
-        const restTimeValue =
-          completed.restTimeAfter && completed.restTimeAfter > 0 ? completed.restTimeAfter : 60;
-        setRestTime(restTimeValue);
-        setInitialRestTime(restTimeValue);
-
-        // Next set = first unlogged, non-skipped in superset-effective order
-        const next = getFirstUnloggedInEffectiveOrder(sets);
-
-        if (next) {
-          const nextExercise = await database
-            .get<Exercise>('exercises')
-            .find(next.exerciseId ?? '');
-          setNextSet({ set: next, exercise: nextExercise });
-        }
-
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Error loading rest timer data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load data');
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
-  }, [workoutLogId, completedSetOrder]);
+    setRestTime(value);
+    setInitialRestTime(value);
+  }, [completedSet]);
 
   // Navigate after rest: skip exercise-transition when next set is in same superset group
   const navigateToNextScreen = () => {
@@ -187,7 +171,7 @@ export default function RestTimerScreen() {
         countdownIntervalRef.current = null;
       }
     };
-  }, [isLoading]); // Only when loading finishes; omit restTime so interval is not recreated every second
+  }, [isLoading, restTime]); // Only when loading finishes; omit restTime so interval is not recreated every second
 
   // Navigate when countdown reaches 0
   useEffect(() => {
@@ -197,7 +181,7 @@ export default function RestTimerScreen() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [restTime, isLoading, workoutLogId, completedSet, nextSet, router]);
+  }, [restTime, isLoading, workoutLogId, completedSet, nextSet, router, navigateToNextScreen]);
 
   // Spinning loader animation
   useEffect(() => {
