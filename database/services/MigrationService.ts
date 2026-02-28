@@ -387,7 +387,7 @@ export class MigrationService {
             newUser.email = undefined; // Old schema doesn't have email, set to undefined as it's optional
             newUser.dateOfBirth = this.convertTimestamp(oldUser.birthday);
             newUser.gender = this.mapGender(oldUser.gender);
-            newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain'; // TODO: same as the gender, this is a text input in the old schema, so let's try to be smart and map it to the closest value, like if it includes 'lose' and "weight" then it should be 'lose weight', if it includes 'gain' and 'weight' etc then it should be 'gain weight', if it includes 'maintain weight' then it should be 'maintain weight'
+            newUser.fitnessGoal = this.mapFitnessGoal(oldUser.fitnessGoals);
             newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);
             newUser.activityLevel = this.mapActivityLevel(oldUser.activityLevel); // Map text to number
             newUser.liftingExperience = this.mapLiftingExperience(oldUser.liftingExperience); // Map text to enum
@@ -1343,7 +1343,57 @@ export class MigrationService {
     } else if (lowerGoals.includes('gain') || lowerGoals.includes('bulk')) {
       return 'gain';
     }
+
     return 'maintain';
+  }
+
+  /**
+   * Map old fitness goals string to new fitness goal format
+   */
+  private mapFitnessGoal(fitnessGoals: string): 'hypertrophy' | 'strength' | 'endurance' | 'weight_loss' | 'general' {
+    if (!fitnessGoals) {
+      return 'general';
+    }
+
+    const lowerGoals = fitnessGoals.toLowerCase();
+    
+    // Check for weight loss related terms
+    if (lowerGoals.includes('lose') && lowerGoals.includes('weight')) {
+      return 'weight_loss';
+    }
+    if (lowerGoals.includes('cut') || lowerGoals.includes('shred') || lowerGoals.includes('lean')) {
+      return 'weight_loss';
+    }
+    
+    // Check for muscle building/hypertrophy related terms
+    if (lowerGoals.includes('gain') && (lowerGoals.includes('muscle') || lowerGoals.includes('mass'))) {
+      return 'hypertrophy';
+    }
+
+    if (lowerGoals.includes('bulk') || lowerGoals.includes('hypertrophy') || lowerGoals.includes('build')) {
+      return 'hypertrophy';
+    }
+    
+    // Check for strength related terms
+    if (lowerGoals.includes('strength') || lowerGoals.includes('power') || lowerGoals.includes('strong')) {
+      return 'strength';
+    }
+    
+    // Check for endurance related terms
+    if (lowerGoals.includes('endurance') || lowerGoals.includes('cardio') || lowerGoals.includes('stamina')) {
+      return 'endurance';
+    }
+    
+    // Check for general fitness terms
+    if (lowerGoals.includes('maintain') && lowerGoals.includes('weight')) {
+      return 'general';
+    }
+    if (lowerGoals.includes('fitness') || lowerGoals.includes('health') || lowerGoals.includes('active')) {
+      return 'general';
+    }
+    
+    // Default fallback
+    return 'general';
   }
 
   /** Lazy-built map: normalized translation string → canonical 'male' | 'female' | 'other'. */
