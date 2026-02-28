@@ -67,6 +67,7 @@ export default function FoodScreen() {
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -242,11 +243,13 @@ export default function FoodScreen() {
 
   const handleEditFood = () => {
     setIsFoodMenuVisible(false);
+    setIsDuplicateMode(false);
     setIsFoodDetailsModalVisible(true);
   };
 
   const handleDuplicateFood = () => {
     setIsFoodMenuVisible(false);
+    setIsDuplicateMode(true);
     setIsFoodDetailsModalVisible(true);
   };
 
@@ -752,16 +755,19 @@ export default function FoodScreen() {
         items={foodMenuItems}
       />
 
-      {/* Food Details Modal (edit mode) */}
+      {/* Food Details Modal (edit/duplicate mode) */}
       {isFoodDetailsModalVisible && selectedFoodItem ? (
         <FoodMealDetailsModal
           visible={isFoodDetailsModalVisible}
           onClose={() => {
             setIsFoodDetailsModalVisible(false);
+            setIsDuplicateMode(false);
             setSelectedFoodItem(null);
           }}
           food={selectedFoodItem.food}
-          foodLog={selectedFoodItem.log}
+          foodLog={isDuplicateMode ? undefined : selectedFoodItem.log}
+          initialMealType={isDuplicateMode ? selectedFoodItem.log.type : undefined}
+          initialDate={isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined}
           onAddFood={async (_data) => {
             try {
               await refresh();
