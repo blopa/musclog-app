@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useSnackbar } from '../components/SnackbarContext';
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
+import type { WorkoutType } from '../constants/workoutTypes';
+import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import { WorkoutTemplateService } from '../database/services';
@@ -41,6 +43,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   const [workoutTitle, setWorkoutTitle] = useState('');
   const [description, setDescription] = useState('');
   const [volumeCalc, setVolumeCalc] = useState('none');
+  const [workoutType, setWorkoutType] = useState<WorkoutType>(DEFAULT_WORKOUT_TYPE);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(isEditMode);
@@ -65,6 +68,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
       setVolumeCalc(template.volumeCalculationType || 'none');
+      setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
 
       // Load week days from weekDaysJson if available, otherwise use schedule
       if (template.weekDaysJson && template.weekDaysJson.length > 0) {
@@ -161,6 +165,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         name: workoutTitle.trim(),
         description: description.trim() || undefined,
         volumeCalculationType: volumeCalc,
+        type: workoutType,
         weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
         exercises: exercisesInWorkout,
         selectedDays,
@@ -177,6 +182,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     workoutTitle,
     description,
     volumeCalc,
+    workoutType,
     exercises,
     exerciseMetadata,
     selectedDays,
@@ -212,6 +218,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     workoutTitle,
     description,
     volumeCalc,
+    workoutType,
     selectedDays,
     focusedField,
     isLoading,
@@ -225,6 +232,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     setWorkoutTitle,
     setDescription,
     setVolumeCalc,
+    setWorkoutType,
     setFocusedField,
     setSelectedExercises,
     setExercises,

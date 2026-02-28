@@ -11,6 +11,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
+import { isWorkoutType } from '../../constants/workoutTypes';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
@@ -76,7 +77,14 @@ function WorkoutInfo({
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row flex-wrap items-center gap-3">
+          {workoutLog?.type && isWorkoutType(workoutLog.type) ? (
+            <View className="rounded-full bg-bg-secondary px-3 py-1">
+              <Text className="text-xs font-medium text-text-secondary">
+                {t(`workout.type.${workoutLog.type}`)}
+              </Text>
+            </View>
+          ) : null}
           <View className="flex-row items-center gap-2">
             <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
             <Text className="text-sm font-medium text-text-secondary">

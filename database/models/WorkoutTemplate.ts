@@ -1,6 +1,7 @@
 import { Model, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
+import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogSet from './WorkoutLogSet';
@@ -18,6 +19,7 @@ export default class WorkoutTemplate extends Model {
   @field('name') name!: string;
   @field('description') description?: string;
   @field('volume_calculation_type') volumeCalculationType!: string;
+  @field('type') type?: string;
   @json('week_days_json', (data: any) => {
     if (data === null || data === undefined) {
       return undefined; // Allow null/undefined (optional field)
@@ -59,6 +61,7 @@ export default class WorkoutTemplate extends Model {
     const workoutLog = await workoutLogsCollection.create((log) => {
       log.workoutName = this.name;
       log.templateId = this.id;
+      log.type = this.type ?? DEFAULT_WORKOUT_TYPE;
       log.startedAt = now;
       log.exhaustionLevel = undefined;
       log.workoutScore = undefined;

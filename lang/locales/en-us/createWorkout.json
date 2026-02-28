@@ -7,6 +7,14 @@
     "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
     "description": "Description",
     "descriptionPlaceholder": "Focus on quads and calves...",
+    "workoutType": "Workout type",
+    "types": {
+      "strength": "Strength",
+      "cardio": "Cardio",
+      "flexibility": "Flexibility",
+      "calisthenics": "Calisthenics",
+      "other": "Other"
+    },
     "intelligence": "Intelligence",
     "volumeCalculation": {
       "title": "Volume Calculation",

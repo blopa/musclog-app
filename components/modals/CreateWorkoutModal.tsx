@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
+import type { WorkoutType } from '../../constants/workoutTypes';
+import { WORKOUT_TYPES } from '../../constants/workoutTypes';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { WEEKDAY_LABELS } from '../../utils/workout';
@@ -33,6 +35,7 @@ export default function CreateWorkoutModal({
     workoutTitle,
     description,
     volumeCalc,
+    workoutType,
     selectedDays,
     focusedField,
     isLoading,
@@ -43,6 +46,7 @@ export default function CreateWorkoutModal({
     setWorkoutTitle,
     setDescription,
     setVolumeCalc,
+    setWorkoutType,
     setFocusedField,
     setSelectedExercises,
     toggleDay,
@@ -235,6 +239,61 @@ export default function CreateWorkoutModal({
                   }}
                 />
               </View>
+            </View>
+          </View>
+
+          {/* Workout Type */}
+          <View
+            style={{
+              marginTop: theme.spacing.gap.base,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.lg,
+              padding: theme.spacing.padding.md,
+              borderWidth: theme.borderWidth.thin,
+              borderColor:
+                focusedField === 'workoutType'
+                  ? theme.colors.accent.primary
+                  : theme.colors.border.light,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.medium,
+                color: theme.colors.text.secondary,
+                marginBottom: theme.spacing.padding.sm,
+              }}
+            >
+              {t('createWorkout.workoutType')}
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.gap.sm }}>
+              {WORKOUT_TYPES.map((type) => {
+                const isSelected = workoutType === type;
+                return (
+                  <Pressable
+                    key={type}
+                    onPress={() => setWorkoutType(type as WorkoutType)}
+                    style={{
+                      paddingVertical: theme.spacing.padding.sm,
+                      paddingHorizontal: theme.spacing.padding.md,
+                      borderRadius: theme.borderRadius.lg,
+                      backgroundColor: isSelected
+                        ? theme.colors.accent.primary
+                        : theme.colors.background.white5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.sm,
+                        fontWeight: theme.typography.fontWeight.medium,
+                        color: isSelected ? theme.colors.text.white : theme.colors.text.secondary,
+                      }}
+                    >
+                      {t(`createWorkout.types.${type}`)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         </View>

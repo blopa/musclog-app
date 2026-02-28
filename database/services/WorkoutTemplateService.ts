@@ -4,6 +4,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 
 import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplatesModal';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
+import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
 import i18n from '../../lang/lang';
 import { theme } from '../../theme';
 import { getWeightUnit } from '../../utils/units';
@@ -43,6 +44,7 @@ export interface SaveTemplateData {
   name: string;
   description?: string;
   volumeCalculationType?: string;
+  type?: string;
   weekDaysJson?: number[];
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
@@ -190,6 +192,7 @@ export class WorkoutTemplateService {
           t.description = data.description || undefined;
           t.volumeCalculationType =
             data.volumeCalculationType ?? t.volumeCalculationType ?? 'standard';
+          t.type = data.type ?? t.type;
           t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
           t.updatedAt = now;
         });
@@ -225,6 +228,7 @@ export class WorkoutTemplateService {
           t.name = data.name;
           t.description = data.description || undefined;
           t.volumeCalculationType = data.volumeCalculationType || 'standard';
+          t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
           t.weekDaysJson = data.weekDaysJson || undefined;
           t.isArchived = false; // Default to not archived
           t.createdAt = now;
@@ -302,6 +306,7 @@ export class WorkoutTemplateService {
       id: string;
       name: string;
       description?: string;
+      type?: string;
       exerciseCount: number;
       lastCompleted?: string; // Formatted relative date string
       lastCompletedTimestamp?: number;
@@ -347,6 +352,7 @@ export class WorkoutTemplateService {
     id: string;
     name: string;
     description?: string;
+    type?: string;
     exerciseCount: number;
     lastCompleted?: string;
     lastCompletedTimestamp?: number;
@@ -421,6 +427,7 @@ export class WorkoutTemplateService {
       id: template.id,
       name: template.name ?? '',
       description: template.description || undefined,
+      type: template.type ?? undefined,
       exerciseCount,
       lastCompleted,
       lastCompletedTimestamp,
@@ -460,6 +467,7 @@ export class WorkoutTemplateService {
       id: string;
       name: string;
       description?: string;
+      type?: string;
       exerciseCount: number;
       lastCompleted?: string;
       lastCompletedTimestamp?: number;
@@ -754,6 +762,7 @@ export class WorkoutTemplateService {
       const template = await this.saveTemplate({
         name: templateName,
         description: rawTemplate.description,
+        type: DEFAULT_WORKOUT_TYPE,
         exercises: exercisesInWorkout,
         selectedDays: [], // No schedule days selected
       });

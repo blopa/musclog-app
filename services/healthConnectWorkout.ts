@@ -23,10 +23,31 @@ export interface CompletedWorkoutPayload {
   startedAt: number;
   completedAt: number;
   totalVolume?: number;
+  /** Workout type (strength, cardio, flexibility, calisthenics, other) for Health Connect exerciseType */
+  workoutType?: string;
   /** User's unit preference; if omitted, read from settings */
   units?: Units;
   /** Per-exercise breakdown for segments and notes */
   segmentItems?: SegmentItem[];
+}
+
+/**
+ * Maps app workout type to Health Connect ExerciseType constant.
+ */
+function mapWorkoutTypeToHealthConnect(workoutType: string | undefined): number {
+  switch (workoutType) {
+    case 'strength':
+      return ExerciseType.STRENGTH_TRAINING;
+    case 'cardio':
+      return ExerciseType.HIGH_INTENSITY_INTERVAL_TRAINING;
+    case 'flexibility':
+      return ExerciseType.STRETCHING;
+    case 'calisthenics':
+      return ExerciseType.CALISTHENICS;
+    case 'other':
+    default:
+      return ExerciseType.OTHER_WORKOUT;
+  }
 }
 
 /**
@@ -133,7 +154,7 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
 
     const record = {
       recordType: 'ExerciseSession' as const,
-      exerciseType: ExerciseType.STRENGTH_TRAINING, // TODO: use whatever is the workout type
+      exerciseType: mapWorkoutTypeToHealthConnect(payload.workoutType),
       startTime,
       endTime,
       title: payload.workoutName,

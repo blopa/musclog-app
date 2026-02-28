@@ -215,6 +215,7 @@ export class WorkoutService {
           startedAt: completedWorkout.startedAt,
           completedAt: completedWorkout.completedAt!,
           totalVolume: completedWorkout.totalVolume,
+          workoutType: completedWorkout.type ?? undefined,
           units,
           segmentItems,
         });
@@ -612,6 +613,7 @@ export class WorkoutService {
       const newLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;
+        log.type = originalLog.type;
         log.startedAt = now;
         log.completedAt = undefined; // Not completed yet
         log.totalVolume = 0;

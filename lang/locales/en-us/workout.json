@@ -5,6 +5,13 @@
     "resumeSession": "Resume Session",
     "workout": "Workout",
     "inProgress": "In Progress",
+    "type": {
+      "strength": "Strength",
+      "cardio": "Cardio",
+      "flexibility": "Flexibility",
+      "calisthenics": "Calisthenics",
+      "other": "Other"
+    },
     "exercises": "{{count}} Exercises",
     "workoutSequence": "Workout Sequence",
     "skipped": "SKIPPED",

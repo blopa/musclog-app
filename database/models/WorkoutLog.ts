@@ -18,6 +18,7 @@ export default class WorkoutLog extends Model {
   @field('completed_at') completedAt?: number;
   @field('total_volume') totalVolume?: number;
   @field('calories_burned') caloriesBurned?: number;
+  @field('type') type?: string;
   @field('exhaustion_level') exhaustionLevel?: number;
   @field('workout_score') workoutScore?: number;
   @field('created_at') createdAt!: number;

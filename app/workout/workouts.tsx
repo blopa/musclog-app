@@ -91,6 +91,7 @@ export default function WorkoutsScreen() {
       id: featured.id,
       name: featured.name,
       description: featured.description,
+      type: featured.type,
       lastCompleted: featured.lastCompleted,
       lastCompletedTimestamp: featured.lastCompletedTimestamp,
       exerciseCount: featured.exerciseCount,
@@ -102,6 +103,7 @@ export default function WorkoutsScreen() {
       id: template.id,
       name: template.name,
       description: template.description,
+      type: template.type,
       lastCompleted: template.lastCompleted,
       lastCompletedTimestamp: template.lastCompletedTimestamp,
       exerciseCount: template.exerciseCount,
@@ -129,26 +131,36 @@ export default function WorkoutsScreen() {
       }
 
       // Apply type filter (strength/cardio/flexibility)
-      // Note: Workout type filtering requires a workout_type field in the schema.
-      // To implement type-based filtering:
-      // 1. Add workout_type column to workout_templates table (schema migration)
-      // 2. Update WorkoutTemplate model to include workout_type field
-      // 3. Update CreateWorkoutModal to allow users to set workout type
-      // 4. Update WorkoutTemplateService.saveTemplate to persist workout_type
-      // 5. Then filter here: if (activeFilter !== 'all' && activeFilter !== 'archived') { return workout.type === activeFilter; }
       if (activeFilter === 'all' || activeFilter === 'archived') {
         return true;
       }
 
-      // Type-based filtering not yet implemented - requires schema changes
+      if (
+        activeFilter === 'strength' ||
+        activeFilter === 'cardio' ||
+        activeFilter === 'flexibility'
+      ) {
+        return workout.type === activeFilter;
+      }
+
       return true;
     });
   }, [workouts, searchQuery, activeFilter]);
 
-  // Filter featured workout based on search query
+  // Filter featured workout based on search query and type
   const filteredFeaturedWorkout = useMemo(() => {
     if (!featuredWorkout) {
       return null;
+    }
+
+    if (
+      activeFilter === 'strength' ||
+      activeFilter === 'cardio' ||
+      activeFilter === 'flexibility'
+    ) {
+      if (featuredWorkout.type !== activeFilter) {
+        return null;
+      }
     }
 
     const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -163,7 +175,7 @@ export default function WorkoutsScreen() {
     }
 
     return featuredWorkout;
-  }, [featuredWorkout, searchQuery]);
+  }, [featuredWorkout, searchQuery, activeFilter]);
 
   // Helper function to start a workout and show overview modal
   const handleStartWorkout = useCallback(async (templateId: string) => {
