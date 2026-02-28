@@ -13,6 +13,8 @@ import { FullScreenModal } from './FullScreenModal';
 
 type ThemeOption = 'system' | 'light' | 'dark';
 
+const HAS_THEMES = false; // TODO: remove this once we have option to pick dark or light theme
+
 type BasicSettingsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -126,30 +128,32 @@ export function BasicSettingsModal({
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.basicSettings.title')}>
       <View className="gap-8 py-6">
         {/* Appearance Section */}
-        <View>
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-            {t('settings.basicSettings.appearance')}
-          </Text>
-          <View
-            style={{
-              backgroundColor: theme.colors.background.card,
-              borderRadius: theme.borderRadius.lg,
-              marginHorizontal: theme.spacing.padding.base,
-              padding: theme.spacing.padding.base,
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-            }}
-          >
-            <Text className="mb-3 text-sm font-medium text-text-secondary">
-              {t('settings.basicSettings.appTheme')}
+        {HAS_THEMES ? (
+          <View>
+            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+              {t('settings.basicSettings.appearance')}
             </Text>
-            <SegmentedControl
-              options={themeOptions}
-              value={themeValue}
-              onValueChange={(val) => handleThemeChange(val as ThemeOption)}
-            />
+            <View
+              style={{
+                backgroundColor: theme.colors.background.card,
+                borderRadius: theme.borderRadius.lg,
+                marginHorizontal: theme.spacing.padding.base,
+                padding: theme.spacing.padding.base,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.border.light,
+              }}
+            >
+              <Text className="mb-3 text-sm font-medium text-text-secondary">
+                {t('settings.basicSettings.appTheme')}
+              </Text>
+              <SegmentedControl
+                options={themeOptions}
+                value={themeValue}
+                onValueChange={(val) => handleThemeChange(val as ThemeOption)}
+              />
+            </View>
           </View>
-        </View>
+        ) : null}
 
         {/* Localization Section */}
         <View
