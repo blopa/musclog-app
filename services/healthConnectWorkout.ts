@@ -53,6 +53,9 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
         ? `Volume: ${payload.totalVolume.toLocaleString()} kg`
         : undefined;
 
+    // TODO: add Segments, which is a Breakdowns of the workout phases (e.g., 5 minutes of "Warm-up", 45 minutes of "Active", 10 minutes of "Cool-down")
+    // so we should put the workout data, like 12 reps of 10kg of squat, etc
+    // TODO: also add Metadata, let health connect know that the musclog app created this workout
     const record = {
       recordType: 'ExerciseSession' as const,
       exerciseType: ExerciseType.STRENGTH_TRAINING,
