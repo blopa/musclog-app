@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Play, WifiOff } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo,useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, View } from 'react-native';
 
@@ -134,6 +134,16 @@ export default function RestOverScreen() {
     loadData();
   }, [workoutLogId, nextSetOrder]);
 
+  const nextExerciseDisplayWeight = useMemo(() => {
+    if (!nextExercise) {
+      return null;
+    }
+
+    const d = kgToDisplay(nextExercise.weightKg, units);
+    const rounded = d % 1 === 0 ? d : Math.round(d * 10) / 10;
+    return `${rounded} ${t(weightUnitKey)}`; // TODO: use i18n
+  }, [nextExercise, units, weightUnitKey, t]);
+
   const handleStartNextSet = () => {
     if (workoutLogId) {
       router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
@@ -206,12 +216,8 @@ export default function RestOverScreen() {
           <RestOverNextExercise
             exercise={{
               ...nextExercise,
-              // TODO: move this to a useMemo
-              weight: (() => {
-                const d = kgToDisplay(nextExercise.weightKg, units);
-                const rounded = d % 1 === 0 ? d : Math.round(d * 10) / 10;
-                return `${rounded} ${t(weightUnitKey)}`;
-              })(),
+              // use memoized display weight
+              weight: nextExerciseDisplayWeight ?? '',
             }}
           />
         ) : null}
