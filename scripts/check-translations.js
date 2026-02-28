@@ -7,7 +7,7 @@ const glob = require('glob');
 
 // Configuration
 const CONFIG = {
-  localeFile: path.join(__dirname, '../lang/locales/en-us.json'),
+  localeDir: path.join(__dirname, '../lang/locales/en-us'),
   scanPaths: [
     '../app/**/*.tsx',
     '../components/**/*.tsx',
@@ -32,32 +32,45 @@ class TranslationScanner {
     this.missingKeys = new Set();
     this.filesWithTranslations = new Map();
     this.missingKeyLocations = new Map();
+    this.keyToFile = new Map(); // key -> path to JSON file (for cleanup)
+    this.namespaceToFile = new Map(); // namespace -> path (for add-missing)
     this.cleanup = options.cleanup || false;
     this.addMissing = options.addMissing || false;
   }
 
-  // Load existing translations from JSON file
+  // Load existing translations from all JSON files in locale directory
   loadExistingTranslations() {
     try {
-      const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
-      const translations = JSON.parse(content);
-      this.extractKeysFromObject(translations, '');
-      console.log(`✓ Loaded ${this.existingKeys.size} existing translation keys`);
+      const files = glob.sync('*.json', { cwd: CONFIG.localeDir, absolute: true });
+      if (files.length === 0) {
+        console.error('✗ No JSON files found in', CONFIG.localeDir);
+        process.exit(1);
+      }
+      for (const filePath of files) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const data = JSON.parse(content);
+        for (const topLevelKey of Object.keys(data)) {
+          this.namespaceToFile.set(topLevelKey, filePath);
+          this.extractKeysFromObject(data[topLevelKey], topLevelKey, filePath);
+        }
+      }
+      console.log(`✓ Loaded ${this.existingKeys.size} existing translation keys from ${files.length} files`);
     } catch (error) {
-      console.error('✗ Error loading translation file:', error.message);
+      console.error('✗ Error loading translation files:', error.message);
       process.exit(1);
     }
   }
 
   // Recursively extract all keys from nested translation object
-  extractKeysFromObject(obj, prefix = '') {
+  extractKeysFromObject(obj, prefix = '', filePath = null) {
     for (const [key, value] of Object.entries(obj)) {
       const fullKey = prefix ? `${prefix}.${key}` : key;
 
       if (typeof value === 'object' && value !== null) {
-        this.extractKeysFromObject(value, fullKey);
+        this.extractKeysFromObject(value, fullKey, filePath);
       } else {
         this.existingKeys.add(fullKey);
+        if (filePath) this.keyToFile.set(fullKey, filePath);
       }
     }
   }
@@ -223,7 +236,7 @@ class TranslationScanner {
     return true;
   }
 
-  // Remove unused translations from the locale file
+  // Remove unused translations from the locale files (per-file)
   cleanupUnusedTranslations() {
     const unusedKeys = [...this.existingKeys].filter((key) => !this.usedKeys.has(key));
 
@@ -232,25 +245,33 @@ class TranslationScanner {
       return;
     }
 
+    const keysByFile = new Map();
+    for (const key of unusedKeys) {
+      const filePath = this.keyToFile.get(key);
+      if (filePath) {
+        if (!keysByFile.has(filePath)) keysByFile.set(filePath, []);
+        keysByFile.get(filePath).push(key);
+      }
+    }
+
     try {
-      const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
-      const translations = JSON.parse(content);
-
-      // Remove unused keys recursively
-      this.removeUnusedKeysFromObject(translations, unusedKeys);
-
-      // Write back to file with proper formatting
-      const cleanedContent = JSON.stringify(translations, null, 2) + '\n';
-      fs.writeFileSync(CONFIG.localeFile, cleanedContent, 'utf8');
-
-      console.log(`\n🧹 Removed ${unusedKeys.length} unused translations from en-us.json`);
-      console.log('📝 Backup: The original file has been overwritten.');
+      for (const [filePath, keys] of keysByFile) {
+        const content = fs.readFileSync(filePath, 'utf8');
+        const data = JSON.parse(content);
+        for (const topLevelKey of Object.keys(data)) {
+          this.removeUnusedKeysFromObject(data[topLevelKey], keys, topLevelKey);
+        }
+        const cleanedContent = JSON.stringify(data, null, 2) + '\n';
+        fs.writeFileSync(filePath, cleanedContent, 'utf8');
+      }
+      console.log(`\n🧹 Removed ${unusedKeys.length} unused translations from ${keysByFile.size} file(s)`);
+      console.log('📝 Original files have been overwritten.');
     } catch (error) {
       console.error('✗ Error cleaning up translations:', error.message);
     }
   }
 
-  // Recursively remove unused keys from an object
+  // Recursively remove unused keys from an object (prefix used for fullKey)
   removeUnusedKeysFromObject(obj, unusedKeys, prefix = '') {
     const keysToRemove = [];
 
@@ -259,7 +280,6 @@ class TranslationScanner {
 
       if (typeof value === 'object' && value !== null) {
         this.removeUnusedKeysFromObject(value, unusedKeys, fullKey);
-        // Remove empty objects after cleanup
         if (Object.keys(value).length === 0) {
           keysToRemove.push(key);
         }
@@ -268,7 +288,6 @@ class TranslationScanner {
       }
     }
 
-    // Remove the keys
     for (const key of keysToRemove) {
       delete obj[key];
     }
@@ -309,7 +328,7 @@ class TranslationScanner {
         }
       }
 
-      console.log('\n💡 SUGGESTED ADDITIONS TO en-us.json:');
+      console.log('\n💡 SUGGESTED ADDITIONS (per-namespace in lang/locales/en-us/*.json):');
       console.log('{');
 
       const sortedMissing = Array.from(this.missingKeys)
@@ -319,52 +338,69 @@ class TranslationScanner {
         });
 
       for (const key of sortedMissing) {
-        const value = this.generateDefaultValue(key);
-        // console.log(`  "${key}": "${value}",`);
         console.log(`  "${key}": "TODO add this translation",`);
       }
       console.log('}');
 
-      // Only add missing keys to the locale file if the user explicitly passed --add-missing
+      // Only add missing keys to locale files if the user explicitly passed --add-missing
       if (this.addMissing) {
         try {
-          const backupPath = `${CONFIG.localeFile}.bak.${Date.now()}`;
-          fs.copyFileSync(CONFIG.localeFile, backupPath);
-          console.log(`\n🔁 Backup created at: ${backupPath}`);
-
-          const content = fs.readFileSync(CONFIG.localeFile, 'utf8');
-          const translations = JSON.parse(content);
-
+          const missingByNamespace = new Map();
           for (const key of sortedMissing) {
-            const defaultValue = this.generateDefaultValue(key);
-            // Set nested key in translations object without overwriting existing values
-            const parts = key.split('.');
-            let node = translations;
-            for (let i = 0; i < parts.length; i++) {
-              const part = parts[i];
-              if (i === parts.length - 1) {
-                // leaf
-                if (node[part] === undefined) {
-                  node[part] = defaultValue;
+            const ns = key.split('.')[0];
+            if (!missingByNamespace.has(ns)) missingByNamespace.set(ns, []);
+            missingByNamespace.get(ns).push(key);
+          }
+          let addedCount = 0;
+          for (const [namespace, keys] of missingByNamespace) {
+            const filePath = this.namespaceToFile.get(namespace);
+            if (!filePath) {
+              console.log(`\n⚠️  No locale file for namespace "${namespace}". Add keys manually or create ${path.join(CONFIG.localeDir, namespace + '.json')}.`);
+              continue;
+            }
+            const backupPath = `${filePath}.bak.${Date.now()}`;
+            fs.copyFileSync(filePath, backupPath);
+            console.log(`\n🔁 Backup: ${path.relative(process.cwd(), backupPath)}`);
+
+            const content = fs.readFileSync(filePath, 'utf8');
+            const data = JSON.parse(content);
+            const rootKey = Object.keys(data)[0];
+            if (!rootKey) continue;
+            let node = data[rootKey];
+
+            for (const key of keys) {
+              const parts = key.split('.');
+              if (parts[0] !== rootKey) continue;
+              const keyParts = parts.slice(1);
+              let n = node;
+              for (let i = 0; i < keyParts.length; i++) {
+                const part = keyParts[i];
+                if (i === keyParts.length - 1) {
+                  if (n[part] === undefined) {
+                    n[part] = this.generateDefaultValue(key);
+                    addedCount++;
+                  }
+                } else {
+                  if (n[part] === undefined || typeof n[part] !== 'object') {
+                    n[part] = {};
+                  }
+                  n = n[part];
                 }
-              } else {
-                if (node[part] === undefined || typeof node[part] !== 'object') {
-                  node[part] = {};
-                }
-                node = node[part];
               }
             }
-          }
 
-          const newContent = JSON.stringify(translations, null, 2) + '\n';
-          fs.writeFileSync(CONFIG.localeFile, newContent, 'utf8');
-          console.log(`\n✅ Added ${sortedMissing.length} missing keys to ${CONFIG.localeFile}`);
+            const newContent = JSON.stringify(data, null, 2) + '\n';
+            fs.writeFileSync(filePath, newContent, 'utf8');
+          }
+          if (addedCount > 0) {
+            console.log(`\n✅ Added ${addedCount} missing key(s) to locale files in ${CONFIG.localeDir}`);
+          }
         } catch (err) {
-          console.error('✗ Failed to add missing keys to locale file:', err.message || err);
+          console.error('✗ Failed to add missing keys to locale files:', err.message || err);
         }
       } else {
         console.log(
-          '\nℹ️  Missing keys not added. Re-run with --add-missing or -a to auto-insert them into the locale file.'
+          '\nℹ️  Missing keys not added. Re-run with --add-missing or -a to auto-insert them into the locale files.'
         );
       }
     } else {
@@ -441,15 +477,17 @@ function parseArgs() {
 
 Usage: node scripts/check-translations.js [options]
 
+Reads all JSON files from lang/locales/en-us/ (one namespace per file).
+
 Options:
-  --cleanup, -c    Automatically remove unused translations from en-us.json
-  --add-missing, -a  Automatically add missing translation keys to en-us.json (creates a backup)
+  --cleanup, -c    Remove unused translations from locale files
+  --add-missing, -a  Add missing translation keys to the correct locale file (creates backups)
   --help, -h       Show this help message
 
 Examples:
   node scripts/check-translations.js              # Scan and report only
   node scripts/check-translations.js --cleanup     # Scan and remove unused translations
-  npm run check-translations -- --cleanup         # Scan and remove unused translations via npm
+  npm run check-translations -- --cleanup         # Via npm
 `);
     process.exit(0);
   }

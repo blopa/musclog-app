@@ -7,6 +7,29 @@
     "searchAgainDesc": "Try a different search term",
     "tryAICamera": "Try AI Camera",
     "tryAICameraDesc": "Scan your meal for instant identification",
+    "common": {
+      "kcal": "kcal"
+    },
+    "aiCamera": {
+      "estimated": "Estimated",
+      "modes": {
+        "mealPhoto": "AI Meal"
+      }
+    },
+    "createMeal": {
+      "estimated": "Estimated",
+      "totalNutrition": "Total Nutrition"
+    },
+    "macros": {
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat"
+    },
+    "mealEstimation": {
+      "identifiedItems": "Identified Items",
+      "addItem": "Add Item",
+      "confirmAndLog": "Confirm & Log Meal"
+    },
     "manageFoodData": {
       "title": "Nutrition Log",
       "searchPlaceholder": "Search food logs...",

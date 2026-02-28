@@ -215,6 +215,7 @@
     },
     "createMeal": {
       "title": "Create New Meal",
+      "description": "Create a custom meal by combining foods",
       "saveMeal": "Save Meal",
       "totalNutrition": "Total Nutrition",
       "estimated": "Estimated",
