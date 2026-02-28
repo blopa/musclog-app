@@ -1,6 +1,5 @@
 {
   "workoutSession": {
-    "kg": "kg",
     "totalTime": "TOTAL TIME",
     "setOf": "SET {{current}} OF {{total}}",
     "lastSetForExercise": "Last set for this exercise",

@@ -57,10 +57,7 @@
       "initializing": "Initializing Health Connect...",
       "syncing": "Syncing health data...",
       "processing": "Processing...",
-      "continue": "Continue",
-      "initializeFirst": "Please initialize Health Connect first.",
-      "permissionsDenied": "The following permissions were not granted: {{types}}. Some features may not work correctly.",
-      "openSettings": "Open Settings"
+      "continue": "Continue"
     },
     "landing": {
       "getStarted": "Get Started",

@@ -37,9 +37,7 @@
       "enterDecryptionPhrase": "Decryption phrase (optional)",
       "encryptionPhrasePlaceholder": "Leave blank for unencrypted export",
       "decryptionPhrasePlaceholder": "Enter phrase if backup was encrypted",
-      "exportFailedTitle": "Export Failed",
       "exportFailedMessage": "An error occurred while exporting. Please try again.",
-      "importFailedTitle": "Import Failed",
       "importFailedMessage": "An error occurred while importing. Please check the file and try again.",
       "privacyDiagnostics": "PRIVACY & DIAGNOSTICS",
       "anonymousBugReport": "Anonymous Bug Report",
@@ -65,10 +63,8 @@
       "manageGoalsDataSubtitle": "View and manage your nutrition and body composition goals history",
       "clearAppData": "Clear App Data",
       "clearAppDataSubtitle": "Open Android settings to clear cache and data",
-      "openSettingsFailedTitle": "Settings Unavailable",
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",
-      "dangerZone": "DANGER ZONE",
-      "version": "Version {{version}}"
+      "dangerZone": "DANGER ZONE"
     },
     "aiSettings": {
       "title": "AI Settings",
@@ -88,8 +84,6 @@
       "geminiModel": "Gemini Model",
       "openAiModel": "OpenAI Model",
       "selectModel": "Select a model",
-      "apiKeyHelp": "Need help finding your API keys?",
-      "setupGuide": "Read the setup guide",
       "selectGeminiModel": "Select Gemini Model",
       "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
       "selectOpenAiModel": "Select OpenAI model",
@@ -97,7 +91,6 @@
       "subtitle": "Settings for all the AI used on this app"
     },
     "notifications": "Notifications",
-    "aboutMusclog": "About Musclog",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy"
   }

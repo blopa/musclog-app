@@ -26,7 +26,6 @@
     "noExercisesPlaceholder": "No Exercises",
     "saveError": "Failed to Save",
     "validation": {
-      "titleRequired": "Title is required",
       "titleRequiredMessage": "Please enter a workout title"
     }
   }

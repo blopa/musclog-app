@@ -52,34 +52,9 @@
       "title": "Create Portion Size",
       "description": "Add a custom portion size for foods"
     },
-    "portions": {
-      "slice": "Slice",
-      "twoSlices": "2 Slices",
-      "cup": "Cup",
-      "tbsp": "Tbsp",
-      "tsp": "Tsp",
-      "oz": "Oz",
-      "100g": "100g",
-      "50g": "50g",
-      "200g": "200g",
-      "250g": "250g"
-    },
     "manageFoodData": {
-      "title": "Manage Food Data",
-      "searchPlaceholder": "Search food logs...",
-      "foodOptions": "Food Options",
-      "editFoodEntry": "Edit Food Entry",
-      "editFoodEntryDesc": "Modify the food details",
-      "duplicateEntry": "Duplicate Entry",
-      "duplicateEntryDesc": "Create a copy of this entry",
-      "deleteEntry": "Delete Entry",
-      "deleteEntryDesc": "Remove this food entry",
-      "endOfHistory": "End of food log history",
-      "caloriesProteinFormat": "{{calories}} kcal • {{protein}}g Protein",
       "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
-      "unknownFood": "Unknown",
-      "noLogs": "No food logs yet",
-      "noLogsDesc": "Start tracking your meals to see them here"
+      "unknownFood": "Unknown"
     },
     "header": {
       "today": "Today",
@@ -188,7 +163,6 @@
       "addFavorite": "Add Favorite",
       "grams": "Grams",
       "unitGrams": "g",
-      "unitCup": "cup",
       "meal": "Meal",
       "date": "Date",
       "today": "Today",
@@ -225,7 +199,6 @@
       "editList": "Edit List",
       "noIngredients": "No Ingredients",
       "addFoodItem": "Add Food Item",
-      "error": "Error",
       "mealNameRequired": "Please enter a meal name",
       "ingredientsRequired": "Please add at least one ingredient",
       "saveFailed": "Failed to save meal. Please try again."
@@ -236,7 +209,6 @@
       "grantPermission": "Grant Permission",
       "mealInstruction": "Point at your meal for instant estimation",
       "labelInstruction": "Point at food label or nutrition facts",
-      "barcodeInstruction": "Align the barcode inside the frame to scan",
       "barcodeAutoInstruction": "Automatically scanning for barcodes...",
       "modes": {
         "mealPhoto": "AI Meal",
@@ -251,12 +223,6 @@
       "photoCaptured": "Photo captured successfully",
       "cameraError": "Camera error. Please try again.",
       "uploadFromGallery": "Choose from gallery"
-    },
-    "mealEstimation": {
-      "identifiedItems": "Identified Items",
-      "addItem": "Add Item",
-      "confirmAndLog": "Confirm & Log Meal",
-      "retake": "Retake"
     },
     "aiNutritionContext": {
       "title": "Add Context for AI",
@@ -277,11 +243,6 @@
       "foodNamePlaceholder": "e.g., Homemade Chicken Salad",
       "barcode": "Barcode",
       "barcodePlaceholder": "Scan or enter barcode",
-      "measurementOptions": {
-        "per100g": "Per 100g",
-        "perServing": "Per Serving",
-        "container": "Container"
-      },
       "macronutrients": "Macronutrients",
       "calories": "Calories",
       "protein": "Protein",

@@ -104,7 +104,6 @@
       "title": "Manage Workout Template Data",
       "searchPlaceholder": "Search templates...",
       "noTemplates": "No workout templates yet",
-      "noTemplatesDesc": "Create workout templates to see them here",
       "endOfHistory": "End of template history",
       "templateOptions": "Template Options",
       "editTemplate": "Edit Template",
