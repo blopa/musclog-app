@@ -158,6 +158,8 @@ export function useDebouncedSettings(debounceMs = 1500) {
     SettingsService.setNotifications
   );
 
+  const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>('units', SettingsService.setUnits);
+
   // Function to immediately save all pending changes to database
   const flushAllPendingChanges = useCallback(async () => {
     const pendingEntries = Object.entries(pendingValuesRef.current);
@@ -200,6 +202,9 @@ export function useDebouncedSettings(debounceMs = 1500) {
           case 'notifications':
             await SettingsService.setNotifications(value as boolean);
             break;
+          case 'units':
+            await SettingsService.setUnits(value as 'metric' | 'imperial');
+            break;
         }
         delete pendingValuesRef.current[settingKey];
       } catch (error) {
@@ -238,6 +243,7 @@ export function useDebouncedSettings(debounceMs = 1500) {
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
     notifications: (localSettings.notifications as boolean) ?? actualSettings.notifications,
+    units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
 
     // Actual (database) values
     actualTheme: actualSettings.theme,
@@ -256,6 +262,7 @@ export function useDebouncedSettings(debounceMs = 1500) {
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleNotificationsChange,
+    handleUnitsChange,
 
     // Utility functions
     flushAllPendingChanges,

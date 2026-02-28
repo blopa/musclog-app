@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, Heart, Moon, Settings, Sun } from 'lucide-react-native';
+import { ChevronRight, Heart, Moon, Ruler, Scale, Settings, Sun } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -48,10 +48,12 @@ export function BasicSettingsModal({
   // Use debounced settings for instant UI updates
   const {
     theme: themeValue,
+    units,
     connectHealthData: debouncedConnectHealthData,
     readHealthData: debouncedReadHealthData,
     writeHealthData: debouncedWriteHealthData,
     handleThemeChange,
+    handleUnitsChange,
     handleConnectHealthDataChange,
     handleReadHealthDataChange,
     handleWriteHealthDataChange,
@@ -94,6 +96,29 @@ export function BasicSettingsModal({
         <Moon
           size={theme.iconSize.md}
           color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+        />
+      ),
+    },
+  ];
+
+  const unitsOptions = [
+    {
+      label: t('editFitnessDetails.imperial'),
+      value: 'imperial',
+      icon: (
+        <Scale
+          size={theme.iconSize.md}
+          color={units === 'imperial' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+        />
+      ),
+    },
+    {
+      label: t('editFitnessDetails.metric'),
+      value: 'metric',
+      icon: (
+        <Ruler
+          size={theme.iconSize.md}
+          color={units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary}
         />
       ),
     },
@@ -154,6 +179,24 @@ export function BasicSettingsModal({
             </View>
           </View>
         ) : null}
+
+        {/* Units Section */}
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+            {t('editFitnessDetails.units')}
+          </Text>
+          <View className="gap-2">
+            <SegmentedControl
+              options={unitsOptions}
+              value={units || 'metric'}
+              onValueChange={(val) => handleUnitsChange(val as 'metric' | 'imperial')}
+            />
+          </View>
+        </View>
 
         {/* Localization Section */}
         <View

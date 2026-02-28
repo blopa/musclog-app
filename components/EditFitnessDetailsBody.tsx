@@ -6,7 +6,9 @@ import {
   Heart,
   Medal,
   Move,
+  Ruler,
   Save,
+  Scale,
   Target,
   Timer,
   Trophy,
@@ -258,8 +260,26 @@ export function EditFitnessDetailsBody({
           </Text>
           <SegmentedControl
             options={[
-              { label: t('editFitnessDetails.imperial'), value: 'imperial' },
-              { label: t('editFitnessDetails.metric'), value: 'metric' },
+              { 
+                label: t('editFitnessDetails.imperial'), 
+                value: 'imperial',
+                icon: (
+                  <Scale
+                    size={theme.iconSize.md}
+                    color={units === 'imperial' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  />
+                ),
+              },
+              { 
+                label: t('editFitnessDetails.metric'), 
+                value: 'metric',
+                icon: (
+                  <Ruler
+                    size={theme.iconSize.md}
+                    color={units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  />
+                ),
+              },
             ]}
             value={units}
             onValueChange={(val) => setUnits(val as 'imperial' | 'metric')}
