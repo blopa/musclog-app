@@ -768,6 +768,7 @@ export default function FoodScreen() {
           foodLog={isDuplicateMode ? undefined : selectedFoodItem.log}
           initialMealType={isDuplicateMode ? selectedFoodItem.log.type : undefined}
           initialDate={isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined}
+          initialServingSize={isDuplicateMode ? selectedFoodItem.gramWeight : undefined}
           onAddFood={async (_data) => {
             try {
               await refresh();

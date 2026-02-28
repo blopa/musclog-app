@@ -42,6 +42,8 @@ type FoodDetailsModalProps = {
   initialMealType?: MealType;
   /** When adding food (not editing a log), use this as the default log date (e.g. date from food screen). */
   initialDate?: Date;
+  /** Initial serving size in grams for duplicate mode */
+  initialServingSize?: number;
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
   /** Called when barcode lookup has finished (product found or not). Used to hide camera loading overlay. */
@@ -57,6 +59,7 @@ export function FoodMealDetailsModal({
   meal,
   initialMealType,
   initialDate,
+  initialServingSize,
   onAddFood,
   onLogMeal,
   foodLog,
@@ -119,6 +122,13 @@ export function FoodMealDetailsModal({
       setSelectedDate(new Date(initialDate));
     }
   }, [visible, initialDate, foodLog]);
+
+  // When opening in duplicate mode, apply initial serving size
+  useEffect(() => {
+    if (visible && initialServingSize && !foodLog) {
+      setServingSize(initialServingSize);
+    }
+  }, [visible, initialServingSize, foodLog]);
 
   // Check local database for food with barcode first
   useEffect(() => {
@@ -190,14 +200,14 @@ export function FoodMealDetailsModal({
     if (food) {
       // Local food already available, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(100);
+      setServingSize(initialServingSize || 100);
       return;
     }
 
     if (localFood) {
       // Local food found by barcode lookup, show details
       setIsFoodDetailsModalVisible(true);
-      setServingSize(100);
+      setServingSize(initialServingSize || 100);
       setIsFavorite(localFood.isFavorite);
       return;
     }
