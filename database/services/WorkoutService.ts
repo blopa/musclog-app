@@ -16,6 +16,7 @@ import Schedule from '../models/Schedule';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
+import { SettingsService } from './SettingsService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
 
 export class WorkoutService {
@@ -185,11 +186,37 @@ export class WorkoutService {
 
       // Write to Health Connect if permission granted (best-effort, never fails workout completion)
       try {
+        const units = await SettingsService.getUnits();
+        const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
+        const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+        const byExercise = new Map<string, WorkoutLogSet[]>();
+        for (const set of sets) {
+          const eid = set.exerciseId ?? '';
+          if (!byExercise.has(eid)) {
+            byExercise.set(eid, []);
+          }
+          byExercise.get(eid)!.push(set);
+        }
+        const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => {
+          const exercise = exerciseMap.get(exerciseId);
+          const totalReps = exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0);
+          const setsData = exerciseSets.map((s) => ({
+            reps: s.reps ?? 0,
+            weight: s.weight ?? 0,
+          }));
+          return {
+            exerciseName: exercise?.name ?? 'Exercise',
+            totalReps,
+            sets: setsData,
+          };
+        });
         await writeWorkoutToHealthConnect({
           workoutName: completedWorkout.workoutName,
           startedAt: completedWorkout.startedAt,
           completedAt: completedWorkout.completedAt!,
           totalVolume: completedWorkout.totalVolume,
+          units,
+          segmentItems,
         });
       } catch (err) {
         console.warn('Health Connect workout write failed:', err);

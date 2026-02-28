@@ -22,6 +22,21 @@ import Setting, { type SettingType } from '../models/Setting';
 
 export class SettingsService {
   /**
+   * Get the current units setting ('metric' | 'imperial').
+   * Defaults to 'metric' if not set.
+   */
+  static async getUnits(): Promise<'metric' | 'imperial'> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    if (settings.length === 0) {
+      return 'metric';
+    }
+    return settings[0].value === '1' ? 'imperial' : 'metric';
+  }
+
+  /**
    * Upsert the units setting ('metric' | 'imperial')
    */
   static async setUnits(units: 'metric' | 'imperial') {
