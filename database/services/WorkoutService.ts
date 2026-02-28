@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import {
   clearActiveWorkoutLogId,
   getActiveWorkoutLogId,
@@ -181,6 +182,18 @@ export class WorkoutService {
 
       // Detect personal records
       const personalRecords = await WorkoutAnalytics.detectPersonalRecords(completedWorkout);
+
+      // Write to Health Connect if permission granted (best-effort, never fails workout completion)
+      try {
+        await writeWorkoutToHealthConnect({
+          workoutName: completedWorkout.workoutName,
+          startedAt: completedWorkout.startedAt,
+          completedAt: completedWorkout.completedAt!,
+          totalVolume: completedWorkout.totalVolume,
+        });
+      } catch (err) {
+        console.warn('Health Connect workout write failed:', err);
+      }
 
       return {
         workoutLog: completedWorkout,
