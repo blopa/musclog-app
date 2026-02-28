@@ -41,6 +41,7 @@ import { useNutritionLogs } from '../../hooks/useNutritionLogs';
 import { useSettings } from '../../hooks/useSettings';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
+import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
 export default function FoodScreen() {
   const { t } = useTranslation();
@@ -513,7 +514,7 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={`${Math.round(entry.gramWeight)} g`}
+                      description={getSimpleServingDisplay(entry.gramWeight, units)}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -538,7 +539,7 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={`${Math.round(entry.gramWeight)} g`}
+                      description={getSimpleServingDisplay(entry.gramWeight, units)}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -563,7 +564,7 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={`${Math.round(entry.gramWeight)} g`}
+                      description={getSimpleServingDisplay(entry.gramWeight, units)}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -588,7 +589,7 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={`${Math.round(entry.gramWeight)} g`}
+                      description={getSimpleServingDisplay(entry.gramWeight, units)}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -613,7 +614,7 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={`${Math.round(entry.gramWeight)} g`}
+                      description={getSimpleServingDisplay(entry.gramWeight, units)}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -751,7 +752,7 @@ export default function FoodScreen() {
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
         title={selectedFoodItem?.displayName ?? ''}
-        subtitle={`${Math.round(selectedFoodItem?.gramWeight || 0)}g • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
+        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
       />
 

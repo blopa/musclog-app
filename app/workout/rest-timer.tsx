@@ -19,6 +19,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestTimerScreen() {
@@ -318,7 +319,7 @@ export default function RestTimerScreen() {
               </Text>
             </View>
             <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
-              {completedSet.set.weight ?? 0} {t(weightUnitKey)}{' '}
+              {kgToDisplay(completedSet.set.weight ?? 0, units)} {t(weightUnitKey)}{' '}
               <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
               {completedSet.set.reps ?? 0} {t('restTimer.reps')}
             </Text>
@@ -331,11 +332,11 @@ export default function RestTimerScreen() {
                 name: nextSet.exercise.name ?? '',
                 media: require('../../assets/icon.png'), // Default image for now
                 itemOne: {
-                  value: `${nextSet.set.weight ?? 0} ${t(weightUnitKey)}`,
+                  value: `${kgToDisplay(nextSet.set.weight ?? 0, units)} ${t(weightUnitKey)}`,
                   icon: Dumbbell,
                 },
-                itemTwo: { value: `${nextSet.set.reps ?? 0} reps`, icon: Repeat },
-                itemThree: { value: `${nextSet.set.reps ?? 0} reps`, icon: ChevronRight },
+                itemTwo: { value: `${nextSet.set.reps ?? 0} reps`, icon: Repeat }, // TODO: use i18n
+                itemThree: { value: `${nextSet.set.reps ?? 0} reps`, icon: ChevronRight }, // TODO: use i18n
               }}
               onPress={() => {
                 navigateToNextScreen();

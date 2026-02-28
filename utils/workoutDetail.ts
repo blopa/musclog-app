@@ -7,6 +7,7 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
+import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
 
@@ -48,26 +49,16 @@ export type WorkoutDetailData = {
 };
 
 /**
- * Format weight for display
+ * Format weight for display (input in kg, output in user unit)
  */
 function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units: Units): string {
   const unitKey = getWeightUnitI18nKey(units);
+  const displayWeight = kgToDisplay(weight, units);
+  const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
   if (isBodyweight) {
-    return weight > 0 ? `+${weight} ${t(unitKey)}` : t('workoutSession.bodyweight');
+    return weight > 0 ? `+${rounded} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
-  return `${weight} ${t(unitKey)}`;
-}
-
-/**
- * Format rest time in seconds to readable format
- */
-function formatRestTime(seconds: number): string {
-  if (seconds < 60) {
-    return `${seconds}s`;
-  }
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  return `${rounded} ${t(unitKey)}`;
 }
 
 /**

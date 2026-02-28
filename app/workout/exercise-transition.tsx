@@ -16,6 +16,7 @@ import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
+import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 type NextExercisePayload = {
@@ -100,9 +101,11 @@ export default function NewExerciseTransitionScreen() {
         if (weights.length === 0) {
           targetWeight = '—';
         } else {
-          const minW = Math.min(...weights);
-          const maxW = Math.max(...weights);
-          targetWeight = minW === maxW ? `${minW} ${unit}` : `${minW}~${maxW} ${unit}`;
+          const minWKg = Math.min(...weights);
+          const maxWKg = Math.max(...weights);
+          const minW = kgToDisplay(minWKg, units);
+          const maxW = kgToDisplay(maxWKg, units);
+          targetWeight = minWKg === maxWKg ? `${minW} ${unit}` : `${minW}~${maxW} ${unit}`; // TODO: use useTranslations
         }
 
         const muscleGroupRaw = (nextEx.muscleGroup ?? 'other').toLowerCase();

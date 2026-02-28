@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { database } from '../../../database';
+import UserMetric from '../../../database/models/UserMetric';
+import { useSettings } from '../../../hooks/useSettings';
+import {
+  cmToDisplay,
+  kgToDisplay,
+  storedHeightToCm,
+  storedWeightToKg,
+} from '../../../utils/unitConversion';
 import type { DataLogModalVariant } from '../DataLogModal';
 import { getInitialValues, saveRecord } from './entityEditConfig';
 import type { EditFormValues } from './types';
@@ -30,6 +38,7 @@ export function useEditRecord(
   recordId: string | null,
   visible: boolean
 ): UseEditRecordResult {
+  const { units } = useSettings();
   const [initialValues, setInitialValues] = useState<EditFormValues>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +66,25 @@ export function useEditRecord(
           throw new Error('Record not found or deleted');
         }
 
-        const values = await getInitialValues(entityType, record);
+        let values = await getInitialValues(entityType, record);
+
+        if (entityType === 'userMetric' && (values.type === 'weight' || values.type === 'height')) {
+          const decrypted = await (record as UserMetric).getDecrypted();
+          const rawValue = (values.value as number) ?? 0;
+          const displayValue =
+            values.type === 'weight'
+              ? kgToDisplay(storedWeightToKg(rawValue, decrypted.unit), units)
+              : cmToDisplay(storedHeightToCm(rawValue, decrypted.unit), units);
+          values = { ...values, value: displayValue };
+        }
+
+        if (entityType === 'nutritionGoal' && values.targetWeight != null) {
+          values = {
+            ...values,
+            targetWeight: kgToDisplay(values.targetWeight as number, units),
+          };
+        }
+
         setInitialValues(values);
       } catch (err) {
         console.error('Error fetching record for edit:', err);
@@ -69,7 +96,7 @@ export function useEditRecord(
     };
 
     fetchRecord();
-  }, [entityType, recordId, visible]);
+  }, [entityType, recordId, visible, units]);
 
   const save = useCallback(
     async (values: EditFormValues) => {
@@ -77,9 +104,9 @@ export function useEditRecord(
         throw new Error('Cannot save: missing entity type or record ID');
       }
 
-      await saveRecord(entityType, recordId, values);
+      await saveRecord(entityType, recordId, values, { units });
     },
-    [entityType, recordId]
+    [entityType, recordId, units]
   );
 
   return {

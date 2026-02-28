@@ -18,12 +18,17 @@ import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { WorkoutService } from '../../database/services';
+import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestOverScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const params = useLocalSearchParams<{ workoutLogId?: string; nextSetOrder?: string }>();
   const workoutLogId = params.workoutLogId;
   const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
@@ -35,7 +40,7 @@ export default function RestOverScreen() {
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
   const [nextExercise, setNextExercise] = useState<{
     name: string;
-    weight: string;
+    weightKg: number;
     reps: number;
     set: number;
     totalSets: number;
@@ -92,7 +97,7 @@ export default function RestOverScreen() {
 
             setNextExercise({
               name: next.exercise.name ?? '',
-              weight: `${next.set.weight ?? 0}kg`,
+              weightKg: next.set.weight ?? 0,
               reps: next.set.reps ?? 0,
               set: setNumber,
               totalSets: exerciseSets.length,
@@ -110,7 +115,7 @@ export default function RestOverScreen() {
 
             setNextExercise({
               name: current.exercise.name ?? '',
-              weight: `${current.set.weight ?? 0}kg`,
+              weightKg: current.set.weight ?? 0,
               reps: current.set.reps ?? 0,
               set: setNumber,
               totalSets: exerciseSets.length,
@@ -197,7 +202,19 @@ export default function RestOverScreen() {
       <View className="z-10 w-full flex-1 items-center justify-center gap-8 px-6">
         <RestOverStatusIcon />
         <RestOverTitle />
-        {nextExercise ? <RestOverNextExercise exercise={nextExercise} /> : null}
+        {nextExercise ? (
+          <RestOverNextExercise
+            exercise={{
+              ...nextExercise,
+              // TODO: move this to a useMemo
+              weight: (() => {
+                const d = kgToDisplay(nextExercise.weightKg, units);
+                const rounded = d % 1 === 0 ? d : Math.round(d * 10) / 10;
+                return `${rounded} ${t(weightUnitKey)}`;
+              })(),
+            }}
+          />
+        ) : null}
       </View>
 
       {/* Footer */}

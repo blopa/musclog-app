@@ -9,7 +9,8 @@ import { ExerciseSegmentType, ExerciseType, RecordingMethod } from 'react-native
 import type { Units } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
-import { getWeightUnit, getWeightUnitI18nKey } from '../utils/units';
+import { kgToDisplay } from '../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../utils/units';
 import { healthConnectService, HealthConnectStatus } from './healthConnect';
 
 export interface SegmentItem {
@@ -78,13 +79,23 @@ function buildSegments(
 
 /**
  * Builds a human-readable breakdown for notes (e.g. "Squat: 12×10kg, 10×12kg; Bench: 8×60kg").
+ * Weights are stored in kg; displayed in user unit (kg or lb).
  */
-function formatSegmentBreakdown(segmentItems: SegmentItem[], unitLabel: string): string {
+function formatSegmentBreakdown(
+  segmentItems: SegmentItem[],
+  unitLabel: string,
+  units: Units
+): string {
   return segmentItems
     .map((item) => {
       const setStr = item.sets
         .filter((s) => s.reps > 0 || s.weight > 0)
-        .map((s) => `${s.reps}×${s.weight} ${unitLabel}`)
+        .map((s) => {
+          const displayWeight = kgToDisplay(s.weight, units);
+          const rounded =
+            displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+          return `${s.reps}×${rounded} ${unitLabel}`; // TODO: use i18n
+        })
         .join(', ');
       return setStr
         ? `${item.exerciseName}: ${setStr}`
@@ -128,7 +139,6 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
 
     const units: Units = payload.units ?? (await SettingsService.getUnits());
     const unitLabel = i18n.t(getWeightUnitI18nKey(units));
-    const weightUnit = getWeightUnit(units);
 
     const noteParts: string[] = [];
     if (payload.totalVolume != null && payload.totalVolume > 0) {
@@ -140,7 +150,7 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
       );
     }
     if (payload.segmentItems && payload.segmentItems.length > 0) {
-      const breakdown = formatSegmentBreakdown(payload.segmentItems, weightUnit);
+      const breakdown = formatSegmentBreakdown(payload.segmentItems, unitLabel, units);
       if (breakdown) {
         noteParts.push(breakdown);
       }

@@ -15,9 +15,18 @@ import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
+import {
+  cmToDisplay,
+  displayToCm,
+  displayToKg,
+  kgToDisplay,
+  storedHeightToCm,
+  storedWeightToKg,
+} from '../../utils/unitConversion';
 
-const DEFAULT_WEIGHT = '60.0';
-const DEFAULT_HEIGHT = '165';
+
+const DEFAULT_WEIGHT_KG = '70.0';
+const DEFAULT_HEIGHT_CM = '170';
 const DEFAULT_FAT_PERCENTAGE = 15;
 
 export default function FitnessInfo() {
@@ -48,11 +57,22 @@ export default function FitnessInfo() {
           latestBodyFat?.getDecrypted(),
         ]);
 
+        const defaultWeightKg = parseFloat(DEFAULT_WEIGHT_KG);
+        const defaultHeightCm = parseFloat(DEFAULT_HEIGHT_CM);
+        const weightDisplay =
+          weightDec != null
+            ? kgToDisplay(storedWeightToKg(weightDec.value, weightDec.unit), units)
+            : kgToDisplay(defaultWeightKg, units);
+        const heightDisplay =
+          heightDec != null
+            ? cmToDisplay(storedHeightToCm(heightDec.value, heightDec.unit), units)
+            : cmToDisplay(defaultHeightCm, units);
+
         if (user) {
           setInitialData({
             units,
-            weight: weightDec ? String(weightDec.value) : DEFAULT_WEIGHT,
-            height: heightDec ? String(heightDec.value) : DEFAULT_HEIGHT,
+            weight: String(weightDisplay),
+            height: String(heightDisplay),
             fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
@@ -62,8 +82,8 @@ export default function FitnessInfo() {
         } else {
           setInitialData({
             units,
-            weight: weightDec ? String(weightDec.value) : DEFAULT_WEIGHT,
-            height: heightDec ? String(heightDec.value) : DEFAULT_HEIGHT,
+            weight: String(weightDisplay),
+            height: String(heightDisplay),
             fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
@@ -75,8 +95,8 @@ export default function FitnessInfo() {
         console.error('Error loading fitness data:', error);
         setInitialData({
           units: 'metric',
-          weight: DEFAULT_WEIGHT,
-          height: DEFAULT_HEIGHT,
+          weight: DEFAULT_WEIGHT_KG,
+          height: DEFAULT_HEIGHT_CM,
           fatPercentage: DEFAULT_FAT_PERCENTAGE,
           weightGoal: 'maintain',
           fitnessGoal: 'general',
@@ -138,8 +158,7 @@ export default function FitnessInfo() {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
 
       if (data.weight && parseFloat(data.weight) > 0) {
-        const weightValue = parseFloat(data.weight);
-        const weightUnit = data.units === 'imperial' ? 'lbs' : 'kg';
+        const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
 
         const existingWeight = await UserMetricService.getMetricsHistory(
           'weight',
@@ -148,15 +167,15 @@ export default function FitnessInfo() {
         );
         if (existingWeight.length > 0) {
           await UserMetricService.updateMetric(existingWeight[0].id, {
-            value: weightValue,
-            unit: weightUnit,
+            value: weightValueKg,
+            unit: 'kg',
             date: currentDate,
           });
         } else {
           await UserMetricService.createMetric({
             type: 'weight',
-            value: weightValue,
-            unit: weightUnit,
+            value: weightValueKg,
+            unit: 'kg',
             date: currentDate,
             timezone,
           });
@@ -164,8 +183,7 @@ export default function FitnessInfo() {
       }
 
       if (data.height && parseFloat(data.height) > 0) {
-        const heightValue = parseFloat(data.height);
-        const heightUnit = data.units === 'imperial' ? 'in' : 'cm';
+        const heightValueCm = displayToCm(parseFloat(data.height), data.units);
         const existingHeight = await UserMetricService.getMetricsHistory(
           'height',
           { startDate: currentDate, endDate: currentDate },
@@ -173,15 +191,15 @@ export default function FitnessInfo() {
         );
         if (existingHeight.length > 0) {
           await UserMetricService.updateMetric(existingHeight[0].id, {
-            value: heightValue,
-            unit: heightUnit,
+            value: heightValueCm,
+            unit: 'cm',
             date: currentDate,
           });
         } else {
           await UserMetricService.createMetric({
             type: 'height',
-            value: heightValue,
-            unit: heightUnit,
+            value: heightValueCm,
+            unit: 'cm',
             date: currentDate,
             timezone,
           });

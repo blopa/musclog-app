@@ -3,6 +3,8 @@
  * Handles data conversion between Health Connect and app format
  */
 
+import type { Units } from '../constants/settings';
+import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
 import { HealthConnectError, HealthConnectErrorCode } from './healthConnectErrors';
 
 /**
@@ -115,16 +117,19 @@ export class HeightConverter {
   }
 
   /**
-   * Format height for display based on unit system
+   * Format height for display based on unit system (uses central unitConversion)
    */
   static formatHeight(cm: number, system: UnitSystem): string {
+    const units: Units = system === UnitSystem.IMPERIAL ? 'imperial' : 'metric';
+    const displayIn = cmToDisplay(cm, units);
     if (system === UnitSystem.IMPERIAL) {
-      const totalInches = this.cmToInches(cm);
+      const totalInches = displayIn;
       const feet = Math.floor(totalInches / 12);
       const inches = Math.round(totalInches % 12);
       return `${feet}' ${inches}"`;
     }
-    return `${Math.round(cm)} cm`;
+
+    return `${Math.round(displayIn)} cm`; // TODO: use i18n
   }
 }
 
@@ -161,13 +166,19 @@ export class WeightConverter {
   }
 
   /**
-   * Format weight for display based on unit system
+   * Format weight for display based on unit system (uses central unitConversion)
    */
   static formatWeight(kg: number, system: UnitSystem, decimals: number = 1): string {
-    if (system === UnitSystem.IMPERIAL) {
-      return `${this.kgToLbs(kg).toFixed(decimals)} lbs`;
-    }
-    return `${kg.toFixed(decimals)} kg`;
+    const units: Units = system === UnitSystem.IMPERIAL ? 'imperial' : 'metric';
+    const display = kgToDisplay(kg, units);
+    const rounded =
+      decimals >= 0
+        ? display.toFixed(decimals)
+        : display % 1 === 0
+          ? String(display)
+          : display.toFixed(1);
+
+    return system === UnitSystem.IMPERIAL ? `${rounded} lbs` : `${rounded} kg`; // TODO: use i18n
   }
 }
 

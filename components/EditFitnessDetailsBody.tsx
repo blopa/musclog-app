@@ -260,23 +260,29 @@ export function EditFitnessDetailsBody({
           </Text>
           <SegmentedControl
             options={[
-              { 
-                label: t('editFitnessDetails.imperial'), 
+              {
+                label: t('editFitnessDetails.imperial'),
                 value: 'imperial',
                 icon: (
                   <Scale
                     size={theme.iconSize.md}
-                    color={units === 'imperial' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                    color={
+                      units === 'imperial'
+                        ? theme.colors.accent.primary
+                        : theme.colors.text.tertiary
+                    }
                   />
                 ),
               },
-              { 
-                label: t('editFitnessDetails.metric'), 
+              {
+                label: t('editFitnessDetails.metric'),
                 value: 'metric',
                 icon: (
                   <Ruler
                     size={theme.iconSize.md}
-                    color={units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                    color={
+                      units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    }
                   />
                 ),
               },

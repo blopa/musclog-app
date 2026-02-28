@@ -32,6 +32,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function WorkoutSessionScreen() {
@@ -72,15 +73,16 @@ export default function WorkoutSessionScreen() {
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Update weight/reps when current set changes
+  // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
     if (currentSetData) {
-      setWeight(currentSetData.set.weight ?? 0);
+      const weightKg = currentSetData.set.weight ?? 0;
+      setWeight(kgToDisplay(weightKg, units));
       setReps(currentSetData.set.reps ?? 0);
       setPartials(currentSetData.set.partials || 0);
       setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
     }
-  }, [currentSetData]);
+  }, [currentSetData, units]);
 
   // Redirect if no active workout
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function WorkoutSessionScreen() {
 
       await workoutLog.updateSet(currentSetData.set.id, {
         difficultyLevel: rpe,
-        weight,
+        weight: displayToKg(weight, units),
         reps,
         partials,
         restTimeAfter: restTime,
@@ -196,7 +198,7 @@ export default function WorkoutSessionScreen() {
     try {
       setIsSaving(true);
       await workoutLog.updateSet(currentSetData.set.id, {
-        weight: data.weight,
+        weight: displayToKg(data.weight, units),
         reps: data.reps,
         partials: data.partials,
         repsInReserve: data.repsInReserve,
@@ -407,8 +409,9 @@ export default function WorkoutSessionScreen() {
               <Text className="text-text-secondary">
                 {t('workoutSession.previous')}:{' '}
                 <Text className="text-text-primary">
-                  {previousSet.weight} {t(weightUnitKey)} × {previousSet.reps}{' '}
-                  {t('workoutSession.reps')}
+                  {/*TODO: use i18n*/}
+                  {kgToDisplay(previousSet.weight ?? 0, units)} {t(weightUnitKey)} ×{' '}
+                  {previousSet.reps} {t('workoutSession.reps')}
                 </Text>
               </Text>
             ) : (

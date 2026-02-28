@@ -2,8 +2,11 @@ import { History } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { GenericCard } from './GenericCard';
 
@@ -27,6 +30,9 @@ interface GoalHistoryCardProps {
 export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
+  const weightDisplay = kgToDisplay(goal.weight, units);
 
   return (
     <View className="relative mb-6 flex-row gap-4">
@@ -82,7 +88,8 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
               </View>
               <View className="items-end">
                 <Text className="text-xs font-bold text-text-secondary">
-                  {goal.weight} {t('goalHistoryCard.kg')}
+                  {weightDisplay % 1 === 0 ? weightDisplay : Math.round(weightDisplay * 10) / 10}{' '}
+                  {t(weightUnitKey)}
                 </Text>
                 <Text
                   className="text-text-secondary"

@@ -16,6 +16,7 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { type EatingPhase } from '../../database/models';
 import { NutritionGoalService, UserMetricService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useSettings } from '../../hooks/useSettings';
 import {
   bmiFromWeightAndHeightM,
   estimateTargetBodyFatWhenCutting,
@@ -25,11 +26,15 @@ import {
   NutritionPlan,
 } from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
 
   const params = useLocalSearchParams<{ aiGenerated?: string; plan?: string }>();
   const aiGenerated = params.aiGenerated === 'true';
@@ -146,7 +151,7 @@ export default function NutritionGoalsResults() {
     return null;
   }, [parsedPlan, savedGoal]);
 
-  // Build projection chart data
+  // Build projection chart data (marker in display unit)
   const projectionLength = 10;
   const projectionData = useMemo(() => {
     if (!displayData?.hasProjection) {
@@ -156,14 +161,15 @@ export default function NutritionGoalsResults() {
     const { startWeight, projectedWeight } = displayData;
     return Array.from({ length: projectionLength }).map((_, i) => {
       const progress = i / (projectionLength - 1);
-      const weight = startWeight + (projectedWeight - startWeight) * progress;
+      const weightKg = startWeight + (projectedWeight - startWeight) * progress;
+      const weightDisplay = kgToDisplay(weightKg, units);
       return {
-        marker: `${weight.toFixed(1)} kg`,
+        marker: `${weightDisplay % 1 === 0 ? weightDisplay : weightDisplay.toFixed(1)} ${t(weightUnitKey)}`,
         x: i,
-        y: parseFloat(weight.toFixed(1)),
+        y: parseFloat(weightKg.toFixed(1)),
       };
     });
-  }, [displayData]);
+  }, [displayData, units, t, weightUnitKey]);
 
   // Determine eating phase from the calorie delta
   const eatingPhase = useMemo<EatingPhase>(() => {
@@ -295,6 +301,19 @@ export default function NutritionGoalsResults() {
     }
   };
 
+  // Formatted weight change with sign (in display unit)
+  const formattedWeightChange = useMemo(() => {
+    if (!displayData) {
+      return '0';
+    }
+
+    const startDisplay = kgToDisplay(displayData.startWeight, units);
+    const endDisplay = kgToDisplay(displayData.startWeight + displayData.weightChange, units);
+    const changeDisplay = endDisplay - startDisplay;
+    const sign = changeDisplay > 0 ? '+' : '';
+    return `${sign}${changeDisplay % 1 === 0 ? changeDisplay : changeDisplay.toFixed(1)} ${t(weightUnitKey)}`;
+  }, [displayData, units, t, weightUnitKey]);
+
   // Loading state for manual flow
   if (!aiGenerated && isLoadingGoal) {
     return (
@@ -318,11 +337,6 @@ export default function NutritionGoalsResults() {
   const formattedCalorieRange = hasCalorieRange
     ? `${displayData!.minTargetCalories!.toLocaleString()} – ${displayData!.maxTargetCalories!.toLocaleString()}`
     : null;
-
-  // Formatted weight change with sign
-  const formattedWeightChange = displayData
-    ? `${displayData.weightChange > 0 ? '+' : ''}${displayData.weightChange.toFixed(1)}`
-    : '0';
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -923,7 +937,13 @@ export default function NutritionGoalsResults() {
                       }}
                     >
                       {t('nutritionGoals.results.projectionDescription', {
-                        weight: displayData.projectedWeight.toFixed(1),
+                        weight:
+                          (() => {
+                            const d = kgToDisplay(displayData.projectedWeight, units);
+                            return d % 1 === 0 ? String(d) : d.toFixed(1);
+                          })() +
+                          ' ' +
+                          t(weightUnitKey),
                         days: displayData.projectionDays,
                       })}
                     </Text>
@@ -944,7 +964,10 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionFat', {
-                              kg: (displayData.estimatedFatChangeKg ?? 0).toFixed(1),
+                              kg: (() => {
+                                const d = kgToDisplay(displayData.estimatedFatChangeKg ?? 0, units);
+                                return `${d % 1 === 0 ? d : d.toFixed(1)} ${t(weightUnitKey)}`;
+                              })(),
                             })}
                           </Text>
                           <Text
@@ -956,7 +979,13 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionLean', {
-                              kg: (displayData.estimatedLeanChangeKg ?? 0).toFixed(1),
+                              kg: (() => {
+                                const d = kgToDisplay(
+                                  displayData.estimatedLeanChangeKg ?? 0,
+                                  units
+                                );
+                                return `${d % 1 === 0 ? d : d.toFixed(1)} ${t(weightUnitKey)}`;
+                              })(),
                             })}
                           </Text>
                         </View>

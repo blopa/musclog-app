@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { useFoodPortions } from '../hooks/useFoodPortions';
+import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
+import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
 
 type ServingSizeSelectorProps = {
   value: number;
@@ -12,31 +14,49 @@ type ServingSizeSelectorProps = {
   quickSizes?: { label: string; value: number }[];
 };
 
+const STEP_GRAMS = 10;
+const STEP_OZ = 0.5;
+
 export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
+
+  // value is always in grams (from parent). Display in g or oz based on units.
+  const displayValue = gramsToDisplay(value, units);
+  const massUnit = getMassUnitLabel(units);
+  const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
   // Load food portions from database
   const { portions, isLoading } = useFoodPortions({
     mode: 'all',
   });
 
-  // Transform database portions to quick sizes format
+  // Transform database portions to quick sizes format (label in display unit, value stays in grams)
   const databaseQuickSizes = useMemo(() => {
-    return portions.map((portion) => ({
-      label: `${portion.name} (${portion.gramWeight}${t('food.foodDetails.unitGrams')})`,
-      value: portion.gramWeight,
-    }));
-  }, [portions, t]);
+    return portions.map((portion) => {
+      const display = gramsToDisplay(portion.gramWeight, units);
+      const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
+      return {
+        label: `${portion.name} (${labelVal} ${massUnit})`, // TODO: use i18n
+        value: portion.gramWeight,
+      };
+    });
+  }, [portions, units, massUnit]);
 
   const effectiveQuickSizes = quickSizes || databaseQuickSizes;
 
   const handleDecrease = () => {
-    onChange(Math.max(0, value - 10));
+    onChange(Math.max(0, value - stepAmount));
   };
 
   const handleIncrease = () => {
-    onChange(value + 10);
+    onChange(value + stepAmount);
+  };
+
+  const handleTextChange = (text: string) => {
+    const parsed = parseFloat(text) || 0;
+    onChange(displayToGrams(parsed, units));
   };
 
   return (
@@ -67,21 +87,22 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
                   width: theme.size['30'],
                   maxWidth: '100%',
                 }}
-                value={String(value)}
-                onChangeText={(text) => {
-                  const num = parseInt(text) || 0;
-                  onChange(num);
-                }}
+                value={String(
+                  displayValue % 1 === 0 ? displayValue : Math.round(displayValue * 10) / 10
+                )}
+                onChangeText={handleTextChange}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor={theme.colors.text.primary20}
                 selectTextOnFocus={true}
               />
               <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
-                {t('food.foodDetails.unitGrams')}
+                {massUnit}
               </Text>
             </View>
-            <Text className="mt-1 text-xs text-text-secondary">{t('food.foodDetails.grams')}</Text>
+            <Text className="mt-1 text-xs text-text-secondary">
+              {massUnit === 'g' ? t('food.foodDetails.grams') : t('food.foodDetails.unitOz', 'oz')}
+            </Text>
           </View>
           <Pressable
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"

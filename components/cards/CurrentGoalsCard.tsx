@@ -2,8 +2,11 @@ import { Activity, Calculator, Calendar, Percent, Scale } from 'lucide-react-nat
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { GenericCard } from './GenericCard';
 
@@ -27,6 +30,10 @@ interface CurrentGoalsCardProps {
 export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
+  const targetWeightDisplay =
+    goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
 
   return (
     <GenericCard variant="card">
@@ -128,7 +135,7 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
             style={{ backgroundColor: theme.colors.background.darkGreen50 }}
           >
-            {goal.targetWeight !== undefined ? (
+            {targetWeightDisplay !== undefined ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
@@ -139,12 +146,14 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.targetWeight}{' '}
+                    {targetWeightDisplay % 1 === 0
+                      ? targetWeightDisplay
+                      : Math.round(targetWeightDisplay * 10) / 10}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
                     >
-                      {t('currentGoalsCard.kg')}
+                      {t(weightUnitKey)}
                     </Text>
                   </Text>
                 </View>

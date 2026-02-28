@@ -1,12 +1,15 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
+import type { Units } from '../constants/settings';
 import { database } from '../database';
 import type { DecryptedUserMetricFields } from '../database/models';
 import UserMetric from '../database/models/UserMetric';
 import { UserMetricService } from '../database/services';
 import { MetricType } from '../services/healthDataTransform';
+import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
 import { useSettings } from './useSettings';
 
 export interface UserMetrics {
@@ -52,67 +55,79 @@ export type UseUserMetricsResultHistory = {
 export type UseUserMetricsResult = UseUserMetricsResultLatest | UseUserMetricsResultHistory;
 
 /**
- * Calculate BMI from weight and height
- * Handles both metric and imperial units
+ * Calculate BMI from weight (kg) and height (cm).
+ * Used internally after normalizing to canonical metric.
  */
-function calculateBMI(
-  weight: number,
-  height: number,
-  weightUnit: 'kg' | 'lbs',
-  heightUnit: 'cm' | 'in'
-): number {
-  // Convert to metric units for calculation
-  let weightKg = weight;
-  let heightM = height;
-
-  // Convert weight to kg if needed
-  if (weightUnit === 'lbs') {
-    weightKg = weight / 2.20462;
+function calculateBMIFromMetric(weightKg: number, heightCm: number): number {
+  if (heightCm <= 0) {
+    return 0;
   }
 
-  // Convert height to meters if needed
-  if (heightUnit === 'cm') {
-    heightM = height / 100;
-  } else if (heightUnit === 'in') {
-    heightM = height * 0.0254;
-  }
-
-  // Calculate BMI: weight(kg) / height(m)²
-  if (heightM > 0) {
-    return weightKg / (heightM * heightM);
-  }
-
-  return 0;
+  const heightM = heightCm / 100;
+  return weightKg / (heightM * heightM);
 }
 
 /**
- * Convert decrypted metric fields to UserMetrics object
+ * Normalize stored weight value to canonical kg (for legacy lbs).
+ */
+function normalizeWeightToKg(value: number, unit?: string | null): number {
+  if (unit === 'lbs') {
+    return convert(value, 'lb').to('kg') as number;
+  }
+
+  return value;
+}
+
+/**
+ * Normalize stored height value to canonical cm (for legacy in).
+ */
+function normalizeHeightToCm(value: number, unit?: string | null): number {
+  if (unit === 'in') {
+    return convert(value, 'in').to('cm') as number;
+  }
+
+  return value;
+}
+
+/**
+ * Convert decrypted metric fields to UserMetrics object.
+ * Normalizes stored values to kg/cm (legacy lbs/in), then converts to display unit.
  */
 function convertDecryptedToUserMetrics(
   weightDec: DecryptedUserMetricFields | null,
   heightDec: DecryptedUserMetricFields | null,
-  bodyFatDec: DecryptedUserMetricFields | null
+  bodyFatDec: DecryptedUserMetricFields | null,
+  units: Units
 ): UserMetrics | null {
-  const weight = weightDec?.value;
-  const height = heightDec?.value;
   const bodyFat = bodyFatDec?.value;
 
-  let bmi: number | undefined;
-  if (weight !== undefined && height !== undefined) {
-    const wUnit = (weightDec?.unit === 'lbs' ? 'lbs' : 'kg') as 'kg' | 'lbs';
-    const hUnit = (heightDec?.unit === 'in' ? 'in' : 'cm') as 'cm' | 'in';
-    bmi = calculateBMI(weight, height, wUnit, hUnit);
+  let weightKg: number | undefined;
+  let heightCm: number | undefined;
+  if (weightDec?.value != null) {
+    weightKg = normalizeWeightToKg(weightDec.value, weightDec.unit);
   }
 
-  if (weight === undefined && height === undefined && bodyFat === undefined) {
+  if (heightDec?.value != null) {
+    heightCm = normalizeHeightToCm(heightDec.value, heightDec.unit);
+  }
+
+  const weightDisplay = weightKg != null ? kgToDisplay(weightKg, units) : undefined;
+  const heightDisplay = heightCm != null ? cmToDisplay(heightCm, units) : undefined;
+
+  let bmi: number | undefined;
+  if (weightKg != null && heightCm != null) {
+    bmi = calculateBMIFromMetric(weightKg, heightCm);
+  }
+
+  if (weightDisplay === undefined && heightDisplay === undefined && bodyFat === undefined) {
     return null;
   }
 
   return {
-    weight,
-    height,
+    weight: weightDisplay,
+    height: heightDisplay,
     bodyFat,
-    bmi: bmi && bmi > 0 ? bmi : undefined,
+    bmi: bmi != null && bmi > 0 ? bmi : undefined,
   };
 }
 
@@ -135,7 +150,7 @@ export function useUserMetrics({
   enableReactivity = true,
   visible = true,
 }: UseUserMetricsParams = {}): UseUserMetricsResult {
-  const { weightUnit, heightUnit } = useSettings();
+  const { units } = useSettings();
 
   // State for latest mode
   const [latestMetrics, setLatestMetrics] = useState<UserMetrics | null>(null);
@@ -218,7 +233,9 @@ export function useUserMetrics({
         heightMetric?.getDecrypted() ?? null,
         bodyFatMetric?.getDecrypted() ?? null,
       ]);
-      setLatestValues(convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null));
+      setLatestValues(
+        convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null, units)
+      );
     } catch (err) {
       console.error('Error loading user metrics history:', err);
       setMetrics([]);
@@ -227,7 +244,7 @@ export function useUserMetrics({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, metricType, dateRange, getAll]);
+  }, [visible, initialLimit, metricType, dateRange, getAll, units]);
 
   // Load more metrics (pagination)
   const loadMore = useCallback(async () => {
@@ -304,7 +321,9 @@ export function useUserMetrics({
       ])
         .then(([w, h, b]) => Promise.all([w?.getDecrypted(), h?.getDecrypted(), b?.getDecrypted()]))
         .then(([wDec, hDec, bDec]) => {
-          setLatestMetrics(convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null));
+          setLatestMetrics(
+            convertDecryptedToUserMetrics(wDec ?? null, hDec ?? null, bDec ?? null, units)
+          );
         })
         .finally(() => setIsLoadingLatest(false));
     };
@@ -319,7 +338,7 @@ export function useUserMetrics({
     refreshLatest();
 
     return () => subscription.unsubscribe();
-  }, [mode]);
+  }, [mode, units]);
 
   // History mode: Observe for new metrics to trigger reload (reactivity)
   useEffect(() => {

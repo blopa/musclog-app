@@ -15,7 +15,9 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { type EatingPhase } from '../database/models';
+import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
+import { displayToKg, kgToDisplay } from '../utils/unitConversion';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
@@ -301,7 +303,9 @@ export function NutritionGoalsBody({
   const theme = useTheme();
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
+  const { units } = useSettings();
   const showIcons = screenWidth >= 415;
+  const defaultTargetWeightKg = 75;
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
   const [protein, setProtein] = useState(initialGoals?.protein ?? 180);
   const [carbs, setCarbs] = useState(initialGoals?.carbs ?? 250);
@@ -310,7 +314,11 @@ export function NutritionGoalsBody({
   const [eatingPhase, setEatingPhase] = useState<EatingPhase>(
     initialGoals?.eatingPhase ?? 'maintain'
   );
-  const [targetWeight, setTargetWeight] = useState(initialGoals?.targetWeight ?? 75);
+  const [targetWeight, setTargetWeight] = useState(
+    initialGoals?.targetWeight != null
+      ? kgToDisplay(initialGoals.targetWeight, units)
+      : kgToDisplay(defaultTargetWeightKg, units)
+  );
   const [targetBodyFat, setTargetBodyFat] = useState(initialGoals?.targetBodyFat ?? 12);
   const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
   const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
@@ -345,6 +353,13 @@ export function NutritionGoalsBody({
         };
     }
   }, [eatingPhase]);
+
+  // Sync targetWeight from initialGoals when it or units change (e.g. modal opened with saved goal)
+  useEffect(() => {
+    if (initialGoals?.targetWeight != null) {
+      setTargetWeight(kgToDisplay(initialGoals.targetWeight, units));
+    }
+  }, [initialGoals?.targetWeight, units]);
 
   // If the eating phase changes to a lower-max (e.g. bulk -> cut), clamp current macro values
   // so they never exceed the allowed maximum for the selected phase.
@@ -395,7 +410,7 @@ export function NutritionGoalsBody({
       fats,
       fiber,
       eatingPhase,
-      targetWeight,
+      targetWeight: displayToKg(targetWeight, units),
       targetBodyFat,
       targetBMI,
       targetFFMI,
@@ -414,6 +429,7 @@ export function NutritionGoalsBody({
     targetFFMI,
     targetWeight,
     totalCalories,
+    units,
   ]);
 
   // Calculate total calories from macros (protein and carbs are 4 kcal/g, fats are 9 kcal/g, fiber is typically ~2 kcal/g or ignored, but we'll include it for accuracy if needed)
@@ -557,8 +573,16 @@ export function NutritionGoalsBody({
             unit="kg"
             icon={showIcons ? Scale : undefined}
             iconSize="sm"
-            onIncrement={() => setTargetWeight(Math.min(200, targetWeight + 1))}
-            onDecrement={() => setTargetWeight(Math.max(30, targetWeight - 1))}
+            onIncrement={() =>
+              setTargetWeight(
+                Math.min(kgToDisplay(200, units), Math.round((targetWeight + 1) * 10) / 10)
+              )
+            }
+            onDecrement={() =>
+              setTargetWeight(
+                Math.max(kgToDisplay(30, units), Math.round((targetWeight - 1) * 10) / 10)
+              )
+            }
             onChangeValue={setTargetWeight}
           />
           <StepperInlineInput

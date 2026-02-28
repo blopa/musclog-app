@@ -1,13 +1,15 @@
 import { format } from 'date-fns';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
@@ -41,6 +43,9 @@ const metricToPageIndex: Record<MetricType, number> = {
   height: 2,
 };
 
+const DEFAULT_WEIGHT_KG = 70;
+const DEFAULT_HEIGHT_CM = 170;
+
 export default function AddUserMetricEntryModal({
   visible,
   onClose,
@@ -49,14 +54,15 @@ export default function AddUserMetricEntryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { units } = useSettings();
   const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
-  const [weight, setWeight] = useState(78.5);
+  const [weight, setWeight] = useState(DEFAULT_WEIGHT_KG);
   const [bodyFat, setBodyFat] = useState(15.0);
-  const [height, setHeight] = useState(180);
+  const [height, setHeight] = useState(DEFAULT_HEIGHT_CM);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date()); // TODO: use these
+  const [selectedTime, setSelectedTime] = useState(new Date()); // TODO: use these
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -68,63 +74,44 @@ export default function AddUserMetricEntryModal({
     { label: t('bodyMetrics.metrics.height'), value: 'height' },
   ];
 
-  const metricConfigs: Record<MetricType, MetricConfig> = {
-    weight: {
-      label: t('bodyMetrics.addEntry.enterWeight'),
-      unit: 'kg',
-      defaultValue: 78.5,
-      quickIncrements: [0.5, 1.0, 5.0],
-      step: 0.1,
-    },
-    body_fat: {
-      label: t('bodyMetrics.addEntry.enterBodyFat'),
-      unit: '%',
-      defaultValue: 15.0,
-      quickIncrements: [0.5, 1.0, 2.0],
-      step: 0.1,
-    },
-    height: {
-      label: t('bodyMetrics.addEntry.enterHeight'),
-      unit: 'cm',
-      defaultValue: 180,
-      quickIncrements: [1, 5, 10],
-      step: 1,
-    },
-  };
+  const metricConfigs: Record<MetricType, MetricConfig> = useMemo(() => {
+    const weightDefault =
+      units === 'imperial' ? kgToDisplay(DEFAULT_WEIGHT_KG, units) : DEFAULT_WEIGHT_KG;
+    const heightDefault =
+      units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM;
 
-  const currentConfig = metricConfigs[selectedMetric];
-  const currentValue =
-    selectedMetric === 'weight' ? weight : selectedMetric === 'body_fat' ? bodyFat : height;
+    return {
+      weight: {
+        label: t('bodyMetrics.addEntry.enterWeight'),
+        unit: units === 'imperial' ? 'lbs' : 'kg',
+        defaultValue: weightDefault,
+        quickIncrements: units === 'imperial' ? [1, 2, 10] : [0.5, 1.0, 5.0],
+        step: units === 'imperial' ? 1 : 0.1,
+      },
+      body_fat: {
+        label: t('bodyMetrics.addEntry.enterBodyFat'),
+        unit: '%',
+        defaultValue: 15.0,
+        quickIncrements: [0.5, 1.0, 2.0],
+        step: 0.1,
+      },
+      height: {
+        label: t('bodyMetrics.addEntry.enterHeight'),
+        unit: units === 'imperial' ? 'in' : 'cm',
+        defaultValue: heightDefault,
+        quickIncrements: units === 'imperial' ? [1, 2, 4] : [1, 5, 10],
+        step: 1,
+      },
+    };
+  }, [units, t]);
 
-  const handleIncrement = (amount: number) => {
-    if (selectedMetric === 'weight') {
-      setWeight((prev) => Math.round((prev + amount) * 10) / 10);
-    } else if (selectedMetric === 'body_fat') {
-      setBodyFat((prev) => Math.round((prev + amount) * 10) / 10);
-    } else {
-      setHeight((prev) => Math.round((prev + amount) * 10) / 10);
+  // Reset weight/height to display-unit defaults when modal opens or units change
+  useEffect(() => {
+    if (visible) {
+      setWeight(units === 'imperial' ? kgToDisplay(DEFAULT_WEIGHT_KG, units) : DEFAULT_WEIGHT_KG);
+      setHeight(units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM);
     }
-  };
-
-  const handleDecrement = () => {
-    if (selectedMetric === 'weight') {
-      setWeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
-    } else if (selectedMetric === 'body_fat') {
-      setBodyFat((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
-    } else {
-      setHeight((prev) => Math.max(0, Math.round((prev - currentConfig.step) * 10) / 10));
-    }
-  };
-
-  const handleIncrementAction = () => {
-    if (selectedMetric === 'weight') {
-      setWeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
-    } else if (selectedMetric === 'body_fat') {
-      setBodyFat((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
-    } else {
-      setHeight((prev) => Math.round((prev + currentConfig.step) * 10) / 10);
-    }
-  };
+  }, [visible, units]);
 
   const formatDate = (date: Date) => {
     return format(date, 'MMM d, yyyy');
@@ -163,10 +150,13 @@ export default function AddUserMetricEntryModal({
       combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
       const dateTimestamp = new Date(combinedDate.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
 
+      const weightKg = displayToKg(weight, units);
+      const heightCm = displayToCm(height, units);
+
       const [encWeight, encBodyFat, encHeight, encMood] = await Promise.all([
-        encryptUserMetricFields({ value: weight, unit: 'kg', date: dateTimestamp }),
+        encryptUserMetricFields({ value: weightKg, unit: 'kg', date: dateTimestamp }),
         encryptUserMetricFields({ value: bodyFat, unit: '%', date: dateTimestamp }),
-        encryptUserMetricFields({ value: height, unit: 'cm', date: dateTimestamp }),
+        encryptUserMetricFields({ value: heightCm, unit: 'cm', date: dateTimestamp }),
         encryptUserMetricFields({ value: mood, unit: '', date: dateTimestamp }),
       ]);
 

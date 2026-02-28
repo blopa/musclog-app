@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
+import { kgToDisplay, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { LineChart } from '../LineChart';
@@ -161,6 +162,17 @@ export default function BodyMetricsHistoryModal({
     [t]
   );
 
+  // Helper to get display value for weight/height (normalize stored to kg/cm then to display unit)
+  const getDisplayValue = useCallback(
+    (value: number, storedUnit?: string | null): number => {
+      if (selectedMetric === 'weight') {
+        return kgToDisplay(storedWeightToKg(value, storedUnit), units);
+      }
+      return value;
+    },
+    [selectedMetric, units]
+  );
+
   // Helper to process metrics into history entries
   const processMetricsToEntries = useCallback(
     (metrics: UserMetricWithDecrypted[], unit: string): HistoryEntry[] => {
@@ -168,11 +180,18 @@ export default function BodyMetricsHistoryModal({
         const metric = item.metric;
         const d = item.decrypted;
         const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
+        const displayValue =
+          selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
         let change: string | null = null;
         let changeType: 'up' | 'down' | null = null;
 
         if (previous) {
-          const diff = d.value - previous.decrypted.value;
+          const prevDisplay =
+            selectedMetric === 'weight'
+              ? getDisplayValue(previous.decrypted.value, previous.decrypted.unit)
+              : (previous.decrypted.value as number);
+
+          const diff = displayValue - prevDisplay;
           const absDiff = Math.abs(diff);
           if (absDiff > 0.01) {
             changeType = diff > 0 ? 'up' : 'down';
@@ -181,7 +200,7 @@ export default function BodyMetricsHistoryModal({
           }
         }
 
-        const valueStr = `${d.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+        const valueStr = `${displayValue % 1 === 0 ? displayValue : displayValue.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
 
         let note = '';
         if (index === metrics.length - 1) {
@@ -216,6 +235,8 @@ export default function BodyMetricsHistoryModal({
       theme.colors.status.indigo600,
       theme.colors.text.primary,
       theme.colors.text.secondary,
+      getDisplayValue,
+      units,
     ]
   );
 
@@ -228,20 +249,26 @@ export default function BodyMetricsHistoryModal({
     return processMetricsToEntries(paginatedMetrics, unit);
   }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries]);
 
-  // Get current metric data from latest entry
+  // Get current metric data from latest entry (weight in display unit)
   const currentMetric = useMemo<MetricData | null>(() => {
     if (!paginatedMetrics || paginatedMetrics.length === 0) {
       return null;
     }
     const latest = paginatedMetrics[0];
     const d = latest.decrypted;
-    const unit = d.unit || getMetricUnit(selectedMetric);
+    const displayVal =
+      selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
+    const unit = getMetricUnit(selectedMetric);
+
     return {
-      current: d.value.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2),
+      current:
+        displayVal % 1 === 0
+          ? String(displayVal)
+          : displayVal.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2),
       unit,
       label: getMetricLabel(selectedMetric),
     };
-  }, [paginatedMetrics, selectedMetric, getMetricUnit, getMetricLabel]);
+  }, [paginatedMetrics, selectedMetric, getMetricUnit, getMetricLabel, getDisplayValue]);
 
   // Generate chart data from all metrics
   const chartData = useMemo(() => {

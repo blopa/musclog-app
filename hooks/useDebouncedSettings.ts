@@ -158,7 +158,10 @@ export function useDebouncedSettings(debounceMs = 1500) {
     SettingsService.setNotifications
   );
 
-  const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>('units', SettingsService.setUnits);
+  const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>(
+    'units',
+    SettingsService.setUnits
+  );
 
   // Function to immediately save all pending changes to database
   const flushAllPendingChanges = useCallback(async () => {

@@ -1,5 +1,6 @@
 import type { Model } from '@nozbe/watermelondb';
 
+import type { Units } from '../../../constants/settings';
 import type UserMetric from '../../../database/models/UserMetric';
 import {
   ExerciseService,
@@ -11,8 +12,11 @@ import {
   UserMetricService,
   WorkoutTemplateService,
 } from '../../../database/services';
+import { displayToCm, displayToKg } from '../../../utils/unitConversion';
 import type { DataLogModalVariant } from '../DataLogModal';
 import type { EditFieldConfig, EditFormValues } from './types';
+
+export type SaveRecordContext = { units: Units };
 
 // Muscle groups for Exercise
 const MUSCLE_GROUPS = [
@@ -507,11 +511,13 @@ export async function getInitialValues(
 
 /**
  * Save updated values to the database via service layer
+ * @param context - Optional context e.g. { units } for userMetric weight/height conversion
  */
 export async function saveRecord(
   entityType: DataLogModalVariant,
   recordId: string,
-  values: EditFormValues
+  values: EditFormValues,
+  context?: SaveRecordContext
 ): Promise<void> {
   switch (entityType) {
     case 'meal':
@@ -540,13 +546,26 @@ export async function saveRecord(
       });
       break;
 
-    case 'userMetric':
+    case 'userMetric': {
+      const type = values.type as string | undefined;
+      let value = values.value as number | undefined;
+      let unit: string | undefined;
+      if (context?.units && type === 'weight' && value != null) {
+        value = displayToKg(value, context.units);
+        unit = 'kg';
+      } else if (context?.units && type === 'height' && value != null) {
+        value = displayToCm(value, context.units);
+        unit = 'cm';
+      }
+
       await UserMetricService.updateMetric(recordId, {
-        type: values.type as any,
-        value: values.value as number | undefined,
+        type: type as any,
+        value,
+        unit,
         date: values.date as number | undefined,
       });
       break;
+    }
 
     case 'workoutTemplate':
       await WorkoutTemplateService.updateTemplate(recordId, {
@@ -577,7 +596,12 @@ export async function saveRecord(
       });
       break;
 
-    case 'nutritionGoal':
+    case 'nutritionGoal': {
+      let targetWeightKg = values.targetWeight as number | undefined;
+      if (context?.units && targetWeightKg != null) {
+        targetWeightKg = displayToKg(targetWeightKg, context.units);
+      }
+
       await NutritionGoalService.updateGoal(recordId, {
         totalCalories: values.totalCalories as number | undefined,
         protein: values.protein as number | undefined,
@@ -585,12 +609,13 @@ export async function saveRecord(
         fats: values.fats as number | undefined,
         fiber: values.fiber as number | undefined,
         eatingPhase: values.eatingPhase as any,
-        targetWeight: values.targetWeight as number | undefined,
+        targetWeight: targetWeightKg,
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
       });
       break;
+    }
 
     default:
       throw new Error(`Saving not implemented for entity type: ${entityType}`);
