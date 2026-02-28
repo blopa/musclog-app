@@ -22,7 +22,14 @@ const CONFIG = {
     /t\(['"`]([^'"`]+)['"`]\s*,/g, // t('key', options)
     /t\(`([^`]+)`\s*,/g, // t(`key`, options)
   ],
-  ignorePatterns: ['**/node_modules/**', '**/*.test.tsx', '**/*.spec.tsx'],
+  ignorePatterns: [
+    '**/node_modules/**',
+    '**/*.test.tsx',
+    '**/*.test.ts',
+    '**/*.spec.tsx',
+    '**/*.spec.ts',
+    '**/__tests__/**',
+  ],
 };
 
 class TranslationScanner {
@@ -54,7 +61,9 @@ class TranslationScanner {
           this.extractKeysFromObject(data[topLevelKey], topLevelKey, filePath);
         }
       }
-      console.log(`✓ Loaded ${this.existingKeys.size} existing translation keys from ${files.length} files`);
+      console.log(
+        `✓ Loaded ${this.existingKeys.size} existing translation keys from ${files.length} files`
+      );
     } catch (error) {
       console.error('✗ Error loading translation files:', error.message);
       process.exit(1);
@@ -63,6 +72,15 @@ class TranslationScanner {
 
   // Recursively extract all keys from nested translation object
   extractKeysFromObject(obj, prefix = '', filePath = null) {
+    if (typeof obj !== 'object' || obj === null) {
+      if (prefix) {
+        this.existingKeys.add(prefix);
+        if (filePath) {
+          this.keyToFile.set(prefix, filePath);
+        }
+      }
+      return;
+    }
     for (const [key, value] of Object.entries(obj)) {
       const fullKey = prefix ? `${prefix}.${key}` : key;
 
@@ -70,7 +88,9 @@ class TranslationScanner {
         this.extractKeysFromObject(value, fullKey, filePath);
       } else {
         this.existingKeys.add(fullKey);
-        if (filePath) this.keyToFile.set(fullKey, filePath);
+        if (filePath) {
+          this.keyToFile.set(fullKey, filePath);
+        }
       }
     }
   }
@@ -179,9 +199,13 @@ class TranslationScanner {
 
   // Find missing translations
   findMissingTranslations() {
+    // Helper: key exists if it's in existingKeys or is a prefix of an existing key (parent key)
+    const keyExists = (key) =>
+      this.existingKeys.has(key) || [...this.existingKeys].some((ek) => ek.startsWith(key + '.'));
+
     // First, add all exact matches
     for (const key of this.usedKeys) {
-      if (!this.existingKeys.has(key)) {
+      if (!keyExists(key)) {
         this.missingKeys.add(key);
       }
     }
@@ -190,17 +214,15 @@ class TranslationScanner {
     for (const usedKey of this.usedKeys) {
       for (const existingKey of this.existingKeys) {
         if (existingKey.startsWith(usedKey + '.')) {
-          // This existing key is a nested key under a used prefix
-          // So we consider it "used" and don't report it as unused
           this.usedKeys.add(existingKey);
         }
       }
     }
 
-    // Recalculate missing keys after adding nested keys
+    // Recalculate missing keys (only report if key doesn't exist and isn't a parent of existing keys)
     this.missingKeys.clear();
     for (const key of this.usedKeys) {
-      if (!this.existingKeys.has(key)) {
+      if (!keyExists(key)) {
         this.missingKeys.add(key);
       }
     }
@@ -249,7 +271,9 @@ class TranslationScanner {
     for (const key of unusedKeys) {
       const filePath = this.keyToFile.get(key);
       if (filePath) {
-        if (!keysByFile.has(filePath)) keysByFile.set(filePath, []);
+        if (!keysByFile.has(filePath)) {
+          keysByFile.set(filePath, []);
+        }
         keysByFile.get(filePath).push(key);
       }
     }
@@ -264,7 +288,9 @@ class TranslationScanner {
         const cleanedContent = JSON.stringify(data, null, 2) + '\n';
         fs.writeFileSync(filePath, cleanedContent, 'utf8');
       }
-      console.log(`\n🧹 Removed ${unusedKeys.length} unused translations from ${keysByFile.size} file(s)`);
+      console.log(
+        `\n🧹 Removed ${unusedKeys.length} unused translations from ${keysByFile.size} file(s)`
+      );
       console.log('📝 Original files have been overwritten.');
     } catch (error) {
       console.error('✗ Error cleaning up translations:', error.message);
@@ -348,14 +374,18 @@ class TranslationScanner {
           const missingByNamespace = new Map();
           for (const key of sortedMissing) {
             const ns = key.split('.')[0];
-            if (!missingByNamespace.has(ns)) missingByNamespace.set(ns, []);
+            if (!missingByNamespace.has(ns)) {
+              missingByNamespace.set(ns, []);
+            }
             missingByNamespace.get(ns).push(key);
           }
           let addedCount = 0;
           for (const [namespace, keys] of missingByNamespace) {
             const filePath = this.namespaceToFile.get(namespace);
             if (!filePath) {
-              console.log(`\n⚠️  No locale file for namespace "${namespace}". Add keys manually or create ${path.join(CONFIG.localeDir, namespace + '.json')}.`);
+              console.log(
+                `\n⚠️  No locale file for namespace "${namespace}". Add keys manually or create ${path.join(CONFIG.localeDir, namespace + '.json')}.`
+              );
               continue;
             }
             const backupPath = `${filePath}.bak.${Date.now()}`;
@@ -365,12 +395,16 @@ class TranslationScanner {
             const content = fs.readFileSync(filePath, 'utf8');
             const data = JSON.parse(content);
             const rootKey = Object.keys(data)[0];
-            if (!rootKey) continue;
+            if (!rootKey) {
+              continue;
+            }
             let node = data[rootKey];
 
             for (const key of keys) {
               const parts = key.split('.');
-              if (parts[0] !== rootKey) continue;
+              if (parts[0] !== rootKey) {
+                continue;
+              }
               const keyParts = parts.slice(1);
               let n = node;
               for (let i = 0; i < keyParts.length; i++) {
@@ -393,7 +427,9 @@ class TranslationScanner {
             fs.writeFileSync(filePath, newContent, 'utf8');
           }
           if (addedCount > 0) {
-            console.log(`\n✅ Added ${addedCount} missing key(s) to locale files in ${CONFIG.localeDir}`);
+            console.log(
+              `\n✅ Added ${addedCount} missing key(s) to locale files in ${CONFIG.localeDir}`
+            );
           }
         } catch (err) {
           console.error('✗ Failed to add missing keys to locale files:', err.message || err);
