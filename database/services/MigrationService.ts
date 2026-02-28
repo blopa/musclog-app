@@ -387,7 +387,7 @@ export class MigrationService {
             newUser.email = undefined; // Old schema doesn't have email, set to undefined as it's optional
             newUser.dateOfBirth = this.convertTimestamp(oldUser.birthday);
             newUser.gender = this.mapGender(oldUser.gender);
-            newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain';
+            newUser.fitnessGoal = oldUser.fitnessGoals || 'maintain'; // TODO: same as the gender, this is a text input in the old schema, so let's try to be smart and map it to the closest value, like if it includes 'lose' and "weight" then it should be 'lose weight', if it includes 'gain' and 'weight' etc then it should be 'gain weight', if it includes 'maintain weight' then it should be 'maintain weight'
             newUser.weightGoal = this.mapFitnessGoalToWeightGoal(oldUser.fitnessGoals);
             newUser.activityLevel = this.mapActivityLevel(oldUser.activityLevel); // Map text to number
             newUser.liftingExperience = this.mapLiftingExperience(oldUser.liftingExperience); // Map text to enum
