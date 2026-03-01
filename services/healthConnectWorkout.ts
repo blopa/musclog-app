@@ -101,6 +101,7 @@ function formatSegmentBreakdown(
           });
         })
         .join(', ');
+
       return setStr
         ? `${item.exerciseName}: ${setStr}`
         : `${item.exerciseName}: ${item.totalReps} reps`;
@@ -171,7 +172,7 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
       exerciseType: mapWorkoutTypeToHealthConnect(payload.workoutType),
       startTime,
       endTime,
-      title: payload.workoutName,
+      title: `Musclog - ${payload.workoutName}`,
       notes,
       segments,
       metadata: {
