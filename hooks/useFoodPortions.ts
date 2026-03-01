@@ -4,6 +4,38 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import FoodPortion from '../database/models/FoodPortion';
 import { FoodPortionService } from '../database/services';
 
+// Utility functions for working with portions
+export const FoodPortionUtils = {
+  /**
+   * Get the default portion from an array of portions
+   */
+  getDefaultPortion: (portions: FoodPortion[]): FoodPortion | null => {
+    return portions.find((p) => p.isDefault) || null;
+  },
+
+  /**
+   * Get non-default portions from an array of portions
+   */
+  getNonDefaultPortions: (portions: FoodPortion[]): FoodPortion[] => {
+    return portions.filter((p) => !p.isDefault);
+  },
+
+  /**
+   * Sort portions with default first, then by name
+   */
+  sortPortions: (portions: FoodPortion[]): FoodPortion[] => {
+    return [...portions].sort((a, b) => {
+      if (a.isDefault && !b.isDefault) {
+        return -1;
+      }
+      if (!a.isDefault && b.isDefault) {
+        return 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
+  },
+};
+
 // Hook parameters
 export interface UseFoodPortionsParams {
   mode?: 'all' | 'paginated'; // Default: 'all'

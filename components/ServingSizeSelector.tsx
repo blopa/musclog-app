@@ -19,7 +19,12 @@ type ServingSizeSelectorProps = {
 const STEP_GRAMS = 10;
 const STEP_OZ = 0.5;
 
-export function ServingSizeSelector({ value, onChange, quickSizes, food }: ServingSizeSelectorProps) {
+export function ServingSizeSelector({
+  value,
+  onChange,
+  quickSizes,
+  food,
+}: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();

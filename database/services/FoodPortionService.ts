@@ -12,7 +12,8 @@ export class FoodPortionService {
   static async createFoodPortion(
     name: string,
     gramWeight: number,
-    icon?: string
+    icon?: string,
+    isDefault = false
   ): Promise<FoodPortion> {
     return await database.write(async () => {
       const now = Date.now();
@@ -20,6 +21,7 @@ export class FoodPortionService {
       return await database.get<FoodPortion>('food_portions').create((portion) => {
         portion.name = name;
         portion.gramWeight = gramWeight;
+        portion.isDefault = isDefault;
         if (icon) {
           portion.icon = icon;
         }
@@ -36,7 +38,8 @@ export class FoodPortionService {
   static async getOrCreatePortion(
     name: string,
     gramWeight: number,
-    icon?: string
+    icon?: string,
+    isDefault = false
   ): Promise<FoodPortion> {
     // Try to find existing portion with same name and gram weight
     const existing = await database
@@ -53,7 +56,7 @@ export class FoodPortionService {
     }
 
     // Create new portion
-    return this.createFoodPortion(name, gramWeight, icon);
+    return this.createFoodPortion(name, gramWeight, icon, isDefault);
   }
 
   /**
@@ -102,6 +105,50 @@ export class FoodPortionService {
   }
 
   /**
+   * Get the default global portion (if any)
+   */
+  static async getDefaultPortion(): Promise<FoodPortion | null> {
+    const portions = await database
+      .get<FoodPortion>('food_portions')
+      .query(Q.where('is_default', true), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    return portions.length > 0 ? portions[0] : null;
+  }
+
+  /**
+   * Set a portion as the default global portion (unsets any existing default)
+   */
+  static async setDefaultPortion(id: string): Promise<void> {
+    return await database.write(async () => {
+      const now = Date.now();
+
+      // Unset current default
+      const currentDefault = await database
+        .get<FoodPortion>('food_portions')
+        .query(Q.where('is_default', true), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const portion of currentDefault) {
+        await portion.update((record) => {
+          record.isDefault = false;
+          record.updatedAt = now;
+        });
+      }
+
+      // Set new default
+      const newDefault = await database.get<FoodPortion>('food_portions').find(id);
+      if (newDefault.deletedAt) {
+        throw new Error('Cannot set deleted portion as default');
+      }
+
+      await newDefault.update((record) => {
+        record.isDefault = true;
+        record.updatedAt = now;
+      });
+    });
+  }
+
+  /**
    * Get portion by ID
    */
   static async getPortionById(id: string): Promise<FoodPortion | null> {
@@ -122,6 +169,7 @@ export class FoodPortionService {
       name?: string;
       gramWeight?: number;
       icon?: string;
+      isDefault?: boolean;
     }
   ): Promise<FoodPortion> {
     return await database.write(async () => {
@@ -140,6 +188,9 @@ export class FoodPortionService {
         }
         if (updates.icon !== undefined) {
           record.icon = updates.icon;
+        }
+        if (updates.isDefault !== undefined) {
+          record.isDefault = updates.isDefault;
         }
         record.updatedAt = Date.now();
       });
@@ -192,6 +243,7 @@ export class FoodPortionService {
           const newPortion = await database.get<FoodPortion>('food_portions').create((p) => {
             p.name = portion.name;
             p.gramWeight = portion.gramWeight;
+            p.isDefault = portion.name === i18n.t('food.portions.100g'); // Set 100g as default
             if (portion.icon) {
               p.icon = portion.icon;
             }
