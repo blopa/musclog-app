@@ -119,10 +119,10 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Detect device language and save it into the settings for language
     const systemLocales = Localization.getLocales();
-    const deviceLanguage = systemLocales.find((locale) =>
-      AVAILABLE_LANGUAGES.includes(locale.languageTag as any)
-    )?.languageTag || EN_US;
-    
+    const deviceLanguage =
+      systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as any))
+        ?.languageTag || EN_US;
+
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
 

@@ -87,13 +87,24 @@ export default function RestTimerScreen() {
   const hasRequiredParams = Boolean(workoutLogId && completedSetOrder !== null);
   const isLoading = hasRequiredParams ? sessionLoading : false;
 
-  // TODO: move this to a helper function to avoid nested ternary
-  const error = !hasRequiredParams
-    ? t('restTimer.missingWorkoutData')
-    : (sessionError ??
-      (!sessionLoading && sets.length > 0 && !completedSet
-        ? t('restTimer.completedSetNotFound')
-        : null));
+  // Helper function to determine error state
+  const getRestTimerError = (): string | null => {
+    if (!hasRequiredParams) {
+      return t('restTimer.missingWorkoutData');
+    }
+
+    if (sessionError) {
+      return sessionError;
+    }
+
+    if (!sessionLoading && sets.length > 0 && !completedSet) {
+      return t('restTimer.completedSetNotFound');
+    }
+
+    return null;
+  };
+
+  const error = getRestTimerError();
 
   // Sync rest time from completed set when session data is ready
   useEffect(() => {

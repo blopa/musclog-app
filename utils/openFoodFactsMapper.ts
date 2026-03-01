@@ -252,11 +252,18 @@ export function getNutrimentsFromV3Nutrition(product: any): Record<string, numbe
 
   // Add all other nutriments from NUTRIMENT_PROPERTIES that aren't already included
   const baseNutriments = [
-    'energy-kcal', 'proteins', 'carbohydrates', 'fat', 'carbohydrates-total',
-    'sugars', 'saturated-fat', 'sodium', 'salt'
+    'energy-kcal',
+    'proteins',
+    'carbohydrates',
+    'fat',
+    'carbohydrates-total',
+    'sugars',
+    'saturated-fat',
+    'sodium',
+    'salt',
   ];
 
-  NUTRIMENT_PROPERTIES.forEach(prop => {
+  NUTRIMENT_PROPERTIES.forEach((prop) => {
     // Skip the ones already added and skip unit/label properties
     if (!baseNutriments.includes(prop) && !prop.includes('_unit') && !prop.includes('_label')) {
       result[prop] = v3NutrientValue(set[prop]);

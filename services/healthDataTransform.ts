@@ -168,13 +168,20 @@ export class WeightConverter {
     const units: Units = system === UnitSystem.IMPERIAL ? 'imperial' : 'metric';
     const display = kgToDisplay(kg, units);
 
-    // TODO: move this to a helper function to avoid nested ternary
-    const rounded =
-      decimals >= 0
-        ? display.toFixed(decimals)
-        : display % 1 === 0
-          ? String(display)
-          : display.toFixed(1);
+    // Helper function to format rounded value
+    const formatRoundedValue = (value: number, decimalPlaces: number): string => {
+      if (decimalPlaces >= 0) {
+        return value.toFixed(decimalPlaces);
+      }
+
+      if (value % 1 === 0) {
+        return String(value);
+      }
+
+      return value.toFixed(1);
+    };
+
+    const rounded = formatRoundedValue(display, decimals);
 
     return system === UnitSystem.IMPERIAL
       ? i18n.t('common.weightFormatLbs', { value: rounded })

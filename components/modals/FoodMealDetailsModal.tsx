@@ -917,12 +917,20 @@ export function FoodMealDetailsModal({
     );
   }
 
-  // TODO: move this to a helper function to avoid nested ternary
-  const actionLabel = meal
-    ? t('meals.logMeal')
-    : foodLog
-      ? t('food.foodDetails.updateFood')
-      : t('food.foodDetails.addFood');
+  // Helper function to determine action label based on mode
+  const getActionLabel = (): string => {
+    if (meal) {
+      return t('meals.logMeal');
+    }
+
+    if (foodLog) {
+      return t('food.foodDetails.updateFood');
+    }
+
+    return t('food.foodDetails.addFood');
+  };
+
+  const actionLabel = getActionLabel();
 
   return (
     <>
