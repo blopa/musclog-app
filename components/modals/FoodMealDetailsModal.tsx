@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import type { Units } from '../../constants/settings';
 import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import FoodPortion from '../../database/models/FoodPortion';
@@ -196,49 +197,55 @@ export function FoodMealDetailsModal({
       : null;
   const { data: productDetails } = useFoodProductDetails(barcodeForHook);
 
-  // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
-  const matchServingSizeToPortion = useCallback(async (servingSizeGrams: number) => {
-    try {
-      // Get all existing portions to find a match
-      const allPortions = await FoodPortionService.getAllPortions();
-
-      // First try to find exact match
-      const exactMatch = allPortions.find((p) => p.gramWeight === servingSizeGrams);
-      if (exactMatch) {
-        return exactMatch;
-      }
-
-      // Try to find close match (within 5g)
-      const closeMatch = allPortions.find((p) => Math.abs(p.gramWeight - servingSizeGrams) <= 5);
-      if (closeMatch) {
-        return closeMatch;
-      }
-
-      // Check user preference for metric or imperial and use proper units
-      const displayWeight = gramsToDisplay(servingSizeGrams, units);
+  // Helper function to generate portion name based on serving size and units
+  const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
+    if (servingSizeGrams === 100) {
       const unitLabel = getMassUnitLabel(units);
-
-      // TODO: move this to a helper function to avoid using nested ternary
-      const portionName =
-        servingSizeGrams === 100
-          ? units === 'imperial'
-            ? `3.5${unitLabel}`
-            : `100${unitLabel}`
-          : `${displayWeight}${unitLabel}`;
-
-      const newPortion = await FoodPortionService.createFoodPortion(
-        portionName,
-        servingSizeGrams,
-        undefined, // icon
-        false // isDefault
-      );
-
-      return newPortion;
-    } catch (error) {
-      console.warn('Error matching serving size to portion:', error);
-      return null;
+      return units === 'imperial' ? `3.5${unitLabel}` : `100${unitLabel}`;
     }
-  }, [units]);
+
+    const displayWeight = gramsToDisplay(servingSizeGrams, units);
+    const unitLabel = getMassUnitLabel(units);
+    return `${displayWeight}${unitLabel}`;
+  }, []);
+
+  // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
+  const matchServingSizeToPortion = useCallback(
+    async (servingSizeGrams: number) => {
+      try {
+        // Get all existing portions to find a match
+        const allPortions = await FoodPortionService.getAllPortions();
+
+        // First try to find exact match
+        const exactMatch = allPortions.find((p) => p.gramWeight === servingSizeGrams);
+        if (exactMatch) {
+          return exactMatch;
+        }
+
+        // Try to find close match (within 5g)
+        const closeMatch = allPortions.find((p) => Math.abs(p.gramWeight - servingSizeGrams) <= 5);
+        if (closeMatch) {
+          return closeMatch;
+        }
+
+        // Check user preference for metric or imperial and use proper units
+        const portionName = generatePortionName(servingSizeGrams, units);
+
+        const newPortion = await FoodPortionService.createFoodPortion(
+          portionName,
+          servingSizeGrams,
+          undefined, // icon
+          false // isDefault
+        );
+
+        return newPortion;
+      } catch (error) {
+        console.warn('Error matching serving size to portion:', error);
+        return null;
+      }
+    },
+    [units]
+  );
 
   const getDefaultServingSize = useCallback(async () => {
     const servingStr =
