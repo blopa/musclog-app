@@ -2,6 +2,7 @@
   "createWorkout": {
     "title": "Create New Workout",
     "save": "Save",
+    "workoutIcon": "Workout Icon",
     "essentials": "Essentials",
     "workoutTitle": "Workout Title",
     "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
