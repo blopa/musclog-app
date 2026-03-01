@@ -24,7 +24,6 @@ import {
   storedWeightToKg,
 } from '../../utils/unitConversion';
 
-
 const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
 const DEFAULT_FAT_PERCENTAGE = 15;

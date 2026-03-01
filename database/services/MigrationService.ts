@@ -1352,13 +1352,15 @@ export class MigrationService {
   /**
    * Map old fitness goals string to new fitness goal format
    */
-  private mapFitnessGoal(fitnessGoals: string): 'hypertrophy' | 'strength' | 'endurance' | 'weight_loss' | 'general' {
+  private mapFitnessGoal(
+    fitnessGoals: string
+  ): 'hypertrophy' | 'strength' | 'endurance' | 'weight_loss' | 'general' {
     if (!fitnessGoals) {
       return 'general';
     }
 
     const lowerGoals = fitnessGoals.toLowerCase();
-    
+
     // Check for weight loss related terms
     if (lowerGoals.includes('lose') && lowerGoals.includes('weight')) {
       return 'weight_loss';
@@ -1366,34 +1368,53 @@ export class MigrationService {
     if (lowerGoals.includes('cut') || lowerGoals.includes('shred') || lowerGoals.includes('lean')) {
       return 'weight_loss';
     }
-    
+
     // Check for muscle building/hypertrophy related terms
-    if (lowerGoals.includes('gain') && (lowerGoals.includes('muscle') || lowerGoals.includes('mass'))) {
+    if (
+      lowerGoals.includes('gain') &&
+      (lowerGoals.includes('muscle') || lowerGoals.includes('mass'))
+    ) {
       return 'hypertrophy';
     }
 
-    if (lowerGoals.includes('bulk') || lowerGoals.includes('hypertrophy') || lowerGoals.includes('build')) {
+    if (
+      lowerGoals.includes('bulk') ||
+      lowerGoals.includes('hypertrophy') ||
+      lowerGoals.includes('build')
+    ) {
       return 'hypertrophy';
     }
-    
+
     // Check for strength related terms
-    if (lowerGoals.includes('strength') || lowerGoals.includes('power') || lowerGoals.includes('strong')) {
+    if (
+      lowerGoals.includes('strength') ||
+      lowerGoals.includes('power') ||
+      lowerGoals.includes('strong')
+    ) {
       return 'strength';
     }
-    
+
     // Check for endurance related terms
-    if (lowerGoals.includes('endurance') || lowerGoals.includes('cardio') || lowerGoals.includes('stamina')) {
+    if (
+      lowerGoals.includes('endurance') ||
+      lowerGoals.includes('cardio') ||
+      lowerGoals.includes('stamina')
+    ) {
       return 'endurance';
     }
-    
+
     // Check for general fitness terms
     if (lowerGoals.includes('maintain') && lowerGoals.includes('weight')) {
       return 'general';
     }
-    if (lowerGoals.includes('fitness') || lowerGoals.includes('health') || lowerGoals.includes('active')) {
+    if (
+      lowerGoals.includes('fitness') ||
+      lowerGoals.includes('health') ||
+      lowerGoals.includes('active')
+    ) {
       return 'general';
     }
-    
+
     // Default fallback
     return 'general';
   }
@@ -1889,12 +1910,12 @@ export class MigrationService {
     for (const [barcode, duplicateFoods] of foodsByBarcode) {
       if (duplicateFoods.length > 1) {
         const foodToKeep = this.selectBestFoodToKeep(duplicateFoods);
-        const foodsToDelete = duplicateFoods.filter(f => f.id !== foodToKeep.id);
-        
+        const foodsToDelete = duplicateFoods.filter((f) => f.id !== foodToKeep.id);
+
         for (const foodToDelete of foodsToDelete) {
           foodIdMap.set(foodToDelete.id, foodToKeep.id);
         }
-        
+
         processedGroups.add(`barcode:${barcode}`);
       }
     }
@@ -1919,12 +1940,12 @@ export class MigrationService {
     for (const [profile, duplicateFoods] of foodsByProfile) {
       if (duplicateFoods.length > 1) {
         const foodToKeep = this.selectBestFoodToKeep(duplicateFoods);
-        const foodsToDelete = duplicateFoods.filter(f => f.id !== foodToKeep.id);
-        
+        const foodsToDelete = duplicateFoods.filter((f) => f.id !== foodToKeep.id);
+
         for (const foodToDelete of foodsToDelete) {
           foodIdMap.set(foodToDelete.id, foodToKeep.id);
         }
-        
+
         processedGroups.add(`profile:${profile}`);
       }
     }
@@ -1940,7 +1961,7 @@ export class MigrationService {
           .fetch();
 
         for (const log of nutritionLogs) {
-          await log.update(l => {
+          await log.update((l) => {
             l.foodId = newFoodId;
           });
         }
@@ -1952,7 +1973,7 @@ export class MigrationService {
           .fetch();
 
         for (const mealFood of mealFoods) {
-          await mealFood.update(mf => {
+          await mealFood.update((mf) => {
             mf.foodId = newFoodId;
           });
         }
@@ -1964,7 +1985,7 @@ export class MigrationService {
           .fetch();
 
         for (const foodFoodPortion of foodFoodPortions) {
-          await foodFoodPortion.update(ffp => {
+          await foodFoodPortion.update((ffp) => {
             ffp.foodId = newFoodId;
           });
         }
@@ -1988,7 +2009,7 @@ export class MigrationService {
     const protein = Math.round(food.protein * 10) / 10; // Round to 1 decimal
     const carbs = Math.round(food.carbs * 10) / 10;
     const fat = Math.round(food.fat * 10) / 10;
-    
+
     return `${normalizedName}|${calories}|${protein}|${carbs}|${fat}`;
   }
 
@@ -2000,14 +2021,20 @@ export class MigrationService {
     // Sort by priority: AI-generated first, then by completeness, then by creation date
     const sorted = [...duplicateFoods].sort((a, b) => {
       // AI-generated foods take priority
-      if (a.isAiGenerated && !b.isAiGenerated) {return -1;}
-      if (!a.isAiGenerated && b.isAiGenerated) {return 1;}
-      
+      if (a.isAiGenerated && !b.isAiGenerated) {
+        return -1;
+      }
+      if (!a.isAiGenerated && b.isAiGenerated) {
+        return 1;
+      }
+
       // Prefer foods with more complete data (brand, micros, etc.)
       const aScore = this.calculateFoodCompletenessScore(a);
       const bScore = this.calculateFoodCompletenessScore(b);
-      if (aScore !== bScore) {return bScore - aScore;}
-      
+      if (aScore !== bScore) {
+        return bScore - aScore;
+      }
+
       // Prefer older entries (original)
       return a.createdAt - b.createdAt;
     });
@@ -2020,13 +2047,23 @@ export class MigrationService {
    */
   private calculateFoodCompletenessScore(food: Food): number {
     let score = 0;
-    
-    if (food.brand) {score += 2;}
-    if (food.barcode) {score += 3;}
-    if (food.micros && Object.keys(food.micros).length > 0) {score += 2;}
-    if (food.fiber > 0) {score += 1;}
-    if (food.source === 'user') {score += 1;} // Prefer user-entered over unknown
-    
+
+    if (food.brand) {
+      score += 2;
+    }
+    if (food.barcode) {
+      score += 3;
+    }
+    if (food.micros && Object.keys(food.micros).length > 0) {
+      score += 2;
+    }
+    if (food.fiber > 0) {
+      score += 1;
+    }
+    if (food.source === 'user') {
+      score += 1;
+    } // Prefer user-entered over unknown
+
     return score;
   }
 }
