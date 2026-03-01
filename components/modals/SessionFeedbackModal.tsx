@@ -11,7 +11,11 @@ import { Slider } from '../theme/Slider';
 type SessionFeedbackModalProps = {
   visible: boolean;
   onClose: () => void;
-  onSubmit?: (data: { difficulty: number; exhaustion: number; enjoyment: number }) => void;
+  onSubmit?: (data: {
+    difficulty: number;
+    exhaustion: number;
+    enjoyment: number;
+  }) => void | Promise<void>;
 };
 
 type RatingSliderProps = {
@@ -83,9 +87,22 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
   const [exhaustion, setExhaustion] = useState(5);
   const [enjoyment, setEnjoyment] = useState(9);
 
-  const handleSubmit = () => {
-    onSubmit?.({ difficulty, exhaustion, enjoyment });
-    onClose();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    // Small delay to allow React to render the loading state before closing
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
+    try {
+      await (onSubmit?.({ difficulty, exhaustion, enjoyment }) ?? Promise.resolve());
+      // Don't call onClose — parent navigates (router.replace), so the screen unmounts and the modal goes with it; closing first would cause a flash.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Web-specific ScrollView styles to prevent browser gestures
@@ -107,6 +124,8 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
         size="md"
         width="full"
         onPress={handleSubmit}
+        loading={isSubmitting}
+        disabled={isSubmitting}
       />
     </View>
   );

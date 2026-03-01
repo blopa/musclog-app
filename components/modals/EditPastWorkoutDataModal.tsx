@@ -190,7 +190,7 @@ export default function EditPastWorkoutDataModal({
     setIsSaving(true);
 
     // Small delay to allow React to render the loading state before closing
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
     try {
       await onSave(sets);
       onClose();

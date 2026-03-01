@@ -78,7 +78,8 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
 
   const handleLogMeal = useCallback(async () => {
     setIsLogging(true);
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    // Small delay to allow React to render the loading state before closing
+    await new Promise((resolve) => setTimeout(resolve, 1));
 
     try {
       onLogMeal(selectedDate, selectedMealType);

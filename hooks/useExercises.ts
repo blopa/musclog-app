@@ -210,7 +210,8 @@ export function useExercises({
 
     setIsLoadingMore(true);
 
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    // Small delay to allow React to render the loading state before closing
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
     try {
       if (canLoadMoreFilteredList) {

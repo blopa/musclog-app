@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Flag, Save, Trash2, X } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Modal, Platform, Pressable, Text, View } from 'react-native';
 
@@ -10,8 +10,8 @@ import { Button } from '../theme/Button';
 type EndWorkoutModalProps = {
   visible: boolean;
   onClose: () => void;
-  onFinishAndSave?: () => void;
-  onFinishAndDiscard?: () => void;
+  onFinishAndSave?: () => void | Promise<void>;
+  onFinishAndDiscard?: () => void | Promise<void>;
 };
 
 export function EndWorkoutModal({
@@ -24,6 +24,8 @@ export function EndWorkoutModal({
   const { t } = useTranslation();
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDiscarding, setIsDiscarding] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -167,10 +169,23 @@ export function EndWorkoutModal({
                   icon={Save}
                   size="sm"
                   width="full"
-                  onPress={() => {
-                    onFinishAndSave?.();
-                    onClose();
+                  onPress={async () => {
+                    if (isSaving) {
+                      return;
+                    }
+
+                    setIsSaving(true);
+                    // Small delay to allow React to render the loading state before closing
+                    await new Promise<void>((resolve) => setTimeout(resolve, 1));
+                    try {
+                      await (onFinishAndSave?.() ?? Promise.resolve());
+                      // Don't call onClose — parent either navigates (screen unmounts) or hides this modal via state; closing first would cause a flash.
+                    } finally {
+                      setIsSaving(false);
+                    }
                   }}
+                  loading={isSaving}
+                  disabled={isSaving || isDiscarding}
                 />
 
                 <Button
@@ -179,10 +194,23 @@ export function EndWorkoutModal({
                   variant="discard"
                   size="sm"
                   width="full"
-                  onPress={() => {
-                    onFinishAndDiscard?.();
-                    onClose();
+                  onPress={async () => {
+                    if (isDiscarding) {
+                      return;
+                    }
+
+                    setIsDiscarding(true);
+                    // Small delay to allow React to render the loading state before closing
+                    await new Promise<void>((resolve) => setTimeout(resolve, 1));
+                    try {
+                      await (onFinishAndDiscard?.() ?? Promise.resolve());
+                      // Don't call onClose — parent navigates or updates state; closing first would cause a flash.
+                    } finally {
+                      setIsDiscarding(false);
+                    }
                   }}
+                  loading={isDiscarding}
+                  disabled={isSaving || isDiscarding}
                 />
               </View>
             </LinearGradient>

@@ -158,7 +158,7 @@ export function useFoodPortions({
     setError(null);
 
     // Small delay to ensure React processes the state update and shows loading state
-    await new Promise<void>((resolve) => setTimeout(resolve, 10));
+    await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
     try {
       const allPortionsData = await FoodPortionService.getAllPortions();

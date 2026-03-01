@@ -22,6 +22,8 @@ type LogSetPerformanceModalProps = {
   repsInReserve?: number;
   initialRpe?: number;
   onConfirm?: (data: { rpe: number }) => void;
+  /** True while the confirm action is in progress (disables buttons, shows loading on log set). */
+  isSaving?: boolean;
   onEditSetDetails?: (data: {
     weight: number;
     reps: number;
@@ -68,6 +70,7 @@ export function LogSetPerformanceModal({
   repsInReserve: initialRepsInReserve = 0,
   initialRpe = 8,
   onConfirm,
+  isSaving = false,
   onEditSetDetails,
 }: LogSetPerformanceModalProps) {
   const theme = useTheme();
@@ -81,7 +84,6 @@ export function LogSetPerformanceModal({
     typeof initialPartials === 'number' ? initialPartials : 0
   );
   const [repsInReserve, setRepsInReserve] = useState(initialRepsInReserve);
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   // Update local state when props change
   useEffect(() => {
@@ -96,7 +98,7 @@ export function LogSetPerformanceModal({
 
   const handleConfirm = () => {
     onConfirm?.({ rpe });
-    onClose();
+    // Don't call onClose — parent navigates or shows next screen; closing first would cause a flash
   };
 
   // Web-specific ScrollView styles to prevent browser gestures
@@ -125,6 +127,7 @@ export function LogSetPerformanceModal({
         size="sm"
         width="flex-1"
         onPress={onClose}
+        disabled={isSaving}
       />
       <Button
         label={t('logSetPerformance.logSet')}
@@ -132,6 +135,8 @@ export function LogSetPerformanceModal({
         size="sm"
         width="flex-2"
         onPress={handleConfirm}
+        loading={isSaving}
+        disabled={isSaving}
       />
     </View>
   );

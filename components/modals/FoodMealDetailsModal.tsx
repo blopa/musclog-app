@@ -690,7 +690,8 @@ export function FoodMealDetailsModal({
 
   const handleAddFood = useCallback(async () => {
     setIsAddingFood(true);
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    // Small delay to allow React to render the loading state before closing
+    await new Promise((resolve) => setTimeout(resolve, 1));
 
     try {
       // Handle meal logging

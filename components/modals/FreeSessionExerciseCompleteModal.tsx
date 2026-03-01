@@ -20,6 +20,8 @@ type FreeSessionExerciseCompleteModalProps = {
   units: Units;
   onAddNextExercise: () => void;
   onFinishWorkout: () => void;
+  /** True while finish workout is in progress (disables buttons, shows loading on finish). */
+  isFinishing?: boolean;
 };
 
 export function FreeSessionExerciseCompleteModal({
@@ -31,6 +33,7 @@ export function FreeSessionExerciseCompleteModal({
   units,
   onAddNextExercise,
   onFinishWorkout,
+  isFinishing = false,
 }: FreeSessionExerciseCompleteModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -134,6 +137,7 @@ export function FreeSessionExerciseCompleteModal({
               onClose();
               onAddNextExercise();
             }}
+            disabled={isFinishing}
           />
           <Button
             label={t('freeTraining.exerciseComplete.finishWorkout')}
@@ -145,6 +149,8 @@ export function FreeSessionExerciseCompleteModal({
               // Don't call onClose() here; parent hides modal and clears state after completeWorkout.
               onFinishWorkout();
             }}
+            loading={isFinishing}
+            disabled={isFinishing}
           />
         </View>
       </View>

@@ -256,6 +256,8 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
+      // Small delay to allow React to render the loading state before closing
+      await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
       const restTime =
         currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
@@ -275,12 +277,11 @@ export default function WorkoutSessionScreen() {
       const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);
       await refresh();
 
-      setIsLogSetModalVisible(false);
-
       if (allSetsDone) {
         if (workoutLog.templateId) {
           await completeWorkout(workoutLog.id);
           router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`);
+          setTimeout(() => setIsLogSetModalVisible(false), 0);
           return;
         }
         setCompletedExerciseForModal({
@@ -289,12 +290,15 @@ export default function WorkoutSessionScreen() {
         });
         setIsFreeSessionCompleteModalVisible(true);
         hasShownFreeSessionCompleteModalRef.current = true;
+        setTimeout(() => setIsLogSetModalVisible(false), 0);
         return;
       }
 
       router.push(
         `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
       );
+      // Defer closing modal so navigation can run first and we avoid a flash of the session screen
+      setTimeout(() => setIsLogSetModalVisible(false), 0);
     } catch (err) {
       console.error('Error completing set:', err);
       // Show error to user
@@ -414,10 +418,13 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
+      // Small delay to allow React to render the loading state before closing
+      await new Promise<void>((resolve) => setTimeout(resolve, 1));
       await completeWorkout(workoutLog.id);
       setCompletedExerciseForModal(null);
-      setIsEndWorkoutModalVisible(false);
+      // Show feedback modal first so we don't flash the underlying screen when hiding the end-workout modal
       setIsSessionFeedbackModalVisible(true);
+      setIsEndWorkoutModalVisible(false);
     } catch (err) {
       console.error('Error completing workout:', err);
     } finally {
@@ -541,8 +548,8 @@ export default function WorkoutSessionScreen() {
                 try {
                   setIsSaving(true);
                   await completeWorkout(workoutLog.id);
-                  setIsEndWorkoutModalVisible(false);
                   setIsSessionFeedbackModalVisible(true);
+                  setIsEndWorkoutModalVisible(false);
                 } catch (err) {
                   console.error('Error completing workout:', err);
                 } finally {
@@ -554,7 +561,6 @@ export default function WorkoutSessionScreen() {
               if (workoutLog) {
                 await clearActiveWorkoutLogId();
               }
-              setIsEndWorkoutModalVisible(false);
               router.replace('/workout/workouts');
             }}
           />
@@ -668,6 +674,7 @@ export default function WorkoutSessionScreen() {
               // completeWorkout() so we stay in this branch until feedback modal is shown.
               handleFinishWorkout();
             }}
+            isFinishing={isSaving}
           />
         ) : null}
         <AddExerciseToSessionModal
@@ -1013,6 +1020,7 @@ export default function WorkoutSessionScreen() {
           onConfirm={(data) => {
             handleCompleteSet(data.rpe);
           }}
+          isSaving={isSaving}
           onEditSetDetails={(data) => {
             setWeight(data.weight);
             setReps(data.reps);
@@ -1095,7 +1103,7 @@ export default function WorkoutSessionScreen() {
             setIsEndWorkoutModalVisible(true);
           }}
           onFinishWorkout={() => {
-            setIsWorkoutOverviewModalVisible(false);
+            // Don't close overview first — handleFinishWorkout shows feedback modal; closing first would flash the session screen
             handleFinishWorkout();
           }}
         />
@@ -1129,6 +1137,7 @@ export default function WorkoutSessionScreen() {
             setCompletedExerciseForModal(null);
             handleFinishWorkout();
           }}
+          isFinishing={isSaving}
         />
       ) : null}
     </MasterLayout>
