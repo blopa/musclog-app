@@ -261,7 +261,9 @@ export default function RestOverScreen() {
             if (workoutLogId) {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
+                router.replace(
+                  `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                );
               } catch (err) {
                 console.error('Error completing workout:', err);
               }
@@ -308,7 +310,9 @@ export default function RestOverScreen() {
             if (workoutLogId) {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
+                router.replace(
+                  `/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                );
               } catch (err) {
                 console.error('Error completing workout:', err);
               }

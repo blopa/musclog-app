@@ -105,7 +105,11 @@ function BlankWorkoutStats({ startTime }: { startTime: number }) {
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ workoutLogId?: string; exerciseId?: string }>();
+  const params = useLocalSearchParams<{
+    workoutLogId?: string;
+    exerciseId?: string;
+    showFeedback?: string;
+  }>();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
@@ -124,6 +128,13 @@ export default function WorkoutSessionScreen() {
     refresh,
   } = useActiveWorkout(workoutLogId);
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
+
+  // When navigated from rest-timer/rest-over after "Finish workout", show feedback modal
+  useEffect(() => {
+    if (params.showFeedback === '1' && workoutLog && !isLoading) {
+      setIsSessionFeedbackModalVisible(true);
+    }
+  }, [params.showFeedback, isLoading, workoutLog]);
 
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
@@ -171,11 +182,18 @@ export default function WorkoutSessionScreen() {
     if (!workoutLog) {
       return;
     }
+
     if (!isWorkoutComplete()) {
       hasShownFreeSessionCompleteModalRef.current = false;
       return;
     }
+
     if (!isLoading && workoutLog.templateId) {
+      // Don't redirect if we're showing session feedback (we navigated here to show the modal)
+      if (params.showFeedback === '1' || isSessionFeedbackModalVisible) {
+        return;
+      }
+
       router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       return;
     }
@@ -184,8 +202,10 @@ export default function WorkoutSessionScreen() {
       const completedSets = sets.filter(
         (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
       );
+
       const byOrder = [...completedSets].sort((a, b) => (b.setOrder ?? 0) - (a.setOrder ?? 0));
       const lastSet = byOrder[0];
+
       if (lastSet) {
         const exercise = exercises.find((e) => e.id === lastSet.exerciseId);
         setCompletedExerciseForModal({
@@ -196,7 +216,16 @@ export default function WorkoutSessionScreen() {
         hasShownFreeSessionCompleteModalRef.current = true;
       }
     }
-  }, [isLoading, isWorkoutComplete, workoutLog, sets, exercises, router]);
+  }, [
+    isLoading,
+    isWorkoutComplete,
+    workoutLog,
+    sets,
+    exercises,
+    router,
+    params.showFeedback,
+    isSessionFeedbackModalVisible,
+  ]);
 
   // Set initial exercise if provided in URL
   useEffect(() => {
@@ -250,7 +279,8 @@ export default function WorkoutSessionScreen() {
 
       if (allSetsDone) {
         if (workoutLog.templateId) {
-          router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+          await completeWorkout(workoutLog.id);
+          router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`);
           return;
         }
         setCompletedExerciseForModal({
@@ -290,7 +320,8 @@ export default function WorkoutSessionScreen() {
 
       if (allSetsDone) {
         if (workoutLog.templateId) {
-          router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+          await completeWorkout(workoutLog.id);
+          router.replace(`/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`);
         } else {
           setCompletedExerciseForModal({
             exerciseId: currentSetData.set.exerciseId ?? '',
@@ -670,6 +701,75 @@ export default function WorkoutSessionScreen() {
     );
   }
 
+  // Template workout finished: show session feedback modal. When user taps "Finish and save"
+  // we set isSessionFeedbackModalVisible(true), but the next render can have currentSetData null
+  // (all sets done), which would otherwise hit the error branch below and never show the modal.
+  if (isSessionFeedbackModalVisible && workoutLog) {
+    return (
+      <MasterLayout showNavigationMenu={false}>
+        <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+          <LinearGradient
+            colors={[...theme.colors.gradients.landingBackground]}
+            locations={[0, 0.5, 1]}
+            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-20%',
+              width: 280,
+              height: 280,
+              borderRadius: 140,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.6,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              top: '35%',
+              right: '-15%',
+              width: 200,
+              height: 200,
+              borderRadius: 100,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.35,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: '25%',
+              left: '10%',
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.25,
+            }}
+          />
+        </View>
+        <SessionFeedbackModal
+          visible={isSessionFeedbackModalVisible}
+          onClose={() => {
+            setIsSessionFeedbackModalVisible(false);
+            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+          }}
+          onSubmit={async (data) => {
+            try {
+              await submitFeedback(workoutLog.id, data);
+            } catch (err) {
+              console.error('Error saving workout feedback:', err);
+            } finally {
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+            }
+          }}
+        />
+      </MasterLayout>
+    );
+  }
+
   if (error || !currentSetData || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
@@ -996,7 +1096,7 @@ export default function WorkoutSessionScreen() {
           }}
           onFinishWorkout={() => {
             setIsWorkoutOverviewModalVisible(false);
-            setIsSessionFeedbackModalVisible(true);
+            handleFinishWorkout();
           }}
         />
       ) : null}

@@ -390,7 +390,9 @@ export default function RestTimerScreen() {
           onFinishAndSave={async () => {
             if (workoutLog) {
               await WorkoutService.completeWorkout(workoutLog.id);
-              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              router.replace(
+                `/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+              );
             }
           }}
           onFinishAndDiscard={async () => {
@@ -434,7 +436,9 @@ export default function RestTimerScreen() {
             if (workoutLog) {
               try {
                 await WorkoutService.completeWorkout(workoutLog.id);
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+                router.replace(
+                  `/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+                );
               } catch (err) {
                 console.error('Error completing workout:', err);
               }
