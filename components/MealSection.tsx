@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { theme } from '../theme';
-import { Button } from './theme/Button';
+import DashedButton from './theme/DashedButton';
 
 type MealSectionProps = {
   title: string;
@@ -28,13 +28,11 @@ function AddFoodButton({ mealType, onPress }: AddFoodButtonProps) {
     : t('food.meals.addFood');
 
   return (
-    <Button
+    <DashedButton
       label={buttonText}
-      icon={Plus}
-      variant="dashed"
-      size="md"
-      width="full"
       onPress={onPress}
+      size="sm"
+      icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
     />
   );
 }
