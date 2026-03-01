@@ -27,7 +27,7 @@ export const schema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string', isOptional: true },
         { name: 'volume_calculation_type', type: 'string' },
-        // { name: 'icon', type: 'string', isOptional: true },
+        // { name: 'icon', type: 'string', isOptional: true }, // TODO: uncomment this line and then implement adding the icon in the model, services and hooks
         { name: 'type', type: 'string', isOptional: true },
         { name: 'week_days_json', type: 'string', isOptional: true },
         { name: 'is_archived', type: 'boolean' },
@@ -78,7 +78,7 @@ export const schema = appSchema({
         { name: 'completed_at', type: 'number', isOptional: true },
         { name: 'total_volume', type: 'number', isOptional: true },
         { name: 'calories_burned', type: 'number', isOptional: true },
-        // { name: 'icon', type: 'string', isOptional: true },
+        // { name: 'icon', type: 'string', isOptional: true }, // TODO: uncomment this line and then implement adding the icon in the model, services and hooks
         { name: 'type', type: 'string', isOptional: true },
         { name: 'exhaustion_level', type: 'number' },
         { name: 'workout_score', type: 'number' },
