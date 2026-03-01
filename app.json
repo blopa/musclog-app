@@ -54,7 +54,8 @@
         }
       ],
       "expo-background-task",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-community/datetimepicker"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -63,7 +64,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a1f1a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
