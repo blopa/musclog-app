@@ -48,6 +48,8 @@ type FoodDetailsModalProps = {
   onLogMeal?: (data: { meal: string; date: Date }) => void;
   /** Called when barcode lookup has finished (product found or not). Used to hide camera loading overlay. */
   onBarcodeLookupComplete?: () => void;
+  /** Called when food was successfully tracked (e.g. so parent can close camera modal). */
+  onFoodTracked?: () => void;
 };
 
 export function FoodMealDetailsModal({
@@ -64,6 +66,7 @@ export function FoodMealDetailsModal({
   onLogMeal,
   foodLog,
   onBarcodeLookupComplete,
+  onFoodTracked,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -622,6 +625,7 @@ export function FoodMealDetailsModal({
           onLogMeal?.({ meal: selectedMeal, date: selectedDate });
 
           onClose();
+          onFoodTracked?.();
 
           showSnackbar('success', t('food.foodDetails.successMessage'), {
             action: t('snackbar.ok'),
@@ -664,6 +668,7 @@ export function FoodMealDetailsModal({
           onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });
 
           onClose();
+          onFoodTracked?.();
 
           showSnackbar('success', t('food.foodDetails.successMessage'), {
             action: t('snackbar.ok'),
@@ -712,6 +717,7 @@ export function FoodMealDetailsModal({
         });
 
         onClose();
+        onFoodTracked?.();
 
         showSnackbar('success', t('food.foodDetails.successMessage'), {
           action: t('snackbar.ok'),
@@ -758,6 +764,7 @@ export function FoodMealDetailsModal({
       });
 
       onClose();
+      onFoodTracked?.();
 
       showSnackbar('success', t('food.foodDetails.successMessage'), {
         action: t('snackbar.ok'),
@@ -793,6 +800,7 @@ export function FoodMealDetailsModal({
     mealPortionMultiplier,
     onAddFood,
     onClose,
+    onFoodTracked,
     showSnackbar,
     t,
     onLogMeal,

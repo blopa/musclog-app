@@ -729,6 +729,7 @@ export default function SmartCameraModal({
             onClose={handleFoodDetailsClose}
             barcode={detectedBarcode}
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
+            onFoodTracked={onClose}
           />
         ) : null}
 
