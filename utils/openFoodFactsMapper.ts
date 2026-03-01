@@ -238,7 +238,7 @@ export function getNutrimentsFromV3Nutrition(product: any): Record<string, numbe
     return null;
   }
 
-  return {
+  const result: Record<string, number> = {
     'energy-kcal': v3NutrientValue(set['energy-kcal']),
     proteins: v3NutrientValue(set.proteins),
     carbohydrates: v3NutrientValue(set.carbohydrates),
@@ -248,8 +248,22 @@ export function getNutrimentsFromV3Nutrition(product: any): Record<string, numbe
     'saturated-fat': v3NutrientValue(set['saturated-fat']),
     sodium: v3NutrientValue(set.sodium),
     salt: v3NutrientValue(set.salt),
-    // TODO: add missing nutriments - maybe check NUTRIMENT_PROPERTIES
   };
+
+  // Add all other nutriments from NUTRIMENT_PROPERTIES that aren't already included
+  const baseNutriments = [
+    'energy-kcal', 'proteins', 'carbohydrates', 'fat', 'carbohydrates-total',
+    'sugars', 'saturated-fat', 'sodium', 'salt'
+  ];
+
+  NUTRIMENT_PROPERTIES.forEach(prop => {
+    // Skip the ones already added and skip unit/label properties
+    if (!baseNutriments.includes(prop) && !prop.includes('_unit') && !prop.includes('_label')) {
+      result[prop] = v3NutrientValue(set[prop]);
+    }
+  });
+
+  return result;
 }
 
 // Helper function to extract nutriment value with fallback hierarchy (exported for use in modals)
