@@ -36,10 +36,12 @@ export function EmptyStateCard({
               colors={theme.colors.gradients.progress}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="h-40 w-40 items-center justify-center rounded-full"
+              className="h-40 w-40 items-center justify-center rounded-full overflow-hidden"
               style={{ opacity: theme.colors.opacity.strong }}
             >
-              <Icon size={theme.iconSize['6xl']} color={theme.colors.text.primary} />
+              <View className="h-36 w-36 items-center justify-center rounded-full bg-white/10">
+                <Icon size={theme.iconSize['6xl']} color={theme.colors.text.primary} />
+              </View>
             </LinearGradient>
           </View>
         ) : (
