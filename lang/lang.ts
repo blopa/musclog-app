@@ -61,6 +61,7 @@ import enUsSessionFeedback from './locales/en-us/sessionFeedback.json';
 import enUsSettings from './locales/en-us/settings.json';
 import enUsSnackbar from './locales/en-us/snackbar.json';
 import enUsStartWorkout from './locales/en-us/startWorkout.json';
+import timePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWorkout from './locales/en-us/workout.json';
@@ -76,7 +77,6 @@ import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import enUsYourGoogleAuthExpiredReauth from './locales/en-us/your_google_auth_expired_reauth.json';
-import timePicker from './locales/en-us/timePicker.json';
 
 export const EN_US = 'en-US';
 // export const ES_ES = 'es-ES';
