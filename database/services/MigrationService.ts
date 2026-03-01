@@ -11,6 +11,8 @@ import {
   type EquipmentType,
   Exercise,
   Food,
+  FoodFoodPortion,
+  MealFood,
   NutritionGoal,
   NutritionLog,
   User,
@@ -1693,12 +1695,10 @@ export class MigrationService {
       );
       result.workoutLogSets = result.details.logSetsMigrated;
 
-      // TODO: after everything is migrated, search for duplicated values in the Food table, by comparing, in priority order:
-      // barcode, if available
-      // name + protein + carbs + fats + calories
-      //
-      // then after finding all duplicated ones, pick one to keep and delete the rest
-      // but when deleting the rest, dont forget to update the nutrition logs and other tables that were using those foods as reference
+      // Step 11: Deduplicate food entries
+      console.log('Deduplicating food entries...');
+      const deduplicationResult = await this.deduplicateFoods();
+      console.log(`Deduplicated ${deduplicationResult.duplicatesRemoved} duplicate food entries`);
 
       // Step 12: Validate migration
       onProgress?.({ step: 'validating' });
@@ -1859,5 +1859,174 @@ export class MigrationService {
       logSetsCount,
       tables,
     };
+  }
+
+  /**
+   * Find and remove duplicate food entries after migration
+   */
+  private async deduplicateFoods(): Promise<{ duplicatesRemoved: number }> {
+    const allFoods = await database
+      .get<Food>('foods')
+      .query(Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const processedGroups = new Set<string>();
+    const foodIdMap = new Map<string, string>(); // oldFoodId -> newFoodId to keep
+
+    // First pass: find duplicates by barcode (highest priority)
+    const foodsByBarcode = new Map<string, Food[]>();
+    for (const food of allFoods) {
+      if (food.barcode) {
+        if (!foodsByBarcode.has(food.barcode)) {
+          foodsByBarcode.set(food.barcode, []);
+        }
+
+        foodsByBarcode.get(food.barcode)!.push(food);
+      }
+    }
+
+    // Process barcode duplicates
+    for (const [barcode, duplicateFoods] of foodsByBarcode) {
+      if (duplicateFoods.length > 1) {
+        const foodToKeep = this.selectBestFoodToKeep(duplicateFoods);
+        const foodsToDelete = duplicateFoods.filter(f => f.id !== foodToKeep.id);
+        
+        for (const foodToDelete of foodsToDelete) {
+          foodIdMap.set(foodToDelete.id, foodToKeep.id);
+        }
+        
+        processedGroups.add(`barcode:${barcode}`);
+      }
+    }
+
+    // Second pass: find duplicates by nutritional profile (name + macros + calories)
+    const foodsByProfile = new Map<string, Food[]>();
+    for (const food of allFoods) {
+      // Skip foods already processed by barcode
+      if (food.barcode && processedGroups.has(`barcode:${food.barcode}`)) {
+        continue;
+      }
+
+      const profileKey = this.createFoodProfileKey(food);
+      if (!foodsByProfile.has(profileKey)) {
+        foodsByProfile.set(profileKey, []);
+      }
+
+      foodsByProfile.get(profileKey)!.push(food);
+    }
+
+    // Process nutritional profile duplicates
+    for (const [profile, duplicateFoods] of foodsByProfile) {
+      if (duplicateFoods.length > 1) {
+        const foodToKeep = this.selectBestFoodToKeep(duplicateFoods);
+        const foodsToDelete = duplicateFoods.filter(f => f.id !== foodToKeep.id);
+        
+        for (const foodToDelete of foodsToDelete) {
+          foodIdMap.set(foodToDelete.id, foodToKeep.id);
+        }
+        
+        processedGroups.add(`profile:${profile}`);
+      }
+    }
+
+    // Update all references and delete duplicates
+    let totalRemoved = 0;
+    for (const [oldFoodId, newFoodId] of foodIdMap) {
+      await database.write(async () => {
+        // Update nutrition_logs
+        const nutritionLogs = await database
+          .get<NutritionLog>('nutrition_logs')
+          .query(Q.where('food_id', oldFoodId))
+          .fetch();
+
+        for (const log of nutritionLogs) {
+          await log.update(l => {
+            l.foodId = newFoodId;
+          });
+        }
+
+        // Update meal_foods
+        const mealFoods = await database
+          .get<MealFood>('meal_foods')
+          .query(Q.where('food_id', oldFoodId))
+          .fetch();
+
+        for (const mealFood of mealFoods) {
+          await mealFood.update(mf => {
+            mf.foodId = newFoodId;
+          });
+        }
+
+        // Update food_food_portions
+        const foodFoodPortions = await database
+          .get<FoodFoodPortion>('food_food_portions')
+          .query(Q.where('food_id', oldFoodId))
+          .fetch();
+
+        for (const foodFoodPortion of foodFoodPortions) {
+          await foodFoodPortion.update(ffp => {
+            ffp.foodId = newFoodId;
+          });
+        }
+
+        // Delete the duplicate food
+        const foodToDelete = await database.get<Food>('foods').find(oldFoodId);
+        await foodToDelete.markAsDeleted();
+        totalRemoved++;
+      });
+    }
+
+    return { duplicatesRemoved: totalRemoved };
+  }
+
+  /**
+   * Create a unique key for food based on name and nutritional profile
+   */
+  private createFoodProfileKey(food: Food): string {
+    const normalizedName = (food.name || '').toLowerCase().trim();
+    const calories = Math.round(food.calories);
+    const protein = Math.round(food.protein * 10) / 10; // Round to 1 decimal
+    const carbs = Math.round(food.carbs * 10) / 10;
+    const fat = Math.round(food.fat * 10) / 10;
+    
+    return `${normalizedName}|${calories}|${protein}|${carbs}|${fat}`;
+  }
+
+  /**
+   * Select the best food to keep from a group of duplicates
+   * Priority: AI-generated > user-created with more complete data > older entry
+   */
+  private selectBestFoodToKeep(duplicateFoods: Food[]): Food {
+    // Sort by priority: AI-generated first, then by completeness, then by creation date
+    const sorted = [...duplicateFoods].sort((a, b) => {
+      // AI-generated foods take priority
+      if (a.isAiGenerated && !b.isAiGenerated) {return -1;}
+      if (!a.isAiGenerated && b.isAiGenerated) {return 1;}
+      
+      // Prefer foods with more complete data (brand, micros, etc.)
+      const aScore = this.calculateFoodCompletenessScore(a);
+      const bScore = this.calculateFoodCompletenessScore(b);
+      if (aScore !== bScore) {return bScore - aScore;}
+      
+      // Prefer older entries (original)
+      return a.createdAt - b.createdAt;
+    });
+
+    return sorted[0];
+  }
+
+  /**
+   * Calculate a score for food completeness
+   */
+  private calculateFoodCompletenessScore(food: Food): number {
+    let score = 0;
+    
+    if (food.brand) {score += 2;}
+    if (food.barcode) {score += 3;}
+    if (food.micros && Object.keys(food.micros).length > 0) {score += 2;}
+    if (food.fiber > 0) {score += 1;}
+    if (food.source === 'user') {score += 1;} // Prefer user-entered over unknown
+    
+    return score;
   }
 }
