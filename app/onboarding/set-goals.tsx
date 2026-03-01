@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -289,6 +289,7 @@ export default function SetGoals() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ weightKg?: string; heightCm?: string }>();
   const { units } = useSettings();
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -299,27 +300,74 @@ export default function SetGoals() {
       return null;
     }
 
-    const [latestWeight, latestHeight, latestBodyFat] = await Promise.all([
-      UserMetricService.getLatest('weight'),
-      UserMetricService.getLatest('height'),
-      UserMetricService.getLatest('body_fat'),
-    ]);
-    const [weightDec, heightDec, bodyFatDec] = await Promise.all([
-      latestWeight?.getDecrypted(),
-      latestHeight?.getDecrypted(),
-      latestBodyFat?.getDecrypted(),
-    ]);
+    let weightKg: number;
+    let heightCm: number;
 
-    const rawWeight = weightDec?.value ?? 0;
-    const rawHeight = heightDec?.value ?? 0;
-    const rawBodyFat = bodyFatDec?.value;
+    if (params?.weightKg && params?.heightCm) {
+      const w = parseFloat(params.weightKg);
+      const h = parseFloat(params.heightCm);
+      if (w > 0 && h > 0 && Number.isFinite(w) && Number.isFinite(h)) {
+        weightKg = w;
+        heightCm = h;
+      } else {
+        return null;
+      }
+    } else {
+      const [latestWeight, latestHeight] = await Promise.all([
+        UserMetricService.getLatest('weight'),
+        UserMetricService.getLatest('height'),
+      ]);
+      const [weightDec, heightDec] = await Promise.all([
+        latestWeight?.getDecrypted(),
+        latestHeight?.getDecrypted(),
+      ]);
 
-    if (rawWeight <= 0 || rawHeight <= 0) {
-      return null;
+      let rawWeight = weightDec?.value ?? 0;
+      let rawHeight = heightDec?.value ?? 0;
+
+      const todayStart = new Date().setHours(0, 0, 0, 0);
+      const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
+      if (rawWeight <= 0) {
+        const todayWeights = await UserMetricService.getMetricsHistory(
+          'weight',
+          { startDate: todayStart, endDate: todayEnd },
+          10
+        );
+        for (const m of todayWeights) {
+          const d = await m.getDecrypted();
+          if (d.value > 0) {
+            rawWeight = d.value;
+            break;
+          }
+        }
+      }
+
+      if (rawHeight <= 0) {
+        const todayHeights = await UserMetricService.getMetricsHistory(
+          'height',
+          { startDate: todayStart, endDate: todayEnd },
+          10
+        );
+        for (const m of todayHeights) {
+          const d = await m.getDecrypted();
+          if (d.value > 0) {
+            rawHeight = d.value;
+            break;
+          }
+        }
+      }
+
+      if (rawWeight <= 0 || rawHeight <= 0) {
+        return null;
+      }
+
+      weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
+      heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
     }
 
-    const weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
-    const heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
+    const latestBodyFat = await UserMetricService.getLatest('body_fat');
+    const rawBodyFat = latestBodyFat ? (await latestBodyFat.getDecrypted())?.value : undefined;
+
     const age = user.getAge();
 
     const input: NutritionCalculatorInput = {
@@ -383,7 +431,7 @@ export default function SetGoals() {
     }
 
     return planWithTargets;
-  }, [units]);
+  }, [units, params?.weightKg, params?.heightCm]);
 
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);

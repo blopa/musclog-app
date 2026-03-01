@@ -6,7 +6,8 @@ import UserMetric, { type UserMetricType } from '../models/UserMetric';
 
 export class UserMetricService {
   /**
-   * Get latest metric value for a specific type (by date).
+   * Get latest metric value for a specific type (by date, then by updated_at so
+   * the most recently updated record wins when dates tie).
    */
   static async getLatest(type: UserMetricType | string): Promise<UserMetric | null> {
     const metrics = await database
@@ -15,6 +16,7 @@ export class UserMetricService {
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
         Q.take(1)
       )
       .fetch();

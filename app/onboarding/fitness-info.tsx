@@ -28,6 +28,32 @@ const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
 const DEFAULT_FAT_PERCENTAGE = 15;
 
+/** Merge initial data with current form state; use defaults for any missing fields so we always have a complete FitnessDetails. */
+function getMergedFitnessData(
+  initial: Partial<FitnessDetails> | undefined,
+  current: Partial<FitnessDetails> | undefined
+): FitnessDetails {
+  const weight =
+    current?.weight != null && String(current.weight).trim() !== ''
+      ? current.weight
+      : (initial?.weight ?? DEFAULT_WEIGHT_KG);
+  const height =
+    current?.height != null && String(current.height).trim() !== ''
+      ? current.height
+      : (initial?.height ?? DEFAULT_HEIGHT_CM);
+
+  return {
+    units: current?.units ?? initial?.units ?? 'metric',
+    weight: typeof weight === 'string' ? weight : String(weight),
+    height: typeof height === 'string' ? height : String(height),
+    fatPercentage: current?.fatPercentage ?? initial?.fatPercentage ?? DEFAULT_FAT_PERCENTAGE,
+    weightGoal: current?.weightGoal ?? initial?.weightGoal ?? 'maintain',
+    fitnessGoal: current?.fitnessGoal ?? initial?.fitnessGoal ?? 'general',
+    activityLevel: current?.activityLevel ?? initial?.activityLevel ?? 3,
+    experience: current?.experience ?? initial?.experience ?? 'intermediate',
+  };
+}
+
 export default function FitnessInfo() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -112,165 +138,186 @@ export default function FitnessInfo() {
     }
   }, [units, isSettingsLoading]);
 
-  const handleSave = async (data: FitnessDetails) => {
-    setIsSaving(true);
-    try {
-      // Get or ensure user exists
-      let user = await UserService.getCurrentUser();
-      if (!user) {
-        // Try to use the temporary Google name saved during OAuth flow, otherwise generate one
-        let fullName = uniqueNamesGenerator({
-          dictionaries: [names],
-          style: 'capital',
-          separator: ' ',
-        });
+  const handleSave = useCallback(
+    async (data: FitnessDetails, options?: { navigate?: boolean }) => {
+      const shouldNavigate = options?.navigate !== false;
+      setIsSaving(true);
+      try {
+        // Get or ensure user exists
+        let user = await UserService.getCurrentUser();
+        if (!user) {
+          // Try to use the temporary Google name saved during OAuth flow, otherwise generate one
+          let fullName = uniqueNamesGenerator({
+            dictionaries: [names],
+            style: 'capital',
+            separator: ' ',
+          });
 
-        try {
-          const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
-          if (tempName && tempName.length > 0) {
-            fullName = tempName;
+          try {
+            const tempName = await AsyncStorage.getItem(TEMP_GOOGLE_USER_NAME);
+            if (tempName && tempName.length > 0) {
+              fullName = tempName;
+            }
+          } catch (e) {
+            console.warn('Failed to read TEMP_GOOGLE_USER_NAME from storage', e);
           }
-        } catch (e) {
-          console.warn('Failed to read TEMP_GOOGLE_USER_NAME from storage', e);
-        }
 
-        user = await UserService.initializeUser({
-          fullName,
-          dateOfBirth: new Date().getTime(),
-          gender: 'other',
-          fitnessGoal: data.fitnessGoal,
-          weightGoal: data.weightGoal,
-          activityLevel: data.activityLevel,
-          liftingExperience: data.experience,
-        });
-      } else {
-        // Update user fitness info
-        await user.updateProfile({
-          fitnessGoal: data.fitnessGoal,
-          weightGoal: data.weightGoal,
-          activityLevel: data.activityLevel,
-          liftingExperience: data.experience,
-        });
-      }
-
-      const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
-
-      if (data.weight && parseFloat(data.weight) > 0) {
-        const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
-
-        const existingWeight = await UserMetricService.getMetricsHistory(
-          'weight',
-          { startDate: currentDate, endDate: currentDate },
-          1
-        );
-        if (existingWeight.length > 0) {
-          await UserMetricService.updateMetric(existingWeight[0].id, {
-            value: weightValueKg,
-            unit: 'kg',
-            date: currentDate,
+          user = await UserService.initializeUser({
+            fullName,
+            dateOfBirth: new Date().getTime(),
+            gender: 'other',
+            fitnessGoal: data.fitnessGoal,
+            weightGoal: data.weightGoal,
+            activityLevel: data.activityLevel,
+            liftingExperience: data.experience,
           });
         } else {
-          await UserMetricService.createMetric({
-            type: 'weight',
-            value: weightValueKg,
-            unit: 'kg',
-            date: currentDate,
-            timezone,
+          // Update user fitness info
+          await user.updateProfile({
+            fitnessGoal: data.fitnessGoal,
+            weightGoal: data.weightGoal,
+            activityLevel: data.activityLevel,
+            liftingExperience: data.experience,
           });
         }
-      }
 
-      if (data.height && parseFloat(data.height) > 0) {
-        const heightValueCm = displayToCm(parseFloat(data.height), data.units);
-        const existingHeight = await UserMetricService.getMetricsHistory(
-          'height',
-          { startDate: currentDate, endDate: currentDate },
-          1
-        );
-        if (existingHeight.length > 0) {
-          await UserMetricService.updateMetric(existingHeight[0].id, {
-            value: heightValueCm,
-            unit: 'cm',
-            date: currentDate,
-          });
-        } else {
-          await UserMetricService.createMetric({
-            type: 'height',
-            value: heightValueCm,
-            unit: 'cm',
-            date: currentDate,
-            timezone,
+        const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
+        const now = Date.now(); // Use current timestamp so this write is the "latest" and getLatest() returns it
+        const endOfDay = currentDate + 24 * 60 * 60 * 1000 - 1; // Any metric "today" (so we update it instead of creating a duplicate)
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
+
+        if (data.weight && parseFloat(data.weight) > 0) {
+          const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
+
+          const existingWeight = await UserMetricService.getMetricsHistory(
+            'weight',
+            { startDate: currentDate, endDate: endOfDay },
+            1
+          );
+          if (existingWeight.length > 0) {
+            await UserMetricService.updateMetric(existingWeight[0].id, {
+              value: weightValueKg,
+              unit: 'kg',
+              date: now,
+            });
+          } else {
+            await UserMetricService.createMetric({
+              type: 'weight',
+              value: weightValueKg,
+              unit: 'kg',
+              date: now,
+              timezone,
+            });
+          }
+        }
+
+        if (data.height && parseFloat(data.height) > 0) {
+          const heightValueCm = displayToCm(parseFloat(data.height), data.units);
+          const existingHeight = await UserMetricService.getMetricsHistory(
+            'height',
+            { startDate: currentDate, endDate: endOfDay },
+            1
+          );
+          if (existingHeight.length > 0) {
+            await UserMetricService.updateMetric(existingHeight[0].id, {
+              value: heightValueCm,
+              unit: 'cm',
+              date: now,
+            });
+          } else {
+            await UserMetricService.createMetric({
+              type: 'height',
+              value: heightValueCm,
+              unit: 'cm',
+              date: now,
+              timezone,
+            });
+          }
+        }
+
+        if (data.fatPercentage != null && data.fatPercentage > 0) {
+          const fatValue = data.fatPercentage;
+          const existingBodyFat = await UserMetricService.getMetricsHistory(
+            'body_fat',
+            { startDate: currentDate, endDate: endOfDay },
+            1
+          );
+          if (existingBodyFat.length > 0) {
+            await UserMetricService.updateMetric(existingBodyFat[0].id, {
+              value: fatValue,
+              unit: '%',
+              date: now,
+            });
+          } else {
+            await UserMetricService.createMetric({
+              type: 'body_fat',
+              value: fatValue,
+              unit: '%',
+              date: now,
+              timezone,
+            });
+          }
+        }
+
+        // Persist units setting via SettingsService
+        await SettingsService.setUnits(data.units);
+
+        if (shouldNavigate) {
+          const weightKg =
+            data.weight && parseFloat(data.weight) > 0
+              ? displayToKg(parseFloat(data.weight), data.units)
+              : 0;
+
+          const heightCm =
+            data.height && parseFloat(data.height) > 0
+              ? displayToCm(parseFloat(data.height), data.units)
+              : 0;
+
+          router.push({
+            pathname: '/onboarding/set-goals',
+            params:
+              weightKg > 0 && heightCm > 0
+                ? { weightKg: String(weightKg), heightCm: String(heightCm) }
+                : undefined,
           });
         }
+      } catch (error) {
+        console.error('Error saving fitness info:', error);
+        showSnackbar('error', t('onboarding.fitnessInfo.errorSaving'));
+      } finally {
+        setIsSaving(false);
       }
-
-      if (data.fatPercentage != null && data.fatPercentage > 0) {
-        const fatValue = data.fatPercentage;
-        const existingBodyFat = await UserMetricService.getMetricsHistory(
-          'body_fat',
-          { startDate: currentDate, endDate: currentDate },
-          1
-        );
-        if (existingBodyFat.length > 0) {
-          await UserMetricService.updateMetric(existingBodyFat[0].id, {
-            value: fatValue,
-            unit: '%',
-            date: currentDate,
-          });
-        } else {
-          await UserMetricService.createMetric({
-            type: 'body_fat',
-            value: fatValue,
-            unit: '%',
-            date: currentDate,
-            timezone,
-          });
-        }
-      }
-
-      // Persist units setting via SettingsService
-      await SettingsService.setUnits(data.units);
-
-      // Navigate to next step (set-goals)
-      router.push('/onboarding/set-goals');
-    } catch (error) {
-      console.error('Error saving fitness info:', error);
-      showSnackbar('error', t('onboarding.fitnessInfo.errorSaving'));
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    },
+    [router, showSnackbar, t]
+  );
 
   const handleSkip = useCallback(async () => {
-    // Navigate to set-goals even when skipping
-    router.push('/onboarding/set-goals');
-  }, [router]);
+    const merged = getMergedFitnessData(initialData, currentFormData);
+    try {
+      await handleSave(merged, { navigate: false });
+    } catch {
+      // Error already shown in handleSave
+    }
+    const weightKg =
+      merged.weight && parseFloat(merged.weight) > 0
+        ? displayToKg(parseFloat(merged.weight), merged.units ?? 'metric')
+        : 0;
+    const heightCm =
+      merged.height && parseFloat(merged.height) > 0
+        ? displayToCm(parseFloat(merged.height), merged.units ?? 'metric')
+        : 0;
+    router.push({
+      pathname: '/onboarding/set-goals',
+      params:
+        weightKg > 0 && heightCm > 0
+          ? { weightKg: String(weightKg), heightCm: String(heightCm) }
+          : undefined,
+    });
+  }, [initialData, currentFormData, router, handleSave]);
 
   const handleFloatingSave = async () => {
-    // Use currentFormData if available and complete, otherwise fall back to initialData
-    const dataToSave =
-      currentFormData &&
-      currentFormData.units &&
-      currentFormData.weight &&
-      currentFormData.height &&
-      currentFormData.fitnessGoal &&
-      currentFormData.activityLevel &&
-      currentFormData.experience
-        ? currentFormData
-        : initialData;
-
-    if (
-      dataToSave &&
-      dataToSave.units &&
-      dataToSave.weight &&
-      dataToSave.height &&
-      dataToSave.fitnessGoal &&
-      dataToSave.activityLevel &&
-      dataToSave.experience
-    ) {
-      await handleSave(dataToSave as FitnessDetails);
-    }
+    const merged = getMergedFitnessData(initialData, currentFormData);
+    await handleSave(merged);
   };
 
   if (isSettingsLoading || isLoading) {
