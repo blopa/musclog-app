@@ -17,7 +17,7 @@ import { useTheme } from '../hooks/useTheme';
 
 type BottomPopUpProps = {
   visible: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   title: string;
   subtitle?: string;
   children?: ReactNode;
@@ -81,7 +81,7 @@ export function BottomPopUp({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => onClose?.()}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       <View
@@ -90,7 +90,7 @@ export function BottomPopUp({
         pointerEvents="box-none"
       >
         {/* Backdrop: sibling behind content so taps on content hit content first (fixes Android menu taps) */}
-        <TouchableWithoutFeedback onPress={onClose}>
+        <TouchableWithoutFeedback onPress={() => onClose?.()}>
           <View
             style={[
               { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
@@ -143,7 +143,7 @@ export function BottomPopUp({
                 </View>
                 <Pressable
                   className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                  onPress={onClose}
+                  onPress={() => onClose?.()}
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                 >
                   <X size={theme.iconSize.md} color={theme.colors.text.secondary} />

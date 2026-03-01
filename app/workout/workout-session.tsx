@@ -566,7 +566,9 @@ export default function WorkoutSessionScreen() {
     progress.totalSets > 0 &&
     progress.isComplete &&
     !workoutLog.templateId &&
-    (completedExerciseForModal || isAddExerciseToSessionModalVisible || isSessionFeedbackModalVisible)
+    (completedExerciseForModal ||
+      isAddExerciseToSessionModalVisible ||
+      isSessionFeedbackModalVisible)
   ) {
     return (
       <MasterLayout showNavigationMenu={false}>

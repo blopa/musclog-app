@@ -123,7 +123,6 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
   return (
     <BottomPopUpMenu
       visible={visible}
-      onClose={onClose}
       title={t('sessionFeedback.title')}
       subtitle={t('sessionFeedback.subtitle')}
       headerIcon={headerIcon}
