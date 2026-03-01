@@ -2,7 +2,7 @@
  * Workout type used for templates and logs (strength, cardio, flexibility, calisthenics, other).
  */
 
-export type WorkoutType = 'strength' | 'cardio' | 'flexibility' | 'calisthenics' | 'other';
+export type WorkoutType = 'strength' | 'cardio' | 'flexibility' | 'calisthenics' | 'other' | 'free';
 
 export const WORKOUT_TYPES: WorkoutType[] = [
   'strength',
@@ -10,6 +10,7 @@ export const WORKOUT_TYPES: WorkoutType[] = [
   'flexibility',
   'calisthenics',
   'other',
+  'free',
 ];
 
 export const DEFAULT_WORKOUT_TYPE: WorkoutType = 'strength';

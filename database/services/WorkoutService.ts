@@ -66,6 +66,55 @@ export class WorkoutService {
   }
 
   /**
+   * Start a free training session (no template). Creates an empty WorkoutLog
+   * and sets it as the active workout.
+   */
+  static async startFreeWorkout(workoutName: string = 'Free Training'): Promise<WorkoutLog> {
+    try {
+      const activeWorkoutLogId = await getActiveWorkoutLogId();
+      if (activeWorkoutLogId) {
+        try {
+          const activeWorkout = await database
+            .get<WorkoutLog>('workout_logs')
+            .find(activeWorkoutLogId);
+          if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
+            throw new Error('There is already an active workout. Please complete it first.');
+          } else {
+            await clearActiveWorkoutLogId();
+          }
+        } catch (error) {
+          await clearActiveWorkoutLogId();
+        }
+      }
+
+      const now = Date.now();
+      const workoutLog = await database.write(async () => {
+        const workoutLogsCollection = database.get<WorkoutLog>('workout_logs');
+        return await workoutLogsCollection.create((log) => {
+          log.workoutName = workoutName;
+          log.templateId = undefined;
+          log.type = 'free';
+          log.startedAt = now;
+          log.completedAt = undefined;
+          log.totalVolume = undefined;
+          log.exhaustionLevel = undefined;
+          log.workoutScore = undefined;
+          log.createdAt = now;
+          log.updatedAt = now;
+        });
+      });
+
+      await setActiveWorkoutLogId(workoutLog.id);
+      return workoutLog;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to start free workout: ${error.message}`);
+      }
+      throw new Error('Failed to start free workout: Unknown error');
+    }
+  }
+
+  /**
    * Get the currently active workout (not completed)
    * Uses AsyncStorage to track the active workout
    */

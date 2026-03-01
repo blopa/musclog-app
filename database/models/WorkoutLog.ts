@@ -143,6 +143,59 @@ export default class WorkoutLog extends Model {
     return newSet;
   }
 
+  /**
+   * Add multiple empty sets for an exercise (e.g. for free training session).
+   * Creates N sets with reps/weight 0, restTimeAfter 60, difficultyLevel 0.
+   */
+  @writer
+  async addAdHocExerciseSets(exerciseId: string, numberOfSets: number): Promise<WorkoutLogSet[]> {
+    if (this.completedAt) {
+      throw new Error('Cannot add exercises to a completed workout');
+    }
+
+    if (numberOfSets < 1) {
+      throw new Error('numberOfSets must be at least 1');
+    }
+
+    const sets = (await this.logSets?.fetch()) ?? [];
+    const maxOrder =
+      sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
+
+    const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
+    const now = Date.now();
+
+    const preparedSets = Array.from({ length: numberOfSets }, (_, i) =>
+      logSetsCollection.prepareCreate((logSet) => {
+        logSet.workoutLogId = this.id;
+        logSet.exerciseId = exerciseId;
+        logSet.reps = 0;
+        logSet.weight = 0;
+        logSet.partials = 0;
+        logSet.restTimeAfter = 60;
+        logSet.repsInReserve = 0;
+        logSet.difficultyLevel = 0;
+        logSet.isSkipped = false;
+        logSet.isDropSet = false;
+        logSet.setOrder = maxOrder + i + 1;
+        logSet.createdAt = now;
+        logSet.updatedAt = now;
+      })
+    );
+
+    await this.collection.database.batch(...preparedSets);
+
+    await this.update((log) => {
+      log.updatedAt = now;
+    });
+
+    // Return the newly created sets by fetching after batch
+    const allSets = await this.logSets.fetch();
+    const newOrderStart = maxOrder + 1;
+    return allSets.filter(
+      (s: WorkoutLogSet) => (s.setOrder ?? 0) >= newOrderStart && s.exerciseId === exerciseId
+    );
+  }
+
   @writer
   async removeSet(setId: string): Promise<void> {
     if (this.completedAt) {

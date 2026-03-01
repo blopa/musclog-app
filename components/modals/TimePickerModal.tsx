@@ -28,9 +28,17 @@ type TimePickerModalProps = {
 };
 
 function getOpacityForDistance(distance: number): number {
-  if (distance === 0) {return 1;}
-  if (distance === 1) {return 0.6;}
-  if (distance === 2) {return 0.4;}
+  if (distance === 0) {
+    return 1;
+  }
+
+  if (distance === 1) {
+    return 0.6;
+  }
+
+  if (distance === 2) {
+    return 0.4;
+  }
   return 0.2;
 }
 
@@ -51,7 +59,9 @@ export function TimePickerModal({
 
   const handleNativeChange = useCallback(
     (_event: unknown, date?: Date) => {
-      if (date) {onTimeSelect(date);}
+      if (date) {
+        onTimeSelect(date);
+      }
     },
     [onTimeSelect]
   );
@@ -90,7 +100,7 @@ export function TimePickerModal({
       >
         <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
           {/* Header: large time display (24h) */}
-          <View className="mb-16 w-full flex justify-center">
+          <View className="mb-16 flex w-full justify-center">
             <Text
               className="text-center font-bold tracking-tight text-white"
               style={{
@@ -185,10 +195,7 @@ function TimePickerModalWeb({
 
   const handleHoursScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(
-        0,
-        Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y))
-      );
+      const index = Math.max(0, Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y)));
       const newTime = new Date(selectedTime);
       if (newTime.getHours() !== index) {
         newTime.setHours(index);
@@ -200,10 +207,7 @@ function TimePickerModalWeb({
 
   const handleMinutesScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(
-        0,
-        Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y))
-      );
+      const index = Math.max(0, Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y)));
       const newTime = new Date(selectedTime);
       if (newTime.getMinutes() !== index) {
         newTime.setMinutes(index);
@@ -215,10 +219,7 @@ function TimePickerModalWeb({
 
   const snapHours = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(
-        0,
-        Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y))
-      );
+      const index = Math.max(0, Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y)));
       scrollToHour(index, true);
     },
     [getCenteredIndex, scrollToHour]
@@ -226,10 +227,7 @@ function TimePickerModalWeb({
 
   const snapMinutes = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.max(
-        0,
-        Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y))
-      );
+      const index = Math.max(0, Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y)));
       scrollToMinute(index, true);
     },
     [getCenteredIndex, scrollToMinute]
@@ -294,7 +292,7 @@ function TimePickerModalWeb({
       }
     >
       <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
-        <View className="mb-16 w-full flex justify-center">
+        <View className="mb-16 flex w-full justify-center">
           <Text
             className="text-center font-bold tracking-tight text-white"
             style={{

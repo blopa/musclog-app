@@ -545,6 +545,18 @@ export default function WorkoutsScreen() {
         <CreateWorkoutOptionsModal
           visible={isCreateOptionsVisible}
           onClose={() => setIsCreateOptionsVisible(false)}
+          onStartFreeTraining={async () => {
+            try {
+              const workoutLog = await WorkoutService.startFreeWorkout(
+                t('freeTraining.workoutName')
+              );
+              setIsCreateOptionsVisible(false);
+              router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            } catch (err) {
+              console.error('Error starting free workout:', err);
+              showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
+            }
+          }}
           onGenerateWithAi={() => {
             setIsCreateOptionsVisible(false);
             setEditingTemplateId(undefined);

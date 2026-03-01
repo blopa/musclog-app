@@ -1,4 +1,4 @@
-import { List, Settings, Square } from 'lucide-react-native';
+import { List, Plus, Settings, Square } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -10,6 +10,7 @@ type WorkoutOptionsModalProps = {
   onPreviewWorkout?: () => void;
   onWorkoutSettings?: () => void;
   onEndWorkout?: () => void;
+  onAddExercise?: () => void;
 };
 
 export function WorkoutOptionsModal({
@@ -18,11 +19,24 @@ export function WorkoutOptionsModal({
   onPreviewWorkout,
   onWorkoutSettings,
   onEndWorkout,
+  onAddExercise,
 }: WorkoutOptionsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
   const items = [
+    ...(onAddExercise
+      ? [
+          {
+            icon: Plus,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('freeTraining.addExercise.title'),
+            description: t('freeTraining.addExercise.menuDescription'),
+            onPress: () => onAddExercise(),
+          },
+        ]
+      : []),
     {
       icon: List,
       iconColor: theme.colors.text.primary,

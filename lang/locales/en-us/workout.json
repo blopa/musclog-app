@@ -10,7 +10,8 @@
       "cardio": "Cardio",
       "flexibility": "Flexibility",
       "calisthenics": "Calisthenics",
-      "other": "Other"
+      "other": "Other",
+      "free": "Free"
     },
     "exercises": "{{count}} Exercises",
     "workoutSequence": "Workout Sequence",

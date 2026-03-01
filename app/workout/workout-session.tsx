@@ -1,16 +1,37 @@
 import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CheckCircle, Edit, Repeat, SkipForward, WifiOff } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import {
+  BarChart3,
+  CheckCircle,
+  ChevronLeft,
+  Clock,
+  Dumbbell,
+  Edit,
+  Flame,
+  Plus,
+  Repeat,
+  SkipForward,
+  WifiOff,
+} from 'lucide-react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ImageBackground, ScrollView, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
+import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import { EditSetDetailsModal } from '../../components/modals/EditSetDetailsModal';
 import { EndWorkoutModal } from '../../components/modals/EndWorkoutModal';
+import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
 import {
   ReplaceExerciseData,
@@ -28,12 +49,58 @@ import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+
+function BlankWorkoutStats({ startTime }: { startTime: number }) {
+  const { t } = useTranslation();
+  const time = useSessionTotalTime({ startTime });
+  const formatTime = (value: number) => String(value).padStart(2, '0');
+  const durationStr = `${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`;
+
+  return (
+    <View
+      className="mt-10 flex-row justify-around rounded-xl border border-border-default bg-bg-card py-4"
+      style={{ borderColor: theme.colors.background.white5 }}
+    >
+      <View className="items-center">
+        <Clock size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        <Text
+          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
+          {t('freeTraining.duration')}
+        </Text>
+        <Text className="mt-0.5 text-base font-bold text-text-primary">{durationStr}</Text>
+      </View>
+      <View className="items-center">
+        <Flame size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        <Text
+          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
+          {t('freeTraining.calories')}
+        </Text>
+        <Text className="mt-0.5 text-base font-bold text-text-primary">0 kcal</Text>
+      </View>
+      <View className="items-center">
+        <BarChart3 size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        <Text
+          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          style={{ fontSize: theme.typography.fontSize.xs }}
+        >
+          {t('freeTraining.volume')}
+        </Text>
+        <Text className="mt-0.5 text-base font-bold text-text-primary">0 kg</Text>
+      </View>
+    </View>
+  );
+}
 
 export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
@@ -71,6 +138,14 @@ export default function WorkoutSessionScreen() {
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
+  const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
+    useState(false);
+  const [isFreeSessionCompleteModalVisible, setIsFreeSessionCompleteModalVisible] = useState(false);
+  const [completedExerciseForModal, setCompletedExerciseForModal] = useState<{
+    exerciseId: string;
+    exerciseName: string;
+  } | null>(null);
+  const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
@@ -91,12 +166,37 @@ export default function WorkoutSessionScreen() {
     }
   }, [isLoading, workoutLog, workoutLogId, router]);
 
-  // Redirect if workout is complete
+  // When workout is complete: redirect to summary for template sessions; show "add more or finish" modal for free sessions
   useEffect(() => {
-    if (!isLoading && isWorkoutComplete() && workoutLog) {
-      router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+    if (!workoutLog) {
+      return;
     }
-  }, [isLoading, isWorkoutComplete, workoutLog, router]);
+    if (!isWorkoutComplete()) {
+      hasShownFreeSessionCompleteModalRef.current = false;
+      return;
+    }
+    if (!isLoading && workoutLog.templateId) {
+      router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      return;
+    }
+    // Free session: show "exercise complete" modal (e.g. when returning from rest-timer with no next set)
+    if (!isLoading && !hasShownFreeSessionCompleteModalRef.current && sets.length > 0) {
+      const completedSets = sets.filter(
+        (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
+      );
+      const byOrder = [...completedSets].sort((a, b) => (b.setOrder ?? 0) - (a.setOrder ?? 0));
+      const lastSet = byOrder[0];
+      if (lastSet) {
+        const exercise = exercises.find((e) => e.id === lastSet.exerciseId);
+        setCompletedExerciseForModal({
+          exerciseId: lastSet.exerciseId ?? '',
+          exerciseName: exercise?.name ?? '',
+        });
+        setIsFreeSessionCompleteModalVisible(true);
+        hasShownFreeSessionCompleteModalRef.current = true;
+      }
+    }
+  }, [isLoading, isWorkoutComplete, workoutLog, sets, exercises, router]);
 
   // Set initial exercise if provided in URL
   useEffect(() => {
@@ -104,6 +204,21 @@ export default function WorkoutSessionScreen() {
       setCurrentExercise(initialExerciseId);
     }
   }, [isLoading, initialExerciseId, setCurrentExercise]);
+
+  // Check from DB whether all sets are done (don't rely on React state which may be stale after updateSet)
+  const checkAllSetsDoneFromDb = useCallback(async (logId: string): Promise<boolean> => {
+    const logSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('workout_log_id', logId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    if (logSets.length === 0) {
+      return false;
+    }
+    const done = logSets.filter(
+      (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
+    ).length;
+    return done === logSets.length;
+  }, []);
 
   const handleCompleteSet = async (rpe: number) => {
     if (!currentSetData || !workoutLog) {
@@ -127,18 +242,26 @@ export default function WorkoutSessionScreen() {
         restTimeAfter: restTime,
       });
 
-      // Refresh to get updated data
+      // Check from DB if all sets are now done (state from refresh() may not be updated yet)
+      const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);
       await refresh();
 
-      // Check if workout is complete
-      if (isWorkoutComplete()) {
-        setIsLogSetModalVisible(false);
-        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      setIsLogSetModalVisible(false);
+
+      if (allSetsDone) {
+        if (workoutLog.templateId) {
+          router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+          return;
+        }
+        setCompletedExerciseForModal({
+          exerciseId: currentSetData.set.exerciseId ?? '',
+          exerciseName: currentSetData.exercise.name ?? '',
+        });
+        setIsFreeSessionCompleteModalVisible(true);
+        hasShownFreeSessionCompleteModalRef.current = true;
         return;
       }
 
-      // Always show rest timer between sets (including between exercises in a superset)
-      setIsLogSetModalVisible(false);
       router.push(
         `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
       );
@@ -157,23 +280,26 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
-      // Mark set as skipped and persist it
-      try {
-        await workoutLog.updateSet(currentSetData.set.id, {
-          isSkipped: true,
-          difficultyLevel: 0,
-        });
-      } catch (err) {
-        console.error('Error persisting skip:', err);
-      }
+      await workoutLog.updateSet(currentSetData.set.id, {
+        isSkipped: true,
+        difficultyLevel: 0,
+      });
 
+      const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);
       await refresh();
 
-      // Check if workout is complete
-      if (isWorkoutComplete()) {
-        router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      if (allSetsDone) {
+        if (workoutLog.templateId) {
+          router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+        } else {
+          setCompletedExerciseForModal({
+            exerciseId: currentSetData.set.exerciseId ?? '',
+            exerciseName: currentSetData.exercise.name ?? '',
+          });
+          setIsFreeSessionCompleteModalVisible(true);
+          hasShownFreeSessionCompleteModalRef.current = true;
+        }
       } else {
-        // Always show rest before next set (use skipped set's order so rest-timer finds next set)
         router.push(
           `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
         );
@@ -258,6 +384,7 @@ export default function WorkoutSessionScreen() {
     try {
       setIsSaving(true);
       await completeWorkout(workoutLog.id);
+      setCompletedExerciseForModal(null);
       setIsEndWorkoutModalVisible(false);
       setIsSessionFeedbackModalVisible(true);
     } catch (err) {
@@ -298,6 +425,245 @@ export default function WorkoutSessionScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
+      </MasterLayout>
+    );
+  }
+
+  // Blank Workout UI: free session with no sets yet
+  if (workoutLog && !error && progress.totalSets === 0) {
+    return (
+      <MasterLayout showNavigationMenu={false}>
+        <View className="flex-1 bg-bg-primary">
+          {/* Header: back + title */}
+          <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
+            <Pressable
+              className="h-12 w-12 items-center justify-center"
+              onPress={() => setIsEndWorkoutModalVisible(true)}
+            >
+              <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
+            </Pressable>
+            <Text
+              className="text-lg font-semibold text-text-primary"
+              style={{ fontSize: theme.typography.fontSize.lg }}
+            >
+              {t('freeTraining.blankWorkout')}
+            </Text>
+            <View className="h-12 w-12" />
+          </View>
+
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 32 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Icon + title + subtitle */}
+            <View className="items-center">
+              <View
+                className="mb-6 h-24 w-24 items-center justify-center rounded-full"
+                style={{ backgroundColor: theme.colors.accent.primary20 }}
+              >
+                <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
+              </View>
+              <Text
+                className="mb-2 text-center text-3xl font-bold text-text-primary"
+                style={{ fontSize: theme.typography.fontSize['3xl'] }}
+              >
+                {t('freeTraining.title')}{' '}
+                <Text style={{ color: theme.colors.accent.primary }}>
+                  {t('freeTraining.titleSession')}
+                </Text>
+              </Text>
+              <Text
+                className="mb-8 text-center text-base text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.base }}
+              >
+                {t('freeTraining.subtitle')}
+              </Text>
+              <Button
+                label={t('freeTraining.addFirstExercise')}
+                icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
+                size="md"
+                width="full"
+                variant="gradientCta"
+                onPress={() => setIsAddExerciseToSessionModalVisible(true)}
+              />
+              <Text
+                className="mt-4 text-center text-sm text-text-secondary"
+                style={{ fontSize: theme.typography.fontSize.sm }}
+              >
+                {t('freeTraining.tip')}
+              </Text>
+            </View>
+
+            {/* Stats row */}
+            <BlankWorkoutStats startTime={workoutLog.startedAt} />
+          </ScrollView>
+        </View>
+
+        {/* End Workout Modal (reused from session) */}
+        {isEndWorkoutModalVisible ? (
+          <EndWorkoutModal
+            visible={isEndWorkoutModalVisible}
+            onClose={() => setIsEndWorkoutModalVisible(false)}
+            onFinishAndSave={async () => {
+              if (workoutLog) {
+                try {
+                  setIsSaving(true);
+                  await completeWorkout(workoutLog.id);
+                  setIsEndWorkoutModalVisible(false);
+                  setIsSessionFeedbackModalVisible(true);
+                } catch (err) {
+                  console.error('Error completing workout:', err);
+                } finally {
+                  setIsSaving(false);
+                }
+              }
+            }}
+            onFinishAndDiscard={async () => {
+              if (workoutLog) {
+                await clearActiveWorkoutLogId();
+              }
+              setIsEndWorkoutModalVisible(false);
+              router.replace('/workout/workouts');
+            }}
+          />
+        ) : null}
+
+        {isSessionFeedbackModalVisible && workoutLog ? (
+          <SessionFeedbackModal
+            visible={isSessionFeedbackModalVisible}
+            onClose={() => {
+              setIsSessionFeedbackModalVisible(false);
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+            }}
+            onSubmit={async (data) => {
+              try {
+                await submitFeedback(workoutLog.id, data);
+              } catch (err) {
+                console.error('Error saving workout feedback:', err);
+              } finally {
+                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              }
+            }}
+          />
+        ) : null}
+
+        <AddExerciseToSessionModal
+          visible={isAddExerciseToSessionModalVisible}
+          onClose={() => setIsAddExerciseToSessionModalVisible(false)}
+          workoutLogId={workoutLog.id}
+          onAdded={() => refresh()}
+        />
+      </MasterLayout>
+    );
+  }
+
+  // Free session with all sets done: show "add more or finish" modal (no currentSetData when all complete).
+  // Stay in this branch when Add Exercise modal or Session Feedback modal is open so those modals are rendered.
+  if (
+    workoutLog &&
+    !error &&
+    progress.totalSets > 0 &&
+    progress.isComplete &&
+    !workoutLog.templateId &&
+    (completedExerciseForModal || isAddExerciseToSessionModalVisible || isSessionFeedbackModalVisible)
+  ) {
+    return (
+      <MasterLayout showNavigationMenu={false}>
+        <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+          <LinearGradient
+            colors={[...theme.colors.gradients.landingBackground]}
+            locations={[0, 0.5, 1]}
+            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+          />
+          {/* Decorative circles behind session feedback modal */}
+          <View
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-20%',
+              width: 280,
+              height: 280,
+              borderRadius: 140,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.6,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              top: '35%',
+              right: '-15%',
+              width: 200,
+              height: 200,
+              borderRadius: 100,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.35,
+            }}
+          />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: '25%',
+              left: '10%',
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              backgroundColor: theme.colors.accent.primary20,
+              opacity: 0.25,
+            }}
+          />
+        </View>
+        {completedExerciseForModal ? (
+          <FreeSessionExerciseCompleteModal
+            visible={isFreeSessionCompleteModalVisible}
+            onClose={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              setCompletedExerciseForModal(null);
+            }}
+            exerciseName={completedExerciseForModal.exerciseName}
+            sets={sets}
+            exerciseId={completedExerciseForModal.exerciseId}
+            units={units}
+            onAddNextExercise={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              setIsAddExerciseToSessionModalVisible(true);
+            }}
+            onFinishWorkout={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              // Don't clear completedExerciseForModal here; handleFinishWorkout clears it after
+              // completeWorkout() so we stay in this branch until feedback modal is shown.
+              handleFinishWorkout();
+            }}
+          />
+        ) : null}
+        <AddExerciseToSessionModal
+          visible={isAddExerciseToSessionModalVisible}
+          onClose={() => {
+            setIsAddExerciseToSessionModalVisible(false);
+            setIsFreeSessionCompleteModalVisible(true);
+          }}
+          workoutLogId={workoutLog.id}
+          onAdded={() => refresh()}
+        />
+        {isSessionFeedbackModalVisible ? (
+          <SessionFeedbackModal
+            visible={isSessionFeedbackModalVisible}
+            onClose={() => {
+              setIsSessionFeedbackModalVisible(false);
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+            }}
+            onSubmit={async (data) => {
+              try {
+                await submitFeedback(workoutLog.id, data);
+              } catch (err) {
+                console.error('Error saving workout feedback:', err);
+              } finally {
+                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              }
+            }}
+          />
+        ) : null}
       </MasterLayout>
     );
   }
@@ -478,6 +844,14 @@ export default function WorkoutSessionScreen() {
             setIsOptionsModalVisible(false);
             setIsEndWorkoutModalVisible(true);
           }}
+          onAddExercise={
+            workoutLog && !workoutLog.templateId
+              ? () => {
+                  setIsOptionsModalVisible(false);
+                  setIsAddExerciseToSessionModalVisible(true);
+                }
+              : undefined
+          }
         />
       ) : null}
 
@@ -621,6 +995,37 @@ export default function WorkoutSessionScreen() {
           onFinishWorkout={() => {
             setIsWorkoutOverviewModalVisible(false);
             setIsSessionFeedbackModalVisible(true);
+          }}
+        />
+      ) : null}
+
+      <AddExerciseToSessionModal
+        visible={isAddExerciseToSessionModalVisible}
+        onClose={() => setIsAddExerciseToSessionModalVisible(false)}
+        workoutLogId={workoutLog.id}
+        onAdded={() => refresh()}
+      />
+
+      {completedExerciseForModal ? (
+        <FreeSessionExerciseCompleteModal
+          visible={isFreeSessionCompleteModalVisible}
+          onClose={() => {
+            setIsFreeSessionCompleteModalVisible(false);
+            setCompletedExerciseForModal(null);
+          }}
+          exerciseName={completedExerciseForModal.exerciseName}
+          sets={sets}
+          exerciseId={completedExerciseForModal.exerciseId}
+          units={units}
+          onAddNextExercise={() => {
+            setIsFreeSessionCompleteModalVisible(false);
+            setCompletedExerciseForModal(null);
+            setIsAddExerciseToSessionModalVisible(true);
+          }}
+          onFinishWorkout={() => {
+            setIsFreeSessionCompleteModalVisible(false);
+            setCompletedExerciseForModal(null);
+            handleFinishWorkout();
           }}
         />
       ) : null}

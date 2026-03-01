@@ -18,6 +18,7 @@ export type BottomPopUpMenuItem = {
 
 type BottomPopUpMenuProps = {
   visible: boolean;
+  // TODO: make it possible that this is optional, and if so, it means that the modal cannot be closed by the user
   onClose: () => void;
   title: string;
   subtitle?: string;

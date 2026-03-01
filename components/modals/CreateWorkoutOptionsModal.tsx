@@ -1,4 +1,4 @@
-import { Library, PlusCircle, Sparkles } from 'lucide-react-native';
+import { Dumbbell, Library, PlusCircle, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -12,6 +12,7 @@ type CreateWorkoutOptionsModalProps = {
   onGenerateWithAi: () => void;
   onCreateEmptyTemplate: () => void;
   onBrowseTemplates: () => void;
+  onStartFreeTraining?: () => void;
 };
 
 export function CreateWorkoutOptionsModal({
@@ -20,6 +21,7 @@ export function CreateWorkoutOptionsModal({
   onGenerateWithAi,
   onCreateEmptyTemplate,
   onBrowseTemplates,
+  onStartFreeTraining,
 }: CreateWorkoutOptionsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -93,6 +95,15 @@ export function CreateWorkoutOptionsModal({
         </View>
 
         <View style={{ gap: theme.spacing.gap.base }}>
+          {onStartFreeTraining ? (
+            <NewWorkoutCard
+              variant="default"
+              icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('freeTraining.startFreeTraining')}
+              subtitle={t('freeTraining.startFreeTrainingSubtitle')}
+              onPress={onStartFreeTraining}
+            />
+          ) : null}
           {/*TODO: only show if there's AI enabled*/}
           <NewWorkoutCard
             variant="popular"

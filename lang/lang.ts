@@ -38,6 +38,7 @@ import enUsExpiresIn from './locales/en-us/expires_in.json';
 import enUsFood from './locales/en-us/food.json';
 import enUsFoodFoodPortions from './locales/en-us/food_food_portions.json';
 import enUsFoodSearch from './locales/en-us/foodSearch.json';
+import enUsFreeTraining from './locales/en-us/freeTraining.json';
 import enUsGoalHistoryCard from './locales/en-us/goalHistoryCard.json';
 import enUsGoalsManagement from './locales/en-us/goalsManagement.json';
 import enUsHealthConnect from './locales/en-us/healthConnect.json';
@@ -110,6 +111,7 @@ const resources = {
       ...enUsExpiresIn,
       ...enUsFoodFoodPortions,
       ...enUsFood,
+      ...enUsFreeTraining,
       ...enUsFoodSearch,
       ...enUsGoalHistoryCard,
       ...enUsGoalsManagement,
