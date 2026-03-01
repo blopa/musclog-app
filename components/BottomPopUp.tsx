@@ -141,13 +141,15 @@ export function BottomPopUp({
                     ) : null}
                   </View>
                 </View>
-                <Pressable
-                  className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                  onPress={() => onClose?.()}
-                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                >
-                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </Pressable>
+                {onClose ? (
+                  <Pressable
+                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                    onPress={() => onClose?.()}
+                    {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+                  >
+                    <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  </Pressable>
+                ) : null}
               </View>
             </LinearGradient>
 
