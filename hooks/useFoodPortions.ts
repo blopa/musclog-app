@@ -97,7 +97,6 @@ export function useFoodPortions({
   const [isLoadingFood, setIsLoadingFood] = useState(false);
 
   // State for paginated mode
-  const [portions, setPortions] = useState<FoodPortion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -119,7 +118,7 @@ export function useFoodPortions({
       if (getAll) {
         // Fetch all portions (no pagination)
         const allPortionsData = await FoodPortionService.getAllPortions();
-        setPortions(allPortionsData);
+        setAllPortions(allPortionsData);
         setHasMore(false);
       } else {
         // Fetch initial batch with pagination
@@ -127,13 +126,13 @@ export function useFoodPortions({
         const initialPortions = allPortionsData.slice(0, initialLimit);
 
         if (initialPortions.length === 0) {
-          setPortions([]);
+          setAllPortions([]);
           setHasMore(false);
           setIsLoading(false);
           return;
         }
 
-        setPortions(initialPortions);
+        setAllPortions(initialPortions);
         setCurrentOffset(initialLimit);
 
         // Check if there are more portions
@@ -141,7 +140,7 @@ export function useFoodPortions({
       }
     } catch (err) {
       console.error('Error loading food portions:', err);
-      setPortions([]);
+      setAllPortions([]);
       setHasMore(false);
       setError(err instanceof Error ? err.message : 'Failed to load food portions');
     } finally {
@@ -172,7 +171,7 @@ export function useFoodPortions({
       }
 
       // Append to existing portions
-      setPortions((prev) => [...prev, ...nextBatch]);
+      setAllPortions((prev) => [...prev, ...nextBatch]);
 
       const newOffset = currentOffset + nextBatch.length;
       setCurrentOffset(newOffset);
