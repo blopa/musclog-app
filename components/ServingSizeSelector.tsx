@@ -7,17 +7,19 @@ import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
+import { Food } from 'database/models';
 
 type ServingSizeSelectorProps = {
   value: number;
   onChange: (value: number) => void;
   quickSizes?: { label: string; value: number }[];
+  food?: Food;
 };
 
 const STEP_GRAMS = 10;
 const STEP_OZ = 0.5;
 
-export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSizeSelectorProps) {
+export function ServingSizeSelector({ value, onChange, quickSizes, food }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -27,7 +29,8 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
-  // Load food portions from database
+  // TODO: if food is passed, then load the portions from the food
+  // if the food does not have portions, then use the default portions
   const { portions, isLoading } = useFoodPortions({
     mode: 'all',
   });
@@ -37,6 +40,7 @@ export function ServingSizeSelector({ value, onChange, quickSizes }: ServingSize
     return portions.map((portion) => {
       const display = gramsToDisplay(portion.gramWeight, units);
       const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
+
       return {
         label: `${portion.name} (${labelVal} ${massUnit})`, // TODO: use i18n
         value: portion.gramWeight,

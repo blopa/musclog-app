@@ -173,6 +173,11 @@ export function FoodMealDetailsModal({
       (isSuccessFoodDetailProductState(productDetails)
         ? productDetails.product.serving_size
         : null);
+
+    // TODO: try to match the serving sizes to existing portions from the database
+    // and if this food is new and we're going to save it into the local database, then
+    // we attach this existing portion to it too, and if we don't have a portion with that size
+    // we create a new one
     if (servingStr) {
       const match = String(servingStr).match(/\((\d+)\s*g\)/);
       if (match) {
@@ -181,6 +186,7 @@ export function FoodMealDetailsModal({
           return g;
         }
       }
+
       const num = String(servingStr).match(/(\d+)/);
       if (num) {
         const g = parseInt(num[1], 10);
@@ -189,6 +195,7 @@ export function FoodMealDetailsModal({
         }
       }
     }
+
     return 100; // Default to 100g when missing or "0 g"
   }, [productDetails, productFromSearch]);
 
@@ -580,6 +587,7 @@ export function FoodMealDetailsModal({
 
   const scaledFood = getScaledNutrition();
 
+  // TODO: if no initialMealType is passed, try to infer it from the current time of the day
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
@@ -842,6 +850,7 @@ export function FoodMealDetailsModal({
     );
   }
 
+  // TODO: move this to a helper function to avoid nested ternary
   const actionLabel = meal
     ? t('meals.logMeal')
     : foodLog
