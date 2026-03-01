@@ -461,8 +461,8 @@ export default function WorkoutsScreen() {
               </>
             ) : null}
 
-            {/* Create Template Button - Always show */}
-            {!isLoading && !error ? (
+            {/* Create Template Button - Only show when there are workouts */}
+            {!isLoading && !error && (filteredFeaturedWorkout || filteredWorkouts.length > 0) ? (
               <DashedButton
                 label={t('workouts.createTemplate.title')}
                 onPress={() => {
