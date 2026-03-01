@@ -199,6 +199,7 @@ export default function SmartCameraModal({
 
   const handleFoodNotFoundClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
+    setIsFoodNotFoundModalVisible(false);
     setDetectedBarcode(null);
     setIsSearchingBarcode(false);
   }, []);
@@ -375,8 +376,10 @@ export default function SmartCameraModal({
               style={StyleSheet.absoluteFill}
               facing="back"
               enableTorch={flashEnabled}
-              active={visible}
-              onBarcodeScanned={isBarcodeScanning ? handleBarcodeScanned : undefined}
+              active={visible ? !isSearchingBarcode : undefined}
+              onBarcodeScanned={
+                isBarcodeScanning && !isSearchingBarcode ? handleBarcodeScanned : undefined
+              }
               barcodeScannerSettings={{
                 barcodeTypes: [
                   'qr',
@@ -733,7 +736,7 @@ export default function SmartCameraModal({
         {isFoodNotFoundModalVisible ? (
           <FoodNotFoundModal
             visible={isFoodNotFoundModalVisible}
-            onClose={() => setIsFoodNotFoundModalVisible(false)}
+            onClose={handleFoodNotFoundClose}
             onTryAiScan={handleTryAiScan}
             onSearchAgain={handleSearchAgain}
             onCreateCustom={handleCreateCustomFood}
