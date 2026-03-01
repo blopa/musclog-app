@@ -248,7 +248,7 @@ export function getNutrimentsFromV3Nutrition(product: any): Record<string, numbe
     'saturated-fat': v3NutrientValue(set['saturated-fat']),
     sodium: v3NutrientValue(set.sodium),
     salt: v3NutrientValue(set.salt),
-    // TODO: add missing nutriments
+    // TODO: add missing nutriments - maybe check NUTRIMENT_PROPERTIES
   };
 }
 
