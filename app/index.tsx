@@ -31,7 +31,7 @@ import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryMo
 import SmartCameraModal from '../components/modals/SmartCameraModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
-import { Button } from '../components/theme/Button';
+import DashedButton from '../components/theme/DashedButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
@@ -340,14 +340,14 @@ export default function HomeScreen() {
               ))}
               
               {/* Add Food Button - only show if there's at least one item */}
-              {recentFoods.length > 0 ? <Button
+              {recentFoods.length > 0 ? (
+                <DashedButton
                   label={t('food.meals.addFood')}
-                  icon={Plus}
-                  variant="dashed"
-                  size="md"
-                  width="full"
                   onPress={() => setIsAddFoodVisible(true)}
-              /> : null}
+                  size="sm"
+                  icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                />
+              ) : null}
             </View>
           )}
         </View>
@@ -410,6 +410,16 @@ export default function HomeScreen() {
                   onPress={() => setSelectedWorkoutId(workout.id)}
                 />
               ))}
+              
+              {/* Start Workout Button - only show if there's at least one workout */}
+              {recentWorkouts.length > 0 ? (
+                <DashedButton
+                  label={t('home.actions.startWorkout')}
+                  onPress={() => router.push('/workout/workouts')}
+                  size="sm"
+                  icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                />
+              ) : null}
             </View>
           )}
         </View>
