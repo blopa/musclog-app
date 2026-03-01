@@ -17,7 +17,9 @@ import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+import { TimePickerModal } from './TimePickerModal';
 
 // UI metric type - subset of UserMetricType for this modal
 type MetricType = Extract<UserMetricType, 'weight' | 'body_fat' | 'height'>;
@@ -61,8 +63,10 @@ export default function AddUserMetricEntryModal({
   const [bodyFat, setBodyFat] = useState(15.0);
   const [height, setHeight] = useState(DEFAULT_HEIGHT_CM);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
-  const [selectedDate, setSelectedDate] = useState(new Date()); // TODO: use these
-  const [selectedTime, setSelectedTime] = useState(new Date()); // TODO: use these
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -136,6 +140,22 @@ export default function AddUserMetricEntryModal({
     if (newMetric !== selectedMetric) {
       setSelectedMetric(newMetric);
     }
+  };
+
+  const handleDateEdit = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const handleTimeEdit = () => {
+    setIsTimePickerVisible(true);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const handleTimeSelect = (time: Date) => {
+    setSelectedTime(time);
   };
 
   const handleSave = async () => {
@@ -330,7 +350,7 @@ export default function AddUserMetricEntryModal({
           <DateTimeSelectorCard
             type="date"
             value={selectedDate}
-            onEdit={() => {}}
+            onEdit={handleDateEdit}
             label={t('bodyMetrics.addEntry.date')}
             formattedValue={formatDate(selectedDate)}
             noCard={true}
@@ -338,7 +358,7 @@ export default function AddUserMetricEntryModal({
           <DateTimeSelectorCard
             type="time"
             value={selectedTime}
-            onEdit={() => {}}
+            onEdit={handleTimeEdit}
             label={t('bodyMetrics.addEntry.time')}
             formattedValue={formatTime(selectedTime)}
             noCard={true}
@@ -423,6 +443,22 @@ export default function AddUserMetricEntryModal({
           <View style={{ height: theme.spacing.padding['3xl'] * 2 }} />
         </ScrollView>
       </View>
+
+      {/* Date Picker Modal */}
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={selectedDate}
+        onDateSelect={handleDateSelect}
+      />
+
+      {/* Time Picker Modal */}
+      <TimePickerModal
+        visible={isTimePickerVisible}
+        onClose={() => setIsTimePickerVisible(false)}
+        selectedTime={selectedTime}
+        onTimeSelect={handleTimeSelect}
+      />
     </FullScreenModal>
   );
 }

@@ -15,6 +15,7 @@ import {
   NutritionService,
 } from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import {
   isMappedNutriments,
@@ -27,6 +28,7 @@ import {
   getNutrimentValue,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -77,9 +79,28 @@ export function FoodMealDetailsModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { units } = useSettings();
+
+  // Infer meal type from current time of day when no initialMealType is passed
+  const inferMealTypeFromTime = (): MealType => {
+    const currentHour = new Date().getHours();
+
+    if (currentHour >= 5 && currentHour < 11) {
+      return 'breakfast';
+    } else if (currentHour >= 11 && currentHour < 15) {
+      return 'lunch';
+    } else if (currentHour >= 15 && currentHour < 21) {
+      return 'dinner';
+    } else {
+      return 'snack';
+    }
+  };
+
   const [servingSize, setServingSize] = useState(100);
   const [mealPortionMultiplier, setMealPortionMultiplier] = useState(1);
-  const [selectedMeal, setSelectedMeal] = useState<MealType>(initialMealType ?? 'lunch');
+  const [selectedMeal, setSelectedMeal] = useState<MealType>(
+    initialMealType ?? inferMealTypeFromTime()
+  );
   const [selectedDate, setSelectedDate] = useState(() =>
     initialDate ? new Date(initialDate) : new Date()
   );
@@ -193,8 +214,18 @@ export function FoodMealDetailsModal({
         return closeMatch;
       }
 
-      // TODO: check if user prefer metric or imperial and use proper units here
-      const portionName = servingSizeGrams === 100 ? '100g' : `${servingSizeGrams}g`;
+      // Check user preference for metric or imperial and use proper units
+      const displayWeight = gramsToDisplay(servingSizeGrams, units);
+      const unitLabel = getMassUnitLabel(units);
+
+      // TODO: move this to a helper function to avoid using nested ternary
+      const portionName =
+        servingSizeGrams === 100
+          ? units === 'imperial'
+            ? `3.5${unitLabel}`
+            : `100${unitLabel}`
+          : `${displayWeight}${unitLabel}`;
+
       const newPortion = await FoodPortionService.createFoodPortion(
         portionName,
         servingSizeGrams,
@@ -207,7 +238,7 @@ export function FoodMealDetailsModal({
       console.warn('Error matching serving size to portion:', error);
       return null;
     }
-  }, []);
+  }, [units]);
 
   const getDefaultServingSize = useCallback(async () => {
     const servingStr =
@@ -642,7 +673,6 @@ export function FoodMealDetailsModal({
 
   const scaledFood = getScaledNutrition();
 
-  // TODO: if no initialMealType is passed, try to infer it from the current time of the day
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
