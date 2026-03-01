@@ -6,8 +6,14 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
 import Food from '../../database/models/Food';
+import FoodPortion from '../../database/models/FoodPortion';
 import Meal from '../../database/models/Meal';
-import { FoodService, MealService, NutritionService } from '../../database/services';
+import {
+  FoodPortionService,
+  FoodService,
+  MealService,
+  NutritionService,
+} from '../../database/services';
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -89,12 +95,15 @@ export function FoodMealDetailsModal({
     fat: number;
     fiber: number;
   } | null>(null);
+
+  // TODO: use isLoadingMealNutrients
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
   );
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
+  const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
 
   // Helper function to determine the mode based on available data
   const getMode = (): 'meal' | 'foodLog' | 'food' | 'barcode' | null => {
@@ -138,6 +147,7 @@ export function FoodMealDetailsModal({
     // Reset checking state when barcode changes
     setHasCheckedLocalFood(false);
     setLocalFood(null);
+    setMatchedPortion(null); // Reset matched portion
 
     const checkLocalFood = async () => {
       if (barcode && !food && !meal && !productFromSearch) {
@@ -167,37 +177,75 @@ export function FoodMealDetailsModal({
   const { data: productDetails } = useFoodProductDetails(barcodeForHook);
 
   // Get default serving size from search result or barcode lookup (never return 0 – OFF data is per 100g)
-  const getDefaultServingSize = useCallback(() => {
+  const matchServingSizeToPortion = useCallback(async (servingSizeGrams: number) => {
+    try {
+      // Get all existing portions to find a match
+      const allPortions = await FoodPortionService.getAllPortions();
+
+      // First try to find exact match
+      const exactMatch = allPortions.find((p) => p.gramWeight === servingSizeGrams);
+      if (exactMatch) {
+        return exactMatch;
+      }
+
+      // Try to find close match (within 5g)
+      const closeMatch = allPortions.find((p) => Math.abs(p.gramWeight - servingSizeGrams) <= 5);
+      if (closeMatch) {
+        return closeMatch;
+      }
+
+      // TODO: check if user prefer metric or imperial and use proper units here
+      const portionName = servingSizeGrams === 100 ? '100g' : `${servingSizeGrams}g`;
+      const newPortion = await FoodPortionService.createFoodPortion(
+        portionName,
+        servingSizeGrams,
+        undefined, // icon
+        false // isDefault
+      );
+
+      return newPortion;
+    } catch (error) {
+      console.warn('Error matching serving size to portion:', error);
+      return null;
+    }
+  }, []);
+
+  const getDefaultServingSize = useCallback(async () => {
     const servingStr =
       productFromSearch?.serving_size ??
       (isSuccessFoodDetailProductState(productDetails)
         ? productDetails.product.serving_size
         : null);
 
-    // TODO: try to match the serving sizes to existing portions from the database
-    // and if this food is new and we're going to save it into the local database, then
-    // we attach this existing portion to it too, and if we don't have a portion with that size
-    // we create a new one
+    let servingSizeGrams = 100; // Default
+
+    // Parse serving size from string
     if (servingStr) {
       const match = String(servingStr).match(/\((\d+)\s*g\)/);
       if (match) {
         const g = parseInt(match[1], 10);
         if (g > 0) {
-          return g;
+          servingSizeGrams = g;
         }
-      }
-
-      const num = String(servingStr).match(/(\d+)/);
-      if (num) {
-        const g = parseInt(num[1], 10);
-        if (g > 0) {
-          return g;
+      } else {
+        const num = String(servingStr).match(/(\d+)/);
+        if (num) {
+          const g = parseInt(num[1], 10);
+          if (g > 0) {
+            servingSizeGrams = g;
+          }
         }
       }
     }
 
-    return 100; // Default to 100g when missing or "0 g"
-  }, [productDetails, productFromSearch]);
+    // Match serving size to existing portions and store the result
+    if (!food && !localFood && (productFromSearch || productDetails)) {
+      const portion = await matchServingSizeToPortion(servingSizeGrams);
+      setMatchedPortion(portion);
+    }
+
+    return servingSizeGrams;
+  }, [productDetails, productFromSearch, food, localFood, matchServingSizeToPortion]);
 
   useEffect(() => {
     if (meal) {
@@ -226,8 +274,12 @@ export function FoodMealDetailsModal({
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
     if (productFromSearch?.product_name && nutriments) {
       setIsFoodDetailsModalVisible(true);
-      const defaultG = getDefaultServingSize(); // uses 100 when serving_size is "0 g" or invalid
-      setServingSize(defaultG);
+      const loadDefaultSize = async () => {
+        const defaultG = await getDefaultServingSize();
+        setServingSize(defaultG);
+      };
+
+      loadDefaultSize();
       onBarcodeLookupComplete?.();
       return;
     }
@@ -543,8 +595,12 @@ export function FoodMealDetailsModal({
   // Update serving size when product details or search product load
   useEffect(() => {
     if (productFromSearch || productDetails) {
-      const defaultSize = getDefaultServingSize();
-      setServingSize(defaultSize);
+      const loadDefaultSize = async () => {
+        const defaultSize = await getDefaultServingSize();
+        setServingSize(defaultSize);
+      };
+
+      loadDefaultSize();
     }
   }, [productFromSearch, productDetails, getDefaultServingSize]);
 
@@ -742,17 +798,21 @@ export function FoodMealDetailsModal({
       }
 
       // Save product to local database (search result has same shape as V3 for our usage)
-      const newFood = await FoodService.createFromV3Product(productToSave as any, {
-        calories: nutritionalData.calories,
-        protein: nutritionalData.protein,
-        carbs: nutritionalData.carbs,
-        fat: nutritionalData.fat,
-        fiber: nutritionalData.fiber,
-        sugar: nutritionalData.sugar,
-        saturatedFat: nutritionalData.saturatedFat,
-        sodium: nutritionalData.sodium,
-        isFavorite: isFavorite,
-      });
+      const newFood = await FoodService.createFromV3Product(
+        productToSave,
+        {
+          calories: nutritionalData.calories,
+          protein: nutritionalData.protein,
+          carbs: nutritionalData.carbs,
+          fat: nutritionalData.fat,
+          fiber: nutritionalData.fiber,
+          sugar: nutritionalData.sugar,
+          saturatedFat: nutritionalData.saturatedFat,
+          sodium: nutritionalData.sodium,
+          isFavorite: isFavorite,
+        },
+        matchedPortion
+      );
 
       // Create nutrition log
       const logFoodPromise = NutritionService.logFood(
@@ -833,6 +893,13 @@ export function FoodMealDetailsModal({
   const handleFoodNotFoundClose = useCallback(() => {
     setIsFoodNotFoundModalVisible(false);
   }, []);
+
+  // Reset matched portion when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setMatchedPortion(null);
+    }
+  }, [visible]);
 
   if (!visible) {
     return null;

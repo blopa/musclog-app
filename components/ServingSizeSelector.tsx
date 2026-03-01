@@ -34,7 +34,7 @@ export function ServingSizeSelector({
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
-  // Load portions with food-specific logic handled by the hook
+  // TODO: use isLoading
   const { portions, isLoading } = useFoodPortions({
     mode: 'all',
     food,

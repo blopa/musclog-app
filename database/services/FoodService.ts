@@ -23,26 +23,34 @@ export class FoodService {
       saturatedFat?: number;
       sodium?: number;
       isFavorite?: boolean;
-    }
+    },
+    customPortion?: FoodPortion | null
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
 
-      // Find or create a "100g" portion (global, reusable)
-      const existingPortion = await database
-        .get<FoodPortion>('food_portions')
-        .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-        .fetch();
+      // Use custom portion if provided, otherwise find or create "100g" portion
+      let defaultPortion: FoodPortion;
 
-      const defaultPortion =
-        existingPortion.length > 0
-          ? existingPortion[0]
-          : await database.get<FoodPortion>('food_portions').create((portion) => {
-              portion.name = '100g';
-              portion.gramWeight = 100;
-              portion.createdAt = now;
-              portion.updatedAt = now;
-            });
+      if (customPortion) {
+        defaultPortion = customPortion;
+      } else {
+        // Find or create a "100g" portion (global, reusable)
+        const existingPortion = await database
+          .get<FoodPortion>('food_portions')
+          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+          .fetch();
+
+        defaultPortion =
+          existingPortion.length > 0
+            ? existingPortion[0]
+            : await database.get<FoodPortion>('food_portions').create((portion) => {
+                portion.name = '100g';
+                portion.gramWeight = 100;
+                portion.createdAt = now;
+                portion.updatedAt = now;
+              });
+      }
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;

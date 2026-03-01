@@ -282,9 +282,9 @@ export function useFoodPortions({
     if (food && foodSpecificPortions.length > 0) {
       return foodSpecificPortions;
     }
-    
+
     // Otherwise, filter default portions from all portions
-    return allPortions.filter(portion => portion.isDefault);
+    return allPortions.filter((portion) => portion.isDefault);
   }, [food, foodSpecificPortions, allPortions]);
 
   // Return appropriate type based on mode
