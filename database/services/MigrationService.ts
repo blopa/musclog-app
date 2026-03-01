@@ -1693,6 +1693,13 @@ export class MigrationService {
       );
       result.workoutLogSets = result.details.logSetsMigrated;
 
+      // TODO: after everything is migrated, search for duplicated values in the Food table, by comparing, in priority order:
+      // barcode, if available
+      // name + protein + carbs + fats + calories
+      //
+      // then after finding all duplicated ones, pick one to keep and delete the rest
+      // but when deleting the rest, dont forget to update the nutrition logs and other tables that were using those foods as reference
+
       // Step 12: Validate migration
       onProgress?.({ step: 'validating' });
       console.log('Validating migration...');
