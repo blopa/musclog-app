@@ -88,6 +88,7 @@ export function ServingSizeSelector({
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
             style={{ borderColor: theme.colors.background.white5 }}
             onPress={handleDecrease}
+            disabled={isLoading}
           >
             <Minus size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
@@ -108,6 +109,7 @@ export function ServingSizeSelector({
                 placeholder="0"
                 placeholderTextColor={theme.colors.text.primary20}
                 selectTextOnFocus={true}
+                editable={!isLoading}
               />
               <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
                 {massUnit}
@@ -120,6 +122,7 @@ export function ServingSizeSelector({
           <Pressable
             className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
             onPress={handleIncrease}
+            disabled={isLoading}
           >
             <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </Pressable>
@@ -145,8 +148,10 @@ export function ServingSizeSelector({
                   value === size.value
                     ? theme.colors.accent.primary20
                     : theme.colors.background.white5,
+                opacity: isLoading ? 0.5 : 1,
               }}
               onPress={() => onChange(size.value)}
+              disabled={isLoading}
             >
               <Text
                 className={`text-xs font-medium ${

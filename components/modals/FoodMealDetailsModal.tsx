@@ -1061,6 +1061,7 @@ export function FoodMealDetailsModal({
                           Math.max(0.25, Math.round((prev - 0.25) * 100) / 100)
                         )
                       }
+                      disabled={isLoadingMealNutrients}
                     >
                       <Text className="text-2xl font-bold text-text-secondary">−</Text>
                     </Pressable>
@@ -1079,6 +1080,7 @@ export function FoodMealDetailsModal({
                       onPress={() =>
                         setMealPortionMultiplier((prev) => Math.round((prev + 0.25) * 100) / 100)
                       }
+                      disabled={isLoadingMealNutrients}
                     >
                       <Text className="text-2xl font-bold text-accent-primary">+</Text>
                     </Pressable>
@@ -1099,8 +1101,10 @@ export function FoodMealDetailsModal({
                             mealPortionMultiplier === preset
                               ? theme.colors.accent.primary20
                               : theme.colors.background.white5,
+                          opacity: isLoadingMealNutrients ? 0.5 : 1,
                         }}
                         onPress={() => setMealPortionMultiplier(preset)}
+                        disabled={isLoadingMealNutrients}
                       >
                         <Text
                           className="text-xs font-medium"
