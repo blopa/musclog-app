@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   MappedNutriments,
@@ -8,7 +9,10 @@ import {
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
 import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
+import { gramsToDisplay } from '../utils/unitConversion';
+import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
 import { useFoods } from './useFoods';
+import { useSettings } from './useSettings';
 
 // Unified search result type
 export type UnifiedFoodResult = {
@@ -49,6 +53,8 @@ export function useUnifiedFoodSearch({
   apiLimit = 20,
   debounceMs = 300,
 }: UseUnifiedFoodSearchProps) {
+  const { t } = useTranslation();
+  const { units } = useSettings();
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -180,22 +186,32 @@ export function useUnifiedFoodSearch({
       return [];
     }
 
-    return localFoods.map((food) => ({
-      id: food.id,
-      name: food.name,
-      description: `${food.brand || 'Custom Food'} • ${Math.round(food.calories || 0)} kcal per 100g`, // TODO: use i18n and check if user uses metric or imperial to decide which unit to use
-      brand: food.brand,
-      imageUrl: food.imageUrl, // Include image URL from local database
-      serving_size: '100 g', // Display standard serving
-      calories: food.calories,
-      protein: food.protein,
-      carbs: food.carbs,
-      fat: food.fat,
-      fiber: food.fiber,
-      source: 'local' as const,
-      _raw: food,
-    }));
-  }, [localFoods, includeLocal]);
+    return localFoods.map((food) => {
+      const massUnit = getMassUnit(units);
+      const displayAmount = units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100;
+
+      return {
+        id: food.id,
+        name: food.name,
+        description: t('food.descriptionFormat', {
+          brand: food.brand || t('food.customFood'),
+          calories: Math.round(food.calories || 0),
+          amount: displayAmount,
+          unit: t(getMassUnitI18nKey(units)),
+        }),
+        brand: food.brand,
+        imageUrl: food.imageUrl, // Include image URL from local database
+        serving_size: `100 ${massUnit}`, // Display standard serving with appropriate unit
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+        source: 'local' as const,
+        _raw: food,
+      };
+    });
+  }, [localFoods, includeLocal, units, t]);
 
   // Convert API results to unified format
   const apiResultsFormatted = useMemo(() => {

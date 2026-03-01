@@ -1,6 +1,10 @@
 {
   "food": {
     "unknownFood": "Unknown Food",
+    "customFood": "Custom Food",
+    "descriptionFormat": "{{brand}} • {{calories}} kcal per {{amount}} {{unit}}",
+    "unitGrams": "g",
+    "unitOz": "oz",
     "manageFoodLibrary": {
       "deleteFoodWarning": "Are you sure you want to delete this food? This action cannot be undone.",
       "usedInLogs": "Used in {{count}} food log",

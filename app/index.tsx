@@ -338,7 +338,7 @@ export default function HomeScreen() {
                   }
                 />
               ))}
-              
+
               {/* Add Food Button - only show if there's at least one item */}
               {recentFoods.length > 0 ? (
                 <DashedButton
@@ -410,7 +410,7 @@ export default function HomeScreen() {
                   onPress={() => setSelectedWorkoutId(workout.id)}
                 />
               ))}
-              
+
               {/* Start Workout Button - only show if there's at least one workout */}
               {recentWorkouts.length > 0 ? (
                 <DashedButton

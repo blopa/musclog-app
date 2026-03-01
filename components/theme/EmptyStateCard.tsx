@@ -36,7 +36,7 @@ export function EmptyStateCard({
               colors={theme.colors.gradients.progress}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              className="h-40 w-40 items-center justify-center rounded-full overflow-hidden"
+              className="h-40 w-40 items-center justify-center overflow-hidden rounded-full"
               style={{ opacity: theme.colors.opacity.strong }}
             >
               <View className="h-36 w-36 items-center justify-center rounded-full bg-white/10">

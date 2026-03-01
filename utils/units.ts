@@ -11,3 +11,11 @@ export function getHeightUnit(units: Units): 'cm' | 'in' {
 export function getWeightUnitI18nKey(units: Units): 'workoutSession.kg' | 'workoutSession.lb' {
   return units === 'imperial' ? 'workoutSession.lb' : 'workoutSession.kg';
 }
+
+export function getMassUnit(units: Units): 'g' | 'oz' {
+  return units === 'imperial' ? 'oz' : 'g';
+}
+
+export function getMassUnitI18nKey(units: Units): 'food.unitOz' | 'food.unitGrams' {
+  return units === 'imperial' ? 'food.unitOz' : 'food.unitGrams';
+}
