@@ -1,8 +1,10 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -26,19 +28,116 @@ type TimePickerModalProps = {
 };
 
 function getOpacityForDistance(distance: number): number {
-  if (distance === 0) {
-    return 1;
-  }
-  if (distance === 1) {
-    return 0.6;
-  }
-  if (distance === 2) {
-    return 0.4;
-  }
+  if (distance === 0) {return 1;}
+  if (distance === 1) {return 0.6;}
+  if (distance === 2) {return 0.4;}
   return 0.2;
 }
 
+const isNativePlatform = Platform.OS === 'ios' || Platform.OS === 'android';
+
 export function TimePickerModal({
+  visible,
+  onClose,
+  selectedTime,
+  onTimeSelect,
+}: TimePickerModalProps) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+
+  const selectedHour = selectedTime.getHours().toString().padStart(2, '0');
+  const selectedMinute = selectedTime.getMinutes().toString().padStart(2, '0');
+  const displayTime = `${selectedHour}:${selectedMinute}`;
+
+  const handleNativeChange = useCallback(
+    (_event: unknown, date?: Date) => {
+      if (date) {onTimeSelect(date);}
+    },
+    [onTimeSelect]
+  );
+
+  // --- Native (iOS/Android): DateTimePicker with our chrome ---
+  if (isNativePlatform) {
+    return (
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title=""
+        scrollable={false}
+        showHeader={false}
+        footer={
+          <View className="flex-row items-stretch gap-3">
+            <Button
+              label={t('timePicker.cancel').toUpperCase()}
+              variant="outline"
+              size="sm"
+              width="flex-1"
+              onPress={onClose}
+              style={{ borderColor: theme.colors.background.white20 }}
+            />
+            <Button
+              label={t('timePicker.confirm').toUpperCase()}
+              variant="gradientCta"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                onTimeSelect(selectedTime);
+                onClose();
+              }}
+            />
+          </View>
+        }
+      >
+        <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
+          {/* Header: large time display (24h) */}
+          <View className="mb-16 w-full flex justify-center">
+            <Text
+              className="text-center font-bold tracking-tight text-white"
+              style={{
+                fontSize: 96,
+                textShadowColor: 'rgba(0,0,0,0.3)',
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 8,
+              }}
+            >
+              {displayTime}
+            </Text>
+          </View>
+
+          {/* Native time picker - functionality from package, our layout around it */}
+          <View className="flex-1 items-center justify-center">
+            <DateTimePicker
+              value={selectedTime}
+              mode="time"
+              display="spinner"
+              onChange={handleNativeChange}
+              is24Hour={true}
+              {...(Platform.OS === 'ios' && {
+                themeVariant: 'dark' as const,
+                accentColor: theme.colors.accent.primary,
+                textColor: theme.colors.text.primary,
+              })}
+              {...(Platform.OS === 'android' && { style: { height: 180 } })}
+            />
+          </View>
+        </View>
+      </FullScreenModal>
+    );
+  }
+
+  // --- Web fallback: custom scroll picker (same design as before) ---
+  return (
+    <TimePickerModalWeb
+      visible={visible}
+      onClose={onClose}
+      selectedTime={selectedTime}
+      onTimeSelect={onTimeSelect}
+    />
+  );
+}
+
+// --- Web-only: custom scroll picker to avoid glitchy native unsupported on web ---
+function TimePickerModalWeb({
   visible,
   onClose,
   selectedTime,
@@ -49,13 +148,14 @@ export function TimePickerModal({
   const hoursScrollRef = useRef<ScrollView>(null);
   const minutesScrollRef = useRef<ScrollView>(null);
 
-  const hours = useMemo(() => {
-    return Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  }, []);
-
-  const minutes = useMemo(() => {
-    return Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
-  }, []);
+  const hours = useMemo(
+    () => Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')),
+    []
+  );
+  const minutes = useMemo(
+    () => Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0')),
+    []
+  );
 
   const selectedHour = selectedTime.getHours().toString().padStart(2, '0');
   const selectedMinute = selectedTime.getMinutes().toString().padStart(2, '0');
@@ -85,8 +185,10 @@ export function TimePickerModal({
 
   const handleHoursScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset } = e.nativeEvent;
-      const index = Math.max(0, Math.min(23, getCenteredIndex(contentOffset.y)));
+      const index = Math.max(
+        0,
+        Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y))
+      );
       const newTime = new Date(selectedTime);
       if (newTime.getHours() !== index) {
         newTime.setHours(index);
@@ -98,8 +200,10 @@ export function TimePickerModal({
 
   const handleMinutesScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset } = e.nativeEvent;
-      const index = Math.max(0, Math.min(59, getCenteredIndex(contentOffset.y)));
+      const index = Math.max(
+        0,
+        Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y))
+      );
       const newTime = new Date(selectedTime);
       if (newTime.getMinutes() !== index) {
         newTime.setMinutes(index);
@@ -111,8 +215,10 @@ export function TimePickerModal({
 
   const snapHours = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset } = e.nativeEvent;
-      const index = Math.max(0, Math.min(23, getCenteredIndex(contentOffset.y)));
+      const index = Math.max(
+        0,
+        Math.min(23, getCenteredIndex(e.nativeEvent.contentOffset.y))
+      );
       scrollToHour(index, true);
     },
     [getCenteredIndex, scrollToHour]
@@ -120,8 +226,10 @@ export function TimePickerModal({
 
   const snapMinutes = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset } = e.nativeEvent;
-      const index = Math.max(0, Math.min(59, getCenteredIndex(contentOffset.y)));
+      const index = Math.max(
+        0,
+        Math.min(59, getCenteredIndex(e.nativeEvent.contentOffset.y))
+      );
       scrollToMinute(index, true);
     },
     [getCenteredIndex, scrollToMinute]
@@ -129,10 +237,11 @@ export function TimePickerModal({
 
   useEffect(() => {
     if (visible) {
-      setTimeout(() => {
+      const id = setTimeout(() => {
         scrollToHour(selectedHourIndex, false);
         scrollToMinute(selectedMinuteIndex, false);
       }, 100);
+      return () => clearTimeout(id);
     }
   }, [visible, selectedHourIndex, selectedMinuteIndex, scrollToHour, scrollToMinute]);
 
@@ -185,8 +294,7 @@ export function TimePickerModal({
       }
     >
       <View className="flex-1 flex-col items-center justify-between overflow-hidden bg-bg-primary py-10">
-        {/* Header: large time display (24h) */}
-        <View className="mb-16 flex w-full justify-center">
+        <View className="mb-16 w-full flex justify-center">
           <Text
             className="text-center font-bold tracking-tight text-white"
             style={{
@@ -200,11 +308,8 @@ export function TimePickerModal({
           </Text>
         </View>
 
-        {/* Picker section: two columns with highlight bar */}
         <View className="w-full max-w-sm flex-1 flex-col items-center justify-center">
-          {/* Wrapper so the highlight bar is centered on the scroll area only (not labels) */}
           <View className="relative w-full" style={{ height: PICKER_VIEW_HEIGHT }}>
-            {/* Highlight bar behind the numbers - centered in scroll area */}
             <View
               className="absolute left-1/2 top-1/2 z-0 w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-xl"
               style={{
@@ -213,9 +318,7 @@ export function TimePickerModal({
               }}
               pointerEvents="none"
             />
-
             <View className="z-10 flex h-full w-full flex-row items-center justify-center gap-16">
-              {/* Hours column */}
               <View className="flex flex-col items-center">
                 <ScrollView
                   ref={hoursScrollRef}
@@ -257,8 +360,6 @@ export function TimePickerModal({
                   })}
                 </ScrollView>
               </View>
-
-              {/* Minutes column */}
               <View className="flex flex-col items-center">
                 <ScrollView
                   ref={minutesScrollRef}
@@ -302,8 +403,6 @@ export function TimePickerModal({
               </View>
             </View>
           </View>
-
-          {/* Labels below the scroll area */}
           <View className="mt-8 flex w-full flex-row justify-center gap-16">
             <Text
               className="font-semibold uppercase tracking-widest text-white/50"
