@@ -1,6 +1,6 @@
-import { Food, FoodPortion } from 'database/models';
+import { Food } from 'database/models';
 import { Minus, Plus } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -34,41 +34,11 @@ export function ServingSizeSelector({
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
-  // Load default portions (fallback)
-  const { portions: defaultPortions, isLoading: isLoadingDefault } = useFoodPortions({
+  // Load portions with food-specific logic handled by the hook
+  const { portions, isLoading } = useFoodPortions({
     mode: 'all',
+    food,
   });
-
-  // Load food-specific portions if food is provided
-  const [foodPortions, setFoodPortions] = useState<FoodPortion[]>([]);
-  const [isLoadingFood, setIsLoadingFood] = useState(false);
-
-  // Load food portions when food changes
-  useEffect(() => {
-    const loadFoodPortions = async () => {
-      if (!food) {
-        setFoodPortions([]);
-        return;
-      }
-
-      setIsLoadingFood(true);
-      try {
-        const portions = await food.getPortionsAsync();
-        setFoodPortions(portions);
-      } catch (error) {
-        console.warn('Error loading food portions:', error);
-        setFoodPortions([]);
-      } finally {
-        setIsLoadingFood(false);
-      }
-    };
-
-    loadFoodPortions();
-  }, [food]);
-
-  // Use food portions if available and food is provided, otherwise use default portions
-  const portions = food && foodPortions.length > 0 ? foodPortions : defaultPortions;
-  const isLoading = isLoadingFood || isLoadingDefault;
 
   // Transform database portions to quick sizes format (label in display unit, value stays in grams)
   const databaseQuickSizes = useMemo(() => {

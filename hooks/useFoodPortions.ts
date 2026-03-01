@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '../constants/database';
+import Food from '../database/models/Food';
 import FoodPortion from '../database/models/FoodPortion';
 import { FoodPortionService } from '../database/services';
 
@@ -44,6 +45,7 @@ export interface UseFoodPortionsParams {
   getAll?: boolean; // For paginated mode: if true, fetch all portions (no pagination)
   enableReactivity?: boolean; // Default: true
   visible?: boolean; // For modal visibility control, default: true
+  food?: Food; // Optional food to get food-specific portions
 }
 
 // Return type for all mode
@@ -83,11 +85,16 @@ export function useFoodPortions({
   getAll = false,
   enableReactivity = true,
   visible = true,
+  food,
 }: UseFoodPortionsParams = {}): UseFoodPortionsResult {
   // State for all mode
   const [allPortions, setAllPortions] = useState<FoodPortion[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(true);
   const [errorAll, setErrorAll] = useState<string | null>(null);
+
+  // State for food-specific portions
+  const [foodSpecificPortions, setFoodSpecificPortions] = useState<FoodPortion[]>([]);
+  const [isLoadingFood, setIsLoadingFood] = useState(false);
 
   // State for paginated mode
   const [portions, setPortions] = useState<FoodPortion[]>([]);
@@ -181,6 +188,30 @@ export function useFoodPortions({
     }
   }, [isLoadingMore, hasMore, visible, currentOffset, batchSize, getAll]);
 
+  // Load food-specific portions when food changes
+  useEffect(() => {
+    const loadFoodPortions = async () => {
+      if (!food) {
+        setFoodSpecificPortions([]);
+        setIsLoadingFood(false);
+        return;
+      }
+
+      setIsLoadingFood(true);
+      try {
+        const portions = await food.getPortionsAsync();
+        setFoodSpecificPortions(portions);
+      } catch (err) {
+        console.warn('Error loading food portions:', err);
+        setFoodSpecificPortions([]);
+      } finally {
+        setIsLoadingFood(false);
+      }
+    };
+
+    loadFoodPortions();
+  }, [food]);
+
   // All mode: Load all portions on mount or when visible changes
   useEffect(() => {
     if (mode !== 'all') {
@@ -245,19 +276,33 @@ export function useFoodPortions({
     await loadInitialPortions();
   }, [loadInitialPortions]);
 
+  // Determine which portions to return based on food availability
+  const getEffectivePortions = useCallback(() => {
+    // If food is provided and has specific portions, use those
+    if (food && foodSpecificPortions.length > 0) {
+      return foodSpecificPortions;
+    }
+    
+    // Otherwise, filter default portions from all portions
+    return allPortions.filter(portion => portion.isDefault);
+  }, [food, foodSpecificPortions, allPortions]);
+
   // Return appropriate type based on mode
   if (mode === 'all') {
+    const effectivePortions = getEffectivePortions();
+
     return {
-      portions: allPortions,
-      isLoading: isLoadingAll,
+      portions: effectivePortions,
+      isLoading: isLoadingAll || isLoadingFood,
       error: errorAll,
       refresh: refreshAll,
     };
   }
 
+  const effectivePortions = getEffectivePortions();
   return {
-    portions,
-    isLoading,
+    portions: effectivePortions,
+    isLoading: isLoading || isLoadingFood,
     isLoadingMore,
     hasMore,
     loadMore,
