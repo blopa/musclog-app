@@ -21,6 +21,11 @@ const CONFIG = {
     /t\(`([^`]+)`\)/g, // t(`key`)
     /t\(['"`]([^'"`]+)['"`]\s*,/g, // t('key', options)
     /t\(`([^`]+)`\s*,/g, // t(`key`, options)
+    // Keys passed via variables: titleKey: 'profile.stats.weight', descriptionKey: '...', etc.
+    /(?:titleKey|descriptionKey|labelKey|messageKey)\s*:\s*['"]([^'"]+)['"]/g,
+    // Keys in ternary branches: condition ? 'profile.gender.male' : 'profile.gender.female'
+    /\?\s*['"]([^'"]+\.[^'"]+)['"]\s*:/g,
+    /:\s*['"]([^'"]+\.[^'"]+)['"]\s*[;),]/g,
   ],
   ignorePatterns: [
     '**/node_modules/**',
@@ -142,6 +147,10 @@ class TranslationScanner {
             if (!this.isValidTranslationKey(key)) {
               continue;
             }
+            // Keys from property assignments (titleKey, descriptionKey, etc.) must look like namespaced keys
+            if (pattern.source.includes('titleKey') && !key.includes('.')) {
+              continue;
+            }
 
             // If the key contains a template literal with a variable, extract the static part
             const dynamicMatch = key.match(/^(.*?)\$\{[^}]+}/);
@@ -149,22 +158,36 @@ class TranslationScanner {
               const staticKey = dynamicMatch[1].replace(/\.$/, '');
               fileKeys.add(staticKey);
 
-              // Track location for missing keys
+              // Track location for missing keys (dedupe by file+line)
               if (!this.existingKeys.has(staticKey)) {
                 if (!this.missingKeyLocations.has(staticKey)) {
                   this.missingKeyLocations.set(staticKey, []);
                 }
-                this.missingKeyLocations.get(staticKey).push({ file: filePath, line: lineNumber });
+                const locs = this.missingKeyLocations.get(staticKey);
+                const already = locs.some(
+                  (loc) => loc.file === filePath && loc.line === lineNumber
+                );
+
+                if (!already) {
+                  locs.push({ file: filePath, line: lineNumber });
+                }
               }
             } else {
               fileKeys.add(key);
 
-              // Track location for missing keys
+              // Track location for missing keys (dedupe by file+line when multiple patterns match)
               if (!this.existingKeys.has(key)) {
                 if (!this.missingKeyLocations.has(key)) {
                   this.missingKeyLocations.set(key, []);
                 }
-                this.missingKeyLocations.get(key).push({ file: filePath, line: lineNumber });
+                const locs = this.missingKeyLocations.get(key);
+                const already = locs.some(
+                  (loc) => loc.file === filePath && loc.line === lineNumber
+                );
+
+                if (!already) {
+                  locs.push({ file: filePath, line: lineNumber });
+                }
               }
             }
           }
