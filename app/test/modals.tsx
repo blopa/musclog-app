@@ -58,6 +58,7 @@ import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistor
 import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
+import { TimePickerModal } from '../../components/modals/TimePickerModal';
 import { UserMenuModal } from '../../components/modals/UserMenuModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
@@ -226,6 +227,10 @@ export default function ModalsTestScreen() {
 
   // Meal Estimation Modal
   const [isMealEstimationVisible, setIsMealEstimationVisible] = useState(false);
+
+  // Time Picker Modal
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(new Date());
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1093,6 +1098,20 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Time Picker Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Time Picker Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for selecting time with hour and minute controls.
+            </Text>
+            <Button
+              label="Open Time Picker Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsTimePickerVisible(true)}
+            />
+          </View>
+
           {/* Nutrition Goal Data Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -1605,6 +1624,16 @@ export default function ModalsTestScreen() {
         visible={isMealEstimationVisible}
         onClose={() => setIsMealEstimationVisible(false)}
         mealImage="https://example.com/meal.jpg"
+      />
+
+      <TimePickerModal
+        visible={isTimePickerVisible}
+        onClose={() => setIsTimePickerVisible(false)}
+        selectedTime={selectedTime}
+        onTimeSelect={(time) => {
+          console.log('Time selected:', time);
+          setSelectedTime(time);
+        }}
       />
     </SafeAreaView>
   );

@@ -76,6 +76,7 @@ import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import enUsYourGoogleAuthExpiredReauth from './locales/en-us/your_google_auth_expired_reauth.json';
+import timePicker from './locales/en-us/timePicker.json';
 
 export const EN_US = 'en-US';
 // export const ES_ES = 'es-ES';
@@ -150,6 +151,7 @@ const resources = {
       ...enUsYourGoogleAuthExpiredReauth,
       ...enUsConnectGoogleAccount,
       ...enUsDatePicker,
+      ...timePicker,
     },
   },
   // [ES_ES]: { translation: es },
