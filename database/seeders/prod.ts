@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Localization from 'expo-localization';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
+import { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
 import { getEncryptionKey } from '../../utils/encryption';
 import { database } from '../database-instance';
 import {
@@ -9,6 +11,7 @@ import {
   type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
+  SettingsService,
 } from '../services';
 
 export type InitProgressPhase = 'seeding' | 'migrating';
@@ -114,9 +117,18 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       }
     }
 
-    // TODO: detect device language and save it into the settings for language
+    // Detect device language and save it into the settings for language
+    const systemLocales = Localization.getLocales();
+    const deviceLanguage = systemLocales.find((locale) =>
+      AVAILABLE_LANGUAGES.includes(locale.languageTag as any)
+    )?.languageTag || EN_US;
+    
+    await SettingsService.setLanguage(deviceLanguage);
+    console.log(`Set language to: ${deviceLanguage}`);
 
-    // TODO: set the anonymousBugReport setting to true by default
+    // Set the anonymousBugReport setting to true by default
+    await SettingsService.setAnonymousBugReport(true);
+    console.log('Set anonymous bug report to true by default');
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');

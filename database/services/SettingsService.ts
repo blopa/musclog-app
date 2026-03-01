@@ -8,6 +8,7 @@ import {
   ENABLE_OPENAI_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  LANGUAGE_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
@@ -224,6 +225,29 @@ export class SettingsService {
    */
   static async setNotifications(value: boolean) {
     await SettingsService.setBooleanSetting(NOTIFICATIONS_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the language setting
+   */
+  static async setLanguage(language: string) {
+    await SettingsService.setStringSetting(LANGUAGE_SETTING_TYPE, language);
+  }
+
+  /**
+   * Get the language setting
+   */
+  static async getLanguage(): Promise<string> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', LANGUAGE_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (settings.length === 0) {
+      return 'en-US';
+    }
+
+    return settings[0].value;
   }
 
   /**

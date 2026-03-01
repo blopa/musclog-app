@@ -88,6 +88,12 @@ export const WORKOUT_INSIGHTS_SETTING_TYPE = 'workout_insights';
  */
 export const NOTIFICATIONS_SETTING_TYPE = 'notifications';
 
+/**
+ * Setting type for language preference (stored in WatermelonDB settings table).
+ * value: string (language code like 'en-US').
+ */
+export const LANGUAGE_SETTING_TYPE = 'language';
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 
