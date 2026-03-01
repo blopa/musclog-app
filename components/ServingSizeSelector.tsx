@@ -1,5 +1,6 @@
+import { Food, FoodPortion } from 'database/models';
 import { Minus, Plus } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
@@ -7,7 +8,6 @@ import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
-import { Food } from 'database/models';
 
 type ServingSizeSelectorProps = {
   value: number;
@@ -29,11 +29,41 @@ export function ServingSizeSelector({ value, onChange, quickSizes, food }: Servi
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
-  // TODO: if food is passed, then load the portions from the food
-  // if the food does not have portions, then use the default portions
-  const { portions, isLoading } = useFoodPortions({
+  // Load default portions (fallback)
+  const { portions: defaultPortions, isLoading: isLoadingDefault } = useFoodPortions({
     mode: 'all',
   });
+
+  // Load food-specific portions if food is provided
+  const [foodPortions, setFoodPortions] = useState<FoodPortion[]>([]);
+  const [isLoadingFood, setIsLoadingFood] = useState(false);
+
+  // Load food portions when food changes
+  useEffect(() => {
+    const loadFoodPortions = async () => {
+      if (!food) {
+        setFoodPortions([]);
+        return;
+      }
+
+      setIsLoadingFood(true);
+      try {
+        const portions = await food.getPortionsAsync();
+        setFoodPortions(portions);
+      } catch (error) {
+        console.warn('Error loading food portions:', error);
+        setFoodPortions([]);
+      } finally {
+        setIsLoadingFood(false);
+      }
+    };
+
+    loadFoodPortions();
+  }, [food]);
+
+  // Use food portions if available and food is provided, otherwise use default portions
+  const portions = food && foodPortions.length > 0 ? foodPortions : defaultPortions;
+  const isLoading = isLoadingFood || isLoadingDefault;
 
   // Transform database portions to quick sizes format (label in display unit, value stays in grams)
   const databaseQuickSizes = useMemo(() => {
