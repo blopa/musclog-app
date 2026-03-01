@@ -46,7 +46,6 @@ import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
@@ -67,6 +66,7 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { Button } from '../../components/theme/Button';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal

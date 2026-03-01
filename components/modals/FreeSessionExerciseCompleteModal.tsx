@@ -1,14 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { createElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { getExerciseIconConfig, isBodyweightExercise } from '../../utils/workout';
+import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -23,6 +25,10 @@ type FreeSessionExerciseCompleteModalProps = {
   sets: WorkoutLogSet[];
   exerciseId: string;
   units: Units;
+  /** Optional exercise image URL; if not set, the workout icon (dumbbell/bodyweight) is shown. */
+  exerciseImageUrl?: string | null;
+  /** Equipment type for icon fallback when exerciseImageUrl is not set (e.g. "bodyweight" | "dumbbell"). */
+  equipmentType?: string | null;
   onAddNextExercise: () => void;
   onFinishWorkout: () => void;
   /** True while finish workout is in progress (disables buttons, shows loading on finish). */
@@ -36,6 +42,8 @@ export function FreeSessionExerciseCompleteModal({
   sets,
   exerciseId,
   units,
+  exerciseImageUrl,
+  equipmentType,
   onAddNextExercise,
   onFinishWorkout,
   isFinishing = false,
@@ -43,6 +51,12 @@ export function FreeSessionExerciseCompleteModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const iconConfig = useMemo(
+    () => getExerciseIconConfig(isBodyweightExercise(equipmentType ?? undefined)),
+    [equipmentType]
+  );
+  const showImage = Boolean(exerciseImageUrl?.trim());
 
   const { setsCompleted, totalVolumeKg } = useMemo(() => {
     const exerciseSets = sets.filter((s) => s.exerciseId === exerciseId);
@@ -62,7 +76,6 @@ export function FreeSessionExerciseCompleteModal({
   const emerald = theme.colors.status.emerald;
   const indigo = theme.colors.status.indigo;
   const emerald20 = theme.colors.status.emerald20;
-  const surfaceDark = theme.colors.background.overlay ?? theme.colors.background.card;
   const borderDark = theme.colors.border.dark;
   const textMuted = theme.colors.text.muted;
 
@@ -147,33 +160,36 @@ export function FreeSessionExerciseCompleteModal({
           </View>
 
           {/* Exercise summary card */}
-          <View
-            className="mb-8 w-full overflow-hidden rounded-2xl border p-5"
-            style={{
-              backgroundColor: surfaceDark,
-              borderColor: borderDark,
-              borderRadius: theme.borderRadius['2xl'],
-            }}
+          <GenericCard
+            variant="card"
+            size="lg"
+            containerStyle={{ marginBottom: theme.spacing.margin['2xl'] }}
           >
-            <View className="flex-row items-start gap-4">
+            <View
+              className="flex-row items-start gap-4"
+              style={{ padding: theme.spacing.padding.lg }}
+            >
               <View
-                className="shrink-0 items-center justify-center rounded-xl border"
+                className="shrink-0 items-center justify-center overflow-hidden rounded-xl border"
                 style={{
                   width: CARD_IMAGE_SIZE,
                   height: CARD_IMAGE_SIZE,
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: showImage ? undefined : iconConfig.iconBgColor,
                   borderColor: borderDark,
                 }}
               >
-                <Text
-                  className="font-bold"
-                  style={{
-                    fontSize: theme.typography.fontSize['2xl'],
-                    color: theme.colors.text.primary,
-                  }}
-                >
-                  {(exerciseName || '?').charAt(0)}
-                </Text>
+                {showImage ? (
+                  <Image
+                    source={{ uri: exerciseImageUrl! }}
+                    style={{ width: CARD_IMAGE_SIZE, height: CARD_IMAGE_SIZE }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  createElement(iconConfig.icon, {
+                    size: theme.iconSize['2xl'],
+                    color: iconConfig.iconColor,
+                  })
+                )}
               </View>
               <View className="min-w-0 flex-1">
                 <Text
@@ -223,7 +239,7 @@ export function FreeSessionExerciseCompleteModal({
                 </View>
               </View>
             </View>
-          </View>
+          </GenericCard>
 
           {/* Buttons */}
           <View className="w-full gap-3">

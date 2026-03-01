@@ -155,6 +155,8 @@ export default function WorkoutSessionScreen() {
   const [completedExerciseForModal, setCompletedExerciseForModal] = useState<{
     exerciseId: string;
     exerciseName: string;
+    exerciseImageUrl?: string | null;
+    equipmentType?: string | null;
   } | null>(null);
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -211,6 +213,8 @@ export default function WorkoutSessionScreen() {
         setCompletedExerciseForModal({
           exerciseId: lastSet.exerciseId ?? '',
           exerciseName: exercise?.name ?? '',
+          exerciseImageUrl: exercise?.imageUrl ?? null,
+          equipmentType: exercise?.equipmentType ?? null,
         });
         setIsFreeSessionCompleteModalVisible(true);
         hasShownFreeSessionCompleteModalRef.current = true;
@@ -287,6 +291,8 @@ export default function WorkoutSessionScreen() {
         setCompletedExerciseForModal({
           exerciseId: currentSetData.set.exerciseId ?? '',
           exerciseName: currentSetData.exercise.name ?? '',
+          exerciseImageUrl: currentSetData.exercise.imageUrl ?? null,
+          equipmentType: currentSetData.exercise.equipmentType ?? null,
         });
         setIsFreeSessionCompleteModalVisible(true);
         hasShownFreeSessionCompleteModalRef.current = true;
@@ -330,6 +336,8 @@ export default function WorkoutSessionScreen() {
           setCompletedExerciseForModal({
             exerciseId: currentSetData.set.exerciseId ?? '',
             exerciseName: currentSetData.exercise.name ?? '',
+            exerciseImageUrl: currentSetData.exercise.imageUrl ?? null,
+            equipmentType: currentSetData.exercise.equipmentType ?? null,
           });
           setIsFreeSessionCompleteModalVisible(true);
           hasShownFreeSessionCompleteModalRef.current = true;
@@ -664,6 +672,8 @@ export default function WorkoutSessionScreen() {
             sets={sets}
             exerciseId={completedExerciseForModal.exerciseId}
             units={units}
+            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
+            equipmentType={completedExerciseForModal.equipmentType}
             onAddNextExercise={() => {
               setIsFreeSessionCompleteModalVisible(false);
               setIsAddExerciseToSessionModalVisible(true);
@@ -1127,6 +1137,8 @@ export default function WorkoutSessionScreen() {
           sets={sets}
           exerciseId={completedExerciseForModal.exerciseId}
           units={units}
+          exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
+          equipmentType={completedExerciseForModal.equipmentType}
           onAddNextExercise={() => {
             setIsFreeSessionCompleteModalVisible(false);
             setCompletedExerciseForModal(null);
