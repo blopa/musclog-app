@@ -183,7 +183,7 @@ export function useUnifiedFoodSearch({
     return localFoods.map((food) => ({
       id: food.id,
       name: food.name,
-      description: `${food.brand || 'Custom Food'} • ${food.calories || 0} kcal per 100g`,
+      description: `${food.brand || 'Custom Food'} • ${Math.round(food.calories || 0)} kcal per 100g`, // TODO: use i18n and check if user uses metric or imperial to decide which unit to use
       brand: food.brand,
       imageUrl: food.imageUrl, // Include image URL from local database
       serving_size: '100 g', // Display standard serving
