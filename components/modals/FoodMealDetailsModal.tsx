@@ -1,5 +1,5 @@
 import { format, isSameDay } from 'date-fns';
-import { BookmarkPlus, Calendar, Edit, PlusCircle } from 'lucide-react-native';
+import { BookmarkPlus, Calendar, Edit, PlusCircle, RefreshCcwDot } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -890,7 +890,7 @@ export function FoodMealDetailsModal({
           <View className="pb-6">
             <Button
               label={actionLabel}
-              icon={PlusCircle}
+              icon={foodLog ? RefreshCcwDot : PlusCircle}
               variant="gradientCta"
               size="sm"
               width="full"

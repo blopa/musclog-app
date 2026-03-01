@@ -1067,6 +1067,7 @@ export function FoodSearchModal({
               setIsFoodDetailsVisible(false);
               setSelectedFood(null);
             }}
+            onFoodTracked={onClose}
           />
         ) : null}
 
@@ -1094,6 +1095,7 @@ export function FoodSearchModal({
               setIsMealDetailsVisible(false);
               setSelectedMeal(null);
             }}
+            onFoodTracked={onClose}
           />
         ) : null}
 
