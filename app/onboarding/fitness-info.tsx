@@ -15,7 +15,6 @@ import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
-import { getEncryptionKey } from '../../utils/encryption';
 import {
   cmToDisplay,
   displayToCm,
@@ -148,7 +147,6 @@ export default function FitnessInfo() {
       const result: { weightMetricId?: string; heightMetricId?: string } = {};
       setIsSaving(true);
       try {
-        await getEncryptionKey();
         // Get or ensure user exists
         let user = await UserService.getCurrentUser();
         if (!user) {

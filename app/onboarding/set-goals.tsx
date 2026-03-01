@@ -18,7 +18,6 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
-import { getEncryptionKey } from '../../utils/encryption';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -296,7 +295,6 @@ export default function SetGoals() {
 
   /** Fetch user + metrics, calculate plan, save to AsyncStorage. Returns plan or null. */
   const calculateAndStorePlan = useCallback(async () => {
-    await getEncryptionKey();
     const user = await UserService.getCurrentUser();
     if (!user) {
       return null;

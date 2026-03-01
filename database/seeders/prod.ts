@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
+import { getEncryptionKey } from '../../utils/encryption';
 import { database } from '../database-instance';
 import {
   ExerciseService,
@@ -67,6 +68,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Clear async storage
     await clearAsyncStorage();
+
+    // Ensure encryption key exists before any encrypted writes (seeding/migration)
+    await getEncryptionKey();
 
     // 1. Seed common portions if none exist
     onProgress?.({ phase: 'seeding' });
