@@ -6,6 +6,18 @@ import UserMetric, { type UserMetricType } from '../models/UserMetric';
 
 export class UserMetricService {
   /**
+   * Get a metric by id. Returns null if not found or deleted.
+   */
+  static async getMetricById(id: string): Promise<UserMetric | null> {
+    try {
+      const metric = await database.get<UserMetric>('user_metrics').find(id);
+      return metric.deletedAt != null ? null : metric;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Get latest metric value for a specific type (by date, then by updated_at so
    * the most recently updated record wins when dates tie).
    */
@@ -104,10 +116,11 @@ export class UserMetricService {
         throw new Error('Cannot update deleted metric');
       }
 
+      const valueToWrite = updates.value ?? (await metric.getDecrypted()).value;
       const encrypted =
         updates.value !== undefined || updates.unit !== undefined
           ? await encryptUserMetricFields({
-              value: updates.value ?? (await metric.getDecrypted()).value,
+              value: valueToWrite,
               unit: updates.unit ?? (await metric.getDecrypted()).unit,
               date: updates.date ?? metric.date,
             })

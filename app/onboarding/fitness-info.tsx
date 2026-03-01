@@ -15,6 +15,7 @@ import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
 import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
+import { getEncryptionKey } from '../../utils/encryption';
 import {
   cmToDisplay,
   displayToCm,
@@ -139,10 +140,15 @@ export default function FitnessInfo() {
   }, [units, isSettingsLoading]);
 
   const handleSave = useCallback(
-    async (data: FitnessDetails, options?: { navigate?: boolean }) => {
+    async (
+      data: FitnessDetails,
+      options?: { navigate?: boolean }
+    ): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {
       const shouldNavigate = options?.navigate !== false;
+      const result: { weightMetricId?: string; heightMetricId?: string } = {};
       setIsSaving(true);
       try {
+        await getEncryptionKey();
         // Get or ensure user exists
         let user = await UserService.getCurrentUser();
         if (!user) {
@@ -182,32 +188,33 @@ export default function FitnessInfo() {
         }
 
         const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
-        const now = Date.now(); // Use current timestamp so this write is the "latest" and getLatest() returns it
-        const endOfDay = currentDate + 24 * 60 * 60 * 1000 - 1; // Any metric "today" (so we update it instead of creating a duplicate)
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's current timezone
+        const now = Date.now();
+        const endOfDay = currentDate + 24 * 60 * 60 * 1000 - 1;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         if (data.weight && parseFloat(data.weight) > 0) {
           const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
-
           const existingWeight = await UserMetricService.getMetricsHistory(
             'weight',
             { startDate: currentDate, endDate: endOfDay },
             1
           );
           if (existingWeight.length > 0) {
-            await UserMetricService.updateMetric(existingWeight[0].id, {
+            const updated = await UserMetricService.updateMetric(existingWeight[0].id, {
               value: weightValueKg,
               unit: 'kg',
               date: now,
             });
+            result.weightMetricId = updated.id;
           } else {
-            await UserMetricService.createMetric({
+            const created = await UserMetricService.createMetric({
               type: 'weight',
               value: weightValueKg,
               unit: 'kg',
               date: now,
               timezone,
             });
+            result.weightMetricId = created.id;
           }
         }
 
@@ -219,19 +226,21 @@ export default function FitnessInfo() {
             1
           );
           if (existingHeight.length > 0) {
-            await UserMetricService.updateMetric(existingHeight[0].id, {
+            const updated = await UserMetricService.updateMetric(existingHeight[0].id, {
               value: heightValueCm,
               unit: 'cm',
               date: now,
             });
+            result.heightMetricId = updated.id;
           } else {
-            await UserMetricService.createMetric({
+            const created = await UserMetricService.createMetric({
               type: 'height',
               value: heightValueCm,
               unit: 'cm',
               date: now,
               timezone,
             });
+            result.heightMetricId = created.id;
           }
         }
 
@@ -263,27 +272,19 @@ export default function FitnessInfo() {
         await SettingsService.setUnits(data.units);
 
         if (shouldNavigate) {
-          const weightKg =
-            data.weight && parseFloat(data.weight) > 0
-              ? displayToKg(parseFloat(data.weight), data.units)
-              : 0;
-
-          const heightCm =
-            data.height && parseFloat(data.height) > 0
-              ? displayToCm(parseFloat(data.height), data.units)
-              : 0;
-
           router.push({
             pathname: '/onboarding/set-goals',
             params:
-              weightKg > 0 && heightCm > 0
-                ? { weightKg: String(weightKg), heightCm: String(heightCm) }
+              result.weightMetricId && result.heightMetricId
+                ? { weightMetricId: result.weightMetricId, heightMetricId: result.heightMetricId }
                 : undefined,
           });
         }
+        return result;
       } catch (error) {
         console.error('Error saving fitness info:', error);
         showSnackbar('error', t('onboarding.fitnessInfo.errorSaving'));
+        return result;
       } finally {
         setIsSaving(false);
       }
@@ -294,25 +295,14 @@ export default function FitnessInfo() {
   const handleSkip = useCallback(async () => {
     const merged = getMergedFitnessData(initialData, currentFormData);
     try {
-      await handleSave(merged, { navigate: false });
+      const { weightMetricId, heightMetricId } = await handleSave(merged, { navigate: false });
+      router.push({
+        pathname: '/onboarding/set-goals',
+        params: weightMetricId && heightMetricId ? { weightMetricId, heightMetricId } : undefined,
+      });
     } catch {
       // Error already shown in handleSave
     }
-    const weightKg =
-      merged.weight && parseFloat(merged.weight) > 0
-        ? displayToKg(parseFloat(merged.weight), merged.units ?? 'metric')
-        : 0;
-    const heightCm =
-      merged.height && parseFloat(merged.height) > 0
-        ? displayToCm(parseFloat(merged.height), merged.units ?? 'metric')
-        : 0;
-    router.push({
-      pathname: '/onboarding/set-goals',
-      params:
-        weightKg > 0 && heightCm > 0
-          ? { weightKg: String(weightKg), heightCm: String(heightCm) }
-          : undefined,
-    });
   }, [initialData, currentFormData, router, handleSave]);
 
   const handleFloatingSave = async () => {

@@ -18,6 +18,7 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { getEncryptionKey } from '../../utils/encryption';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -289,12 +290,13 @@ export default function SetGoals() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ weightKg?: string; heightCm?: string }>();
+  const params = useLocalSearchParams<{ weightMetricId?: string; heightMetricId?: string }>();
   const { units } = useSettings();
   const [isCalculating, setIsCalculating] = useState(false);
 
   /** Fetch user + metrics, calculate plan, save to AsyncStorage. Returns plan or null. */
   const calculateAndStorePlan = useCallback(async () => {
+    await getEncryptionKey();
     const user = await UserService.getCurrentUser();
     if (!user) {
       return null;
@@ -303,10 +305,18 @@ export default function SetGoals() {
     let weightKg: number;
     let heightCm: number;
 
-    if (params?.weightKg && params?.heightCm) {
-      const w = parseFloat(params.weightKg);
-      const h = parseFloat(params.heightCm);
-      if (w > 0 && h > 0 && Number.isFinite(w) && Number.isFinite(h)) {
+    if (params?.weightMetricId && params?.heightMetricId) {
+      const [weightMetric, heightMetric] = await Promise.all([
+        UserMetricService.getMetricById(params.weightMetricId),
+        UserMetricService.getMetricById(params.heightMetricId),
+      ]);
+      const [weightDec, heightDec] = await Promise.all([
+        weightMetric?.getDecrypted(),
+        heightMetric?.getDecrypted(),
+      ]);
+      const w = weightDec?.value ?? 0;
+      const h = heightDec?.value ?? 0;
+      if (w > 0 && h > 0) {
         weightKg = w;
         heightCm = h;
       } else {
@@ -431,7 +441,7 @@ export default function SetGoals() {
     }
 
     return planWithTargets;
-  }, [units, params?.weightKg, params?.heightCm]);
+  }, [params, units]);
 
   const handleCalculateForMe = useCallback(async () => {
     setIsCalculating(true);
