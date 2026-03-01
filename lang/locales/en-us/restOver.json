@@ -3,6 +3,7 @@
     "startNextSet": "Start Next Set",
     "upNext": "Up Next",
     "weight": "Weight",
+    "weightWithUnit": "{{value}} {{unit}}",
     "reps": "Reps",
     "set": "Set",
     "restTimeIs": "Rest time is",

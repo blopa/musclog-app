@@ -105,7 +105,14 @@ export default function NewExerciseTransitionScreen() {
           const maxWKg = Math.max(...weights);
           const minW = kgToDisplay(minWKg, units);
           const maxW = kgToDisplay(maxWKg, units);
-          targetWeight = minWKg === maxWKg ? `${minW} ${unit}` : `${minW}~${maxW} ${unit}`; // TODO: use useTranslations
+          targetWeight =
+            minWKg === maxWKg
+              ? t('exerciseTransition.weightSingle', { value: minW, unit })
+              : t('exerciseTransition.weightRange', {
+                  min: minW,
+                  max: maxW,
+                  unit,
+                });
         }
 
         const muscleGroupRaw = (nextEx.muscleGroup ?? 'other').toLowerCase();

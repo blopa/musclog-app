@@ -97,7 +97,6 @@ const getNormalizedTemplates = (t: TFunction) => {
         totalSets = item.sets;
       }
 
-      // TODO: Use i18next pluralization so translations can include the number and handle pluralization rules
       const setsText = totalSets
         ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
         : '';

@@ -47,11 +47,15 @@ export function ServingSizeSelector({
       const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
 
       return {
-        label: `${portion.name} (${labelVal} ${massUnit})`, // TODO: use i18n
+        label: t('portionSizes.portionWithValueUnit', {
+          name: portion.name,
+          value: labelVal,
+          unit: massUnit === 'g' ? t('common.units.g') : t('common.units.oz'),
+        }),
         value: portion.gramWeight,
       };
     });
-  }, [portions, units, massUnit]);
+  }, [portions, units, massUnit, t]);
 
   const effectiveQuickSizes = quickSizes || databaseQuickSizes;
 

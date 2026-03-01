@@ -32,6 +32,15 @@
     "saveChanges": "Save Changes",
     "close": "Close",
     "install": "Install",
-    "createNew": "Create New"
+    "createNew": "Create New",
+    "heightFormatMetric": "{{value}} cm",
+    "heightFormatImperial": "{{feet}}' {{inches}}\"",
+    "weightFormatKg": "{{value}} kg",
+    "weightFormatLbs": "{{value}} lbs",
+    "units": {
+      "g": "g",
+      "oz": "oz"
+    },
+    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
   }
 }

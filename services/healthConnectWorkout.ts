@@ -94,7 +94,11 @@ function formatSegmentBreakdown(
           const displayWeight = kgToDisplay(s.weight, units);
           const rounded =
             displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
-          return `${s.reps}×${rounded} ${unitLabel}`; // TODO: use i18n
+          return i18n.t('healthConnect.repsWeightFormat', {
+            reps: s.reps,
+            weight: rounded,
+            unit: unitLabel,
+          });
         })
         .join(', ');
       return setStr

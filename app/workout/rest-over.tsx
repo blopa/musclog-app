@@ -141,7 +141,10 @@ export default function RestOverScreen() {
 
     const d = kgToDisplay(nextExercise.weightKg, units);
     const rounded = d % 1 === 0 ? d : Math.round(d * 10) / 10;
-    return `${rounded} ${t(weightUnitKey)}`; // TODO: use i18n
+    return t('restOver.weightWithUnit', {
+      value: rounded,
+      unit: t(weightUnitKey),
+    });
   }, [nextExercise, units, weightUnitKey, t]);
 
   const handleStartNextSet = () => {

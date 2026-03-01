@@ -5,6 +5,7 @@
     "lastSetForExercise": "Last set for this exercise",
     "weight": "WEIGHT",
     "reps": "REPS",
+    "previousSetFormat": "{{weight}} {{unit}} × {{count}} {{repsLabel}}",
     "partials": "PARTIALS",
     "previous": "Previous",
     "history": "History",

@@ -95,8 +95,12 @@
         "duration": "Duration",
         "exercises": "Exercises",
         "exercisesQty": "{{count}} Exercise",
+        "exercisesQty_one": "{{count}} Exercise",
+        "exercisesQty_other": "{{count}} Exercises",
         "sets": "Sets",
-        "setsQty": "{{count}} Set"
+        "setsQty": "{{count}} Set",
+        "setsQty_one": "{{count}} Set",
+        "setsQty_other": "{{count}} Sets"
       }
     },
     "manageWorkoutTemplateData": {

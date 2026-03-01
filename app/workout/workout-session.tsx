@@ -409,9 +409,12 @@ export default function WorkoutSessionScreen() {
               <Text className="text-text-secondary">
                 {t('workoutSession.previous')}:{' '}
                 <Text className="text-text-primary">
-                  {/*TODO: use i18n*/}
-                  {kgToDisplay(previousSet.weight ?? 0, units)} {t(weightUnitKey)} ×{' '}
-                  {previousSet.reps} {t('workoutSession.reps')}
+                  {t('workoutSession.previousSetFormat', {
+                    weight: kgToDisplay(previousSet.weight ?? 0, units),
+                    unit: t(weightUnitKey),
+                    count: previousSet.reps,
+                    repsLabel: t('workoutSession.reps'),
+                  })}
                 </Text>
               </Text>
             ) : (

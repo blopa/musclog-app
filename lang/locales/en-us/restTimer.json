@@ -6,6 +6,9 @@
     "skipRest": "SKIP REST",
     "done": "Done",
     "reps": "reps",
-    "upNext": "UP NEXT"
+    "repsWithCount": "{{count}} reps",
+    "upNext": "UP NEXT",
+    "missingWorkoutData": "Missing workout data",
+    "completedSetNotFound": "Completed set not found"
   }
 }

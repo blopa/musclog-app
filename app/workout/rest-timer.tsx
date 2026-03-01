@@ -86,10 +86,14 @@ export default function RestTimerScreen() {
 
   const hasRequiredParams = Boolean(workoutLogId && completedSetOrder !== null);
   const isLoading = hasRequiredParams ? sessionLoading : false;
+
+  // TODO: move this to a helper function to avoid nested ternary
   const error = !hasRequiredParams
-    ? 'Missing workout data' // TODO: use translation
+    ? t('restTimer.missingWorkoutData')
     : (sessionError ??
-      (!sessionLoading && sets.length > 0 && !completedSet ? 'Completed set not found' : null));
+      (!sessionLoading && sets.length > 0 && !completedSet
+        ? t('restTimer.completedSetNotFound')
+        : null));
 
   // Sync rest time from completed set when session data is ready
   useEffect(() => {
@@ -335,8 +339,18 @@ export default function RestTimerScreen() {
                   value: `${kgToDisplay(nextSet.set.weight ?? 0, units)} ${t(weightUnitKey)}`,
                   icon: Dumbbell,
                 },
-                itemTwo: { value: `${nextSet.set.reps ?? 0} reps`, icon: Repeat }, // TODO: use i18n
-                itemThree: { value: `${nextSet.set.reps ?? 0} reps`, icon: ChevronRight }, // TODO: use i18n
+                itemTwo: {
+                  value: t('restTimer.repsWithCount', {
+                    count: nextSet.set.reps ?? 0,
+                  }),
+                  icon: Repeat,
+                },
+                itemThree: {
+                  value: t('restTimer.repsWithCount', {
+                    count: nextSet.set.reps ?? 0,
+                  }),
+                  icon: ChevronRight,
+                },
               }}
               onPress={() => {
                 navigateToNextScreen();

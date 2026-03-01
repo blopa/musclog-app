@@ -1,9 +1,5 @@
-/**
- * Health Data Transformation Service
- * Handles data conversion between Health Connect and app format
- */
-
 import type { Units } from '../constants/settings';
+import i18n from '../lang/lang';
 import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
 import { HealthConnectError, HealthConnectErrorCode } from './healthConnectErrors';
 
@@ -126,10 +122,10 @@ export class HeightConverter {
       const totalInches = displayIn;
       const feet = Math.floor(totalInches / 12);
       const inches = Math.round(totalInches % 12);
-      return `${feet}' ${inches}"`;
+      return i18n.t('common.heightFormatImperial', { feet, inches });
     }
 
-    return `${Math.round(displayIn)} cm`; // TODO: use i18n
+    return i18n.t('common.heightFormatMetric', { value: Math.round(displayIn) });
   }
 }
 
@@ -171,6 +167,8 @@ export class WeightConverter {
   static formatWeight(kg: number, system: UnitSystem, decimals: number = 1): string {
     const units: Units = system === UnitSystem.IMPERIAL ? 'imperial' : 'metric';
     const display = kgToDisplay(kg, units);
+
+    // TODO: move this to a helper function to avoid nested ternary
     const rounded =
       decimals >= 0
         ? display.toFixed(decimals)
@@ -178,7 +176,9 @@ export class WeightConverter {
           ? String(display)
           : display.toFixed(1);
 
-    return system === UnitSystem.IMPERIAL ? `${rounded} lbs` : `${rounded} kg`; // TODO: use i18n
+    return system === UnitSystem.IMPERIAL
+      ? i18n.t('common.weightFormatLbs', { value: rounded })
+      : i18n.t('common.weightFormatKg', { value: rounded });
   }
 }
 

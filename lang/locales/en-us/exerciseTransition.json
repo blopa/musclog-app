@@ -5,6 +5,8 @@
     "completedMessage": "Great effort. Catch your breath.",
     "upNext": "UP NEXT",
     "target": "TARGET",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
     "sets": "Sets",
     "reps": "Reps",
     "rest": "REST",
