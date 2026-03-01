@@ -96,7 +96,6 @@ export function FoodMealDetailsModal({
     fiber: number;
   } | null>(null);
 
-  // TODO: use isLoadingMealNutrients
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
