@@ -130,7 +130,7 @@ export function FreeSessionExerciseCompleteModal({
               }}
             >
               <LinearGradient
-                colors={theme.colors.gradients.cta as unknown as string[]}
+                colors={[theme.colors.gradients.cta[0], theme.colors.gradients.cta[1]] as const}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{

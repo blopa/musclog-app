@@ -46,6 +46,7 @@ import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
@@ -1663,24 +1664,26 @@ export default function ModalsTestScreen() {
         onClose={() => setIsFreeSessionExerciseCompleteVisible(false)}
         exerciseName="Bench Press"
         exerciseId="test-exercise-id"
-        sets={[
-          {
-            id: '1',
-            exerciseId: 'test-exercise-id',
-            reps: 10,
-            weight: 80,
-            difficultyLevel: 8,
-            isSkipped: false,
-          },
-          {
-            id: '2',
-            exerciseId: 'test-exercise-id',
-            reps: 8,
-            weight: 85,
-            difficultyLevel: 9,
-            isSkipped: false,
-          },
-        ]}
+        sets={
+          [
+            {
+              id: '1',
+              exerciseId: 'test-exercise-id',
+              reps: 10,
+              weight: 80,
+              difficultyLevel: 8,
+              isSkipped: false,
+            },
+            {
+              id: '2',
+              exerciseId: 'test-exercise-id',
+              reps: 8,
+              weight: 85,
+              difficultyLevel: 9,
+              isSkipped: false,
+            },
+          ] as WorkoutLogSet[]
+        }
         units="metric"
         onAddNextExercise={() => console.log('Add next exercise pressed')}
         onFinishWorkout={() => console.log('Finish workout pressed')}
