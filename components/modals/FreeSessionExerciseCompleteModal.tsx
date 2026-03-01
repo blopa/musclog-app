@@ -1,8 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { CheckCircle, Flag, Plus, X } from 'lucide-react-native';
+import { CheckCircle, Flag, Plus } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
@@ -86,20 +86,6 @@ export function FreeSessionExerciseCompleteModal({
           <View style={{ width: 40, height: 40 }} />
         </View>
 
-        {/* Background glow behind success icon */}
-        <View
-          className="absolute left-1/2 top-24 h-48 w-48 -translate-x-1/2 rounded-full opacity-20"
-          style={{
-            backgroundColor: indigo,
-            shadowColor: emerald,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.2,
-            shadowRadius: 60,
-            elevation: 0,
-          }}
-          pointerEvents="none"
-        />
-
         <View className="flex-1 items-center justify-center">
           {/* Success icon: gradient ring + inner gradient circle with check */}
           <View className="mb-8 items-center justify-center">
@@ -130,7 +116,7 @@ export function FreeSessionExerciseCompleteModal({
               }}
             >
               <LinearGradient
-                colors={[theme.colors.gradients.cta[0], theme.colors.gradients.cta[1]] as const}
+                colors={theme.colors.gradients.cta}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={{
