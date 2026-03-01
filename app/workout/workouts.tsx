@@ -96,6 +96,7 @@ export default function WorkoutsScreen() {
       lastCompletedTimestamp: featured.lastCompletedTimestamp,
       exerciseCount: featured.exerciseCount,
       duration: featured.duration,
+      icon: featured.icon,
     };
 
     // Rest are regular workouts
@@ -108,6 +109,7 @@ export default function WorkoutsScreen() {
       lastCompletedTimestamp: template.lastCompletedTimestamp,
       exerciseCount: template.exerciseCount,
       duration: template.duration,
+      icon: template.icon,
     }));
 
     return {
