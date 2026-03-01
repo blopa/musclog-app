@@ -406,6 +406,8 @@ describe('hooks/useWorkoutForm', () => {
         name: 'New Workout',
         description: 'Description',
         volumeCalculationType: 'none',
+        type: 'strength',
+        icon: undefined,
         weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],
@@ -485,6 +487,8 @@ describe('hooks/useWorkoutForm', () => {
         name: 'Test Workout',
         description: undefined, // Empty trimmed description becomes undefined
         volumeCalculationType: 'none',
+        type: 'strength',
+        icon: undefined,
         weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],

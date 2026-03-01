@@ -45,6 +45,7 @@ export interface SaveTemplateData {
   description?: string;
   volumeCalculationType?: string;
   type?: string;
+  icon?: string;
   weekDaysJson?: number[];
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
@@ -193,6 +194,7 @@ export class WorkoutTemplateService {
           t.volumeCalculationType =
             data.volumeCalculationType ?? t.volumeCalculationType ?? 'standard';
           t.type = data.type ?? t.type;
+          t.icon = data.icon ?? t.icon;
           t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
           t.updatedAt = now;
         });
@@ -229,6 +231,7 @@ export class WorkoutTemplateService {
           t.description = data.description || undefined;
           t.volumeCalculationType = data.volumeCalculationType || 'standard';
           t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
+          t.icon = data.icon ?? undefined;
           t.weekDaysJson = data.weekDaysJson || undefined;
           t.isArchived = false; // Default to not archived
           t.createdAt = now;
@@ -307,6 +310,7 @@ export class WorkoutTemplateService {
       name: string;
       description?: string;
       type?: string;
+      icon?: string;
       exerciseCount: number;
       lastCompleted?: string; // Formatted relative date string
       lastCompletedTimestamp?: number;
@@ -353,6 +357,7 @@ export class WorkoutTemplateService {
     name: string;
     description?: string;
     type?: string;
+    icon?: string;
     exerciseCount: number;
     lastCompleted?: string;
     lastCompletedTimestamp?: number;
@@ -428,6 +433,7 @@ export class WorkoutTemplateService {
       name: template.name ?? '',
       description: template.description || undefined,
       type: template.type ?? undefined,
+      icon: template.icon ?? undefined,
       exerciseCount,
       lastCompleted,
       lastCompletedTimestamp,
@@ -468,6 +474,7 @@ export class WorkoutTemplateService {
       name: string;
       description?: string;
       type?: string;
+      icon?: string;
       exerciseCount: number;
       lastCompleted?: string;
       lastCompletedTimestamp?: number;
@@ -763,6 +770,7 @@ export class WorkoutTemplateService {
         name: templateName,
         description: rawTemplate.description,
         type: DEFAULT_WORKOUT_TYPE,
+        icon: undefined,
         exercises: exercisesInWorkout,
         selectedDays: [], // No schedule days selected
       });
@@ -808,6 +816,8 @@ export class WorkoutTemplateService {
         t.name = `${template.name} (Copy)`;
         t.description = template.description;
         t.volumeCalculationType = template.volumeCalculationType || 'standard';
+        t.type = template.type ?? DEFAULT_WORKOUT_TYPE;
+        t.icon = template.icon ?? undefined;
         t.weekDaysJson = template.weekDaysJson || undefined;
         t.isArchived = false;
         t.createdAt = now;
@@ -993,6 +1003,7 @@ export class WorkoutTemplateService {
       name?: string;
       description?: string;
       isArchived?: boolean;
+      icon?: string;
     }
   ): Promise<WorkoutTemplate> {
     return await database.write(async () => {
@@ -1006,12 +1017,19 @@ export class WorkoutTemplateService {
         if (updates.name !== undefined) {
           record.name = updates.name;
         }
+
         if (updates.description !== undefined) {
           record.description = updates.description;
         }
+
         if (updates.isArchived !== undefined) {
           record.isArchived = updates.isArchived;
         }
+
+        if (updates.icon !== undefined) {
+          record.icon = updates.icon;
+        }
+
         record.updatedAt = Date.now();
       });
 

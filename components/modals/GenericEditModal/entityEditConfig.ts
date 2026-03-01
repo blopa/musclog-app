@@ -13,6 +13,7 @@ import {
   WorkoutTemplateService,
 } from '../../../database/services';
 import { displayToCm, displayToKg } from '../../../utils/unitConversion';
+import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
 import type { DataLogModalVariant } from '../DataLogModal';
 import type { EditFieldConfig, EditFormValues } from './types';
 
@@ -230,6 +231,15 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           label: 'common.description',
           placeholder: 'common.description',
           multiline: true,
+        },
+        {
+          type: 'select',
+          key: 'icon',
+          label: 'common.icon',
+          options: [
+            { value: '', label: 'common.none' },
+            ...WORKOUT_ICON_OPTIONS.map((o) => ({ value: o.value, label: o.label })),
+          ],
         },
         {
           type: 'boolean',
@@ -469,6 +479,7 @@ export async function getInitialValues(
       return {
         name: recordAny.name ?? '',
         description: recordAny.description ?? '',
+        icon: recordAny.icon ?? '',
         isArchived: recordAny.isArchived ?? false,
       };
 
@@ -571,6 +582,10 @@ export async function saveRecord(
       await WorkoutTemplateService.updateTemplate(recordId, {
         name: values.name as string | undefined,
         description: values.description as string | undefined,
+        icon:
+          (values.icon as string) !== undefined && (values.icon as string) !== ''
+            ? (values.icon as string)
+            : undefined,
         isArchived: values.isArchived as boolean | undefined,
       });
       break;

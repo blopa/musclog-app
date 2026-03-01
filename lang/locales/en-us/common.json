@@ -4,6 +4,7 @@
     "saveErrorSubtitle": "Please try again",
     "select": "Select...",
     "today": "Today",
+    "none": "None",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
     "oneWeekAgo": "1 week ago",

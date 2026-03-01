@@ -10,6 +10,7 @@ export type WorkoutTemplateWithMetadata = {
   name: string;
   description?: string;
   type?: string;
+  icon?: string;
   exerciseCount: number;
   lastCompleted?: string;
   lastCompletedTimestamp?: number;

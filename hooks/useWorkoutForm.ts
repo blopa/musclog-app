@@ -44,6 +44,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   const [description, setDescription] = useState('');
   const [volumeCalc, setVolumeCalc] = useState('none');
   const [workoutType, setWorkoutType] = useState<WorkoutType>(DEFAULT_WORKOUT_TYPE);
+  const [icon, setIcon] = useState<string | undefined>(undefined);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(isEditMode);
@@ -69,6 +70,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       setDescription(template.description || '');
       setVolumeCalc(template.volumeCalculationType || 'none');
       setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
+      setIcon(template.icon ?? undefined);
 
       // Load week days from weekDaysJson if available, otherwise use schedule
       if (template.weekDaysJson && template.weekDaysJson.length > 0) {
@@ -166,6 +168,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         description: description.trim() || undefined,
         volumeCalculationType: volumeCalc,
         type: workoutType,
+        icon: icon ?? undefined,
         weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
         exercises: exercisesInWorkout,
         selectedDays,
@@ -183,6 +186,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     description,
     volumeCalc,
     workoutType,
+    icon,
     exercises,
     exerciseMetadata,
     selectedDays,
@@ -219,6 +223,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     description,
     volumeCalc,
     workoutType,
+    icon,
     selectedDays,
     focusedField,
     isLoading,
@@ -233,6 +238,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     setDescription,
     setVolumeCalc,
     setWorkoutType,
+    setIcon,
     setFocusedField,
     setSelectedExercises,
     setExercises,

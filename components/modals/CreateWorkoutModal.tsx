@@ -8,6 +8,7 @@ import { WORKOUT_TYPES } from '../../constants/workoutTypes';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { WEEKDAY_LABELS } from '../../utils/workout';
+import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -36,6 +37,7 @@ export default function CreateWorkoutModal({
     description,
     volumeCalc,
     workoutType,
+    icon,
     selectedDays,
     focusedField,
     isLoading,
@@ -47,6 +49,7 @@ export default function CreateWorkoutModal({
     setDescription,
     setVolumeCalc,
     setWorkoutType,
+    setIcon,
     setFocusedField,
     setSelectedExercises,
     toggleDay,
@@ -295,6 +298,85 @@ export default function CreateWorkoutModal({
                 );
               })}
             </View>
+          </View>
+
+          {/* Workout Icon */}
+          <View
+            style={{
+              marginTop: theme.spacing.gap.base,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.lg,
+              padding: theme.spacing.padding.md,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.border.light,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.medium,
+                color: theme.colors.text.secondary,
+                marginBottom: theme.spacing.padding.sm,
+              }}
+            >
+              {t('createWorkout.workoutIcon')}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: theme.spacing.gap.sm }}
+            >
+              <Pressable
+                onPress={() => setIcon(undefined)}
+                style={{
+                  width: 48,
+                  height: 48,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: theme.borderRadius.lg,
+                  backgroundColor:
+                    icon === undefined
+                      ? theme.colors.accent.primary
+                      : theme.colors.background.white5,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    color:
+                      icon === undefined ? theme.colors.text.white : theme.colors.text.tertiary,
+                  }}
+                >
+                  {t('common.none')}
+                </Text>
+              </Pressable>
+              {WORKOUT_ICON_OPTIONS.map((option) => {
+                const IconComponent = getWorkoutIcon(option.value);
+                const isSelected = icon === option.value;
+                return (
+                  <Pressable
+                    key={option.value}
+                    onPress={() => setIcon(option.value)}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: theme.borderRadius.lg,
+                      backgroundColor: isSelected
+                        ? theme.colors.accent.primary
+                        : theme.colors.background.white5,
+                    }}
+                  >
+                    <IconComponent
+                      size={theme.iconSize.md}
+                      color={isSelected ? theme.colors.text.white : theme.colors.text.secondary}
+                    />
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
         </View>
 

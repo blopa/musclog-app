@@ -19,6 +19,7 @@ export default class WorkoutTemplate extends Model {
   @field('name') name!: string;
   @field('description') description?: string;
   @field('volume_calculation_type') volumeCalculationType!: string;
+  @field('icon') icon?: string;
   @field('type') type?: string;
   @json('week_days_json', (data: any) => {
     if (data === null || data === undefined) {

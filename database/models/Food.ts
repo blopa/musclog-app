@@ -3,6 +3,7 @@ import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
 import { MealFood, NutritionLog } from './index';
 
+// TODO: import data from https://www.eurofir.org/food-information/food-composition-databases/
 export interface MicrosData {
   // Basic micronutrients
   sugar?: number;

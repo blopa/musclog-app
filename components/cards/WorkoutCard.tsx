@@ -1,8 +1,9 @@
-import { Archive, Clock, Dumbbell } from 'lucide-react-native';
+import { Archive, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { getWorkoutIcon } from '../../utils/workoutIconUtils';
 import { StartWorkoutButton } from '../StartWorkoutButton';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
@@ -14,6 +15,7 @@ type FeaturedWorkoutCardProps = {
   lastCompletedTimestamp?: number;
   exerciseCount: number;
   duration?: string;
+  icon?: string;
   onStart?: () => void;
   onMore?: () => void;
   onArchive?: () => void;
@@ -26,6 +28,7 @@ export function WorkoutCard({
   lastCompletedTimestamp,
   exerciseCount,
   duration,
+  icon,
   onStart,
   onMore,
   onArchive,
@@ -33,6 +36,7 @@ export function WorkoutCard({
 }: FeaturedWorkoutCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const IconComponent = getWorkoutIcon(icon);
 
   // Format lastCompleted with translations if timestamp is available
   const formatLastCompleted = (): string | undefined => {
@@ -87,8 +91,7 @@ export function WorkoutCard({
             className="ml-4 h-20 w-20 items-center justify-center rounded-2xl"
             style={{ backgroundColor: theme.colors.background.iconDark }}
           >
-            {/* TODO: instead render the icon from the workout */}
-            <Dumbbell size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+            <IconComponent size={theme.iconSize.lg} color={theme.colors.text.secondary} />
           </View>
         </View>
 

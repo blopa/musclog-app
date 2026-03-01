@@ -414,6 +414,7 @@ export default function WorkoutsScreen() {
                 lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
                 exerciseCount={filteredFeaturedWorkout.exerciseCount}
                 duration={filteredFeaturedWorkout.duration}
+                icon={filteredFeaturedWorkout.icon}
                 onStart={async () => {
                   if (filteredFeaturedWorkout.id) {
                     await handleStartWorkout(filteredFeaturedWorkout.id);
@@ -438,6 +439,7 @@ export default function WorkoutsScreen() {
                     lastCompletedTimestamp={workout.lastCompletedTimestamp}
                     exerciseCount={workout.exerciseCount}
                     duration={workout.duration}
+                    icon={workout.icon}
                     variant="standard"
                     onStart={async () => {
                       await handleStartWorkout(workout.id);
