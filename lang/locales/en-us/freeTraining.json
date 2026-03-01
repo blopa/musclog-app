@@ -12,6 +12,7 @@
     "duration": "DURATION",
     "calories": "CALORIES",
     "volume": "VOLUME",
+    "inProgress": "In Progress",
     "addExercise": {
       "title": "Add Exercise",
       "numberOfSets": "NUMBER OF SETS",
@@ -23,8 +24,8 @@
       "subtitle": "Exercise complete. Ready for more?",
       "setsCompleted": "{{count}} sets completed",
       "totalVolume": "TOTAL VOLUME",
-      "addNextExercise": "ADD NEXT EXERCISE",
-      "finishWorkout": "FINISH WORKOUT"
+      "addNextExercise": "Add next exercise",
+      "finishWorkout": "Finish workout"
     }
   }
 }

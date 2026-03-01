@@ -46,6 +46,7 @@ import { FilterWorkoutsModal } from '../../components/modals/FilterWorkoutsModal
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
@@ -231,6 +232,10 @@ export default function ModalsTestScreen() {
   // Time Picker Modal
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  // Free Session Exercise Complete Modal
+  const [isFreeSessionExerciseCompleteVisible, setIsFreeSessionExerciseCompleteVisible] =
+    useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1112,6 +1117,23 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Free Session Exercise Complete Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Free Session Exercise Complete Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal displayed when completing an exercise in a free training session with summary
+              stats and options.
+            </Text>
+            <Button
+              label="Open Free Session Exercise Complete Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsFreeSessionExerciseCompleteVisible(true)}
+            />
+          </View>
+
           {/* Nutrition Goal Data Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">
@@ -1634,6 +1656,35 @@ export default function ModalsTestScreen() {
           console.log('Time selected:', time);
           setSelectedTime(time);
         }}
+      />
+
+      <FreeSessionExerciseCompleteModal
+        visible={isFreeSessionExerciseCompleteVisible}
+        onClose={() => setIsFreeSessionExerciseCompleteVisible(false)}
+        exerciseName="Bench Press"
+        exerciseId="test-exercise-id"
+        sets={[
+          {
+            id: '1',
+            exerciseId: 'test-exercise-id',
+            reps: 10,
+            weight: 80,
+            difficultyLevel: 8,
+            isSkipped: false,
+          },
+          {
+            id: '2',
+            exerciseId: 'test-exercise-id',
+            reps: 8,
+            weight: 85,
+            difficultyLevel: 9,
+            isSkipped: false,
+          },
+        ]}
+        units="metric"
+        onAddNextExercise={() => console.log('Add next exercise pressed')}
+        onFinishWorkout={() => console.log('Finish workout pressed')}
+        isFinishing={false}
       />
     </SafeAreaView>
   );
