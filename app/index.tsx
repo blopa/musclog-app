@@ -5,6 +5,7 @@ import {
   Clock,
   Droplet,
   Flame,
+  Plus,
   Trophy,
   UtensilsCrossed,
   Wheat,
@@ -30,6 +31,7 @@ import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryMo
 import SmartCameraModal from '../components/modals/SmartCameraModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { Button } from '../components/theme/Button';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
@@ -336,6 +338,16 @@ export default function HomeScreen() {
                   }
                 />
               ))}
+              
+              {/* Add Food Button - only show if there's at least one item */}
+              {recentFoods.length > 0 ? <Button
+                  label={t('food.meals.addFood')}
+                  icon={Plus}
+                  variant="dashed"
+                  size="md"
+                  width="full"
+                  onPress={() => setIsAddFoodVisible(true)}
+              /> : null}
             </View>
           )}
         </View>
