@@ -22,8 +22,8 @@ import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
-import GoalsManagementModal from '../components/modals/GoalsManagementModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
+import GoalsManagementModal from '../components/modals/GoalsManagementModal';
 import MyMealsModal from '../components/modals/MyMealsModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
@@ -38,7 +38,7 @@ import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 import { type MealType } from '../database/models';
-import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
+import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
@@ -61,54 +61,18 @@ export default function HomeScreen() {
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
 
-  const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
-    mode: 'current',
-  });
-
-  const { dailyNutrients, isLoading: isLoadingNutrition } = useNutritionLogs({
-    mode: 'daily',
-    date: today,
-  });
+  const {
+    calories: dailyCalories,
+    macros: dailyMacros,
+    nutritionGoal,
+    isLoading: isLoadingNutritionSummary,
+  } = useDailyNutritionSummary({ date: today });
 
   // Get recent foods for display (limit to today's logs)
   const { recentFoods, isLoading: isLoadingRecentFoods } = useNutritionLogs({
     mode: 'recent',
     date: today,
   });
-
-  // Calculate daily summary from real data
-  const dailySummary = useMemo(() => {
-    const caloriesGoal = nutritionGoal?.totalCalories;
-    const caloriesConsumed = Math.round(dailyNutrients.calories);
-    const caloriesRemaining = Math.max(0, (caloriesGoal ?? 0) - caloriesConsumed);
-
-    return {
-      calories: {
-        consumed: caloriesConsumed,
-        remaining: caloriesRemaining,
-        goal: caloriesGoal ?? 0,
-      },
-      gradientColors: theme.colors.gradients.primary,
-    };
-  }, [nutritionGoal, dailyNutrients]);
-
-  // Calculate macros from real data
-  const macros = useMemo(() => {
-    return {
-      protein: {
-        value: Math.round(dailyNutrients.protein),
-        goal: nutritionGoal?.protein ?? 0,
-      },
-      carbs: {
-        value: Math.round(dailyNutrients.carbs),
-        goal: nutritionGoal?.carbs ?? 0,
-      },
-      fats: {
-        value: Math.round(dailyNutrients.fat),
-        goal: nutritionGoal?.fats ?? 0,
-      },
-    };
-  }, [dailyNutrients, nutritionGoal]);
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
@@ -270,14 +234,18 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-6">
-          {isLoadingGoal || isLoadingNutrition ? (
+          {isLoadingNutritionSummary ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
-            <DailySummaryCard 
-              calories={dailySummary.calories} 
-              macros={macros} 
+            <DailySummaryCard
+              calories={dailyCalories}
+              macros={{
+                protein: dailyMacros.protein,
+                carbs: dailyMacros.carbs,
+                fats: dailyMacros.fat,
+              }}
               menuButton={
-                <MenuButton 
+                <MenuButton
                   onPress={() => setIsGoalsManagementModalVisible(true)}
                   size="sm"
                   color={theme.colors.text.primary}

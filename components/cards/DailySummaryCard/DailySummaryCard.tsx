@@ -160,7 +160,7 @@ export function DailySummaryCard({
                 }}
               />
             </View>
-            <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+            <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
               {Math.round(calorieProgress)}%
             </Text>
           </View>
@@ -215,7 +215,7 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
                 {Math.round(proteinProgress)}%
               </Text>
             </View>
@@ -266,7 +266,7 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
                 {Math.round(carbsProgress)}%
               </Text>
             </View>
@@ -317,7 +317,7 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
                 {Math.round(fatsProgress)}%
               </Text>
             </View>

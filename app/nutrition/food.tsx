@@ -38,8 +38,7 @@ import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
 import { NutritionService } from '../../database/services';
-import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
-import { useNutritionLogs } from '../../hooks/useNutritionLogs';
+import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
@@ -77,12 +76,12 @@ export default function FoodScreen() {
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
 
-  const { logs, dailyNutrients, isLoading, refresh, totalCount } = useNutritionLogs({
-    mode: 'daily',
-    date: selectedDate,
-    enableReactivity: true,
-    visible: true,
-  });
+  const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
+    useDailyNutritionSummary({
+      date: selectedDate,
+      enableReactivity: true,
+      visible: true,
+    });
 
   const [resolvedLogs, setResolvedLogs] = useState<
     {
@@ -94,14 +93,6 @@ export default function FoodScreen() {
     }[]
   >([]);
   const [isResolvingRelations, setIsResolvingRelations] = useState(false);
-
-  // Get nutrition goal active on the displayed date (so past dates show the correct goal)
-  const { goal: nutritionGoal } = useCurrentNutritionGoal({
-    mode: 'current',
-    date: selectedDate,
-    enableReactivity: true,
-    visible: true,
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -151,7 +142,7 @@ export default function FoodScreen() {
   // Calculate calories consumed and macros
   const caloriesData = useMemo(() => {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
-    const consumedCalories = Math.ceil(dailyNutrients?.calories || 0);
+    const consumedCalories = Math.round(dailyNutrients?.calories || 0);
     const percentage = Math.round((consumedCalories / totalCalories) * 100);
 
     return {
