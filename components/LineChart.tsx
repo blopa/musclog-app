@@ -107,8 +107,13 @@ export function LineChart({
   const lineColorResolved = lineColor ?? theme.colors.accent.primary;
   const areaColorResolved = areaColor ?? theme.colors.accent.primary30;
 
-  // CartesianChart expects data with x and y keys; our data already has that shape
-  const chartData = data as { x: number; y: number }[];
+  // CartesianChart (victory-native) uses mathematical coordinates: y=0 at bottom, y increases upward.
+  // Callers (e.g. BodyMetricsHistoryModal) may pass screen-style y (y=0 at top) for web Victory.
+  // Invert y so that the same data shows correctly on native (high values at top).
+  const chartData = (data as { x: number; y: number }[]).map((point) => ({
+    ...point,
+    y: chartHeight - point.y,
+  }));
 
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
