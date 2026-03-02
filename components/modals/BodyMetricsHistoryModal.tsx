@@ -324,16 +324,19 @@ export default function BodyMetricsHistoryModal({
         style={{ backgroundColor: theme.colors.background.primary }}
         contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
       >
-        <View className="mt-2 space-y-6 px-4">
+        <View className="mt-2 px-4">
           {/* Metric Selector */}
-          <SegmentedControl
-            options={metricOptions}
-            value={selectedMetric}
-            onValueChange={(value) => setSelectedMetric(value as UiMetricType)}
-            variant="gradient"
-          />
+          <View className="mb-6">
+            <SegmentedControl
+              options={metricOptions}
+              value={selectedMetric}
+              onValueChange={(value) => setSelectedMetric(value as UiMetricType)}
+              variant="gradient"
+            />
+          </View>
 
           {/* Current Metric Card */}
+          <View className="mb-6">
           {isLoading ? (
             <GenericCard variant="card" size="default">
               <View className="p-5">
@@ -473,10 +476,11 @@ export default function BodyMetricsHistoryModal({
               </View>
             </GenericCard>
           )}
+          </View>
 
           {/* History Section */}
-          <View className="space-y-4">
-            <View className="flex-row items-center justify-between px-1">
+          <View className="mb-6">
+            <View className="mb-4 flex-row items-center justify-between px-1">
               <Text className="text-lg font-bold text-text-primary">
                 {t('bodyMetrics.history.title')}
               </Text>
@@ -489,35 +493,39 @@ export default function BodyMetricsHistoryModal({
             </View>
 
             {isLoading ? (
-              <View className="space-y-3">
+              <View className="mb-3">
                 {/* Skeleton loaders for history entries */}
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <GenericCard key={i} variant="card" size="default">
-                    <View className="flex-row items-center justify-between p-5">
-                      <View className="flex-1 flex-row items-center gap-4">
+                  <View key={i} className="mb-3">
+                    <GenericCard variant="card" size="default">
+                      <View className="flex-row items-center justify-between p-5">
+                        <View className="flex-1 flex-row items-center gap-4">
+                          <SkeletonLoader
+                            width={theme.size['10']}
+                            height={theme.size['10']}
+                            borderRadius={theme.borderRadius.full}
+                          />
+                          <View className="flex-1 gap-2">
+                            <SkeletonLoader width="60%" height={theme.size['3']} />
+                            <SkeletonLoader width="40%" height={theme.size['5']} />
+                          </View>
+                        </View>
                         <SkeletonLoader
-                          width={theme.size['10']}
-                          height={theme.size['10']}
+                          width={theme.size['16']}
+                          height={theme.size['6']}
                           borderRadius={theme.borderRadius.full}
                         />
-                        <View className="flex-1 gap-2">
-                          <SkeletonLoader width="60%" height={theme.size['3']} />
-                          <SkeletonLoader width="40%" height={theme.size['5']} />
-                        </View>
                       </View>
-                      <SkeletonLoader
-                        width={theme.size['16']}
-                        height={theme.size['6']}
-                        borderRadius={theme.borderRadius.full}
-                      />
-                    </View>
-                  </GenericCard>
+                    </GenericCard>
+                  </View>
                 ))}
               </View>
             ) : historyEntries.length > 0 ? (
-              <View className="space-y-3">
+              <View className="mb-3">
                 {historyEntries.map((entry) => (
-                  <HistoryBodyMetricCard key={entry.id} entry={entry} />
+                  <View key={entry.id} className="mb-3">
+                    <HistoryBodyMetricCard entry={entry} />
+                  </View>
                 ))}
 
                 {/* Load More Button */}
