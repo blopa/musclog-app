@@ -52,7 +52,6 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  // TODO: use isLoadingUser
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { isAiFeaturesEnabled } = useSettings();
   const params = useLocalSearchParams<{ code?: string }>();
@@ -60,12 +59,10 @@ export default function HomeScreen() {
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
 
-  // TODO: use isLoadingGoal
   const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
     mode: 'current',
   });
 
-  // TODO: use isLoadingNutrition
   const { dailyNutrients, isLoading: isLoadingNutrition } = useNutritionLogs({
     mode: 'daily',
     date: today,
@@ -196,46 +193,63 @@ export default function HomeScreen() {
             className="flex-row items-center gap-3"
             onPress={() => setIsUserMenuVisible(true)}
           >
-            <View className="relative">
-              <View
-                className="h-14 w-14 overflow-hidden rounded-full border-4"
-                style={{
-                  borderColor: dbUser
-                    ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
-                    : theme.colors.accent.primary,
-                  backgroundColor: dbUser
-                    ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
-                    : theme.colors.accent.primary20,
-                }}
-              >
-                {dbUser?.avatarIcon ? (
-                  <View className="h-full w-full items-center justify-center rounded-full">
-                    {createElement(
-                      getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
-                      {
-                        size: 24,
-                        color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
-                      }
+            {isLoadingUser ? (
+              <>
+                <SkeletonLoader width={56} height={56} borderRadius={28} />
+                <View className="gap-2">
+                  <SkeletonLoader width={80} height={12} />
+                  <SkeletonLoader width={120} height={20} />
+                </View>
+              </>
+            ) : (
+              <>
+                <View className="relative">
+                  <View
+                    className="h-14 w-14 overflow-hidden rounded-full border-4"
+                    style={{
+                      borderColor: dbUser
+                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                        : theme.colors.accent.primary,
+                      backgroundColor: dbUser
+                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
+                            .backgroundColor
+                        : theme.colors.accent.primary20,
+                    }}
+                  >
+                    {dbUser?.avatarIcon ? (
+                      <View className="h-full w-full items-center justify-center rounded-full">
+                        {createElement(
+                          getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
+                            .IconComponent,
+                          {
+                            size: 24,
+                            color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
+                              .color,
+                          }
+                        )}
+                      </View>
+                    ) : (
+                      <View
+                        className="h-full w-full items-center justify-center rounded-full"
+                        style={{ backgroundColor: theme.colors.background.imageLight }}
+                      >
+                        <Text className="text-lg font-bold text-text-primary">
+                          {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
+                        </Text>
+                      </View>
                     )}
                   </View>
-                ) : (
-                  <View
-                    className="h-full w-full items-center justify-center rounded-full"
-                    style={{ backgroundColor: theme.colors.background.imageLight }}
-                  >
-                    <Text className="text-lg font-bold text-text-primary">
-                      {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </View>
-            <View>
-              <Text className="text-sm text-text-secondary">{t('home.greeting.goodEvening')}</Text>
-              <Text className="text-xl font-bold text-text-primary">
-                {dbUser?.fullName || 'Guest'}
-              </Text>
-            </View>
+                </View>
+                <View>
+                  <Text className="text-sm text-text-secondary">
+                    {t('home.greeting.goodEvening')}
+                  </Text>
+                  <Text className="text-xl font-bold text-text-primary">
+                    {dbUser?.fullName || 'Guest'}
+                  </Text>
+                </View>
+              </>
+            )}
           </Pressable>
           {SHOW_NOTIFICATIONS ? (
             <Pressable
@@ -253,7 +267,9 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-6">
-          {nutritionGoal ? (
+          {isLoadingGoal || isLoadingNutrition ? (
+            <SkeletonLoader width="100%" height={180} borderRadius={16} />
+          ) : nutritionGoal ? (
             <DailySummaryCard calories={dailySummary.calories} macros={macros} />
           ) : (
             <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />

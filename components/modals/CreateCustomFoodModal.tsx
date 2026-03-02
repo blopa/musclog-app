@@ -37,6 +37,7 @@ import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useTheme } from '../../hooks/useTheme';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
+import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
@@ -117,7 +118,6 @@ export default function CreateCustomFoodModal({
   const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
   const { t } = useTranslation();
 
-  // TODO: use isLoadingPortions
   const { portions, isLoading: isLoadingPortions } = useFoodPortions({
     mode: 'all',
     visible: visible,
@@ -641,9 +641,12 @@ export default function CreateCustomFoodModal({
                 borderWidth: 1,
               }}
               onPress={() => setShowPortionPicker(true)}
+              disabled={isLoadingPortions}
             >
               <View className="flex-1 flex-row flex-wrap items-center gap-2">
-                {selectedPortionIds.length > 0 ? (
+                {isLoadingPortions ? (
+                  <SkeletonLoader width="80%" height={20} borderRadius={10} />
+                ) : selectedPortionIds.length > 0 ? (
                   selectedPortionIds.map((id) => {
                     const portion = portions.find((p) => p.id === id);
                     return portion ? (

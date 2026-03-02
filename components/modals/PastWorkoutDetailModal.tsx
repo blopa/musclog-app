@@ -376,7 +376,6 @@ export default function PastWorkoutDetailModal({
       workoutId,
     });
 
-  // TODO: use isSavingSets and saveError
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
@@ -427,6 +426,17 @@ export default function PastWorkoutDetailModal({
         headerRight={headerRight}
       >
         <View className="flex-1 gap-5 p-4">
+          {saveError ? (
+            <View
+              className="rounded-xl px-4 py-3"
+              style={{ backgroundColor: theme.colors.status.errorSolid + '20' }}
+            >
+              <Text className="text-sm font-medium" style={{ color: theme.colors.status.errorSolid }}>
+                {t('workoutDetail.saveError')}
+              </Text>
+            </View>
+          ) : null}
+
           <WorkoutSummaryCard
             totalTime={workout.totalTime}
             volume={workout.volume}
@@ -445,7 +455,7 @@ export default function PastWorkoutDetailModal({
           <ExercisesSection
             exercises={workout.exercises}
             onEdit={(exerciseId?: string) => {
-              if (!exerciseId) {
+              if (!exerciseId || isSavingSets) {
                 return;
               }
               setEditingExerciseId(exerciseId);

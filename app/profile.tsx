@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { CheckCircle, Dumbbell, Edit, List, Settings, TrendingUp, User } from 'lucide-react-native';
-import { createElement, useMemo, useState } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -16,10 +16,12 @@ import {
 import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
+import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { type Gender } from '../database/models';
 import { UserService } from '../database/services';
 import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
+import { useSyncTracking } from '../hooks/useSyncTracking';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { theme } from '../theme';
@@ -55,15 +57,16 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
 
-  // TODO: use isLoadingUser
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  // TODO: use isLoadingMetrics
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
-  // TODO: use setIsSyncing
-  const [isSyncing, setIsSyncing] = useState(false);
+  const { isSyncing, syncNow } = useSyncTracking();
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
   const [isEditFitnessVisible, setIsEditFitnessVisible] = useState(false);
+
+  useEffect(() => {
+    syncNow();
+  }, [syncNow]);
 
   // Transform metrics and user data into stats array format
   const stats = useMemo(() => {
@@ -233,49 +236,58 @@ export default function ProfileScreen() {
 
         {/* User Profile Section */}
         <View className="mb-8 items-center">
-          <View className="relative mb-4">
-            <View
-              className="h-32 w-32 overflow-hidden rounded-full border-4"
-              style={{
-                borderColor: dbUser
-                  ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
-                  : theme.colors.accent.primary,
-                backgroundColor: dbUser
-                  ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
-                  : theme.colors.accent.primary20,
-              }}
-            >
-              {dbUser?.avatarIcon ? (
-                <View className="h-full w-full items-center justify-center rounded-full">
-                  {createElement(
-                    getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
-                    {
-                      size: 40,
-                      color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
-                    }
-                  )}
-                </View>
-              ) : null}
+          {isLoadingUser ? (
+            <View className="items-center gap-3">
+              <SkeletonLoader width={128} height={128} borderRadius={64} />
+              <SkeletonLoader width={200} height={28} borderRadius={8} />
             </View>
-            <Pressable
-              className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
-              style={{ backgroundColor: theme.colors.accent.primary }}
-              onPress={() => setIsEditPersonalVisible(true)}
-            >
-              <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
-            </Pressable>
-          </View>
-          <Text className="mb-3 text-3xl font-bold text-text-primary">
-            {dbUser?.fullName || t('profile.loading')}
-          </Text>
-          {dbUser?.fitnessGoal ? (
-            <Text className="text-base text-text-primary">
-              {t('profile.goal')}:{' '}
-              {t(
-                `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
-              )}
-            </Text>
-          ) : null}
+          ) : (
+            <>
+              <View className="relative mb-4">
+                <View
+                  className="h-32 w-32 overflow-hidden rounded-full border-4"
+                  style={{
+                    borderColor: dbUser
+                      ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                      : theme.colors.accent.primary,
+                    backgroundColor: dbUser
+                      ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
+                      : theme.colors.accent.primary20,
+                  }}
+                >
+                  {dbUser?.avatarIcon ? (
+                    <View className="h-full w-full items-center justify-center rounded-full">
+                      {createElement(
+                        getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                        {
+                          size: 40,
+                          color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
+                        }
+                      )}
+                    </View>
+                  ) : null}
+                </View>
+                <Pressable
+                  className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
+                  style={{ backgroundColor: theme.colors.accent.primary }}
+                  onPress={() => setIsEditPersonalVisible(true)}
+                >
+                  <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
+                </Pressable>
+              </View>
+              <Text className="mb-3 text-3xl font-bold text-text-primary">
+                {dbUser?.fullName || t('profile.loading')}
+              </Text>
+              {dbUser?.fitnessGoal ? (
+                <Text className="text-base text-text-primary">
+                  {t('profile.goal')}:{' '}
+                  {t(
+                    `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
+                  )}
+                </Text>
+              ) : null}
+            </>
+          )}
         </View>
 
         {/* Current Stats Section */}
@@ -290,19 +302,25 @@ export default function ProfileScreen() {
             />
           </View>
           <View className="-mx-2 flex-row flex-wrap">
-            {stats.map((stat) => (
-              <View key={stat.id} className="mb-4 w-1/2 px-2">
-                <StatCard
-                  title={t(stat.titleKey)}
-                  value={stat.value}
-                  unit={getStatUnit(stat)}
-                  change={stat.change}
-                  changeType={stat.changeType}
-                  icon={stat.icon}
-                  iconColor={stat.iconColor}
-                />
-              </View>
-            ))}
+            {isLoadingMetrics || isLoadingUser
+              ? [1, 2, 3, 4].map((i) => (
+                  <View key={i} className="mb-4 w-1/2 px-2">
+                    <SkeletonLoader height={80} borderRadius={12} />
+                  </View>
+                ))
+              : stats.map((stat) => (
+                  <View key={stat.id} className="mb-4 w-1/2 px-2">
+                    <StatCard
+                      title={t(stat.titleKey)}
+                      value={stat.value}
+                      unit={getStatUnit(stat)}
+                      change={stat.change}
+                      changeType={stat.changeType}
+                      icon={stat.icon}
+                      iconColor={stat.iconColor}
+                    />
+                  </View>
+                ))}
           </View>
         </View>
 

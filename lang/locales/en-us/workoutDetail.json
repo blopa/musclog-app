@@ -7,6 +7,7 @@
     "volumeTrendPercentage": "+{{percentage}}% vs avg",
     "exercisesCount": "Exercises ({{count}})",
     "minsSpent": "{{minutes}} mins spent",
+    "saveError": "Failed to save changes. Please try again.",
     "set": "SET",
     "weight": "WEIGHT",
     "reps": "REPS",
