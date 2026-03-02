@@ -22,6 +22,7 @@ import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
+import GoalsManagementModal from '../components/modals/GoalsManagementModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import MyMealsModal from '../components/modals/MyMealsModal';
 import { NotificationsModal } from '../components/modals/NotificationsModal';
@@ -32,6 +33,7 @@ import SmartCameraModal from '../components/modals/SmartCameraModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
 import DashedButton from '../components/theme/DashedButton';
+import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
@@ -118,6 +120,7 @@ export default function HomeScreen() {
   const [isCameraVisible, setIsCameraVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
+  const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
     'ai-meal-photo'
@@ -270,7 +273,17 @@ export default function HomeScreen() {
           {isLoadingGoal || isLoadingNutrition ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
-            <DailySummaryCard calories={dailySummary.calories} macros={macros} />
+            <DailySummaryCard 
+              calories={dailySummary.calories} 
+              macros={macros} 
+              menuButton={
+                <MenuButton 
+                  onPress={() => setIsGoalsManagementModalVisible(true)}
+                  size="sm"
+                  color={theme.colors.text.primary}
+                />
+              }
+            />
           ) : (
             <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
           )}
@@ -577,6 +590,12 @@ export default function HomeScreen() {
       {isMyMealsVisible ? (
         <MyMealsModal visible={isMyMealsVisible} onClose={() => setIsMyMealsVisible(false)} />
       ) : null}
+
+      {/* Goals Management Modal */}
+      <GoalsManagementModal
+        visible={isGoalsManagementModalVisible}
+        onClose={() => setIsGoalsManagementModalVisible(false)}
+      />
 
       {/* Create Custom Food Modal */}
       {isCreateCustomFoodVisible ? (

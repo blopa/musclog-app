@@ -23,12 +23,14 @@ type DailySummaryCardProps = {
     fats: MacroValue;
   };
   highlightThresholdStyle?: 'default' | 'none' | 'simple';
+  menuButton?: React.ReactNode;
 };
 
 export function DailySummaryCard({
   calories,
   macros,
   highlightThresholdStyle = 'simple',
+  menuButton,
 }: DailySummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -61,24 +63,28 @@ export function DailySummaryCard({
           >
             {t('dailySummaryCard.dailySummary', 'Daily Summary')}
           </Text>
-          <View
-            className="rounded px-2 py-0.5 backdrop-blur-md"
-            style={{
-              backgroundColor: theme.colors.overlay.white20,
-              borderColor: theme.colors.overlay.white50,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Text
-              className="font-bold uppercase tracking-tighter"
+          {menuButton ? (
+            menuButton
+          ) : (
+            <View
+              className="rounded px-2 py-0.5 backdrop-blur-md"
               style={{
-                fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.primary,
+                backgroundColor: theme.colors.overlay.white20,
+                borderColor: theme.colors.overlay.white50,
+                borderWidth: theme.borderWidth.thin,
               }}
             >
-              {t('dailySummaryCard.today', 'Today')}
-            </Text>
-          </View>
+              <Text
+                className="font-bold uppercase tracking-tighter"
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  color: theme.colors.text.primary,
+                }}
+              >
+                {t('dailySummaryCard.today', 'Today')}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Main calorie section */}

@@ -269,7 +269,7 @@ export const schema = appSchema({
         { name: 'email', type: 'string', isOptional: true },
         { name: 'date_of_birth', type: 'number' },
         { name: 'gender', type: 'string' }, // 'male', 'female', 'other'
-        { name: 'fitness_goal', type: 'string' },
+        { name: 'fitness_goal', type: 'string' }, // 'weight_loss'
         { name: 'weight_goal', type: 'string' }, // 'lose' | 'gain' | 'maintain'
         { name: 'activity_level', type: 'number' },
         { name: 'lifting_experience', type: 'string' }, // 'beginner', 'intermediate', 'advanced'
