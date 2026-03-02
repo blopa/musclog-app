@@ -263,7 +263,8 @@ export class WorkoutService {
             sets: setsData,
           };
         });
-        await writeWorkoutToHealthConnect({
+
+        const hcRecordId = await writeWorkoutToHealthConnect({
           workoutName: completedWorkout.workoutName,
           startedAt: completedWorkout.startedAt,
           completedAt: completedWorkout.completedAt!,
@@ -272,6 +273,14 @@ export class WorkoutService {
           units,
           segmentItems,
         });
+
+        if (hcRecordId) {
+          await database.write(async () => {
+            await completedWorkout.update((log) => {
+              log.externalId = hcRecordId;
+            });
+          });
+        }
       } catch (err) {
         console.warn('Health Connect workout write failed:', err);
       }

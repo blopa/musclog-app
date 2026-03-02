@@ -114,10 +114,13 @@ function formatSegmentBreakdown(
  * - No-ops on non-Android.
  * - If ExerciseSession write permission is not granted, returns without error.
  * - On failure (e.g. HC not available), logs and returns without throwing.
+ * @returns The Health Connect record ID assigned to the inserted record, or undefined if not written.
  */
-export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPayload): Promise<void> {
+export async function writeWorkoutToHealthConnect(
+  payload: CompletedWorkoutPayload
+): Promise<string | undefined> {
   if (Platform.OS !== 'android') {
-    return;
+    return undefined;
   }
 
   try {
@@ -127,7 +130,7 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
         await healthConnectService.initializeHealthConnect();
       } catch {
         // HC not installed or not available - skip silently
-        return;
+        return undefined;
       }
     }
 
@@ -135,8 +138,9 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
       'ExerciseSession',
       'write'
     );
+
     if (!hasWrite) {
-      return;
+      return undefined;
     }
 
     const startTime = new Date(payload.startedAt).toISOString();
@@ -181,8 +185,10 @@ export async function writeWorkoutToHealthConnect(payload: CompletedWorkoutPaylo
       },
     };
 
-    await healthConnectService.insertRecords([record]);
+    const recordIds = await healthConnectService.insertRecords([record]);
+    return recordIds[0];
   } catch (error) {
     console.warn('[healthConnectWorkout] Failed to write workout to Health Connect:', error);
+    return undefined;
   }
 }
