@@ -2,11 +2,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Share, View } from 'react-native';
 
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { theme } from '../../theme';
 
 export default function WorkoutSummaryScreen() {
@@ -93,9 +93,20 @@ export default function WorkoutSummaryScreen() {
     router.replace('/');
   };
 
-  const handleShareSummary = () => {
-    // TODO: Implement share functionality
-    console.log('Share summary');
+  const handleShareSummary = async () => {
+    const lines = [
+      t('workoutSummary.shareText'),
+      '',
+      `⏱ ${totalTime}`,
+      `🏋️ ${volume}`,
+      ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []),
+    ];
+
+    try {
+      await Share.share({ message: lines.join('\n') });
+    } catch (err) {
+      console.error('Error sharing workout summary:', err);
+    }
   };
 
   if (isLoading) {

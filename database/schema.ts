@@ -73,6 +73,7 @@ export const schema = appSchema({
       name: 'workout_logs',
       columns: [
         { name: 'template_id', type: 'string', isIndexed: true }, // Optional link to blueprint
+        // { name: 'external_id', type: 'string', isIndexed: true }, // TODO: uncomment this - it will be use to store the ID of external data integration, like Health Connect, and used to sync data
         { name: 'workout_name', type: 'string' }, // We save the name here so it's permanent
         { name: 'started_at', type: 'number', isIndexed: true },
         { name: 'completed_at', type: 'number', isOptional: true },
@@ -212,6 +213,7 @@ export const schema = appSchema({
       columns: [
         { name: 'food_id', type: 'string', isIndexed: true },
         { name: 'type', type: 'string' }, // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
+        // { name: 'external_id', type: 'string', isIndexed: true }, // TODO: uncomment this - it will be use to store the ID of external data integration, like Health Connect, and used to sync data
 
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
@@ -237,6 +239,7 @@ export const schema = appSchema({
       name: 'user_metrics',
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
+        // { name: 'external_id', type: 'string', isIndexed: true }, // TODO: uncomment this - it will be use to store the ID of external data integration, like Health Connect, and used to sync data
         // Encrypted at rest (utils/encryption.ts)
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true

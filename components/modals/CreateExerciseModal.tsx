@@ -1,7 +1,8 @@
-import { Camera, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Camera, Check, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type MuscleGroup } from '../../database/models';
 import { ExerciseService } from '../../database/services';
@@ -47,8 +48,9 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   const [isBodyweightOnly, setIsBodyweightOnly] = useState(false);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  // Placeholder state for visuals — populated by TODO #3 (image) and TODO #4 (video URL)
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [showVideoInput, setShowVideoInput] = useState(false);
 
   const PRIMARY_MUSCLES = PRIMARY_MUSCLES_KEYS.map((value) => ({
     value,
@@ -68,6 +70,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       setSecondaryMuscles([]);
       setIsBodyweightOnly(false);
       setImageUri(undefined);
+      setVideoUrl('');
+      setShowVideoInput(false);
       setIsCreating(false);
     }
   }, [visible]);
@@ -104,14 +108,30 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
     }
   };
 
-  const handleUploadImage = () => {
-    // TODO: Implement image upload (#3)
-    console.log('Upload image');
+  const handleUploadImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      showSnackbar(
+        'error',
+        t('exercises.createExercise.imagePermissionDenied')
+      );
+
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setImageUri(result.assets[0].uri);
+    }
   };
 
   const handleVideoURL = () => {
-    // TODO: Implement video URL input (#4)
-    console.log('Video URL');
+    setShowVideoInput((prev) => !prev);
   };
 
   const toggleSecondaryMuscle = (muscle: string) => {
@@ -262,25 +282,74 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleUploadImage}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
-                style={{ borderColor: theme.colors.background.white10 }}
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4"
+                style={{
+                  borderColor: imageUri
+                    ? theme.colors.accent.primary
+                    : theme.colors.background.white10,
+                  backgroundColor: imageUri
+                    ? theme.colors.accent.primary10
+                    : theme.colors.background.cardElevated,
+                  overflow: 'hidden',
+                }}
               >
-                <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">
-                  {t('exercises.createExercise.uploadImage')}
+                {imageUri ? (
+                  <Image
+                    source={{ uri: imageUri }}
+                    style={{ width: 48, height: 48, borderRadius: theme.borderRadius.sm }}
+                  />
+                ) : (
+                  <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                )}
+                <Text
+                  className="text-xs font-medium"
+                  style={{
+                    color: imageUri ? theme.colors.accent.primary : theme.colors.text.secondary,
+                  }}
+                >
+                  {imageUri
+                    ? t('exercises.createExercise.imageSelected')
+                    : t('exercises.createExercise.uploadImage')}
                 </Text>
               </Pressable>
               <Pressable
                 onPress={handleVideoURL}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed bg-bg-card/30 p-4 active:border-accent-primary active:bg-accent-primary/5"
-                style={{ borderColor: theme.colors.background.white10 }}
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4"
+                style={{
+                  borderColor: videoUrl
+                    ? theme.colors.accent.primary
+                    : theme.colors.background.white10,
+                  backgroundColor: videoUrl
+                    ? theme.colors.accent.primary10
+                    : theme.colors.background.cardElevated,
+                }}
               >
-                <Link size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-                <Text className="text-xs font-medium text-text-secondary">
-                  {t('exercises.createExercise.videoURL')}
+                {videoUrl ? (
+                  <Check size={theme.iconSize.xl} color={theme.colors.accent.primary} />
+                ) : (
+                  <Link size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                )}
+                <Text
+                  className="text-xs font-medium"
+                  style={{
+                    color: videoUrl ? theme.colors.accent.primary : theme.colors.text.secondary,
+                  }}
+                >
+                  {videoUrl
+                    ? t('exercises.createExercise.videoURLSet')
+                    : t('exercises.createExercise.videoURL')}
                 </Text>
               </Pressable>
             </View>
+            {showVideoInput ? (
+              <TextInput
+                label={t('exercises.createExercise.videoURL')}
+                value={videoUrl}
+                onChangeText={setVideoUrl}
+                placeholder="https://youtube.com/..."
+                icon={<Link size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              />
+            ) : null}
           </View>
         </View>
       </ScrollView>

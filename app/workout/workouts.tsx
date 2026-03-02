@@ -1,8 +1,9 @@
+import { Q } from '@nozbe/watermelondb';
 import { useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, Share, View } from 'react-native';
 
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { FilterTabs } from '../../components/FilterTabs';
@@ -24,7 +25,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import { TextInput } from '../../components/theme/TextInput';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
-import { database, WorkoutTemplate } from '../../database';
+import { database, Exercise, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
@@ -518,10 +519,37 @@ export default function WorkoutsScreen() {
               // Keep menu open on error so user can try again
             }
           }}
-          onShare={() => {
-            // TODO: Implement share functionality
-            console.log('Share workout:', selectedWorkoutName);
+          onShare={async () => {
             setIsMenuVisible(false);
+            try {
+              // TODO: move this to a service or hook (or both - a hook that uses a service)
+              const { template, sets } =
+                await WorkoutTemplateService.getTemplateWithDetails(selectedWorkoutId);
+              const exerciseIds = [
+                ...new Set(sets.map((s) => s.exerciseId).filter(Boolean)),
+              ] as string[];
+              const exercises =
+                exerciseIds.length > 0
+                  ? await database
+                      .get<Exercise>('exercises')
+                      .query(Q.where('id', Q.oneOf(exerciseIds)))
+                      .fetch()
+                  : [];
+              const exerciseNames = exerciseIds
+                .map((id) => exercises.find((e) => e.id === id)?.name)
+                .filter(Boolean) as string[];
+              const lines = [
+                selectedWorkoutName,
+                ...(template.description ? [template.description] : []),
+                ...(exerciseNames.length > 0
+                  ? ['', ...exerciseNames.map((name) => `• ${name}`)]
+                  : []),
+              ];
+              await Share.share({ message: lines.join('\n') });
+            } catch (err) {
+              console.error('Error sharing workout:', err);
+              showSnackbar('error', t('common.error'));
+            }
           }}
           onDelete={async () => {
             if (selectedWorkoutId) {
