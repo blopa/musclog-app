@@ -296,6 +296,29 @@ export default function BodyMetricsHistoryModal({
     });
   }, [allMetricsForChart]);
 
+  // X-axis labels from actual date range (first, middle, last)
+  const xAxisLabels = useMemo(() => {
+    if (!allMetricsForChart || allMetricsForChart.length === 0) {
+      return [];
+    }
+    const sorted = [...allMetricsForChart].sort((a, b) => a.decrypted.date - b.decrypted.date);
+    const dates = sorted.map((m) => m.decrypted.date);
+    if (dates.length === 1) {
+      return [format(dates[0], 'MMM d')];
+    }
+    if (dates.length === 2) {
+      return [format(dates[0], 'MMM d'), format(dates[1], 'MMM d')];
+    }
+    const first = 0;
+    const mid = Math.floor(dates.length / 2);
+    const last = dates.length - 1;
+    return [
+      format(dates[first], 'MMM d'),
+      format(dates[mid], 'MMM d'),
+      format(dates[last], 'MMM d'),
+    ];
+  }, [allMetricsForChart]);
+
   const handleNewMetric = () => {
     // TODO: Open add new metric modal or form
     console.log('New metric pressed');
@@ -337,145 +360,142 @@ export default function BodyMetricsHistoryModal({
 
           {/* Current Metric Card */}
           <View className="mb-6">
-          {isLoading ? (
-            <GenericCard variant="card" size="default">
-              <View className="p-5">
-                <View className="mb-6 flex-row items-center justify-between">
-                  <View className="flex-1 gap-2">
-                    <SkeletonLoader width={theme.size['24']} height={theme.size['3']} />
-                    <View className="flex-row items-baseline gap-2">
-                      <SkeletonLoader width={theme.size['20']} height={theme.size['8']} />
-                      <SkeletonLoader width={theme.size['8']} height={theme.size['5']} />
+            {isLoading ? (
+              <GenericCard variant="card" size="default">
+                <View className="p-5">
+                  <View className="mb-6 flex-row items-center justify-between">
+                    <View className="flex-1 gap-2">
+                      <SkeletonLoader width={theme.size['24']} height={theme.size['3']} />
+                      <View className="flex-row items-baseline gap-2">
+                        <SkeletonLoader width={theme.size['20']} height={theme.size['8']} />
+                        <SkeletonLoader width={theme.size['8']} height={theme.size['5']} />
+                      </View>
+                    </View>
+                    <View
+                      className="flex-row gap-1 rounded-lg p-1"
+                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                    >
+                      <SkeletonLoader
+                        width={theme.size['12']}
+                        height={theme.size['6']}
+                        borderRadius={theme.borderRadius.md}
+                      />
+                      <SkeletonLoader
+                        width={theme.size['12']}
+                        height={theme.size['6']}
+                        borderRadius={theme.borderRadius.md}
+                      />
+                      <SkeletonLoader
+                        width={theme.size['12']}
+                        height={theme.size['6']}
+                        borderRadius={theme.borderRadius.md}
+                      />
                     </View>
                   </View>
-                  <View
-                    className="flex-row gap-1 rounded-lg p-1"
-                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
-                  >
-                    <SkeletonLoader
-                      width={theme.size['12']}
-                      height={theme.size['6']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                    <SkeletonLoader
-                      width={theme.size['12']}
-                      height={theme.size['6']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                    <SkeletonLoader
-                      width={theme.size['12']}
-                      height={theme.size['6']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                  </View>
+                  {/* Chart skeleton */}
+                  <SkeletonLoader
+                    width="100%"
+                    height={theme.size['40']}
+                    borderRadius={theme.borderRadius.lg}
+                  />
                 </View>
-                {/* Chart skeleton */}
-                <SkeletonLoader
-                  width="100%"
-                  height={theme.size['40']}
-                  borderRadius={theme.borderRadius.lg}
-                />
-              </View>
-            </GenericCard>
-          ) : currentMetric ? (
-            <GenericCard variant="card" size="default">
-              <View className="p-5">
-                <View className="mb-6 flex-row items-center justify-between">
-                  <View>
-                    <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                      {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
-                    </Text>
-                    <View className="flex-row items-baseline gap-1">
-                      <Text className="text-3xl font-extrabold text-text-primary">
-                        {currentMetric.current}
+              </GenericCard>
+            ) : currentMetric ? (
+              <GenericCard variant="card" size="default">
+                <View className="p-5">
+                  <View className="mb-6 flex-row items-center justify-between">
+                    <View>
+                      <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                        {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                       </Text>
-                      {currentMetric.unit && currentMetric.unit.length > 0 ? (
-                        <Text className="ml-1 text-lg font-medium text-text-tertiary">
-                          {currentMetric.unit}
+                      <View className="flex-row items-baseline gap-1">
+                        <Text className="text-3xl font-extrabold text-text-primary">
+                          {currentMetric.current}
                         </Text>
-                      ) : null}
+                        {currentMetric.unit && currentMetric.unit.length > 0 ? (
+                          <Text className="ml-1 text-lg font-medium text-text-tertiary">
+                            {currentMetric.unit}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </View>
+                    <View
+                      className="flex-row rounded-lg p-1"
+                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                    >
+                      <Pressable
+                        onPress={() => setSelectedPeriod('30D')}
+                        className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
+                        style={
+                          selectedPeriod === '30D'
+                            ? {
+                                backgroundColor: theme.colors.accent.primary10,
+                              }
+                            : {}
+                        }
+                      >
+                        <Text
+                          className={`text-[10px] font-bold ${
+                            selectedPeriod === '30D' ? 'text-accent-primary' : 'text-text-tertiary'
+                          }`}
+                        >
+                          30D
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => setSelectedPeriod('3M')}
+                        className={`rounded-md px-3 py-1 ${selectedPeriod === '3M' ? '' : ''}`}
+                        style={
+                          selectedPeriod === '3M'
+                            ? {
+                                backgroundColor: theme.colors.accent.primary10,
+                              }
+                            : {}
+                        }
+                      >
+                        <Text
+                          className={`text-[10px] font-bold ${
+                            selectedPeriod === '3M' ? 'text-accent-primary' : 'text-text-tertiary'
+                          }`}
+                        >
+                          3M
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => setSelectedPeriod('1Y')}
+                        className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
+                        style={
+                          selectedPeriod === '1Y'
+                            ? {
+                                backgroundColor: theme.colors.accent.primary10,
+                              }
+                            : {}
+                        }
+                      >
+                        <Text
+                          className={`text-[10px] font-bold ${
+                            selectedPeriod === '1Y' ? 'text-accent-primary' : 'text-text-tertiary'
+                          }`}
+                        >
+                          1Y
+                        </Text>
+                      </Pressable>
                     </View>
                   </View>
-                  <View
-                    className="flex-row rounded-lg p-1"
-                    style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
-                  >
-                    <Pressable
-                      onPress={() => setSelectedPeriod('30D')}
-                      className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
-                      style={
-                        selectedPeriod === '30D'
-                          ? {
-                              backgroundColor: theme.colors.accent.primary10,
-                            }
-                          : {}
-                      }
-                    >
-                      <Text
-                        className={`text-[10px] font-bold ${
-                          selectedPeriod === '30D' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}
-                      >
-                        30D
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setSelectedPeriod('3M')}
-                      className={`rounded-md px-3 py-1 ${selectedPeriod === '3M' ? '' : ''}`}
-                      style={
-                        selectedPeriod === '3M'
-                          ? {
-                              backgroundColor: theme.colors.accent.primary10,
-                            }
-                          : {}
-                      }
-                    >
-                      <Text
-                        className={`text-[10px] font-bold ${
-                          selectedPeriod === '3M' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}
-                      >
-                        3M
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => setSelectedPeriod('1Y')}
-                      className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
-                      style={
-                        selectedPeriod === '1Y'
-                          ? {
-                              backgroundColor: theme.colors.accent.primary10,
-                            }
-                          : {}
-                      }
-                    >
-                      <Text
-                        className={`text-[10px] font-bold ${
-                          selectedPeriod === '1Y' ? 'text-accent-primary' : 'text-text-tertiary'
-                        }`}
-                      >
-                        1Y
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
 
-                {/* Chart */}
-                <LineChart
-                  data={chartData}
-                  xAxisLabels={['May 12', 'May 26', 'Jun 11']} // TODO: Make these dynamic based on actual dates
-                />
-              </View>
-            </GenericCard>
-          ) : (
-            <GenericCard variant="card" size="default">
-              <View className="p-5">
-                <Text className="text-center text-text-secondary">
-                  {t('bodyMetrics.noDataAvailable')}
-                </Text>
-              </View>
-            </GenericCard>
-          )}
+                  {/* Chart */}
+                  <LineChart data={chartData} xAxisLabels={xAxisLabels} />
+                </View>
+              </GenericCard>
+            ) : (
+              <GenericCard variant="card" size="default">
+                <View className="p-5">
+                  <Text className="text-center text-text-secondary">
+                    {t('bodyMetrics.noDataAvailable')}
+                  </Text>
+                </View>
+              </GenericCard>
+            )}
           </View>
 
           {/* History Section */}
