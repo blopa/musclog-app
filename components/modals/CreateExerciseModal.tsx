@@ -7,6 +7,7 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { type MuscleGroup } from '../../database/models';
 import { ExerciseService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
+import { saveExerciseImage } from '../../utils/file';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
@@ -111,10 +112,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   const handleUploadImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      showSnackbar(
-        'error',
-        t('exercises.createExercise.imagePermissionDenied')
-      );
+      showSnackbar('error', t('exercises.createExercise.imagePermissionDenied'));
 
       return;
     }
@@ -126,7 +124,14 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
     });
 
     if (!result.canceled && result.assets[0]) {
-      setImageUri(result.assets[0].uri);
+      try {
+        // Copy the image from the picker's temporary cache to permanent storage
+        const permanentUri = await saveExerciseImage(result.assets[0].uri, imageUri);
+        setImageUri(permanentUri);
+      } catch (err) {
+        console.error('Error saving exercise image:', err);
+        showSnackbar('error', t('exercises.createExercise.createError'));
+      }
     }
   };
 

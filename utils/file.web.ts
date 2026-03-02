@@ -79,6 +79,12 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
   }
 }
 
+export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
+  return tempUri;
+}
+
+export async function deleteExerciseImage(imageUri: string): Promise<void> {}
+
 export async function detectBarcodes(imageUri: string) {
   const quaggaResult = await Quagga.decodeSingle({
     src: imageUri,

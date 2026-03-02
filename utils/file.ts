@@ -1,4 +1,5 @@
 import * as DocumentPicker from 'expo-document-picker';
+import { Directory, File, Paths } from 'expo-file-system';
 import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 import { ImageManipulator } from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
@@ -56,4 +57,65 @@ export async function detectBarcodes(imageUri: string) {
   const barcodes = await RNDetectBarcodes(imageUri, [BarcodeFormat.EAN_13, BarcodeFormat.EAN_8]);
 
   return barcodes.length > 0 ? barcodes[0].rawValue : null;
+}
+
+/**
+ * Copies a temporary image URI (e.g. from expo-image-picker) into the app's
+ * permanent document directory so it survives app restarts and OS cache clears.
+ *
+ * If an existing permanent URI is supplied (e.g. when replacing a previous
+ * image), the old file is deleted before saving the new one.
+ *
+ * @param tempUri  - The temporary `file:///` URI returned by the image picker.
+ * @param existingUri - Optional URI of a previously saved exercise image to delete.
+ * @returns The permanent `file:///` URI that should be stored in the database.
+ */
+export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Ensure the exercises directory exists
+  const exercisesDir = new Directory(Paths.document, 'exercises');
+  if (!exercisesDir.exists) {
+    exercisesDir.create();
+  }
+
+  // Build a unique filename from the current timestamp and a random suffix,
+  // preserving the original extension when possible.
+  const ext = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+  const filename = `exercise-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  // Copy from the temporary picker URI to the permanent destination
+  const srcFile = new File(tempUri);
+  const destFile = new File(exercisesDir, filename);
+  srcFile.copy(destFile);
+
+  // Remove the old file if one was provided (best-effort; ignore errors)
+  if (existingUri) {
+    try {
+      const oldFile = new File(existingUri);
+      if (oldFile.exists) {
+        oldFile.delete();
+      }
+    } catch {
+      // Non-fatal: old file may have already been removed
+    }
+  }
+
+  return destFile.uri;
+}
+
+/**
+ * Deletes a permanently stored exercise image file.
+ * Safe to call with any URI — non-local or missing files are silently ignored.
+ */
+export async function deleteExerciseImage(imageUri: string): Promise<void> {
+  try {
+    if (!imageUri.startsWith('file://')) {
+      return;
+    }
+    const file = new File(imageUri);
+    if (file.exists) {
+      file.delete();
+    }
+  } catch {
+    // Non-fatal
+  }
 }
