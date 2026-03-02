@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
-import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
+import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
@@ -441,12 +441,33 @@ export default function FoodScreen() {
             {/* Normal State */}
             {!isScreenLoading && !hasNoFood ? (
               <>
-                {/* Calories Remaining Card */}
-                <CaloriesRemainingCard
-                  calories={caloriesData}
-                  macros={macrosData}
+                {/* Daily Summary Card */}
+                <DailySummaryCard
+                  calories={{
+                    consumed: caloriesData.consumed,
+                    remaining: Math.max(0, caloriesData.total - caloriesData.consumed),
+                    goal: caloriesData.total,
+                  }}
+                  macros={{
+                    protein: {
+                      value: Math.round(dailyNutrients?.protein || 0),
+                      goal: nutritionGoal?.protein || 150,
+                    },
+                    carbs: {
+                      value: Math.round(dailyNutrients?.carbs || 0),
+                      goal: nutritionGoal?.carbs || 250,
+                    },
+                    fats: {
+                      value: Math.round(dailyNutrients?.fat || 0),
+                      goal: nutritionGoal?.fats || 80,
+                    },
+                  }}
                   menuButton={
-                    <MenuButton onPress={() => setIsGoalsManagementModalVisible(true)} size="sm" />
+                    <MenuButton
+                      onPress={() => setIsGoalsManagementModalVisible(true)}
+                      size="sm"
+                      color={theme.colors.text.primary}
+                    />
                   }
                 />
 
