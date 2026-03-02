@@ -7,6 +7,7 @@ import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -83,6 +84,7 @@ type MyMealsModalProps = {
 export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { isAiFeaturesEnabled } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -389,6 +391,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             onCreateMeal={handleCreateMeal}
             onGenerateMealAI={handleGenerateMealAI}
             onManageCategories={handleManageCategories}
+            isAiEnabled={isAiFeaturesEnabled}
           />
         ) : null}
         {/* CreateMealModal */}

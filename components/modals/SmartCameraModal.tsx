@@ -42,6 +42,7 @@ type CameraModalProps = {
   onClose: () => void;
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
+  isAiEnabled?: boolean;
 };
 
 export default function SmartCameraModal({
@@ -49,12 +50,15 @@ export default function SmartCameraModal({
   onClose,
   mode = 'barcode-scan',
   hideCameraModePicker = false,
+  isAiEnabled = true,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
-  const [cameraMode, setCameraMode] = useState<CameraMode>(mode || 'ai-meal-photo');
+  const [cameraMode, setCameraMode] = useState<CameraMode>(
+    !isAiEnabled ? 'barcode-scan' : mode || 'ai-meal-photo'
+  );
   const [isContextModalVisible, setIsContextModalVisible] = useState(false);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
@@ -74,9 +78,10 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      setCameraMode(mode);
+      const safeMode = !isAiEnabled && mode !== 'barcode-scan' ? 'barcode-scan' : mode;
+      setCameraMode(safeMode);
     }
-  }, [mode]);
+  }, [mode, isAiEnabled]);
 
   // Show appropriate modal based on product details availability
   useEffect(() => {
@@ -511,95 +516,99 @@ export default function SmartCameraModal({
                     borderColor: theme.colors.background.white10,
                   }}
                 >
-                  {/* AI Meal Photo */}
-                  <Pressable
-                    onPress={() => handleModeChange('ai-meal-photo')}
-                    className="flex-1 rounded-xl px-2 py-2.5"
-                    style={[
-                      { overflow: 'hidden' },
-                      cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
-                    ]}
-                  >
-                    {cameraMode === 'ai-meal-photo' ? (
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        className="absolute inset-0"
-                        style={{
-                          borderRadius: theme.borderRadius.md,
-                          overflow: 'hidden',
-                        }}
-                      />
-                    ) : null}
-                    <View className="flex-row items-center justify-center gap-1.5">
-                      <Sparkles
-                        size={theme.iconSize.md}
-                        color={
-                          cameraMode === 'ai-meal-photo'
-                            ? theme.colors.text.white
-                            : theme.colors.text.secondary
-                        }
-                      />
-                      <Text
-                        className="font-bold uppercase tracking-wide"
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color:
+                  {/* AI Meal Photo — hidden when AI is disabled */}
+                  {isAiEnabled ? (
+                    <Pressable
+                      onPress={() => handleModeChange('ai-meal-photo')}
+                      className="flex-1 rounded-xl px-2 py-2.5"
+                      style={[
+                        { overflow: 'hidden' },
+                        cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
+                      ]}
+                    >
+                      {cameraMode === 'ai-meal-photo' ? (
+                        <LinearGradient
+                          colors={theme.colors.gradients.cta}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          className="absolute inset-0"
+                          style={{
+                            borderRadius: theme.borderRadius.md,
+                            overflow: 'hidden',
+                          }}
+                        />
+                      ) : null}
+                      <View className="flex-row items-center justify-center gap-1.5">
+                        <Sparkles
+                          size={theme.iconSize.md}
+                          color={
                             cameraMode === 'ai-meal-photo'
                               ? theme.colors.text.white
-                              : theme.colors.text.secondary,
-                        }}
-                      >
-                        {t('food.aiCamera.modes.mealPhoto')}
-                      </Text>
-                    </View>
-                  </Pressable>
+                              : theme.colors.text.secondary
+                          }
+                        />
+                        <Text
+                          className="font-bold uppercase tracking-wide"
+                          style={{
+                            fontSize: theme.typography.fontSize.xs,
+                            color:
+                              cameraMode === 'ai-meal-photo'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary,
+                          }}
+                        >
+                          {t('food.aiCamera.modes.mealPhoto')}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  ) : null}
 
-                  {/* AI Label Scan */}
-                  <Pressable
-                    onPress={() => handleModeChange('ai-label-scan')}
-                    className="flex-1 rounded-xl px-2 py-2.5"
-                    style={[
-                      { overflow: 'hidden' },
-                      cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
-                    ]}
-                  >
-                    {cameraMode === 'ai-label-scan' ? (
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        className="absolute inset-0"
-                        style={{
-                          borderRadius: theme.borderRadius.md,
-                          overflow: 'hidden',
-                        }}
-                      />
-                    ) : null}
-                    <View className="flex-row items-center justify-center gap-1.5">
-                      <FileText
-                        size={theme.iconSize.md}
-                        color={
-                          cameraMode === 'ai-label-scan'
-                            ? theme.colors.text.white
-                            : theme.colors.text.secondary
-                        }
-                      />
-                      <Text
-                        className="font-bold uppercase tracking-wide"
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color:
+                  {/* AI Label Scan — hidden when AI is disabled */}
+                  {isAiEnabled ? (
+                    <Pressable
+                      onPress={() => handleModeChange('ai-label-scan')}
+                      className="flex-1 rounded-xl px-2 py-2.5"
+                      style={[
+                        { overflow: 'hidden' },
+                        cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
+                      ]}
+                    >
+                      {cameraMode === 'ai-label-scan' ? (
+                        <LinearGradient
+                          colors={theme.colors.gradients.cta}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          className="absolute inset-0"
+                          style={{
+                            borderRadius: theme.borderRadius.md,
+                            overflow: 'hidden',
+                          }}
+                        />
+                      ) : null}
+                      <View className="flex-row items-center justify-center gap-1.5">
+                        <FileText
+                          size={theme.iconSize.md}
+                          color={
                             cameraMode === 'ai-label-scan'
                               ? theme.colors.text.white
-                              : theme.colors.text.secondary,
-                        }}
-                      >
-                        {t('food.aiCamera.modes.labelScan')}
-                      </Text>
-                    </View>
-                  </Pressable>
+                              : theme.colors.text.secondary
+                          }
+                        />
+                        <Text
+                          className="font-bold uppercase tracking-wide"
+                          style={{
+                            fontSize: theme.typography.fontSize.xs,
+                            color:
+                              cameraMode === 'ai-label-scan'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary,
+                          }}
+                        >
+                          {t('food.aiCamera.modes.labelScan')}
+                        </Text>
+                      </View>
+                    </Pressable>
+                  ) : null}
 
                   {/* Barcode Scan */}
                   <Pressable
@@ -685,31 +694,35 @@ export default function SmartCameraModal({
                 />
               </Pressable>
 
-              {/* Context Button */}
-              <Pressable
-                onPress={() => setIsContextModalVisible(true)}
-                className="h-12 w-12 items-center justify-center rounded-full"
-                style={{
-                  backgroundColor: theme.colors.background.darkGray50,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white10,
-                  opacity: hideCameraModePicker
-                    ? 0
-                    : cameraMode === 'barcode-scan'
-                      ? theme.colors.opacity.strong
-                      : 1,
-                }}
-                disabled={cameraMode === 'barcode-scan'}
-              >
-                <MessageSquareText
-                  size={theme.iconSize.lg}
-                  color={
-                    cameraMode === 'barcode-scan'
-                      ? theme.colors.text.gray500
-                      : theme.colors.text.primary
-                  }
-                />
-              </Pressable>
+              {/* Context Button — hidden when AI is disabled */}
+              {isAiEnabled ? (
+                <Pressable
+                  onPress={() => setIsContextModalVisible(true)}
+                  className="h-12 w-12 items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor: theme.colors.background.darkGray50,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.background.white10,
+                    opacity: hideCameraModePicker
+                      ? 0
+                      : cameraMode === 'barcode-scan'
+                        ? theme.colors.opacity.strong
+                        : 1,
+                  }}
+                  disabled={cameraMode === 'barcode-scan'}
+                >
+                  <MessageSquareText
+                    size={theme.iconSize.lg}
+                    color={
+                      cameraMode === 'barcode-scan'
+                        ? theme.colors.text.gray500
+                        : theme.colors.text.primary
+                    }
+                  />
+                </Pressable>
+              ) : (
+                <View className="h-12 w-12" />
+              )}
             </View>
           </View>
         </SafeAreaView>

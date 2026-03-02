@@ -27,6 +27,7 @@ type AddFoodModalProps = {
   onSearchFoodPress?: () => void;
   onCreateCustomFoodPress?: () => void;
   onTrackCustomMealPress?: () => void;
+  isAiEnabled?: boolean;
 };
 
 export function AddFoodModal({
@@ -38,6 +39,7 @@ export function AddFoodModal({
   onSearchFoodPress,
   onCreateCustomFoodPress,
   onTrackCustomMealPress,
+  isAiEnabled = true,
 }: AddFoodModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -140,20 +142,22 @@ export function AddFoodModal({
               </Text>
             </View>
             <View className="gap-3">
-              <TrackingMethodButton
-                icon={Sparkles}
-                title={t('food.addFoodModal.aiCamera.title')}
-                description={t('food.addFoodModal.aiCamera.description')}
-                iconGradient={
-                  [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
-                }
-                badge={t('food.addFoodModal.aiCamera.badge')}
-                highlighted={true}
-                onPress={() => {
-                  onAiCameraPress?.();
-                  onClose();
-                }}
-              />
+              {isAiEnabled ? (
+                <TrackingMethodButton
+                  icon={Sparkles}
+                  title={t('food.addFoodModal.aiCamera.title')}
+                  description={t('food.addFoodModal.aiCamera.description')}
+                  iconGradient={
+                    [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
+                  }
+                  badge={t('food.addFoodModal.aiCamera.badge')}
+                  highlighted={true}
+                  onPress={() => {
+                    onAiCameraPress?.();
+                    onClose();
+                  }}
+                />
+              ) : null}
               <TrackingMethodButton
                 icon={ScanLine}
                 title={t('food.addFoodModal.scanBarcode.title')}

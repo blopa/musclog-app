@@ -1,11 +1,12 @@
 import { usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Camera, Dumbbell, Home, MessageSquare, UtensilsCrossed } from 'lucide-react-native';
+import { Camera, Dumbbell, Home, MessageSquare, User, UtensilsCrossed } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { CoachModal } from './modals/CoachModal';
 import SmartCameraModal from './modals/SmartCameraModal';
@@ -20,6 +21,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const { isAiFeaturesEnabled } = useSettings();
   const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
   const [isCameraModalVisible, setIsCameraModalVisible] = useState(false);
 
@@ -53,6 +55,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
         <SmartCameraModal
           visible={isCameraModalVisible}
           onClose={() => setIsCameraModalVisible(false)}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
       <View className="relative flex-1 overflow-hidden">{children}</View>
@@ -180,25 +183,53 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
                   {t('home.navigation.food')}
                 </Text>
               </Pressable>
-              <Pressable
-                className="flex-1 items-center justify-center gap-1"
-                onPress={() => setIsCoachModalVisible(true)}
-              >
-                <View className={`h-10 w-16 items-center justify-center rounded-lg`}>
-                  <MessageSquare
-                    size={theme.iconSize.md}
-                    color={theme.colors.text.tertiary}
-                    strokeWidth={theme.borderWidth.medium}
-                  />
-                </View>
-                <Text
-                  className={`text-xs font-medium ${
-                    isActive('/coach') ? 'text-text-accent' : 'text-text-tertiary'
-                  }`}
+              {isAiFeaturesEnabled ? (
+                <Pressable
+                  className="flex-1 items-center justify-center gap-1"
+                  onPress={() => setIsCoachModalVisible(true)}
                 >
-                  {t('home.navigation.coach')}
-                </Text>
-              </Pressable>
+                  <View className="h-10 w-16 items-center justify-center rounded-lg">
+                    <MessageSquare
+                      size={theme.iconSize.md}
+                      color={theme.colors.text.tertiary}
+                      strokeWidth={theme.borderWidth.medium}
+                    />
+                  </View>
+                  <Text className="text-xs font-medium text-text-tertiary">
+                    {t('home.navigation.coach')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  className="flex-1 items-center justify-center gap-1"
+                  onPress={() => router.push('/settings')}
+                >
+                  <View
+                    className={`h-10 w-16 items-center justify-center rounded-lg ${
+                      isActive('/settings') ? 'bg-bg-navActive' : ''
+                    }`}
+                  >
+                    <User
+                      size={theme.iconSize.md}
+                      color={
+                        isActive('/settings')
+                          ? theme.colors.accent.primary
+                          : theme.colors.text.tertiary
+                      }
+                      strokeWidth={
+                        isActive('/settings') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                      }
+                    />
+                  </View>
+                  <Text
+                    className={`text-xs font-medium ${
+                      isActive('/settings') ? 'text-text-accent' : 'text-text-tertiary'
+                    }`}
+                  >
+                    {t('home.navigation.profile')}
+                  </Text>
+                </Pressable>
+              )}
             </View>
           </SafeAreaView>
         </View>

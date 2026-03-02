@@ -54,8 +54,12 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
+
+  // TODO: use isLoadingUser
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
+  // TODO: use isLoadingMetrics
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
+  // TODO: use setIsSyncing
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);

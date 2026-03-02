@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 
 
 import type { WorkoutType } from '../../constants/workoutTypes';
 import { WORKOUT_TYPES } from '../../constants/workoutTypes';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
 import { WEEKDAY_LABELS } from '../../utils/workout';
@@ -29,6 +30,7 @@ export default function CreateWorkoutModal({
 }: CreateWorkoutModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { isAiFeaturesEnabled } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
 
@@ -62,16 +64,20 @@ export default function CreateWorkoutModal({
   const volumeOptions = [
     { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
     { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
-    {
-      label: t('createWorkout.volumeCalculation.ai'),
-      value: 'ai',
-      icon: (
-        <Sparkles
-          size={theme.iconSize.xs}
-          color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
-        />
-      ),
-    },
+    ...(isAiFeaturesEnabled
+      ? [
+          {
+            label: t('createWorkout.volumeCalculation.ai'),
+            value: 'ai',
+            icon: (
+              <Sparkles
+                size={theme.iconSize.xs}
+                color={volumeCalc === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

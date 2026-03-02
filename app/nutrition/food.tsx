@@ -45,7 +45,7 @@ import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
 export default function FoodScreen() {
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units, isAiFeaturesEnabled } = useSettings();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const [isCameraVisible, setIsCameraVisible] = useState(false);
@@ -465,18 +465,20 @@ export default function FoodScreen() {
                         setIsCameraVisible(true);
                       }}
                     />
-                    <Button
-                      label={t('food.actions.aiCamera')}
-                      icon={Sparkles}
-                      variant="secondaryGradient"
-                      size="md"
-                      width="flex-1"
-                      onPress={() => {
-                        setCameraMode('ai-meal-photo');
-                        setHideCameraModePicker(false);
-                        setIsCameraVisible(true);
-                      }}
-                    />
+                    {isAiFeaturesEnabled ? (
+                      <Button
+                        label={t('food.actions.aiCamera')}
+                        icon={Sparkles}
+                        variant="secondaryGradient"
+                        size="md"
+                        width="flex-1"
+                        onPress={() => {
+                          setCameraMode('ai-meal-photo');
+                          setHideCameraModePicker(false);
+                          setIsCameraVisible(true);
+                        }}
+                      />
+                    ) : null}
                   </View>
                   <View className="flex-row gap-4">
                     <Button
@@ -689,6 +691,7 @@ export default function FoodScreen() {
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 

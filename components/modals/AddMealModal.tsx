@@ -10,6 +10,7 @@ export type AddMealModalProps = {
   onCreateMeal?: () => void;
   onGenerateMealAI?: () => void;
   onManageCategories?: () => void;
+  isAiEnabled?: boolean;
 };
 
 export function AddMealModal({
@@ -18,6 +19,7 @@ export function AddMealModal({
   onCreateMeal,
   onGenerateMealAI,
   onManageCategories,
+  isAiEnabled = true,
 }: AddMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -31,14 +33,18 @@ export function AddMealModal({
       description: t('addMeal.createMealDesc'),
       onPress: () => onCreateMeal?.(),
     },
-    {
-      icon: Sparkles,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      title: t('addMeal.generateMealAI'),
-      description: t('addMeal.generateMealAIDesc'),
-      onPress: () => onGenerateMealAI?.(),
-    },
+    ...(isAiEnabled
+      ? [
+          {
+            icon: Sparkles,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('addMeal.generateMealAI'),
+            description: t('addMeal.generateMealAIDesc'),
+            onPress: () => onGenerateMealAI?.(),
+          },
+        ]
+      : []),
     {
       icon: Folder,
       iconColor: theme.colors.text.primary,

@@ -38,6 +38,7 @@ import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 import { type MealType } from '../database/models';
 import { useCurrentNutritionGoal } from '../hooks/useCurrentNutritionGoal';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
+import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
@@ -50,18 +51,21 @@ const SHOW_NOTIFICATIONS = false;
 export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+
+  // TODO: use isLoadingUser
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
+  const { isAiFeaturesEnabled } = useSettings();
   const params = useLocalSearchParams<{ code?: string }>();
 
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
 
-  // Get current nutrition goals
+  // TODO: use isLoadingGoal
   const { goal: nutritionGoal, isLoading: isLoadingGoal } = useCurrentNutritionGoal({
     mode: 'current',
   });
 
-  // Get today's nutrition data
+  // TODO: use isLoadingNutrition
   const { dailyNutrients, isLoading: isLoadingNutrition } = useNutritionLogs({
     mode: 'daily',
     date: today,
@@ -509,6 +513,7 @@ export default function HomeScreen() {
             setIsMyMealsVisible(true);
             setIsAddFoodVisible(false);
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 
@@ -548,6 +553,7 @@ export default function HomeScreen() {
           visible={isCameraVisible}
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 

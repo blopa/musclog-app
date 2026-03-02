@@ -218,17 +218,6 @@ export function AddFoodItemToMealModal({
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
 
-  const totalCalories = useMemo(() => {
-    return foods.reduce((acc, food) => {
-      const selection = selectedItems[food.id];
-      if (selection?.selected) {
-        return acc + Math.round((food.calories * selection.amount) / 100);
-      }
-
-      return acc;
-    }, 0);
-  }, [selectedItems, foods]);
-
   const toggleItem = (id: string) => {
     setSelectedItems((prev) => {
       const current = prev[id] || { selected: false, amount: 100 };

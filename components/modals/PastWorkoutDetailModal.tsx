@@ -376,6 +376,7 @@ export default function PastWorkoutDetailModal({
       workoutId,
     });
 
+  // TODO: use isSavingSets and saveError
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);

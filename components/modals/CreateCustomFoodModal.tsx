@@ -117,8 +117,8 @@ export default function CreateCustomFoodModal({
   const [selectedPortionIds, setSelectedPortionIds] = useState<string[]>([]);
   const { t } = useTranslation();
 
-  // Load food portions
-  const { portions, isLoading: portionsLoading } = useFoodPortions({
+  // TODO: use isLoadingPortions
+  const { portions, isLoading: isLoadingPortions } = useFoodPortions({
     mode: 'all',
     visible: visible,
   });
