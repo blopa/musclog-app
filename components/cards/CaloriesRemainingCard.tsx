@@ -38,27 +38,23 @@ type CaloriesRemainingCardProps = {
   menuButton?: React.ReactNode;
 };
 
-// Helper function to estimate if text will truncate
-const willTruncate = (amount: string, goal: number, compact: boolean): boolean => {
-  // Rough character limits based on testing
-  const maxChars = compact ? 8 : 6;
-  const totalChars = amount.length + goal.toString().length + 3; // +3 for " / g"
-  return totalChars > maxChars;
+const willOverflow = (amount: string, goal: number): boolean => {
+  // +3 for " / g" — if combined chars exceed ~6, the inline layout will overflow
+  return amount.length + goal.toString().length + 3 > 6;
 };
 
-export function CaloriesRemainingCard({ calories, macros, menuButton }: CaloriesRemainingCardProps) {
+export function CaloriesRemainingCard({
+  calories,
+  macros,
+  menuButton,
+}: CaloriesRemainingCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  // When any macro goal is 3 digits, use compact text on all cards so "/ XXXg" fits and cards stay aligned
-  const useCompactMacros =
-    macros.protein.goal >= 100 || macros.carbs.goal >= 100 || macros.fat.goal >= 100;
-
-  // Check if ANY macro would truncate - if so, use vertical layout for ALL
   const needsVerticalLayout =
-    willTruncate(macros.protein.amount, macros.protein.goal, useCompactMacros) ||
-    willTruncate(macros.carbs.amount, macros.carbs.goal, useCompactMacros) ||
-    willTruncate(macros.fat.amount, macros.fat.goal, useCompactMacros);
+    willOverflow(macros.protein.amount, macros.protein.goal) ||
+    willOverflow(macros.carbs.amount, macros.carbs.goal) ||
+    willOverflow(macros.fat.amount, macros.fat.goal);
 
   return (
     <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
@@ -112,7 +108,6 @@ export function CaloriesRemainingCard({ calories, macros, menuButton }: Calories
             goal={macros.protein.goal}
             color={macros.protein.color}
             progressColor={macros.protein.progressColor}
-            compact={useCompactMacros}
             forceVertical={needsVerticalLayout}
           />
           <MacroCard
@@ -122,7 +117,6 @@ export function CaloriesRemainingCard({ calories, macros, menuButton }: Calories
             goal={macros.carbs.goal}
             color={macros.carbs.color}
             progressColor={macros.carbs.progressColor}
-            compact={useCompactMacros}
             forceVertical={needsVerticalLayout}
           />
           <MacroCard
@@ -132,7 +126,6 @@ export function CaloriesRemainingCard({ calories, macros, menuButton }: Calories
             goal={macros.fat.goal}
             color={macros.fat.color}
             progressColor={macros.fat.progressColor}
-            compact={useCompactMacros}
             forceVertical={needsVerticalLayout}
           />
         </View>

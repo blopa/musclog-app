@@ -431,7 +431,10 @@ export default function PastWorkoutDetailModal({
               className="rounded-xl px-4 py-3"
               style={{ backgroundColor: theme.colors.status.errorSolid + '20' }}
             >
-              <Text className="text-sm font-medium" style={{ color: theme.colors.status.errorSolid }}>
+              <Text
+                className="text-sm font-medium"
+                style={{ color: theme.colors.status.errorSolid }}
+              >
                 {t('workoutDetail.saveError')}
               </Text>
             </View>

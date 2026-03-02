@@ -26,8 +26,8 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
-import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
+import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
@@ -451,14 +451,11 @@ export default function FoodScreen() {
             {!isScreenLoading && !hasNoFood ? (
               <>
                 {/* Calories Remaining Card */}
-                <CaloriesRemainingCard 
-                  calories={caloriesData} 
-                  macros={macrosData} 
+                <CaloriesRemainingCard
+                  calories={caloriesData}
+                  macros={macrosData}
                   menuButton={
-                    <MenuButton 
-                      onPress={() => setIsGoalsManagementModalVisible(true)}
-                      size="sm"
-                    />
+                    <MenuButton onPress={() => setIsGoalsManagementModalVisible(true)} size="sm" />
                   }
                 />
 

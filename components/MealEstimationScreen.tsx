@@ -95,7 +95,6 @@ export function MealEstimationScreen({
                 goal={protein.goal}
                 color={macroColors.protein}
                 progressColor={macroColors.proteinProgress}
-                compact={protein.goal >= 100 || carbs.goal >= 100 || fat.goal >= 100}
               />
               <MacroCard
                 name={t('nutrition.macros.carbs')}
@@ -104,7 +103,6 @@ export function MealEstimationScreen({
                 goal={carbs.goal}
                 color={macroColors.carbs}
                 progressColor={macroColors.carbsProgress}
-                compact={protein.goal >= 100 || carbs.goal >= 100 || fat.goal >= 100}
               />
               <MacroCard
                 name={t('nutrition.macros.fat')}
@@ -113,7 +111,6 @@ export function MealEstimationScreen({
                 goal={fat.goal}
                 color={macroColors.fat}
                 progressColor={macroColors.fatProgress}
-                compact={protein.goal >= 100 || carbs.goal >= 100 || fat.goal >= 100}
               />
             </View>
           </View>
