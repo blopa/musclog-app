@@ -663,6 +663,7 @@ export class WorkoutService {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;
         log.type = originalLog.type;
+        log.icon = originalLog.icon ?? undefined;
         log.startedAt = now;
         log.completedAt = undefined; // Not completed yet
         log.totalVolume = 0;
