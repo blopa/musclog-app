@@ -37,6 +37,7 @@ export default class UserMetric extends Model {
   static table = 'user_metrics';
 
   @field('type') type!: UserMetricType;
+  @field('external_id') externalId?: string;
   @field('value') valueRaw!: string;
   @field('unit') unitRaw?: string;
   @field('date') date!: number;

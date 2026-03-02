@@ -13,6 +13,7 @@ export default class WorkoutLog extends Model {
   };
 
   @field('template_id') templateId?: string;
+  @field('external_id') externalId?: string;
   @field('workout_name') workoutName!: string;
   @field('started_at') startedAt!: number;
   @field('completed_at') completedAt?: number;

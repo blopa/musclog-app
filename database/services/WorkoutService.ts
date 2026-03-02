@@ -69,7 +69,10 @@ export class WorkoutService {
    * Start a free training session (no template). Creates an empty WorkoutLog
    * and sets it as the active workout.
    */
-  static async startFreeWorkout(workoutName: string = 'Free Training'): Promise<WorkoutLog> {
+  static async startFreeWorkout(
+    workoutName: string = 'Free Training',
+    externalId?: string
+  ): Promise<WorkoutLog> {
     try {
       const activeWorkoutLogId = await getActiveWorkoutLogId();
       if (activeWorkoutLogId) {
@@ -93,6 +96,7 @@ export class WorkoutService {
         return await workoutLogsCollection.create((log) => {
           log.workoutName = workoutName;
           log.templateId = undefined;
+          log.externalId = externalId;
           log.type = 'free';
           log.startedAt = now;
           log.completedAt = undefined;

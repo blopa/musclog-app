@@ -14,7 +14,8 @@ export class NutritionService {
     date: Date,
     mealType: MealType,
     amount: number,
-    portionId?: string
+    portionId?: string,
+    externalId?: string
   ): Promise<NutritionLog> {
     return await database.write(async () => {
       const food = await database.get<Food>('foods').find(foodId);
@@ -32,6 +33,7 @@ export class NutritionService {
 
       return await database.get<NutritionLog>('nutrition_logs').create((log) => {
         log.foodId = foodId;
+        log.externalId = externalId;
         log.date = dateTimestamp;
         log.type = mealType;
         log.amount = amount;

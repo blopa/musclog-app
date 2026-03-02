@@ -27,6 +27,7 @@ export default class NutritionLog extends Model {
   };
 
   @field('food_id') foodId!: string;
+  @field('external_id') externalId?: string;
   @field('date') date!: number; // Midnight timestamp for the day
   @field('type') type!: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
