@@ -10,7 +10,7 @@ import { HealthConnectIllustration } from '../../components/HealthConnectIllustr
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
-import { useHealthConnect } from '../../hooks/useHealthConnect';
+import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { theme } from '../../theme';
 
@@ -49,7 +49,7 @@ export default function HealthConnectScreen() {
     requestPermissions,
     openSettings,
     error: hcError,
-  } = useHealthConnect();
+  } = useHealthConnectPermissions();
 
   // Sync tracking
   const { enableSync, isSyncing, error: syncError } = useSyncTracking();

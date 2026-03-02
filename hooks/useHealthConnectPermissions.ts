@@ -41,7 +41,7 @@ export interface UseHealthConnectResult {
 /**
  * Hook for managing Health Connect lifecycle
  */
-export const useHealthConnect = (): UseHealthConnectResult => {
+export const useHealthConnectPermissions = (): UseHealthConnectResult => {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [status, setStatus] = useState<HealthConnectStatus>(HealthConnectStatus.NOT_INITIALIZED);
