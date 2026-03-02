@@ -1,11 +1,13 @@
 import { Camera, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { type MuscleGroup } from '../../database/models';
+import { ExerciseService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -38,11 +40,15 @@ type CreateExerciseModalProps = {
 export default function CreateExerciseModal({ visible, onClose }: CreateExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [exerciseName, setExerciseName] = useState('');
   const [primaryMuscle, setPrimaryMuscle] = useState<string | null>(null);
-  const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>(['abs', 'traps']);
+  const [secondaryMuscles, setSecondaryMuscles] = useState<string[]>([]);
   const [isBodyweightOnly, setIsBodyweightOnly] = useState(false);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  // Placeholder state for visuals — populated by TODO #3 (image) and TODO #4 (video URL)
+  const [imageUri, setImageUri] = useState<string | undefined>(undefined);
 
   const PRIMARY_MUSCLES = PRIMARY_MUSCLES_KEYS.map((value) => ({
     value,
@@ -54,23 +60,57 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
     label: t(`exercises.createExercise.muscleGroups.secondary.${value}`),
   }));
 
-  const handleCreateExercise = () => {
-    // TODO: Implement create exercise logic
-    console.log('Create exercise', {
-      exerciseName,
-      primaryMuscle,
-      secondaryMuscles,
-      isBodyweightOnly,
-    });
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!visible) {
+      setExerciseName('');
+      setPrimaryMuscle(null);
+      setSecondaryMuscles([]);
+      setIsBodyweightOnly(false);
+      setImageUri(undefined);
+      setIsCreating(false);
+    }
+  }, [visible]);
+
+  const handleCreateExercise = async () => {
+    if (!exerciseName.trim()) {
+      showSnackbar('error', t('exercises.createExercise.nameRequired'));
+      return;
+    }
+    if (!primaryMuscle) {
+      showSnackbar('error', t('exercises.createExercise.primaryMuscleRequired'));
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const equipmentType = isBodyweightOnly ? 'bodyweight' : 'other';
+      await ExerciseService.createExercise(
+        exerciseName.trim(),
+        '',
+        primaryMuscle as MuscleGroup,
+        equipmentType,
+        'compound',
+        1.0,
+        imageUri
+      );
+      showSnackbar('success', t('exercises.createExercise.createSuccess'));
+      onClose();
+    } catch (error) {
+      console.error('Error creating exercise:', error);
+      showSnackbar('error', t('exercises.createExercise.createError'));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleUploadImage = () => {
-    // TODO: Implement image upload
+    // TODO: Implement image upload (#3)
     console.log('Upload image');
   };
 
   const handleVideoURL = () => {
-    // TODO: Implement video URL input
+    // TODO: Implement video URL input (#4)
     console.log('Video URL');
   };
 
@@ -111,6 +151,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
           variant="gradientCta"
           size="md"
           width="full"
+          loading={isCreating}
+          disabled={isCreating}
         />
       }
     >

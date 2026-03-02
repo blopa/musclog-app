@@ -43,6 +43,10 @@
       "uploadImage": "Upload Image",
       "videoURL": "Video URL",
       "createButton": "Create Exercise",
+      "nameRequired": "Exercise name is required",
+      "primaryMuscleRequired": "Please select a primary muscle group",
+      "createSuccess": "Exercise created successfully",
+      "createError": "Failed to create exercise. Please try again.",
       "muscleGroups": {
         "primary": {
           "abdomen": "Abdomen",
