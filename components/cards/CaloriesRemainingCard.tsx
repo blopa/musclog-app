@@ -35,6 +35,7 @@ type CaloriesRemainingCardProps = {
       progressColor: string;
     };
   };
+  menuButton?: React.ReactNode;
 };
 
 // Helper function to estimate if text will truncate
@@ -45,7 +46,7 @@ const willTruncate = (amount: string, goal: number, compact: boolean): boolean =
   return totalChars > maxChars;
 };
 
-export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCardProps) {
+export function CaloriesRemainingCard({ calories, macros, menuButton }: CaloriesRemainingCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -63,20 +64,25 @@ export function CaloriesRemainingCard({ calories, macros }: CaloriesRemainingCar
     <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
       <View className="p-6">
         <View className="mb-6">
-          <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
-          <View className="mb-1 flex-row items-baseline gap-2">
-            <Text className="text-6xl font-bold text-text-primary">
-              {calories.consumed.toLocaleString('en-US', { useGrouping: false })}
-            </Text>
-            <Text className="text-2xl text-text-secondary">
-              / {calories.total.toLocaleString('en-US', { useGrouping: false })}
-            </Text>
-            <Text
-              className="ml-auto text-3xl font-semibold"
-              style={{ color: theme.colors.accent.secondary }}
-            >
-              {calories.percentage}%
-            </Text>
+          <View className="flex-row items-start justify-between">
+            <View className="flex-1">
+              <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
+              <View className="mb-1 flex-row items-baseline gap-2">
+                <Text className="text-6xl font-bold text-text-primary">
+                  {calories.consumed.toLocaleString('en-US', { useGrouping: false })}
+                </Text>
+                <Text className="text-2xl text-text-secondary">
+                  / {calories.total.toLocaleString('en-US', { useGrouping: false })}
+                </Text>
+                <Text
+                  className="ml-auto text-3xl font-semibold"
+                  style={{ color: theme.colors.accent.secondary }}
+                >
+                  {calories.percentage}%
+                </Text>
+              </View>
+            </View>
+            {menuButton}
           </View>
         </View>
 

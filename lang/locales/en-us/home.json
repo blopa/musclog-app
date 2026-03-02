@@ -13,6 +13,7 @@
     },
     "navigation": {
       "home": "Home",
+      "profile": "Profile",
       "workouts": "Workouts",
       "food": "Food",
       "coach": "Coach"

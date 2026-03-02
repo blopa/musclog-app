@@ -26,12 +26,14 @@ import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
+import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
+import { MenuButton } from '../../components/theme/MenuButton';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
@@ -59,6 +61,7 @@ export default function FoodScreen() {
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
+  const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
     log: NutritionLog;
     food: Food | null;
@@ -448,7 +451,16 @@ export default function FoodScreen() {
             {!isScreenLoading && !hasNoFood ? (
               <>
                 {/* Calories Remaining Card */}
-                <CaloriesRemainingCard calories={caloriesData} macros={macrosData} />
+                <CaloriesRemainingCard 
+                  calories={caloriesData} 
+                  macros={macrosData} 
+                  menuButton={
+                    <MenuButton 
+                      onPress={() => setIsGoalsManagementModalVisible(true)}
+                      size="sm"
+                    />
+                  }
+                />
 
                 {/* Scan Buttons */}
                 <View className="gap-4">
@@ -748,6 +760,12 @@ export default function FoodScreen() {
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
         onDateSelect={handleDateSelect}
+      />
+
+      {/* Goals Management Modal */}
+      <GoalsManagementModal
+        visible={isGoalsManagementModalVisible}
+        onClose={() => setIsGoalsManagementModalVisible(false)}
       />
 
       {/* Food Menu Modal */}
