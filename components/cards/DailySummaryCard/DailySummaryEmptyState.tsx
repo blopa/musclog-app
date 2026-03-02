@@ -26,7 +26,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
               color: theme.colors.overlay.white70,
             }}
           >
-            {t('dailySummaryCard.dailySummary', 'Daily Summary')}
+            {t('dailySummaryCard.dailySummary')}
           </Text>
         </View>
 

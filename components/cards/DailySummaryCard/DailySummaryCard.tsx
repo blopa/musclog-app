@@ -61,7 +61,7 @@ export function DailySummaryCard({
               color: theme.colors.overlay.white70,
             }}
           >
-            {t('dailySummaryCard.dailySummary', 'Daily Summary')}
+            {t('dailySummaryCard.dailySummary')}
           </Text>
           {menuButton ? (
             menuButton
@@ -129,20 +129,6 @@ export function DailySummaryCard({
 
           {/* Progress bar */}
           <View className="gap-1.5">
-            <View
-              className="h-1.5 overflow-hidden rounded-full"
-              style={{ backgroundColor: theme.colors.overlay.black60 }}
-            >
-              <View
-                className="h-full rounded-full"
-                style={{
-                  width: `${Math.min(calorieProgress, 100)}%`,
-                  backgroundColor: showColoredIndicators
-                    ? getProgressBarColor(calorieStatus, theme)
-                    : theme.colors.text.primary,
-                }}
-              />
-            </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-xs font-bold" style={{ color: theme.colors.overlay.white90 }}>
                 {calories.remaining >= 0
@@ -160,6 +146,23 @@ export function DailySummaryCard({
                 </Text>
               ) : null}
             </View>
+            <View
+              className="h-1.5 overflow-hidden rounded-full"
+              style={{ backgroundColor: theme.colors.overlay.black60 }}
+            >
+              <View
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.min(calorieProgress, 100)}%`,
+                  backgroundColor: showColoredIndicators
+                    ? getProgressBarColor(calorieStatus, theme)
+                    : theme.colors.text.primary,
+                }}
+              />
+            </View>
+            <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+              {Math.round(calorieProgress)}%
+            </Text>
           </View>
         </View>
 
@@ -212,6 +215,9 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
+              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+                {Math.round(proteinProgress)}%
+              </Text>
             </View>
 
             {/* Carbs */}
@@ -260,6 +266,9 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
+              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+                {Math.round(carbsProgress)}%
+              </Text>
             </View>
 
             {/* Fats */}
@@ -308,6 +317,9 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
+              <Text className="text-xs text-left" style={{ color: theme.colors.overlay.white70 }}>
+                {Math.round(fatsProgress)}%
+              </Text>
             </View>
           </View>
         ) : null}
