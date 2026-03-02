@@ -52,41 +52,6 @@ export function DailySummaryCard({
   return (
     <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View className="gap-4 p-5">
-        {/* Header with title and badge */}
-        <View className="flex-row items-center justify-between">
-          <Text
-            className="font-medium uppercase tracking-wider"
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              color: theme.colors.overlay.white70,
-            }}
-          >
-            {t('dailySummaryCard.dailySummary')}
-          </Text>
-          {menuButton ? (
-            menuButton
-          ) : (
-            <View
-              className="rounded px-2 py-0.5 backdrop-blur-md"
-              style={{
-                backgroundColor: theme.colors.overlay.white20,
-                borderColor: theme.colors.overlay.white50,
-                borderWidth: theme.borderWidth.thin,
-              }}
-            >
-              <Text
-                className="font-bold uppercase tracking-tighter"
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  color: theme.colors.text.primary,
-                }}
-              >
-                {t('dailySummaryCard.today', 'Today')}
-              </Text>
-            </View>
-          )}
-        </View>
-
         {/* Main calorie section */}
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
@@ -125,6 +90,7 @@ export function DailySummaryCard({
             {highlightThresholds && calorieStatus === 'exceeded' ? (
               <AlertCircle size={24} color={theme.colors.status.warning} strokeWidth={2.5} />
             ) : null}
+            {menuButton ? menuButton : null}
           </View>
 
           {/* Progress bar */}
