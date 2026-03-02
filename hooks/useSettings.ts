@@ -76,6 +76,7 @@ export function useSettings(): UseSettingsResult & {
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
   notifications: boolean;
+  isAiFeaturesEnabled: boolean;
 } {
   const [units, setUnits] = useState<Units>('metric');
   const [theme, setTheme] = useState<ThemeOption>('system');

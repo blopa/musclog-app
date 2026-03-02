@@ -26,6 +26,7 @@ import { TextInput } from '../../components/theme/TextInput';
 import { WorkoutDetailsMenu } from '../../components/WorkoutDetailsMenu';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
+import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme';
@@ -34,6 +35,7 @@ import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { isAiFeaturesEnabled } = useSettings();
 
   const FILTER_TABS = [
     { id: 'all', label: t('workouts.filters.all') },
@@ -545,6 +547,7 @@ export default function WorkoutsScreen() {
         <CreateWorkoutOptionsModal
           visible={isCreateOptionsVisible}
           onClose={() => setIsCreateOptionsVisible(false)}
+          isAiEnabled={isAiFeaturesEnabled}
           onStartFreeTraining={async () => {
             try {
               const workoutLog = await WorkoutService.startFreeWorkout(

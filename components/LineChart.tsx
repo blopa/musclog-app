@@ -83,8 +83,8 @@ export function LineChart({
   lineWidth = 3,
   showLastPoint = true,
   lastPointSize = 10,
-  lastPointStrokeColor, // TODO: use this
-  lastPointStrokeWidth = 2, // TODO: use this
+  lastPointStrokeColor,
+  lastPointStrokeWidth = 2,
   xDomain,
   yDomain,
   interpolation = 'monotoneX',
@@ -140,12 +140,20 @@ export function LineChart({
                 strokeCap="round"
               />
               {showLastPoint && points.y.length > 0 ? (
-                <Scatter
-                  points={points.y.slice(-1)}
-                  radius={lastPointSize / 2}
-                  color={lineColorResolved}
-                  style="fill"
-                />
+                <>
+                  <Scatter
+                    points={points.y.slice(-1)}
+                    radius={lastPointSize / 2 + lastPointStrokeWidth}
+                    color={lastPointStrokeColor ?? theme.colors.background.card}
+                    style="fill"
+                  />
+                  <Scatter
+                    points={points.y.slice(-1)}
+                    radius={lastPointSize / 2}
+                    color={lineColorResolved}
+                    style="fill"
+                  />
+                </>
               ) : null}
             </>
           )}

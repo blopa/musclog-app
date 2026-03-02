@@ -4,92 +4,99 @@
 
 ---
 
-## services/healthDataSync.ts
+## 🔥 High Priority
 
-| Line                                   | TODO                                                         |
-| -------------------------------------- | ------------------------------------------------------------ |
-| [498](services/healthDataSync.ts#L498) | Implement writing to Health Connect (sync back to HC format) |
+### services/healthDataSync.ts
 
----
+| Line                                   | TODO                                                         | Priority |
+| -------------------------------------- | ------------------------------------------------------------ | -------- |
+| [498](services/healthDataSync.ts#L498) | Implement writing to Health Connect (sync back to HC format) | High     |
 
-## app/workout/
+### components/modals/CreateExerciseModal.tsx
 
-| Line                                      | File                  | TODO                                                 |
-| ----------------------------------------- | --------------------- | ---------------------------------------------------- |
-| [520](app/workout/workouts.tsx#L520)      | `workouts.tsx`        | Implement share functionality (`onShare` callback)   |
-| [97](app/workout/workout-summary.tsx#L97) | `workout-summary.tsx` | Implement share functionality (`handleShareSummary`) |
-
----
-
-## components/modals/CreateExerciseModal.tsx
-
-| Line                                                | TODO                            |
-| --------------------------------------------------- | ------------------------------- |
-| [58](components/modals/CreateExerciseModal.tsx#L58) | Implement create exercise logic |
-| [68](components/modals/CreateExerciseModal.tsx#L68) | Implement image upload          |
-| [73](components/modals/CreateExerciseModal.tsx#L73) | Implement video URL input       |
+| Line                                                | TODO                            | Priority |
+| --------------------------------------------------- | ------------------------------- | -------- |
+| [58](components/modals/CreateExerciseModal.tsx#L58) | Implement create exercise logic | High     |
 
 ---
 
-## components/modals/SmartCameraModal.tsx
+## 🟡 Medium Priority
 
-| Line                                               | TODO                                        |
-| -------------------------------------------------- | ------------------------------------------- |
-| [122](components/modals/SmartCameraModal.tsx#L122) | Add vibration feedback on barcode detection |
+### components/modals/CreateExerciseModal.tsx
 
----
+| Line                                                | TODO                      | Priority |
+| --------------------------------------------------- | ------------------------- | -------- |
+| [68](components/modals/CreateExerciseModal.tsx#L68) | Implement image upload    | Medium   |
+| [73](components/modals/CreateExerciseModal.tsx#L73) | Implement video URL input | Medium   |
 
-## components/modals/BodyMetricsHistoryModal.tsx
+### app/workout/
 
-| Line                                                      | TODO                                                  |
-| --------------------------------------------------------- | ----------------------------------------------------- |
-| [300](components/modals/BodyMetricsHistoryModal.tsx#L300) | Open add-new-metric modal/form in `handleNewMetric()` |
-| [463](components/modals/BodyMetricsHistoryModal.tsx#L463) | Make X-axis labels dynamic based on actual dates      |
+| Line                                      | File                  | TODO                                                 | Priority |
+| ----------------------------------------- | --------------------- | ---------------------------------------------------- | -------- |
+| [520](app/workout/workouts.tsx#L520)      | `workouts.tsx`        | Implement share functionality (`onShare` callback)   | Medium   |
+| [97](app/workout/workout-summary.tsx#L97) | `workout-summary.tsx` | Implement share functionality (`handleShareSummary`) | Medium   |
 
----
+### components/modals/BodyMetricsHistoryModal.tsx
 
-## components/modals/GenericEditModal.tsx
+| Line                                                      | TODO                                                  | Priority |
+| --------------------------------------------------------- | ----------------------------------------------------- | -------- |
+| [300](components/modals/BodyMetricsHistoryModal.tsx#L300) | Open add-new-metric modal/form in `handleNewMetric()` | Medium   |
 
-| Line                                             | TODO                                            |
-| ------------------------------------------------ | ----------------------------------------------- |
-| [27](components/modals/GenericEditModal.tsx#L27) | Improve Meals modal to support add/remove foods |
-| [28](components/modals/GenericEditModal.tsx#L28) | Improve edit workout template modal             |
+### components/modals/CreateWorkoutOptionsModal.tsx
 
----
-
-## components/modals/CreateWorkoutOptionsModal.tsx
-
-| Line                                                        | TODO                                 |
-| ----------------------------------------------------------- | ------------------------------------ |
-| [107](components/modals/CreateWorkoutOptionsModal.tsx#L107) | Only show AI option if AI is enabled |
+| Line                                                        | TODO                                 | Priority |
+| ----------------------------------------------------------- | ------------------------------------ | -------- |
+| [107](components/modals/CreateWorkoutOptionsModal.tsx#L107) | Only show AI option if AI is enabled | Medium   |
 
 To know if AI is enabled, we need to check if:
 
 - User is either authenticated with google and has enabled AI in their settings
 - User is not authenticated but has enabled AI in their settings and has a api key for openai or gemini
 
----
+### components/
 
-## components/LineChart.tsx
-
-| Line                               | TODO                                                                |
-| ---------------------------------- | ------------------------------------------------------------------- |
-| [86](components/LineChart.tsx#L86) | Use `lastPointStrokeColor` prop (currently destructured but unused) |
-| [87](components/LineChart.tsx#L87) | Use `lastPointStrokeWidth` prop (currently destructured but unused) |
+| Line                                               | File                            | TODO         | Priority |
+| -------------------------------------------------- | ------------------------------- | ------------ | -------- |
+| [21](components/WorkoutSummaryCelebration.tsx#L21) | `WorkoutSummaryCelebration.tsx` | Fix UI issue | Medium   |
 
 ---
 
-## components/
+## 🔵 Low Priority
 
-| Line                                               | File                            | TODO                                                    |
-| -------------------------------------------------- | ------------------------------- | ------------------------------------------------------- |
-| [21](components/WorkoutSummaryCelebration.tsx#L21) | `WorkoutSummaryCelebration.tsx` | Fix UI issue                                            |
-| [22](components/cards/NotificationCard.tsx#L22)    | `cards/NotificationCard.tsx`    | Implement different styles based on notification `type` |
+### components/modals/GenericEditModal.tsx
 
----
+| Line                                             | TODO                                            | Priority |
+| ------------------------------------------------ | ----------------------------------------------- | -------- |
+| [27](components/modals/GenericEditModal.tsx#L27) | Improve Meals modal to support add/remove foods | Low      |
+| [28](components/modals/GenericEditModal.tsx#L28) | Improve edit workout template modal             | Low      |
 
-## hooks/**tests**/useWorkoutForm.test.ts
+### components/modals/SmartCameraModal.tsx
 
-| Line                                               | TODO                                                             |
-| -------------------------------------------------- | ---------------------------------------------------------------- |
-| [443](hooks/__tests__/useWorkoutForm.test.ts#L443) | Implement edit mode save test (currently skipped with `it.skip`) |
+| Line                                               | TODO                                        | Priority |
+| -------------------------------------------------- | ------------------------------------------- | -------- |
+| [122](components/modals/SmartCameraModal.tsx#L122) | Add vibration feedback on barcode detection | Low      |
+
+### components/modals/BodyMetricsHistoryModal.tsx
+
+| Line                                                      | TODO                                             | Priority |
+| --------------------------------------------------------- | ------------------------------------------------ | -------- |
+| [463](components/modals/BodyMetricsHistoryModal.tsx#L463) | Make X-axis labels dynamic based on actual dates | Low      |
+
+### components/LineChart.tsx
+
+| Line                               | TODO                                                                | Priority |
+| ---------------------------------- | ------------------------------------------------------------------- | -------- |
+| [86](components/LineChart.tsx#L86) | Use `lastPointStrokeColor` prop (currently destructured but unused) | Low      |
+| [87](components/LineChart.tsx#L87) | Use `lastPointStrokeWidth` prop (currently destructured but unused) | Low      |
+
+### components/
+
+| Line                                            | File                         | TODO                                                    | Priority |
+| ----------------------------------------------- | ---------------------------- | ------------------------------------------------------- | -------- |
+| [22](components/cards/NotificationCard.tsx#L22) | `cards/NotificationCard.tsx` | Implement different styles based on notification `type` | Low      |
+
+### hooks/**tests**/useWorkoutForm.test.ts
+
+| Line                                               | TODO                                                             | Priority |
+| -------------------------------------------------- | ---------------------------------------------------------------- | -------- |
+| [443](hooks/__tests__/useWorkoutForm.test.ts#L443) | Implement edit mode save test (currently skipped with `it.skip`) | Low      |

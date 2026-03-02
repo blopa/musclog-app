@@ -1,4 +1,5 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -119,7 +120,7 @@ export default function SmartCameraModal({
       if (cameraMode === 'barcode-scan' && !isSearchingBarcode) {
         setIsSearchingBarcode(true);
         setDetectedBarcode(data);
-        // TODO: add Vibration feedback
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       }
     },
     [cameraMode, isSearchingBarcode]

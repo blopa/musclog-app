@@ -13,6 +13,7 @@ type CreateWorkoutOptionsModalProps = {
   onCreateEmptyTemplate: () => void;
   onBrowseTemplates: () => void;
   onStartFreeTraining?: () => void;
+  isAiEnabled?: boolean;
 };
 
 export function CreateWorkoutOptionsModal({
@@ -22,6 +23,7 @@ export function CreateWorkoutOptionsModal({
   onCreateEmptyTemplate,
   onBrowseTemplates,
   onStartFreeTraining,
+  isAiEnabled = false,
 }: CreateWorkoutOptionsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -104,14 +106,15 @@ export function CreateWorkoutOptionsModal({
               onPress={onStartFreeTraining}
             />
           ) : null}
-          {/*TODO: only show if there's AI enabled*/}
-          <NewWorkoutCard
-            variant="popular"
-            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
-            title={t('workouts.createWorkoutOptions.generateWithAi')}
-            subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
-            onPress={onGenerateWithAi}
-          />
+          {isAiEnabled ? (
+            <NewWorkoutCard
+              variant="popular"
+              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              title={t('workouts.createWorkoutOptions.generateWithAi')}
+              subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
+              onPress={onGenerateWithAi}
+            />
+          ) : null}
 
           <NewWorkoutCard
             variant="default"
