@@ -21,7 +21,10 @@
       "duplicateGoalDesc": "Create a copy to use as a new goal",
       "deleteGoal": "Delete goal",
       "deleteGoalDesc": "Remove this goal from history",
-      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} kg"
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} kg",
+      "phaseCut": "Cut",
+      "phaseMaintain": "Maintain", 
+      "phaseBulk": "Bulk"
     }
   }
 }

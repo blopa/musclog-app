@@ -42,6 +42,8 @@
       "g": "g",
       "oz": "oz"
     },
-    "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
+    "eatingPhase": "Eating Phase",
+    "description": "Description",
+    "loadMultiplier": "Load Multiplier"
   }
 }

@@ -126,6 +126,10 @@
       "kettlebell": "Kettlebell",
       "resistance_band": "Resistance Band",
       "other": "Other"
+    },
+    "mechanicTypes": {
+      "compound": "Compound",
+      "isolation": "Isolation"
     }
   }
 }

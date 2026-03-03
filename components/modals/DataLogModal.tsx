@@ -234,7 +234,7 @@ export function getDataLogModalTranslations(
       deleteDesc: t('bodyMetrics.manageMetricData.deleteEntryDesc'),
       formatCaloriesMacros: () => '',
       formatItemSubtitle: (item) => {
-        const value = item.metricValue ?? 0;
+        const value = Number((item.metricValue ?? 0).toFixed(1));
         const unit = item.metricUnit ?? '';
         return unit ? `${value} ${unit}`.trim() : String(value);
       },
@@ -306,7 +306,7 @@ export function getDataLogModalTranslations(
       formatCaloriesMacros: () => '',
       formatItemSubtitle: (item) =>
         t('food.managePortionData.gramWeightFormat', {
-          grams: item.portionGramWeight ?? 0,
+          grams: Number((item.portionGramWeight ?? 0).toFixed(1)),
         }),
     };
   }
@@ -332,9 +332,9 @@ export function getDataLogModalTranslations(
       formatCaloriesMacros: () => '',
       formatItemSubtitle: (item) =>
         t('goalsManagement.manageGoalData.subtitleFormat', {
-          calories: item.goalCalories ?? 0,
+          calories: Number((item.goalCalories ?? 0).toFixed(0)),
           phase: item.goalEatingPhase ?? '',
-          targetWeight: item.goalTargetWeight ?? 0,
+          targetWeight: Number((item.goalTargetWeight ?? 0).toFixed(1)),
         }),
     };
   }
@@ -945,10 +945,10 @@ export function DataLogModal({
               {translations.formatItemSubtitle
                 ? translations.formatItemSubtitle(item)
                 : translations.formatCaloriesMacros({
-                    calories: item.calories ?? 0,
-                    protein: item.protein ?? 0,
-                    carbs: item.carbs ?? 0,
-                    fat: item.fat ?? 0,
+                    calories: Number((item.calories ?? 0).toFixed(0)),
+                    protein: Number((item.protein ?? 0).toFixed(1)),
+                    carbs: Number((item.carbs ?? 0).toFixed(1)),
+                    fat: Number((item.fat ?? 0).toFixed(1)),
                   })}
             </Text>
           </View>
