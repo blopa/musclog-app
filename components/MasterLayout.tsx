@@ -202,28 +202,28 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
               ) : (
                 <Pressable
                   className="flex-1 items-center justify-center gap-1"
-                  onPress={() => router.push('/settings')}
+                  onPress={() => router.push('/profile')}
                 >
                   <View
                     className={`h-10 w-16 items-center justify-center rounded-lg ${
-                      isActive('/settings') ? 'bg-bg-navActive' : ''
+                      isActive('/profile') ? 'bg-bg-navActive' : ''
                     }`}
                   >
                     <User
                       size={theme.iconSize.md}
                       color={
-                        isActive('/settings')
+                        isActive('/profile')
                           ? theme.colors.accent.primary
                           : theme.colors.text.tertiary
                       }
                       strokeWidth={
-                        isActive('/settings') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                        isActive('/profile') ? theme.strokeWidth.medium : theme.borderWidth.medium
                       }
                     />
                   </View>
                   <Text
                     className={`text-xs font-medium ${
-                      isActive('/settings') ? 'text-text-accent' : 'text-text-tertiary'
+                      isActive('/profile') ? 'text-text-accent' : 'text-text-tertiary'
                     }`}
                   >
                     {t('home.navigation.profile')}
