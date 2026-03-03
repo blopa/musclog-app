@@ -50,7 +50,6 @@ export interface SyncResult {
  */
 interface SyncConfig {
   lookbackDays?: number; // How many days to look back (default: 30)
-  batchSize?: number; // Records to process at once (default: 100)
   retryAttempts?: number; // Max retry attempts (default: 3)
   skipValidation?: boolean; // Skip validation (default: false)
 }
@@ -191,7 +190,6 @@ class HealthDataSyncService {
 
     const {
       lookbackDays = 30,
-      batchSize = 100, // TODO: use this
       retryAttempts = RETRY_CONFIG.maxAttempts,
       skipValidation = false,
     } = config;
