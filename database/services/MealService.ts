@@ -107,7 +107,8 @@ export class MealService {
         return null;
       }
 
-      const foods = await meal.mealFoods.fetch();
+      const allFoods = await meal.mealFoods.fetch();
+      const foods = allFoods.filter((f) => !f.deletedAt);
 
       return { meal, foods };
     } catch (error) {

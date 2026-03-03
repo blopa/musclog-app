@@ -1,11 +1,10 @@
 import { Search } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import type { MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import { MealService, NutritionService } from '../../database/services';
+import { MealService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -224,42 +223,13 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setLogMealModalVisible(true);
   };
 
-  const handleLogMeal = async (data: { meal: string; date: Date }) => {
-    if (!selectedMealForLogging) {
-      return;
-    }
-
-    try {
-      // Get meal with its foods
-      const mealWithFoods = await MealService.getMealWithFoods(selectedMealForLogging.id);
-
-      if (!mealWithFoods) {
-        console.error('Failed to get meal foods');
-        return;
-      }
-
-      // Log each food in the meal
-      for (const mealFood of mealWithFoods.foods) {
-        await NutritionService.logFood(
-          mealFood.foodId,
-          data.date,
-          data.meal as MealType,
-          mealFood.amount,
-          mealFood.portionId
-        );
-      }
-
-      // Refresh meals list
-      await refresh();
-
-      // Close modal and reset
-      setLogMealModalVisible(false);
-      setSelectedMealForLogging(null);
-      onClose();
-    } catch (error) {
-      console.error('Error logging meal:', error);
-    }
-  };
+  // just clean up state here, do not log again.
+  const handleLogMeal = useCallback(async (_data: { meal: string; date: Date }) => {
+    await refresh();
+    setLogMealModalVisible(false);
+    setSelectedMealForLogging(null);
+    onClose();
+  }, [onClose, refresh]);
 
   const showLoading = isLoading || isTransforming;
 

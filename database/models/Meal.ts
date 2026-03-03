@@ -62,7 +62,8 @@ export default class Meal extends Model {
     fat: number;
     fiber: number;
   }> {
-    const mealFoods = await this.mealFoods.fetch();
+    const allMealFoods = await this.mealFoods.fetch();
+    const mealFoods = allMealFoods.filter((mf) => !mf.deletedAt);
 
     let totalCalories = 0;
     let totalProtein = 0;
