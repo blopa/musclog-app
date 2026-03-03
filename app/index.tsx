@@ -415,7 +415,7 @@ export default function HomeScreen() {
               {/* Start Workout Button - only show if there's at least one workout */}
               {recentWorkouts.length > 0 ? (
                 <DashedButton
-                  label={t('home.actions.startWorkout')}
+                  label={t('startWorkout.label')}
                   onPress={() => router.push('/workout/workouts')}
                   size="sm"
                   icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}

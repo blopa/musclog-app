@@ -13,6 +13,10 @@
       "meals": "Meals",
       "favorites": "Favorites"
     },
+    "commonBreakfastFoods": "Common Breakfast Foods",
+    "commonLunchFoods": "Common Lunch Foods",
+    "commonSnackFoods": "Common Snack Foods",
+    "commonDinnerFoods": "Common Dinner Foods",
     "searching": "SEARCHING...",
     "bestMatches": "BEST MATCHES",
     "noResults": "NO RESULTS",

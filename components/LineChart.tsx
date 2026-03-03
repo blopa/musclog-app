@@ -107,13 +107,10 @@ export function LineChart({
   const lineColorResolved = lineColor ?? theme.colors.accent.primary;
   const areaColorResolved = areaColor ?? theme.colors.accent.primary30;
 
-  // CartesianChart (victory-native) uses mathematical coordinates: y=0 at bottom, y increases upward.
-  // Callers (e.g. BodyMetricsHistoryModal) may pass screen-style y (y=0 at top) for web Victory.
-  // Invert y so that the same data shows correctly on native (high values at top).
-  const chartData = (data as { x: number; y: number }[]).map((point) => ({
-    ...point,
-    y: chartHeight - point.y,
-  }));
+  // CartesianChart (victory-native) uses screen coordinates: y=0 at top, y increases downward.
+  // Callers already provide screen-style y values (high metric → low y → near top of chart),
+  // so no re-inversion is needed here.
+  const chartData = data as { x: number; y: number }[];
 
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
@@ -133,7 +130,7 @@ export function LineChart({
             <>
               <Area
                 points={points.y}
-                y0={yDomainFinal[0]}
+                y0={yDomainFinal[1]}
                 curveType={curveType}
                 color={areaColorResolved}
               />

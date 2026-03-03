@@ -30,6 +30,10 @@ export default function NewNumericalInput({
   const handleInputChange = (val: string) => {
     if (val === '' || /^\d+$/.test(val)) {
       setInputValue(val);
+      if (val !== '') {
+        const numVal = parseInt(val, 10);
+        onChange(Math.max(min, numVal));
+      }
     }
   };
 

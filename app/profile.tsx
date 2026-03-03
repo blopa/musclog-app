@@ -1,5 +1,17 @@
 import { useRouter } from 'expo-router';
-import { CheckCircle, Dumbbell, Edit, List, Settings, TrendingUp, User } from 'lucide-react-native';
+import {
+  Activity,
+  CheckCircle,
+  Dumbbell,
+  Edit,
+  Heart,
+  List,
+  Ruler,
+  Settings,
+  TrendingDown,
+  TrendingUp,
+  User,
+} from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -79,19 +91,34 @@ export default function ProfileScreen() {
       changeType?: 'positive' | 'negative' | 'warning';
       status?: string;
       statusColor?: string;
-      icon: typeof TrendingUp | typeof CheckCircle | typeof User;
+      icon:
+        | typeof TrendingUp
+        | typeof TrendingDown
+        | typeof CheckCircle
+        | typeof User
+        | typeof Activity
+        | typeof Heart
+        | typeof Ruler;
       iconColor: string;
     }[] = [];
 
     // Weight stat
     if (metrics?.weight !== undefined) {
+      const weightGoal = dbUser?.weightGoal ?? 'maintain';
+      const isGainPhase = weightGoal === 'gain';
+      const isLosePhase = weightGoal === 'lose';
+
       statsArray.push({
         id: 'weight',
         titleKey: 'profile.stats.weight',
         value: metrics.weight.toFixed(1),
         unit: weightUnit,
-        icon: TrendingUp,
-        iconColor: theme.colors.accent.primary,
+        icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
+        iconColor: isGainPhase
+          ? theme.colors.status.success
+          : isLosePhase
+            ? theme.colors.status.warning
+            : theme.colors.accent.primary,
       });
     }
 
@@ -103,20 +130,28 @@ export default function ProfileScreen() {
         value: metrics.height.toFixed(0),
         unit: heightUnit,
         status: 'Verified',
-        icon: CheckCircle,
+        icon: Ruler,
         iconColor: theme.colors.text.secondary,
       });
     }
 
     // Body fat stat
     if (metrics?.bodyFat !== undefined) {
+      const weightGoal = dbUser?.weightGoal ?? 'maintain';
+      const isGainPhase = weightGoal === 'gain';
+      const isLosePhase = weightGoal === 'lose';
+
       statsArray.push({
         id: 'bodyFat',
         titleKey: 'profile.stats.bodyFat',
         value: metrics.bodyFat.toFixed(1),
         unit: '%',
-        icon: TrendingUp,
-        iconColor: theme.colors.status.warning,
+        icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
+        iconColor: isGainPhase
+          ? theme.colors.status.warning
+          : isLosePhase
+            ? theme.colors.status.success
+            : theme.colors.status.warning,
       });
     }
 
@@ -137,7 +172,7 @@ export default function ProfileScreen() {
         value: calculatedBMI.toFixed(1),
         status: t(bmiStatusKey),
         statusColor: theme.colors.status.info,
-        icon: User,
+        icon: Activity,
         iconColor: theme.colors.status.info,
       });
     }
@@ -148,7 +183,7 @@ export default function ProfileScreen() {
         id: 'age',
         titleKey: 'profile.stats.age',
         value: dbUser.getAge().toString(),
-        icon: User,
+        icon: Heart,
         iconColor: theme.colors.text.secondary,
       });
     }

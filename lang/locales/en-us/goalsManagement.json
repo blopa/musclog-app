@@ -23,7 +23,7 @@
       "deleteGoalDesc": "Remove this goal from history",
       "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} kg",
       "phaseCut": "Cut",
-      "phaseMaintain": "Maintain", 
+      "phaseMaintain": "Maintain",
       "phaseBulk": "Bulk"
     }
   }
