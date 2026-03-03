@@ -11,7 +11,13 @@
 
 import { Q } from '@nozbe/watermelondb';
 import type { RecordType } from 'react-native-health-connect';
+import { RecordingMethod } from 'react-native-health-connect';
 
+import {
+  CONNECT_HEALTH_DATA_SETTING_TYPE,
+  READ_HEALTH_DATA_SETTING_TYPE,
+  WRITE_HEALTH_DATA_SETTING_TYPE,
+} from '../constants/settings';
 import { database } from '../database';
 import { encryptUserMetricFields } from '../database/encryptionHelpers';
 import Setting from '../database/models/Setting';
@@ -21,6 +27,7 @@ import { RETRY_CONFIG } from './healthConnectErrors';
 import {
   DataValidator,
   HealthDataTransformer,
+  HeightConverter,
   MetricType,
   TimestampConverter,
 } from './healthDataTransform';
@@ -42,15 +49,135 @@ type TransformedMetric = {
   externalId: string | undefined;
 };
 
-async function isSyncEnabled(): Promise<boolean> {
+async function isSettingEnabled(type: string): Promise<boolean> {
+  const settings = await database
+    .get<Setting>('settings')
+    .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+  return settings.length > 0 && settings[0].value === 'true';
+}
+
+async function isReadSyncEnabled(): Promise<boolean> {
   try {
-    const settings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', 'health_connect_sync_enabled'), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    return settings.length > 0 && settings[0].value === 'true';
+    return (
+      (await isSettingEnabled(CONNECT_HEALTH_DATA_SETTING_TYPE)) &&
+      (await isSettingEnabled(READ_HEALTH_DATA_SETTING_TYPE))
+    );
   } catch {
     return false;
+  }
+}
+
+async function isWriteSyncEnabled(): Promise<boolean> {
+  try {
+    return (
+      (await isSettingEnabled(CONNECT_HEALTH_DATA_SETTING_TYPE)) &&
+      (await isSettingEnabled(WRITE_HEALTH_DATA_SETTING_TYPE))
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Maps UserMetricType to its Health Connect RecordType for writing. */
+const METRIC_TYPE_TO_HC: Partial<Record<string, RecordType>> = {
+  weight: 'Weight',
+  height: 'Height',
+  body_fat: 'BodyFat',
+  lean_body_mass: 'LeanBodyMass',
+};
+
+export interface UserMetricWriteParams {
+  metricId: string; // WatermelonDB record ID – used as clientRecordId for deduplication
+  type: string; // UserMetricType
+  value: number; // in app-native units (kg, cm, %, etc.)
+  date: number; // unix ms
+  timezone: string;
+}
+
+/**
+ * Write a single user metric to Health Connect.
+ * Returns the HC-assigned record ID (to store as externalId), or undefined on failure.
+ * Never throws – all errors are caught and logged.
+ */
+export async function writeUserMetricToHealthConnect(
+  params: UserMetricWriteParams
+): Promise<string | undefined> {
+  const hcType = METRIC_TYPE_TO_HC[params.type];
+  if (!hcType) {
+    return undefined; // unsupported metric type — no HC mapping
+  }
+
+  if (!(await isWriteSyncEnabled())) {
+    return undefined;
+  }
+
+  const isAvailable = await healthConnectService.checkAvailability();
+  if (!isAvailable) {
+    return undefined;
+  }
+
+  const hasPermission = await healthConnectService.hasPermissionForRecordType(hcType, 'write');
+  if (!hasPermission) {
+    return undefined;
+  }
+
+  try {
+    const time = TimestampConverter.unixToIso(params.date);
+    const metadata = {
+      clientRecordId: params.metricId,
+      dataOrigin: 'Musclog',
+      recordingMethod: RecordingMethod.RECORDING_METHOD_MANUAL_ENTRY,
+    };
+
+    let record: any;
+
+    switch (hcType) {
+      case 'Weight':
+        record = {
+          recordType: 'Weight' as const,
+          weight: { value: params.value, unit: 'kilograms' as const },
+          time,
+          zoneOffset: params.timezone,
+          metadata,
+        };
+        break;
+      case 'Height':
+        record = {
+          recordType: 'Height' as const,
+          height: { value: HeightConverter.cmToMeters(params.value), unit: 'meters' as const },
+          time,
+          zoneOffset: params.timezone,
+          metadata,
+        };
+        break;
+      case 'BodyFat':
+        record = {
+          recordType: 'BodyFat' as const,
+          percentage: params.value,
+          time,
+          zoneOffset: params.timezone,
+          metadata,
+        };
+        break;
+      case 'LeanBodyMass':
+        record = {
+          recordType: 'LeanBodyMass' as const,
+          mass: { value: params.value, unit: 'kilograms' as const },
+          time,
+          zoneOffset: params.timezone,
+          metadata,
+        };
+        break;
+      default:
+        return undefined;
+    }
+
+    const ids = await healthConnectService.insertRecords([record]);
+    return ids[0];
+  } catch (err) {
+    console.warn('[healthConnectFitness] writeUserMetricToHealthConnect failed:', err);
+    return undefined;
   }
 }
 
@@ -76,7 +203,7 @@ export async function syncFitnessMetrics(
 ): Promise<FitnessSyncCounts> {
   const { retryAttempts = RETRY_CONFIG.maxAttempts, skipValidation = false } = options;
 
-  if (!(await isSyncEnabled())) {
+  if (!(await isReadSyncEnabled())) {
     return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
   }
 

@@ -1,5 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
+import { Platform } from 'react-native';
 
+import { writeUserMetricToHealthConnect } from '../../services/healthConnectFitness';
 import { encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import UserMetric, { type UserMetricType } from '../models/UserMetric';
@@ -85,18 +87,41 @@ export class UserMetricService {
       unit: plain.unit,
       date: plain.date,
     });
-    return await database.write(async () => {
-      return await database.get<UserMetric>('user_metrics').create((metric) => {
-        metric.type = plain.type as UserMetricType;
-        metric.externalId = plain.externalId;
-        metric.valueRaw = encrypted.value;
-        metric.unitRaw = encrypted.unit;
-        metric.date = plain.date;
-        metric.timezone = plain.timezone;
-        metric.createdAt = Date.now();
-        metric.updatedAt = Date.now();
+
+    const metric = await database.write(async () => {
+      return await database.get<UserMetric>('user_metrics').create((record) => {
+        record.type = plain.type as UserMetricType;
+        record.externalId = plain.externalId;
+        record.valueRaw = encrypted.value;
+        record.unitRaw = encrypted.unit;
+        record.date = plain.date;
+        record.timezone = plain.timezone;
+        record.createdAt = Date.now();
+        record.updatedAt = Date.now();
       });
     });
+
+    // Write to Health Connect (Android only, user-entered records only — HC-sourced records
+    // already have externalId set and must not be written back to avoid an echo loop).
+    if (Platform.OS === 'android' && !plain.externalId) {
+      const hcId = await writeUserMetricToHealthConnect({
+        metricId: metric.id,
+        type: plain.type,
+        value: plain.value,
+        date: plain.date,
+        timezone: plain.timezone,
+      }).catch(() => undefined);
+
+      if (hcId) {
+        await database.write(async () => {
+          await metric.update((record) => {
+            record.externalId = hcId;
+          });
+        });
+      }
+    }
+
+    return metric;
   }
 
   /**

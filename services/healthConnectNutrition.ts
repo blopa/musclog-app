@@ -18,7 +18,13 @@
  */
 
 import { Q } from '@nozbe/watermelondb';
+import { RecordingMethod } from 'react-native-health-connect';
 
+import {
+  CONNECT_HEALTH_DATA_SETTING_TYPE,
+  READ_HEALTH_DATA_SETTING_TYPE,
+  WRITE_HEALTH_DATA_SETTING_TYPE,
+} from '../constants/settings';
 import { database } from '../database';
 import { encryptNutritionLogSnapshot } from '../database/encryptionHelpers';
 import Food from '../database/models/Food';
@@ -30,15 +36,113 @@ import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
 
-async function isSyncEnabled(): Promise<boolean> {
+async function isSettingEnabled(type: string): Promise<boolean> {
+  const settings = await database
+    .get<Setting>('settings')
+    .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+  return settings.length > 0 && settings[0].value === 'true';
+}
+
+async function isReadSyncEnabled(): Promise<boolean> {
   try {
-    const settings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', 'health_connect_sync_enabled'), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    return settings.length > 0 && settings[0].value === 'true';
+    return (
+      (await isSettingEnabled(CONNECT_HEALTH_DATA_SETTING_TYPE)) &&
+      (await isSettingEnabled(READ_HEALTH_DATA_SETTING_TYPE))
+    );
   } catch {
     return false;
+  }
+}
+
+async function isWriteSyncEnabled(): Promise<boolean> {
+  try {
+    return (
+      (await isSettingEnabled(CONNECT_HEALTH_DATA_SETTING_TYPE)) &&
+      (await isSettingEnabled(WRITE_HEALTH_DATA_SETTING_TYPE))
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Maps app MealType string to Health Connect mealType integer. */
+function mealTypeToHC(mealType: MealType): number {
+  switch (mealType) {
+    case 'breakfast':
+      return 1;
+    case 'lunch':
+      return 2;
+    case 'dinner':
+      return 3;
+    case 'snack':
+      return 4;
+    default:
+      return 0;
+  }
+}
+
+export interface NutritionWriteParams {
+  logId: string; // WatermelonDB record ID – used as clientRecordId for deduplication
+  date: number; // unix ms (midnight of the log date)
+  mealType: MealType;
+  foodName: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
+
+/**
+ * Write a single nutrition log to Health Connect.
+ * Returns the HC-assigned record ID (to store as externalId), or undefined on failure.
+ * Never throws – all errors are caught and logged.
+ */
+export async function writeNutritionLogToHealthConnect(
+  params: NutritionWriteParams
+): Promise<string | undefined> {
+  if (!(await isWriteSyncEnabled())) {
+    return undefined;
+  }
+
+  const isAvailable = await healthConnectService.checkAvailability();
+  if (!isAvailable) {
+    return undefined;
+  }
+
+  const hasPermission = await healthConnectService.hasPermissionForRecordType('Nutrition', 'write');
+  if (!hasPermission) {
+    return undefined;
+  }
+
+  try {
+    const startTime = TimestampConverter.unixToIso(params.date);
+    const endTime = TimestampConverter.unixToIso(params.date + 1); // HC requires endTime > startTime
+
+    const record = {
+      recordType: 'Nutrition' as const,
+      startTime,
+      endTime,
+      name: params.foodName,
+      mealType: mealTypeToHC(params.mealType),
+      energy: { value: params.calories, unit: 'kilocalories' as const },
+      protein: { value: params.protein, unit: 'grams' as const },
+      totalCarbohydrate: { value: params.carbs, unit: 'grams' as const },
+      totalFat: { value: params.fat, unit: 'grams' as const },
+      fiber: { value: params.fiber, unit: 'grams' as const },
+      metadata: {
+        clientRecordId: params.logId,
+        dataOrigin: 'Musclog',
+        recordingMethod: RecordingMethod.RECORDING_METHOD_MANUAL_ENTRY,
+      },
+    };
+
+    const ids = await healthConnectService.insertRecords([record]);
+    return ids[0];
+  } catch (err) {
+    console.warn('[healthConnectNutrition] writeNutritionLogToHealthConnect failed:', err);
+    return undefined;
   }
 }
 
@@ -138,7 +242,7 @@ export async function syncNutritionFromHealthConnect(
 ): Promise<NutritionSyncCounts> {
   const { retryAttempts = RETRY_CONFIG.maxAttempts } = options;
 
-  if (!(await isSyncEnabled())) {
+  if (!(await isReadSyncEnabled())) {
     return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
   }
 

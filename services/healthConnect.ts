@@ -58,8 +58,11 @@ export interface TimeRangeFilter {
  */
 export const REQUIRED_PERMISSIONS: Permission[] = [
   { accessType: 'read', recordType: 'Height' },
+  { accessType: 'write', recordType: 'Height' },
   { accessType: 'read', recordType: 'Weight' },
+  { accessType: 'write', recordType: 'Weight' },
   { accessType: 'read', recordType: 'BodyFat' },
+  { accessType: 'write', recordType: 'BodyFat' },
   { accessType: 'read', recordType: 'Nutrition' },
   { accessType: 'write', recordType: 'Nutrition' },
   { accessType: 'read', recordType: 'TotalCaloriesBurned' },

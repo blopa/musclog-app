@@ -1,5 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
+import { Platform } from 'react-native';
 
+import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
 import Food from '../models/Food';
@@ -17,10 +19,11 @@ export class NutritionService {
     portionId?: string,
     externalId?: string
   ): Promise<NutritionLog> {
-    return await database.write(async () => {
+    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+    const log = await database.write(async () => {
       const food = await database.get<Food>('foods').find(foodId);
       const now = Date.now();
-      const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
       const encrypted = await encryptNutritionLogSnapshot({
         loggedFoodName: food.name ?? undefined,
         loggedCalories: food.calories ?? 0,
@@ -31,24 +34,55 @@ export class NutritionService {
         loggedMicros: food.micros,
       });
 
-      return await database.get<NutritionLog>('nutrition_logs').create((log) => {
-        log.foodId = foodId;
-        log.externalId = externalId;
-        log.date = dateTimestamp;
-        log.type = mealType;
-        log.amount = amount;
-        log.portionId = portionId;
-        log.loggedFoodNameRaw = encrypted.loggedFoodName;
-        log.loggedCaloriesRaw = encrypted.loggedCalories;
-        log.loggedProteinRaw = encrypted.loggedProtein;
-        log.loggedCarbsRaw = encrypted.loggedCarbs;
-        log.loggedFatRaw = encrypted.loggedFat;
-        log.loggedFiberRaw = encrypted.loggedFiber;
-        log.loggedMicrosRaw = encrypted.loggedMicrosJson;
-        log.createdAt = now;
-        log.updatedAt = now;
+      return await database.get<NutritionLog>('nutrition_logs').create((record) => {
+        record.foodId = foodId;
+        record.externalId = externalId;
+        record.date = dateTimestamp;
+        record.type = mealType;
+        record.amount = amount;
+        record.portionId = portionId;
+        record.loggedFoodNameRaw = encrypted.loggedFoodName;
+        record.loggedCaloriesRaw = encrypted.loggedCalories;
+        record.loggedProteinRaw = encrypted.loggedProtein;
+        record.loggedCarbsRaw = encrypted.loggedCarbs;
+        record.loggedFatRaw = encrypted.loggedFat;
+        record.loggedFiberRaw = encrypted.loggedFiber;
+        record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.createdAt = now;
+        record.updatedAt = now;
       });
     });
+
+    // Write to Health Connect (Android only, user-entered records only — HC-sourced records
+    // already have externalId set and must not be written back to avoid an echo loop).
+    if (Platform.OS === 'android' && !externalId) {
+      const [nutrients, snapshot] = await Promise.all([
+        log.getNutrients(),
+        log.getDecryptedSnapshot(),
+      ]);
+
+      const hcId = await writeNutritionLogToHealthConnect({
+        logId: log.id,
+        date: dateTimestamp,
+        mealType,
+        foodName: snapshot.loggedFoodName ?? '',
+        calories: nutrients.calories,
+        protein: nutrients.protein,
+        carbs: nutrients.carbs,
+        fat: nutrients.fat,
+        fiber: nutrients.fiber,
+      }).catch(() => undefined);
+
+      if (hcId) {
+        await database.write(async () => {
+          await log.update((record) => {
+            record.externalId = hcId;
+          });
+        });
+      }
+    }
+
+    return log;
   }
 
   /**

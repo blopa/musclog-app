@@ -1,5 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 
+import {
+  CONNECT_HEALTH_DATA_SETTING_TYPE,
+  READ_HEALTH_DATA_SETTING_TYPE,
+} from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
 import UserMetric from '../database/models/UserMetric';
@@ -17,9 +21,7 @@ import { syncNutritionFromHealthConnect } from './healthConnectNutrition';
 /**
  * Setting types for Health Connect sync tracking
  */
-export const HC_SYNC_ENABLED_TYPE = 'health_connect_sync_enabled';
 export const HC_LAST_SYNC_TYPE = 'health_connect_last_sync';
-export const HC_SYNC_IN_PROGRESS_TYPE = 'health_connect_sync_in_progress';
 
 /**
  * Sync status enum
@@ -54,6 +56,31 @@ interface SyncConfig {
   skipValidation?: boolean; // Skip validation (default: false)
 }
 
+/** Upsert a boolean setting (stored as 'true'/'false') by type key. */
+async function upsertBooleanSetting(type: string, value: boolean): Promise<void> {
+  const now = Date.now();
+  const existing = await database
+    .get<Setting>('settings')
+    .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+
+  await database.write(async () => {
+    if (existing.length > 0) {
+      await existing[0].update((s) => {
+        s.value = value ? 'true' : 'false';
+        s.updatedAt = now;
+      });
+    } else {
+      await database.get<Setting>('settings').create((s) => {
+        s.type = type as any;
+        s.value = value ? 'true' : 'false';
+        s.createdAt = now;
+        s.updatedAt = now;
+      });
+    }
+  });
+}
+
 /**
  * Health Data Sync Service
  */
@@ -62,13 +89,13 @@ class HealthDataSyncService {
   private lastSyncTime: number = 0;
 
   /**
-   * Check if Health Connect sync is enabled
+   * Check if Health Connect sync is enabled (master toggle = connect_health_data).
    */
   async isSyncEnabled(): Promise<boolean> {
     try {
       const settings = await database
         .get<Setting>('settings')
-        .query(Q.where('type', HC_SYNC_ENABLED_TYPE), Q.where('deleted_at', Q.eq(null)))
+        .query(Q.where('type', CONNECT_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       return settings.length > 0 && settings[0].value === 'true';
@@ -79,50 +106,19 @@ class HealthDataSyncService {
   }
 
   /**
-   * Enable Health Connect sync
+   * Enable Health Connect sync (sets connect_health_data + read_health_data).
+   * Called from the onboarding flow after the user grants permissions.
    */
   async enableSync(): Promise<void> {
-    const now = Date.now();
-    const existingSettings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', HC_SYNC_ENABLED_TYPE), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    await database.write(async () => {
-      if (existingSettings.length > 0) {
-        await existingSettings[0].update((setting) => {
-          setting.value = 'true';
-          setting.updatedAt = now;
-        });
-      } else {
-        await database.get<Setting>('settings').create((setting) => {
-          setting.type = HC_SYNC_ENABLED_TYPE;
-          setting.value = 'true';
-          setting.createdAt = now;
-          setting.updatedAt = now;
-        });
-      }
-    });
+    await upsertBooleanSetting(CONNECT_HEALTH_DATA_SETTING_TYPE, true);
+    await upsertBooleanSetting(READ_HEALTH_DATA_SETTING_TYPE, true);
   }
 
   /**
-   * Disable Health Connect sync
+   * Disable Health Connect sync (sets connect_health_data = false).
    */
   async disableSync(): Promise<void> {
-    const now = Date.now();
-    const existingSettings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', HC_SYNC_ENABLED_TYPE), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    await database.write(async () => {
-      if (existingSettings.length > 0) {
-        await existingSettings[0].update((setting) => {
-          setting.value = 'false';
-          setting.updatedAt = now;
-        });
-      }
-    });
+    await upsertBooleanSetting(CONNECT_HEALTH_DATA_SETTING_TYPE, false);
   }
 
   /**
