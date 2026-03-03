@@ -1,11 +1,12 @@
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { type EatingPhase } from '../../database/models';
 import { NutritionGoalService } from '../../database/services';
+import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
@@ -52,63 +53,53 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const theme = useTheme();
   const { t } = useTranslation();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
-  const [currentGoal, setCurrentGoal] = useState<CurrentGoal | null>(null);
-  const [currentGoalsData, setCurrentGoalsData] = useState<Partial<NutritionGoals> | undefined>(
-    undefined
-  );
-  const [goalsHistory, setGoalsHistory] = useState<GoalHistoryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Load goals data
-  useEffect(() => {
-    if (visible) {
-      loadGoalsData();
+  const { goals, current, isLoading } = useCurrentNutritionGoal({ mode: 'history', visible });
+
+  const currentGoal = useMemo<CurrentGoal | null>(() => {
+    if (!current) {
+      return null;
     }
-  }, [visible]);
 
-  // TODO: can't we use the existing useNutritionGoalDataLogs here?
-  const loadGoalsData = async () => {
-    setIsLoading(true);
-    try {
-      // Load current goal
-      const current = await NutritionGoalService.getCurrent();
-      if (current) {
-        setCurrentGoal({
-          phase: convertEatingPhaseToUI(current.eatingPhase),
-          calories: current.totalCalories,
-          protein: current.protein,
-          carbs: current.carbs,
-          fat: current.fats,
-          targetWeight: current.targetWeight,
-          bodyFat: current.targetBodyFat,
-          bmi: current.targetBmi,
-          ffmi: current.targetFfmi,
-          goalDate: current.targetDate
-            ? format(new Date(current.targetDate), 'MMM d, yyyy')
-            : undefined,
-        });
-        // Store full data for passing to NutritionGoalsModal
-        setCurrentGoalsData({
-          totalCalories: current.totalCalories,
-          protein: current.protein,
-          carbs: current.carbs,
-          fats: current.fats,
-          fiber: current.fiber,
-          eatingPhase: current.eatingPhase as EatingPhase,
-          targetWeight: current.targetWeight,
-          targetBodyFat: current.targetBodyFat,
-          targetBMI: current.targetBmi,
-          targetFFMI: current.targetFfmi,
-          targetDate: current.targetDate ?? null,
-        });
-      } else {
-        setCurrentGoal(null);
-        setCurrentGoalsData(undefined);
-      }
+    return {
+      phase: convertEatingPhaseToUI(current.eatingPhase),
+      calories: current.totalCalories,
+      protein: current.protein,
+      carbs: current.carbs,
+      fat: current.fats,
+      targetWeight: current.targetWeight,
+      bodyFat: current.targetBodyFat,
+      bmi: current.targetBmi,
+      ffmi: current.targetFfmi,
+      goalDate: current.targetDate
+        ? format(new Date(current.targetDate), 'MMM d, yyyy')
+        : undefined,
+    };
+  }, [current]);
 
-      // Load history (all goals except current)
-      const history = await NutritionGoalService.getHistory();
-      const historyItems: GoalHistoryItem[] = history
+  const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
+    if (!current) {
+      return undefined;
+    }
+
+    return {
+      totalCalories: current.totalCalories,
+      protein: current.protein,
+      carbs: current.carbs,
+      fats: current.fats,
+      fiber: current.fiber,
+      eatingPhase: current.eatingPhase as EatingPhase,
+      targetWeight: current.targetWeight,
+      targetBodyFat: current.targetBodyFat,
+      targetBMI: current.targetBmi,
+      targetFFMI: current.targetFfmi,
+      targetDate: current.targetDate ?? null,
+    };
+  }, [current]);
+
+  const goalsHistory = useMemo<GoalHistoryItem[]>(
+    () =>
+      goals
         .filter((goal) => goal.effectiveUntil !== null) // Only past goals
         .map((goal, index) => {
           const startDate = new Date(goal.createdAt);
@@ -129,14 +120,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             weight: goal.targetWeight,
             bodyFat: goal.targetBodyFat,
           };
-        });
-      setGoalsHistory(historyItems);
-    } catch (error) {
-      console.error('Error loading goals data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        }),
+    [goals]
+  );
 
   const handleNewGoal = () => {
     setNutritionGoalsModalVisible(true);
@@ -146,23 +132,22 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     setNutritionGoalsModalVisible(false);
   };
 
-  const handleSaveNutritionGoals = async (goals: NutritionGoals) => {
+  const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
     try {
       await NutritionGoalService.saveGoals({
-        totalCalories: goals.totalCalories,
-        protein: goals.protein,
-        carbs: goals.carbs,
-        fats: goals.fats,
-        fiber: goals.fiber,
-        eatingPhase: goals.eatingPhase,
-        targetWeight: goals.targetWeight,
-        targetBodyFat: goals.targetBodyFat,
-        targetBMI: goals.targetBMI,
-        targetFFMI: goals.targetFFMI,
-        targetDate: goals.targetDate ?? null,
+        totalCalories: nutritionGoals.totalCalories,
+        protein: nutritionGoals.protein,
+        carbs: nutritionGoals.carbs,
+        fats: nutritionGoals.fats,
+        fiber: nutritionGoals.fiber,
+        eatingPhase: nutritionGoals.eatingPhase,
+        targetWeight: nutritionGoals.targetWeight,
+        targetBodyFat: nutritionGoals.targetBodyFat,
+        targetBMI: nutritionGoals.targetBMI,
+        targetFFMI: nutritionGoals.targetFFMI,
+        targetDate: nutritionGoals.targetDate ?? null,
       });
-      // Reload data after saving
-      await loadGoalsData();
+      // No manual reload needed — WatermelonDB reactivity triggers automatic refresh
       setNutritionGoalsModalVisible(false);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
