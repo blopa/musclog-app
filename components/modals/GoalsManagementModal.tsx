@@ -44,6 +44,10 @@ type GoalsManagementModalProps = {
   onClose: () => void;
 };
 
+// TODO: implement a way to edit the current goal too, and also edit previous goals, and also remove previous goals, and also add a past goal (so add a goal and pick it's created at date, for example)
+// we can probably use the NutritionGoalsModal by changing it to have a "edit" mode, where we can pass a NutritionGoal and it would be possible to edit and save it
+// as on how to open this modal, we can add the MenuButton.tsx into the cards on this GoalsManagementModal modal, that when it's clicked, will load the
+// NutritionGoalsModal in edit mode.
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -62,6 +66,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
   }, [visible]);
 
+  // TODO: can't we use the existing useNutritionGoalDataLogs here?
   const loadGoalsData = async () => {
     setIsLoading(true);
     try {
