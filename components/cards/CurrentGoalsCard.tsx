@@ -1,4 +1,4 @@
-import { Activity, Calculator, Calendar, Pencil, Percent, Scale } from 'lucide-react-native';
+import { Activity, Calculator, Calendar, Pencil, Percent, Scale, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -8,7 +8,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
-import { BottomPopUpMenu } from '../BottomPopUpMenu';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
@@ -29,9 +29,10 @@ interface CurrentGoal {
 interface CurrentGoalsCardProps {
   goal: CurrentGoal;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function CurrentGoalsCard({ goal, onEdit }: CurrentGoalsCardProps) {
+export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -39,6 +40,36 @@ export function CurrentGoalsCard({ goal, onEdit }: CurrentGoalsCardProps) {
   const targetWeightDisplay =
     goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const hasMenu = onEdit != null || onDelete != null;
+
+  const menuItems: BottomPopUpMenuItem[] = [
+    ...(onEdit
+      ? [
+          {
+            icon: Pencil,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.editGoal'),
+            description: t('goalsManagement.manageGoalData.editGoalDesc'),
+            onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error10,
+            title: t('goalsManagement.manageGoalData.deleteGoal'),
+            description: t('goalsManagement.manageGoalData.deleteGoalDesc'),
+            titleColor: theme.colors.status.error,
+            onPress: onDelete,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <GenericCard variant="card">
@@ -217,24 +248,15 @@ export function CurrentGoalsCard({ goal, onEdit }: CurrentGoalsCardProps) {
         {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
         <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
           <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
-          {onEdit ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
+          {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
         </View>
 
-        {onEdit ? (
+        {hasMenu ? (
           <BottomPopUpMenu
             visible={menuVisible}
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
-            items={[
-              {
-                icon: Pencil,
-                iconColor: theme.colors.text.primary,
-                iconBgColor: theme.colors.text.primary20,
-                title: t('goalsManagement.manageGoalData.editGoal'),
-                description: t('goalsManagement.manageGoalData.editGoalDesc'),
-                onPress: onEdit,
-              },
-            ]}
+            items={menuItems}
           />
         ) : null}
       </View>

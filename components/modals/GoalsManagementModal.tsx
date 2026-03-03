@@ -72,7 +72,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
 
-  const { goals, current, isLoading } = useCurrentNutritionGoal({ mode: 'history', visible });
+  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({ mode: 'history', visible });
 
   const currentGoal = useMemo<CurrentGoal | null>(() => {
     if (!current) {
@@ -155,10 +155,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     }
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
+      await refresh();
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
     }
-    // WatermelonDB reactivity updates the list automatically
   };
 
   const handleCloseNutritionGoalsModal = () => {
@@ -193,7 +193,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           await NutritionGoalService.saveGoals(input);
         }
       }
-      // No manual reload needed — WatermelonDB reactivity triggers automatic refresh
+      await refresh();
       setNutritionGoalsModalVisible(false);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
@@ -261,6 +261,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   <CurrentGoalsCard
                     goal={currentGoal}
                     onEdit={current ? () => handleEditGoal(current) : undefined}
+                    onDelete={current ? () => handleDeleteGoal(current) : undefined}
                   />
                 </View>
               ) : null}

@@ -31,6 +31,7 @@ export type UseCurrentNutritionGoalResultHistory = {
   isLoadingMore: boolean;
   hasMore: boolean;
   loadMore: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 export type UseCurrentNutritionGoalResult =
@@ -246,8 +247,9 @@ export function useCurrentNutritionGoal({
       isLoadingMore,
       hasMore,
       loadMore,
+      refresh: loadInitialGoals,
     }),
-    [goals, currentGoal, isLoading, isLoadingMore, hasMore, loadMore]
+    [goals, currentGoal, isLoading, isLoadingMore, hasMore, loadMore, loadInitialGoals]
   );
 
   // Return appropriate type based on mode

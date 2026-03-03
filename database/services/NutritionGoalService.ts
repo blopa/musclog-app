@@ -240,8 +240,9 @@ export class NutritionGoalService {
    * Delete nutrition goal (soft delete)
    */
   static async deleteGoal(id: string): Promise<void> {
-    const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
-    await goal.markAsDeleted();
+    await database.write(async () => {
+      const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
+      await goal.markAsDeleted();
+    });
   }
 }
