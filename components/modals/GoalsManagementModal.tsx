@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { type EatingPhase } from '../../database/models';
+import NutritionGoal from '../../database/models/NutritionGoal';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useTheme } from '../../hooks/useTheme';
@@ -12,6 +13,7 @@ import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPh
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { NutritionGoals, NutritionGoalsModal } from './NutritionGoalsModal';
 
@@ -45,14 +47,30 @@ type GoalsManagementModalProps = {
   onClose: () => void;
 };
 
-// TODO: implement a way to edit the current goal too, and also edit previous goals, and also remove previous goals, and also add a past goal (so add a goal and pick it's created at date, for example)
-// we can probably use the NutritionGoalsModal by changing it to have a "edit" mode, where we can pass a NutritionGoal and it would be possible to edit and save it
-// as on how to open this modal, we can add the MenuButton.tsx into the cards on this GoalsManagementModal modal, that when it's clicked, will load the
-// NutritionGoalsModal in edit mode.
+function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
+  return {
+    totalCalories: goal.totalCalories,
+    protein: goal.protein,
+    carbs: goal.carbs,
+    fats: goal.fats,
+    fiber: goal.fiber,
+    eatingPhase: goal.eatingPhase as EatingPhase,
+    targetWeight: goal.targetWeight,
+    targetBodyFat: goal.targetBodyFat,
+    targetBMI: goal.targetBmi,
+    targetFFMI: goal.targetFfmi,
+    targetDate: goal.targetDate ?? null,
+  };
+}
+
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
+  const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
 
   const { goals, current, isLoading } = useCurrentNutritionGoal({ mode: 'history', visible });
 
@@ -81,26 +99,14 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     if (!current) {
       return undefined;
     }
-
-    return {
-      totalCalories: current.totalCalories,
-      protein: current.protein,
-      carbs: current.carbs,
-      fats: current.fats,
-      fiber: current.fiber,
-      eatingPhase: current.eatingPhase as EatingPhase,
-      targetWeight: current.targetWeight,
-      targetBodyFat: current.targetBodyFat,
-      targetBMI: current.targetBmi,
-      targetFFMI: current.targetFfmi,
-      targetDate: current.targetDate ?? null,
-    };
+    return goalToFormData(current);
   }, [current]);
 
-  const goalsHistory = useMemo<GoalHistoryItem[]>(
+  // Keep raw NutritionGoal alongside display data to enable edit/delete
+  const historyWithRaw = useMemo(
     () =>
       goals
-        .filter((goal) => goal.effectiveUntil !== null) // Only past goals
+        .filter((goal) => goal.effectiveUntil !== null)
         .map((goal, index) => {
           const startDate = new Date(goal.createdAt);
           const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
@@ -109,7 +115,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
               ? format(startDate, 'MMM d, yyyy')
               : `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
 
-          return {
+          const display: GoalHistoryItem = {
             id: parseInt(goal.id, 10) || index,
             dateRange,
             phase: convertEatingPhaseToUI(goal.eatingPhase),
@@ -120,12 +126,39 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
             weight: goal.targetWeight,
             bodyFat: goal.targetBodyFat,
           };
+
+          return { display, raw: goal };
         }),
     [goals]
   );
 
   const handleNewGoal = () => {
+    setSelectedGoal(null);
+    setIsEditing(false);
     setNutritionGoalsModalVisible(true);
+  };
+
+  const handleEditGoal = (goal: NutritionGoal) => {
+    setSelectedGoal(goal);
+    setIsEditing(true);
+    setNutritionGoalsModalVisible(true);
+  };
+
+  const handleDeleteGoal = (goal: NutritionGoal) => {
+    setGoalToDelete(goal);
+    setConfirmDeleteVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!goalToDelete) {
+      return;
+    }
+    try {
+      await NutritionGoalService.deleteGoal(goalToDelete.id);
+    } catch (error) {
+      console.error('Error deleting nutrition goal:', error);
+    }
+    // WatermelonDB reactivity updates the list automatically
   };
 
   const handleCloseNutritionGoalsModal = () => {
@@ -133,26 +166,42 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   };
 
   const handleSaveNutritionGoals = async (nutritionGoals: NutritionGoals) => {
+    const input = {
+      totalCalories: nutritionGoals.totalCalories,
+      protein: nutritionGoals.protein,
+      carbs: nutritionGoals.carbs,
+      fats: nutritionGoals.fats,
+      fiber: nutritionGoals.fiber,
+      eatingPhase: nutritionGoals.eatingPhase,
+      targetWeight: nutritionGoals.targetWeight,
+      targetBodyFat: nutritionGoals.targetBodyFat,
+      targetBMI: nutritionGoals.targetBMI,
+      targetFFMI: nutritionGoals.targetFFMI,
+      targetDate: nutritionGoals.targetDate ?? null,
+    };
+
     try {
-      await NutritionGoalService.saveGoals({
-        totalCalories: nutritionGoals.totalCalories,
-        protein: nutritionGoals.protein,
-        carbs: nutritionGoals.carbs,
-        fats: nutritionGoals.fats,
-        fiber: nutritionGoals.fiber,
-        eatingPhase: nutritionGoals.eatingPhase,
-        targetWeight: nutritionGoals.targetWeight,
-        targetBodyFat: nutritionGoals.targetBodyFat,
-        targetBMI: nutritionGoals.targetBMI,
-        targetFFMI: nutritionGoals.targetFFMI,
-        targetDate: nutritionGoals.targetDate ?? null,
-      });
+      if (isEditing && selectedGoal) {
+        await NutritionGoalService.updateGoal(selectedGoal.id, input);
+      } else {
+        const startDate = nutritionGoals.goalStartDate;
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        if (startDate != null && startDate < todayStart.getTime()) {
+          await NutritionGoalService.addGoalAtDate(input, startDate);
+        } else {
+          await NutritionGoalService.saveGoals(input);
+        }
+      }
       // No manual reload needed — WatermelonDB reactivity triggers automatic refresh
       setNutritionGoalsModalVisible(false);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
     }
   };
+
+  const editModalInitialGoals =
+    isEditing && selectedGoal ? goalToFormData(selectedGoal) : currentGoalsData;
 
   return (
     <>
@@ -209,12 +258,15 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   </View>
 
                   {/* Current Goal Card */}
-                  <CurrentGoalsCard goal={currentGoal} />
+                  <CurrentGoalsCard
+                    goal={currentGoal}
+                    onEdit={current ? () => handleEditGoal(current) : undefined}
+                  />
                 </View>
               ) : null}
 
               {/* Goals History Section */}
-              {goalsHistory.length > 0 ? (
+              {historyWithRaw.length > 0 ? (
                 <View className="mb-6">
                   <Text
                     className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
@@ -224,16 +276,24 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   </Text>
 
                   <View>
-                    {goalsHistory.map((goal, index) => {
-                      const isLast = index === goalsHistory.length - 1;
-                      return <GoalHistoryCard key={goal.id} goal={goal} isLast={isLast} />;
+                    {historyWithRaw.map(({ display, raw }, index) => {
+                      const isLast = index === historyWithRaw.length - 1;
+                      return (
+                        <GoalHistoryCard
+                          key={display.id}
+                          goal={display}
+                          isLast={isLast}
+                          onEdit={() => handleEditGoal(raw)}
+                          onDelete={() => handleDeleteGoal(raw)}
+                        />
+                      );
                     })}
                   </View>
                 </View>
               ) : null}
 
               {/* Empty state */}
-              {!currentGoal && goalsHistory.length === 0 ? (
+              {!currentGoal && historyWithRaw.length === 0 ? (
                 <View className="flex-1 items-center justify-center py-16">
                   <Text className="text-center text-text-secondary">
                     {t('goalsManagement.subtitle')}
@@ -255,7 +315,18 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         visible={nutritionGoalsModalVisible}
         onClose={handleCloseNutritionGoalsModal}
         onSave={handleSaveNutritionGoals}
-        initialGoals={currentGoalsData}
+        initialGoals={editModalInitialGoals}
+        isEditing={isEditing}
+      />
+
+      <ConfirmationModal
+        visible={confirmDeleteVisible}
+        onClose={() => setConfirmDeleteVisible(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('goalsManagement.deleteGoal')}
+        message={t('goalsManagement.deleteGoalMessage')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
       />
     </>
   );

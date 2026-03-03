@@ -1,4 +1,5 @@
-import { Activity, Calculator, Calendar, Percent, Scale } from 'lucide-react-native';
+import { Activity, Calculator, Calendar, Pencil, Percent, Scale } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -7,7 +8,9 @@ import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
+import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
 interface CurrentGoal {
@@ -25,24 +28,21 @@ interface CurrentGoal {
 
 interface CurrentGoalsCardProps {
   goal: CurrentGoal;
+  onEdit?: () => void;
 }
 
-export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
+export function CurrentGoalsCard({ goal, onEdit }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay =
     goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
+  const [menuVisible, setMenuVisible] = useState(false);
 
   return (
     <GenericCard variant="card">
       <View className="relative p-5">
-        {/* Eating Phase Badge */}
-        <View className="absolute right-0 top-0 p-4">
-          <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
-        </View>
-
         {/* Daily Target */}
         <View className="mb-6">
           <Text
@@ -212,6 +212,30 @@ export function CurrentGoalsCard({ goal }: CurrentGoalsCardProps) {
               </View>
             ) : null}
           </View>
+        ) : null}
+
+        {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
+        <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
+          <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
+          {onEdit ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
+        </View>
+
+        {onEdit ? (
+          <BottomPopUpMenu
+            visible={menuVisible}
+            onClose={() => setMenuVisible(false)}
+            title={t('goalsManagement.manageGoalData.goalOptions')}
+            items={[
+              {
+                icon: Pencil,
+                iconColor: theme.colors.text.primary,
+                iconBgColor: theme.colors.text.primary20,
+                title: t('goalsManagement.manageGoalData.editGoal'),
+                description: t('goalsManagement.manageGoalData.editGoalDesc'),
+                onPress: onEdit,
+              },
+            ]}
+          />
         ) : null}
       </View>
     </GenericCard>

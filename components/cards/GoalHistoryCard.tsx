@@ -1,4 +1,5 @@
-import { History } from 'lucide-react-native';
+import { History, Pencil, Trash2 } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -7,7 +8,9 @@ import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
+import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
 interface GoalHistoryItem {
@@ -25,14 +28,47 @@ interface GoalHistoryItem {
 interface GoalHistoryCardProps {
   goal: GoalHistoryItem;
   isLast?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) {
+export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const weightDisplay = kgToDisplay(goal.weight, units);
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const hasMenu = onEdit != null || onDelete != null;
+
+  const menuItems: BottomPopUpMenuItem[] = [
+    ...(onEdit
+      ? [
+          {
+            icon: Pencil,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.editGoal'),
+            description: t('goalsManagement.manageGoalData.editGoalDesc'),
+            onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onDelete
+      ? [
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error10,
+            title: t('goalsManagement.manageGoalData.deleteGoal'),
+            description: t('goalsManagement.manageGoalData.deleteGoalDesc'),
+            titleColor: theme.colors.status.error,
+            onPress: onDelete,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <View className="relative mb-6 flex-row gap-4">
@@ -60,8 +96,20 @@ export function GoalHistoryCard({ goal, isLast = false }: GoalHistoryCardProps) 
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xs font-semibold text-text-secondary">{goal.dateRange}</Text>
-          <EatingPhaseBadge phase={goal.phase} variant="compact" showBorder={true} />
+          <View className="flex-row items-center gap-1">
+            <EatingPhaseBadge phase={goal.phase} variant="compact" showBorder={true} />
+            {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
+          </View>
         </View>
+
+        {hasMenu ? (
+          <BottomPopUpMenu
+            visible={menuVisible}
+            onClose={() => setMenuVisible(false)}
+            title={t('goalsManagement.manageGoalData.goalOptions')}
+            items={menuItems}
+          />
+        ) : null}
 
         <GenericCard variant="card">
           <View className="p-3">

@@ -7,6 +7,10 @@
     "history": "GOALS HISTORY",
     "newGoal": "New Goal",
     "emptyStateMessage": "Create a new goal to get started",
+    "editGoal": "Edit",
+    "deleteGoalAction": "Delete",
+    "deleteGoal": "Delete Goal",
+    "deleteGoalMessage": "This goal will be permanently removed from your history.",
     "manageGoalData": {
       "deleteGoalWarning": "Are you sure you want to delete this goal? This action cannot be undone.",
       "title": "Nutrition goals",

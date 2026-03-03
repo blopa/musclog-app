@@ -11,6 +11,7 @@ type NutritionGoalsModalProps = {
   onClose: () => void;
   onSave?: (goals: NutritionGoals) => void;
   initialGoals?: Partial<NutritionGoals>;
+  isEditing?: boolean;
 };
 
 // Re-export for convenience
@@ -21,6 +22,7 @@ export function NutritionGoalsModal({
   onClose,
   onSave,
   initialGoals,
+  isEditing = false,
 }: NutritionGoalsModalProps) {
   const { t } = useTranslation();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | undefined>(undefined);
@@ -40,11 +42,11 @@ export function NutritionGoalsModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('nutritionGoals.title')}
+      title={isEditing ? t('nutritionGoals.editTitle') : t('nutritionGoals.title')}
       scrollable={false}
       footer={
         <Button
-          label={t('nutritionGoals.saveGoals')}
+          label={isEditing ? t('nutritionGoals.updateGoal') : t('nutritionGoals.saveGoals')}
           icon={ChevronRight}
           iconPosition="right"
           variant="gradientCta"
@@ -59,6 +61,7 @@ export function NutritionGoalsModal({
         onFormChange={setCurrentGoals}
         initialGoals={initialGoals}
         showSaveButton={false}
+        showGoalStartDate={!isEditing}
       />
     </FullScreenModal>
   );

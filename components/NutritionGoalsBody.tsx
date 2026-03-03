@@ -37,6 +37,7 @@ export type NutritionGoals = {
   targetBMI: number;
   targetFFMI: number;
   targetDate?: number | null;
+  goalStartDate?: number | null;
 };
 
 type NutritionGoalsModalBodyProps = {
@@ -45,6 +46,7 @@ type NutritionGoalsModalBodyProps = {
   initialGoals?: Partial<NutritionGoals>;
   showSaveButton?: boolean;
   showSubtitle?: boolean;
+  showGoalStartDate?: boolean;
 };
 
 type MacroCardProps = {
@@ -299,6 +301,7 @@ export function NutritionGoalsBody({
   initialGoals,
   showSaveButton = true,
   showSubtitle = true,
+  showGoalStartDate = false,
 }: NutritionGoalsModalBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -323,7 +326,11 @@ export function NutritionGoalsBody({
   const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
   const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
+  const [goalStartDate, setGoalStartDate] = useState<number | null>(
+    initialGoals?.goalStartDate ?? null
+  );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
+  const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
   const isInitialMount = useRef(true);
 
   // Dynamically compute sensible max values for macros depending on eating phase
@@ -385,6 +392,7 @@ export function NutritionGoalsBody({
         targetBMI,
         targetFFMI,
         targetDate,
+        goalStartDate,
       });
     }
   }, [
@@ -399,6 +407,7 @@ export function NutritionGoalsBody({
     targetBMI,
     targetFFMI,
     targetDate,
+    goalStartDate,
     onFormChange,
   ]);
 
@@ -415,12 +424,14 @@ export function NutritionGoalsBody({
       targetBMI,
       targetFFMI,
       targetDate,
+      goalStartDate,
     } as NutritionGoals);
   }, [
     carbs,
     eatingPhase,
     fats,
     fiber,
+    goalStartDate,
     onSave,
     protein,
     targetBMI,
@@ -507,6 +518,65 @@ export function NutritionGoalsBody({
             onValueChange={(val) => setEatingPhase(val as EatingPhase)}
           />
         </View>
+
+        {/* Goal Start Date (only shown in create mode) */}
+        {showGoalStartDate ? (
+          <Pressable
+            onPress={() => setIsGoalStartDatePickerVisible(true)}
+            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
+          >
+            <View className="flex-1 flex-row items-center gap-3 pr-3">
+              {showIcons ? (
+                <View
+                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                >
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                </View>
+              ) : null}
+              <View className="flex-1">
+                <Text className="font-semibold text-white">
+                  {t('nutritionGoals.goalStartDate')}
+                </Text>
+                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                  {t('nutritionGoals.goalStartDateSublabel')}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-shrink flex-row items-center gap-2">
+              <Text className="text-text-secondary" numberOfLines={1}>
+                {goalStartDate != null
+                  ? format(new Date(goalStartDate), 'MMM d, yyyy')
+                  : t('nutritionGoals.goalStartDateToday')}
+              </Text>
+              {goalStartDate != null ? (
+                <Pressable
+                  hitSlop={8}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setGoalStartDate(null);
+                  }}
+                >
+                  <Text className="text-xs text-accent-primary">
+                    {t('nutritionGoals.targetDateClear')}
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          </Pressable>
+        ) : null}
+
+        {isGoalStartDatePickerVisible ? (
+          <DatePickerModal
+            visible={isGoalStartDatePickerVisible}
+            onClose={() => setIsGoalStartDatePickerVisible(false)}
+            selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
+            onDateSelect={(date) => {
+              setGoalStartDate(date.getTime());
+              setIsGoalStartDatePickerVisible(false);
+            }}
+          />
+        ) : null}
 
         {/* Daily Macro Targets */}
         <Text

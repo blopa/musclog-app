@@ -19,6 +19,11 @@
     "targetDateNotSet": "Not set",
     "targetDateSublabel": "When you want to reach your body targets",
     "targetDateClear": "Clear",
+    "editTitle": "Edit Goal",
+    "updateGoal": "Update Goal",
+    "goalStartDate": "Goal Start Date",
+    "goalStartDateSublabel": "When this goal period started",
+    "goalStartDateToday": "Today",
     "saveGoals": "Save Goals",
     "settingsNote": "You can change these values anytime in Settings.",
     "kcalPerGram": {

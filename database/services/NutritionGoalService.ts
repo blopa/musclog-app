@@ -186,6 +186,57 @@ export class NutritionGoalService {
   }
 
   /**
+   * Insert a goal that started at a specific past (or present) date.
+   * Finds the goal that was active during startDate, splits its period at startDate,
+   * and creates the new goal with the correct effectiveUntil.
+   */
+  static async addGoalAtDate(data: NutritionGoalInput, startDate: number): Promise<NutritionGoal> {
+    return await database.write(async () => {
+      const now = Date.now();
+
+      // All non-deleted goals, oldest first
+      const allGoals = await database
+        .get<NutritionGoal>('nutrition_goals')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
+        .fetch();
+
+      // Find the goal whose active period includes startDate
+      const prevGoal = allGoals.find(
+        (g) =>
+          g.createdAt <= startDate && (g.effectiveUntil == null || g.effectiveUntil > startDate)
+      );
+
+      // New goal inherits prevGoal's effectiveUntil
+      const newEffectiveUntil = prevGoal?.effectiveUntil ?? null;
+
+      // Truncate prevGoal's period at startDate
+      if (prevGoal) {
+        await prevGoal.update((r) => {
+          r.effectiveUntil = startDate;
+          r.updatedAt = now;
+        });
+      }
+
+      return await database.get<NutritionGoal>('nutrition_goals').create((r) => {
+        r.totalCalories = data.totalCalories;
+        r.protein = data.protein;
+        r.carbs = data.carbs;
+        r.fats = data.fats;
+        r.fiber = data.fiber;
+        r.eatingPhase = data.eatingPhase;
+        r.targetWeight = data.targetWeight;
+        r.targetBodyFat = data.targetBodyFat;
+        r.targetBmi = data.targetBMI;
+        r.targetFfmi = data.targetFFMI;
+        r.targetDate = data.targetDate ?? null;
+        r.effectiveUntil = newEffectiveUntil;
+        r.createdAt = startDate;
+        r.updatedAt = now;
+      });
+    });
+  }
+
+  /**
    * Delete nutrition goal (soft delete)
    */
   static async deleteGoal(id: string): Promise<void> {
