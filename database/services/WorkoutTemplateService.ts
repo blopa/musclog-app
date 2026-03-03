@@ -964,6 +964,31 @@ export class WorkoutTemplateService {
   }
 
   /**
+   * Build a plain-text share message for a workout template.
+   * Includes the template name, optional description, and bullet-listed exercise names.
+   */
+  static async getShareMessage(templateId: string): Promise<string> {
+    const { template, sets } = await this.getTemplateWithDetails(templateId);
+    const exerciseIds = [...new Set(sets.map((s) => s.exerciseId).filter(Boolean))] as string[];
+    const exercises =
+      exerciseIds.length > 0
+        ? await database
+            .get<Exercise>('exercises')
+            .query(Q.where('id', Q.oneOf(exerciseIds)))
+            .fetch()
+        : [];
+    const exerciseNames = exerciseIds
+      .map((id) => exercises.find((e) => e.id === id)?.name)
+      .filter(Boolean) as string[];
+    const lines = [
+      template.name ?? '',
+      ...(template.description ? [template.description] : []),
+      ...(exerciseNames.length > 0 ? ['', ...exerciseNames.map((name) => `• ${name}`)] : []),
+    ];
+    return lines.join('\n');
+  }
+
+  /**
    * Delete workout template (soft delete)
    */
   static async deleteTemplate(id: string): Promise<void> {
