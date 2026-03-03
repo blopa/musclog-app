@@ -6,6 +6,7 @@ import {
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
 } from '../../utils/activeWorkoutStorage';
+import { calculateWorkoutKcal, type MWEMInput } from '../../utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -17,6 +18,8 @@ import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import { SettingsService } from './SettingsService';
+import { UserMetricService } from './UserMetricService';
+import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
 
 export class WorkoutService {
@@ -233,6 +236,68 @@ export class WorkoutService {
 
       // Reload to get updated values
       const completedWorkout = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      // Calculate calories burned using MWEM (best-effort, never blocks completion)
+      try {
+        const [user, weightMetric, heightMetric] = await Promise.all([
+          UserService.getCurrentUser(),
+          UserMetricService.getLatest('weight'),
+          UserMetricService.getLatest('height'),
+        ]);
+
+        if (user && weightMetric && heightMetric) {
+          const [{ value: weightKg }, { value: heightCm }] = await Promise.all([
+            weightMetric.getDecrypted(),
+            heightMetric.getDecrypted(),
+          ]);
+
+          if (weightKg > 0 && heightCm > 0) {
+            const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
+            const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+            const setsByExercise = new Map<string, WorkoutLogSet[]>();
+            for (const set of sets) {
+              const eid = set.exerciseId ?? '';
+              if (!setsByExercise.has(eid)) {
+                setsByExercise.set(eid, []);
+              }
+              setsByExercise.get(eid)!.push(set);
+            }
+
+            const mwemInputs: MWEMInput[] = Array.from(setsByExercise.entries()).flatMap(
+              ([exerciseId, exerciseSets]) => {
+                const exercise = exerciseMap.get(exerciseId);
+                if (!exercise) {
+                  return [];
+                }
+
+                return [
+                  {
+                    user: { weightKg, heightCm, gender: user.gender },
+                    exercise: {
+                      mechanicType: exercise.mechanicType,
+                      muscleGroup: exercise.muscleGroup,
+                      equipmentType: exercise.equipmentType,
+                      loadMultiplier: exercise.loadMultiplier ?? 1,
+                    },
+                    sets: exerciseSets.map((s) => ({ weight: s.weight ?? 0, reps: s.reps ?? 0 })),
+                  },
+                ];
+              }
+            );
+
+            const totalKcal = calculateWorkoutKcal(mwemInputs);
+            if (totalKcal > 0) {
+              await database.write(async () => {
+                await completedWorkout.update((log) => {
+                  log.caloriesBurned = Math.round(totalKcal);
+                });
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('MWEM calorie calculation failed:', err);
+      }
 
       // Detect personal records
       const personalRecords = await WorkoutAnalytics.detectPersonalRecords(completedWorkout);
