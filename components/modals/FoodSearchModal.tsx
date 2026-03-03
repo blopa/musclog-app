@@ -1,4 +1,4 @@
-import { History, Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
+import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,15 +14,15 @@ import {
 
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
-import NutritionLog from '../../database/models/NutritionLog';
 import { FoodPortionService, NutritionService } from '../../database/services';
 import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
 import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
+import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
-import { GenericCard } from '../cards/GenericCard';
+import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -49,6 +49,8 @@ type FoodSearchModalProps = {
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
+  /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
+  onFoodTracked?: () => void;
 };
 
 type UnderlineTabsProps = {
@@ -156,15 +158,6 @@ type MealCardData = {
   fat: number;
 };
 
-type YesterdayMealData = {
-  logs: NutritionLog[];
-  totalCalories: number;
-  totalProtein: number;
-  totalCarbs: number;
-  totalFat: number;
-  items: { name: string; calories: number }[];
-};
-
 type MealSearchCardProps = {
   mealData: MealCardData;
   onAddPress: () => void;
@@ -239,6 +232,7 @@ export function FoodSearchModal({
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
+  onFoodTracked,
 }: FoodSearchModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -252,10 +246,13 @@ export function FoodSearchModal({
   const [portion100gName, setPortion100gName] = useState<string>('100g');
   const [isRecentNutritionHistoryModalVisible, setIsRecentNutritionHistoryModalVisible] =
     useState(false);
-  const [yesterdayMealData, setYesterdayMealData] = useState<YesterdayMealData | null>(null);
-  const [isLoadingYesterday, setIsLoadingYesterday] = useState(false);
   const [confirmSameAsYesterdayVisible, setConfirmSameAsYesterdayVisible] = useState(false);
   const [isAddingSameAsYesterday, setIsAddingSameAsYesterday] = useState(false);
+
+  const { yesterdayMealData, isLoadingYesterday } = useYesterdayMealData({
+    visible,
+    mealType,
+  });
 
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
@@ -272,73 +269,6 @@ export function FoodSearchModal({
       mounted = false;
     };
   }, [visible]);
-
-  // TODO: move this to a hook
-  useEffect(() => {
-    if (!visible || !mealType) {
-      setYesterdayMealData(null);
-      return;
-    }
-
-    let mounted = true;
-    setIsLoadingYesterday(true);
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
-
-    const doTask = async () => {
-      try {
-        const logs = await NutritionService.getNutritionLogsForMeal(yesterday, mealType);
-        if (!mounted || logs.length === 0) {
-          if (mounted) {
-            setYesterdayMealData(null);
-          }
-
-          return;
-        }
-
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFat = 0;
-        const items: { name: string; calories: number }[] = [];
-        for (const log of logs) {
-          const [name, nutrients] = await Promise.all([log.getDisplayName(), log.getNutrients()]);
-          totalCalories += nutrients.calories;
-          totalProtein += nutrients.protein;
-          totalCarbs += nutrients.carbs;
-          totalFat += nutrients.fat;
-          items.push({ name, calories: Math.round(nutrients.calories) });
-        }
-
-        if (mounted) {
-          setYesterdayMealData({
-            logs,
-            totalCalories: Math.round(totalCalories),
-            totalProtein: Math.round(totalProtein),
-            totalCarbs: Math.round(totalCarbs),
-            totalFat: Math.round(totalFat),
-            items,
-          });
-        }
-      } catch (err) {
-        console.error('Error loading yesterday meal:', err);
-        if (mounted) {
-          setYesterdayMealData(null);
-        }
-      } finally {
-        if (mounted) {
-          setIsLoadingYesterday(false);
-        }
-      }
-    };
-
-    doTask();
-
-    return () => {
-      mounted = false;
-    };
-  }, [visible, mealType]);
 
   // Get recent local foods for the "Recent History" section
   const { foods: recentFoods } = useFoods({
@@ -388,7 +318,7 @@ export function FoodSearchModal({
     hasMore: hasMoreFavoriteFoods,
     loadMore: loadMoreFavoriteFoods,
     totalCount: favoriteFoodsCount,
-    error: favoriteFoodsError, // TODO: use this variable
+    error: favoriteFoodsError,
   } = useFavoriteFoods({
     visible: visible && !searchQuery, // Always load count, but only load foods when not searching
     initialLimit: 10,
@@ -684,6 +614,7 @@ export function FoodSearchModal({
         await NutritionService.logFood(log.foodId, targetDate, mealType, log.amount, log.portionId);
       }
       onFoodSelect?.({} as FoodItem);
+      onFoodTracked?.();
       onClose();
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'), {
         action: t('snackbar.ok'),
@@ -696,7 +627,7 @@ export function FoodSearchModal({
     } finally {
       setIsAddingSameAsYesterday(false);
     }
-  }, [yesterdayMealData, mealType, logDate, onFoodSelect, onClose, showSnackbar, t]);
+  }, [yesterdayMealData, mealType, logDate, onFoodSelect, onFoodTracked, onClose, showSnackbar, t]);
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>
@@ -981,6 +912,12 @@ export function FoodSearchModal({
                           <View className="py-4">
                             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                           </View>
+                        ) : favoriteFoodsError ? (
+                          <View className="py-8 text-center">
+                            <Text className="text-center text-text-tertiary">
+                              {t('foodSearch.loadFavoritesError')}
+                            </Text>
+                          </View>
                         ) : favoriteFoods.length > 0 ? (
                           <>
                             {favoriteFoods.map((food) => (
@@ -1122,176 +1059,11 @@ export function FoodSearchModal({
                       !isLoadingYesterday &&
                       yesterdayMealData &&
                       yesterdayMealData.logs.length > 0 ? (
-                        // TODO: move this to a separate file component
-                        <View style={{ marginTop: theme.spacing.padding.lg }}>
-                          <SectionHeader title={t('foodSearch.sameAsYesterday')} icon={History} />
-                          <GenericCard
-                            isPressable
-                            onPress={() => setConfirmSameAsYesterdayVisible(true)}
-                            variant="card"
-                            containerStyle={{
-                              borderWidth: theme.borderWidth.thin,
-                              borderColor: theme.colors.accent.secondary31,
-                              overflow: 'hidden',
-                            }}
-                          >
-                            <View
-                              className="flex-row items-center"
-                              style={{
-                                padding: theme.spacing.padding.xl,
-                                gap: theme.spacing.gap.xl,
-                              }}
-                            >
-                              {/* Content column: reserves space so it never overlaps the button */}
-                              <View
-                                className="min-w-0 flex-1"
-                                style={{
-                                  paddingRight: theme.spacing.padding.md,
-                                }}
-                              >
-                                <View
-                                  className="flex-row items-start justify-between"
-                                  style={{ marginBottom: theme.spacing.padding.lg }}
-                                >
-                                  <View
-                                    style={{
-                                      flexShrink: 0,
-                                      paddingRight: theme.spacing.padding.sm,
-                                    }}
-                                  >
-                                    <Text
-                                      className="text-xs font-bold uppercase tracking-tighter"
-                                      style={{
-                                        color: theme.colors.accent.secondary,
-                                        marginBottom: 2,
-                                      }}
-                                    >
-                                      {t('foodSearch.yesterdayMealTitle', {
-                                        meal: mealLabel,
-                                      })}
-                                    </Text>
-                                    <View
-                                      className="flex-row flex-wrap"
-                                      style={{
-                                        gap: theme.spacing.gap.sm,
-                                        alignItems: 'center',
-                                      }}
-                                    >
-                                      <Text
-                                        className="text-[11px] font-bold tracking-tight"
-                                        style={{ color: theme.colors.macros.protein.text }}
-                                      >
-                                        {/*TODO: use i18n here*/}
-                                        P: {yesterdayMealData.totalProtein}g
-                                      </Text>
-                                      <Text
-                                        className="text-[11px] font-bold tracking-tight"
-                                        style={{ color: theme.colors.macros.carbs.text }}
-                                      >
-                                        {/*TODO: use i18n here*/}
-                                        C: {yesterdayMealData.totalCarbs}g
-                                      </Text>
-                                      <Text
-                                        className="text-[11px] font-bold tracking-tight"
-                                        style={{ color: theme.colors.macros.fat.text }}
-                                      >
-                                        {/*TODO: use i18n here*/}
-                                        F: {yesterdayMealData.totalFat}g
-                                      </Text>
-                                    </View>
-                                  </View>
-                                  <Text
-                                    className="text-xs font-bold text-text-primary"
-                                    style={{ flexShrink: 0 }}
-                                  >
-                                    {/*TODO: use i18n here*/}
-                                    Total: {yesterdayMealData.totalCalories} {t('food.common.kcal')}
-                                  </Text>
-                                </View>
-                                <View
-                                  style={{
-                                    height: 1,
-                                    width: '100%',
-                                    marginBottom: theme.spacing.padding.lg,
-                                    backgroundColor: theme.colors.border.light,
-                                  }}
-                                />
-                                <View style={{ gap: theme.spacing.gap.sm }}>
-                                  {yesterdayMealData.items.map((item, index) => (
-                                    <View
-                                      key={`${item.name}-${index}`}
-                                      className="flex-row items-center justify-between"
-                                      style={{ gap: theme.spacing.gap.sm }}
-                                    >
-                                      <View
-                                        className="min-w-0 flex-1 flex-row items-center"
-                                        style={{ gap: theme.spacing.gap.sm }}
-                                      >
-                                        <View
-                                          style={{
-                                            width: 6,
-                                            height: 6,
-                                            borderRadius: 3,
-                                            backgroundColor: theme.colors.accent.secondary31,
-                                            flexShrink: 0,
-                                          }}
-                                        />
-                                        <Text
-                                          className="text-sm font-medium text-text-primary"
-                                          numberOfLines={1}
-                                          ellipsizeMode="tail"
-                                          style={{ flex: 1, minWidth: 0 }}
-                                        >
-                                          {item.name}
-                                        </Text>
-                                      </View>
-                                      <Text
-                                        className="text-xs text-text-secondary"
-                                        style={{ flexShrink: 0 }}
-                                      >
-                                        {item.calories} {t('food.common.kcal')}
-                                      </Text>
-                                    </View>
-                                  ))}
-                                </View>
-                              </View>
-                              {/* Add All button - fixed width so content never clips under it */}
-                              <View
-                                className="flex-col items-center"
-                                style={{
-                                  flexShrink: 0,
-                                  gap: theme.spacing.gap.sm,
-                                  paddingLeft: theme.spacing.padding.sm,
-                                }}
-                              >
-                                <Pressable
-                                  onPress={(e) => {
-                                    e?.stopPropagation?.();
-                                    setConfirmSameAsYesterdayVisible(true);
-                                  }}
-                                  className="items-center justify-center rounded-full active:scale-90"
-                                  style={{
-                                    width: theme.size['12'],
-                                    height: theme.size['12'],
-                                    backgroundColor: theme.colors.accent.primary,
-                                    ...theme.shadows.lg,
-                                  }}
-                                >
-                                  <Plus
-                                    size={theme.iconSize.xl}
-                                    color={theme.colors.background.primary}
-                                  />
-                                </Pressable>
-                                <Text
-                                  className="text-[9px] font-bold uppercase tracking-tighter"
-                                  style={{ color: theme.colors.accent.secondary }}
-                                >
-                                  {t('foodSearch.addAll')}
-                                </Text>
-                              </View>
-                            </View>
-                          </GenericCard>
-                        </View>
+                        <SameAsYesterdayCard
+                          yesterdayMealData={yesterdayMealData}
+                          mealLabel={mealLabel}
+                          onAddAllPress={() => setConfirmSameAsYesterdayVisible(true)}
+                        />
                       ) : null}
                     </View>
                   )}
@@ -1356,7 +1128,10 @@ export function FoodSearchModal({
               setIsFoodDetailsVisible(false);
               setSelectedFood(null);
             }}
-            onFoodTracked={onClose}
+            onFoodTracked={() => {
+              onFoodTracked?.();
+              onClose();
+            }}
           />
         ) : null}
 
@@ -1384,7 +1159,10 @@ export function FoodSearchModal({
               setIsMealDetailsVisible(false);
               setSelectedMeal(null);
             }}
-            onFoodTracked={onClose}
+            onFoodTracked={() => {
+              onFoodTracked?.();
+              onClose();
+            }}
           />
         ) : null}
 

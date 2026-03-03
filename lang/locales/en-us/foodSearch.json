@@ -34,6 +34,7 @@
     "noRecentFoods": "No recent foods found. Start searching or add custom foods!",
     "createFood": "Create Food",
     "noFavoriteFoods": "No Favorite Foods",
+    "loadFavoritesError": "Failed to load favorites",
     "yourFavoriteFoods": "Your Favorite Foods",
     "noMeals": "No meals yet. Create one from the Meals screen.",
     "sameAsYesterday": "Same as Yesterday?",
@@ -42,6 +43,10 @@
     "confirmTrackSameAsYesterdayTitle": "Track these foods?",
     "confirmTrackSameAsYesterdayMessage": "Are you sure you want to track these foods for today's {{meal}}?",
     "sameAsYesterdaySuccess": "Foods logged successfully",
-    "sameAsYesterdayError": "Failed to log some foods"
+    "sameAsYesterdayError": "Failed to log some foods",
+    "macroProtein": "P: {{value}}g",
+    "macroCarbs": "C: {{value}}g",
+    "macroFat": "F: {{value}}g",
+    "totalWithKcal": "Total: {{calories}} {{kcal}}"
   }
 }

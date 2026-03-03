@@ -1,0 +1,98 @@
+import { useEffect, useState } from 'react';
+
+import { type MealType } from '../database/models';
+import NutritionLog from '../database/models/NutritionLog';
+import { NutritionService } from '../database/services';
+
+export type YesterdayMealData = {
+  logs: NutritionLog[];
+  totalCalories: number;
+  totalProtein: number;
+  totalCarbs: number;
+  totalFat: number;
+  items: { name: string; calories: number }[];
+};
+
+export interface UseYesterdayMealDataParams {
+  visible: boolean;
+  mealType: MealType | null | undefined;
+}
+
+/**
+ * Loads yesterday's meal logs for the given meal type (e.g. breakfast, lunch).
+ * Used by the "Same as yesterday" card in FoodSearchModal.
+ */
+export function useYesterdayMealData({ visible, mealType }: UseYesterdayMealDataParams): {
+  yesterdayMealData: YesterdayMealData | null;
+  isLoadingYesterday: boolean;
+} {
+  const [yesterdayMealData, setYesterdayMealData] = useState<YesterdayMealData | null>(null);
+  const [isLoadingYesterday, setIsLoadingYesterday] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !mealType) {
+      setYesterdayMealData(null);
+      return;
+    }
+
+    let mounted = true;
+    setIsLoadingYesterday(true);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    const doTask = async () => {
+      try {
+        const logs = await NutritionService.getNutritionLogsForMeal(yesterday, mealType);
+        if (!mounted || logs.length === 0) {
+          if (mounted) {
+            setYesterdayMealData(null);
+          }
+          return;
+        }
+
+        let totalCalories = 0;
+        let totalProtein = 0;
+        let totalCarbs = 0;
+        let totalFat = 0;
+        const items: { name: string; calories: number }[] = [];
+        for (const log of logs) {
+          const [name, nutrients] = await Promise.all([log.getDisplayName(), log.getNutrients()]);
+          totalCalories += nutrients.calories;
+          totalProtein += nutrients.protein;
+          totalCarbs += nutrients.carbs;
+          totalFat += nutrients.fat;
+          items.push({ name, calories: Math.round(nutrients.calories) });
+        }
+
+        if (mounted) {
+          setYesterdayMealData({
+            logs,
+            totalCalories: Math.round(totalCalories),
+            totalProtein: Math.round(totalProtein),
+            totalCarbs: Math.round(totalCarbs),
+            totalFat: Math.round(totalFat),
+            items,
+          });
+        }
+      } catch (err) {
+        console.error('Error loading yesterday meal:', err);
+        if (mounted) {
+          setYesterdayMealData(null);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoadingYesterday(false);
+        }
+      }
+    };
+
+    doTask();
+
+    return () => {
+      mounted = false;
+    };
+  }, [visible, mealType]);
+
+  return { yesterdayMealData, isLoadingYesterday };
+}
