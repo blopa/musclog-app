@@ -1,8 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import Food from '../models/Food';
-import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import MealFood from '../models/MealFood';
 
@@ -170,7 +168,6 @@ export class MealService {
    */
   static async removeFoodFromMeal(mealFoodId: string): Promise<void> {
     const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
     await mealFood.markAsDeleted();
   }
 
@@ -179,7 +176,6 @@ export class MealService {
    */
   static async deleteMeal(mealId: string): Promise<void> {
     const meal = await database.get<Meal>('meals').find(mealId);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
     await meal.markAsDeleted();
   }
 
@@ -198,42 +194,43 @@ export class MealService {
    * Duplicate meal (create a copy)
    */
   static async duplicateMeal(mealId: string, newName?: string): Promise<Meal> {
-    return await database.write(async () => {
-      const originalMeal = await database.get<Meal>('meals').find(mealId);
+    const originalMeal = await database.get<Meal>('meals').find(mealId);
 
-      if (originalMeal.deletedAt) {
-        throw new Error('Cannot duplicate deleted meal');
-      }
+    if (originalMeal.deletedAt) {
+      throw new Error('Cannot duplicate deleted meal');
+    }
 
-      const originalFoods = await originalMeal.mealFoods.fetch();
+    const originalFoods = await originalMeal.mealFoods.fetch();
+    const now = Date.now();
+    const mealCollection = database.get<Meal>('meals');
+    const mealFoodCollection = database.get<MealFood>('meal_foods');
 
-      // Create new meal
-      const now = Date.now();
-      const newMeal = await database.get<Meal>('meals').create((meal) => {
-        meal.isAiGenerated = false;
-        meal.name = newName || `${originalMeal.name} (Copy)`;
-        meal.description = originalMeal.description;
-        meal.isFavorite = false;
-        meal.createdAt = now;
-        meal.updatedAt = now;
-      });
-
-      // Copy all foods
-      for (const mealFood of originalFoods) {
-        if (!mealFood.deletedAt) {
-          await database.get<MealFood>('meal_foods').create((newMealFood) => {
-            newMealFood.mealId = newMeal.id;
-            newMealFood.foodId = mealFood.foodId;
-            newMealFood.amount = mealFood.amount;
-            newMealFood.portionId = mealFood.portionId;
-            newMealFood.createdAt = now;
-            newMealFood.updatedAt = now;
-          });
-        }
-      }
-
-      return newMeal;
+    const newMeal = mealCollection.prepareCreate((meal) => {
+      meal.isAiGenerated = false;
+      meal.name = newName || `${originalMeal.name} (Copy)`;
+      meal.description = originalMeal.description;
+      meal.isFavorite = false;
+      meal.createdAt = now;
+      meal.updatedAt = now;
     });
+
+    const newMealFoods = originalFoods
+      .filter((mf) => !mf.deletedAt)
+      .map((mf) =>
+        mealFoodCollection.prepareCreate((newMealFood) => {
+          newMealFood.mealId = newMeal.id;
+          newMealFood.foodId = mf.foodId;
+          newMealFood.amount = mf.amount;
+          newMealFood.portionId = mf.portionId;
+          newMealFood.createdAt = now;
+          newMealFood.updatedAt = now;
+        })
+      );
+
+    await database.write(async () => {
+      await database.batch(newMeal, ...newMealFoods);
+    });
+    return newMeal;
   }
 
   /**
@@ -248,33 +245,34 @@ export class MealService {
     }[],
     description?: string
   ): Promise<Meal> {
-    return await database.write(async () => {
-      const now = Date.now();
+    const now = Date.now();
+    const mealCollection = database.get<Meal>('meals');
+    const mealFoodCollection = database.get<MealFood>('meal_foods');
 
-      // Create meal
-      const meal = await database.get<Meal>('meals').create((mealRecord) => {
-        mealRecord.isAiGenerated = false;
-        mealRecord.name = name;
-        mealRecord.description = description ?? '';
-        mealRecord.isFavorite = false;
-        mealRecord.createdAt = now;
-        mealRecord.updatedAt = now;
-      });
-
-      // Add all foods to meal
-      for (const foodItem of foodItems) {
-        await database.get<MealFood>('meal_foods').create((mealFood) => {
-          mealFood.mealId = meal.id;
-          mealFood.foodId = foodItem.foodId;
-          mealFood.amount = foodItem.amount;
-          mealFood.portionId = foodItem.portionId;
-          mealFood.createdAt = now;
-          mealFood.updatedAt = now;
-        });
-      }
-
-      return meal;
+    const meal = mealCollection.prepareCreate((mealRecord) => {
+      mealRecord.isAiGenerated = false;
+      mealRecord.name = name;
+      mealRecord.description = description ?? '';
+      mealRecord.isFavorite = false;
+      mealRecord.createdAt = now;
+      mealRecord.updatedAt = now;
     });
+
+    const mealFoods = foodItems.map((foodItem) =>
+      mealFoodCollection.prepareCreate((mealFood) => {
+        mealFood.mealId = meal.id;
+        mealFood.foodId = foodItem.foodId;
+        mealFood.amount = foodItem.amount;
+        mealFood.portionId = foodItem.portionId;
+        mealFood.createdAt = now;
+        mealFood.updatedAt = now;
+      })
+    );
+
+    await database.write(async () => {
+      await database.batch(meal, ...mealFoods);
+    });
+    return meal;
   }
 
   /**
