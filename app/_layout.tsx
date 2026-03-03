@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
+import { healthDataSyncService } from '../services/healthDataSync';
 import { captureException } from '../utils/sentry';
 
 const queryClient = new QueryClient({
@@ -63,6 +64,17 @@ function AppContent() {
 }
 
 function RootLayout() {
+  // Boot-time Health Connect sync (Android only, best-effort, 7-day lookback)
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+
+    healthDataSyncService
+      .syncFromHealthConnect({ lookbackDays: 7 })
+      .catch((err) => console.warn('[boot sync] Health Connect sync error:', err));
+  }, []);
+
   useEffect(() => {
     // 2. Setup Focus Management for Mobile
     // This ensures TanStack Query knows when the app is active/foregrounded

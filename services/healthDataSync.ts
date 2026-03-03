@@ -1,10 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
-import type { RecordType } from 'react-native-health-connect';
 
 import { database } from '../database';
-import { encryptUserMetricFields } from '../database/encryptionHelpers';
 import Setting from '../database/models/Setting';
-import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
+import UserMetric from '../database/models/UserMetric';
 import i18n from '../lang/lang';
 import { healthConnectService } from './healthConnect';
 import {
@@ -13,12 +11,8 @@ import {
   HealthConnectErrorFactory,
   RETRY_CONFIG,
 } from './healthConnectErrors';
-import {
-  DataValidator,
-  HealthDataTransformer,
-  MetricType,
-  TimestampConverter,
-} from './healthDataTransform';
+import { syncFitnessMetrics } from './healthConnectFitness';
+import { syncNutritionFromHealthConnect } from './healthConnectNutrition';
 
 /**
  * Setting types for Health Connect sync tracking
@@ -197,7 +191,7 @@ class HealthDataSyncService {
 
     const {
       lookbackDays = 30,
-      batchSize = 100,
+      batchSize = 100, // TODO: use this
       retryAttempts = RETRY_CONFIG.maxAttempts,
       skipValidation = false,
     } = config;
@@ -238,73 +232,40 @@ class HealthDataSyncService {
       // Calculate time range
       const endTime = Date.now();
       const startTimeMs = endTime - lookbackDays * 24 * 60 * 60 * 1000;
+      const timeRange = { startTime: startTimeMs, endTime };
 
-      // Sync each metric type
-      const metricTypes: { hcType: RecordType; transformer: (record: any) => any }[] = [
-        {
-          hcType: 'Height',
-          transformer: HealthDataTransformer.transformHeight,
-        },
-        {
-          hcType: 'Weight',
-          transformer: HealthDataTransformer.transformWeight,
-        },
-        {
-          hcType: 'BodyFat',
-          transformer: HealthDataTransformer.transformBodyFat,
-        },
-        {
-          hcType: 'LeanBodyMass',
-          transformer: HealthDataTransformer.transformLeanBodyMass,
-        },
-        {
-          hcType: 'TotalCaloriesBurned',
-          transformer: HealthDataTransformer.transformTotalCalories,
-        },
-        {
-          hcType: 'ActiveCaloriesBurned',
-          transformer: HealthDataTransformer.transformActiveCalories,
-        },
-        {
-          hcType: 'BasalMetabolicRate',
-          transformer: HealthDataTransformer.transformBMR,
-        },
-      ];
+      // Sync fitness metrics (Height, Weight, BodyFat, etc.)
+      try {
+        const fitnessResult = await syncFitnessMetrics(timeRange, {
+          retryAttempts,
+          skipValidation,
+        });
+        result.recordsRead += fitnessResult.totalRead;
+        result.recordsWritten += fitnessResult.written + fitnessResult.updated;
+        result.recordsSkipped += fitnessResult.skipped + fitnessResult.deleted;
+      } catch (error) {
+        console.error('Error syncing fitness metrics:', error);
+        if (error instanceof HealthConnectError) {
+          result.errors.push(error);
+        } else {
+          result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
+        }
+      }
 
-      for (const { hcType, transformer } of metricTypes) {
-        try {
-          // Check if user has permission for this record type
-          const hasPermission = await healthConnectService.hasPermissionForRecordType(
-            hcType,
-            'read'
-          );
-          if (!hasPermission) {
-            console.log(`Skipping ${hcType}: no permission granted`);
-            // Count as skipped but don't error
-            result.recordsSkipped += 1;
-            continue;
-          }
-
-          const records = await this.syncMetricTypeWithRetry(
-            hcType,
-            { startTime: startTimeMs, endTime },
-            transformer,
-            {
-              retryAttempts,
-              skipValidation,
-            }
-          );
-
-          result.recordsRead += records.totalRead;
-          result.recordsWritten += records.written;
-          result.recordsSkipped += records.skipped;
-        } catch (error) {
-          console.error(`Error syncing ${hcType}:`, error);
-          if (error instanceof HealthConnectError) {
-            result.errors.push(error);
-          } else {
-            result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
-          }
+      // Sync nutrition logs (Nutrition records from Health Connect)
+      try {
+        const nutritionResult = await syncNutritionFromHealthConnect(timeRange, {
+          retryAttempts,
+        });
+        result.recordsRead += nutritionResult.totalRead;
+        result.recordsWritten += nutritionResult.written + nutritionResult.updated;
+        result.recordsSkipped += nutritionResult.skipped + nutritionResult.deleted;
+      } catch (error) {
+        console.error('Error syncing nutrition:', error);
+        if (error instanceof HealthConnectError) {
+          result.errors.push(error);
+        } else {
+          result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
         }
       }
 
@@ -327,167 +288,6 @@ class HealthDataSyncService {
     }
 
     return result;
-  }
-
-  /**
-   * Sync a specific metric type with retry logic
-   */
-  private async syncMetricTypeWithRetry(
-    recordType: RecordType,
-    timeRange: { startTime: number; endTime: number },
-    transformer: (record: any) => any,
-    options: { retryAttempts: number; skipValidation: boolean }
-  ): Promise<{ totalRead: number; written: number; skipped: number }> {
-    let lastError: Error | null = null;
-
-    for (let attempt = 1; attempt <= options.retryAttempts; attempt++) {
-      try {
-        return await this.syncMetricType(
-          recordType,
-          timeRange,
-          transformer,
-          options.skipValidation
-        );
-      } catch (error) {
-        lastError = error as Error;
-        console.warn(
-          `Attempt ${attempt}/${options.retryAttempts} failed for ${recordType}:`,
-          error
-        );
-
-        // Check if error is retryable
-        if (error instanceof HealthConnectError && !error.isRetryable()) {
-          throw error; // Don't retry non-retryable errors
-        }
-
-        // Wait before retry with exponential backoff
-        if (attempt < options.retryAttempts) {
-          const delay =
-            error instanceof HealthConnectError
-              ? error.getRetryDelay(attempt)
-              : 1000 * Math.pow(2, attempt - 1);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-      }
-    }
-
-    // All attempts failed
-    throw lastError || HealthConnectErrorFactory.unknownError();
-  }
-
-  /**
-   * Sync a specific metric type from Health Connect
-   */
-  private async syncMetricType(
-    recordType: RecordType,
-    timeRange: { startTime: number; endTime: number },
-    transformer: (record: any) => any,
-    skipValidation: boolean
-  ): Promise<{ totalRead: number; written: number; skipped: number }> {
-    // Read records from Health Connect
-    const hcRecords = await healthConnectService.readRecords(recordType, {
-      operator: 'between',
-      startTime: TimestampConverter.unixToIso(timeRange.startTime),
-      endTime: TimestampConverter.unixToIso(timeRange.endTime),
-    });
-
-    const totalRead = hcRecords.records?.length || 0;
-    let written = 0;
-    let skipped = 0;
-
-    if (totalRead === 0) {
-      return { totalRead, written, skipped };
-    }
-
-    // Transform and validate records
-    const transformedRecords: {
-      type: MetricType;
-      value: number;
-      unit: string;
-      date: number;
-      timezone: string;
-    }[] = [];
-
-    for (const hcRecord of hcRecords.records || []) {
-      try {
-        const transformed = transformer(hcRecord);
-
-        // Validate if not skipping
-        if (!skipValidation) {
-          DataValidator.validateMetricValue(transformed.type, transformed.value);
-          DataValidator.validateTimestamp(transformed.date);
-        }
-
-        transformedRecords.push(transformed);
-      } catch (error) {
-        console.warn(`Skipping invalid record for ${recordType}:`, error);
-        skipped++;
-      }
-    }
-
-    // Deduplicate by timestamp
-    const deduplicated = HealthDataTransformer.deduplicateRecords(transformedRecords);
-    skipped += transformedRecords.length - deduplicated.length;
-
-    // Check for existing records in database to prevent duplicates
-    const existingRecords = await this.getExistingMetrics(
-      deduplicated.map((r) => r.type),
-      deduplicated.map((r) => r.date)
-    );
-
-    const existingDates = new Set(
-      await Promise.all(existingRecords.map((r) => r.getDecrypted().then((d) => d.date)))
-    );
-
-    const newRecords = deduplicated.filter((r) => !existingDates.has(r.date));
-    skipped += deduplicated.length - newRecords.length;
-
-    if (newRecords.length > 0) {
-      await database.write(async () => {
-        for (const record of newRecords) {
-          const encrypted = await encryptUserMetricFields({
-            value: record.value,
-            unit: record.unit,
-            date: record.date,
-          });
-          await database.get<UserMetric>('user_metrics').create((metric) => {
-            metric.type = record.type as UserMetricType;
-            metric.valueRaw = encrypted.value;
-            metric.unitRaw = encrypted.unit;
-            metric.date = record.date;
-            metric.timezone = record.timezone;
-            metric.createdAt = Date.now();
-            metric.updatedAt = Date.now();
-          });
-          written++;
-        }
-      });
-    }
-
-    return { totalRead, written, skipped };
-  }
-
-  /**
-   * Get existing metrics from database to check for duplicates.
-   */
-  private async getExistingMetrics(types: MetricType[], dates: number[]): Promise<UserMetric[]> {
-    if (types.length === 0 || dates.length === 0) {
-      return [];
-    }
-
-    const uniqueTypes = Array.from(new Set(types));
-    const minDate = Math.min(...dates);
-    const maxDate = Math.max(...dates);
-
-    return await database
-      .get<UserMetric>('user_metrics')
-      .query(
-        Q.where('type', Q.oneOf(uniqueTypes)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.gte(minDate)),
-        Q.where('date', Q.lte(maxDate))
-      )
-      .fetch();
   }
 
   /**
