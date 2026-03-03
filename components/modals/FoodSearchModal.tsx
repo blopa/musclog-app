@@ -249,10 +249,12 @@ export function FoodSearchModal({
   const [confirmSameAsYesterdayVisible, setConfirmSameAsYesterdayVisible] = useState(false);
   const [isAddingSameAsYesterday, setIsAddingSameAsYesterday] = useState(false);
 
-  const { yesterdayMealData, isLoadingYesterday } = useYesterdayMealData({
-    visible,
-    mealType,
-  });
+  const { yesterdayMealData, isLoadingYesterday, hasItemsTrackedForSelectedDate } =
+    useYesterdayMealData({
+      visible,
+      mealType,
+      logDate,
+    });
 
   // Load the standard 100g portion name when modal is visible
   useEffect(() => {
@@ -1057,6 +1059,7 @@ export function FoodSearchModal({
 
                       {activeFilter === 'all' &&
                       !isLoadingYesterday &&
+                      !hasItemsTrackedForSelectedDate &&
                       yesterdayMealData &&
                       yesterdayMealData.logs.length > 0 ? (
                         <SameAsYesterdayCard

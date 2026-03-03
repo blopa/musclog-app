@@ -16,22 +16,33 @@ export type YesterdayMealData = {
 export interface UseYesterdayMealDataParams {
   visible: boolean;
   mealType: MealType | null | undefined;
+  /** Date we're logging for (e.g. today). Used to hide the block if this meal type already has items for that date. */
+  logDate?: Date;
 }
 
 /**
  * Loads yesterday's meal logs for the given meal type (e.g. breakfast, lunch).
  * Used by the "Same as yesterday" card in FoodSearchModal.
+ * Also returns whether the selected meal type has any items tracked for logDate (today);
+ * the card should only show when there are none.
  */
-export function useYesterdayMealData({ visible, mealType }: UseYesterdayMealDataParams): {
+export function useYesterdayMealData({
+  visible,
+  mealType,
+  logDate,
+}: UseYesterdayMealDataParams): {
   yesterdayMealData: YesterdayMealData | null;
   isLoadingYesterday: boolean;
+  hasItemsTrackedForSelectedDate: boolean;
 } {
   const [yesterdayMealData, setYesterdayMealData] = useState<YesterdayMealData | null>(null);
   const [isLoadingYesterday, setIsLoadingYesterday] = useState(false);
+  const [hasItemsTrackedForSelectedDate, setHasItemsTrackedForSelectedDate] = useState(false);
 
   useEffect(() => {
     if (!visible || !mealType) {
       setYesterdayMealData(null);
+      setHasItemsTrackedForSelectedDate(false);
       return;
     }
 
@@ -40,10 +51,24 @@ export function useYesterdayMealData({ visible, mealType }: UseYesterdayMealData
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0, 0, 0, 0);
+    const targetDate = logDate ?? new Date();
+    const targetDateNormalized = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    );
 
     const doTask = async () => {
       try {
-        const logs = await NutritionService.getNutritionLogsForMeal(yesterday, mealType);
+        const [logs, todayLogs] = await Promise.all([
+          NutritionService.getNutritionLogsForMeal(yesterday, mealType),
+          NutritionService.getNutritionLogsForMeal(targetDateNormalized, mealType),
+        ]);
+
+        if (mounted) {
+          setHasItemsTrackedForSelectedDate(todayLogs.length > 0);
+        }
+
         if (!mounted || logs.length === 0) {
           if (mounted) {
             setYesterdayMealData(null);
@@ -79,6 +104,7 @@ export function useYesterdayMealData({ visible, mealType }: UseYesterdayMealData
         console.error('Error loading yesterday meal:', err);
         if (mounted) {
           setYesterdayMealData(null);
+          setHasItemsTrackedForSelectedDate(false);
         }
       } finally {
         if (mounted) {
@@ -92,7 +118,7 @@ export function useYesterdayMealData({ visible, mealType }: UseYesterdayMealData
     return () => {
       mounted = false;
     };
-  }, [visible, mealType]);
+  }, [visible, mealType, logDate]);
 
-  return { yesterdayMealData, isLoadingYesterday };
+  return { yesterdayMealData, isLoadingYesterday, hasItemsTrackedForSelectedDate };
 }
