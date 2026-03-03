@@ -72,6 +72,7 @@ export default function SmartCameraModal({
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<any>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
+  const isSearchingBarcodeRef = useRef(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
@@ -124,16 +125,14 @@ export default function SmartCameraModal({
   // Handle automatic barcode detection
   const handleBarcodeScanned = useCallback(
     ({ data }: { data: string }) => {
-      if (cameraMode === 'barcode-scan' && !isSearchingBarcode) {
-        // TODO: even with the isSearchingBarcode flag, the barcode is sometimes detected twice
-        // I know this because it vibrates one time and then a few ms later it vibrates again
-        // so maybe instead os useState we should use a useRef to prevent the double detection?
+      if (cameraMode === 'barcode-scan' && !isSearchingBarcodeRef.current) {
+        isSearchingBarcodeRef.current = true;
         setIsSearchingBarcode(true);
         setDetectedBarcode(data);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       }
     },
-    [cameraMode, isSearchingBarcode]
+    [cameraMode]
   );
 
   const handleTakePicture = useCallback(async () => {
@@ -160,6 +159,7 @@ export default function SmartCameraModal({
             // Keep loading visible until food details modal is shown (cleared in useEffect above)
           } else {
             showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+            isSearchingBarcodeRef.current = false;
             setIsSearchingBarcode(false);
             // Show food not found modal instead of food details modal
             setIsFoodNotFoundModalVisible(true);
@@ -167,6 +167,7 @@ export default function SmartCameraModal({
         } catch (error) {
           console.error('Error detecting barcode:', error);
           showSnackbar('error', t('food.aiCamera.cameraError'));
+          isSearchingBarcodeRef.current = false;
           setIsSearchingBarcode(false);
         }
       } else if (cameraMode === 'ai-meal-photo' || cameraMode === 'ai-label-scan') {
@@ -186,6 +187,7 @@ export default function SmartCameraModal({
   }, [cameraMode, t]);
 
   const handleClose = useCallback(() => {
+    isSearchingBarcodeRef.current = false;
     onClose();
   }, [onClose]);
 
@@ -205,6 +207,7 @@ export default function SmartCameraModal({
   const handleFoodDetailsClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
+    isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
   }, []);
 
@@ -212,10 +215,12 @@ export default function SmartCameraModal({
     setIsFoodDetailsModalVisible(false);
     setIsFoodNotFoundModalVisible(false);
     setDetectedBarcode(null);
+    isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
   }, []);
 
   const handleBarcodeLookupComplete = useCallback(() => {
+    isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
   }, []);
 
@@ -301,6 +306,7 @@ export default function SmartCameraModal({
               // Keep loading visible until food details modal is shown (cleared in useEffect above)
             } else {
               showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
+              isSearchingBarcodeRef.current = false;
               setIsSearchingBarcode(false);
               // Show food not found modal instead of food details modal
               setIsFoodNotFoundModalVisible(true);
@@ -308,6 +314,7 @@ export default function SmartCameraModal({
           } catch (error) {
             console.error('Error detecting barcode from gallery:', error);
             showSnackbar('error', t('food.aiCamera.cameraError'));
+            isSearchingBarcodeRef.current = false;
             setIsSearchingBarcode(false);
           }
         }
@@ -319,6 +326,7 @@ export default function SmartCameraModal({
   }, [cameraMode, t]);
 
   if (!visible) {
+    isSearchingBarcodeRef.current = false;
     return null;
   }
 
@@ -326,7 +334,7 @@ export default function SmartCameraModal({
     return (
       <FullScreenModal
         visible={visible}
-        onClose={onClose}
+        onClose={handleClose}
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
@@ -347,7 +355,7 @@ export default function SmartCameraModal({
     return (
       <FullScreenModal
         visible={visible}
-        onClose={onClose}
+        onClose={handleClose}
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
@@ -372,7 +380,7 @@ export default function SmartCameraModal({
   return (
     <FullScreenModal
       visible={visible}
-      onClose={onClose}
+      onClose={handleClose}
       title={t('camera.title')}
       scrollable={false}
       showHeader={false}
@@ -748,7 +756,7 @@ export default function SmartCameraModal({
             onClose={handleFoodDetailsClose}
             barcode={detectedBarcode}
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
-            onFoodTracked={onClose}
+            onFoodTracked={handleClose}
           />
         ) : null}
 

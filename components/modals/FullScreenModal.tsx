@@ -91,7 +91,7 @@ export function FullScreenModal({
               end={{ x: 1, y: 0 }}
               className="flex-row items-center gap-4 px-4 py-4"
             >
-              <Pressable className="-ml-2 rounded-full p-2" onPress={onClose}>
+              <Pressable className="-ml-2 rounded-full p-2" onPress={onClose} hitSlop={10}>
                 <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
               </Pressable>
               <View className="flex-1">
