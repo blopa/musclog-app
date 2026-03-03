@@ -143,8 +143,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {/*TODO: use i18n here*/}
-              P: {Math.round((food.protein * amount) / 100)}g
+              {t('foodSearch.macroProtein', { value: Math.round((food.protein * amount) / 100) })}
             </Text>
             <Text
               style={{
@@ -153,8 +152,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {/*TODO: use i18n here*/}
-              C: {Math.round((food.carbs * amount) / 100)}g
+              {t('foodSearch.macroCarbs', { value: Math.round((food.carbs * amount) / 100) })}
             </Text>
             <Text
               style={{
@@ -163,8 +161,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {/*TODO: use i18n here*/}
-              F: {Math.round((food.fat * amount) / 100)}g
+              {t('foodSearch.macroFat', { value: Math.round((food.fat * amount) / 100) })}
             </Text>
           </View>
         </View>
