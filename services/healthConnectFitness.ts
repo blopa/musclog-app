@@ -14,6 +14,7 @@ import type { RecordType } from 'react-native-health-connect';
 
 import { database } from '../database';
 import { encryptUserMetricFields } from '../database/encryptionHelpers';
+import Setting from '../database/models/Setting';
 import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
@@ -41,6 +42,18 @@ type TransformedMetric = {
   externalId: string | undefined;
 };
 
+async function isSyncEnabled(): Promise<boolean> {
+  try {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', 'health_connect_sync_enabled'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    return settings.length > 0 && settings[0].value === 'true';
+  } catch {
+    return false;
+  }
+}
+
 const FITNESS_METRIC_TYPES: {
   hcType: RecordType;
   transformer: (record: any) => Omit<TransformedMetric, 'externalId'>;
@@ -62,6 +75,10 @@ export async function syncFitnessMetrics(
   options: { retryAttempts?: number; skipValidation?: boolean } = {}
 ): Promise<FitnessSyncCounts> {
   const { retryAttempts = RETRY_CONFIG.maxAttempts, skipValidation = false } = options;
+
+  if (!(await isSyncEnabled())) {
+    return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
+  }
 
   const totals: FitnessSyncCounts = {
     totalRead: 0,

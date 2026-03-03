@@ -25,9 +25,22 @@ import Food from '../database/models/Food';
 import FoodFoodPortion from '../database/models/FoodFoodPortion';
 import FoodPortion from '../database/models/FoodPortion';
 import NutritionLog, { type MealType } from '../database/models/NutritionLog';
+import Setting from '../database/models/Setting';
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
+
+async function isSyncEnabled(): Promise<boolean> {
+  try {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', 'health_connect_sync_enabled'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    return settings.length > 0 && settings[0].value === 'true';
+  } catch {
+    return false;
+  }
+}
 
 export interface NutritionSyncCounts {
   totalRead: number;
@@ -124,6 +137,10 @@ export async function syncNutritionFromHealthConnect(
   options: { retryAttempts?: number } = {}
 ): Promise<NutritionSyncCounts> {
   const { retryAttempts = RETRY_CONFIG.maxAttempts } = options;
+
+  if (!(await isSyncEnabled())) {
+    return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
+  }
 
   const hasPermission = await healthConnectService.hasPermissionForRecordType('Nutrition', 'read');
   if (!hasPermission) {
