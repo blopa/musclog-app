@@ -1,7 +1,7 @@
 import { Pencil, Search, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
@@ -15,6 +15,7 @@ import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { TextInput } from '../theme/TextInput';
 import { AddMealModal } from './AddMealModal';
+import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -100,6 +101,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
   const [menuMealId, setMenuMealId] = useState<string | null>(null);
   const [editMealId, setEditMealId] = useState<string | null>(null);
+  const [deleteMealId, setDeleteMealId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
@@ -235,26 +238,25 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   };
 
   const handleDeleteMeal = (mealId: string) => {
-    // TODO: use ConfirmationModal instead
-    Alert.alert(
-      t('food.meals.manageMealData.deleteMeal'),
-      t('food.meals.manageMealData.deleteMealWarning'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await MealService.deleteMeal(mealId);
-              await refresh();
-            } catch (error) {
-              console.error('Error deleting meal:', error);
-            }
-          },
-        },
-      ]
-    );
+    setMenuMealId(null);
+    setDeleteMealId(mealId);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteMealId) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await MealService.deleteMeal(deleteMealId);
+      await refresh();
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteMealId(null);
+    }
   };
 
   // just clean up state here, do not log again.
@@ -462,6 +464,17 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             onLogMeal={handleLogMeal}
           />
         ) : null}
+        {/* Delete Confirmation Modal */}
+        <ConfirmationModal
+          visible={!!deleteMealId}
+          onClose={() => setDeleteMealId(null)}
+          onConfirm={handleConfirmDelete}
+          title={t('food.meals.manageMealData.deleteMeal')}
+          message={t('food.meals.manageMealData.deleteMealWarning')}
+          confirmLabel={t('common.delete')}
+          variant="destructive"
+          isLoading={isDeleting}
+        />
       </View>
     </FullScreenModal>
   );

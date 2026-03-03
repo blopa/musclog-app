@@ -1,28 +1,18 @@
 import { Apple, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
+import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
 import { useTheme } from '../../hooks/useTheme';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { FullScreenModal } from './FullScreenModal';
-
-type Ingredient = {
-  mealFoodId?: string; // present when loaded from an existing meal (edit mode)
-  foodId: string;
-  name: string;
-  amount: number; // in grams
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-};
 
 type CreateMealModalProps = {
   visible: boolean;
@@ -238,44 +228,14 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const removedMealFoodIdsRef = useRef<string[]>([]);
 
-  // TODO: can this be moved to a hook?
+  const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(meal);
+
   useEffect(() => {
-    removedMealFoodIdsRef.current = [];
-    if (!meal) {
-      setMealName('');
-      setIngredients([]);
-      return;
-    }
-    setMealName(meal.name ?? '');
-    MealService.getMealWithFoods(meal.id).then(async (result) => {
-      if (!result) {
-        return;
-      }
-
-      const loaded = await Promise.all(
-        result.foods.map(async (mf) => {
-          const food = await mf.food;
-          const nutrients = await mf.getNutrients();
-          return {
-            mealFoodId: mf.id,
-            foodId: mf.foodId,
-            name: food?.name ?? t('food.unknownFood'),
-            amount: mf.amount,
-            calories: nutrients.calories,
-            protein: nutrients.protein,
-            carbs: nutrients.carbs,
-            fat: nutrients.fat,
-          };
-        })
-      );
-      setIngredients(loaded);
-    });
-  }, [meal, t]);
+    setMealName(meal?.name ?? '');
+  }, [meal]);
 
   // Calculate total macros from ingredients
   const totalMacros = useMemo(() => {
@@ -356,6 +316,16 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
     });
   };
 
+  const getSaveLabel = () => {
+    if (isSaving) {
+      return t('common.saving');
+    }
+    if (meal) {
+      return t('common.save');
+    }
+    return t('food.createMeal.saveMeal');
+  };
+
   const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
     const newIngredients: Ingredient[] = selectedFoods.map((item) => {
       // Calculate nutrients based on amount (per 100g base)
@@ -384,14 +354,7 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
-            label={
-            // TODO: move this to a helper function to avoid nested ternary
-              isSaving
-                ? t('common.saving')
-                : meal
-                  ? t('common.save')
-                  : t('food.createMeal.saveMeal')
-            }
+            label={getSaveLabel()}
             variant="gradientCta"
             size="md"
             width="full"
