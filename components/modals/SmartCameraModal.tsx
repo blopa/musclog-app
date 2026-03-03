@@ -64,6 +64,8 @@ export default function SmartCameraModal({
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isNewCustomFoodModalVisible, setIsNewCustomFoodModalVisible] = useState(false);
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
+
+  // TODO: use aiContext once we have the AI integration implemented
   const [aiContext, setAiContext] = useState<{ description: string; tags: string[] } | null>(null);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isLogMealModalVisible, setIsLogMealModalVisible] = useState(false);
@@ -123,6 +125,9 @@ export default function SmartCameraModal({
   const handleBarcodeScanned = useCallback(
     ({ data }: { data: string }) => {
       if (cameraMode === 'barcode-scan' && !isSearchingBarcode) {
+        // TODO: even with the isSearchingBarcode flag, the barcode is sometimes detected twice
+        // I know this because it vibrates one time and then a few ms later it vibrates again
+        // so maybe instead os useState we should use a useRef to prevent the double detection?
         setIsSearchingBarcode(true);
         setDetectedBarcode(data);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
