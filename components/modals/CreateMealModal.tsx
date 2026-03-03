@@ -1,9 +1,10 @@
 import { Apple, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 
 import Food from '../../database/models/Food';
+import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { useSnackbar } from '../SnackbarContext';
@@ -13,6 +14,7 @@ import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type Ingredient = {
+  mealFoodId?: string; // present when loaded from an existing meal (edit mode)
   foodId: string;
   name: string;
   amount: number; // in grams
@@ -26,6 +28,7 @@ type CreateMealModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: () => void; // Callback to refresh meals list
+  meal?: Meal; // When provided, the modal operates in edit mode
 };
 
 const MacroCard = ({
@@ -229,7 +232,7 @@ const MealMacrosSummary = ({
   );
 };
 
-export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalProps) {
+export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
@@ -238,6 +241,41 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const removedMealFoodIdsRef = useRef<string[]>([]);
+
+  // TODO: can this be moved to a hook?
+  useEffect(() => {
+    removedMealFoodIdsRef.current = [];
+    if (!meal) {
+      setMealName('');
+      setIngredients([]);
+      return;
+    }
+    setMealName(meal.name ?? '');
+    MealService.getMealWithFoods(meal.id).then(async (result) => {
+      if (!result) {
+        return;
+      }
+
+      const loaded = await Promise.all(
+        result.foods.map(async (mf) => {
+          const food = await mf.food;
+          const nutrients = await mf.getNutrients();
+          return {
+            mealFoodId: mf.id,
+            foodId: mf.foodId,
+            name: food?.name ?? t('food.unknownFood'),
+            amount: mf.amount,
+            calories: nutrients.calories,
+            protein: nutrients.protein,
+            carbs: nutrients.carbs,
+            fat: nutrients.fat,
+          };
+        })
+      );
+      setIngredients(loaded);
+    });
+  }, [meal, t]);
 
   // Calculate total macros from ingredients
   const totalMacros = useMemo(() => {
@@ -271,22 +309,30 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
 
     setIsSaving(true);
     try {
-      // Create meal with foods using MealService
-      await MealService.createMealFromFoods(
-        mealName.trim(),
-        ingredients.map((ing) => ({
-          foodId: ing.foodId,
-          amount: ing.amount,
-        })),
-        '' // No description for now
-      );
+      if (meal) {
+        // Edit mode: update name, remove deleted foods, add new foods
+        await MealService.updateMeal(meal.id, { name: mealName.trim() });
+        for (const mealFoodId of removedMealFoodIdsRef.current) {
+          await MealService.removeFoodFromMeal(mealFoodId);
+        }
+        const newIngredients = ingredients.filter((ing) => !ing.mealFoodId);
+        for (const ing of newIngredients) {
+          await MealService.addFoodToMeal(meal.id, ing.foodId, ing.amount);
+        }
+      } else {
+        // Create mode
+        await MealService.createMealFromFoods(
+          mealName.trim(),
+          ingredients.map((ing) => ({
+            foodId: ing.foodId,
+            amount: ing.amount,
+          })),
+          '' // No description for now
+        );
+      }
 
       // Callback to refresh meals list
       onSave?.();
-
-      // Reset form
-      setMealName('');
-      setIngredients([]);
 
       // Close modal
       onClose();
@@ -301,7 +347,13 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
   };
 
   const removeIngredient = (foodId: string) => {
-    setIngredients((prev) => prev.filter((item) => item.foodId !== foodId));
+    setIngredients((prev) => {
+      const toRemove = prev.find((item) => item.foodId === foodId);
+      if (toRemove?.mealFoodId) {
+        removedMealFoodIdsRef.current.push(toRemove.mealFoodId);
+      }
+      return prev.filter((item) => item.foodId !== foodId);
+    });
   };
 
   const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
@@ -327,12 +379,19 @@ export function CreateMealModal({ visible, onClose, onSave }: CreateMealModalPro
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('food.createMeal.title')}
+      title={meal ? t('food.meals.manageMealData.editMeal') : t('food.createMeal.title')}
       headerRight={<MenuButton size="md" className="p-2" />}
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
-            label={isSaving ? t('common.saving') : t('food.createMeal.saveMeal')}
+            label={
+            // TODO: move this to a helper function to avoid nested ternary
+              isSaving
+                ? t('common.saving')
+                : meal
+                  ? t('common.save')
+                  : t('food.createMeal.saveMeal')
+            }
             variant="gradientCta"
             size="md"
             width="full"

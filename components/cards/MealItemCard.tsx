@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
-import { Button } from '../theme/Button';
+import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
 type MacroProps = {
@@ -43,7 +43,7 @@ type MealItemCardProps = {
   };
   /** optional image source (local require or remote uri) */
   image?: ImageSourcePropType;
-  onTrackPress: () => void;
+  onMenuPress: () => void;
 };
 
 export function MealItemCard({
@@ -52,7 +52,7 @@ export function MealItemCard({
   calories,
   macros,
   image,
-  onTrackPress,
+  onMenuPress,
 }: MealItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -92,65 +92,59 @@ export function MealItemCard({
             </Text>
           </View>
         </View>
-        <View className="flex-1 justify-between">
-          <View>
-            <Text
-              className="mb-0.5 font-bold"
-              style={{
-                color: theme.colors.text.gray300,
-                fontSize: theme.typography.fontSize.base,
-              }}
-            >
-              {title}
-            </Text>
-            <Text
-              className="font-medium"
-              style={{
-                color: theme.colors.text.gray500,
-                fontSize: theme.typography.fontSize.xs,
-              }}
-            >
-              {tags.join(' • ')}
-            </Text>
-          </View>
-          <View className="flex-row items-end justify-between">
-            <View className="flex-row items-center gap-x-3">
-              <Macro
-                label={t('food.macros.proteinLegend')}
-                value={macros.protein}
-                color={theme.colors.status.red400}
-              />
-              <View
-                className="w-[1px]"
+        <View className="flex-1">
+          <View className="flex-row items-start justify-between">
+            <View className="flex-1">
+              <Text
+                className="mb-0.5 font-bold"
                 style={{
-                  backgroundColor: theme.colors.border.gray600,
-                  height: theme.size[5],
+                  color: theme.colors.text.gray300,
+                  fontSize: theme.typography.fontSize.base,
                 }}
-              />
-              <Macro
-                label={t('food.macros.carbsLegend')}
-                value={macros.carbs}
-                color={theme.colors.status.teal400}
-              />
-              <View
-                className="w-[1px]"
+              >
+                {title}
+              </Text>
+              <Text
+                className="font-medium"
                 style={{
-                  backgroundColor: theme.colors.border.gray600,
-                  height: theme.size[5],
+                  color: theme.colors.text.gray500,
+                  fontSize: theme.typography.fontSize.xs,
                 }}
-              />
-              <Macro
-                label={t('food.macros.fatLegend')}
-                value={macros.fat}
-                color={theme.colors.status.amber}
-              />
+              >
+                {tags.join(' • ')}
+              </Text>
             </View>
-            <Button
-              label={t('food.actions.track')}
-              onPress={onTrackPress}
-              size="sm"
-              width="auto"
-              variant="accent"
+            <MenuButton size="sm" onPress={onMenuPress} color={theme.colors.text.secondary} />
+          </View>
+          <View className="flex-row items-center gap-x-3 pt-2">
+            <Macro
+              label={t('food.macros.proteinLegend')}
+              value={macros.protein}
+              color={theme.colors.status.red400}
+            />
+            <View
+              className="w-[1px]"
+              style={{
+                backgroundColor: theme.colors.border.gray600,
+                height: theme.size[5],
+              }}
+            />
+            <Macro
+              label={t('food.macros.carbsLegend')}
+              value={macros.carbs}
+              color={theme.colors.status.teal400}
+            />
+            <View
+              className="w-[1px]"
+              style={{
+                backgroundColor: theme.colors.border.gray600,
+                height: theme.size[5],
+              }}
+            />
+            <Macro
+              label={t('food.macros.fatLegend')}
+              value={macros.fat}
+              color={theme.colors.status.amber}
             />
           </View>
         </View>

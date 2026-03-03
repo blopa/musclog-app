@@ -398,7 +398,7 @@ export default function CardsTestScreen() {
             calories={350}
             macros={{ protein: '25g', carbs: '30g', fat: '10g' }}
             image={{ uri: 'https://via.placeholder.com/150' }}
-            onTrackPress={() => console.log('Track meal')}
+            onMenuPress={() => console.log('Menu pressed')}
           />
         </TestSection>
 

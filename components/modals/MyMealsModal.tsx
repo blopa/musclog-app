@@ -1,13 +1,14 @@
-import { Search } from 'lucide-react-native';
+import { Pencil, Search, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
@@ -97,6 +98,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
   const [logMealModalVisible, setLogMealModalVisible] = useState(false);
   const [selectedMealForLogging, setSelectedMealForLogging] = useState<Meal | null>(null);
+  const [menuMealId, setMenuMealId] = useState<string | null>(null);
+  const [editMealId, setEditMealId] = useState<string | null>(null);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
@@ -212,7 +215,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setSearchQuery(query);
   };
 
-  const handleTrackMeal = async (mealId: string) => {
+  const handleOpenMenu = (mealId: string) => {
+    setMenuMealId(mealId);
+  };
+
+  const handleTrackMeal = (mealId: string) => {
     const meal = mealsMap.get(mealId);
     if (!meal) {
       console.error('Meal not found:', mealId);
@@ -221,6 +228,33 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
     setSelectedMealForLogging(meal);
     setLogMealModalVisible(true);
+  };
+
+  const handleEditMeal = (mealId: string) => {
+    setEditMealId(mealId);
+  };
+
+  const handleDeleteMeal = (mealId: string) => {
+    // TODO: use ConfirmationModal instead
+    Alert.alert(
+      t('food.meals.manageMealData.deleteMeal'),
+      t('food.meals.manageMealData.deleteMealWarning'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await MealService.deleteMeal(mealId);
+              await refresh();
+            } catch (error) {
+              console.error('Error deleting meal:', error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   // just clean up state here, do not log again.
@@ -333,7 +367,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   calories={meal.calories}
                   macros={meal.macros}
                   image={meal.image}
-                  onTrackPress={() => handleTrackMeal(meal.id)}
+                  onMenuPress={() => handleOpenMenu(meal.id)}
                 />
               ))}
               {/* Load More Button */}
@@ -367,14 +401,53 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             isAiEnabled={isAiFeaturesEnabled}
           />
         ) : null}
-        {/* CreateMealModal */}
-        {createMealModalVisible ? (
+        {/* CreateMealModal (create or edit) */}
+        {createMealModalVisible || !!editMealId ? (
           <CreateMealModal
-            visible={createMealModalVisible}
-            onClose={() => setCreateMealModalVisible(false)}
+            visible={createMealModalVisible || !!editMealId}
+            meal={editMealId ? mealsMap.get(editMealId) : undefined}
+            onClose={() => {
+              setCreateMealModalVisible(false);
+              setEditMealId(null);
+            }}
             onSave={() => {
               refresh();
             }}
+          />
+        ) : null}
+        {/* Meal Options Menu */}
+        {menuMealId ? (
+          <BottomPopUpMenu
+            visible={!!menuMealId}
+            onClose={() => setMenuMealId(null)}
+            title={t('food.meals.manageMealData.mealOptions')}
+            items={[
+              {
+                icon: Utensils,
+                iconColor: theme.colors.text.black,
+                iconBgColor: theme.colors.accent.primary,
+                title: t('food.actions.track'),
+                description: t('meals.logMeal'),
+                onPress: () => handleTrackMeal(menuMealId),
+              },
+              {
+                icon: Pencil,
+                iconColor: theme.colors.text.primary,
+                iconBgColor: theme.colors.background.iconDarker,
+                title: t('food.meals.manageMealData.editMeal'),
+                description: t('food.meals.manageMealData.editMealDesc'),
+                onPress: () => handleEditMeal(menuMealId),
+              },
+              {
+                icon: Trash2,
+                iconColor: theme.colors.status.error,
+                iconBgColor: theme.colors.status.error20,
+                title: t('food.meals.manageMealData.deleteMeal'),
+                description: t('food.meals.manageMealData.deleteMealDesc'),
+                titleColor: theme.colors.status.error,
+                onPress: () => handleDeleteMeal(menuMealId),
+              },
+            ]}
           />
         ) : null}
         {/* FoodDetailsModal for Meal */}

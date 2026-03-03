@@ -26,11 +26,7 @@ export interface UseYesterdayMealDataParams {
  * Also returns whether the selected meal type has any items tracked for logDate (today);
  * the card should only show when there are none.
  */
-export function useYesterdayMealData({
-  visible,
-  mealType,
-  logDate,
-}: UseYesterdayMealDataParams): {
+export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterdayMealDataParams): {
   yesterdayMealData: YesterdayMealData | null;
   isLoadingYesterday: boolean;
   hasItemsTrackedForSelectedDate: boolean;
