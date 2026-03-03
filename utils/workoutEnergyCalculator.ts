@@ -7,7 +7,7 @@
  * Based on: Reis et al. (2017), Scott (2011), Robergs (2007)
  */
 
-import type { EquipmentType, Gender,MechanicType, MuscleGroup  } from '../database/models';
+import type { EquipmentType, Gender, MechanicType, MuscleGroup } from '../database/models';
 
 // ---------------------------------------------------------------------------
 // Constants

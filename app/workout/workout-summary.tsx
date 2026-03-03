@@ -17,6 +17,7 @@ export default function WorkoutSummaryScreen() {
 
   const [totalTime, setTotalTime] = useState<string>('0m');
   const [volume, setVolume] = useState<string>('0 kg');
+  const [caloriesBurned, setCaloriesBurned] = useState<number>(0);
   const [personalRecords, setPersonalRecords] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +72,11 @@ export default function WorkoutSummaryScreen() {
           setVolume(`${formattedVolume} kg`);
         }
 
+        // Set calories burned
+        if (completedWorkout.caloriesBurned && completedWorkout.caloriesBurned > 0) {
+          setCaloriesBurned(completedWorkout.caloriesBurned);
+        }
+
         // Set personal records count
         if (personalRecordsData && Array.isArray(personalRecordsData)) {
           setPersonalRecords(personalRecordsData.length);
@@ -99,6 +105,7 @@ export default function WorkoutSummaryScreen() {
       '',
       `⏱ ${totalTime}`,
       `🏋️ ${volume}`,
+      ...(caloriesBurned > 0 ? [`🔥 ${caloriesBurned} kcal`] : []),
       ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []),
     ];
 

@@ -334,6 +334,7 @@ export class WorkoutService {
           startedAt: completedWorkout.startedAt,
           completedAt: completedWorkout.completedAt!,
           totalVolume: completedWorkout.totalVolume,
+          caloriesBurned: completedWorkout.caloriesBurned ?? undefined,
           workoutType: completedWorkout.type ?? undefined,
           units,
           segmentItems,

@@ -24,6 +24,8 @@ export interface CompletedWorkoutPayload {
   startedAt: number;
   completedAt: number;
   totalVolume?: number;
+  /** Calories burned (kcal), e.g. from MWEM calculation */
+  caloriesBurned?: number;
   /** Workout type (strength, cardio, flexibility, calisthenics, other) for Health Connect exerciseType */
   workoutType?: string;
   /** User's unit preference; if omitted, read from settings */
@@ -150,6 +152,12 @@ export async function writeWorkoutToHealthConnect(
     const unitLabel = i18n.t(getWeightUnitI18nKey(units));
 
     const noteParts: string[] = [];
+    if (payload.caloriesBurned != null && payload.caloriesBurned > 0) {
+      noteParts.push(
+        i18n.t('healthConnect.workoutCaloriesNote', { calories: payload.caloriesBurned })
+      );
+    }
+
     if (payload.totalVolume != null && payload.totalVolume > 0) {
       noteParts.push(
         i18n.t('healthConnect.workoutVolumeNote', {
