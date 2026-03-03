@@ -660,6 +660,7 @@ export default function FoodScreen() {
       {/* Add Food Modal */}
       {isAddFoodModalVisible ? (
         <AddFoodModal
+          isAiEnabled={isAiFeaturesEnabled}
           visible={isAddFoodModalVisible}
           onClose={() => setIsAddFoodModalVisible(false)}
           onMealTypeSelect={(mealType) => {
