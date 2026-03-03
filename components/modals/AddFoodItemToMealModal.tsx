@@ -143,6 +143,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
+              {/*TODO: use i18n here*/}
               P: {Math.round((food.protein * amount) / 100)}g
             </Text>
             <Text
@@ -152,6 +153,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
+              {/*TODO: use i18n here*/}
               C: {Math.round((food.carbs * amount) / 100)}g
             </Text>
             <Text
@@ -161,6 +163,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
+              {/*TODO: use i18n here*/}
               F: {Math.round((food.fat * amount) / 100)}g
             </Text>
           </View>

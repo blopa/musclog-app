@@ -29,7 +29,7 @@ type DailySummaryCardProps = {
 export function DailySummaryCard({
   calories,
   macros,
-  highlightThresholdStyle = 'simple',
+  highlightThresholdStyle = 'none',
   menuButton,
 }: DailySummaryCardProps) {
   const theme = useTheme();

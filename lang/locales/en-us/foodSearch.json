@@ -35,6 +35,13 @@
     "createFood": "Create Food",
     "noFavoriteFoods": "No Favorite Foods",
     "yourFavoriteFoods": "Your Favorite Foods",
-    "noMeals": "No meals yet. Create one from the Meals screen."
+    "noMeals": "No meals yet. Create one from the Meals screen.",
+    "sameAsYesterday": "Same as Yesterday?",
+    "yesterdayMealTitle": "Yesterday's {{meal}}",
+    "addAll": "Add All",
+    "confirmTrackSameAsYesterdayTitle": "Track these foods?",
+    "confirmTrackSameAsYesterdayMessage": "Are you sure you want to track these foods for today's {{meal}}?",
+    "sameAsYesterdaySuccess": "Foods logged successfully",
+    "sameAsYesterdayError": "Failed to log some foods"
   }
 }

@@ -224,12 +224,15 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   };
 
   // just clean up state here, do not log again.
-  const handleLogMeal = useCallback(async (_data: { meal: string; date: Date }) => {
-    await refresh();
-    setLogMealModalVisible(false);
-    setSelectedMealForLogging(null);
-    onClose();
-  }, [onClose, refresh]);
+  const handleLogMeal = useCallback(
+    async (_data: { meal: string; date: Date }) => {
+      await refresh();
+      setLogMealModalVisible(false);
+      setSelectedMealForLogging(null);
+      onClose();
+    },
+    [onClose, refresh]
+  );
 
   const showLoading = isLoading || isTransforming;
 
