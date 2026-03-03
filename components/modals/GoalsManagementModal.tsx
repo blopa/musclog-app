@@ -72,7 +72,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
 
-  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({ mode: 'history', visible });
+  const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
+    mode: 'history',
+    visible,
+  });
 
   const currentGoal = useMemo<CurrentGoal | null>(() => {
     if (!current) {

@@ -237,11 +237,34 @@ export class NutritionGoalService {
   }
 
   /**
-   * Delete nutrition goal (soft delete)
+   * Delete nutrition goal (soft delete).
+   * If deleting the current goal (effectiveUntil == null), promotes the previous
+   * goal to current by clearing its effectiveUntil.
    */
   static async deleteGoal(id: string): Promise<void> {
     await database.write(async () => {
       const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
+
+      if (goal.effectiveUntil == null) {
+        // This is the current goal — promote the previous one
+        const previousGoals = await database
+          .get<NutritionGoal>('nutrition_goals')
+          .query(
+            Q.where('deleted_at', Q.eq(null)),
+            Q.where('created_at', Q.lt(goal.createdAt)),
+            Q.sortBy('created_at', Q.desc),
+            Q.take(1)
+          )
+          .fetch();
+
+        if (previousGoals.length > 0) {
+          await previousGoals[0].update((r) => {
+            r.effectiveUntil = null;
+            r.updatedAt = Date.now();
+          });
+        }
+      }
+
       await goal.markAsDeleted();
     });
   }
