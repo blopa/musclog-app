@@ -804,6 +804,7 @@ export default function CreateCustomFoodModal({
             onClose();
           }}
           food={createdFood}
+          isAiEnabled={false} // TODO: implement this
         />
       ) : null}
       <PortionSizesPickerModal

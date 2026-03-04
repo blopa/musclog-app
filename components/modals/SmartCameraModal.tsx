@@ -758,6 +758,7 @@ export default function SmartCameraModal({
             barcode={detectedBarcode}
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
             onFoodTracked={handleClose}
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 

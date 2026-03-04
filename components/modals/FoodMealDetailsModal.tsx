@@ -59,6 +59,8 @@ type FoodDetailsModalProps = {
   onBarcodeLookupComplete?: () => void;
   /** Called when food was successfully tracked (e.g. so parent can close camera modal). */
   onFoodTracked?: () => void;
+  /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
+  isAiEnabled?: boolean;
 };
 
 export function FoodMealDetailsModal({
@@ -76,6 +78,7 @@ export function FoodMealDetailsModal({
   foodLog,
   onBarcodeLookupComplete,
   onFoodTracked,
+  isAiEnabled = true,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -950,7 +953,7 @@ export function FoodMealDetailsModal({
         onTryAiScan={handleTryAiScan}
         onSearchAgain={handleSearchAgain}
         onCreateCustom={handleCreateCustom}
-        isAiEnabled={false} // TODO: implement this
+        isAiEnabled={isAiEnabled}
       />
     );
   }

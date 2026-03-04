@@ -1135,6 +1135,7 @@ export function FoodSearchModal({
               onFoodTracked?.();
               onClose();
             }}
+            isAiEnabled={false} // TODO: implement this
           />
         ) : null}
 
@@ -1166,6 +1167,7 @@ export function FoodSearchModal({
               onFoodTracked?.();
               onClose();
             }}
+            isAiEnabled={false} // TODO: implement this
           />
         ) : null}
 

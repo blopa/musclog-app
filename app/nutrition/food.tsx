@@ -813,6 +813,7 @@ export default function FoodScreen() {
               router.replace('/nutrition/food');
             }
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
     </MasterLayout>

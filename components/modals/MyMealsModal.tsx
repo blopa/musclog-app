@@ -462,6 +462,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               setSelectedMealForLogging(null);
             }}
             onLogMeal={handleLogMeal}
+            isAiEnabled={isAiFeaturesEnabled}
           />
         ) : null}
         {/* Delete Confirmation Modal */}
