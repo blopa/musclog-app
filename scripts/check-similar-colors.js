@@ -1,35 +1,19 @@
 const chroma = require('chroma-js');
 
 const colors = {
-  black: '#000000',
-  blackOlive: '#0a0f0d',
   surfaceBlack: '#131314',
   gray900: '#1f1f1f',
   charcoalGreen: '#141a17',
   emerald900: '#064e3b',
   darkViridian: '#2a4d3f',
-  hunterGreen: '#254637',
   green800: '#125630',
-  pineShadow: '#1a3d2f',
   deepGreen: '#1a3a2a',
-  pineDark: '#1a3d35',
-  darkTealBg: '#1f4039',
   darkForest: '#0d3520',
-  deepJungle: '#0a1f1a',
-  darkPine: '#0f251f',
-  darkMoss: '#11211a',
-  swampGreen: '#15261f',
+  swampGreen: '#0a1f1a',
   darkMint: '#0f2419',
-  gunmetalGreenDark: '#1a2520',
-  darkSlateGreen: '#1a2e2a',
   gunmetalGreen: '#1a2420',
-  jungleCard: '#1a2f2a',
-  darkEmerald: '#0f2f27',
-  deepAquamarine: '#1a3530',
-  darkSeaGreen: '#243d37',
-  emerald500: '#10b981',
-  jade: '#1aa869',
-  emerald300: '#34d399',
+  darkSeaGreen: '#0f2f27',
+  jade: '#10b981',
   green500: '#22c55e',
   teal500: '#14b8a6',
   teal400: '#2dd4bf',
@@ -49,7 +33,6 @@ const colors = {
   zinc400: '#8e918f',
   gray400: '#9ca3af',
   gray300: '#d1d5db',
-  gray200Tailwind: '#e5e7eb',
   gray200: '#e3e3e3',
   white: '#ffffff',
   rose500: '#da2552',
@@ -92,7 +75,9 @@ for (let i = 0; i < colorNames.length; i++) {
   const baseName = colorNames[i];
 
   // If this color was already grouped under another color, skip it!
-  if (processedColors.has(baseName)) continue;
+  if (processedColors.has(baseName)) {
+    continue;
+  }
 
   const currentGroup = {
     base: baseName,
@@ -104,12 +89,14 @@ for (let i = 0; i < colorNames.length; i++) {
     const compareName = colorNames[j];
 
     // Skip if the comparison color is already in a group
-    if (processedColors.has(compareName)) continue;
+    if (processedColors.has(compareName)) {
+      continue;
+    }
 
     const sim = getSimilarity(colors[baseName], colors[compareName]);
 
     // 3. If similar, add it to the base color's group
-    if (sim >= 90) {
+    if (sim >= 97) {
       currentGroup.similar.push({
         name: compareName,
         hex: colors[compareName],
@@ -136,8 +123,11 @@ colorGroups.forEach((group) => {
   console.log(`Base Color: ${group.base} (${group.hex})`);
   group.similar.forEach((match) => {
     let warning = '';
-    if (match.sim > 98) warning = ' [CRITICAL: Delete one]';
-    else if (match.sim > 95) warning = ' [WARNING: Very similar]';
+    if (match.sim > 98) {
+      warning = ' [CRITICAL: Delete one]';
+    } else if (match.sim > 95) {
+      warning = ' [WARNING: Very similar]';
+    }
 
     console.log(`  ↳ ${match.sim.toFixed(2)}% similar -> ${match.name} (${match.hex})${warning}`);
   });
