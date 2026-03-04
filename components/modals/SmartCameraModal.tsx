@@ -130,11 +130,6 @@ export default function SmartCameraModal({
         setIsSearchingBarcode(true);
         setDetectedBarcode(data);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-
-        // DEBUG: help me debug why this is being triggered twice when I have a barcode in front of the camera
-        // and keep it in front of the camera the whole time, it should only be triggered once
-        // but my phone vibrates twice, and I see this console.log twice in the console
-        console.log('Barcode detected!!!');
       }
     },
     [cameraMode]
@@ -225,7 +220,6 @@ export default function SmartCameraModal({
   }, []);
 
   const handleBarcodeLookupComplete = useCallback(() => {
-    isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
   }, []);
 
