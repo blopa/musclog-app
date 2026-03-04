@@ -38,7 +38,7 @@ const baseColors = {
   zinc500: '#747775',
   red900: '#7f1d1d',
   indigo400: '#818cf8',
-  violet500: '#8b5cf6',
+  purple500: '#8b5cf6',
   warmGray: '#8b7d6b',
   zinc400: '#8e918f',
   sage: '#95c6b0',
@@ -46,13 +46,11 @@ const baseColors = {
   rose900: '#9f1239',
   violet300: '#a78bfa',
   emerald200: '#a7f3d0',
-  purple500: '#a855f7',
   indigo200: '#c7d2fe',
   tan: '#d4b5a0',
   rose600: '#da2552',
   gray200Tailwind: '#e5e7eb',
   pink500: '#ec4899',
-  red500: '#ef4444',
   amber500: '#f59e0b',
   red400: '#f87171',
   orange500: '#f97316',
@@ -84,7 +82,7 @@ const colors = {
   gray700Alpha30: addOpacityToHex(baseColors.gray700, 0.3),
   gray600Alpha40: addOpacityToHex(baseColors.gray600, 0.4),
   gray600Alpha50: addOpacityToHex(baseColors.gray600, 0.5),
-  violetAlpha20: addOpacityToHex(baseColors.violet500, 0.2),
+  violetAlpha20: addOpacityToHex(baseColors.purple500, 0.2),
   purpleAlpha10: addOpacityToHex(baseColors.purple500, 0.1),
   purpleAlpha13: addOpacityToHex(baseColors.purple500, 0.13),
   purpleAlpha20: addOpacityToHex(baseColors.purple500, 0.2),
@@ -113,11 +111,11 @@ const colors = {
   orangeAlpha10: addOpacityToHex(baseColors.orange500, 0.1),
   orangeAlpha20: addOpacityToHex(baseColors.orange500, 0.2),
   orangeAlpha50: addOpacityToHex(baseColors.orange500, 0.5),
-  redAlpha08: addOpacityToHex(baseColors.red500, 0.08),
-  redAlpha10: addOpacityToHex(baseColors.red500, 0.1),
-  redAlpha12: addOpacityToHex(baseColors.red500, 0.125),
-  redAlpha20: addOpacityToHex(baseColors.red500, 0.2),
-  redAlpha50: addOpacityToHex(baseColors.red500, 0.5),
+  redAlpha08: addOpacityToHex(baseColors.red400, 0.08),
+  redAlpha10: addOpacityToHex(baseColors.red400, 0.1),
+  redAlpha12: addOpacityToHex(baseColors.red400, 0.125),
+  redAlpha20: addOpacityToHex(baseColors.red400, 0.2),
+  redAlpha50: addOpacityToHex(baseColors.red400, 0.5),
   whiteAlpha02: addOpacityToHex(baseColors.white, 0.02),
   whiteAlpha03: addOpacityToHex(baseColors.white, 0.03),
   whiteAlpha05: addOpacityToHex(baseColors.white, 0.05),
@@ -275,10 +273,10 @@ const themeColors = {
   status: {
     success: colors.green500,
     warning: colors.orange500, // Orange
-    error: colors.red500, // Red
+    error: colors.red400, // Red
     info: colors.blue500, // Blue
     purple: colors.purple500, // Purple
-    notificationBadge: colors.red500, // Red notification badge (same as error)
+    notificationBadge: colors.red400, // Red notification badge (same as error)
     amber: colors.amber400, // Amber-400
     yellow: colors.amber400, // Yellow-500
     indigo: colors.indigo500, // Indigo-500
@@ -327,14 +325,14 @@ const themeColors = {
     emeraldTeal: colors.teal600, // Teal-600 (for emerald-teal gradient)
     gray10: colors.gray500Alpha10, // Gray with 10% opacity
     // Error colors for ungroup action
-    errorSolid: colors.red500, // Solid red for ungroup
+    errorSolid: colors.red400, // Solid red for ungroup
     // Success colors for group action
     emeraldSolid: colors.emerald500, // Solid emerald for group
     // Additional status colors
     red400: colors.red400, // Red-400 (for fat icons, etc.)
     teal400: colors.teal400, // Teal-400 (for monounsat fat, etc.)
     purple400: '#a78bfa', // Purple-400 (for fiber icons, etc.)
-    violet500: colors.violet500, // Violet-500 (for polyunsat fat, etc.)
+    violet500: colors.purple500, // Violet-500 (for polyunsat fat, etc.)
   },
 
   // Rose colors (for red button variant)
@@ -370,7 +368,7 @@ const themeColors = {
   avatar: {
     emerald: colors.green500, // Primary green
     blue: colors.blue500, // Blue-500
-    purple: colors.violet500, // Violet-500
+    purple: colors.purple500, // Violet-500
     pink: colors.pink500, // Pink-500
     orange: colors.orange500, // Orange-500
     teal: colors.teal500, // Teal-500
