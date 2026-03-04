@@ -98,6 +98,8 @@ export class MigrationService {
 
   constructor() {
     try {
+      console.log('Opening old database...');
+
       this.oldDB = openDatabaseSync('workoutLoggerDatabase.db', {
         enableChangeListener: true,
         useNewConnection: true,
@@ -141,6 +143,8 @@ export class MigrationService {
     }
 
     try {
+      // TODO: this is always true, because when we open the database, it is created if it doesn't exist
+      // so figure out a way to do this check properly
       await this.oldDB.getAllAsync('SELECT 1 FROM sqlite_master LIMIT 1');
       return true;
     } catch (error) {
@@ -164,6 +168,27 @@ export class MigrationService {
     `);
 
     return result.map((row: any) => row.name);
+  }
+
+  /**
+   * Check if a table exists in the old database
+   */
+  private async tableExists(tableName: string): Promise<boolean> {
+    if (!this.oldDB) {
+      return false;
+    }
+
+    try {
+      const result = await this.oldDB.getAllAsync(`
+        SELECT name FROM sqlite_master 
+        WHERE type='table' AND name = ?
+      `, [tableName]);
+      
+      return result.length > 0;
+    } catch (error) {
+      console.error(`Error checking if table ${tableName} exists:`, error);
+      return false;
+    }
   }
 
   /**
@@ -215,6 +240,14 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if FitnessGoals table exists
+    const tableExists = await this.tableExists('FitnessGoals');
+    if (!tableExists) {
+      console.log('FitnessGoals table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
     }
 
     const oldGoals = (await this.oldDB.getAllAsync(`
@@ -270,6 +303,14 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if UserMetrics table exists
+    const tableExists = await this.tableExists('UserMetrics');
+    if (!tableExists) {
+      console.log('UserMetrics table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
     }
 
     const encKey = await getOldEncryptionKey();
@@ -372,6 +413,14 @@ export class MigrationService {
       throw new Error('Old database not available');
     }
 
+    // Check if User table exists
+    const tableExists = await this.tableExists('User');
+    if (!tableExists) {
+      console.log('User table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
+    }
+
     const oldUsers = (await this.oldDB.getAllAsync(`
       SELECT * FROM User 
       WHERE deletedAt IS NULL OR deletedAt = ''
@@ -426,6 +475,14 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if Food table exists
+    const tableExists = await this.tableExists('Food');
+    if (!tableExists) {
+      console.log('Food table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
     }
 
     const oldFoods = (await this.oldDB.getAllAsync(`
@@ -585,6 +642,14 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if UserNutrition table exists
+    const tableExists = await this.tableExists('UserNutrition');
+    if (!tableExists) {
+      console.log('UserNutrition table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
     }
 
     const oldNutritionLogs = (await this.oldDB.getAllAsync(`
@@ -806,6 +871,14 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if Exercise table exists
+    const tableExists = await this.tableExists('Exercise');
+    if (!tableExists) {
+      console.log('Exercise table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
     }
 
     const oldExercises = (await this.oldDB.getAllAsync(`
@@ -1043,6 +1116,14 @@ export class MigrationService {
       throw new Error('Old database not available');
     }
 
+    // Check if Workout table exists
+    const tableExists = await this.tableExists('Workout');
+    if (!tableExists) {
+      console.log('Workout table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
+    }
+
     const oldWorkouts = (await this.oldDB.getAllAsync(`
       SELECT * FROM Workout 
       WHERE deletedAt IS NULL OR deletedAt = ''
@@ -1116,6 +1197,14 @@ export class MigrationService {
       throw new Error('Old database not available');
     }
 
+    // Check if WorkoutEvent table exists
+    const tableExists = await this.tableExists('WorkoutEvent');
+    if (!tableExists) {
+      console.log('WorkoutEvent table does not exist - skipping migration');
+      reportProgress?.(0, 0);
+      return 0;
+    }
+
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
       SELECT * FROM WorkoutEvent 
       WHERE deletedAt IS NULL OR deletedAt = ''
@@ -1169,6 +1258,16 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if Workout table exists (needed for template sets)
+    const workoutTableExists = await this.tableExists('Workout');
+    const setTableExists = await this.tableExists('Set');
+    
+    if (!workoutTableExists || !setTableExists) {
+      console.log('Workout or Set table does not exist - skipping template sets migration');
+      reportProgress?.(0, totalForProgress);
+      return 0;
     }
 
     const oldWorkouts = (await this.oldDB.getAllAsync(`
@@ -1241,6 +1340,16 @@ export class MigrationService {
   ): Promise<number> {
     if (!this.oldDB) {
       throw new Error('Old database not available');
+    }
+
+    // Check if WorkoutEvent table exists (needed for log sets)
+    const workoutEventTableExists = await this.tableExists('WorkoutEvent');
+    const setTableExists = await this.tableExists('Set');
+    
+    if (!workoutEventTableExists || !setTableExists) {
+      console.log('WorkoutEvent or Set table does not exist - skipping log sets migration');
+      reportProgress?.(0, totalForProgress);
+      return 0;
     }
 
     const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
@@ -1647,7 +1756,17 @@ export class MigrationService {
         throw new Error('Old database not found or not accessible');
       }
 
-      console.log('Starting migration from old database...');
+      console.log('Database exists... Starting migration from old database...');
+
+      // Debug: List all tables in development mode
+      if (__DEV__) {
+        try {
+          const tables = await this.getOldDatabaseTables();
+          console.log('🔍 Old database tables:', tables);
+        } catch (error) {
+          console.log('🔍 Could not retrieve old database tables:', error);
+        }
+      }
 
       const summary = await this.getMigrationSummary();
 
