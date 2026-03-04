@@ -16,7 +16,7 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
 
   const variantConfig = {
     workout: {
-      bgColor: 'bg-accent-primary',
+      bgColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.background.workoutIcon,
       icon: Dumbbell,
       iconColor: theme.colors.background.primary,
@@ -24,7 +24,7 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
       backgroundIconColor: theme.colors.background.primary,
     },
     food: {
-      bgColor: 'bg-bg-overlay',
+      bgColor: theme.colors.background.overlay,
       iconBgColor: theme.colors.background.iconDarker,
       icon: UtensilsCrossed,
       iconColor: theme.colors.text.primary,
@@ -38,8 +38,11 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
 
   return (
     <Pressable
-      className={`relative flex-1 justify-between overflow-hidden rounded-3xl ${config.bgColor} p-6`}
-      style={{ minHeight: theme.size['180'] }}
+      className={`relative flex-1 justify-between overflow-hidden rounded-3xl p-6`}
+      style={{ 
+        minHeight: theme.size['180'],
+        backgroundColor: config.bgColor,
+      }}
       onPress={onPress}
     >
       <View

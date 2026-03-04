@@ -14,7 +14,8 @@ const baseColors = {
   indigo500: '#6366f1',
   blue500: '#3b82f6',
   indigo400: '#818cf8',
-  swampGreen: '#15261f',
+  swampGreen: '#15261f', // 234035
+  grassGreen: '#1e3529', // 234035
   teal400: '#2dd4bf',
   zinc500: '#747775',
   rose900: '#9f1239',
@@ -54,9 +55,9 @@ const colors = {
   blackAlpha80: addOpacityToHex(baseColors.black, 0.8),
   blackAlpha90: addOpacityToHex(baseColors.black, 0.9),
   overlayDarker: addOpacityToHex(baseColors.black, 0.9),
-  darkJungleAlpha20: addOpacityToHex(baseColors.swampGreen, 0.2),
-  darkJungleAlpha80: addOpacityToHex(baseColors.swampGreen, 0.8),
-  darkJungleAlpha90: addOpacityToHex(baseColors.swampGreen, 0.9),
+  darkJungleAlpha20: addOpacityToHex(baseColors.grassGreen, 0.2),
+  darkJungleAlpha80: addOpacityToHex(baseColors.grassGreen, 0.8),
+  darkJungleAlpha90: addOpacityToHex(baseColors.grassGreen, 0.9),
   gray500Alpha10: addOpacityToHex(baseColors.zinc500, 0.1),
   gray800Alpha50: addOpacityToHex(baseColors.gray800, 0.5),
   gray700Alpha30: addOpacityToHex(baseColors.gray700, 0.3),
@@ -129,7 +130,7 @@ const colors = {
   infoBg20: addOpacityToHex(baseColors.blue500, 0.2),
   blueAlpha40: addOpacityToHex(baseColors.blue500, 0.4),
   blueAlpha50: addOpacityToHex(baseColors.blue500, 0.5),
-  emerald900Alpha30: addOpacityToHex(baseColors.swampGreen, 0.3),
+  emerald900Alpha30: addOpacityToHex(baseColors.grassGreen, 0.3),
   indigoAlpha30: addOpacityToHex(baseColors.indigo600, 0.3),
   indigoLightAlpha10: addOpacityToHex(baseColors.indigo500, 0.1),
   indigoLightAlpha20: addOpacityToHex(baseColors.indigo500, 0.2),
@@ -139,28 +140,28 @@ const colors = {
 const themeColors = {
   // Background colors
   background: {
-    primary: colors.swampGreen, // Main app background
-    secondary: colors.swampGreen, // Secondary backgrounds (nav bar, cards)
+    primary: colors.grassGreen, // Main app background
+    secondary: colors.grassGreen, // Secondary backgrounds (nav bar, cards)
     tertiary: colors.charcoalGreen, // Darker backgrounds (food page)
     card: colors.charcoalGreen, // Card backgrounds
-    cardElevated: colors.swampGreen, // Elevated card backgrounds
-    secondaryDark: colors.swampGreen, // Dark card backgrounds (active states)
-    overlay: colors.swampGreen, // Overlay backgrounds
-    filterTab: colors.swampGreen, // Filter tab background
-    iconDark: colors.swampGreen, // Dark icon backgrounds
-    iconDarker: colors.swampGreen, // Darker icon backgrounds
-    iconDarkest: colors.swampGreen, // Darkest icon backgrounds
+    cardElevated: colors.grassGreen, // Elevated card backgrounds
+    secondaryDark: colors.grassGreen, // Dark card backgrounds (active states)
+    overlay: colors.grassGreen, // Overlay backgrounds
+    filterTab: colors.grassGreen, // Filter tab background
+    iconDark: colors.grassGreen, // Dark icon backgrounds
+    iconDarker: colors.grassGreen, // Darker icon backgrounds
+    iconDarkest: colors.grassGreen, // Darkest icon backgrounds
     workoutIcon: colors.green500, // Workout action button icon background
     imageLight: colors.tan, // Light image background
     imageMedium: colors.warmGray, // Medium image background
-    notificationCard: colors.swampGreen, // Notification card gradient start
+    notificationCard: colors.grassGreen, // Notification card gradient start
     gray700: colors.gray700, // Gray-700
     gray800: colors.gray800, // Gray-800
     gray800Opacity50: colors.gray800Alpha50, // Gray-800/50
     white: colors.white, // White background
     overlayDark: colors.blackAlpha60, // Black overlay with 60% opacity
     purpleBlob: colors.darkPurpleBg, // Purple blob background
-    greenBlob: colors.swampGreen, // Green blob background
+    greenBlob: colors.grassGreen, // Green blob background
     darkGreen50: colors.darkGreenAlpha50, // Dark green with 50% opacity
     darkGreen80: colors.darkPineAlpha80, // Dark green with 80% opacity
     black10: colors.blackAlpha10, // Black with 10% opacity
@@ -170,21 +171,21 @@ const themeColors = {
     black40: colors.blackAlpha40, // Black with 40% opacity
     black80: colors.blackAlpha80, // Black with 80% opacity
     black90: colors.blackAlpha90, // Black with 90% opacity
-    aiCardBackground: colors.swampGreen, // Dark green for AI card background
-    darkGreenVariant: colors.swampGreen, // Dark green variant for tags/badges
+    aiCardBackground: colors.grassGreen, // Dark green for AI card background
+    darkGreenVariant: colors.grassGreen, // Dark green variant for tags/badges
     darkGreenOverlay: colors.deepTealAlpha90, // Dark green overlay (rgba(26, 46, 42, 0.9))
-    darkGreenSolid: colors.swampGreen, // Dark green solid color
+    darkGreenSolid: colors.grassGreen, // Dark green solid color
     darkGray: colors.blackGrayAlpha40, // Dark gray background with opacity
     darkGray50: colors.blackGrayAlpha50, // Dark gray with 50% opacity
     darkGray90: colors.blackGrayAlpha90, // Dark gray with 90% opacity
     darkGraySolid: colors.darkMossAlpha50, // Dark gray solid with opacity
     darkGreenSolidAlt: colors.darkTaupeSolid, // Alternative dark green solid
-    exerciseCardBackground: colors.swampGreen, // Exercise card background
-    darkBackground: colors.swampGreen, // Dark background color (landing page, etc.)
-    snackbarSuccess: colors.swampGreen, // Success snackbar background
+    exerciseCardBackground: colors.grassGreen, // Exercise card background
+    darkBackground: colors.grassGreen, // Dark background color (landing page, etc.)
+    snackbarSuccess: colors.grassGreen, // Success snackbar background
     snackbarError: colors.darkRedBg, // Error snackbar background
-    buttonCard: colors.swampGreen, // Button/card background
-    buttonCardActive: colors.swampGreen, // Active button/card background
+    buttonCard: colors.grassGreen, // Button/card background
+    buttonCardActive: colors.grassGreen, // Active button/card background
     separatorLight: colors.white, // Light separator (gray-200)
     // White background with opacity
     white2: colors.whiteAlpha02, // White with ~3% opacity
@@ -241,8 +242,8 @@ const themeColors = {
   border: {
     default: colors.gray600Alpha50, // gray-800/50
     light: colors.gray700Alpha30, // gray-700/30
-    dark: colors.swampGreen, // Dark border
-    accent: colors.swampGreen, // Accent border
+    dark: colors.grassGreen, // Dark border
+    accent: colors.grassGreen, // Accent border
     dashed: colors.gray700, // Dashed border (gray-700)
     emerald: colors.emerald900Alpha30, // emerald-900/30
     blue: colors.blueAlpha40, // blue-500/40
@@ -296,7 +297,7 @@ const themeColors = {
     // Red border colors for ungroup action
     redDark: colors.rose900, // Dark red border
     // Emerald border colors for group action
-    emeraldDark: colors.swampGreen, // Dark emerald border
+    emeraldDark: colors.grassGreen, // Dark emerald border
     indigo600Purple: colors.violet800, // Purple-700 (for indigo gradients)
     indigo500: colors.indigo500, // Blue-600
     pink500: colors.pink500, // Pink-500 (already in macros but adding for convenience)
@@ -416,34 +417,34 @@ const themeColors = {
   gradients: {
     primary: [colors.blue500, colors.teal600, colors.emerald300] as const,
     accent: [colors.emerald300, colors.teal400] as const,
-    card: [colors.swampGreen, colors.darkMossAlpha50] as const,
-    button: [colors.swampGreen, colors.charcoalGreen] as const,
+    card: [colors.grassGreen, colors.darkMossAlpha50] as const,
+    button: [colors.grassGreen, colors.charcoalGreen] as const,
     progress: [colors.indigo500, colors.teal600, colors.emerald300] as const,
     workoutsTitle: [colors.violet300, colors.blue500, colors.emerald300] as const,
-    notification: [colors.swampGreen, colors.swampGreen] as const,
-    upNextCard: [colors.swampGreen, colors.charcoalGreen, colors.swampGreen] as const,
+    notification: [colors.grassGreen, colors.grassGreen] as const,
+    upNextCard: [colors.grassGreen, colors.charcoalGreen, colors.grassGreen] as const,
     cta: [colors.indigo600, colors.emerald300] as const, // Indigo to primary green gradient
     userBubble: [colors.green500, colors.emerald300] as const, // User message bubble gradient
     celebrationGlow: [colors.indigo200, colors.white, colors.sage] as const, // Celebration header gradient
     restOverTitle: [colors.green500, colors.indigo400] as const, // Rest over title gradient
     workoutStats: [colors.indigo400, colors.green500, colors.emerald300] as const, // Workout stats gradient
     workoutSessionOverlay: [
-      addOpacityToHex(colors.swampGreen, 0.95),
-      addOpacityToHex(colors.swampGreen, 0.85),
-      addOpacityToHex(colors.swampGreen, 0.7),
+      addOpacityToHex(colors.grassGreen, 0.95),
+      addOpacityToHex(colors.grassGreen, 0.85),
+      addOpacityToHex(colors.grassGreen, 0.7),
     ] as const,
     indigoPurple: [colors.indigo600, colors.violet800] as const, // Indigo to purple gradient
     emeraldTeal: [colors.emerald300, colors.teal600] as const, // Emerald to teal gradient
     pinkRose: [colors.pink500, colors.rose600] as const, // Pink to rose gradient
     blueEmerald: [colors.indigo500, colors.emerald300] as const, // Blue to emerald gradient
-    overlayDark: ['transparent', colors.deepTealAlpha90, colors.swampGreen] as const, // Dark overlay gradient
+    overlayDark: ['transparent', colors.deepTealAlpha90, colors.grassGreen] as const, // Dark overlay gradient
     cameraOverlay: [colors.blackAlpha60, 'transparent', colors.blackAlpha90] as const, // Camera overlay gradient
     onboardingAmbient: [
       colors.indigoLightAlpha20Alt, // indigo-600/20
       colors.neonMintAlpha20, // primary/20
       colors.emeraldAlpha20, // emerald-400/20
     ] as const,
-    landingBackground: [colors.swampGreen, colors.swampGreen, colors.swampGreen] as const, // Landing page background gradient
+    landingBackground: [colors.grassGreen, colors.grassGreen, colors.grassGreen] as const, // Landing page background gradient
     whiteSubtle: [colors.whiteAlpha10, colors.surfaceHighlight05] as const, // Subtle white gradient
     backdrop90: colors.darkJungleAlpha90, // Background with 90% opacity
   },
