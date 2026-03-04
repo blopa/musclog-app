@@ -950,6 +950,7 @@ export function FoodMealDetailsModal({
         onTryAiScan={handleTryAiScan}
         onSearchAgain={handleSearchAgain}
         onCreateCustom={handleCreateCustom}
+        isAiEnabled={false} // TODO: implement this
       />
     );
   }

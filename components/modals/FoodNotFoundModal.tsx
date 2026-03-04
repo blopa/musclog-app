@@ -12,16 +12,17 @@ type FoodNotFoundModalProps = {
   onTryAiScan?: () => void;
   onSearchAgain?: () => void;
   onCreateCustom?: () => void;
+  /** When false, the "Try AI Camera" option is hidden. Defaults to true for backward compatibility. */
+  isAiEnabled?: boolean;
 };
 
-// TODO: when this modal is shown, the camera live feed keeps running in the background
-// but we should instead stop it, pause the camera feed, and resume it when the modal is closed
 export function FoodNotFoundModal({
   visible,
   onClose,
   onTryAiScan,
   onSearchAgain,
   onCreateCustom,
+  isAiEnabled = true,
 }: FoodNotFoundModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -43,34 +44,35 @@ export function FoodNotFoundModal({
       maxHeight="60%"
     >
       <View className="gap-3 p-2">
-        {/* TODO: only show this AI Camera option if AI is enabled */}
-        <Pressable
-          onPress={() => {
-            onTryAiScan?.();
-            onClose();
-          }}
-          className="overflow-hidden rounded-2xl"
-        >
-          <LinearGradient
-            colors={theme.colors.gradients.cta}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            className="flex-row items-center gap-4 p-4"
+        {isAiEnabled ? (
+          <Pressable
+            onPress={() => {
+              onTryAiScan?.();
+              onClose();
+            }}
+            className="overflow-hidden rounded-2xl"
           >
-            <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
-              <Text className="text-2xl">✨</Text>
-            </View>
-            <View className="flex-1">
-              <Text className="text-lg font-bold text-white">
-                {t('nutrition.tryAICamera')}
-              </Text>
-              <Text className="text-xs text-white/80">
-                {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
-              </Text>
-            </View>
-            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
-          </LinearGradient>
-        </Pressable>
+            <LinearGradient
+              colors={theme.colors.gradients.cta}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              className="flex-row items-center gap-4 p-4"
+            >
+              <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
+                <Text className="text-2xl">✨</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-lg font-bold text-white">
+                  {t('nutrition.tryAICamera')}
+                </Text>
+                <Text className="text-xs text-white/80">
+                  {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
+                </Text>
+              </View>
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
+            </LinearGradient>
+          </Pressable>
+        ) : null}
 
         {/* Search Again */}
         <Pressable

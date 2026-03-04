@@ -394,7 +394,9 @@ export default function SmartCameraModal({
               style={StyleSheet.absoluteFill}
               facing="back"
               enableTorch={flashEnabled}
-              active={visible ? !isSearchingBarcode : undefined}
+              active={
+                visible && !isSearchingBarcode ? !isFoodNotFoundModalVisible : false
+              }
               onBarcodeScanned={
                 isBarcodeScanning && !isSearchingBarcode ? handleBarcodeScanned : undefined
               }
@@ -767,6 +769,7 @@ export default function SmartCameraModal({
             onTryAiScan={handleTryAiScan}
             onSearchAgain={handleSearchAgain}
             onCreateCustom={handleCreateCustomFood}
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 
