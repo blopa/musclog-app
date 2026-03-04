@@ -1,5 +1,5 @@
 # --- RN-MLKIT-OCR CONFIG ---
-$ReactNativeOcrSubspecs = ['English', 'Portuguese', 'Spanish', 'Dutch', 'German', 'French', 'latin']
+$ReactNativeOcrSubspecs = ['Latin', 'latin']
 # --- END RN-MLKIT-OCR CONFIG ---
 
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")

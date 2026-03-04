@@ -59,7 +59,7 @@
       [
         "rn-mlkit-ocr",
         {
-          "ocrModels": ["english", "portuguese", "spanish", "dutch", "german", "french"],
+          "ocrModels": ["latin"],
           "ocrUseBundled": true
         }
       ]

@@ -16,7 +16,7 @@ type MasterLayoutProps = {
 
 export function MasterLayout({ children, showNavigationMenu = true }: MasterLayoutProps) {
   const theme = useTheme();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
   const [isCoachModalVisible, setIsCoachModalVisible] = useState(false);
   const [isCameraModalVisible, setIsCameraModalVisible] = useState(false);
 
@@ -34,6 +34,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
           visible={isCameraModalVisible}
           onClose={() => setIsCameraModalVisible(false)}
           isAiEnabled={isAiFeaturesEnabled}
+          useOcrBeforeAi={useOcrBeforeAi}
         />
       ) : null}
       <View className="relative flex-1 overflow-hidden">{children}</View>

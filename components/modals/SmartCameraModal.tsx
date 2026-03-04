@@ -20,6 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { type MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { detectBarcodes } from '../../utils/file';
+import { performOcr } from '../../utils/ocr';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
 import { CameraView, useCameraPermissions } from '../CameraView';
@@ -43,6 +44,7 @@ type CameraModalProps = {
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
   isAiEnabled?: boolean;
+  useOcrBeforeAi?: boolean;
 };
 
 export default function SmartCameraModal({
@@ -51,6 +53,7 @@ export default function SmartCameraModal({
   mode = 'barcode-scan',
   hideCameraModePicker = false,
   isAiEnabled = true,
+  useOcrBeforeAi = false,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -177,21 +180,24 @@ export default function SmartCameraModal({
           isSearchingBarcodeRef.current = false;
           setIsSearchingBarcode(false);
         }
-      } else if (cameraMode === 'ai-meal-photo' || cameraMode === 'ai-label-scan') {
-        // For AI modes, we would process the image with AI
-        // For now, just show a placeholder message
-        console.log('AI processing photo:', photo.uri);
+      } else if (cameraMode === 'ai-label-scan') {
+        if (useOcrBeforeAi) {
+          const text = await performOcr(photo.uri);
+          console.log('[SmartCamera] OCR result:', text);
+        } else {
+          console.log('[SmartCamera] AI label scan (no OCR) — image URI:', photo.uri);
+        }
         showSnackbar('success', t('food.aiCamera.photoCaptured'));
-
+      } else if (cameraMode === 'ai-meal-photo') {
         // TODO: Implement actual AI processing here
-        // This would involve sending the image to an AI service
-        // and handling the response to show food/nutrition information
+        console.log('[SmartCamera] AI meal photo — image URI:', photo.uri);
+        showSnackbar('success', t('food.aiCamera.photoCaptured'));
       }
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, [cameraMode, t]);
+  }, [cameraMode, t, useOcrBeforeAi]);
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -325,6 +331,14 @@ export default function SmartCameraModal({
             isSearchingBarcodeRef.current = false;
             setIsSearchingBarcode(false);
           }
+        } else if (cameraMode === 'ai-label-scan') {
+          if (useOcrBeforeAi) {
+            const text = await performOcr(selectedAsset.uri);
+            console.log('[SmartCamera] OCR result (gallery):', text);
+          } else {
+            console.log('[SmartCamera] AI label scan (no OCR) — image URI:', selectedAsset.uri);
+          }
+          showSnackbar('success', t('food.aiCamera.photoCaptured'));
         }
       }
     } catch (error) {

@@ -55,7 +55,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
   const params = useLocalSearchParams<{ code?: string }>();
 
   // Memoize today's date to prevent infinite re-renders
@@ -552,6 +552,7 @@ export default function HomeScreen() {
           onClose={() => setIsCameraVisible(false)}
           mode={cameraMode}
           isAiEnabled={isAiFeaturesEnabled}
+          useOcrBeforeAi={useOcrBeforeAi}
         />
       ) : null}
 

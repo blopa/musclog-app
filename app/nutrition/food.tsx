@@ -46,7 +46,7 @@ import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
 export default function FoodScreen() {
   const { t } = useTranslation();
-  const { units, isAiFeaturesEnabled } = useSettings();
+  const { units, isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const [isCameraVisible, setIsCameraVisible] = useState(false);
@@ -714,6 +714,7 @@ export default function FoodScreen() {
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={isAiFeaturesEnabled}
+          useOcrBeforeAi={useOcrBeforeAi}
         />
       ) : null}
 
