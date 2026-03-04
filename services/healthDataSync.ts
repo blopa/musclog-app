@@ -6,7 +6,6 @@ import {
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
-import UserMetric from '../database/models/UserMetric';
 import i18n from '../lang/lang';
 import { healthConnectService } from './healthConnect';
 import {
@@ -282,17 +281,6 @@ class HealthDataSyncService {
     }
 
     return result;
-  }
-
-  /**
-   * Write local metric to Health Connect
-   * (For future implementation - writing app data to Health Connect)
-   */
-  async syncToHealthConnect(metric: UserMetric): Promise<boolean> {
-    // TODO: Implement writing to Health Connect
-    // This would convert app format back to Health Connect format and insert
-    console.log('Syncing to Health Connect not yet implemented:', metric.type);
-    return false;
   }
 }
 
