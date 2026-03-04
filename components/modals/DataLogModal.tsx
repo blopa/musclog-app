@@ -448,8 +448,6 @@ export function DataLogModal({
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // TODO: use isDuplicating
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
@@ -684,6 +682,10 @@ export function DataLogModal({
   };
 
   const handleItemPress = (item: DataLogDisplayItem) => {
+    if (isDuplicating) {
+      return;
+    }
+
     setSelectedItem(item);
     setShowMenu(true);
   };
@@ -754,6 +756,9 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Duplicate failed:', error);
+      showSnackbar('error', t('common.duplicateFailed'), {
+        action: t('common.ok'),
+      });
     } finally {
       setIsDuplicating(false);
     }

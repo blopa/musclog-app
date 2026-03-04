@@ -5,6 +5,7 @@
     "select": "Select...",
     "today": "Today",
     "none": "None",
+    "duplicateFailed": "Duplicate Failed",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
     "oneWeekAgo": "1 week ago",
