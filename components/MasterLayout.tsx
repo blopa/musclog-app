@@ -60,6 +60,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       ) : null}
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
+        // TODO: move the navigation menu into a separate component
         <View className="absolute bottom-0 left-0 right-0 border-t border-border-dark bg-bg-navBar">
           <SafeAreaView edges={['bottom']}>
             <View className="relative flex-row items-stretch px-6 py-4">

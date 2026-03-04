@@ -39,7 +39,7 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
   return (
     <Pressable
       className={`relative flex-1 justify-between overflow-hidden rounded-3xl p-6`}
-      style={{ 
+      style={{
         minHeight: theme.size['180'],
         backgroundColor: config.bgColor,
       }}
