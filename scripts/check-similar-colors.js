@@ -74,45 +74,71 @@ function getSimilarity(hex1, hex2) {
   return Math.max(0, 100 - difference);
 }
 
-// 1. Create an array to hold our findings
-const report = [];
+// 1. Set up tracking variables
+const processedColors = new Set();
+const colorGroups = [];
 const colorNames = Object.keys(colors);
 
-// 2. Loop through every color...
+// 2. Loop through the colors to create groups
 for (let i = 0; i < colorNames.length; i++) {
-  // ...and compare it to every *subsequent* color
-  // (to avoid duplicate reverse comparisons like A vs B and B vs A)
+  const baseName = colorNames[i];
+
+  // If this color was already grouped under another color, skip it!
+  if (processedColors.has(baseName)) {
+    continue;
+  }
+
+  const currentGroup = {
+    base: baseName,
+    hex: colors[baseName],
+    similar: [],
+  };
+
   for (let j = i + 1; j < colorNames.length; j++) {
-    const name1 = colorNames[i];
-    const name2 = colorNames[j];
+    const compareName = colorNames[j];
 
-    const sim = getSimilarity(colors[name1], colors[name2]);
-
-    // 3. Only keep pairs that are highly similar (90%+)
-    if (sim >= 90) {
-      report.push({
-        name1,
-        hex1: colors[name1],
-        name2,
-        hex2: colors[name2],
-        sim,
-      });
+    // Skip if the comparison color is already in a group
+    if (processedColors.has(compareName)) {
+      continue;
     }
+
+    const sim = getSimilarity(colors[baseName], colors[compareName]);
+
+    // 3. If similar, add it to the base color's group
+    if (sim >= 90) {
+      currentGroup.similar.push({
+        name: compareName,
+        hex: colors[compareName],
+        sim: sim,
+      });
+      // Mark it as processed so it doesn't become its own base color later
+      processedColors.add(compareName);
+    }
+  }
+
+  // 4. If we found duplicates for this base color, save the group
+  if (currentGroup.similar.length > 0) {
+    currentGroup.similar.sort((a, b) => b.sim - a.sim); // Sort highest similarity first
+    colorGroups.push(currentGroup);
+    processedColors.add(baseName);
   }
 }
 
-// 4. Sort the report from highest similarity to lowest
-report.sort((a, b) => b.sim - a.sim);
+// 5. Print out the cleaned-up report
+console.log('\n=== 🧹 COLOR REDUNDANCY GROUPS (>= 90%) 🧹 ===\n');
+console.log('Rule of thumb: Keep the Base Color, consider deleting the indented ones.\n');
 
-// 5. Print out the results nicely
-console.log('\n=== 🚨 HIGHLY SIMILAR COLOR REPORT (>= 90%) 🚨 ===\n');
-report.forEach((item) => {
-  let warning = '';
-  if (item.sim > 98) warning = ' [CRITICAL: Basically Identical]';
-  else if (item.sim > 95) warning = ' [WARNING: Very Similar]';
+colorGroups.forEach((group) => {
+  console.log(`Base Color: ${group.base} (${group.hex})`);
+  group.similar.forEach((match) => {
+    let warning = '';
+    if (match.sim > 98) {
+      warning = ' [CRITICAL: Delete one]';
+    } else if (match.sim > 95) {
+      warning = ' [WARNING: Very similar]';
+    }
 
-  console.log(
-    `${item.sim.toFixed(2)}% | ${item.name1} (${item.hex1}) <---> ${item.name2} (${item.hex2})${warning}`
-  );
+    console.log(`  ↳ ${match.sim.toFixed(2)}% similar -> ${match.name} (${match.hex})${warning}`);
+  });
+  console.log('--------------------------------------------------');
 });
-console.log(`\nFound ${report.length} potentially redundant color pairs.`);
