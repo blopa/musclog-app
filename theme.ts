@@ -6,21 +6,16 @@
 const baseColors = {
   black: '#000000',
   charcoalGreen: '#141a17',
-  deepAquamarine: '#1a3530',
-  darkSeaGreen: '#243d37',
-  jungleCard: '#1a2f2a',
-  swampGreen: '#15261f',
-  teal500: '#14b8a6',
-  teal400: '#2dd4bf',
   green500: '#22c55e',
+  emerald300: '#34d399',
   gray800: '#1f2937',
   gray700: '#374151',
   gray850: '#303030',
-  blue600: '#2563eb',
   indigo500: '#6366f1',
-  emerald300: '#34d399',
   blue500: '#3b82f6',
   indigo400: '#818cf8',
+  swampGreen: '#15261f',
+  teal400: '#2dd4bf',
   zinc500: '#747775',
   rose900: '#9f1239',
   gray400: '#9ca3af',
@@ -86,7 +81,7 @@ const colors = {
   emerald300Alpha10: addOpacityToHex(baseColors.emerald300, 0.1),
   emerald300Alpha20: addOpacityToHex(baseColors.emerald300, 0.2),
   emerald300Alpha31: addOpacityToHex(baseColors.emerald300, 0.31),
-  tealAlpha20: addOpacityToHex(baseColors.teal500, 0.2),
+  tealAlpha20: addOpacityToHex(baseColors.teal400, 0.2),
   roseAlpha20: addOpacityToHex(baseColors.rose600, 0.2),
   pinkRedAlpha10: addOpacityToHex(baseColors.rose600, 0.1),
   pinkAlpha20: addOpacityToHex(baseColors.pink500, 0.2),
@@ -134,7 +129,7 @@ const colors = {
   infoBg20: addOpacityToHex(baseColors.blue500, 0.2),
   blueAlpha40: addOpacityToHex(baseColors.blue500, 0.4),
   blueAlpha50: addOpacityToHex(baseColors.blue500, 0.5),
-  emerald900Alpha30: addOpacityToHex(baseColors.darkSeaGreen, 0.3),
+  emerald900Alpha30: addOpacityToHex(baseColors.swampGreen, 0.3),
   indigoAlpha30: addOpacityToHex(baseColors.indigo600, 0.3),
   indigoLightAlpha10: addOpacityToHex(baseColors.indigo500, 0.1),
   indigoLightAlpha20: addOpacityToHex(baseColors.indigo500, 0.2),
@@ -148,24 +143,24 @@ const themeColors = {
     secondary: colors.swampGreen, // Secondary backgrounds (nav bar, cards)
     tertiary: colors.charcoalGreen, // Darker backgrounds (food page)
     card: colors.charcoalGreen, // Card backgrounds
-    cardElevated: colors.deepAquamarine, // Elevated card backgrounds
+    cardElevated: colors.swampGreen, // Elevated card backgrounds
     secondaryDark: colors.swampGreen, // Dark card backgrounds (active states)
-    overlay: colors.jungleCard, // Overlay backgrounds
-    filterTab: colors.jungleCard, // Filter tab background
-    iconDark: colors.darkSeaGreen, // Dark icon backgrounds
-    iconDarker: colors.darkSeaGreen, // Darker icon backgrounds
-    iconDarkest: colors.deepAquamarine, // Darkest icon backgrounds
+    overlay: colors.swampGreen, // Overlay backgrounds
+    filterTab: colors.swampGreen, // Filter tab background
+    iconDark: colors.swampGreen, // Dark icon backgrounds
+    iconDarker: colors.swampGreen, // Darker icon backgrounds
+    iconDarkest: colors.swampGreen, // Darkest icon backgrounds
     workoutIcon: colors.green500, // Workout action button icon background
     imageLight: colors.tan, // Light image background
     imageMedium: colors.warmGray, // Medium image background
-    notificationCard: colors.darkSeaGreen, // Notification card gradient start
+    notificationCard: colors.swampGreen, // Notification card gradient start
     gray700: colors.gray700, // Gray-700
     gray800: colors.gray800, // Gray-800
     gray800Opacity50: colors.gray800Alpha50, // Gray-800/50
     white: colors.white, // White background
     overlayDark: colors.blackAlpha60, // Black overlay with 60% opacity
     purpleBlob: colors.darkPurpleBg, // Purple blob background
-    greenBlob: colors.darkSeaGreen, // Green blob background
+    greenBlob: colors.swampGreen, // Green blob background
     darkGreen50: colors.darkGreenAlpha50, // Dark green with 50% opacity
     darkGreen80: colors.darkPineAlpha80, // Dark green with 80% opacity
     black10: colors.blackAlpha10, // Black with 10% opacity
@@ -176,20 +171,20 @@ const themeColors = {
     black80: colors.blackAlpha80, // Black with 80% opacity
     black90: colors.blackAlpha90, // Black with 90% opacity
     aiCardBackground: colors.swampGreen, // Dark green for AI card background
-    darkGreenVariant: colors.darkSeaGreen, // Dark green variant for tags/badges
+    darkGreenVariant: colors.swampGreen, // Dark green variant for tags/badges
     darkGreenOverlay: colors.deepTealAlpha90, // Dark green overlay (rgba(26, 46, 42, 0.9))
-    darkGreenSolid: colors.jungleCard, // Dark green solid color
+    darkGreenSolid: colors.swampGreen, // Dark green solid color
     darkGray: colors.blackGrayAlpha40, // Dark gray background with opacity
     darkGray50: colors.blackGrayAlpha50, // Dark gray with 50% opacity
     darkGray90: colors.blackGrayAlpha90, // Dark gray with 90% opacity
     darkGraySolid: colors.darkMossAlpha50, // Dark gray solid with opacity
     darkGreenSolidAlt: colors.darkTaupeSolid, // Alternative dark green solid
-    exerciseCardBackground: colors.darkSeaGreen, // Exercise card background
+    exerciseCardBackground: colors.swampGreen, // Exercise card background
     darkBackground: colors.swampGreen, // Dark background color (landing page, etc.)
-    snackbarSuccess: colors.darkSeaGreen, // Success snackbar background
+    snackbarSuccess: colors.swampGreen, // Success snackbar background
     snackbarError: colors.darkRedBg, // Error snackbar background
-    buttonCard: colors.deepAquamarine, // Button/card background
-    buttonCardActive: colors.darkSeaGreen, // Active button/card background
+    buttonCard: colors.swampGreen, // Button/card background
+    buttonCardActive: colors.swampGreen, // Active button/card background
     separatorLight: colors.white, // Light separator (gray-200)
     // White background with opacity
     white2: colors.whiteAlpha02, // White with ~3% opacity
@@ -225,10 +220,10 @@ const themeColors = {
   accent: {
     primary: colors.green500, // Primary green
     secondary: colors.emerald300, // Secondary green (emerald)
-    tertiary: colors.teal500, // Tertiary green (teal)
+    tertiary: colors.teal400, // Tertiary green (teal)
     gradient: {
       start: colors.emerald300,
-      end: colors.teal500,
+      end: colors.teal400,
     },
     // Accent colors with opacity
     primary10: colors.greenAlpha10, // Primary with 10% opacity
@@ -246,8 +241,8 @@ const themeColors = {
   border: {
     default: colors.gray600Alpha50, // gray-800/50
     light: colors.gray700Alpha30, // gray-700/30
-    dark: colors.jungleCard, // Dark border
-    accent: colors.darkSeaGreen, // Accent border
+    dark: colors.swampGreen, // Dark border
+    accent: colors.swampGreen, // Accent border
     dashed: colors.gray700, // Dashed border (gray-700)
     emerald: colors.emerald900Alpha30, // emerald-900/30
     blue: colors.blueAlpha40, // blue-500/40
@@ -301,9 +296,9 @@ const themeColors = {
     // Red border colors for ungroup action
     redDark: colors.rose900, // Dark red border
     // Emerald border colors for group action
-    emeraldDark: colors.darkSeaGreen, // Dark emerald border
+    emeraldDark: colors.swampGreen, // Dark emerald border
     indigo600Purple: colors.violet800, // Purple-700 (for indigo gradients)
-    blue600: colors.blue600, // Blue-600
+    indigo500: colors.indigo500, // Blue-600
     pink500: colors.pink500, // Pink-500 (already in macros but adding for convenience)
     rose600: colors.rose600, // Rose-600
     customGreen: colors.sage, // Custom green used in components
@@ -356,7 +351,7 @@ const themeColors = {
     purple: colors.purple500, // Violet-500
     pink: colors.pink500, // Pink-500
     orange: colors.orange500, // Orange-500
-    teal: colors.teal500, // Teal-500
+    teal: colors.teal400, // Teal-500
     yellow: colors.amber400, // Yellow-500
     indigo: colors.indigo500, // Indigo-500
   },
@@ -420,13 +415,13 @@ const themeColors = {
   // Gradient colors
   gradients: {
     primary: [colors.blue500, colors.teal600, colors.emerald300] as const,
-    accent: [colors.emerald300, colors.teal500] as const,
-    card: [colors.deepAquamarine, colors.darkMossAlpha50] as const,
-    button: [colors.deepAquamarine, colors.charcoalGreen] as const,
+    accent: [colors.emerald300, colors.teal400] as const,
+    card: [colors.swampGreen, colors.darkMossAlpha50] as const,
+    button: [colors.swampGreen, colors.charcoalGreen] as const,
     progress: [colors.indigo500, colors.teal600, colors.emerald300] as const,
     workoutsTitle: [colors.violet300, colors.blue500, colors.emerald300] as const,
-    notification: [colors.darkSeaGreen, colors.swampGreen] as const,
-    upNextCard: [colors.jungleCard, colors.charcoalGreen, colors.deepAquamarine] as const,
+    notification: [colors.swampGreen, colors.swampGreen] as const,
+    upNextCard: [colors.swampGreen, colors.charcoalGreen, colors.swampGreen] as const,
     cta: [colors.indigo600, colors.emerald300] as const, // Indigo to primary green gradient
     userBubble: [colors.green500, colors.emerald300] as const, // User message bubble gradient
     celebrationGlow: [colors.indigo200, colors.white, colors.sage] as const, // Celebration header gradient
@@ -440,8 +435,8 @@ const themeColors = {
     indigoPurple: [colors.indigo600, colors.violet800] as const, // Indigo to purple gradient
     emeraldTeal: [colors.emerald300, colors.teal600] as const, // Emerald to teal gradient
     pinkRose: [colors.pink500, colors.rose600] as const, // Pink to rose gradient
-    blueEmerald: [colors.blue600, colors.emerald300] as const, // Blue to emerald gradient
-    overlayDark: ['transparent', colors.deepTealAlpha90, colors.jungleCard] as const, // Dark overlay gradient
+    blueEmerald: [colors.indigo500, colors.emerald300] as const, // Blue to emerald gradient
+    overlayDark: ['transparent', colors.deepTealAlpha90, colors.swampGreen] as const, // Dark overlay gradient
     cameraOverlay: [colors.blackAlpha60, 'transparent', colors.blackAlpha90] as const, // Camera overlay gradient
     onboardingAmbient: [
       colors.indigoLightAlpha20Alt, // indigo-600/20

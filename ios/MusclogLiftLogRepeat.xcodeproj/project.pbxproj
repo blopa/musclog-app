@@ -106,7 +106,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				43F92DE5E5F64C9AA7D9B1DA /* Upload Debug Symbols to Sentry */,
+				66DA61EA4F2447A5A7AD3D47 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -223,7 +223,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		43F92DE5E5F64C9AA7D9B1DA /* Upload Debug Symbols to Sentry */ = {
+		66DA61EA4F2447A5A7AD3D47 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
