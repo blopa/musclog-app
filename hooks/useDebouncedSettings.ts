@@ -37,6 +37,7 @@ export function useDebouncedSettings(debounceMs = 1500) {
       'dailyNutritionInsights',
       'workoutInsights',
       'notifications',
+      'useOcrBeforeAi',
       'units',
     ];
 
@@ -163,6 +164,11 @@ export function useDebouncedSettings(debounceMs = 1500) {
     SettingsService.setUnits
   );
 
+  const handleUseOcrBeforeAiChange = createSettingHandler(
+    'useOcrBeforeAi',
+    SettingsService.setUseOcrBeforeAi
+  );
+
   // Function to immediately save all pending changes to database
   const flushAllPendingChanges = useCallback(async () => {
     const pendingEntries = Object.entries(pendingValuesRef.current);
@@ -208,6 +214,9 @@ export function useDebouncedSettings(debounceMs = 1500) {
           case 'units':
             await SettingsService.setUnits(value as 'metric' | 'imperial');
             break;
+          case 'useOcrBeforeAi':
+            await SettingsService.setUseOcrBeforeAi(value as boolean);
+            break;
         }
         delete pendingValuesRef.current[settingKey];
       } catch (error) {
@@ -246,6 +255,7 @@ export function useDebouncedSettings(debounceMs = 1500) {
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
     notifications: (localSettings.notifications as boolean) ?? actualSettings.notifications,
+    useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
 
     // Actual (database) values
@@ -266,6 +276,7 @@ export function useDebouncedSettings(debounceMs = 1500) {
     handleWorkoutInsightsChange,
     handleNotificationsChange,
     handleUnitsChange,
+    handleUseOcrBeforeAiChange,
 
     // Utility functions
     flushAllPendingChanges,

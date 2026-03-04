@@ -88,7 +88,10 @@
       "selectGeminiModelSubtitle": "Select the model to be used by all AI features",
       "selectOpenAiModel": "Select OpenAI model",
       "selectOpenAiModelSubtitle": "Select the model to be used by all AI features",
-      "subtitle": "Settings for all the AI used on this app"
+      "subtitle": "Settings for all the AI used on this app",
+      "imageProcessing": "IMAGE PROCESSING",
+      "useOcrBeforeAi": "Use OCR Before Sending to AI",
+      "useOcrBeforeAiSubtitle": "Process images locally with OCR and send text instead"
     },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",

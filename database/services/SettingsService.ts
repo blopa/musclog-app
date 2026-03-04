@@ -15,6 +15,7 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  USE_OCR_BEFORE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '../../constants/settings';
@@ -225,6 +226,13 @@ export class SettingsService {
    */
   static async setNotifications(value: boolean) {
     await SettingsService.setBooleanSetting(NOTIFICATIONS_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the use OCR before AI setting
+   */
+  static async setUseOcrBeforeAi(value: boolean) {
+    await SettingsService.setBooleanSetting(USE_OCR_BEFORE_AI_SETTING_TYPE, value);
   }
 
   /**

@@ -19,6 +19,7 @@ export type SettingType =
   | 'health_connect_sync_enabled'
   | 'health_connect_last_sync'
   | 'health_connect_sync_in_progress'
+  | 'use_ocr_before_ai'
   | 'other';
 
 export default class Setting extends Model {

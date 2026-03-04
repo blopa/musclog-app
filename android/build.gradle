@@ -22,3 +22,13 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
+
+buildscript {
+    ext {
+        // --- RN-MLKIT-OCR CONFIG START ---
+        ocrModels = ["english", "portuguese", "spanish", "dutch", "german", "french"]
+        ocrUseBundled = true
+        // --- RN-MLKIT-OCR CONFIG END ---
+  
+    }
+}

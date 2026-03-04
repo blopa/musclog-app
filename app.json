@@ -55,7 +55,14 @@
       ],
       "expo-background-task",
       "expo-web-browser",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "rn-mlkit-ocr",
+        {
+          "ocrModels": ["english", "portuguese", "spanish", "dutch", "german", "french"],
+          "ocrUseBundled": true
+        }
+      ]
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",

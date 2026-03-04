@@ -94,6 +94,13 @@ export const NOTIFICATIONS_SETTING_TYPE = 'notifications';
  */
 export const LANGUAGE_SETTING_TYPE = 'language';
 
+/**
+ * Setting type for using OCR before sending images to AI (stored in WatermelonDB settings table).
+ * When enabled, images are processed locally via OCR and the resulting text is sent to the AI
+ * instead of the raw image. value: 'true' | 'false'.
+ */
+export const USE_OCR_BEFORE_AI_SETTING_TYPE = 'use_ocr_before_ai';
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 

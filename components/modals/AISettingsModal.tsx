@@ -1,4 +1,4 @@
-import { Apple, Bot, ChevronDown, Dumbbell } from 'lucide-react-native';
+import { Apple, Bot, ChevronDown, Dumbbell, ScanText } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -205,10 +205,12 @@ export function AISettingsModal({
     enableOpenAi: debouncedEnableOpenAi,
     dailyNutritionInsights: debouncedDailyNutritionInsights,
     workoutInsights: debouncedWorkoutInsights,
+    useOcrBeforeAi: debouncedUseOcrBeforeAi,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
+    handleUseOcrBeforeAiChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(1500);
 
@@ -400,6 +402,41 @@ export function AISettingsModal({
             {t('settings.aiSettings.insightsAlerts')}
           </Text>
           <ToggleInput items={insightsItems} />
+        </View>
+
+        {/* Image Processing Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.aiSettings.imageProcessing')}
+          </Text>
+          <ToggleInput
+            items={[
+              {
+                key: 'use-ocr-before-ai',
+                label: t('settings.aiSettings.useOcrBeforeAi'),
+                subtitle: t('settings.aiSettings.useOcrBeforeAiSubtitle'),
+                value: debouncedUseOcrBeforeAi,
+                onValueChange: handleUseOcrBeforeAiChange,
+                icon: (
+                  <View
+                    style={{
+                      width: theme.size['8'],
+                      height: theme.size['8'],
+                      borderRadius: theme.borderRadius.full / 2,
+                      backgroundColor: theme.colors.status.success20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ScanText size={theme.iconSize.md} color={theme.colors.status.success} />
+                  </View>
+                ),
+              },
+            ]}
+          />
         </View>
 
         <LegalLinksCard />

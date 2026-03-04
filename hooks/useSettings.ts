@@ -16,6 +16,7 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
+  USE_OCR_BEFORE_AI_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '../constants/settings';
@@ -76,6 +77,7 @@ export function useSettings(): UseSettingsResult & {
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
   notifications: boolean;
+  useOcrBeforeAi: boolean;
   isAiFeaturesEnabled: boolean;
 } {
   const [units, setUnits] = useState<Units>('metric');
@@ -93,6 +95,7 @@ export function useSettings(): UseSettingsResult & {
   const [dailyNutritionInsights, setDailyNutritionInsights] = useState(true);
   const [workoutInsights, setWorkoutInsights] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -161,6 +164,10 @@ export function useSettings(): UseSettingsResult & {
     const notificationsQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', NOTIFICATIONS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const useOcrBeforeAiQuery = database
+      .get<Setting>('settings')
+      .query(Q.where('type', USE_OCR_BEFORE_AI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
     const unitsSubscription = unitsQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
@@ -313,6 +320,15 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
+    const useOcrBeforeAiSubscription = useOcrBeforeAiQuery.observeWithColumns(['value']).subscribe({
+      next: (settings) => {
+        setUseOcrBeforeAi(parseBooleanFromSettings(settings));
+      },
+      error: () => {
+        setUseOcrBeforeAi(false);
+      },
+    });
+
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -334,6 +350,7 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsightsSubscription.unsubscribe();
       workoutInsightsSubscription.unsubscribe();
       notificationsSubscription.unsubscribe();
+      useOcrBeforeAiSubscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
@@ -363,6 +380,7 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsights,
       workoutInsights,
       notifications,
+      useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
       weightUnit: getWeightUnit(units),
@@ -384,6 +402,7 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsights,
       workoutInsights,
       notifications,
+      useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
     ]
