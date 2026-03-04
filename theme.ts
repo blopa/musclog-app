@@ -5,11 +5,8 @@
 
 const baseColors = {
   black: '#000000',
-  emerald900: '#064e3b',
   darkForest: '#0d3520',
   teal600: '#0d9488',
-  darkMint: '#0f2419',
-  emerald500: '#10b981',
   charcoalGreen: '#141a17',
   teal500: '#14b8a6',
   swampGreen: '#15261f',
@@ -87,9 +84,9 @@ const colors = {
   purpleAlpha13: addOpacityToHex(baseColors.purple500, 0.13),
   purpleAlpha20: addOpacityToHex(baseColors.purple500, 0.2),
   purpleAlpha40: addOpacityToHex(baseColors.purple500, 0.4),
-  emeraldAlpha10: addOpacityToHex(baseColors.emerald500, 0.1),
-  emeraldAlpha20: addOpacityToHex(baseColors.emerald500, 0.2),
-  emeraldAlpha30: addOpacityToHex(baseColors.emerald500, 0.3),
+  emeraldAlpha10: addOpacityToHex(baseColors.emerald300, 0.1),
+  emeraldAlpha20: addOpacityToHex(baseColors.emerald300, 0.2),
+  emeraldAlpha30: addOpacityToHex(baseColors.emerald300, 0.3),
   greenAlpha05: addOpacityToHex(baseColors.green500, 0.05),
   greenAlpha10: addOpacityToHex(baseColors.green500, 0.1),
   greenAlpha20: addOpacityToHex(baseColors.green500, 0.2),
@@ -149,7 +146,7 @@ const colors = {
   infoBg20: addOpacityToHex(baseColors.blue500, 0.2),
   blueAlpha40: addOpacityToHex(baseColors.blue500, 0.4),
   blueAlpha50: addOpacityToHex(baseColors.blue500, 0.5),
-  emerald900Alpha30: addOpacityToHex(baseColors.emerald900, 0.3),
+  emerald900Alpha30: addOpacityToHex(baseColors.hunterGreen, 0.3),
   indigoAlpha30: addOpacityToHex(baseColors.indigo600, 0.3),
   indigoLightAlpha10: addOpacityToHex(baseColors.indigo500, 0.1),
   indigoLightAlpha20: addOpacityToHex(baseColors.indigo500, 0.2),
@@ -164,7 +161,7 @@ const themeColors = {
     tertiary: colors.charcoalGreen, // Darker backgrounds (food page)
     card: colors.charcoalGreen, // Card backgrounds
     cardElevated: colors.deepAquamarine, // Elevated card backgrounds
-    secondaryDark: colors.darkMint, // Dark card backgrounds (active states)
+    secondaryDark: colors.swampGreen, // Dark card backgrounds (active states)
     overlay: colors.jungleCard, // Overlay backgrounds
     filterTab: colors.jungleCard, // Filter tab background
     iconDark: colors.darkForest, // Dark icon backgrounds
@@ -281,7 +278,7 @@ const themeColors = {
     yellow: colors.amber400, // Yellow-500
     indigo: colors.indigo500, // Indigo-500
     indigoLight: colors.indigo400, // Indigo-400
-    emerald: colors.emerald500, // Emerald-500
+    emerald: colors.emerald300, // Emerald-500
     emeraldLight: colors.neonMint, // Emerald-400
     greenDark: colors.emerald300, // Green-600
     indigoVeryLight: colors.indigo200, // Indigo-100
@@ -316,7 +313,7 @@ const themeColors = {
     // Red border colors for ungroup action
     redDark: colors.red900, // Dark red border
     // Emerald border colors for group action
-    emeraldDark: colors.emerald900, // Dark emerald border
+    emeraldDark: colors.hunterGreen, // Dark emerald border
     indigo600Purple: colors.violet800, // Purple-700 (for indigo gradients)
     blue600: colors.blue600, // Blue-600
     pink500: colors.pink500, // Pink-500 (already in macros but adding for convenience)
@@ -327,7 +324,7 @@ const themeColors = {
     // Error colors for ungroup action
     errorSolid: colors.red400, // Solid red for ungroup
     // Success colors for group action
-    emeraldSolid: colors.emerald500, // Solid emerald for group
+    emeraldSolid: colors.emerald300, // Solid emerald for group
     // Additional status colors
     red400: colors.red400, // Red-400 (for fat icons, etc.)
     teal400: colors.teal400, // Teal-400 (for monounsat fat, etc.)
@@ -351,8 +348,8 @@ const themeColors = {
       bg: colors.indigo500, // Indigo-500
     },
     carbs: {
-      text: colors.emerald500, // Emerald-500
-      bg: colors.emerald500, // Emerald-500
+      text: colors.emerald300, // Emerald-500
+      bg: colors.emerald300, // Emerald-500
     },
     fat: {
       text: colors.amber500, // Amber-500
@@ -434,13 +431,13 @@ const themeColors = {
 
   // Gradient colors
   gradients: {
-    primary: [colors.blue500, colors.teal600, colors.emerald500] as const,
+    primary: [colors.blue500, colors.teal600, colors.emerald300] as const,
     accent: [colors.emerald300, colors.teal500] as const,
     card: [colors.deepAquamarine, colors.darkMossAlpha50] as const,
     button: [colors.deepAquamarine, colors.charcoalGreen] as const,
-    progress: [colors.indigo500, colors.teal600, colors.emerald500] as const,
+    progress: [colors.indigo500, colors.teal600, colors.emerald300] as const,
     workoutsTitle: [colors.violet300, colors.blue500, colors.emerald300] as const,
-    notification: [colors.pineShadow, colors.darkMint] as const,
+    notification: [colors.pineShadow, colors.swampGreen] as const,
     upNextCard: [colors.jungleCard, colors.charcoalGreen, colors.deepAquamarine] as const,
     cta: [colors.indigo600, colors.neonMint] as const, // Indigo to primary green gradient
     userBubble: [colors.green500, colors.emerald300] as const, // User message bubble gradient
@@ -453,9 +450,9 @@ const themeColors = {
       addOpacityToHex(colors.swampGreen, 0.7),
     ] as const,
     indigoPurple: [colors.indigo600, colors.violet800] as const, // Indigo to purple gradient
-    emeraldTeal: [colors.emerald500, colors.teal600] as const, // Emerald to teal gradient
+    emeraldTeal: [colors.emerald300, colors.teal600] as const, // Emerald to teal gradient
     pinkRose: [colors.pink500, colors.rose600] as const, // Pink to rose gradient
-    blueEmerald: [colors.blue600, colors.emerald500] as const, // Blue to emerald gradient
+    blueEmerald: [colors.blue600, colors.emerald300] as const, // Blue to emerald gradient
     overlayDark: ['transparent', colors.deepTealAlpha90, colors.jungleCard] as const, // Dark overlay gradient
     cameraOverlay: [colors.blackAlpha60, 'transparent', colors.blackAlpha90] as const, // Camera overlay gradient
     onboardingAmbient: [

@@ -2,11 +2,8 @@ const chroma = require('chroma-js');
 
 const colors = {
   black: '#000000',
-  emerald900: '#064e3b',
   darkForest: '#0d3520',
   teal600: '#0d9488',
-  darkMint: '#0f2419',
-  emerald500: '#10b981',
   charcoalGreen: '#141a17',
   teal500: '#14b8a6',
   swampGreen: '#15261f',
