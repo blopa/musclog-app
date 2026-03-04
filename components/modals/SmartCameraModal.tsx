@@ -517,8 +517,8 @@ export default function SmartCameraModal({
 
           {/* Bottom Controls */}
           <View className="relative z-20 px-4 pb-10 pt-4">
-            {/* Mode Selector */}
-            {!hideCameraModePicker ? (
+            {/* Mode Selector — only show when more than one mode is available */}
+            {!hideCameraModePicker && isAiEnabled ? (
               <View className="mb-6 w-full items-center">
                 <View
                   className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
