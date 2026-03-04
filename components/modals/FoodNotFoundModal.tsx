@@ -14,6 +14,8 @@ type FoodNotFoundModalProps = {
   onCreateCustom?: () => void;
 };
 
+// TODO: when this modal is shown, the camera live feed keeps running in the background
+// but we should instead stop it, pause the camera feed, and resume it when the modal is closed
 export function FoodNotFoundModal({
   visible,
   onClose,
@@ -41,7 +43,7 @@ export function FoodNotFoundModal({
       maxHeight="60%"
     >
       <View className="gap-3 p-2">
-        {/* Try AI Camera Scan - gradient primary CTA */}
+        {/* TODO: only show this AI Camera option if AI is enabled */}
         <Pressable
           onPress={() => {
             onTryAiScan?.();
@@ -60,7 +62,7 @@ export function FoodNotFoundModal({
             </View>
             <View className="flex-1">
               <Text className="text-lg font-bold text-white">
-                {t('nutrition.tryAICamera', 'Try AI Camera Scan')}
+                {t('nutrition.tryAICamera')}
               </Text>
               <Text className="text-xs text-white/80">
                 {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
