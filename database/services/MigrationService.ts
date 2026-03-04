@@ -143,10 +143,26 @@ export class MigrationService {
     }
 
     try {
-      // TODO: this is always true, because when we open the database, it is created if it doesn't exist
-      // so figure out a way to do this check properly
-      await this.oldDB.getAllAsync('SELECT 1 FROM sqlite_master LIMIT 1');
-      return true;
+      // openDatabaseSync creates an empty DB if none exists, so querying sqlite_master always
+      // succeeds. Instead, verify that at least one of the expected old-app tables is present.
+      const expectedTables = [
+        'FitnessGoals',
+        'UserMetrics',
+        'User',
+        'Food',
+        'UserNutrition',
+        'Exercise',
+        'Workout',
+        'WorkoutEvent',
+        'Set',
+      ];
+
+      const placeholders = expectedTables.map(() => '?').join(',');
+      const result = (await this.oldDB.getAllAsync(
+        `SELECT COUNT(*) as count FROM sqlite_master WHERE type='table' AND name IN (${placeholders})`,
+        expectedTables
+      )) as { count: number }[];
+      return (result[0]?.count ?? 0) > 0;
     } catch (error) {
       console.error('Error accessing old database:', error);
       return false;

@@ -7,6 +7,7 @@ export class MigrationService {
     if (!MigrationService.instance) {
       MigrationService.instance = new MigrationService();
     }
+
     return MigrationService.instance;
   }
 

@@ -108,6 +108,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
             total: info.total,
           }),
       });
+
       if (result.success) {
         console.log(
           `Migration completed: ${result.exercises} exercises, ${result.workouts} workouts, ${result.workoutLogs} workout logs, ${result.templateSets} template sets, ${result.workoutLogSets} log sets`
@@ -115,6 +116,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       } else {
         console.warn('Migration from old database failed:', result.error);
       }
+    } else {
+      console.log('Old database not present, skip migration...');
     }
 
     // Detect device language and save it into the settings for language
