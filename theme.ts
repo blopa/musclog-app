@@ -48,11 +48,9 @@ const baseColors = {
   emerald200: '#a7f3d0',
   purple500: '#a855f7',
   indigo200: '#c7d2fe',
-  gray300: '#d1d5db',
   tan: '#d4b5a0',
   rose600: '#da2552',
   gray200Tailwind: '#e5e7eb',
-  yellow500: '#eab308',
   pink500: '#ec4899',
   red500: '#ef4444',
   amber500: '#f59e0b',
@@ -109,8 +107,8 @@ const colors = {
   roseAlpha20: addOpacityToHex(baseColors.rose600, 0.2),
   pinkRedAlpha10: addOpacityToHex(baseColors.rose600, 0.1),
   pinkAlpha20: addOpacityToHex(baseColors.pink500, 0.2),
-  yellowAlpha10: addOpacityToHex(baseColors.yellow500, 0.1),
-  yellowAlpha20: addOpacityToHex(baseColors.yellow500, 0.2),
+  yellowAlpha10: addOpacityToHex(baseColors.amber400, 0.1),
+  yellowAlpha20: addOpacityToHex(baseColors.amber400, 0.2),
   amberAlpha10: addOpacityToHex(baseColors.amber400, 0.1),
   orangeAlpha10: addOpacityToHex(baseColors.orange500, 0.1),
   orangeAlpha20: addOpacityToHex(baseColors.orange500, 0.2),
@@ -231,7 +229,7 @@ const themeColors = {
     accent: colors.green500, // Accent text (green)
     accentLight: colors.emerald300, // Light accent text (emerald)
     black: colors.black, // Black text (for icons on light backgrounds)
-    gray300: colors.gray300, // Gray-300
+    gray300: colors.gray200Tailwind, // Gray-300
     gray500: colors.gray500, // Gray-500
     white: colors.white, // White
     // Text colors with opacity
@@ -282,7 +280,7 @@ const themeColors = {
     purple: colors.purple500, // Purple
     notificationBadge: colors.red500, // Red notification badge (same as error)
     amber: colors.amber400, // Amber-400
-    yellow: colors.yellow500, // Yellow-500
+    yellow: colors.amber400, // Yellow-500
     indigo: colors.indigo500, // Indigo-500
     indigoLight: colors.indigo400, // Indigo-400
     emerald: colors.emerald500, // Emerald-500
@@ -376,7 +374,7 @@ const themeColors = {
     pink: colors.pink500, // Pink-500
     orange: colors.orange500, // Orange-500
     teal: colors.teal500, // Teal-500
-    yellow: colors.yellow500, // Yellow-500
+    yellow: colors.amber400, // Yellow-500
     indigo: colors.indigo500, // Indigo-500
   },
 
