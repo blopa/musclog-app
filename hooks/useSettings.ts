@@ -356,6 +356,10 @@ export function useSettings(): UseSettingsResult & {
   }, []);
 
   const isAiFeaturesEnabled = useMemo(() => {
+    if (__DEV__) {
+      return true;
+    }
+
     return (
       (enableGoogleGemini && googleGeminiApiKey.trim() !== '') ||
       (enableOpenAi && openAiApiKey.trim() !== '')
