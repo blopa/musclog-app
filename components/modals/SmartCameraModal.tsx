@@ -77,6 +77,13 @@ export default function SmartCameraModal({
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [cameraResumeKey, setCameraResumeKey] = useState(0);
+
+  // When any overlay modal is open (Food Not Found or Food Details), the camera must be inactive
+  // so the feed is not live behind the modal. Food Not Found can be shown by SmartCameraModal
+  // (take picture/gallery, no barcode) or by FoodMealDetailsModal (barcode scanned but product not in DB).
+  const isCameraActive =
+    visible && !isSearchingBarcode && !isFoodNotFoundModalVisible && !isFoodDetailsModalVisible;
 
   // Update camera mode when mode prop changes
   useEffect(() => {
@@ -209,6 +216,7 @@ export default function SmartCameraModal({
     setDetectedBarcode(null);
     isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
+    setCameraResumeKey((k) => k + 1);
   }, []);
 
   const handleFoodNotFoundClose = useCallback(() => {
@@ -217,6 +225,7 @@ export default function SmartCameraModal({
     setDetectedBarcode(null);
     isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
+    setCameraResumeKey((k) => k + 1);
   }, []);
 
   const handleBarcodeLookupComplete = useCallback(() => {
@@ -387,31 +396,38 @@ export default function SmartCameraModal({
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
         <StatusBar barStyle="light-content" />
         <SafeAreaView className="flex-1" edges={['top']}>
-          {/* Camera Background */}
+          {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
           <View className="absolute inset-0">
-            <CameraView
-              ref={cameraRef}
-              style={StyleSheet.absoluteFill}
-              facing="back"
-              enableTorch={flashEnabled}
-              // TODO: for some reason still not pausing the live feed of camera
-              active={visible && !isSearchingBarcode ? !isFoodNotFoundModalVisible : false}
-              onBarcodeScanned={
-                isBarcodeScanning && !isSearchingBarcode ? handleBarcodeScanned : undefined
-              }
-              barcodeScannerSettings={{
-                barcodeTypes: [
-                  'qr',
-                  'ean13',
-                  'ean8',
-                  'upc_a',
-                  'upc_e',
-                  'code128',
-                  'code39',
-                  'code93',
-                ],
-              }}
-            />
+            {isCameraActive ? (
+              <CameraView
+                key={`camera-${cameraResumeKey}`}
+                ref={cameraRef}
+                style={StyleSheet.absoluteFill}
+                facing="back"
+                enableTorch={flashEnabled}
+                active={true}
+                onBarcodeScanned={isBarcodeScanning ? handleBarcodeScanned : undefined}
+                barcodeScannerSettings={{
+                  barcodeTypes: [
+                    'qr',
+                    'ean13',
+                    'ean8',
+                    'upc_a',
+                    'upc_e',
+                    'code128',
+                    'code39',
+                    'code93',
+                  ],
+                }}
+              />
+            ) : (
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  { backgroundColor: theme.colors.background.darkGreenSolid },
+                ]}
+              />
+            )}
             {/* Gradient Overlay */}
             <LinearGradient
               colors={theme.colors.gradients.cameraOverlay}

@@ -914,25 +914,29 @@ export function FoodMealDetailsModal({
     onLogMeal,
   ]);
 
-  // Handlers for FoodNotFoundModal actions
+  // Handlers for FoodNotFoundModal actions — close Food Details modal too so parent can resume camera.
   const handleTryAiScan = useCallback(() => {
     setIsFoodNotFoundModalVisible(false);
+    onClose();
     // Trigger AI scan logic
-  }, []);
+  }, [onClose]);
 
   const handleSearchAgain = useCallback(() => {
     setIsFoodNotFoundModalVisible(false);
+    onClose();
     // Trigger search again logic
-  }, []);
+  }, [onClose]);
 
   const handleCreateCustom = useCallback(() => {
     setIsFoodNotFoundModalVisible(false);
+    onClose();
     // Trigger create custom food logic
-  }, []);
+  }, [onClose]);
 
   const handleFoodNotFoundClose = useCallback(() => {
     setIsFoodNotFoundModalVisible(false);
-  }, []);
+    onClose();
+  }, [onClose]);
 
   // Reset matched portion when modal closes
   useEffect(() => {
