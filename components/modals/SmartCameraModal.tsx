@@ -1,5 +1,6 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
+import ExpoImageCropTool from 'expo-image-crop-tool';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -145,59 +146,84 @@ export default function SmartCameraModal({
     [cameraMode]
   );
 
+  const processAiPhoto = useCallback(
+    async (uri: string) => {
+      if (cameraMode === 'ai-label-scan') {
+        if (useOcrBeforeAi) {
+          const text = await performOcr(uri);
+          console.log('[SmartCamera] OCR result:', text);
+        } else {
+          console.log('[SmartCamera] AI label scan (no OCR) — image URI:', uri);
+        }
+        showSnackbar('success', t('food.aiCamera.photoCaptured'));
+      } else if (cameraMode === 'ai-meal-photo') {
+        console.log('[SmartCamera] AI meal photo — image URI:', uri);
+        showSnackbar('success', t('food.aiCamera.photoCaptured'));
+      }
+    },
+    [cameraMode, useOcrBeforeAi, t]
+  );
+
   const handleTakePicture = useCallback(async () => {
     if (!cameraRef.current) {
       return;
     }
 
+    // AI modes: take photo then open native crop UI
+    if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.85,
+          base64: false,
+        });
+        const cropped = await ExpoImageCropTool.openCropperAsync({
+          imageUri: photo.uri,
+          format: 'jpeg',
+          compressImageQuality: 0.85,
+        });
+        await processAiPhoto(cropped.path);
+      } catch (error) {
+        // User cancelled crop or error occurred — silently ignore cancel
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes('cancel') && !message.includes('Cancel')) {
+          console.error('Error taking picture:', error);
+          showSnackbar('error', t('food.aiCamera.cameraError'));
+        }
+      }
+      return;
+    }
+
+    // Barcode scan mode
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
         base64: false,
       });
 
-      // Process the photo based on camera mode
-      if (cameraMode === 'barcode-scan') {
-        // For barcode mode, try to detect barcodes in the image (fallback)
-        setIsSearchingBarcode(true);
-        try {
-          const barcode = await detectBarcodes(photo.uri);
+      setIsSearchingBarcode(true);
+      try {
+        const barcode = await detectBarcodes(photo.uri);
 
-          if (barcode) {
-            setDetectedBarcode(barcode);
-            setIsFoodDetailsModalVisible(true);
-            // Keep loading visible until food details modal is shown (cleared in useEffect above)
-          } else {
-            showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
-            isSearchingBarcodeRef.current = false;
-            setIsSearchingBarcode(false);
-            // Show food not found modal instead of food details modal
-            setIsFoodNotFoundModalVisible(true);
-          }
-        } catch (error) {
-          console.error('Error detecting barcode:', error);
-          showSnackbar('error', t('food.aiCamera.cameraError'));
+        if (barcode) {
+          setDetectedBarcode(barcode);
+          setIsFoodDetailsModalVisible(true);
+        } else {
+          showSnackbar('error', t('food.aiCamera.noBarcodeFound'));
           isSearchingBarcodeRef.current = false;
           setIsSearchingBarcode(false);
+          setIsFoodNotFoundModalVisible(true);
         }
-      } else if (cameraMode === 'ai-label-scan') {
-        if (useOcrBeforeAi) {
-          const text = await performOcr(photo.uri);
-          console.log('[SmartCamera] OCR result:', text);
-        } else {
-          console.log('[SmartCamera] AI label scan (no OCR) — image URI:', photo.uri);
-        }
-        showSnackbar('success', t('food.aiCamera.photoCaptured'));
-      } else if (cameraMode === 'ai-meal-photo') {
-        // TODO: Implement actual AI processing here
-        console.log('[SmartCamera] AI meal photo — image URI:', photo.uri);
-        showSnackbar('success', t('food.aiCamera.photoCaptured'));
+      } catch (error) {
+        console.error('Error detecting barcode:', error);
+        showSnackbar('error', t('food.aiCamera.cameraError'));
+        isSearchingBarcodeRef.current = false;
+        setIsSearchingBarcode(false);
       }
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, [cameraMode, t, useOcrBeforeAi]);
+  }, [cameraMode, t, processAiPhoto]);
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -297,12 +323,10 @@ export default function SmartCameraModal({
         return;
       }
 
-      // Launch image picker
+      // Launch image picker (no editing here — we open the cropper ourselves for AI modes)
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.8,
+        quality: 0.85,
         base64: false,
       });
 
@@ -331,14 +355,21 @@ export default function SmartCameraModal({
             isSearchingBarcodeRef.current = false;
             setIsSearchingBarcode(false);
           }
-        } else if (cameraMode === 'ai-label-scan') {
-          if (useOcrBeforeAi) {
-            const text = await performOcr(selectedAsset.uri);
-            console.log('[SmartCamera] OCR result (gallery):', text);
-          } else {
-            console.log('[SmartCamera] AI label scan (no OCR) — image URI:', selectedAsset.uri);
+        } else if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
+          try {
+            const cropped = await ExpoImageCropTool.openCropperAsync({
+              imageUri: selectedAsset.uri,
+              format: 'jpeg',
+              compressImageQuality: 0.85,
+            });
+            await processAiPhoto(cropped.path);
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            if (!message.includes('cancel') && !message.includes('Cancel')) {
+              console.error('Error cropping gallery image:', error);
+              showSnackbar('error', t('food.aiCamera.cameraError'));
+            }
           }
-          showSnackbar('success', t('food.aiCamera.photoCaptured'));
         }
       }
     } catch (error) {
