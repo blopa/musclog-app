@@ -1,5 +1,6 @@
 const chroma = require('chroma-js');
 
+// 1. Your original colors object (truncated here for brevity, paste your full list!)
 const colors = {
   black: '#000000',
   darkForest: '#0d3520',
@@ -57,71 +58,70 @@ function getSimilarity(hex1, hex2) {
   return Math.max(0, 100 - difference);
 }
 
-// 1. Set up tracking variables
 const processedColors = new Set();
 const colorGroups = [];
 const colorNames = Object.keys(colors);
 
-// 2. Loop through the colors to create groups
+// 2. Group the colors (same as before)
 for (let i = 0; i < colorNames.length; i++) {
   const baseName = colorNames[i];
-
-  // If this color was already grouped under another color, skip it!
   if (processedColors.has(baseName)) {
     continue;
   }
 
   const currentGroup = {
     base: baseName,
-    hex: colors[baseName],
     similar: [],
   };
 
   for (let j = i + 1; j < colorNames.length; j++) {
     const compareName = colorNames[j];
-
-    // Skip if the comparison color is already in a group
     if (processedColors.has(compareName)) {
       continue;
     }
 
     const sim = getSimilarity(colors[baseName], colors[compareName]);
 
-    // 3. If similar, add it to the base color's group
     if (sim >= 90) {
-      currentGroup.similar.push({
-        name: compareName,
-        hex: colors[compareName],
-        sim: sim,
-      });
-      // Mark it as processed so it doesn't become its own base color later
+      currentGroup.similar.push({ name: compareName, sim: sim });
       processedColors.add(compareName);
     }
   }
 
-  // 4. If we found duplicates for this base color, save the group
   if (currentGroup.similar.length > 0) {
-    currentGroup.similar.sort((a, b) => b.sim - a.sim); // Sort highest similarity first
+    currentGroup.similar.sort((a, b) => b.sim - a.sim);
     colorGroups.push(currentGroup);
     processedColors.add(baseName);
   }
 }
 
-// 5. Print out the cleaned-up report
-console.log('\n=== 🧹 COLOR REDUNDANCY GROUPS (>= 90%) 🧹 ===\n');
-console.log('Rule of thumb: Keep the Base Color, consider deleting the indented ones.\n');
+// 3. Build the new sorted object
+const sortedColors = {};
 
+// First, insert the clustered groups
 colorGroups.forEach((group) => {
-  console.log(`Base Color: ${group.base} (${group.hex})`);
-  group.similar.forEach((match) => {
-    let warning = '';
-    if (match.sim > 98) {
-      warning = ' [CRITICAL: Delete one]';
-    } else if (match.sim > 95) {
-      warning = ' [WARNING: Very similar]';
-    }
+  // Add the base color
+  sortedColors[group.base] = colors[group.base];
 
-    console.log(`  ↳ ${match.sim.toFixed(2)}% similar -> ${match.name} (${match.hex})${warning}`);
+  // Immediately follow it with its similar matches
+  group.similar.forEach((match) => {
+    sortedColors[match.name] = colors[match.name];
   });
-  console.log('--------------------------------------------------');
 });
+
+// Finally, add any colors that had no similarities >= 90%
+colorNames.forEach((name) => {
+  if (!sortedColors.hasOwnProperty(name)) {
+    sortedColors[name] = colors[name];
+  }
+});
+
+// 4. Print the newly formatted object for copy-pasting
+console.log('\n// === COPY AND PASTE THIS INTO YOUR CODE ===\n');
+console.log('const baseColors = {');
+
+for (const [key, value] of Object.entries(sortedColors)) {
+  console.log(`  ${key}: '${value}',`);
+}
+
+console.log('};\n');
