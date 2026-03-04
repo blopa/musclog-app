@@ -394,9 +394,8 @@ export default function SmartCameraModal({
               style={StyleSheet.absoluteFill}
               facing="back"
               enableTorch={flashEnabled}
-              active={
-                visible && !isSearchingBarcode ? !isFoodNotFoundModalVisible : false
-              }
+              // TODO: for some reason still not pausing the live feed of camera
+              active={visible && !isSearchingBarcode ? !isFoodNotFoundModalVisible : false}
               onBarcodeScanned={
                 isBarcodeScanning && !isSearchingBarcode ? handleBarcodeScanned : undefined
               }
@@ -794,6 +793,7 @@ export default function SmartCameraModal({
             visible={isNewCustomFoodModalVisible}
             onClose={handleNewCustomFoodClose}
             onSave={handleNewCustomFoodSave}
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 
@@ -805,6 +805,7 @@ export default function SmartCameraModal({
             mealType={selectedMealType}
             onBarcodeScanPress={handleScanBarcodePress}
             onCreatePress={handleCreateCustomFood}
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 

@@ -23,6 +23,7 @@ import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
 import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
 import { useNutritionGoalDataLogs } from '../../hooks/useNutritionGoalDataLogs';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
@@ -440,12 +441,15 @@ export function DataLogModal({
 }: DataLogModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { isAiFeaturesEnabled } = useSettings();
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // TODO: use isDuplicating
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
@@ -1241,6 +1245,7 @@ export function DataLogModal({
             refresh();
             setCreateFoodModalVisible(false);
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 

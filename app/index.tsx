@@ -541,6 +541,7 @@ export default function HomeScreen() {
             setCameraMode('barcode-scan');
             setIsCameraVisible(true);
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 
@@ -574,6 +575,7 @@ export default function HomeScreen() {
             console.log('Custom food saved:', data);
             setIsCreateCustomFoodVisible(false);
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
     </MasterLayout>

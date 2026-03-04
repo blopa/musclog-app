@@ -50,6 +50,8 @@ type NewCustomFoodModalProps = {
   onClose: () => void;
   onSave?: (data: any) => void;
   trackFoodAfterSave?: boolean;
+  /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
+  isAiEnabled?: boolean;
 };
 
 export default function CreateCustomFoodModal({
@@ -57,6 +59,7 @@ export default function CreateCustomFoodModal({
   onClose,
   onSave,
   trackFoodAfterSave = false,
+  isAiEnabled = true,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const [isSaving, setIsSaving] = useState(false);
@@ -804,7 +807,7 @@ export default function CreateCustomFoodModal({
             onClose();
           }}
           food={createdFood}
-          isAiEnabled={false} // TODO: implement this
+          isAiEnabled={isAiEnabled}
         />
       ) : null}
       <PortionSizesPickerModal

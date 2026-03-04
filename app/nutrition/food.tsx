@@ -723,6 +723,7 @@ export default function FoodScreen() {
           visible={isCreateCustomFoodVisible}
           trackFoodAfterSave={true}
           onClose={() => setIsCreateCustomFoodVisible(false)}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 
@@ -746,6 +747,7 @@ export default function FoodScreen() {
             setHideCameraModePicker(true);
             setIsCameraVisible(true);
           }}
+          isAiEnabled={isAiFeaturesEnabled}
         />
       ) : null}
 

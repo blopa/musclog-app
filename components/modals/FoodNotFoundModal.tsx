@@ -62,9 +62,7 @@ export function FoodNotFoundModal({
                 <Text className="text-2xl">✨</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold text-white">
-                  {t('nutrition.tryAICamera')}
-                </Text>
+                <Text className="text-lg font-bold text-white">{t('nutrition.tryAICamera')}</Text>
                 <Text className="text-xs text-white/80">
                   {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
                 </Text>

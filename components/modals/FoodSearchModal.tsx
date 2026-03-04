@@ -51,6 +51,8 @@ type FoodSearchModalProps = {
   onFoodSelect?: (food: FoodItem) => void;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
   onFoodTracked?: () => void;
+  /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
+  isAiEnabled?: boolean;
 };
 
 type UnderlineTabsProps = {
@@ -233,6 +235,7 @@ export function FoodSearchModal({
   onBarcodeScanPress,
   onFoodSelect,
   onFoodTracked,
+  isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -1135,7 +1138,7 @@ export function FoodSearchModal({
               onFoodTracked?.();
               onClose();
             }}
-            isAiEnabled={false} // TODO: implement this
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 
@@ -1167,7 +1170,7 @@ export function FoodSearchModal({
               onFoodTracked?.();
               onClose();
             }}
-            isAiEnabled={false} // TODO: implement this
+            isAiEnabled={isAiEnabled}
           />
         ) : null}
 

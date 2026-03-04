@@ -195,11 +195,14 @@ export class MigrationService {
     }
 
     try {
-      const result = await this.oldDB.getAllAsync(`
+      const result = await this.oldDB.getAllAsync(
+        `
         SELECT name FROM sqlite_master 
         WHERE type='table' AND name = ?
-      `, [tableName]);
-      
+      `,
+        [tableName]
+      );
+
       return result.length > 0;
     } catch (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -1279,7 +1282,7 @@ export class MigrationService {
     // Check if Workout table exists (needed for template sets)
     const workoutTableExists = await this.tableExists('Workout');
     const setTableExists = await this.tableExists('Set');
-    
+
     if (!workoutTableExists || !setTableExists) {
       console.log('Workout or Set table does not exist - skipping template sets migration');
       reportProgress?.(0, totalForProgress);
@@ -1361,7 +1364,7 @@ export class MigrationService {
     // Check if WorkoutEvent table exists (needed for log sets)
     const workoutEventTableExists = await this.tableExists('WorkoutEvent');
     const setTableExists = await this.tableExists('Set');
-    
+
     if (!workoutEventTableExists || !setTableExists) {
       console.log('WorkoutEvent or Set table does not exist - skipping log sets migration');
       reportProgress?.(0, totalForProgress);
