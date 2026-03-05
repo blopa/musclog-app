@@ -1,6 +1,5 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
-import ExpoImageCropTool from 'expo-image-crop-tool';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -20,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
-import { detectBarcodes } from '../../utils/file';
+import { detectBarcodes, openCropperAsync } from '../../utils/file';
 import { performOcr } from '../../utils/ocr';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
@@ -176,7 +175,7 @@ export default function SmartCameraModal({
           quality: 0.85,
           base64: false,
         });
-        const cropped = await ExpoImageCropTool.openCropperAsync({
+        const cropped = await openCropperAsync({
           imageUri: photo.uri,
           format: 'jpeg',
           compressImageQuality: 0.85,
@@ -357,7 +356,7 @@ export default function SmartCameraModal({
           }
         } else if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
           try {
-            const cropped = await ExpoImageCropTool.openCropperAsync({
+            const cropped = await openCropperAsync({
               imageUri: selectedAsset.uri,
               format: 'jpeg',
               compressImageQuality: 0.85,

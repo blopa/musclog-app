@@ -107,3 +107,7 @@ export async function detectBarcodes(imageUri: string) {
 
   return quaggaResult?.codeResult?.code ?? null;
 }
+
+export async function openCropperAsync(options: any) {
+  return options.imageUri;
+}
