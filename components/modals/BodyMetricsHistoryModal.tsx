@@ -292,7 +292,7 @@ export default function BodyMetricsHistoryModal({
       // Handle single data point case
       const normalizedX =
         sortedMetrics.length === 1 ? 200 : (index / (sortedMetrics.length - 1)) * 400;
-      return { x: normalizedX, y: Math.max(0, Math.min(150, 150 - normalizedY)) }; // Invert Y for chart
+      return { x: normalizedX, y: Math.max(0, Math.min(150, normalizedY)) };
     });
   }, [allMetricsForChart]);
 

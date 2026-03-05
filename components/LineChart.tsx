@@ -107,9 +107,8 @@ export function LineChart({
   const lineColorResolved = lineColor ?? theme.colors.accent.primary;
   const areaColorResolved = areaColor ?? theme.colors.accent.primary30;
 
-  // CartesianChart (victory-native) uses screen coordinates: y=0 at top, y increases downward.
-  // Callers already provide screen-style y values (high metric → low y → near top of chart),
-  // so no re-inversion is needed here.
+  // CartesianChart (victory-native) uses standard math coordinates: y=0 at bottom, y increases upward.
+  // Callers provide values where high metric = high y = near top of chart.
   const chartData = data as { x: number; y: number }[];
 
   return (
@@ -126,11 +125,11 @@ export function LineChart({
             labelColor: 'transparent',
           }}
         >
-          {({ points }) => (
+          {({ points, chartBounds }) => (
             <>
               <Area
                 points={points.y}
-                y0={yDomainFinal[1]}
+                y0={chartBounds.bottom}
                 curveType={curveType}
                 color={areaColorResolved}
               />
