@@ -31,15 +31,34 @@ export class ChatService {
     });
   }
 
-  static async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
-    return await database
+  /**
+   * Fetch messages for a session, newest-first (DESC), with optional pagination.
+   * @param sessionId
+   * @param limit  How many messages to return
+   * @param offset How many messages to skip (for load-more of older messages)
+   */
+  static async getSessionMessages(
+    sessionId: string,
+    limit?: number,
+    offset?: number
+  ): Promise<ChatMessage[]> {
+    let query = database
       .get<ChatMessage>('chat_messages')
       .query(
         Q.where('session_id', sessionId),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('created_at', Q.asc)
-      )
-      .fetch();
+        Q.sortBy('created_at', Q.desc)
+      );
+
+    if (limit !== undefined) {
+      if (offset && offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
   }
 
   static async deleteSession(sessionId: string): Promise<void> {

@@ -160,7 +160,17 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
 };
 
 export const configureBasicGenAI = async (
-  { accessToken, apiKey, model }: { accessToken?: string; apiKey?: string; model?: string },
+  {
+    accessToken,
+    apiKey,
+    model,
+    generationConfig,
+  }: {
+    accessToken?: string;
+    apiKey?: string;
+    model?: string;
+    generationConfig?: Record<string, unknown>;
+  },
   systemParts?: Part[]
 ) => {
   const genAI = await getGenerativeAI({ accessToken, apiKey });
@@ -168,6 +178,7 @@ export const configureBasicGenAI = async (
   return genAI.getGenerativeModel({
     model: model || (await getModel()),
     safetySettings,
+    ...(generationConfig && { generationConfig }),
     ...(systemParts && {
       systemInstruction: {
         parts: systemParts,

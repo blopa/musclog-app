@@ -14,7 +14,13 @@ import { database } from '../database';
 import ChatMessage from '../database/models/ChatMessage';
 import Setting from '../database/models/Setting';
 import { ChatService } from '../database/services/ChatService';
-import { type ChatHistoryEntry, type CoachAIConfig, sendCoachMessage } from '../utils/coachAI';
+import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
+import {
+  type ChatHistoryEntry,
+  type CoachAIConfig,
+  type CoachResponse,
+  sendCoachMessage,
+} from '../utils/coachAI';
 
 // AI Coach avatar URL (shared with CoachModal)
 export const AI_COACH_AVATAR =
@@ -30,6 +36,9 @@ export interface ExtendedIMessage extends IMessage {
   };
 }
 
+const INITIAL_LIMIT = 10;
+const BATCH_SIZE = 10;
+
 function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
   const isCoach = record.sender === 'coach';
   return {
@@ -43,9 +52,12 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 export type UseChatMessagesResult = {
   messages: ExtendedIMessage[];
   isLoading: boolean;
+  isLoadingMore: boolean;
   isSending: boolean;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
   sendMessage: (text: string) => Promise<void>;
-  sessionId: string;
+  sessionId: string | null;
 };
 
 type AISettings = {
@@ -75,62 +87,145 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
   return null;
 }
 
-export function useChatMessages(initialSessionId?: string): UseChatMessagesResult {
-  const [sessionId] = useState<string>(() => initialSessionId ?? ChatService.generateSessionId());
+export function useChatMessages(): UseChatMessagesResult {
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
 
-  // Keep a ref to raw ChatMessage records for building AI history
+  // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
 
+  // Resolve or create session ID on mount
   useEffect(() => {
-    setIsLoading(true);
+    let cancelled = false;
+    const doTask = async () => {
+      let sid = await getCurrentChatSessionId();
 
-    const subscription = database
-      .get<ChatMessage>('chat_messages')
-      .query(
-        Q.where('session_id', sessionId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('created_at', Q.desc)
-      )
-      .observe()
-      .subscribe({
-        next: (records) => {
-          // GiftedChat expects newest-first; query is already DESC
-          rawMessagesRef.current = [...records].reverse(); // keep ASC copy for history building
-          setMessages(records.map(toGiftedMessage));
-          setIsLoading(false);
-        },
-        error: (err) => {
-          console.error('[useChatMessages] subscription error:', err);
-          setIsLoading(false);
-        },
-      });
+      if (!sid) {
+        sid = ChatService.generateSessionId();
+        await setCurrentChatSessionId(sid);
+      }
 
-    return () => subscription.unsubscribe();
+      if (!cancelled) {
+        setSessionId(sid);
+      }
+    };
+
+    doTask();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Initial load once sessionId is resolved
+  useEffect(() => {
+    if (!sessionId) {
+      return;
+    }
+
+    let cancelled = false;
+    const doTask = async () => {
+      setIsLoading(true);
+      try {
+        const records = await ChatService.getSessionMessages(sessionId, INITIAL_LIMIT, 0);
+        if (cancelled) {
+          return;
+        }
+        // records are DESC (newest first) — right for GiftedChat
+        setMessages(records.map(toGiftedMessage));
+        // Store ASC copy for AI history building
+        rawMessagesRef.current = [...records].reverse();
+        setCurrentOffset(records.length);
+
+        // Check if there are older messages
+        const lookAhead = await ChatService.getSessionMessages(sessionId, 1, records.length);
+        if (!cancelled) {
+          setHasMore(lookAhead.length > 0);
+        }
+      } catch (err) {
+        console.error('[useChatMessages] initial load error:', err);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    doTask();
+
+    return () => {
+      cancelled = true;
+    };
   }, [sessionId]);
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore || !sessionId) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+    try {
+      const olderRecords = await ChatService.getSessionMessages(
+        sessionId,
+        BATCH_SIZE,
+        currentOffset
+      );
+
+      if (olderRecords.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      // Prepend older records to ASC history ref
+      rawMessagesRef.current = [...[...olderRecords].reverse(), ...rawMessagesRef.current];
+
+      // Append to GiftedChat messages (older = further down the DESC list)
+      setMessages((prev) => [...prev, ...olderRecords.map(toGiftedMessage)]);
+
+      const newOffset = currentOffset + olderRecords.length;
+      setCurrentOffset(newOffset);
+
+      if (olderRecords.length < BATCH_SIZE) {
+        setHasMore(false);
+      } else {
+        const lookAhead = await ChatService.getSessionMessages(sessionId, 1, newOffset);
+        setHasMore(lookAhead.length > 0);
+      }
+    } catch (err) {
+      console.error('[useChatMessages] loadMore error:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMore, sessionId, currentOffset]);
 
   const sendMessage = useCallback(
     async (text: string) => {
-      if (!text.trim() || isSending) {
+      if (!text.trim() || isSending || !sessionId) {
         return;
       }
 
       setIsSending(true);
       try {
-        // 1. Persist user message
-        await ChatService.saveMessage({
-          sessionId,
-          sender: 'user',
-          message: text.trim(),
-        });
-
-        // 2. Build history for AI (oldest-first, use summarized when available)
+        // 1. Snapshot history BEFORE saving the new user message to avoid duplication
         const history: ChatHistoryEntry[] = rawMessagesRef.current.map((record) => ({
           role: record.sender,
           content: record.summarizedMessage ?? record.message,
         }));
+
+        // 2. Persist user message and prepend to UI immediately
+        const userRecord = await ChatService.saveMessage({
+          sessionId,
+          sender: 'user',
+          message: text.trim(),
+        });
+        rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
+        setMessages((prev) => [toGiftedMessage(userRecord), ...prev]);
+        setCurrentOffset((prev) => prev + 1);
 
         // 3. Read AI settings from DB
         const fetchSetting = async (type: string) => {
@@ -168,31 +263,44 @@ export function useChatMessages(initialSessionId?: string): UseChatMessagesResul
 
         if (!aiConfig) {
           console.warn('[useChatMessages] No AI provider configured');
-          await ChatService.saveMessage({
+          const errorRecord = await ChatService.saveMessage({
             sessionId,
             sender: 'coach',
             message:
               'AI features are not configured. Please add a Gemini or OpenAI API key in Settings.',
           });
+          rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
+          setMessages((prev) => [toGiftedMessage(errorRecord), ...prev]);
+          setCurrentOffset((prev) => prev + 1);
           return;
         }
 
         // 4. Call AI
-        const reply = await sendCoachMessage(aiConfig, history, text.trim());
+        const reply: CoachResponse = await sendCoachMessage(aiConfig, history, text.trim());
 
-        // 5. Persist coach reply
-        await ChatService.saveMessage({
+        // 5. Persist coach reply and prepend to UI
+        const coachRecord = await ChatService.saveMessage({
           sessionId,
           sender: 'coach',
-          message: reply,
+          message: reply.msg4User,
+          summarizedMessage: reply.sumMsg,
         });
+        rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
+        setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
+        setCurrentOffset((prev) => prev + 1);
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
-        await ChatService.saveMessage({
-          sessionId,
-          sender: 'coach',
-          message: 'Sorry, something went wrong. Please try again.',
-        });
+        if (sessionId) {
+          const errorRecord = await ChatService.saveMessage({
+            sessionId,
+            sender: 'coach',
+            message: 'Sorry, something went wrong. Please try again.',
+          });
+
+          rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
+          setMessages((prev) => [toGiftedMessage(errorRecord), ...prev]);
+          setCurrentOffset((prev) => prev + 1);
+        }
       } finally {
         setIsSending(false);
       }
@@ -200,5 +308,14 @@ export function useChatMessages(initialSessionId?: string): UseChatMessagesResul
     [sessionId, isSending]
   );
 
-  return { messages, isLoading, isSending, sendMessage, sessionId };
+  return {
+    messages,
+    isLoading,
+    isLoadingMore,
+    isSending,
+    hasMore,
+    loadMore,
+    sendMessage,
+    sessionId,
+  };
 }

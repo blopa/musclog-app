@@ -9,7 +9,15 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   BubbleProps,
   Composer,
@@ -219,7 +227,7 @@ type CoachModalProps = {
 export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { messages, isSending, sendMessage } = useChatMessages();
+  const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
 
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
@@ -355,6 +363,24 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
                 paddingBottom: theme.spacing.padding.base,
                 paddingHorizontal: theme.spacing.padding.base,
               },
+              ListFooterComponent: hasMore ? (
+                <Pressable
+                  onPress={loadMore}
+                  disabled={isLoadingMore}
+                  className="mb-4 items-center py-2"
+                >
+                  {isLoadingMore ? (
+                    <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                  ) : (
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: theme.colors.accent.primary }}
+                    >
+                      {t('replaceExercise.loadMore')}
+                    </Text>
+                  )}
+                </Pressable>
+              ) : null,
             }}
           />
         </View>
