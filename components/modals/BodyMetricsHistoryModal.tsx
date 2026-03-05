@@ -296,6 +296,42 @@ export default function BodyMetricsHistoryModal({
     });
   }, [allMetricsForChart]);
 
+  // Y-axis labels (min, mid, max) with display values
+  const yAxisLabels = useMemo(() => {
+    if (!allMetricsForChart || allMetricsForChart.length === 0) return [];
+
+    const storedValues = allMetricsForChart.map((m) => m.decrypted.value);
+    const minStored = Math.min(...storedValues);
+    const maxStored = Math.max(...storedValues);
+    const range = maxStored - minStored || 1;
+    const padding = range * 0.1;
+
+    const toDomainY = (v: number) =>
+      Math.max(0, Math.min(150, ((v - minStored + padding) / (range + padding * 2)) * 150));
+
+    const minMetric = allMetricsForChart.find((m) => m.decrypted.value === minStored);
+    const maxMetric = allMetricsForChart.find((m) => m.decrypted.value === maxStored);
+    const minDisplay = getDisplayValue(minStored, minMetric?.decrypted.unit);
+    const maxDisplay = getDisplayValue(maxStored, maxMetric?.decrypted.unit);
+    const midDisplay = (minDisplay + maxDisplay) / 2;
+
+    const unit = getMetricUnit(selectedMetric);
+    const fmt = (v: number) => {
+      const decimals = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 1;
+      return unit ? `${v.toFixed(decimals)} ${unit}` : v.toFixed(decimals);
+    };
+
+    if (range < 0.01) {
+      return [{ label: fmt(maxDisplay), yDomainValue: toDomainY(maxStored) }];
+    }
+
+    return [
+      { label: fmt(maxDisplay), yDomainValue: toDomainY(maxStored) },
+      { label: fmt(midDisplay), yDomainValue: toDomainY((minStored + maxStored) / 2) },
+      { label: fmt(minDisplay), yDomainValue: toDomainY(minStored) },
+    ];
+  }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit]);
+
   // X-axis labels from actual date range (first, middle, last)
   const xAxisLabels = useMemo(() => {
     if (!allMetricsForChart || allMetricsForChart.length === 0) {
@@ -484,7 +520,7 @@ export default function BodyMetricsHistoryModal({
                   </View>
 
                   {/* Chart */}
-                  <LineChart data={chartData} xAxisLabels={xAxisLabels} />
+                  <LineChart data={chartData} xAxisLabels={xAxisLabels} yAxisLabels={yAxisLabels} />
                 </View>
               </GenericCard>
             ) : (

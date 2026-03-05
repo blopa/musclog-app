@@ -52,6 +52,8 @@ export type LineChartProps = {
   gridTickValues?: number[];
   /** Custom X-axis labels to display below the chart */
   xAxisLabels?: string[];
+  /** Y-axis labels overlaid on the chart. yDomainValue should be in the y-domain space [yDomain[0], yDomain[1]]. */
+  yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
   marginTop?: number;
   /** Custom margin bottom for X-axis labels (default: 16) */
@@ -91,6 +93,7 @@ export function LineChart({
   showGridLines = true,
   gridLineColor,
   xAxisLabels,
+  yAxisLabels,
   marginTop = 16,
   marginBottom = 16,
   className,
@@ -113,7 +116,7 @@ export function LineChart({
 
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
-      <View style={{ height }}>
+      <View style={{ height, position: 'relative' }}>
         <CartesianChart
           data={chartData}
           xKey="x"
@@ -159,6 +162,27 @@ export function LineChart({
             </>
           )}
         </CartesianChart>
+        {yAxisLabels?.map(({ label, yDomainValue }) => {
+          const yRange = yDomainFinal[1] - yDomainFinal[0];
+          const topOffset =
+            (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
+          return (
+            <Text
+              key={label}
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: 6,
+                top: topOffset - 6,
+                fontSize: 9,
+                fontWeight: '600',
+                color: theme.colors.text.tertiary,
+              }}
+            >
+              {label}
+            </Text>
+          );
+        })}
       </View>
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View className="mt-4 flex-row justify-between px-1" style={{ marginTop: marginBottom }}>
