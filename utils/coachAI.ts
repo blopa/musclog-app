@@ -22,6 +22,10 @@ export type CoachResponse = {
   sumMsg: string;
 };
 
+export const WORDS_SOFT_LIMIT = 100;
+export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
+
+
 const COACH_SYSTEM_PROMPT = `You are Loggy, an expert personal trainer and nutritionist embedded in the Musclog fitness app.
 Your role is to help users with:
 - Planning and optimizing workouts
@@ -35,7 +39,7 @@ You have access to the user's workout and nutrition logs through the app.
 
 You must always respond with a JSON object containing exactly two fields:
 - "msg4User": The full response to display to the user in the chat.
-- "sumMsg": A brief 1-2 sentence summary of your response, used to preserve context in future turns without wasting tokens.`;
+- "sumMsg": A brief 1-2 sentence summary of your response, used to preserve context in future turns without wasting tokens. ${BE_CONCISE_PROMPT}`;
 
 const RESPONSE_SCHEMA = {
   type: 'object',
@@ -46,7 +50,8 @@ const RESPONSE_SCHEMA = {
     },
     sumMsg: {
       type: 'string',
-      description: 'A brief 1-2 sentence summary of the response for future context.',
+      description:
+        'A brief 1-2 sentence summary of the response for future context. Capture only the main points and advice given',
     },
   },
   required: ['msg4User', 'sumMsg'],
@@ -156,5 +161,6 @@ export async function sendCoachMessage(
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, userMessage);
   }
+
   return sendViaOpenAI(config, history, userMessage);
 }
