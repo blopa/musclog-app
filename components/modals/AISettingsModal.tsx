@@ -1,17 +1,19 @@
 import { Apple, Bot, ChevronDown, Dumbbell, ScanText } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { AppState, Pressable, Text, View } from 'react-native';
 
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { deleteAllData, isGoogleSignedIn } from '../../utils/googleAuth';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type AIIntegrationCardProps = {
@@ -198,6 +200,8 @@ export function AISettingsModal({
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -220,6 +224,28 @@ export function AISettingsModal({
       flushAllPendingChanges();
     }
   }, [visible, flushAllPendingChanges]);
+
+  // Check Google connection status when modal opens
+  useEffect(() => {
+    if (visible) {
+      isGoogleSignedIn().then(setIsGoogleConnected);
+    }
+  }, [visible]);
+
+  // Re-check when app comes back to foreground (e.g. after OAuth redirect)
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        isGoogleSignedIn().then(setIsGoogleConnected);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
+  const handleDisconnectGoogle = async () => {
+    await deleteAllData();
+    setIsGoogleConnected(false);
+  };
 
   // Local state for API keys (to avoid saving on every keystroke)
   const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
@@ -362,7 +388,19 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={geminiToggleItems}
           enabled={debouncedEnableGoogleGemini}
-          headerContent={<GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />}
+          headerContent={
+            isGoogleConnected ? (
+              <Button
+                label={t('settings.aiSettings.disconnectGoogle')}
+                onPress={() => setShowDisconnectConfirm(true)}
+                variant="outline"
+                size="sm"
+                width="full"
+              />
+            ) : (
+              <GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />
+            )
+          }
           apiKeyLabel={t('settings.aiSettings.googleGeminiApiKey')}
           apiKeyValue={localGeminiApiKey}
           onApiKeyChange={setLocalGeminiApiKey}
@@ -458,6 +496,16 @@ export function AISettingsModal({
           items={openAiModelMenuItems}
         />
       </View>
+
+      <ConfirmationModal
+        visible={showDisconnectConfirm}
+        onClose={() => setShowDisconnectConfirm(false)}
+        onConfirm={handleDisconnectGoogle}
+        title={t('settings.aiSettings.disconnectGoogleTitle')}
+        message={t('settings.aiSettings.disconnectGoogleMessage')}
+        confirmLabel={t('settings.aiSettings.disconnectGoogleConfirm')}
+        variant="destructive"
+      />
     </FullScreenModal>
   );
 }
