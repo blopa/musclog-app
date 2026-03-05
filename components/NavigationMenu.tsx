@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
+import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
@@ -18,6 +19,7 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
   const router = useRouter();
   const pathname = usePathname();
   const { isAiFeaturesEnabled } = useSettings();
+  const unreadChatMessages = useUnreadChatMessages();
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -163,11 +165,23 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
           {isAiFeaturesEnabled ? (
             <Pressable className="flex-1 items-center justify-center gap-1" onPress={onCoachPress}>
               <View className="h-10 w-16 items-center justify-center rounded-lg">
-                <MessageSquare
-                  size={theme.iconSize.md}
-                  color={theme.colors.text.tertiary}
-                  strokeWidth={theme.borderWidth.medium}
-                />
+                <View className="relative">
+                  <MessageSquare
+                    size={theme.iconSize.md}
+                    color={theme.colors.text.tertiary}
+                    strokeWidth={theme.borderWidth.medium}
+                  />
+                  {unreadChatMessages > 0 ? (
+                    <View
+                      className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                      style={{ minWidth: 20, minHeight: 20 }}
+                    >
+                      <Text className="text-xs font-bold text-white">
+                        {unreadChatMessages > 99 ? '99+' : unreadChatMessages}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
               </View>
               <Text className="text-xs font-medium text-text-tertiary">
                 {t('home.navigation.coach')}

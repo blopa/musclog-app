@@ -5,6 +5,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { ENCRYPTION_KEY } from '../constants/database';
 import {
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
@@ -12,7 +13,6 @@ import {
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
 } from '../constants/misc';
-import { ENCRYPTION_KEY } from '../constants/database';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,

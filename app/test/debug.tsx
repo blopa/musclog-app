@@ -8,8 +8,12 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
-import { GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE } from '../../constants/misc';
 import { ENCRYPTION_KEY } from '../../constants/database';
+import {
+  GOOGLE_ACCESS_TOKEN,
+  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
+  UNREAD_CHAT_MESSAGES_COUNT,
+} from '../../constants/misc';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
@@ -70,6 +74,7 @@ export default function DebugTestScreen() {
   const { checkMigrationData, migrationSummary, checkingOldDatabase } = useOldDatabaseMigration();
   const [migrationService] = useState(() => new MigrationService());
   const [googleDebugInfo, setGoogleDebugInfo] = useState<Record<string, string> | null>(null);
+  const [unreadMessagesInput, setUnreadMessagesInput] = useState('');
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -264,6 +269,32 @@ export default function DebugTestScreen() {
     setGoogleDebugInfo(info);
   };
 
+  const setUnreadMessagesCount = async () => {
+    const count = parseInt(unreadMessagesInput, 10);
+    if (isNaN(count) || count < 0) {
+      console.log('Invalid count. Please enter a non-negative number.');
+      return;
+    }
+
+    try {
+      await AsyncStorage.setItem(UNREAD_CHAT_MESSAGES_COUNT, count.toString());
+      console.log(`Unread messages count set to: ${count}`);
+      setUnreadMessagesInput('');
+    } catch (error) {
+      console.error('Error setting unread messages count:', error);
+    }
+  };
+
+  const clearUnreadMessagesCount = async () => {
+    try {
+      await AsyncStorage.removeItem(UNREAD_CHAT_MESSAGES_COUNT);
+      console.log('Unread messages count cleared');
+      setUnreadMessagesInput('');
+    } catch (error) {
+      console.error('Error clearing unread messages count:', error);
+    }
+  };
+
   // Group screens by category
   const screensByCategory = APP_SCREENS.reduce(
     (acc, screen) => {
@@ -321,6 +352,41 @@ export default function DebugTestScreen() {
                 ))}
               </View>
             ) : null}
+          </View>
+
+          {/* Unread Messages Debug */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Unread Messages Debug</Text>
+            <Text className="mb-2 text-sm text-text-secondary">
+              Set or clear the unread chat messages count for testing the badge in NavigationMenu.
+            </Text>
+            <View>
+              <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+                Unread Messages Count
+              </Text>
+              <TextInput
+                className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
+                placeholder="Enter number (e.g. 5)"
+                placeholderTextColor={theme.colors.text.tertiary}
+                value={unreadMessagesInput}
+                onChangeText={setUnreadMessagesInput}
+                keyboardType="numeric"
+              />
+            </View>
+            <View className="flex-row gap-2">
+              <Button
+                onPress={setUnreadMessagesCount}
+                label="Set Count"
+                size="sm"
+                variant="accent"
+              />
+              <Button
+                onPress={clearUnreadMessagesCount}
+                label="Clear Count"
+                size="sm"
+                variant="secondary"
+              />
+            </View>
           </View>
 
           {/* Navigation Links Section */}
