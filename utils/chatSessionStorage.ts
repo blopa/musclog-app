@@ -22,7 +22,8 @@ export async function setCurrentChatSessionId(sessionId: string): Promise<void> 
   }
 }
 
-// TODO migrate this to a more robust way with a react hook or a react context
+// TODO migrate this to a more robust way with a react hook or a react context instead of
+// using the singleton local esmodule variable
 
 let _unreadCount = 0;
 const _listeners = new Set<() => void>();
