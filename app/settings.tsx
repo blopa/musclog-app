@@ -13,6 +13,7 @@ import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
 import { ToggleInput } from '../components/theme/ToggleInput';
 import { SettingsService } from '../database/services/SettingsService';
+import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { useSettings } from '../hooks/useSettings';
 import { theme } from '../theme';
 
@@ -29,6 +30,7 @@ export default function SettingsScreen() {
     openAiModel,
     notifications,
   } = useSettings();
+  const { promptAsync } = useGoogleAuth();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
@@ -207,6 +209,7 @@ export default function SettingsScreen() {
       <AISettingsModal
         visible={isAISettingsVisible}
         onClose={() => setAISettingsVisible(false)}
+        onConnectGoogleAccount={() => promptAsync(false)}
         googleGeminiApiKey={googleGeminiApiKey}
         onGoogleGeminiApiKeyChange={handleGoogleGeminiApiKeyChange}
         geminiModel={googleGeminiModel}

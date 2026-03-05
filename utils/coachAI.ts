@@ -7,7 +7,8 @@ export type CoachAIProvider = 'gemini' | 'openai';
 
 export type CoachAIConfig = {
   provider: CoachAIProvider;
-  apiKey: string;
+  apiKey?: string;
+  accessToken?: string;
   model: string;
 };
 
@@ -89,6 +90,7 @@ async function sendViaGemini(
   const systemParts: Part[] = [{ text: COACH_SYSTEM_PROMPT }];
   const genModel = await configureBasicGenAI(
     {
+      accessToken: config.accessToken,
       apiKey: config.apiKey,
       model: config.model,
       generationConfig: {

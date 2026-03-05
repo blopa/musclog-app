@@ -13,6 +13,7 @@ import {
 import { database } from '../database';
 import ChatMessage from '../database/models/ChatMessage';
 import Setting from '../database/models/Setting';
+import { GoogleAuthService } from '../database/services';
 import { ChatService } from '../database/services/ChatService';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
@@ -21,6 +22,7 @@ import {
   type CoachResponse,
   sendCoachMessage,
 } from '../utils/coachAI';
+import { getAccessToken } from '../utils/googleAuth';
 
 // AI Coach avatar URL (shared with CoachModal)
 export const AI_COACH_AVATAR =
@@ -70,6 +72,20 @@ type AISettings = {
 };
 
 async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | null> {
+  // Priority 1: Google OAuth access token (user signed in with Google)
+  const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+  if (oauthGeminiEnabled) {
+    const accessToken = await getAccessToken();
+    if (accessToken) {
+      return {
+        provider: 'gemini',
+        accessToken,
+        model: settings.googleGeminiModel || 'gemini-2.5-flash',
+      };
+    }
+  }
+
+  // Priority 2: Manual Gemini API key
   if (settings.enableGoogleGemini && settings.googleGeminiApiKey) {
     return {
       provider: 'gemini',
@@ -77,6 +93,8 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
       model: settings.googleGeminiModel || 'gemini-2.5-flash',
     };
   }
+
+  // Priority 3: OpenAI API key
   if (settings.enableOpenAi && settings.openAiApiKey) {
     return {
       provider: 'openai',
@@ -84,6 +102,7 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
       model: settings.openAiModel || 'gpt-4o',
     };
   }
+
   return null;
 }
 
