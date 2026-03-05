@@ -245,6 +245,9 @@ export function AISettingsModal({
   const handleDisconnectGoogle = async () => {
     await deleteAllData();
     setIsGoogleConnected(false);
+    if (!googleGeminiApiKey.trim()) {
+      handleEnableGoogleGeminiChange(false);
+    }
   };
 
   // Local state for API keys (to avoid saving on every keystroke)
