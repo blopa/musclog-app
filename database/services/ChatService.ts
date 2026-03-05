@@ -61,6 +61,15 @@ export class ChatService {
     return await query.fetch();
   }
 
+  static async updateMessageSummary(record: ChatMessage, summarizedMessage: string): Promise<void> {
+    await database.write(async () => {
+      await record.update((r) => {
+        r.summarizedMessage = summarizedMessage;
+        r.updatedAt = Date.now();
+      });
+    });
+  }
+
   static async deleteSession(sessionId: string): Promise<void> {
     const messages = await database
       .get<ChatMessage>('chat_messages')

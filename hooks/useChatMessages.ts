@@ -1,19 +1,8 @@
-import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IMessage } from 'react-native-gifted-chat';
 
-import {
-  ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
-  ENABLE_OPENAI_SETTING_TYPE,
-  GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
-  GOOGLE_GEMINI_MODEL_SETTING_TYPE,
-  OPENAI_API_KEY_SETTING_TYPE,
-  OPENAI_MODEL_SETTING_TYPE,
-} from '../constants/settings';
-import { database } from '../database';
 import ChatMessage from '../database/models/ChatMessage';
-import Setting from '../database/models/Setting';
-import { ChatService, GoogleAuthService } from '../database/services';
+import { ChatService, GoogleAuthService, SettingsService } from '../database/services';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
   type ChatHistoryEntry,
@@ -245,39 +234,29 @@ export function useChatMessages(): UseChatMessagesResult {
         setCurrentOffset((prev) => prev + 1);
 
         // 3. Read AI settings from DB
-        const fetchSetting = async (type: string) => {
-          // TODO: use Service or settings hook for this
-          const results = await database
-            .get<Setting>('settings')
-            .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-            .fetch();
-
-          return results[0]?.value ?? '';
-        };
-
         const [
-          enableGeminiRaw,
-          enableOpenAiRaw,
-          geminiApiKey,
-          geminiModel,
+          enableGoogleGemini,
+          enableOpenAi,
+          googleGeminiApiKey,
+          googleGeminiModel,
           openAiApiKey,
           openAiModel,
         ] = await Promise.all([
-          fetchSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE),
-          fetchSetting(ENABLE_OPENAI_SETTING_TYPE),
-          fetchSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
-          fetchSetting(GOOGLE_GEMINI_MODEL_SETTING_TYPE),
-          fetchSetting(OPENAI_API_KEY_SETTING_TYPE),
-          fetchSetting(OPENAI_MODEL_SETTING_TYPE),
+          SettingsService.getEnableGoogleGemini(),
+          SettingsService.getEnableOpenAi(),
+          SettingsService.getGoogleGeminiApiKey(),
+          SettingsService.getGoogleGeminiModel(),
+          SettingsService.getOpenAiApiKey(),
+          SettingsService.getOpenAiModel(),
         ]);
 
         const aiConfig = await resolveAIConfig({
-          enableGoogleGemini: enableGeminiRaw === 'true',
-          enableOpenAi: enableOpenAiRaw === 'true',
-          googleGeminiApiKey: geminiApiKey,
-          googleGeminiModel: geminiModel,
-          openAiApiKey: openAiApiKey,
-          openAiModel: openAiModel,
+          enableGoogleGemini,
+          enableOpenAi,
+          googleGeminiApiKey,
+          googleGeminiModel,
+          openAiApiKey,
+          openAiModel,
         });
 
         if (!aiConfig) {
@@ -299,13 +278,7 @@ export function useChatMessages(): UseChatMessagesResult {
 
         // 4b. If the AI returned a summary of the user's message, persist it
         if (reply.sumUserMsg) {
-          // TODO: use service of hook for this
-          await database.write(async () => {
-            await userRecord.update((record) => {
-              record.summarizedMessage = reply.sumUserMsg;
-              record.updatedAt = Date.now();
-            });
-          });
+          await ChatService.updateMessageSummary(userRecord, reply.sumUserMsg);
         }
 
         // 5. Persist coach reply and prepend to UI

@@ -258,6 +258,68 @@ export class SettingsService {
     return settings[0].value;
   }
 
+  // --- AI Settings Getters ---
+
+  static async getGoogleGeminiApiKey(): Promise<string> {
+    return SettingsService.getStringSetting(GOOGLE_GEMINI_API_KEY_SETTING_TYPE, '');
+  }
+
+  static async getGoogleGeminiModel(): Promise<string> {
+    return SettingsService.getStringSetting(GOOGLE_GEMINI_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getOpenAiApiKey(): Promise<string> {
+    return SettingsService.getStringSetting(OPENAI_API_KEY_SETTING_TYPE, '');
+  }
+
+  static async getOpenAiModel(): Promise<string> {
+    return SettingsService.getStringSetting(OPENAI_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getEnableGoogleGemini(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, false);
+  }
+
+  static async getEnableOpenAi(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, false);
+  }
+
+  // --- Private helpers ---
+
+  private static async getStringSetting(type: string, defaultValue: string): Promise<string> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (settings.length === 0) {
+      return defaultValue;
+    }
+
+    const mostRecent = settings.reduce((latest, current) =>
+      current.updatedAt > latest.updatedAt ? current : latest
+    );
+
+    return mostRecent.value ?? defaultValue;
+  }
+
+  private static async getBooleanSetting(type: string, defaultValue: boolean): Promise<boolean> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (settings.length === 0) {
+      return defaultValue;
+    }
+
+    const mostRecent = settings.reduce((latest, current) =>
+      current.updatedAt > latest.updatedAt ? current : latest
+    );
+
+    return mostRecent.value === 'true';
+  }
+
   /**
    * Helper method to upsert boolean settings
    */
