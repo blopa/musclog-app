@@ -3,6 +3,16 @@
  * Single implementation for both web and native; platform-specific file I/O lives in utils/file.
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import {
+  GOOGLE_ACCESS_TOKEN,
+  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
+  TEMP_GOOGLE_AUTH_CODE,
+  TEMP_GOOGLE_USER_NAME,
+  TEMP_NUTRITION_PLAN,
+} from '../constants/auth';
+import { ENCRYPTION_KEY } from '../constants/database';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
@@ -12,6 +22,16 @@ import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
+
+/** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
+const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
+  ENCRYPTION_KEY,
+  GOOGLE_ACCESS_TOKEN,
+  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
+  TEMP_GOOGLE_AUTH_CODE,
+  TEMP_GOOGLE_USER_NAME,
+  TEMP_NUTRITION_PLAN,
+]);
 
 const EXPORT_VERSION = 1;
 
@@ -127,6 +147,20 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
     dbData[tableName] = records.map((r) => getRawRow(r));
   }
 
+  // Dump AsyncStorage (exclude device-specific and session-only keys)
+  const allKeys = await AsyncStorage.getAllKeys();
+  const keysToBackup = allKeys.filter((k) => !ASYNC_STORAGE_EXCLUDED_KEYS.has(k));
+
+  if (keysToBackup.length > 0) {
+    const pairs = await AsyncStorage.multiGet(keysToBackup);
+    const asyncStorageData: Record<string, string | null> = {};
+    for (const [key, value] of pairs) {
+      asyncStorageData[key] = value;
+    }
+
+    dbData._async_storage_ = asyncStorageData;
+  }
+
   let jsonString = JSON.stringify(dbData, null, 2);
   if (encryptionPhrase && encryptionPhrase.trim()) {
     jsonString = await encrypt(jsonString, encryptionPhrase.trim());
@@ -150,6 +184,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   const dbData = JSON.parse(jsonString) as ExportDump;
   if (typeof dbData._exportVersion !== 'number') {
     throw new Error('Invalid export file: missing _exportVersion');
+  }
+
+  // TODO: preserve all device specifi keys from ASYNC_STORAGE_EXCLUDED_KEYS
+  const currentEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
+  await AsyncStorage.clear();
+  if (currentEncryptionKey != null) {
+    await AsyncStorage.setItem(ENCRYPTION_KEY, currentEncryptionKey);
   }
 
   const idMaps: Record<string, IdMap> = {};
@@ -322,5 +363,18 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         idMaps[tableName][oldId] = created.id;
       }
     });
+  }
+
+  // Restore AsyncStorage values from the backup (excluded keys are never in the dump)
+  const asyncStorageData = dbData._async_storage_;
+  if (asyncStorageData && typeof asyncStorageData === 'object') {
+    const pairs: [string, string][] = Object.entries(
+      asyncStorageData as Record<string, string | null>
+    )
+      .filter(([, value]) => value != null)
+      .map(([key, value]) => [key, value as string]);
+    if (pairs.length > 0) {
+      await AsyncStorage.multiSet(pairs);
+    }
   }
 }

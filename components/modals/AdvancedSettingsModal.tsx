@@ -82,7 +82,6 @@ export function AdvancedSettingsModal({
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // TODO: when exporting, let's also add all AsyncStorage keys and values that we have in a `_async_storage_` key in the json dump
   const handleExportConfirm = useCallback(async () => {
     setLoading(true);
     try {
@@ -97,9 +96,6 @@ export function AdvancedSettingsModal({
     }
   }, [encryptionPhrase, t, showSnackbar]);
 
-  // TODO: read the `_async_storage_` from the JSON dump and add these values to the database
-  // also, before importing, clear the database and also clear the AsyncStorage to make sure we
-  // start from scratch
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
     try {
