@@ -173,11 +173,11 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
                   />
                   {unreadChatMessages > 0 ? (
                     <View
-                      className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-red-500"
-                      style={{ minWidth: 20, minHeight: 20 }}
+                      className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
+                      style={{ minWidth: 14, minHeight: 14 }}
                     >
-                      <Text className="text-xs font-bold text-white">
-                        {unreadChatMessages > 99 ? '99+' : unreadChatMessages}
+                      <Text className="text-[10px] font-bold text-white leading-none">
+                        {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
                       </Text>
                     </View>
                   ) : null}
