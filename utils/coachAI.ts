@@ -10,6 +10,7 @@ export type CoachAIConfig = {
   apiKey?: string;
   accessToken?: string;
   model: string;
+  language?: string; // Re-introduced from old code
 };
 
 export type ChatHistoryEntry = {
@@ -25,21 +26,22 @@ export type CoachResponse = {
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
 
+/**
+ * Merged System Prompt:
+ * Combines Loggy's app integration with Chad's PhD personality and guardrails.
+ */
+const getSystemPrompt = (language: string = 'en-US') =>
+  `
+You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
+Your goal is to provide expert, motivating, and practical fitness advice.
 
-const COACH_SYSTEM_PROMPT = `You are Loggy, an expert personal trainer and nutritionist embedded in the Musclog fitness app.
-Your role is to help users with:
-- Planning and optimizing workouts
-- Analyzing workout history and progress
-- Providing nutrition advice and meal planning guidance
-- Answering questions about exercises, form, and recovery
-
-Keep responses concise, practical, and motivating. When suggesting workouts, be specific with exercises, sets, and reps.
-When discussing nutrition, give actionable advice. Always prioritize safety and proper form.
-You have access to the user's workout and nutrition logs through the app.
-
-You must always respond with a JSON object containing exactly two fields:
-- "msg4User": The full response to display to the user in the chat.
-- "sumMsg": A brief 1-2 sentence summary of your response, used to preserve context in future turns without wasting tokens. ${BE_CONCISE_PROMPT}`;
+STRICT GUIDELINES:
+1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally—don't sound like a robot.
+2. LANGUAGE: You MUST respond in ${language}, even if the user speaks to you in another language.
+3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
+4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
+5. CONCISE: ${BE_CONCISE_PROMPT}
+`.trim();
 
 const RESPONSE_SCHEMA = {
   type: 'object',
@@ -50,30 +52,33 @@ const RESPONSE_SCHEMA = {
     },
     sumMsg: {
       type: 'string',
-      description:
-        'A brief 1-2 sentence summary of the response for future context. Capture only the main points and advice given',
+      description: 'A brief 1-2 sentence summary of the main advice given.',
     },
   },
+  // TODO: if the user message is bigger than 100 characters, also get a summarized version of the user message from the LLM
+  // to use for future messages history when sending to the llm
   required: ['msg4User', 'sumMsg'],
 };
+
+// --- Helper Functions ---
 
 function extractRawText(response: any): string {
   if (typeof response?.text === 'function') {
     return response.text() as string;
   }
-  // Raw API response (access token path)
   return response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
   try {
-    const parsed = JSON.parse(raw);
+    // Handle cases where the model might wrap JSON in markdown blocks
+    const cleanJson = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(cleanJson);
     return {
       msg4User: parsed.msg4User ?? raw,
       sumMsg: parsed.sumMsg ?? raw,
     };
   } catch {
-    // Fallback: if JSON parsing fails, use raw text for both fields
     return { msg4User: raw, sumMsg: raw };
   }
 }
@@ -87,12 +92,15 @@ function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): 
   return [...historyContents, { parts: [{ text: userMessage } as Part], role: 'user' }];
 }
 
+// --- Provider Implementations ---
+
 async function sendViaGemini(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
   userMessage: string
 ): Promise<CoachResponse> {
-  const systemParts: Part[] = [{ text: COACH_SYSTEM_PROMPT }];
+  const systemParts: Part[] = [{ text: getSystemPrompt(config.language) }];
+
   const genModel = await configureBasicGenAI(
     {
       accessToken: config.accessToken,
@@ -120,7 +128,7 @@ async function sendViaOpenAI(
   const client = new OpenAI({ apiKey: config.apiKey });
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: 'system', content: COACH_SYSTEM_PROMPT },
+    { role: 'system', content: getSystemPrompt(config.language) },
     ...history.map((entry) => ({
       role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
       content: entry.content,
