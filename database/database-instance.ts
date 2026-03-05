@@ -2,6 +2,7 @@ import { Database } from '@nozbe/watermelondb';
 
 import adapter from './adapter';
 // Import all models
+import ChatMessage from './models/ChatMessage';
 import Exercise from './models/Exercise';
 import Food from './models/Food';
 import FoodFoodPortion from './models/FoodFoodPortion';
@@ -41,5 +42,6 @@ export const database = new Database({
     Meal,
     MealFood,
     NutritionLog,
+    ChatMessage,
   ],
 });

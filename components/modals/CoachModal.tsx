@@ -7,7 +7,7 @@ import {
   TrendingUp,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
@@ -15,134 +15,26 @@ import {
   Composer,
   ComposerProps,
   GiftedChat,
-  IMessage,
   InputToolbar,
   InputToolbarProps,
   Send,
   SendProps,
 } from 'react-native-gifted-chat';
 
+import {
+  AI_COACH_AVATAR,
+  type ExtendedIMessage,
+  useChatMessages,
+} from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 
-// AI Coach avatar URL
-const AI_COACH_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAXxrp6riIDnXZkR98-jJEX8IIqKuGBbD6Nlxrt4t8oifz8KgM3q3VjFPKYVzNwfFBEbdvjEkEU1a8oYivCY0oJHBD1HEi-Pjg0638r8tULKurmfvFPaF6OSNcWQvlzhK3coc8DccgtARUtSOOmqSOoHEQM8JQIOwBYvElVbb2XsURsvRMicbylHk1qeA98fvyZhS3mwy_S67AKXjSWGEGJ5IJBSZNpAQRfaMWXjKg6b5xV_xg0ScM8K_urNvzJV1Pa5ATJZO9yDjw7';
-
-// Workout image URL
+// Workout image URL (used for future workout card messages)
 const WORKOUT_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC8wdyvHF33Emd_otj2gCXb_-DtuZnk1Yynloi9mvz8s2ZtTJ1fFbg_J8B8x02R5Njk5nPX1SonjXw5sEU1gwylKXq3buzHpa2EoRQfBpA6BTNRGfSjYnqBMRSyDW7tl5DHtCWM5DOUd91Ka2gB8Y-rdvJB99_hQED2ZIqMdcWkgxVdv_pRnWFXwFirvEOSMuCveL2ZxoS3oQpkrQoYXVBSunvPf8QQ6xtQQw-v_r9wOPDB6W6pKw22mPLs0nsdG-MkvUJTj7VCxnSe';
-
-// Extend IMessage to include workout data
-interface ExtendedIMessage extends IMessage {
-  workout?: {
-    title: string;
-    duration: string;
-    level: string;
-    exerciseCount: number;
-    calories: number;
-  };
-}
-
-// Mock initial messages
-const getInitialMessages = (): ExtendedIMessage[] => {
-  const now = new Date();
-  const today9_41 = new Date(now);
-  today9_41.setHours(9, 41, 0, 0);
-  const today9_42 = new Date(now);
-  today9_42.setHours(9, 42, 0, 0);
-
-  return [
-    {
-      _id: 8,
-      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-    {
-      _id: 7,
-      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-    {
-      _id: 6,
-      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-    {
-      _id: 5,
-      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-    {
-      _id: 4,
-      text: '',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'AI Coach',
-        avatar: AI_COACH_AVATAR,
-      },
-      workout: {
-        title: 'Leg Day Intensity',
-        duration: '45 mins',
-        level: 'Advanced',
-        exerciseCount: 6,
-        calories: 420,
-      },
-    },
-    {
-      _id: 3,
-      text: 'Got it. Here is a high-intensity leg workout based on your previous logs. Get ready to sweat! 🔥',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-    {
-      _id: 2,
-      text: 'I want to focus on legs today. Can you make it intense?',
-      createdAt: today9_42.getTime(),
-      user: {
-        _id: 1,
-      },
-    },
-    {
-      _id: 1,
-      text: "Hello! I'm ready to help. Should we plan your next session or look at your stats?",
-      createdAt: today9_41.getTime(),
-      user: {
-        _id: 2,
-        name: 'Musclog Trainer',
-        avatar: AI_COACH_AVATAR,
-      },
-    },
-  ];
-};
 
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
@@ -327,17 +219,17 @@ type CoachModalProps = {
 export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
+  const { messages, isSending, sendMessage } = useChatMessages();
 
-  useEffect(() => {
-    if (visible) {
-      setMessages(getInitialMessages());
-    }
-  }, [visible, t]);
-
-  const onSend = useCallback((newMessages: ExtendedIMessage[] = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-  }, []);
+  const onSend = useCallback(
+    (newMessages: ExtendedIMessage[] = []) => {
+      const text = newMessages[0]?.text;
+      if (text) {
+        sendMessage(text);
+      }
+    },
+    [sendMessage]
+  );
 
   const renderAccessory = useCallback(() => {
     return (
@@ -447,6 +339,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             messages={messages}
             onSend={onSend}
             user={{ _id: 1 }}
+            isTyping={isSending}
             renderBubble={(props) => renderBubble(props, theme)}
             renderAvatar={(props) => renderAvatar(props, theme)}
             renderCustomView={renderCustomView}

@@ -159,7 +159,7 @@ const rawFetchGeminiApi = async (model: string, accessToken: string, body: any) 
   };
 };
 
-const configureBasicGenAI = async (
+export const configureBasicGenAI = async (
   { accessToken, apiKey, model }: { accessToken?: string; apiKey?: string; model?: string },
   systemParts?: Part[]
 ) => {
@@ -177,7 +177,7 @@ const configureBasicGenAI = async (
   });
 };
 
-const createConversationContent = (messages: ChatCompletionMessageParam[]): Content[] =>
+export const createConversationContent = (messages: ChatCompletionMessageParam[]): Content[] =>
   messages
     .filter((msg) => msg.role !== 'system')
     .map((msg) => ({

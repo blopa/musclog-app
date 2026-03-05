@@ -308,5 +308,20 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+    // AI Coach Chat Messages
+    tableSchema({
+      name: 'chat_messages',
+      columns: [
+        { name: 'session_id', type: 'string', isIndexed: true },
+        { name: 'sender', type: 'string' }, // 'user' | 'coach'
+        { name: 'message', type: 'string' },
+        { name: 'message_type', type: 'string' }, // 'text' for now
+        { name: 'payload_json', type: 'string', isOptional: true },
+        { name: 'summarized_message', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
   ],
 });
