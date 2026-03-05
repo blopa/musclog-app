@@ -186,11 +186,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     throw new Error('Invalid export file: missing _exportVersion');
   }
 
-  // TODO: preserve all device specifi keys from ASYNC_STORAGE_EXCLUDED_KEYS
-  const currentEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
+  // Preserve all device-specific/session keys before wiping AsyncStorage
+  const excludedKeysList = [...ASYNC_STORAGE_EXCLUDED_KEYS];
+  const preservedPairs = await AsyncStorage.multiGet(excludedKeysList);
   await AsyncStorage.clear();
-  if (currentEncryptionKey != null) {
-    await AsyncStorage.setItem(ENCRYPTION_KEY, currentEncryptionKey);
+  const toRestore = preservedPairs.filter(([, v]) => v != null) as [string, string][];
+  if (toRestore.length > 0) {
+    await AsyncStorage.multiSet(toRestore);
   }
 
   const idMaps: Record<string, IdMap> = {};
