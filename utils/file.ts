@@ -36,6 +36,7 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
     if (result.canceled || !result.assets?.[0]) {
       return;
     }
+
     const { uri } = result.assets[0];
     const dbDump = await readAsStringAsync(uri);
     await restoreDatabase(dbDump, decryptionPhrase);
