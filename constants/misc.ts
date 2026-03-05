@@ -39,3 +39,5 @@ export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
 
 // Current user (sync_id) for multi-user / future sync support
 export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
+
+export const UNREAD_CHAT_MESSAGES_COUNT = 'unreadChatMessages';

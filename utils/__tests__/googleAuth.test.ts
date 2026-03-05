@@ -4,7 +4,7 @@ import {
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
   GOOGLE_CLIENT_ID_MOBILE,
   GOOGLE_CLIENT_ID_WEB,
-} from '../../constants/auth';
+} from '../../constants/misc';
 import { GoogleAuthService } from '../../database/services';
 import {
   deleteAllData,

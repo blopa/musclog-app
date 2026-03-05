@@ -4,7 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/auth';
+import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/misc';
 import i18n from '../lang/lang';
 import { getGoogleClientId } from '../utils/googleAuth';
 import { showSnackbar } from '../utils/snackbarService';

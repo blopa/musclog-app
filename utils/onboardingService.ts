@@ -7,7 +7,7 @@ import {
   ONBOARDING_VERSION,
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
-} from '../constants/auth';
+} from '../constants/misc';
 
 export interface OnboardingStatus {
   completed: boolean;

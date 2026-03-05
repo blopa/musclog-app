@@ -9,7 +9,7 @@ import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { MasterLayout } from '../../components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGoalsBody';
 import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
+import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { EatingPhase } from '../../database/models';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';

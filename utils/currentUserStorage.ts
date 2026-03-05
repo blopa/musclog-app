@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { CURRENT_USER_SYNC_ID } from '../constants/auth';
+import { CURRENT_USER_SYNC_ID } from '../constants/misc';
 
 /**
  * Get the current user's sync_id from AsyncStorage.

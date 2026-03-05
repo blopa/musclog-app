@@ -12,7 +12,7 @@ import {
 import { MasterLayout } from '../../components/MasterLayout';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
-import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
+import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';

@@ -14,7 +14,7 @@ import { GradientText } from '../../components/GradientText';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
+import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';

@@ -11,7 +11,7 @@ import {
   TEMP_GOOGLE_AUTH_CODE,
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
-} from '../constants/auth';
+} from '../constants/misc';
 import { ENCRYPTION_KEY } from '../constants/database';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,

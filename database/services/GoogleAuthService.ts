@@ -4,7 +4,7 @@ import {
   AI_SETTINGS_TYPE,
   GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
   GOOGLE_REFRESH_TOKEN_TYPE,
-} from '../../constants/auth';
+} from '../../constants/misc';
 import { database } from '../database-instance';
 import Setting from '../models/Setting';
 

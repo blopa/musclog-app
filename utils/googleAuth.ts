@@ -9,7 +9,7 @@ import {
   GOOGLE_CLIENT_ID_WEB,
   LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
   ONBOARDING_COMPLETED,
-} from '../constants/auth';
+} from '../constants/misc';
 import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
 import { captureException, setSentryUser } from './sentry';

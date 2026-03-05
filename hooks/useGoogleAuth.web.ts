@@ -10,7 +10,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GOOGLE_SCOPES } from '../constants/auth';
+import { GOOGLE_SCOPES } from '../constants/misc';
 import { getGoogleClientId } from '../utils/googleAuth';
 import { showSnackbar } from '../utils/snackbarService';
 

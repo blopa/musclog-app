@@ -3,7 +3,7 @@ import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
-} from '../../constants/auth';
+} from '../../constants/misc';
 import {
   getOnboardingStatus,
   getOnboardingVersion,

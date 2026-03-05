@@ -36,7 +36,7 @@ import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { GOOGLE_REDIRECT_URI_MOBILE, TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
+import { GOOGLE_REDIRECT_URI_MOBILE, TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
 import { type MealType } from '../database/models';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';

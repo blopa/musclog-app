@@ -12,7 +12,7 @@ import { GenericCard } from '../../components/cards/GenericCard';
 import { LineChart } from '../../components/LineChart';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
-import { TEMP_NUTRITION_PLAN } from '../../constants/auth';
+import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { NutritionGoalService, UserMetricService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';

@@ -11,7 +11,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
-import { TEMP_GOOGLE_USER_NAME } from '../../constants/auth';
+import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';

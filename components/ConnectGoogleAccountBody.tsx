@@ -8,7 +8,7 @@ import {
   GOOGLE_REDIRECT_URI_MOBILE,
   TEMP_GOOGLE_AUTH_CODE,
   TEMP_GOOGLE_USER_NAME,
-} from '../constants/auth';
+} from '../constants/misc';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useTheme } from '../hooks/useTheme';
 import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../utils/googleAuth';
