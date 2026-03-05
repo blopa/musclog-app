@@ -7,6 +7,9 @@ export { NutritionService } from './NutritionService';
 // Export exercise service
 export { ExerciseService } from './ExerciseService';
 
+// Export chat service
+export { ChatService } from './ChatService';
+
 // Export existing services
 export { GoogleAuthService } from './GoogleAuthService';
 export {

@@ -39,6 +39,7 @@ import {
 } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { clearUnreadCount } from '../../utils/chatSessionStorage';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
@@ -232,6 +233,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
+
+  // Clear unread badge whenever the modal becomes visible
+  useEffect(() => {
+    if (visible) {
+      clearUnreadCount();
+    }
+  }, [visible]);
 
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.

@@ -1,24 +1,31 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
-import { UNREAD_CHAT_MESSAGES_COUNT } from '../constants/misc';
+import {
+  getUnreadCount,
+  initUnreadCount,
+  subscribeToUnreadCount,
+} from '../utils/chatSessionStorage';
 
 export function useUnreadChatMessages(): number {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(getUnreadCount);
 
   useEffect(() => {
-    const loadUnreadCount = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(UNREAD_CHAT_MESSAGES_COUNT);
-        const count = stored ? parseInt(stored, 10) : 0;
-        setUnreadCount(count);
-      } catch (error) {
-        console.error('Error loading unread chat messages count:', error);
-        setUnreadCount(0);
-      }
-    };
+    let cancelled = false;
 
-    loadUnreadCount();
+    initUnreadCount().then(() => {
+      if (!cancelled) {
+        setUnreadCount(getUnreadCount());
+      }
+    });
+
+    const unsubscribe = subscribeToUnreadCount(() => {
+      setUnreadCount(getUnreadCount());
+    });
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   return unreadCount;

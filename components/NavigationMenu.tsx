@@ -176,7 +176,7 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
                       className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
                       style={{ minWidth: 14, minHeight: 14 }}
                     >
-                      <Text className="text-[10px] font-bold text-white leading-none">
+                      <Text className="text-[10px] font-bold leading-none text-white">
                         {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
                       </Text>
                     </View>

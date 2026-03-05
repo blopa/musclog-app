@@ -9,17 +9,15 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
 import { ENCRYPTION_KEY } from '../../constants/database';
-import {
-  GOOGLE_ACCESS_TOKEN,
-  GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
-  UNREAD_CHAT_MESSAGES_COUNT,
-} from '../../constants/misc';
+import { GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE } from '../../constants/misc';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
 import { GoogleAuthService, MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
+import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { theme } from '../../theme';
+import { clearUnreadCount, setUnreadCount } from '../../utils/chatSessionStorage';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 
@@ -74,7 +72,8 @@ export default function DebugTestScreen() {
   const { checkMigrationData, migrationSummary, checkingOldDatabase } = useOldDatabaseMigration();
   const [migrationService] = useState(() => new MigrationService());
   const [googleDebugInfo, setGoogleDebugInfo] = useState<Record<string, string> | null>(null);
-  const [unreadMessagesInput, setUnreadMessagesInput] = useState('');
+  const [unreadInput, setUnreadInput] = useState('');
+  const unreadCount = useUnreadChatMessages();
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -269,30 +268,20 @@ export default function DebugTestScreen() {
     setGoogleDebugInfo(info);
   };
 
-  const setUnreadMessagesCount = async () => {
-    const count = parseInt(unreadMessagesInput, 10);
+  const applyUnreadCount = async () => {
+    const count = parseInt(unreadInput, 10);
     if (isNaN(count) || count < 0) {
-      console.log('Invalid count. Please enter a non-negative number.');
       return;
     }
 
-    try {
-      await AsyncStorage.setItem(UNREAD_CHAT_MESSAGES_COUNT, count.toString());
-      console.log(`Unread messages count set to: ${count}`);
-      setUnreadMessagesInput('');
-    } catch (error) {
-      console.error('Error setting unread messages count:', error);
-    }
+    await setUnreadCount(count);
+    console.log(`Unread count set to ${count}`);
   };
 
-  const clearUnreadMessagesCount = async () => {
-    try {
-      await AsyncStorage.removeItem(UNREAD_CHAT_MESSAGES_COUNT);
-      console.log('Unread messages count cleared');
-      setUnreadMessagesInput('');
-    } catch (error) {
-      console.error('Error clearing unread messages count:', error);
-    }
+  const clearUnread = async () => {
+    await clearUnreadCount();
+    setUnreadInput('');
+    console.log('Unread count cleared');
   };
 
   // Group screens by category
@@ -357,35 +346,29 @@ export default function DebugTestScreen() {
           {/* Unread Messages Debug */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-lg font-bold text-text-primary">Unread Messages Debug</Text>
-            <Text className="mb-2 text-sm text-text-secondary">
-              Set or clear the unread chat messages count for testing the badge in NavigationMenu.
-            </Text>
+
+            {/* Live count */}
+            <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+              <Text className="text-xs font-bold uppercase text-text-tertiary">Current Count</Text>
+              <Text className="text-2xl font-bold text-accent-primary">{unreadCount}</Text>
+            </View>
+
             <View>
               <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
-                Unread Messages Count
+                Set unread count
               </Text>
               <TextInput
                 className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
-                placeholder="Enter number (e.g. 5)"
+                placeholder="e.g. 5"
                 placeholderTextColor={theme.colors.text.tertiary}
-                value={unreadMessagesInput}
-                onChangeText={setUnreadMessagesInput}
+                value={unreadInput}
+                onChangeText={setUnreadInput}
                 keyboardType="numeric"
               />
             </View>
             <View className="flex-row gap-2">
-              <Button
-                onPress={setUnreadMessagesCount}
-                label="Set Count"
-                size="sm"
-                variant="accent"
-              />
-              <Button
-                onPress={clearUnreadMessagesCount}
-                label="Clear Count"
-                size="sm"
-                variant="secondary"
-              />
+              <Button onPress={applyUnreadCount} label="Set Count" size="sm" variant="accent" />
+              <Button onPress={clearUnread} label="Clear" size="sm" variant="secondary" />
             </View>
           </View>
 
