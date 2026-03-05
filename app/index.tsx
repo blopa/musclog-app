@@ -36,15 +36,17 @@ import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
+import { GOOGLE_REDIRECT_URI_MOBILE, TEMP_GOOGLE_AUTH_CODE } from '../constants/auth';
 import { type MealType } from '../database/models';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
+import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
+import { handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 
 // No notification system yet, so leave it like this for now
@@ -127,6 +129,14 @@ export default function HomeScreen() {
           } catch (e) {
             console.error('Error restoring onboarding step, falling back to landing', e);
             router.replace('/onboarding/landing');
+          }
+        } else if (codeParam) {
+          // Post-onboarding Google auth (e.g. from AI Settings modal)
+          try {
+            const tokenData = await exchangeCodeForToken(codeParam, GOOGLE_REDIRECT_URI_MOBILE);
+            await handleGoogleSignIn(tokenData);
+          } catch (e) {
+            console.warn('Failed to exchange Google auth code after onboarding', e);
           }
         }
       } catch (error) {
