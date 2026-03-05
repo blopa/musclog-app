@@ -1,6 +1,7 @@
 {
   "coach": {
-    "title": "AI Coach",
+    "title": "Chat",
+    "name": "Loggy",
     "status": "Online",
     "placeholder": "Type a message...",
     "todayAt": "Today, {{time}}",

@@ -24,7 +24,7 @@ import {
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
 
-// Local avatar image for AI coach
+// Local avatar image for Loggy
 export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
 
 export interface ExtendedIMessage extends IMessage {

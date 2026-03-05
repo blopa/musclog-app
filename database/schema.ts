@@ -308,7 +308,7 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
-    // AI Coach Chat Messages
+    // Loggy Chat Messages
     tableSchema({
       name: 'chat_messages',
       columns: [

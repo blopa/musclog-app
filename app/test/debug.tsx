@@ -8,6 +8,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
+import { useUnreadChat } from '../../components/UnreadChatContext';
 import { ENCRYPTION_KEY } from '../../constants/database';
 import { GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE } from '../../constants/misc';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
@@ -17,7 +18,6 @@ import { GoogleAuthService, MigrationService, UserService } from '../../database
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { theme } from '../../theme';
-import { clearUnreadCount, setUnreadCount } from '../../utils/chatSessionStorage';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 
@@ -74,6 +74,7 @@ export default function DebugTestScreen() {
   const [googleDebugInfo, setGoogleDebugInfo] = useState<Record<string, string> | null>(null);
   const [unreadInput, setUnreadInput] = useState('');
   const unreadCount = useUnreadChatMessages();
+  const { setUnreadCount, clearUnreadCount } = useUnreadChat();
 
   // Fetch exercises manually
   const fetchExercises = async () => {

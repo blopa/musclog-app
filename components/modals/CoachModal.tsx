@@ -39,9 +39,9 @@ import {
 } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
-import { clearUnreadCount } from '../../utils/chatSessionStorage';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { MenuButton } from '../theme/MenuButton';
+import { useUnreadChat } from '../UnreadChatContext';
 import { FullScreenModal } from './FullScreenModal';
 
 // Workout image URL (used for future workout card messages)
@@ -233,13 +233,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
+  const { clearUnreadCount } = useUnreadChat();
 
   // Clear unread badge whenever the modal becomes visible
   useEffect(() => {
     if (visible) {
       clearUnreadCount();
     }
-  }, [visible]);
+  }, [visible, clearUnreadCount]);
 
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
@@ -360,13 +361,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             />
           </View>
           <View>
-            <Text className="text-lg font-bold text-text-primary">{t('coach.title')}</Text>
+            <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
             <View className="flex-row items-center gap-1">
               <View
                 className="h-1.5 w-1.5 rounded-full"
                 style={{ backgroundColor: theme.colors.accent.primary }}
               />
               <Text className="text-xs font-medium" style={{ color: theme.colors.accent.primary }}>
+                {/*TODO: change status depending if the phone is online or offline*/}
                 {t('coach.status')}
               </Text>
             </View>

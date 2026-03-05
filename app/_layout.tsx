@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
+import { UnreadChatProvider } from '../components/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { captureException } from '../utils/sentry';
 
@@ -113,9 +114,11 @@ function RootLayout() {
             )}
           >
             <ThemeProvider>
-              <SnackbarProvider>
-                <AppContent />
-              </SnackbarProvider>
+              <UnreadChatProvider>
+                <SnackbarProvider>
+                  <AppContent />
+                </SnackbarProvider>
+              </UnreadChatProvider>
             </ThemeProvider>
           </Sentry.ErrorBoundary>
         </SafeAreaProvider>
