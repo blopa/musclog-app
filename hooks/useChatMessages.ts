@@ -24,9 +24,8 @@ import {
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
 
-// TODO: instead of this url for the avatar, use the local assets/avatars/loggy.png file for it
-export const AI_COACH_AVATAR =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAXxrp6riIDnXZkR98-jJEX8IIqKuGBbD6Nlxrt4t8oifz8KgM3q3VjFPKYVzNwfFBEbdvjEkEU1a8oYivCY0oJHBD1HEi-Pjg0638r8tULKurmfvFPaF6OSNcWQvlzhK3coc8DccgtARUtSOOmqSOoHEQM8JQIOwBYvElVbb2XsURsvRMicbylHk1qeA98fvyZhS3mwy_S67AKXjSWGEGJ5IJBSZNpAQRfaMWXjKg6b5xV_xg0ScM8K_urNvzJV1Pa5ATJZO9yDjw7';
+// Local avatar image for AI coach
+export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
 
 export interface ExtendedIMessage extends IMessage {
   workout?: {
@@ -47,7 +46,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
     _id: record.id,
     text: record.message,
     createdAt: new Date(record.createdAt),
-    user: isCoach ? { _id: 2, name: 'Musclog Trainer', avatar: AI_COACH_AVATAR } : { _id: 1 },
+    user: isCoach ? { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR } : { _id: 1 },
   };
 }
 

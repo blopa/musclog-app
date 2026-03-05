@@ -144,7 +144,7 @@ const renderAvatar = (props: any, theme: Theme) => {
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
   }
-  return <Image source={{ uri: AI_COACH_AVATAR }} style={styles.avatar} resizeMode="cover" />;
+  return <Image source={AI_COACH_AVATAR} style={styles.avatar} resizeMode="cover" />;
 };
 
 const renderDay = (props: any, t: TFunction, theme: Theme) => {
@@ -237,7 +237,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   // We manually track the keyboard height and apply it as padding.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   useEffect(() => {
-    if (Platform.OS !== 'android') {return;}
+    if (Platform.OS !== 'android') {
+      return;
+    }
     const show = Keyboard.addListener('keyboardDidShow', (e) => {
       setKeyboardHeight(e.endCoordinates.height);
     });
@@ -332,7 +334,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         >
           <View className="relative">
             <Image
-              source={{ uri: AI_COACH_AVATAR }}
+              source={AI_COACH_AVATAR}
               className="h-10 w-10 rounded-full"
               style={{
                 borderWidth: theme.borderWidth.medium,
