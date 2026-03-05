@@ -21,6 +21,7 @@ export type ChatHistoryEntry = {
 export type CoachResponse = {
   msg4User: string;
   sumMsg: string;
+  sumUserMsg?: string;
 };
 
 export const WORDS_SOFT_LIMIT = 100;
@@ -43,22 +44,34 @@ STRICT GUIDELINES:
 5. CONCISE: ${BE_CONCISE_PROMPT}
 `.trim();
 
-const RESPONSE_SCHEMA = {
-  type: 'object',
-  properties: {
-    msg4User: {
-      type: 'string',
-      description: 'The full response to display to the user in the chat.',
-    },
-    sumMsg: {
-      type: 'string',
-      description: 'A brief 1-2 sentence summary of the main advice given.',
-    },
+const baseSchemaProperties = {
+  msg4User: {
+    type: 'string',
+    description: 'The full response to display to the user in the chat.',
   },
-  // TODO: if the user message is bigger than 100 characters, also get a summarized version of the user message from the LLM
-  // to use for future messages history when sending to the llm
-  required: ['msg4User', 'sumMsg'],
+  sumMsg: {
+    type: 'string',
+    description: 'A brief 1-2 sentence summary of the main advice given.',
+  },
 };
+
+const sumUserMsgProperty = {
+  sumUserMsg: {
+    type: 'string',
+    description:
+      "A brief 1-2 sentence summary of the user's message, capturing their intent. Used to compress long messages in future conversation history.",
+  },
+};
+
+function buildResponseSchema(includeUserSummary: boolean) {
+  return {
+    type: 'object',
+    properties: includeUserSummary
+      ? { ...baseSchemaProperties, ...sumUserMsgProperty }
+      : baseSchemaProperties,
+    required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
+  };
+}
 
 // --- Helper Functions ---
 
@@ -77,6 +90,7 @@ function parseCoachResponse(raw: string): CoachResponse {
     return {
       msg4User: parsed.msg4User ?? raw,
       sumMsg: parsed.sumMsg ?? raw,
+      sumUserMsg: parsed.sumUserMsg ?? undefined,
     };
   } catch {
     return { msg4User: raw, sumMsg: raw };
@@ -100,6 +114,7 @@ async function sendViaGemini(
   userMessage: string
 ): Promise<CoachResponse> {
   const systemParts: Part[] = [{ text: getSystemPrompt(config.language) }];
+  const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
 
   const genModel = await configureBasicGenAI(
     {
@@ -108,7 +123,7 @@ async function sendViaGemini(
       model: config.model,
       generationConfig: {
         responseMimeType: 'application/json',
-        responseSchema: RESPONSE_SCHEMA,
+        responseSchema: buildResponseSchema(includeUserSummary),
       },
     },
     systemParts
@@ -126,6 +141,7 @@ async function sendViaOpenAI(
   userMessage: string
 ): Promise<CoachResponse> {
   const client = new OpenAI({ apiKey: config.apiKey });
+  const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: getSystemPrompt(config.language) },
@@ -136,6 +152,8 @@ async function sendViaOpenAI(
     { role: 'user', content: userMessage },
   ];
 
+  const schema = buildResponseSchema(includeUserSummary);
+
   const completion = await client.chat.completions.create({
     model: config.model,
     messages,
@@ -145,12 +163,7 @@ async function sendViaOpenAI(
         name: 'coach_response',
         strict: true,
         schema: {
-          type: 'object',
-          properties: {
-            msg4User: { type: 'string' },
-            sumMsg: { type: 'string' },
-          },
-          required: ['msg4User', 'sumMsg'],
+          ...schema,
           additionalProperties: false,
         },
       },

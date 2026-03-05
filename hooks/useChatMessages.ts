@@ -13,8 +13,7 @@ import {
 import { database } from '../database';
 import ChatMessage from '../database/models/ChatMessage';
 import Setting from '../database/models/Setting';
-import { GoogleAuthService } from '../database/services';
-import { ChatService } from '../database/services/ChatService';
+import { ChatService, GoogleAuthService } from '../database/services';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
   type ChatHistoryEntry,
@@ -247,10 +246,12 @@ export function useChatMessages(): UseChatMessagesResult {
 
         // 3. Read AI settings from DB
         const fetchSetting = async (type: string) => {
+          // TODO: use Service or settings hook for this
           const results = await database
             .get<Setting>('settings')
             .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
             .fetch();
+
           return results[0]?.value ?? '';
         };
 
@@ -295,6 +296,17 @@ export function useChatMessages(): UseChatMessagesResult {
 
         // 4. Call AI
         const reply: CoachResponse = await sendCoachMessage(aiConfig, history, text.trim());
+
+        // 4b. If the AI returned a summary of the user's message, persist it
+        if (reply.sumUserMsg) {
+          // TODO: use service of hook for this
+          await database.write(async () => {
+            await userRecord.update((record) => {
+              record.summarizedMessage = reply.sumUserMsg;
+              record.updatedAt = Date.now();
+            });
+          });
+        }
 
         // 5. Persist coach reply and prepend to UI
         const coachRecord = await ChatService.saveMessage({
