@@ -7,11 +7,13 @@ import {
   TrendingUp,
   UtensilsCrossed,
 } from 'lucide-react-native';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
+  Keyboard,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -28,6 +30,7 @@ import {
   Send,
   SendProps,
 } from 'react-native-gifted-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   AI_COACH_AVATAR,
@@ -227,7 +230,25 @@ type CoachModalProps = {
 export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
+
+  // On Android, KeyboardAvoidingView doesn't work inside a Modal.
+  // We manually track the keyboard height and apply it as padding.
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  useEffect(() => {
+    if (Platform.OS !== 'android') {return;}
+    const show = Keyboard.addListener('keyboardDidShow', (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hide = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
@@ -342,7 +363,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </View>
         </View>
 
-        <View className="flex-1">
+        <View
+          className="flex-1"
+          style={keyboardHeight > 0 ? { paddingBottom: keyboardHeight - insets.bottom } : undefined}
+        >
           <GiftedChat
             messages={messages}
             onSend={onSend}
