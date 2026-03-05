@@ -390,13 +390,9 @@ export function AISettingsModal({
           enabled={debouncedEnableGoogleGemini}
           headerContent={
             isGoogleConnected ? (
-              <Button
-                label={t('settings.aiSettings.disconnectGoogle')}
-                onPress={() => setShowDisconnectConfirm(true)}
-                variant="outline"
-                size="sm"
-                width="full"
-              />
+              <GoogleSignInButton onPress={() => setShowDisconnectConfirm(true)} variant="dark">
+                {t('settings.aiSettings.disconnectGoogle')}
+              </GoogleSignInButton>
             ) : (
               <GoogleSignInButton onPress={onConnectGoogleAccount} variant="dark" />
             )
