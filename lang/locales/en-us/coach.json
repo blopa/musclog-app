@@ -3,6 +3,7 @@
     "title": "Chat",
     "name": "Loggy",
     "status": "Online",
+    "statusOffline": "Offline",
     "placeholder": "Type a message...",
     "todayAt": "Today, {{time}}",
     "actions": {

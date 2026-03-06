@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
@@ -234,6 +235,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const insets = useSafeAreaInsets();
   const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOnline(state.isConnected ?? true);
+    });
+    return unsubscribe;
+  }, []);
 
   // Clear unread badge whenever the modal becomes visible
   useEffect(() => {
@@ -365,11 +374,19 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             <View className="flex-row items-center gap-1">
               <View
                 className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary }}
+                style={{
+                  backgroundColor: isOnline
+                    ? theme.colors.accent.primary
+                    : theme.colors.status.error,
+                }}
               />
-              <Text className="text-xs font-medium" style={{ color: theme.colors.accent.primary }}>
-                {/*TODO: change status depending if the phone is online or offline*/}
-                {t('coach.status')}
+              <Text
+                className="text-xs font-medium"
+                style={{
+                  color: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
+                }}
+              >
+                {isOnline ? t('coach.status') : t('coach.statusOffline')}
               </Text>
             </View>
           </View>
