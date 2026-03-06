@@ -187,13 +187,17 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     throw new Error('Invalid export file: missing _exportVersion');
   }
 
-  // Preserve all device-specific/session keys before wiping AsyncStorage
-  const excludedKeysList = [...ASYNC_STORAGE_EXCLUDED_KEYS];
-  const preservedPairs = await AsyncStorage.multiGet(excludedKeysList);
-  await AsyncStorage.clear();
-  const toRestore = preservedPairs.filter(([, v]) => v != null) as [string, string][];
-  if (toRestore.length > 0) {
-    await AsyncStorage.multiSet(toRestore);
+  // Only clear AsyncStorage if the imported data contains async storage data
+  const asyncStorageData = dbData._async_storage_;
+  if (asyncStorageData && typeof asyncStorageData === 'object') {
+    // Preserve all device-specific/session keys before wiping AsyncStorage
+    const excludedKeysList = [...ASYNC_STORAGE_EXCLUDED_KEYS];
+    const preservedPairs = await AsyncStorage.multiGet(excludedKeysList);
+    await AsyncStorage.clear();
+    const toRestore = preservedPairs.filter(([, v]) => v != null) as [string, string][];
+    if (toRestore.length > 0) {
+      await AsyncStorage.multiSet(toRestore);
+    }
   }
 
   const idMaps: Record<string, IdMap> = {};
@@ -375,8 +379,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     });
   }
 
-  // Restore AsyncStorage values from the backup (excluded keys are never in the dump)
-  const asyncStorageData = dbData._async_storage_;
+  // Restore AsyncStorage values from the backup (only if async storage data was included in import)
   if (asyncStorageData && typeof asyncStorageData === 'object') {
     const pairs: [string, string][] = Object.entries(
       asyncStorageData as Record<string, string | null>
