@@ -9,11 +9,14 @@ import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { ChatService, GoogleAuthService, WorkoutService } from '../../database/services';
 import { SettingsService } from '../../database/services/SettingsService';
+import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { type CoachAIConfig, getRecentWorkoutInsights } from '../../utils/coachAI';
 import { getAccessToken } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { processFeedbackResponse } from '../../utils/workoutAI';
 
 async function resolveAIConfig(): Promise<CoachAIConfig | null> {
@@ -59,6 +62,7 @@ export default function WorkoutSummaryScreen() {
   const params = useLocalSearchParams<{ workoutLogId?: string }>();
   const workoutLogId = params.workoutLogId;
   const { setUnreadCount } = useUnreadChat();
+  const { units } = useSettings();
   const processedWorkoutRef = useRef<string | null>(null);
 
   const [totalTime, setTotalTime] = useState<string>('0m');
@@ -128,11 +132,16 @@ export default function WorkoutSummaryScreen() {
           setTotalTime(durationStr);
         }
 
-        // Format volume
-        let volumeStr = '0 kg';
+        // Format volume with user's preferred units
+        const weightUnitKey = getWeightUnitI18nKey(units);
+        const weightUnit = t(weightUnitKey);
+        let volumeStr = `0 ${weightUnit}`;
         if (completedWorkout.totalVolume) {
-          // TODO: use translation and also get the units from settings in case they use imperial
-          volumeStr = `${completedWorkout.totalVolume.toLocaleString('en-US')} kg`;
+          const displayVolume = kgToDisplay(completedWorkout.totalVolume, units);
+          const formattedVolume = displayVolume.toLocaleString('en-US', {
+            maximumFractionDigits: 0,
+          });
+          volumeStr = `${formattedVolume} ${weightUnit}`;
           setVolume(volumeStr);
         }
 
@@ -152,10 +161,12 @@ export default function WorkoutSummaryScreen() {
         await ChatService.saveMessage({
           sessionId: chatSessionId,
           sender: 'coach',
-          // TODO: use translation
-          message: `You have completed the ${completedWorkout.workoutName} workout`,
-          // TODO: use translation
-          summarizedMessage: `Workout completed: ${completedWorkout.workoutName}`,
+          message: t('workoutSummary.completedMessage', {
+            workoutName: completedWorkout.workoutName,
+          }),
+          summarizedMessage: t('workoutSummary.completedSummary', {
+            workoutName: completedWorkout.workoutName,
+          }),
           payloadJson: JSON.stringify({
             type: 'workoutCompleted',
             workoutLogId,
@@ -179,7 +190,7 @@ export default function WorkoutSummaryScreen() {
     };
 
     loadWorkoutData();
-  }, [setUnreadCount, t, workoutLogId]);
+  }, [setUnreadCount, t, units, workoutLogId]);
 
   const handleGoHome = () => {
     router.replace('/');

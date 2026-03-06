@@ -10,6 +10,7 @@
       "createWorkout": "Create Workout",
       "analyzeProgress": "Analyze Progress",
       "nutritionCheck": "Nutrition Check"
-    }
+    },
+    "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train."
   }
 }

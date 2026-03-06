@@ -1,16 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
-import {
-  Mic,
-  PlusCircle,
-  Send as SendIcon,
-  TrendingUp,
-  UtensilsCrossed,
-  X,
-} from 'lucide-react-native';
+import { Mic, PlusCircle, Send as SendIcon, TrendingUp, UtensilsCrossed, X, } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -37,11 +29,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../../constants/chat';
-import {
-  AI_COACH_AVATAR,
-  type ExtendedIMessage,
-  useChatMessages,
-} from '../../hooks/useChatMessages';
+import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages, } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
@@ -49,6 +37,7 @@ import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { MenuButton } from '../theme/MenuButton';
 import { useUnreadChat } from '../UnreadChatContext';
 import { FullScreenModal } from './FullScreenModal';
+import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 // Workout image URL (used for future workout card messages)
 const WORKOUT_IMAGE_URL =
@@ -296,7 +285,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const {
     messages,
     pendingCoachMessage,
@@ -311,12 +299,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const { clearUnreadCount } = useUnreadChat();
   const [isOnline, setIsOnline] = useState(true);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
+    return NetInfo.addEventListener((state) => {
       setIsOnline(state.isConnected ?? true);
     });
-    return unsubscribe;
   }, []);
 
   // Clear unread badge whenever the modal becomes visible
@@ -379,13 +367,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       setPendingIntention(GENERATE_MY_WORKOUTS);
       addPendingCoachMessage({
         _id: `pending-workout-gen-${Date.now()}`,
-        // TODO: use translation for this
-        text: "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
+        text: t('coach.workoutGenerationPrompt'),
         createdAt: new Date(),
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [pendingIntention, addPendingCoachMessage, clearPendingCoachMessage]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
   const handleClearIntention = useCallback(async () => {
     await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
@@ -393,15 +380,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
 
-  const handleViewWorkoutDetails = useCallback(
-    (workoutLogId: string) => {
-      onClose();
-
-      // TODO: instead of navigating here, we need to open the past workouts details modal
-      router.push(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
-    },
-    [onClose, router]
-  );
+  const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
+    setSelectedWorkoutId(workoutLogId);
+  }, []);
 
   const renderAccessory = useCallback(() => {
     return (
@@ -577,6 +558,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           />
         </View>
       </View>
+
+      <PastWorkoutDetailModal
+        visible={!!selectedWorkoutId}
+        onClose={() => setSelectedWorkoutId(null)}
+        workoutId={selectedWorkoutId || undefined}
+      />
     </FullScreenModal>
   );
 }
