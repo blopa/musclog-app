@@ -28,6 +28,13 @@ export interface ExtendedIMessage extends IMessage {
     exerciseCount: number;
     calories: number;
   };
+  workoutCompleted?: {
+    workoutLogId: string;
+    workoutName: string;
+    volume: string;
+    duration: string;
+    personalRecords: number;
+  };
 }
 
 const INITIAL_LIMIT = 10;
@@ -35,12 +42,31 @@ const BATCH_SIZE = 10;
 
 function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
   const isCoach = record.sender === 'coach';
-  return {
+  const msg: ExtendedIMessage = {
     _id: record.id,
     text: record.message,
     createdAt: new Date(record.createdAt),
     user: isCoach ? { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR } : { _id: 1 },
   };
+
+  if (record.payloadJson) {
+    try {
+      const payload = JSON.parse(record.payloadJson);
+      if (payload.type === 'workoutCompleted') {
+        msg.workoutCompleted = {
+          workoutLogId: payload.workoutLogId,
+          workoutName: payload.workoutName,
+          volume: payload.volume,
+          duration: payload.duration,
+          personalRecords: payload.personalRecords,
+        };
+      }
+    } catch {
+      // ignore malformed payload
+    }
+  }
+
+  return msg;
 }
 
 export type UseChatMessagesResult = {

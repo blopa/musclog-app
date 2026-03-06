@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
 import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
+import { ChatWorkoutCompletedCard } from '../../components/cards/ChatWorkoutCompletedCard';
 import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../../components/cards/DailySummaryCard/DailySummaryEmptyState';
@@ -389,6 +390,25 @@ export default function CardsTestScreen() {
             image={{ uri: 'https://via.placeholder.com/150' }}
             onStartWorkout={() => console.log('Start workout')}
           />
+        </TestSection>
+
+        <TestSection title="Chat Workout Completed" subtitle="Display completed workout summary">
+          <ChatWorkoutCompletedCard
+            workoutName="Push Day"
+            volume="2,450 kg"
+            duration="45m"
+            personalRecords={3}
+            onViewDetails={() => console.log('View workout details')}
+          />
+          <View className="mt-4">
+            <ChatWorkoutCompletedCard
+              workoutName="Leg Day"
+              volume="3,120 kg"
+              duration="1h 5m"
+              personalRecords={0}
+              onViewDetails={() => console.log('View workout details')}
+            />
+          </View>
         </TestSection>
 
         <TestSection title="Meal Item" subtitle="Display meal details">

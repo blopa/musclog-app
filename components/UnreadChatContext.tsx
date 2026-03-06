@@ -1,11 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { UNREAD_CHAT_MESSAGES_COUNT } from '../constants/misc';
 
+type SetUnreadCountArg = number | ((prev: number) => number);
+
 type UnreadChatContextType = {
   unreadCount: number;
-  setUnreadCount: (count: number) => Promise<void>;
+  setUnreadCount: (countOrUpdater: SetUnreadCountArg) => Promise<void>;
   clearUnreadCount: () => Promise<void>;
 };
 
@@ -13,19 +23,31 @@ const UnreadChatContext = createContext<UnreadChatContextType | undefined>(undef
 
 export function UnreadChatProvider({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCountState] = useState(0);
+  const unreadCountRef = useRef(unreadCount);
+
+  useEffect(() => {
+    unreadCountRef.current = unreadCount;
+  }, [unreadCount]);
 
   useEffect(() => {
     AsyncStorage.getItem(UNREAD_CHAT_MESSAGES_COUNT)
       .then((stored) => {
         if (stored) {
-          setUnreadCountState(Math.max(0, parseInt(stored, 10) || 0));
+          const parsed = Math.max(0, parseInt(stored, 10) || 0);
+          setUnreadCountState(parsed);
+          unreadCountRef.current = parsed;
         }
       })
       .catch(() => {});
   }, []);
 
-  const setUnreadCount = useCallback(async (count: number) => {
-    const value = Math.max(0, count);
+  const setUnreadCount = useCallback(async (countOrUpdater: SetUnreadCountArg) => {
+    const newValue =
+      typeof countOrUpdater === 'function'
+        ? countOrUpdater(unreadCountRef.current)
+        : countOrUpdater;
+    const value = Math.max(0, newValue);
+    unreadCountRef.current = value;
     setUnreadCountState(value);
     try {
       await AsyncStorage.setItem(UNREAD_CHAT_MESSAGES_COUNT, value.toString());

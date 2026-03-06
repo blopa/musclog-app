@@ -2,11 +2,16 @@
   "workoutSummary": {
     "totalTime": "Total Time",
     "volume": "Volume",
+    "duration": "Duration",
     "personalRecords": "Personal Records",
+    "newPRs": "New PRs",
     "goHome": "Go Home",
     "youCrushedIt": "You Crushed It!",
     "feedbackSubmitted": "Workout feedback submitted successfully.",
     "shareText": "I just crushed a workout!",
-    "shareSummary": "Share Summary"
+    "shareSummary": "Share Summary",
+    "workoutCompleted": "Workout Completed!",
+    "viewDetails": "View Details",
+    "getFeedback": "Get AI Feedback"
   }
 }

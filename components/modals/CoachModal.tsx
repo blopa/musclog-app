@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
   Mic,
@@ -35,11 +36,7 @@ import {
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  CANCEL_GENERATE_MY_WORKOUTS,
-  CHAT_INTENTION_KEY,
-  GENERATE_MY_WORKOUTS,
-} from '../../constants/chat';
+import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../../constants/chat';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
@@ -48,6 +45,7 @@ import {
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
+import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { MenuButton } from '../theme/MenuButton';
 import { useUnreadChat } from '../UnreadChatContext';
 import { FullScreenModal } from './FullScreenModal';
@@ -75,8 +73,23 @@ const renderMessageText = (props: any, theme: Theme) => {
   );
 };
 
-const renderCustomView = (props: BubbleProps<ExtendedIMessage>) => {
+const renderCustomView = (
+  props: BubbleProps<ExtendedIMessage>,
+  onViewWorkoutDetails?: (workoutLogId: string) => void
+) => {
   const { currentMessage } = props;
+  if (currentMessage?.workoutCompleted) {
+    return (
+      <ChatWorkoutCompletedCard
+        {...currentMessage.workoutCompleted}
+        onViewDetails={
+          onViewWorkoutDetails
+            ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
+            : undefined
+        }
+      />
+    );
+  }
   if (currentMessage?.workout) {
     return (
       <View className="mt-2 w-full max-w-sm">
@@ -95,7 +108,11 @@ const renderCustomView = (props: BubbleProps<ExtendedIMessage>) => {
   return null;
 };
 
-const renderBubble = (props: BubbleProps<ExtendedIMessage>, theme: Theme) => {
+const renderBubble = (
+  props: BubbleProps<ExtendedIMessage>,
+  theme: Theme,
+  onViewWorkoutDetails?: (workoutLogId: string) => void
+) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
   const styles = getStyles(theme);
@@ -135,10 +152,12 @@ const renderBubble = (props: BubbleProps<ExtendedIMessage>, theme: Theme) => {
             {currentMessage.user.name}
           </Text>
         ) : null}
-        {!!currentMessage?.text ? (
+        {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
         ) : null}
-        {!!currentMessage?.workout ? renderCustomView(props) : null}
+        {currentMessage?.workoutCompleted || currentMessage?.workout
+          ? renderCustomView(props, onViewWorkoutDetails)
+          : null}
       </View>
     );
   }
@@ -277,6 +296,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const {
     messages,
     pendingCoachMessage,
@@ -372,6 +392,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     setPendingIntention(null);
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
+
+  const handleViewWorkoutDetails = useCallback(
+    (workoutLogId: string) => {
+      onClose();
+
+      // TODO: instead of navigating here, we need to open the past workouts details modal
+      router.push(`/workout/workout-summary?workoutLogId=${workoutLogId}`);
+    },
+    [onClose, router]
+  );
 
   const renderAccessory = useCallback(() => {
     return (
@@ -508,9 +538,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             onSend={onSend}
             user={{ _id: 1 }}
             isTyping={isSending}
-            renderBubble={(props) => renderBubble(props, theme)}
+            renderBubble={(props) => renderBubble(props, theme, handleViewWorkoutDetails)}
             renderAvatar={(props) => renderAvatar(props, theme)}
-            renderCustomView={renderCustomView}
+            renderCustomView={(props) => renderCustomView(props, handleViewWorkoutDetails)}
             renderInputToolbar={(props) =>
               renderInputToolbar(props, theme, pendingIntention, handleClearIntention)
             }
