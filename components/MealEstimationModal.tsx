@@ -2,6 +2,7 @@ import { Camera } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
+import { useTheme } from '../hooks/useTheme';
 import { IdentifiedItem, MealEstimationScreen } from './MealEstimationScreen';
 import { FullScreenModal } from './modals/FullScreenModal';
 
@@ -26,6 +27,7 @@ export function MealEstimationModal({
   mealImage,
   aiEstimationData,
 }: MealEstimationModalProps) {
+  const theme = useTheme();
   const [identifiedItems, setIdentifiedItems] = useState<IdentifiedItem[]>(
     aiEstimationData?.identifiedItems || []
   );
@@ -115,7 +117,7 @@ export function MealEstimationModal({
           onPress={handleRetake}
           className="flex-row items-center gap-2 rounded-lg px-3 py-2"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: theme.colors.background.white10,
           }}
         >
           <Camera size={16} color="white" />

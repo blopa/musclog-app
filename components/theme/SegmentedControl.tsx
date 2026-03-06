@@ -54,7 +54,7 @@ export function SegmentedControl({
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={{
-                  paddingVertical: 8,
+                  paddingVertical: theme.spacing.padding.sm,
                   borderRadius: theme.borderRadius.sm,
                   overflow: 'hidden',
                   alignItems: 'center',

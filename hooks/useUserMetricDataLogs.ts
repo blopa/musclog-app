@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserMetric, { type UserMetricType } from '../database/models/UserMetric';
 import { UserMetricService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type UserMetricDataDisplayItem = {
   id: string;
@@ -46,16 +47,6 @@ const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   ffmi: 'trending-up',
 };
 
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  'monitor-weight': { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
-  percent: { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
-  straighten: { color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)' },
-  'trending-up': { color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
-  mood: { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
-  'fitness-center': { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  'local-fire-department': { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
-};
-
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
@@ -82,10 +73,11 @@ function getMetricTypeLabel(type: string, t: TFunction): string {
 function metricToDisplayItem(
   metric: UserMetric,
   decrypted: { value: number; unit?: string },
-  t: TFunction
+  t: TFunction,
+  iconColors: Record<string, { color: string; bg: string }>
 ): UserMetricDataDisplayItem {
   const icon = ICON_BY_TYPE[metric.type as UserMetricType] ?? 'monitor-weight';
-  const colors = ICON_COLORS[icon] ?? ICON_COLORS['monitor-weight'];
+  const colors = iconColors[icon] ?? iconColors['monitor-weight'];
 
   return {
     id: metric.id,
@@ -192,7 +184,26 @@ export function useUserMetricDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseUserMetricDataLogsParams = {}): UseUserMetricDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      'monitor-weight': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+      percent: { color: theme.colors.status.violet500, bg: theme.colors.status.purple10 },
+      straighten: { color: theme.colors.accent.tertiary, bg: theme.colors.status.info10 },
+      'trending-up': { color: theme.colors.accent.secondary, bg: theme.colors.status.emerald10 },
+      mood: { color: theme.colors.macros.fat.text, bg: theme.colors.status.amber10 },
+      'fitness-center': {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      'local-fire-department': {
+        color: theme.colors.status.error,
+        bg: theme.colors.status.error10,
+      },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<UserMetricDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -212,7 +223,7 @@ export function useUserMetricDataLogs({
       const metrics = await UserMetricService.getMetricsHistory(undefined, undefined, batchSize, 0);
       const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
       const results = metrics.map((metric, i) => ({
-        item: metricToDisplayItem(metric, decryptedList[i], t),
+        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors),
         dateTimestamp: decryptedList[i].date,
       }));
       const groups = groupMetricsByDate(results, t);
@@ -226,7 +237,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -250,7 +261,7 @@ export function useUserMetricDataLogs({
 
       const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
       const results = metrics.map((metric, i) => ({
-        item: metricToDisplayItem(metric, decryptedList[i], t),
+        item: metricToDisplayItem(metric, decryptedList[i], t, iconColors),
         dateTimestamp: decryptedList[i].date,
       }));
 
@@ -263,7 +274,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

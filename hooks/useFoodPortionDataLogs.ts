@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import FoodPortion from '../database/models/FoodPortion';
 import { FoodPortionService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type FoodPortionDisplayItem = {
   id: string;
@@ -22,14 +23,6 @@ export type FoodPortionDayGroup = {
 };
 
 const BATCH_SIZE = 20;
-
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  scale: { color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.15)' },
-  egg: { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
-  'local-cafe': { color: '#78716c', bg: 'rgba(120, 113, 108, 0.15)' },
-  'water-drop': { color: '#0ea5e9', bg: 'rgba(14, 165, 233, 0.1)' },
-  restaurant: { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-};
 
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
@@ -58,9 +51,12 @@ function mapPortionIconToMaterial(icon?: string): string {
   return m[icon] ?? 'scale';
 }
 
-function portionToDisplayItem(portion: FoodPortion): FoodPortionDisplayItem {
+function portionToDisplayItem(
+  portion: FoodPortion,
+  iconColors: Record<string, { color: string; bg: string }>
+): FoodPortionDisplayItem {
   const icon = mapPortionIconToMaterial(portion.icon);
-  const colors = ICON_COLORS[icon] ?? ICON_COLORS.scale;
+  const colors = iconColors[icon] ?? iconColors.scale;
 
   return {
     id: portion.id,
@@ -166,7 +162,21 @@ export function useFoodPortionDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseFoodPortionDataLogsParams = {}): UseFoodPortionDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      scale: { color: theme.colors.text.secondary, bg: theme.colors.status.gray10 },
+      egg: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
+      'local-cafe': { color: theme.colors.text.muted, bg: theme.colors.status.gray10 },
+      'water-drop': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+      restaurant: {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<FoodPortionDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -185,7 +195,7 @@ export function useFoodPortionDataLogs({
     try {
       const portions = await FoodPortionService.getPortionsPaginated(batchSize, 0);
       const results = portions.map((portion) => ({
-        item: portionToDisplayItem(portion),
+        item: portionToDisplayItem(portion, iconColors),
         dateTimestamp: portion.createdAt,
       }));
       const groups = groupPortionsByDate(results, t);
@@ -199,7 +209,7 @@ export function useFoodPortionDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -217,7 +227,7 @@ export function useFoodPortionDataLogs({
       }
 
       const results = portions.map((portion) => ({
-        item: portionToDisplayItem(portion),
+        item: portionToDisplayItem(portion, iconColors),
         dateTimestamp: portion.createdAt,
       }));
 
@@ -230,7 +240,7 @@ export function useFoodPortionDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

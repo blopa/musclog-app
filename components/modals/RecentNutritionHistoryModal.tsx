@@ -55,8 +55,8 @@ export function RecentNutritionHistoryModal({
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            padding: 16,
-            paddingBottom: 80,
+            padding: theme.spacing.padding.base,
+            paddingBottom: theme.size['20'],
             backgroundColor: theme.colors.background.primary,
           }}
         >

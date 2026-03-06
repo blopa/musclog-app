@@ -69,7 +69,7 @@ export function AvatarSelector({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 12 }}
+          contentContainerStyle={{ gap: theme.spacing.gap.md }}
           className="flex-1"
         >
           {avatarOptions.map(({ icon, component: IconComponent }) => (
@@ -100,7 +100,7 @@ export function AvatarSelector({
           <View
             className="rounded-2xl border border-white/10 bg-bg-card"
             style={{
-              paddingHorizontal: 14,
+              paddingHorizontal: theme.spacing.padding['3half'],
             }}
           >
             <ScrollView

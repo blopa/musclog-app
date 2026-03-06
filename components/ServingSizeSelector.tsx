@@ -129,7 +129,10 @@ export function ServingSizeSelector({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 8, paddingVertical: 8 }}
+          contentContainerStyle={{
+            paddingHorizontal: theme.spacing.padding.sm,
+            paddingVertical: theme.spacing.padding.sm,
+          }}
           className="flex-row gap-4 pb-2"
         >
           {effectiveQuickSizes.map((size) => (
@@ -142,7 +145,7 @@ export function ServingSizeSelector({
               }`}
               style={{
                 paddingVertical: theme.spacing.padding['1half'],
-                marginHorizontal: 4,
+                marginHorizontal: theme.spacing.margin.xs,
                 borderColor:
                   value === size.value
                     ? theme.colors.accent.primary20

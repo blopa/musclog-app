@@ -718,7 +718,7 @@ export default function NutritionGoalsResults() {
                 <View
                   className="h-3 w-full flex-row overflow-hidden rounded-full"
                   style={{
-                    borderRadius: 999,
+                    borderRadius: theme.borderRadius.full,
                     backgroundColor: theme.colors.background.card,
                   }}
                 >

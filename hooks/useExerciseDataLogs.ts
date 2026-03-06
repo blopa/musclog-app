@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Exercise, { type EquipmentType, type MuscleGroup } from '../database/models/Exercise';
 import { ExerciseService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type ExerciseDataDisplayItem = {
   id: string;
@@ -24,21 +25,6 @@ export type ExerciseDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  chest: { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.1)' },
-  back: { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
-  shoulders: { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' },
-  biceps: { color: '#ec4899', bg: 'rgba(236, 72, 153, 0.1)' },
-  triceps: { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)' },
-  quads: { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' },
-  hamstrings: { color: '#14b8a6', bg: 'rgba(20, 184, 166, 0.1)' },
-  glutes: { color: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)' },
-  abs: { color: '#eab308', bg: 'rgba(234, 179, 8, 0.1)' },
-  full_body: { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
-  cardio: { color: '#06b6d4', bg: 'rgba(6, 182, 212, 0.1)' },
-  default: { color: '#64748b', bg: 'rgba(100, 116, 139, 0.1)' },
-};
-
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
@@ -53,9 +39,13 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
   return format(date, 'MMM d');
 }
 
-function exerciseToDisplayItem(exercise: Exercise, t: TFunction): ExerciseDataDisplayItem {
+function exerciseToDisplayItem(
+  exercise: Exercise,
+  t: TFunction,
+  iconColors: Record<string, { color: string; bg: string }>
+): ExerciseDataDisplayItem {
   const muscleGroup = exercise.muscleGroup ?? 'other';
-  const colors = ICON_COLORS[muscleGroup] ?? ICON_COLORS.default;
+  const colors = iconColors[muscleGroup] ?? iconColors.default;
 
   return {
     id: exercise.id,
@@ -162,7 +152,25 @@ export function useExerciseDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseExerciseDataLogsParams = {}): UseExerciseDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      chest: { color: theme.colors.status.error, bg: theme.colors.status.error10 },
+      back: { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+      shoulders: { color: theme.colors.status.violet500, bg: theme.colors.status.purple10 },
+      biceps: { color: theme.colors.status.pink500, bg: theme.colors.rose.brand10 },
+      triceps: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
+      quads: { color: theme.colors.accent.primary, bg: theme.colors.accent.primary10 },
+      hamstrings: { color: theme.colors.accent.tertiary, bg: theme.colors.status.emerald10 },
+      glutes: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
+      abs: { color: theme.colors.status.yellow, bg: theme.colors.status.yellow10 },
+      full_body: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
+      cardio: { color: theme.colors.accent.tertiary, bg: theme.colors.status.info10 },
+      default: { color: theme.colors.text.muted, bg: theme.colors.status.gray10 },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<ExerciseDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -181,7 +189,7 @@ export function useExerciseDataLogs({
     try {
       const exercises = await ExerciseService.getExercisesPaginated(batchSize, 0);
       const validResults = exercises.map((exercise) => ({
-        item: exerciseToDisplayItem(exercise, t),
+        item: exerciseToDisplayItem(exercise, t, iconColors),
         dateTimestamp: exercise.createdAt,
       }));
       const groups = groupExercisesByDate(validResults, t);
@@ -195,7 +203,7 @@ export function useExerciseDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -213,7 +221,7 @@ export function useExerciseDataLogs({
       }
 
       const validResults = exercises.map((exercise) => ({
-        item: exerciseToDisplayItem(exercise, t),
+        item: exerciseToDisplayItem(exercise, t, iconColors),
         dateTimestamp: exercise.createdAt,
       }));
 
@@ -226,7 +234,7 @@ export function useExerciseDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

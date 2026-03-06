@@ -515,7 +515,7 @@ export default function SmartCameraModal({
           {isSearchingBarcode ? (
             <View
               className="absolute inset-0 z-30"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+              style={{ backgroundColor: theme.colors.overlay.black90 }}
             >
               <CameraProcessingIndicator />
             </View>

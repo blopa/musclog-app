@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '../database/models/NutritionGoal';
 import { NutritionGoalService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type NutritionGoalDisplayItem = {
   id: string;
@@ -26,7 +27,6 @@ export type NutritionGoalDayGroup = {
 const BATCH_SIZE = 20;
 
 const ICON = 'flag';
-const ICON_COLORS = { color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.1)' };
 
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
@@ -51,15 +51,19 @@ function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
   return translated;
 }
 
-function goalToDisplayItem(goal: NutritionGoal, t: TFunction): NutritionGoalDisplayItem {
+function goalToDisplayItem(
+  goal: NutritionGoal,
+  t: TFunction,
+  iconColors: { color: string; bg: string }
+): NutritionGoalDisplayItem {
   const phaseLabel = getPhaseLabel(goal.eatingPhase, t);
   const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy');
   return {
     id: goal.id,
     name: `${phaseLabel} • ${dateLabel}`,
     icon: ICON,
-    iconColor: ICON_COLORS.color,
-    iconBgColor: ICON_COLORS.bg,
+    iconColor: iconColors.color,
+    iconBgColor: iconColors.bg,
     goalCalories: Math.round(goal.totalCalories),
     goalEatingPhase: phaseLabel,
     goalTargetWeight: goal.targetWeight,
@@ -162,7 +166,12 @@ export function useNutritionGoalDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseNutritionGoalDataLogsParams = {}): UseNutritionGoalDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({ color: theme.colors.status.violet500, bg: theme.colors.status.purple10 }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<NutritionGoalDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -181,7 +190,7 @@ export function useNutritionGoalDataLogs({
     try {
       const goals = await NutritionGoalService.getGoalsHistory(batchSize, 0);
       const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t),
+        item: goalToDisplayItem(goal, t, iconColors),
         dateTimestamp: goal.createdAt,
       }));
       const groups = groupGoalsByDate(results, t);
@@ -195,7 +204,7 @@ export function useNutritionGoalDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -213,7 +222,7 @@ export function useNutritionGoalDataLogs({
       }
 
       const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t),
+        item: goalToDisplayItem(goal, t, iconColors),
         dateTimestamp: goal.createdAt,
       }));
 
@@ -226,7 +235,7 @@ export function useNutritionGoalDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

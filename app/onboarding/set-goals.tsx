@@ -73,7 +73,7 @@ function OrbitalIllustration() {
           backgroundColor: `${theme.colors.status.indigo}33`,
           width: 256,
           height: 256,
-          borderRadius: 128,
+          borderRadius: theme.borderRadius.full,
           shadowColor: theme.colors.status.indigo,
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.6,
@@ -89,7 +89,7 @@ function OrbitalIllustration() {
           style={{
             backgroundColor: `${theme.colors.status.indigo}33`,
             opacity: 0.2,
-            borderRadius: 64,
+            borderRadius: theme.borderRadius.full,
             shadowColor: theme.colors.status.indigo,
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.8,
@@ -144,7 +144,7 @@ function OrbitalIllustration() {
               width: 8,
               height: 8,
               marginBottom: -8,
-              marginLeft: 16,
+              marginLeft: theme.spacing.margin.base,
             }}
           />
         </View>
@@ -164,7 +164,7 @@ function OrbitalIllustration() {
             name="local-fire-department"
             size={24}
             color={theme.colors.status.warning}
-            style={{ marginBottom: 2 }}
+            style={{ marginBottom: theme.spacing.margin['2'] }}
           />
           <Text
             className="text-[10px] font-bold tracking-wider"
@@ -182,7 +182,10 @@ function OrbitalIllustration() {
 
       <View
         className="absolute right-[8%] top-[20%] z-30 h-20 w-20 flex-col items-center justify-center overflow-hidden rounded-[2rem]"
-        style={[glassNodeStyle, { top: '20%', right: '8%', borderRadius: 32 }]}
+        style={[
+          glassNodeStyle,
+          { top: '20%', right: '8%', borderRadius: theme.borderRadius['3xl'] },
+        ]}
       >
         <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFillObject} />
         <View style={{ alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
@@ -190,7 +193,7 @@ function OrbitalIllustration() {
             name="fitness-center"
             size={30}
             color={theme.colors.status.indigoLight}
-            style={{ marginBottom: 4 }}
+            style={{ marginBottom: theme.spacing.margin.xs }}
           />
           <Text
             className="text-[10px] font-bold tracking-wider"
@@ -219,7 +222,7 @@ function OrbitalIllustration() {
             name="eco"
             size={24}
             color={theme.colors.status.emeraldLight}
-            style={{ marginBottom: 2 }}
+            style={{ marginBottom: theme.spacing.margin['2'] }}
           />
           <Text
             className="text-[10px] font-bold tracking-wider"

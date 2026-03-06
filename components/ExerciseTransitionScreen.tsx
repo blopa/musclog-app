@@ -61,7 +61,11 @@ export function ExerciseTransitionScreen({
       {/* Main Content - scrollable to avoid broken layout on small screens */}
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingBottom: 24 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: theme.spacing.padding.lg,
+          paddingBottom: theme.spacing.padding.xl,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Completion Status */}
@@ -99,7 +103,7 @@ export function ExerciseTransitionScreen({
         {nextExercise ? (
           <GenericCard
             variant="card"
-            containerStyle={{ marginTop: 16, overflow: 'hidden' as const }}
+            containerStyle={{ marginTop: theme.spacing.margin.base, overflow: 'hidden' as const }}
           >
             <View className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200 dark:bg-gray-800">
               <Image
@@ -108,7 +112,11 @@ export function ExerciseTransitionScreen({
                 resizeMode="cover"
               />
               <LinearGradient
-                colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.4)', 'transparent']}
+                colors={[
+                  theme.colors.background.black90,
+                  theme.colors.background.black40,
+                  'transparent',
+                ]}
                 locations={[0, 0.5, 1]}
                 start={{ x: 0, y: 1 }}
                 end={{ x: 0, y: 0 }}
@@ -118,7 +126,7 @@ export function ExerciseTransitionScreen({
                 <Text
                   className="text-2xl font-bold leading-tight text-white"
                   style={{
-                    textShadowColor: 'rgba(0,0,0,0.9)',
+                    textShadowColor: theme.colors.overlay.black90,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 3,
                   }}
@@ -129,7 +137,7 @@ export function ExerciseTransitionScreen({
                   className="text-sm font-semibold uppercase tracking-wide"
                   style={{
                     color: theme.colors.accent.primary,
-                    textShadowColor: 'rgba(0,0,0,0.6)',
+                    textShadowColor: theme.colors.overlay.black60,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 2,
                   }}

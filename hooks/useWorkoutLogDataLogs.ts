@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type WorkoutLogDataDisplayItem = {
   id: string;
@@ -24,8 +25,6 @@ export type WorkoutLogDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-const ICON_COLORS = { color: '#22c55e', bg: 'rgba(34, 197, 94, 0.1)' };
-
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
@@ -40,13 +39,17 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
   return format(date, 'MMM d');
 }
 
-function workoutLogToDisplayItem(log: WorkoutLog, t: TFunction): WorkoutLogDataDisplayItem {
+function workoutLogToDisplayItem(
+  log: WorkoutLog,
+  t: TFunction,
+  iconColors: { color: string; bg: string }
+): WorkoutLogDataDisplayItem {
   return {
     id: log.id,
     name: log.workoutName || t('workoutLog.manageWorkoutLogData.unknownWorkout', 'Unknown Workout'),
     icon: 'fitness-center',
-    iconColor: ICON_COLORS.color,
-    iconBgColor: ICON_COLORS.bg,
+    iconColor: iconColors.color,
+    iconBgColor: iconColors.bg,
     isCompleted: !!log.completedAt,
     totalVolume: log.totalVolume,
   };
@@ -146,7 +149,12 @@ export function useWorkoutLogDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseWorkoutLogDataLogsParams = {}): UseWorkoutLogDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({ color: theme.colors.accent.primary, bg: theme.colors.accent.primary10 }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<WorkoutLogDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -165,7 +173,7 @@ export function useWorkoutLogDataLogs({
     try {
       const logs = await WorkoutService.getWorkoutHistory(undefined, batchSize, 0);
       const validResults = logs.map((log) => ({
-        item: workoutLogToDisplayItem(log, t),
+        item: workoutLogToDisplayItem(log, t, iconColors),
         dateTimestamp: log.startedAt,
       }));
       const groups = groupWorkoutLogsByDate(validResults, t);
@@ -179,7 +187,7 @@ export function useWorkoutLogDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -197,7 +205,7 @@ export function useWorkoutLogDataLogs({
       }
 
       const validResults = logs.map((log) => ({
-        item: workoutLogToDisplayItem(log, t),
+        item: workoutLogToDisplayItem(log, t, iconColors),
         dateTimestamp: log.startedAt,
       }));
 
@@ -210,7 +218,7 @@ export function useWorkoutLogDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

@@ -223,7 +223,7 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                     >
                       {t('food.macros.carbs')}
                     </Text>
-                    <Text className="text-lg font-bold" style={{ color: '#60a5fa' }}>
+                    <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
                       {meal.carbs}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
@@ -244,7 +244,10 @@ export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModal
                     >
                       {t('food.macros.fat')}
                     </Text>
-                    <Text className="text-lg font-bold" style={{ color: '#fbbf24' }}>
+                    <Text
+                      className="text-lg font-bold"
+                      style={{ color: theme.colors.status.amber }}
+                    >
                       {meal.fat}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>

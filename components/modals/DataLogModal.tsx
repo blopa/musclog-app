@@ -921,7 +921,7 @@ export function DataLogModal({
       {
         icon: DeleteIcon,
         iconColor: theme.colors.status.error50,
-        iconBgColor: 'rgba(239, 68, 68, 0.1)',
+        iconBgColor: theme.colors.status.error10,
         title: translations.deleteTitle,
         description: translations.deleteDesc,
         onPress: handleDelete,

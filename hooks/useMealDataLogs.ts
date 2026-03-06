@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Meal from '../database/models/Meal';
 import { MealService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type MealDataDisplayItem = {
   id: string;
@@ -29,14 +30,6 @@ export type MealDataDayGroup = {
 };
 
 const BATCH_SIZE = 20;
-
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  restaurant: { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  'local-dining': { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
-  fastfood: { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)' },
-  'lunch-dining': { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
-  'dinner-dining': { color: '#a855f7', bg: 'rgba(168, 85, 247, 0.1)' },
-};
 
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
@@ -75,12 +68,13 @@ function pickIconForMeal(name: string, isAiGenerated: boolean): MealDataDisplayI
 
 async function mealToDisplayItemWithT(
   meal: Meal,
-  t: TFunction
+  t: TFunction,
+  iconColors: Record<string, { color: string; bg: string }>
 ): Promise<MealDataDisplayItem | null> {
   try {
     const nutrients = await meal.getTotalNutrients();
     const icon = pickIconForMeal(meal.name, meal.isAiGenerated);
-    const colors = ICON_COLORS[icon] ?? ICON_COLORS.restaurant;
+    const colors = iconColors[icon] ?? iconColors.restaurant;
 
     return {
       id: meal.id,
@@ -197,7 +191,21 @@ export function useMealDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseMealDataLogsParams = {}): UseMealDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      restaurant: {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      'local-dining': { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
+      fastfood: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
+      'lunch-dining': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+      'dinner-dining': { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<MealDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -217,7 +225,7 @@ export function useMealDataLogs({
       const meals = await MealService.getMealsPaginated(batchSize, 0);
       const results = await Promise.all(
         meals.map(async (meal) => {
-          const item = await mealToDisplayItemWithT(meal, t);
+          const item = await mealToDisplayItemWithT(meal, t, iconColors);
           return item ? { item, dateTimestamp: meal.createdAt } : null;
         })
       );
@@ -236,7 +244,7 @@ export function useMealDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -255,7 +263,7 @@ export function useMealDataLogs({
 
       const results = await Promise.all(
         meals.map(async (meal) => {
-          const item = await mealToDisplayItemWithT(meal, t);
+          const item = await mealToDisplayItemWithT(meal, t, iconColors);
           return item ? { item, dateTimestamp: meal.createdAt } : null;
         })
       );
@@ -273,7 +281,7 @@ export function useMealDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

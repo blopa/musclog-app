@@ -257,7 +257,7 @@ export function LineChart({
                   position: 'absolute',
                   width: 12,
                   height: 12,
-                  borderRadius: 6,
+                  borderRadius: theme.borderRadius.full,
                   backgroundColor: lineColorResolved,
                   borderWidth: 2,
                   borderColor: theme.colors.background.card,
@@ -274,10 +274,10 @@ export function LineChart({
                     width: TOOLTIP_WIDTH,
                     height: TOOLTIP_HEIGHT,
                     backgroundColor: theme.colors.background.card,
-                    borderRadius: 6,
-                    paddingHorizontal: 8,
-                    paddingVertical: 6,
-                    shadowColor: '#000',
+                    borderRadius: theme.borderRadius.xs,
+                    paddingHorizontal: theme.spacing.padding.sm,
+                    paddingVertical: theme.spacing.padding['1half'],
+                    shadowColor: theme.colors.text.black,
                     shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.15,
                     shadowRadius: 4,
@@ -291,7 +291,7 @@ export function LineChart({
                 <Text
                   style={{
                     color: theme.colors.text.primary,
-                    fontSize: 12,
+                    fontSize: theme.typography.fontSize.xs,
                     fontWeight: '600',
                     textAlign: 'center',
                   }}
@@ -315,7 +315,7 @@ export function LineChart({
                 position: 'absolute',
                 left: 6,
                 top: topOffset - 6,
-                fontSize: 9,
+                fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
                 color: theme.colors.text.tertiary,
               }}

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Food from '../database/models/Food';
 import { FoodService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type FoodLibraryDisplayItem = {
   id: string;
@@ -26,14 +27,6 @@ export type FoodLibraryDayGroup = {
 };
 
 const BATCH_SIZE = 20;
-
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  restaurant: { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  egg: { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
-  'local-pizza': { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)' },
-  'fitness-center': { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  'restaurant-menu': { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
-};
 
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
@@ -66,9 +59,13 @@ function pickIconForFoodName(name: string): string {
   return 'restaurant';
 }
 
-function foodToDisplayItem(food: Food, t: TFunction): FoodLibraryDisplayItem {
+function foodToDisplayItem(
+  food: Food,
+  t: TFunction,
+  iconColors: Record<string, { color: string; bg: string }>
+): FoodLibraryDisplayItem {
   const icon = pickIconForFoodName(food.name);
-  const colors = ICON_COLORS[icon] ?? ICON_COLORS.restaurant;
+  const colors = iconColors[icon] ?? iconColors.restaurant;
 
   return {
     id: food.id,
@@ -178,7 +175,24 @@ export function useFoodsDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseFoodsDataLogsParams = {}): UseFoodsDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      restaurant: {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      egg: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
+      'local-pizza': { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
+      'fitness-center': {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      'restaurant-menu': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<FoodLibraryDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -197,7 +211,7 @@ export function useFoodsDataLogs({
     try {
       const foods = await FoodService.getFoodsPaginated(batchSize, 0);
       const results = foods.map((food) => ({
-        item: foodToDisplayItem(food, t),
+        item: foodToDisplayItem(food, t, iconColors),
         dateTimestamp: food.createdAt,
       }));
       const groups = groupFoodsByDate(results, t);
@@ -211,7 +225,7 @@ export function useFoodsDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -229,7 +243,7 @@ export function useFoodsDataLogs({
       }
 
       const results = foods.map((food) => ({
-        item: foodToDisplayItem(food, t),
+        item: foodToDisplayItem(food, t, iconColors),
         dateTimestamp: food.createdAt,
       }));
 
@@ -242,7 +256,7 @@ export function useFoodsDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

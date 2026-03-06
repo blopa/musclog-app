@@ -66,7 +66,7 @@ export function SameAsYesterdayCard({
                   className="text-xs font-bold uppercase tracking-tighter"
                   style={{
                     color: theme.colors.accent.secondary,
-                    marginBottom: 2,
+                    marginBottom: theme.spacing.margin['2'],
                   }}
                 >
                   {t('foodSearch.yesterdayMealTitle', {
@@ -136,7 +136,7 @@ export function SameAsYesterdayCard({
                       style={{
                         width: 6,
                         height: 6,
-                        borderRadius: 3,
+                        borderRadius: theme.borderRadius.full,
                         backgroundColor: theme.colors.accent.secondary31,
                         flexShrink: 0,
                       }}

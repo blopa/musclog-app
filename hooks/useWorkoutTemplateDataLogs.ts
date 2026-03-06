@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
 import { WorkoutTemplateService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type WorkoutTemplateDataDisplayItem = {
   id: string;
@@ -23,8 +24,6 @@ export type WorkoutTemplateDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-const ICON_COLOR = { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' };
-
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
@@ -41,15 +40,16 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
 
 function templateToDisplayItem(
   template: WorkoutTemplate,
-  t: TFunction
+  t: TFunction,
+  iconColor: { color: string; bg: string }
 ): WorkoutTemplateDataDisplayItem {
   return {
     id: template.id,
     name:
       template.name || t('workouts.manageWorkoutTemplateData.unknownTemplate', 'Unknown Template'),
     icon: 'fitness-center',
-    iconColor: ICON_COLOR.color,
-    iconBgColor: ICON_COLOR.bg,
+    iconColor: iconColor.color,
+    iconBgColor: iconColor.bg,
     description: template.description || undefined,
   };
 }
@@ -151,7 +151,12 @@ export function useWorkoutTemplateDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseWorkoutTemplateDataLogsParams = {}): UseWorkoutTemplateDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColor = useMemo(
+    () => ({ color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<WorkoutTemplateDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -170,7 +175,7 @@ export function useWorkoutTemplateDataLogs({
     try {
       const templates = await WorkoutTemplateService.getWorkoutTemplatesPaginated(batchSize, 0);
       const validResults = templates.map((template) => ({
-        item: templateToDisplayItem(template, t),
+        item: templateToDisplayItem(template, t, iconColor),
         dateTimestamp: template.createdAt,
       }));
       const groups = groupTemplatesByDate(validResults, t);
@@ -184,7 +189,7 @@ export function useWorkoutTemplateDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColor]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -205,7 +210,7 @@ export function useWorkoutTemplateDataLogs({
       }
 
       const validResults = templates.map((template) => ({
-        item: templateToDisplayItem(template, t),
+        item: templateToDisplayItem(template, t, iconColor),
         dateTimestamp: template.createdAt,
       }));
 
@@ -218,7 +223,7 @@ export function useWorkoutTemplateDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColor]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

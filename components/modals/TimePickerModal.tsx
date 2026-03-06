@@ -104,8 +104,8 @@ export function TimePickerModal({
             <Text
               className="text-center font-bold tracking-tight text-white"
               style={{
-                fontSize: 96,
-                textShadowColor: 'rgba(0,0,0,0.3)',
+                fontSize: theme.typography.fontSize['8xl'],
+                textShadowColor: theme.colors.background.black30,
                 textShadowOffset: { width: 0, height: 2 },
                 textShadowRadius: 8,
               }}
@@ -296,8 +296,8 @@ function TimePickerModalWeb({
           <Text
             className="text-center font-bold tracking-tight text-white"
             style={{
-              fontSize: 96,
-              textShadowColor: 'rgba(0,0,0,0.3)',
+              fontSize: theme.typography.fontSize['8xl'],
+              textShadowColor: theme.colors.background.black30,
               textShadowOffset: { width: 0, height: 2 },
               textShadowRadius: 8,
             }}
@@ -404,13 +404,13 @@ function TimePickerModalWeb({
           <View className="mt-8 flex w-full flex-row justify-center gap-16">
             <Text
               className="font-semibold uppercase tracking-widest text-white/50"
-              style={{ fontSize: 10 }}
+              style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {t('timePicker.hours')}
             </Text>
             <Text
               className="font-semibold uppercase tracking-widest text-white/50"
-              style={{ fontSize: 10 }}
+              style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {t('timePicker.minutes')}
             </Text>

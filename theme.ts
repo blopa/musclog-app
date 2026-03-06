@@ -491,6 +491,7 @@ export const theme = {
       '5xl': 48,
       '6xl': 60,
       '7xl': 80,
+      '8xl': 96,
     },
 
     // Font weights

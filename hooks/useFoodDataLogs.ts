@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionLog from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
+import { useTheme } from './useTheme';
 
 export type FoodDataDisplayItem = {
   id: string;
@@ -34,14 +35,6 @@ const ICON_OPTIONS: FoodDataDisplayItem['icon'][] = [
   'fitness-center',
   'restaurant-menu',
 ];
-
-const ICON_COLORS: Record<string, { color: string; bg: string }> = {
-  restaurant: { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  egg: { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.1)' },
-  'local-pizza': { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)' },
-  'fitness-center': { color: '#29e08e', bg: 'rgba(41, 224, 142, 0.1)' },
-  'restaurant-menu': { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
-};
 
 function formatRelativeDate(timestamp: number, t: TFunction): string {
   const date = new Date(timestamp);
@@ -76,7 +69,8 @@ function pickIconForFood(name: string): FoodDataDisplayItem['icon'] {
 
 async function logToDisplayItemWithT(
   log: NutritionLog,
-  t: TFunction
+  t: TFunction,
+  iconColors: Record<string, { color: string; bg: string }>
 ): Promise<FoodDataDisplayItem | null> {
   try {
     const [nutrients, displayName, food] = await Promise.all([
@@ -85,7 +79,7 @@ async function logToDisplayItemWithT(
       log.food,
     ]);
     const icon = pickIconForFood(displayName || food?.name);
-    const colors = ICON_COLORS[icon] ?? ICON_COLORS.restaurant;
+    const colors = iconColors[icon] ?? iconColors.restaurant;
 
     return {
       id: log.id,
@@ -199,7 +193,24 @@ export function useFoodDataLogs({
   batchSize = BATCH_SIZE,
   searchQuery = '',
 }: UseFoodDataLogsParams = {}): UseFoodDataLogsResult {
+  const theme = useTheme();
   const { t } = useTranslation();
+  const iconColors = useMemo(
+    () => ({
+      restaurant: {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      egg: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
+      'local-pizza': { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
+      'fitness-center': {
+        color: theme.colors.status.emeraldLight,
+        bg: theme.colors.status.emerald400_10,
+      },
+      'restaurant-menu': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
+    }),
+    [theme]
+  );
   const [dayGroups, setDayGroups] = useState<FoodDataDayGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -219,7 +230,7 @@ export function useFoodDataLogs({
       const logs = await NutritionService.getNutritionLogsPaginated(batchSize, 0);
       const results = await Promise.all(
         logs.map(async (log) => {
-          const item = await logToDisplayItemWithT(log, t);
+          const item = await logToDisplayItemWithT(log, t, iconColors);
           return item ? { item, dateTimestamp: log.date } : null;
         })
       );
@@ -238,7 +249,7 @@ export function useFoodDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t]);
+  }, [visible, batchSize, t, iconColors]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -260,7 +271,7 @@ export function useFoodDataLogs({
 
       const results = await Promise.all(
         logs.map(async (log) => {
-          const item = await logToDisplayItemWithT(log, t);
+          const item = await logToDisplayItemWithT(log, t, iconColors);
           return item ? { item, dateTimestamp: log.date } : null;
         })
       );
@@ -278,7 +289,7 @@ export function useFoodDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

@@ -13,7 +13,7 @@ import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 
 // Mock data - replace with actual data from props or route params
-const EXERCISE_DATA = {
+const EXERCISE_STATIC = {
   name: 'Incline Dumbbell Press',
   primaryMuscle: 'Chest',
   equipment: 'Dumbbell',
@@ -21,27 +21,9 @@ const EXERCISE_DATA = {
   personalBest: { value: 85, unit: 'KG' },
   avgFrequency: { value: 2.4, unit: 'x / wk' },
   workouts: [
-    {
-      id: '1',
-      name: 'Push Day Hypertrophy',
-      subtitle: 'Last performed 2 days ago',
-      iconGradient: ['#4f46e5', '#4f46e5'] as const,
-      icon: Zap,
-    },
-    {
-      id: '2',
-      name: 'Upper Body Blast',
-      subtitle: 'Created on Oct 12, 2023',
-      iconGradient: ['#4f46e5', '#4f46e5'] as const,
-      icon: Zap,
-    },
-    {
-      id: '3',
-      name: 'Full Body Foundation',
-      subtitle: 'Used in 12 sessions',
-      iconGradient: ['#4f46e5', '#4f46e5'] as const,
-      icon: Heart,
-    },
+    { id: '1', name: 'Push Day Hypertrophy', subtitle: 'Last performed 2 days ago', icon: Zap },
+    { id: '2', name: 'Upper Body Blast', subtitle: 'Created on Oct 12, 2023', icon: Zap },
+    { id: '3', name: 'Full Body Foundation', subtitle: 'Used in 12 sessions', icon: Heart },
   ],
 };
 
@@ -55,17 +37,20 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
   const { t } = useTranslation();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
+  const EXERCISE_DATA = {
+    ...EXERCISE_STATIC,
+    workouts: EXERCISE_STATIC.workouts.map((w) => ({
+      ...w,
+      iconGradient: [theme.colors.status.indigo600, theme.colors.status.indigo600] as const,
+    })),
+  };
+
   // For now, using a placeholder image - replace with actual exercise image
   const backgroundImage = require('../../assets/icon.png');
 
   const handleWatchTechnique = () => {
     // Navigate to technique video or open modal
     console.log('Watch technique');
-  };
-
-  const handleLogExercise = () => {
-    // Navigate to log exercise screen
-    console.log('Log exercise');
   };
 
   const handleWorkoutPress = (workoutId: string) => {

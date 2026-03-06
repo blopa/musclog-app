@@ -148,8 +148,12 @@ export function LineChart({
       }
       labelComponent={
         <VictoryTooltip
-          style={{ fontSize: 11, fontWeight: '600' }}
-          flyoutStyle={{ fill: 'white', stroke: '#e5e7eb', strokeWidth: 1 }}
+          style={{ fontSize: theme.typography.fontSize.xs, fontWeight: '600' }}
+          flyoutStyle={{
+            fill: theme.colors.text.white,
+            stroke: theme.colors.background.separatorLight,
+            strokeWidth: 1,
+          }}
           flyoutPadding={{ top: 6, bottom: 6, left: 10, right: 10 }}
         />
       }

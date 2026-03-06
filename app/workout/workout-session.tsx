@@ -499,7 +499,11 @@ export default function WorkoutSessionScreen() {
 
           <ScrollView
             className="flex-1"
-            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 32 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingHorizontal: theme.spacing.padding.xl,
+              paddingTop: theme.spacing.padding['2xl'],
+            }}
             showsVerticalScrollIndicator={false}
           >
             {/* Icon + title + subtitle */}
@@ -631,7 +635,7 @@ export default function WorkoutSessionScreen() {
               left: '-20%',
               width: 280,
               height: 280,
-              borderRadius: 140,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.6,
             }}
@@ -643,7 +647,7 @@ export default function WorkoutSessionScreen() {
               right: '-15%',
               width: 200,
               height: 200,
-              borderRadius: 100,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.35,
             }}
@@ -655,7 +659,7 @@ export default function WorkoutSessionScreen() {
               left: '10%',
               width: 120,
               height: 120,
-              borderRadius: 60,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.25,
             }}
@@ -737,7 +741,7 @@ export default function WorkoutSessionScreen() {
               left: '-20%',
               width: 280,
               height: 280,
-              borderRadius: 140,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.6,
             }}
@@ -749,7 +753,7 @@ export default function WorkoutSessionScreen() {
               right: '-15%',
               width: 200,
               height: 200,
-              borderRadius: 100,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.35,
             }}
@@ -761,7 +765,7 @@ export default function WorkoutSessionScreen() {
               left: '10%',
               width: 120,
               height: 120,
-              borderRadius: 60,
+              borderRadius: theme.borderRadius.full,
               backgroundColor: theme.colors.accent.primary20,
               opacity: 0.25,
             }}

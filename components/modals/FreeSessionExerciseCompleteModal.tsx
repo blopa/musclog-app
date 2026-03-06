@@ -119,7 +119,7 @@ export function FreeSessionExerciseCompleteModal({
               style={{
                 width: SUCCESS_ICON_SIZE - INNER_ICON_OFFSET * 2,
                 height: SUCCESS_ICON_SIZE - INNER_ICON_OFFSET * 2,
-                borderRadius: 9999,
+                borderRadius: theme.borderRadius.full,
                 overflow: 'hidden',
                 shadowColor: emerald,
                 shadowOffset: { width: 0, height: 0 },
@@ -203,7 +203,7 @@ export function FreeSessionExerciseCompleteModal({
                   <CheckCircle
                     size={theme.iconSize.sm}
                     color={emerald}
-                    style={{ marginRight: 6 }}
+                    style={{ marginRight: theme.spacing.margin['1half'] }}
                   />
                   <Text
                     style={{
