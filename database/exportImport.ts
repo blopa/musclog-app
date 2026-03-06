@@ -42,6 +42,7 @@ const RESTORE_ORDER: string[] = [
   'foods',
   'food_portions',
   'nutrition_goals',
+  'nutrition_checkins',
   'settings',
   'workout_templates',
   'meals',
@@ -353,6 +354,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
                 (rec as any).mealId = mapped;
               } else {
                 (rec as any).mealId = value;
+              }
+            } else if (key === 'nutrition_goal_id') {
+              const mapped = mapId('nutrition_goals', value as string);
+              if (mapped != null) {
+                (rec as any).nutritionGoalId = mapped;
+              } else {
+                (rec as any).nutritionGoalId = value;
               }
             } else if (key === 'portion_id') {
               const mapped = mapId('food_portions', value as string);

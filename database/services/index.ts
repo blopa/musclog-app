@@ -18,6 +18,7 @@ export {
   MigrationService,
   type MigrationStepKey,
 } from './MigrationService';
+export { NutritionCheckinService } from './NutritionCheckinService';
 export { NutritionGoalService } from './NutritionGoalService';
 export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';

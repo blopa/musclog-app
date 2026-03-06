@@ -308,6 +308,23 @@ export const schema = appSchema({
         { name: 'deleted_at', type: 'number', isOptional: true },
       ],
     }),
+
+    // Midterm check-ins for a nutrition goal (targets at intermediate dates)
+    tableSchema({
+      name: 'nutrition_checkins',
+      columns: [
+        { name: 'nutrition_goal_id', type: 'string', isIndexed: true },
+        { name: 'checkin_date', type: 'number', isIndexed: true },
+        { name: 'target_weight', type: 'number' },
+        { name: 'target_body_fat', type: 'number' },
+        { name: 'target_bmi', type: 'number' },
+        { name: 'target_ffmi', type: 'number' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // Loggy Chat Messages
     tableSchema({
       name: 'chat_messages',

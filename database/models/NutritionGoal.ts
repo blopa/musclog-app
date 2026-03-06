@@ -1,10 +1,16 @@
-import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { Model, Query } from '@nozbe/watermelondb';
+import { children, field } from '@nozbe/watermelondb/decorators';
+
+import type NutritionCheckin from './NutritionCheckin';
 
 export type EatingPhase = 'cut' | 'maintain' | 'bulk';
 
 export default class NutritionGoal extends Model {
   static table = 'nutrition_goals';
+
+  static associations = {
+    nutrition_checkins: { type: 'has_many' as const, foreignKey: 'nutrition_goal_id' },
+  };
 
   @field('total_calories') totalCalories!: number;
   @field('protein') protein!: number;
@@ -21,4 +27,6 @@ export default class NutritionGoal extends Model {
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
+
+  @children('nutrition_checkins') checkins!: Query<NutritionCheckin>;
 }

@@ -9,6 +9,7 @@ import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
+import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
 import Schedule from './models/Schedule';
@@ -36,6 +37,7 @@ export const database = new Database({
     WorkoutLog,
     WorkoutLogSet,
     NutritionGoal,
+    NutritionCheckin,
     Food,
     FoodPortion,
     FoodFoodPortion,

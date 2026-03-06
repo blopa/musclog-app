@@ -5,6 +5,7 @@ export { default as FoodFoodPortion } from './FoodFoodPortion';
 export { default as FoodPortion } from './FoodPortion';
 export { default as Meal } from './Meal';
 export { default as MealFood } from './MealFood';
+export { default as NutritionCheckin } from './NutritionCheckin';
 export { default as NutritionGoal } from './NutritionGoal';
 export { default as NutritionLog } from './NutritionLog';
 export { default as Schedule } from './Schedule';
