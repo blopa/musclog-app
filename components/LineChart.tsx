@@ -224,7 +224,10 @@ export function LineChart({
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
             onResponderTerminationRequest={() => false}
-            onResponderGrant={(e) => { onInteractionStart?.(); handleTouchAt(e.nativeEvent.locationX); }}
+            onResponderGrant={(e) => {
+              onInteractionStart?.();
+              handleTouchAt(e.nativeEvent.locationX);
+            }}
             onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
             onResponderRelease={() => onInteractionEnd?.()}
             onResponderTerminate={() => onInteractionEnd?.()}

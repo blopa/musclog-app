@@ -528,8 +528,12 @@ export default function BodyMetricsHistoryModal({
                     data={chartData}
                     xAxisLabels={xAxisLabels}
                     yAxisLabels={yAxisLabels}
-                    onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
-                    onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
+                    onInteractionStart={() =>
+                      scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
+                    }
+                    onInteractionEnd={() =>
+                      scrollViewRef.current?.setNativeProps({ scrollEnabled: true })
+                    }
                   />
                 </View>
               </GenericCard>

@@ -2,14 +2,13 @@ import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
-import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { WorkoutService } from '../../database/services/WorkoutService';
+import { WorkoutService } from '../../database/services';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
@@ -123,7 +122,13 @@ type VolumeTrendCardProps = {
   onInteractionEnd?: () => void;
 };
 
-function VolumeTrendCard({ percentage, data, labels, onInteractionStart, onInteractionEnd }: VolumeTrendCardProps) {
+function VolumeTrendCard({
+  percentage,
+  data,
+  labels,
+  onInteractionStart,
+  onInteractionEnd,
+}: VolumeTrendCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -459,8 +464,12 @@ export default function PastWorkoutDetailModal({
               percentage={workout.volumeTrend.percentage}
               data={workout.volumeTrend.data}
               labels={workout.volumeTrend.labels}
-              onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
-              onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
+              onInteractionStart={() =>
+                scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
+              }
+              onInteractionEnd={() =>
+                scrollViewRef.current?.setNativeProps({ scrollEnabled: true })
+              }
             />
           ) : null}
 

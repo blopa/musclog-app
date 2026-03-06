@@ -70,6 +70,10 @@ export type LineChartProps = {
   interactive?: boolean;
   /** Format the tooltip label for a given data point (default: shows rounded y value) */
   tooltipFormatter?: (point: LineChartDataPoint) => string;
+  /** No-op on web — only used by native to lock parent ScrollView */
+  onInteractionStart?: () => void;
+  /** No-op on web — only used by native to lock parent ScrollView */
+  onInteractionEnd?: () => void;
 };
 
 /**

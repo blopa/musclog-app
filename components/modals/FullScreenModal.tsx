@@ -18,7 +18,7 @@ type FullScreenModalProps = {
   scrollable?: boolean;
   withGradient?: boolean;
   showHeader?: boolean;
-  scrollViewRef?: RefObject<ScrollView>;
+  scrollViewRef?: RefObject<ScrollView | null>;
 };
 
 export function FullScreenModal({

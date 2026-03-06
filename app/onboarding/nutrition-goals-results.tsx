@@ -1025,8 +1025,12 @@ export default function NutritionGoalsResults() {
                           Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
                         ]}
                         marginBottom={4}
-                        onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
-                        onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
+                        onInteractionStart={() =>
+                          scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
+                        }
+                        onInteractionEnd={() =>
+                          scrollViewRef.current?.setNativeProps({ scrollEnabled: true })
+                        }
                       />
                     </View>
                   ) : null}
