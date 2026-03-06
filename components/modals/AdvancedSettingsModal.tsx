@@ -2,6 +2,7 @@ import {
   Activity,
   Apple,
   Bug,
+  CalendarCheck,
   ChevronRight,
   Coffee,
   Database,
@@ -34,6 +35,7 @@ import {
   FoodDataModal,
   FoodPortionDataModal,
   MealDataModal,
+  NutritionCheckinDataModal,
   NutritionGoalDataModal,
   NutritionLogModal,
   UserMetricDataModal,
@@ -135,6 +137,7 @@ export function AdvancedSettingsModal({
   const [showMetricsModal, setShowMetricsModal] = useState(false);
   const [showExercisesModal, setShowExercisesModal] = useState(false);
   const [showNutritionGoalsModal, setShowNutritionGoalsModal] = useState(false);
+  const [showNutritionCheckinsModal, setShowNutritionCheckinsModal] = useState(false);
   const [showChatMessagesModal, setShowChatMessagesModal] = useState(false);
   const bugReportItems = [
     {
@@ -363,6 +366,21 @@ export function AdvancedSettingsModal({
               }
             />
             <SettingsCard
+              icon={<CalendarCheck size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              iconContainerStyle={{
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.sm,
+                backgroundColor: theme.colors.accent.primary20,
+              }}
+              title={t('settings.advancedSettings.manageCheckinsData')}
+              subtitle={t('settings.advancedSettings.manageCheckinsDataSubtitle')}
+              onPress={() => setShowNutritionCheckinsModal(true)}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              }
+            />
+            <SettingsCard
               icon={<MessageSquare size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               iconContainerStyle={{
                 width: theme.size['16'],
@@ -528,6 +546,10 @@ export function AdvancedSettingsModal({
       <NutritionGoalDataModal
         visible={showNutritionGoalsModal}
         onClose={() => setShowNutritionGoalsModal(false)}
+      />
+      <NutritionCheckinDataModal
+        visible={showNutritionCheckinsModal}
+        onClose={() => setShowNutritionCheckinsModal(false)}
       />
       <ChatMessageDataModal
         visible={showChatMessagesModal}

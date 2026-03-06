@@ -12,6 +12,7 @@ import {
   FoodPortionService,
   FoodService,
   MealService,
+  NutritionCheckinService,
   NutritionGoalService,
   NutritionService,
   UserMetricService,
@@ -24,6 +25,7 @@ import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
 import { useFoodsDataLogs } from '../../hooks/useFoodsDataLogs';
 import { useMealDataLogs } from '../../hooks/useMealDataLogs';
+import { useNutritionCheckinDataLogs } from '../../hooks/useNutritionCheckinDataLogs';
 import { useNutritionGoalDataLogs } from '../../hooks/useNutritionGoalDataLogs';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -59,6 +61,7 @@ export type DataLogModalVariant =
   | 'workoutTemplate'
   | 'userMetric'
   | 'nutritionGoal'
+  | 'nutritionCheckin'
   | 'chatMessage';
 
 export type DataLogModalTranslations = {
@@ -343,6 +346,33 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'nutritionCheckin') {
+    return {
+      title: t('goalsManagement.manageCheckinData.title'),
+      searchPlaceholder: t('goalsManagement.manageCheckinData.searchPlaceholder'),
+      noItemsText: t('goalsManagement.manageCheckinData.noCheckins'),
+      noItemsDesc: t('goalsManagement.manageCheckinData.noCheckinsDesc'),
+      endOfHistoryText: t('goalsManagement.manageCheckinData.endOfHistory'),
+      menuTitle: t('goalsManagement.manageCheckinData.checkinOptions'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('goalsManagement.manageCheckinData.editCheckin'),
+      editDesc: t('goalsManagement.manageCheckinData.editCheckinDesc'),
+      duplicateTitle: '',
+      duplicateDesc: '',
+      deleteTitle: t('goalsManagement.manageCheckinData.deleteCheckin'),
+      deleteDesc: t('goalsManagement.manageCheckinData.deleteCheckinDesc'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) =>
+        t('goalsManagement.manageCheckinData.subtitleFormat', {
+          targetWeight: Number((item.checkinTargetWeight ?? 0).toFixed(1)),
+          targetBodyFat: Number((item.checkinTargetBodyFat ?? 0).toFixed(1)),
+        }),
+    };
+  }
+
   if (variant === 'chatMessage') {
     return {
       title: t('coach.chatMessages.title', 'Chat Messages'),
@@ -404,6 +434,8 @@ export function getEmptyStateIconName(
       return 'scale';
     case 'nutritionGoal':
       return 'flag';
+    case 'nutritionCheckin':
+      return 'event-note';
     case 'chatMessage':
       return 'chat';
     // meal, nutrition_log, food and any other fallback
@@ -435,6 +467,8 @@ export type DataLogDisplayItem = {
   goalCalories?: number; // Optional - only nutrition goals have this
   goalEatingPhase?: string; // Optional - only nutrition goals have this
   goalTargetWeight?: number; // Optional - only nutrition goals have this
+  checkinTargetWeight?: number; // Optional - only nutrition check-ins have this
+  checkinTargetBodyFat?: number; // Optional - only nutrition check-ins have this
   chatMessageText?: string; // Optional - only chat messages have this
 };
 
@@ -865,6 +899,9 @@ export function DataLogModal({
         case 'nutritionGoal':
           await NutritionGoalService.deleteGoal(selectedItem.id);
           break;
+        case 'nutritionCheckin':
+          await NutritionCheckinService.delete(selectedItem.id);
+          break;
         case 'chatMessage':
           await ChatService.deleteMessage(selectedItem.id);
           break;
@@ -927,6 +964,7 @@ export function DataLogModal({
       'food',
       'nutrition_log',
       'nutritionGoal',
+      'nutritionCheckin',
       'chatMessage',
     ];
 
@@ -1658,6 +1696,38 @@ export function NutritionGoalDataModal({ visible, onClose }: NutritionGoalDataMo
       visible={visible}
       onClose={onClose}
       variant="nutritionGoal"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+      refresh={refresh}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useNutritionCheckinDataLogs
+type NutritionCheckinDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function NutritionCheckinDataModal({ visible, onClose }: NutritionCheckinDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } =
+    useNutritionCheckinDataLogs({
+      visible,
+      batchSize: 20,
+      searchQuery,
+    });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="nutritionCheckin"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

@@ -63,6 +63,8 @@
       "manageExercisesDataSubtitle": "Maintain your custom exercise list and details",
       "manageGoalsData": "Manage Nutrition Goals",
       "manageGoalsDataSubtitle": "View and manage your nutrition and body composition goals history",
+      "manageCheckinsData": "Nutrition Check-ins",
+      "manageCheckinsDataSubtitle": "View and manage your progress check-ins",
       "clearAppData": "Clear App Data",
       "clearAppDataSubtitle": "Open Android settings to clear cache and data",
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",

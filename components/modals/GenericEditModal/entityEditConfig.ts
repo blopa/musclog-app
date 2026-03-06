@@ -8,6 +8,7 @@ import {
   FoodPortionService,
   FoodService,
   MealService,
+  NutritionCheckinService,
   NutritionGoalService,
   NutritionService,
   UserMetricService,
@@ -440,6 +441,47 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         },
       ];
 
+    case 'nutritionCheckin':
+      return [
+        {
+          type: 'date',
+          key: 'checkinDate',
+          label: 'goalsManagement.manageCheckinData.checkinDate',
+          required: true,
+        },
+        {
+          type: 'number',
+          key: 'targetWeight',
+          label: 'currentGoalsCard.targetWeight',
+          min: 0,
+          step: 0.1,
+          unit: 'kg',
+          required: true,
+        },
+        {
+          type: 'number',
+          key: 'targetBodyFat',
+          label: 'currentGoalsCard.bodyFat',
+          min: 0,
+          step: 0.1,
+          unit: '%',
+        },
+        {
+          type: 'number',
+          key: 'targetBmi',
+          label: 'currentGoalsCard.bmi',
+          min: 0,
+          step: 0.1,
+        },
+        {
+          type: 'number',
+          key: 'targetFfmi',
+          label: 'currentGoalsCard.ffmi',
+          min: 0,
+          step: 0.1,
+        },
+      ];
+
     default:
       // For unsupported entity types, return empty array
       return [];
@@ -531,6 +573,15 @@ export async function getInitialValues(
     case 'chatMessage':
       return {
         message: recordAny.message ?? '',
+      };
+
+    case 'nutritionCheckin':
+      return {
+        checkinDate: recordAny.checkinDate ?? Date.now(),
+        targetWeight: recordAny.targetWeight ?? 0,
+        targetBodyFat: recordAny.targetBodyFat ?? 0,
+        targetBmi: recordAny.targetBmi ?? 0,
+        targetFfmi: recordAny.targetFfmi ?? 0,
       };
 
     default:
@@ -656,6 +707,22 @@ export async function saveRecord(
     case 'chatMessage':
       await ChatService.updateMessage(recordId, values.message as string);
       break;
+
+    case 'nutritionCheckin': {
+      let targetWeightKg = values.targetWeight as number | undefined;
+      if (context?.units && targetWeightKg != null) {
+        targetWeightKg = displayToKg(targetWeightKg, context.units);
+      }
+
+      await NutritionCheckinService.update(recordId, {
+        checkinDate: values.checkinDate as number | undefined,
+        targetWeight: targetWeightKg,
+        targetBodyFat: values.targetBodyFat as number | undefined,
+        targetBmi: values.targetBmi as number | undefined,
+        targetFfmi: values.targetFfmi as number | undefined,
+      });
+      break;
+    }
 
     default:
       throw new Error(`Saving not implemented for entity type: ${entityType}`);

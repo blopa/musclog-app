@@ -29,6 +29,20 @@
       "phaseCut": "Cut",
       "phaseMaintain": "Maintain",
       "phaseBulk": "Bulk"
+    },
+    "manageCheckinData": {
+      "title": "Nutrition Check-ins",
+      "searchPlaceholder": "Search check-ins...",
+      "noCheckins": "No check-ins yet",
+      "noCheckinsDesc": "Check-ins are created when you set up an AI-calculated nutrition goal",
+      "endOfHistory": "All check-ins loaded",
+      "checkinOptions": "Check-in options",
+      "editCheckin": "Edit check-in",
+      "editCheckinDesc": "Change check-in targets",
+      "deleteCheckin": "Delete check-in",
+      "deleteCheckinDesc": "Permanently remove this check-in",
+      "subtitleFormat": "Target {{targetWeight}} kg • {{targetBodyFat}}% body fat",
+      "checkinDate": "Check-in Date"
     }
   }
 }

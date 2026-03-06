@@ -38,6 +38,25 @@ export class NutritionCheckinService {
   }
 
   /**
+   * Get all check-ins with pagination support, ordered by checkin_date descending.
+   */
+  static async getHistory(limit?: number, offset?: number): Promise<NutritionCheckin[]> {
+    let query = database
+      .get<NutritionCheckin>('nutrition_checkins')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('checkin_date', Q.desc));
+
+    if (limit) {
+      if (offset !== undefined && offset !== null && offset > 0) {
+        query = query.extend(Q.skip(offset), Q.take(limit));
+      } else {
+        query = query.extend(Q.take(limit));
+      }
+    }
+
+    return await query.fetch();
+  }
+
+  /**
    * Create a new check-in for a nutrition goal.
    */
   static async create(
