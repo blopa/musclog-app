@@ -49,15 +49,19 @@ import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
+import { ImportNutritionModal } from '../../components/modals/ImportNutritionModal';
+import { ImportWorkoutsModal } from '../../components/modals/ImportWorkoutsModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
+import { NutritionConfirmationModal } from '../../components/modals/NutritionConfirmationModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
+import { RetrospectiveNutritionModal } from '../../components/modals/RetrospectiveNutritionModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import { TimePickerModal } from '../../components/modals/TimePickerModal';
 import { UserMenuModal } from '../../components/modals/UserMenuModal';
@@ -237,6 +241,18 @@ export default function ModalsTestScreen() {
   // Free Session Exercise Complete Modal
   const [isFreeSessionExerciseCompleteVisible, setIsFreeSessionExerciseCompleteVisible] =
     useState(false);
+
+  // Import Nutrition Modal
+  const [isImportNutritionVisible, setIsImportNutritionVisible] = useState(false);
+
+  // Import Workouts Modal
+  const [isImportWorkoutsVisible, setIsImportWorkoutsVisible] = useState(false);
+
+  // Nutrition Confirmation Modal
+  const [isNutritionConfirmationVisible, setIsNutritionConfirmationVisible] = useState(false);
+
+  // Retrospective Nutrition Modal
+  const [isRetrospectiveNutritionVisible, setIsRetrospectiveNutritionVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1151,6 +1167,66 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* Import Nutrition Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Import Nutrition Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for pasting raw nutrition data to be parsed by AI.
+            </Text>
+            <Button
+              label="Open Import Nutrition Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsImportNutritionVisible(true)}
+            />
+          </View>
+
+          {/* Import Workouts Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Import Workouts Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for pasting raw workout data to be parsed by AI.
+            </Text>
+            <Button
+              label="Open Import Workouts Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsImportWorkoutsVisible(true)}
+            />
+          </View>
+
+          {/* Nutrition Confirmation Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Nutrition Confirmation Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for reviewing and confirming AI-parsed nutrition entries before saving.
+            </Text>
+            <Button
+              label="Open Nutrition Confirmation Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsNutritionConfirmationVisible(true)}
+            />
+          </View>
+
+          {/* Retrospective Nutrition Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Retrospective Nutrition Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for describing meals in natural language to log nutrition for a past date.
+            </Text>
+            <Button
+              label="Open Retrospective Nutrition Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsRetrospectiveNutritionVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1688,6 +1764,38 @@ export default function ModalsTestScreen() {
         onAddNextExercise={() => console.log('Add next exercise pressed')}
         onFinishWorkout={() => console.log('Finish workout pressed')}
         isFinishing={false}
+      />
+      <ImportNutritionModal
+        visible={isImportNutritionVisible}
+        onClose={() => setIsImportNutritionVisible(false)}
+      />
+
+      <ImportWorkoutsModal
+        visible={isImportWorkoutsVisible}
+        onClose={() => setIsImportWorkoutsVisible(false)}
+      />
+
+      <NutritionConfirmationModal
+        visible={isNutritionConfirmationVisible}
+        onClose={() => setIsNutritionConfirmationVisible(false)}
+        onConfirm={(entries) => console.log('Confirmed entries:', entries)}
+        entries={[
+          {
+            productTitle: 'Oatmeal',
+            calories: 350,
+            protein: 12,
+            carbs: 60,
+            fat: 7,
+            fiber: 5,
+            mealType: 1,
+          },
+        ]}
+      />
+
+      <RetrospectiveNutritionModal
+        visible={isRetrospectiveNutritionVisible}
+        onClose={() => setIsRetrospectiveNutritionVisible(false)}
+        targetDate={new Date()}
       />
     </SafeAreaView>
   );

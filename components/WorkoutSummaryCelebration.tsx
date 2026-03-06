@@ -1,4 +1,4 @@
-import { Home } from 'lucide-react-native';
+import { Home, MessageCircle } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -13,6 +13,7 @@ import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
 type WorkoutSummaryCelebrationProps = {
   onGoHome: () => void;
   onShareSummary?: () => void;
+  onGetFeedback?: () => void;
   totalTime?: string; // e.g., "45m"
   volume?: string; // e.g., "12,450 kg"
   personalRecords?: number; // e.g., 2
@@ -22,6 +23,7 @@ type WorkoutSummaryCelebrationProps = {
 export function WorkoutSummaryCelebration({
   onGoHome,
   onShareSummary,
+  onGetFeedback,
   totalTime = '45m',
   volume = '12,450 kg',
   personalRecords = 2,
@@ -137,6 +139,19 @@ export function WorkoutSummaryCelebration({
 
           {/* Spacer */}
           <View className="flex-1" />
+
+          {/* Get Feedback Button */}
+          {onGetFeedback ? (
+            <Button
+              label={t('workoutSummary.getFeedback')}
+              icon={MessageCircle}
+              variant="secondary"
+              size="md"
+              width="full"
+              onPress={onGetFeedback}
+              style={{ marginBottom: theme.spacing.padding.base }}
+            />
+          ) : null}
 
           {/* Go Home Button */}
           <Button

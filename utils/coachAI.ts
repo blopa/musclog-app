@@ -24,6 +24,90 @@ export type CoachResponse = {
   sumUserMsg?: string;
 };
 
+/**
+ * Response types for various AI functions
+ */
+
+export type WorkoutPlan = {
+  title: string;
+  description?: string;
+  recurringOnWeekDay: string;
+  exercises: {
+    name: string;
+    reps: number;
+    sets: number;
+    oneRepMaxPercentage: number;
+  }[];
+};
+
+export type GenerateWorkoutPlanResponse = {
+  workoutPlan: WorkoutPlan[];
+  description: string;
+};
+
+export type CalculateVolumeResponse = {
+  messageToUser: string;
+  workoutVolume: {
+    exerciseId: number;
+    sets: {
+      setId: number;
+      reps: number;
+      weight: number;
+    }[];
+  }[];
+};
+
+export type MacroEstimate = {
+  name: string;
+  kcal: number;
+  kj: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  grams: number;
+  barcode?: string;
+};
+
+export type ParsedWorkout = {
+  title: string;
+  date: string;
+  duration?: number;
+  description?: string;
+  exercises: {
+    name: string;
+    muscleGroup?: string;
+    type?: string;
+    sets: {
+      reps: number;
+      weight: number;
+    }[];
+  }[];
+};
+
+export type ParsedNutrition = {
+  date: string;
+  calories: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
+  cholesterol?: number;
+};
+
+export type NutritionEntry = {
+  productTitle: string;
+  calories: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  mealType: number; // 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack, 5=Other
+  fiber?: number;
+  sodium?: number;
+  sugar?: number;
+};
+
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
 
@@ -184,4 +268,235 @@ export async function sendCoachMessage(
   }
 
   return sendViaOpenAI(config, history, userMessage);
+}
+
+/**
+ * AI FUNCTION DISPATCHERS
+ * These delegate to provider-specific implementations
+ */
+
+/**
+ * Get nutrition insights for a date range
+ */
+export async function getNutritionInsights(
+  config: CoachAIConfig,
+  startDate: string,
+  endDate: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] getNutritionInsights not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] getNutritionInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Generate a workout plan from conversation history
+ */
+export async function generateWorkoutPlan(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[]
+): Promise<GenerateWorkoutPlanResponse | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] generateWorkoutPlan not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] generateWorkoutPlan error:', error);
+    return null;
+  }
+}
+
+/**
+ * Calculate next workout volume based on performance
+ */
+export async function calculateNextWorkoutVolume(
+  config: CoachAIConfig,
+  workoutTitle: string,
+  completedWorkoutData: any
+): Promise<CalculateVolumeResponse | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] calculateNextWorkoutVolume not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] calculateNextWorkoutVolume error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get insights about an upcoming workout
+ */
+export async function getWorkoutInsights(
+  config: CoachAIConfig,
+  workoutTitle: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] getWorkoutInsights not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] getWorkoutInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get feedback on a recently completed workout
+ */
+export async function getRecentWorkoutInsights(
+  config: CoachAIConfig,
+  workoutTitle: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] getRecentWorkoutInsights not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] getRecentWorkoutInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get insights about recent workouts in a date range
+ */
+export async function getRecentWorkoutsInsights(
+  config: CoachAIConfig,
+  startDate: string,
+  endDate: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] getRecentWorkoutsInsights not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] getRecentWorkoutsInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Get volume trend analysis for a specific workout
+ */
+export async function getWorkoutVolumeInsights(
+  config: CoachAIConfig,
+  workoutTitle: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] getWorkoutVolumeInsights not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] getWorkoutVolumeInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Estimate nutrition from a meal photo
+ */
+export async function estimateNutritionFromPhoto(
+  config: CoachAIConfig,
+  base64Image: string
+): Promise<MacroEstimate | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI vision
+    console.warn('[coachAI] estimateNutritionFromPhoto not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] estimateNutritionFromPhoto error:', error);
+    return null;
+  }
+}
+
+/**
+ * Extract macros from a nutrition label photo
+ */
+export async function extractMacrosFromLabelPhoto(
+  config: CoachAIConfig,
+  base64Image: string
+): Promise<MacroEstimate | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI vision
+    console.warn('[coachAI] extractMacrosFromLabelPhoto not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
+    return null;
+  }
+}
+
+/**
+ * Parse past workouts from natural language
+ */
+export async function parsePastWorkouts(
+  config: CoachAIConfig,
+  userMessage: string,
+  exerciseNames: string[]
+): Promise<ParsedWorkout[] | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] parsePastWorkouts not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] parsePastWorkouts error:', error);
+    return null;
+  }
+}
+
+/**
+ * Parse past nutrition from natural language
+ */
+export async function parsePastNutrition(
+  config: CoachAIConfig,
+  userMessage: string
+): Promise<ParsedNutrition[] | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] parsePastNutrition not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] parsePastNutrition error:', error);
+    return null;
+  }
+}
+
+/**
+ * Parse nutrition from a natural language description of a past day
+ */
+export async function parseRetrospectiveNutrition(
+  config: CoachAIConfig,
+  userMessage: string,
+  targetDate: string
+): Promise<NutritionEntry[] | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI
+    console.warn('[coachAI] parseRetrospectiveNutrition not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] parseRetrospectiveNutrition error:', error);
+    return null;
+  }
+}
+
+/**
+ * Generate an exercise image via AI
+ */
+export async function generateExerciseImage(
+  config: CoachAIConfig,
+  exerciseName: string
+): Promise<string | null> {
+  try {
+    // TODO: Implement via Gemini/OpenAI vision
+    console.warn('[coachAI] generateExerciseImage not yet implemented');
+    return null;
+  } catch (error) {
+    console.error('[coachAI] generateExerciseImage error:', error);
+    return null;
+  }
 }

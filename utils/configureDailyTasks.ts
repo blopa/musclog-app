@@ -1,0 +1,184 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
+import { ChatService, GoogleAuthService } from '../database/services';
+import { SettingsService } from '../database/services/SettingsService';
+import { type CoachAIConfig, getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
+import { getAccessToken } from './googleAuth';
+
+const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
+
+/**
+ * Resolve AI config from settings (same as in workout-summary.tsx)
+ */
+async function resolveAIConfig(): Promise<CoachAIConfig | null> {
+  try {
+    // Priority 1: Google OAuth access token
+    const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+    if (oauthGeminiEnabled) {
+      const accessToken = await getAccessToken();
+      if (accessToken) {
+        const model = await SettingsService.getGoogleGeminiModel();
+        return {
+          provider: 'gemini',
+          accessToken,
+          model: model || 'gemini-2.5-flash',
+        };
+      }
+    }
+
+    // Priority 2: Manual Gemini API key
+    const enableGoogleGemini = await SettingsService.getEnableGoogleGemini();
+    const googleGeminiApiKey = await SettingsService.getGoogleGeminiApiKey();
+    if (enableGoogleGemini && googleGeminiApiKey) {
+      const model = await SettingsService.getGoogleGeminiModel();
+      return {
+        provider: 'gemini',
+        apiKey: googleGeminiApiKey,
+        model: model || 'gemini-2.5-flash',
+      };
+    }
+
+    // Priority 3: OpenAI API key
+    const enableOpenAi = await SettingsService.getEnableOpenAi();
+    const openAiApiKey = await SettingsService.getOpenAiApiKey();
+    if (enableOpenAi && openAiApiKey) {
+      const model = await SettingsService.getOpenAiModel();
+      return {
+        provider: 'openai',
+        apiKey: openAiApiKey,
+        model: model || 'gpt-4o',
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('[resolveAIConfig] Error:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if task should run today
+ * Returns true if it's a new day since last run
+ */
+async function shouldRunToday(): Promise<boolean> {
+  try {
+    const lastRunTimestamp = await AsyncStorage.getItem(DAILY_TASKS_TIMESTAMP_KEY);
+    if (!lastRunTimestamp) {
+      return true; // First run ever
+    }
+
+    const lastRunDate = new Date(parseInt(lastRunTimestamp, 10));
+    const today = new Date();
+
+    // Compare dates (ignore time)
+    return (
+      lastRunDate.getFullYear() !== today.getFullYear() ||
+      lastRunDate.getMonth() !== today.getMonth() ||
+      lastRunDate.getDate() !== today.getDate()
+    );
+  } catch (error) {
+    console.error('[shouldRunToday] Error:', error);
+    return false;
+  }
+}
+
+/**
+ * Mark today as having run the daily tasks
+ */
+async function markTodayAsRun(): Promise<void> {
+  try {
+    await AsyncStorage.setItem(DAILY_TASKS_TIMESTAMP_KEY, Date.now().toString());
+  } catch (error) {
+    console.error('[markTodayAsRun] Error:', error);
+  }
+}
+
+/**
+ * Configure and run daily AI insights tasks
+ * Called on app startup (native only)
+ */
+export async function configureDailyTasks(onInsightsGenerated?: () => void): Promise<void> {
+  try {
+    // Only run on native platforms
+    if (Platform.OS === 'web') {
+      console.log('[configureDailyTasks] Skipping on web platform');
+      return;
+    }
+
+    // Check if we've already run today
+    const runToday = await shouldRunToday();
+    if (!runToday) {
+      console.log('[configureDailyTasks] Already ran today, skipping');
+      return;
+    }
+
+    console.log('[configureDailyTasks] Starting daily tasks');
+
+    // Get AI config
+    const aiConfig = await resolveAIConfig();
+    if (!aiConfig) {
+      console.log('[configureDailyTasks] AI not configured, skipping insights');
+      return;
+    }
+
+    // Get a session ID for saving insights
+    const sessionId = ChatService.generateSessionId();
+
+    // Calculate date range (last 7 days)
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 7);
+
+    // Format dates as ISO strings
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = today.toISOString().split('T')[0];
+
+    // Generate workout insights
+    try {
+      console.log('[configureDailyTasks] Generating workout insights...');
+      const workoutInsights = await getRecentWorkoutsInsights(aiConfig, startDateStr, endDateStr);
+
+      if (workoutInsights) {
+        await ChatService.saveMessage({
+          sessionId,
+          sender: 'coach',
+          message: workoutInsights,
+          messageType: 'text',
+          summarizedMessage: workoutInsights.substring(0, 200),
+        });
+        console.log('[configureDailyTasks] Workout insights generated and saved');
+      }
+    } catch (error) {
+      console.error('[configureDailyTasks] Error generating workout insights:', error);
+    }
+
+    // Generate nutrition insights
+    try {
+      console.log('[configureDailyTasks] Generating nutrition insights...');
+      const nutritionInsights = await getNutritionInsights(aiConfig, startDateStr, endDateStr);
+
+      if (nutritionInsights) {
+        await ChatService.saveMessage({
+          sessionId,
+          sender: 'coach',
+          message: nutritionInsights,
+          messageType: 'text',
+          summarizedMessage: nutritionInsights.substring(0, 200),
+        });
+        console.log('[configureDailyTasks] Nutrition insights generated and saved');
+      }
+    } catch (error) {
+      console.error('[configureDailyTasks] Error generating nutrition insights:', error);
+    }
+
+    // Mark today as complete and notify if insights were generated
+    await markTodayAsRun();
+    onInsightsGenerated?.();
+
+    console.log('[configureDailyTasks] Daily tasks completed');
+  } catch (error) {
+    console.error('[configureDailyTasks] Unexpected error:', error);
+  }
+}

@@ -19,6 +19,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  estimateNutritionFromPhoto,
+  extractMacrosFromLabelPhoto,
+  type MacroEstimate,
+} from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync } from '../../utils/file';
 import { performOcr } from '../../utils/ocr';
 import { showSnackbar } from '../../utils/snackbarService';
@@ -147,17 +152,30 @@ export default function SmartCameraModal({
 
   const processAiPhoto = useCallback(
     async (uri: string) => {
-      if (cameraMode === 'ai-label-scan') {
-        if (useOcrBeforeAi) {
-          const text = await performOcr(uri);
-          console.log('[SmartCamera] OCR result:', text);
-        } else {
-          console.log('[SmartCamera] AI label scan (no OCR) — image URI:', uri);
+      try {
+        if (cameraMode === 'ai-label-scan') {
+          if (useOcrBeforeAi) {
+            // Try OCR first
+            console.log('[SmartCamera] Running OCR on label...');
+            const text = await performOcr(uri);
+            console.log('[SmartCamera] OCR result:', text);
+            // TODO: Parse OCR text with parseRetrospectiveNutrition or extractMacrosFromLabelPhoto
+            showSnackbar('success', t('food.aiCamera.photoCaptured'));
+          } else {
+            // Use AI vision to extract macros from label
+            console.log('[SmartCamera] Analyzing nutrition label with AI...');
+            // TODO: Read file as base64, get AI config from settings, call extractMacrosFromLabelPhoto
+            showSnackbar('success', t('food.aiCamera.photoCaptured'));
+          }
+        } else if (cameraMode === 'ai-meal-photo') {
+          // Use AI vision to estimate nutrition from meal photo
+          console.log('[SmartCamera] Analyzing meal photo with AI...');
+          // TODO: Read file as base64, get AI config from settings, call estimateNutritionFromPhoto
+          showSnackbar('success', t('food.aiCamera.photoCaptured'));
         }
-        showSnackbar('success', t('food.aiCamera.photoCaptured'));
-      } else if (cameraMode === 'ai-meal-photo') {
-        console.log('[SmartCamera] AI meal photo — image URI:', uri);
-        showSnackbar('success', t('food.aiCamera.photoCaptured'));
+      } catch (error) {
+        console.error('[SmartCamera] Error processing AI photo:', error);
+        showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
       }
     },
     [cameraMode, useOcrBeforeAi, t]

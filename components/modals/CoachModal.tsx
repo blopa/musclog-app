@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
@@ -7,6 +8,7 @@ import {
   Send as SendIcon,
   TrendingUp,
   UtensilsCrossed,
+  X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +35,11 @@ import {
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import {
+  CANCEL_GENERATE_MY_WORKOUTS,
+  CHAT_INTENTION_KEY,
+  GENERATE_MY_WORKOUTS,
+} from '../../constants/chat';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
@@ -218,15 +225,44 @@ const renderComposer = (props: ComposerProps, t: TFunction, theme: Theme) => {
   );
 };
 
-const renderInputToolbar = (props: InputToolbarProps<ExtendedIMessage>, theme: Theme) => {
+const renderInputToolbar = (
+  props: InputToolbarProps<ExtendedIMessage>,
+  theme: Theme,
+  pendingIntention: string | null,
+  onClearIntention: () => void
+) => {
   const styles = getStyles(theme);
 
   return (
-    <InputToolbar
-      {...props}
-      containerStyle={styles.inputToolbarContainer}
-      primaryStyle={styles.inputToolbarPrimary}
-    />
+    <View>
+      {pendingIntention ? (
+        <View className="px-4 py-2">
+          <View
+            className="flex-row items-center gap-1.5 rounded-full px-3 py-1"
+            style={{
+              backgroundColor: theme.colors.accent.primary20,
+              alignSelf: 'flex-start',
+            }}
+          >
+            <View
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: theme.colors.accent.primary }}
+            />
+            <Text className="text-xs font-medium text-text-primary">
+              {pendingIntention === GENERATE_MY_WORKOUTS ? 'Workout Gen.' : pendingIntention}
+            </Text>
+            <Pressable onPress={onClearIntention} className="p-0.5">
+              <X size={14} color={theme.colors.accent.primary} />
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+      <InputToolbar
+        {...props}
+        containerStyle={styles.inputToolbarContainer}
+        primaryStyle={styles.inputToolbarPrimary}
+      />
+    </View>
   );
 };
 
@@ -241,9 +277,20 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { messages, isSending, isLoadingMore, hasMore, loadMore, sendMessage } = useChatMessages();
+  const {
+    messages,
+    pendingCoachMessage,
+    isSending,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    sendMessage,
+    addPendingCoachMessage,
+    clearPendingCoachMessage,
+  } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const [isOnline, setIsOnline] = useState(true);
+  const [pendingIntention, setPendingIntention] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -258,6 +305,18 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       clearUnreadCount();
     }
   }, [visible, clearUnreadCount]);
+
+  // Load pending intention from AsyncStorage when modal opens
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    const loadIntention = async () => {
+      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
+      setPendingIntention(intention);
+    };
+    loadIntention();
+  }, [visible]);
 
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
@@ -278,6 +337,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     };
   }, []);
 
+  const displayMessages = pendingCoachMessage ? [pendingCoachMessage, ...messages] : messages;
+
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
       const text = newMessages[0]?.text;
@@ -288,6 +349,30 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     [sendMessage]
   );
 
+  const handleGenerateWorkouts = useCallback(async () => {
+    if (pendingIntention === GENERATE_MY_WORKOUTS) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS);
+      setPendingIntention(GENERATE_MY_WORKOUTS);
+      addPendingCoachMessage({
+        _id: `pending-workout-gen-${Date.now()}`,
+        // TODO: use translation for this
+        text: "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [pendingIntention, addPendingCoachMessage, clearPendingCoachMessage]);
+
+  const handleClearIntention = useCallback(async () => {
+    await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+    setPendingIntention(null);
+    clearPendingCoachMessage();
+  }, [clearPendingCoachMessage]);
+
   const renderAccessory = useCallback(() => {
     return (
       <ScrollView
@@ -297,14 +382,22 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         contentContainerStyle={{ gap: theme.spacing.gap.sm }}
       >
         <Pressable
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 active:scale-95"
+          onPress={handleGenerateWorkouts}
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
-            backgroundColor: theme.colors.status.indigo10,
-            borderColor: theme.colors.accent.primary30,
+            borderColor:
+              pendingIntention === GENERATE_MY_WORKOUTS
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === GENERATE_MY_WORKOUTS ? 2 : 1,
+            backgroundColor:
+              pendingIntention === GENERATE_MY_WORKOUTS
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
           }}
         >
           <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
+          <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.createWorkout')}
           </Text>
         </Pressable>
@@ -329,9 +422,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       </ScrollView>
     );
   }, [
+    handleGenerateWorkouts,
+    pendingIntention,
     t,
     theme.colors.accent.primary,
+    theme.colors.accent.primary10,
     theme.colors.accent.primary30,
+    theme.colors.background.card,
     theme.colors.border.light,
     theme.colors.status.indigo10,
     theme.colors.status.info,
@@ -407,14 +504,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           style={keyboardHeight > 0 ? { paddingBottom: keyboardHeight - insets.bottom } : undefined}
         >
           <GiftedChat
-            messages={messages}
+            messages={displayMessages}
             onSend={onSend}
             user={{ _id: 1 }}
             isTyping={isSending}
             renderBubble={(props) => renderBubble(props, theme)}
             renderAvatar={(props) => renderAvatar(props, theme)}
             renderCustomView={renderCustomView}
-            renderInputToolbar={(props) => renderInputToolbar(props, theme)}
+            renderInputToolbar={(props) =>
+              renderInputToolbar(props, theme, pendingIntention, handleClearIntention)
+            }
             renderComposer={(props) => renderComposer(props, t, theme)}
             renderSend={(props) => renderSend(props, theme)}
             renderAccessory={renderAccessory}

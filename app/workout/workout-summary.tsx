@@ -5,15 +5,80 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Share, View } from 'react-native';
 
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
+import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { WorkoutService } from '../../database/services';
+import { ChatService, GoogleAuthService, WorkoutService } from '../../database/services';
+import { SettingsService } from '../../database/services/SettingsService';
 import { theme } from '../../theme';
+import {
+  calculateNextWorkoutVolume,
+  type CoachAIConfig,
+  getRecentWorkoutInsights,
+} from '../../utils/coachAI';
+import { getAccessToken } from '../../utils/googleAuth';
+import { showSnackbar } from '../../utils/snackbarService';
+import {
+  prepareWorkoutDataForAI,
+  processCalculateVolumeResponse,
+  processFeedbackResponse,
+} from '../../utils/workoutAI';
+
+/**
+ * Helper: Resolve AI config from settings
+ */
+async function resolveAIConfig(): Promise<CoachAIConfig | null> {
+  try {
+    // Priority 1: Google OAuth access token
+    const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+    if (oauthGeminiEnabled) {
+      const accessToken = await getAccessToken();
+      if (accessToken) {
+        const model = await SettingsService.getGoogleGeminiModel();
+        return {
+          provider: 'gemini',
+          accessToken,
+          model: model || 'gemini-2.5-flash',
+        };
+      }
+    }
+
+    // Priority 2: Manual Gemini API key
+    const enableGoogleGemini = await SettingsService.getEnableGoogleGemini();
+    const googleGeminiApiKey = await SettingsService.getGoogleGeminiApiKey();
+    if (enableGoogleGemini && googleGeminiApiKey) {
+      const model = await SettingsService.getGoogleGeminiModel();
+      return {
+        provider: 'gemini',
+        apiKey: googleGeminiApiKey,
+        model: model || 'gemini-2.5-flash',
+      };
+    }
+
+    // Priority 3: OpenAI API key
+    const enableOpenAi = await SettingsService.getEnableOpenAi();
+    const openAiApiKey = await SettingsService.getOpenAiApiKey();
+    if (enableOpenAi && openAiApiKey) {
+      const model = await SettingsService.getOpenAiModel();
+      return {
+        provider: 'openai',
+        apiKey: openAiApiKey,
+        model: model || 'gpt-4o',
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('[resolveAIConfig] Error:', error);
+    return null;
+  }
+}
 
 export default function WorkoutSummaryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string }>();
   const workoutLogId = params.workoutLogId;
+  const { unreadCount, setUnreadCount } = useUnreadChat();
 
   const [totalTime, setTotalTime] = useState<string>('0m');
   const [volume, setVolume] = useState<string>('0 kg');
@@ -21,6 +86,8 @@ export default function WorkoutSummaryScreen() {
   const [personalRecords, setPersonalRecords] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string>('');
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
 
   useEffect(() => {
     const loadWorkoutData = async () => {
@@ -36,6 +103,10 @@ export default function WorkoutSummaryScreen() {
 
         // Get workout with details
         const { workoutLog, sets } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+
+        // Create or use existing session ID
+        const newSessionId = ChatService.generateSessionId();
+        setSessionId(newSessionId);
 
         // Complete workout if not already completed
         let completedWorkout = workoutLog;
@@ -84,6 +155,35 @@ export default function WorkoutSummaryScreen() {
           setPersonalRecords(0);
         }
 
+        // Trigger non-blocking volume calculation after a short delay
+        setTimeout(async () => {
+          try {
+            console.log('[WorkoutSummary] Starting post-workout volume calculation...');
+            const aiConfig = await resolveAIConfig();
+            if (!aiConfig) {
+              console.log('[WorkoutSummary] AI config not available, skipping volume calculation');
+              return;
+            }
+
+            const workoutData = await prepareWorkoutDataForAI(workoutLogId);
+            const volumeResponse = await calculateNextWorkoutVolume(
+              aiConfig,
+              completedWorkout.workoutName,
+              workoutData
+            );
+
+            if (volumeResponse) {
+              await processCalculateVolumeResponse(volumeResponse, workoutLogId, newSessionId);
+              // Increment unread chat count
+              setUnreadCount(unreadCount + 1);
+              console.log('[WorkoutSummary] Volume calculation completed');
+            }
+          } catch (err) {
+            console.error('[WorkoutSummary] Error in volume calculation:', err);
+            // Non-blocking, so we don't show an error to the user
+          }
+        }, 2000);
+
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading workout summary:', err);
@@ -116,6 +216,42 @@ export default function WorkoutSummaryScreen() {
     }
   };
 
+  const handleGetFeedback = async () => {
+    if (!workoutLogId || !sessionId) {
+      showSnackbar('error', t('workout.summary.noWorkoutId'));
+      return;
+    }
+
+    setIsFeedbackLoading(true);
+    try {
+      const aiConfig = await resolveAIConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('ai.settings.notConfigured'));
+        setIsFeedbackLoading(false);
+        return;
+      }
+
+      const { workoutLog } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+      const feedback = await getRecentWorkoutInsights(aiConfig, workoutLog.workoutName);
+
+      if (feedback) {
+        await processFeedbackResponse(feedback, sessionId);
+        // Increment unread chat count
+        setUnreadCount(unreadCount + 1);
+        showSnackbar('success', t('workout.summary.feedbackReceived'));
+        // Navigate to chat to show the feedback
+        router.push('/coach');
+      } else {
+        showSnackbar('error', t('workout.summary.failedToGetFeedback'));
+      }
+    } catch (err) {
+      console.error('[WorkoutSummary] Error getting feedback:', err);
+      showSnackbar('error', t('workout.summary.failedToGetFeedback'));
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-bg-primary">
@@ -142,6 +278,7 @@ export default function WorkoutSummaryScreen() {
     <WorkoutSummaryCelebration
       onGoHome={handleGoHome}
       onShareSummary={handleShareSummary}
+      onGetFeedback={isFeedbackLoading ? undefined : handleGetFeedback}
       totalTime={totalTime}
       volume={volume}
       personalRecords={personalRecords}

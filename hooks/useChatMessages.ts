@@ -1,6 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IMessage } from 'react-native-gifted-chat';
 
+import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../constants/chat';
 import ChatMessage from '../database/models/ChatMessage';
 import { ChatService, GoogleAuthService, SettingsService } from '../database/services';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
@@ -8,9 +10,12 @@ import {
   type ChatHistoryEntry,
   type CoachAIConfig,
   type CoachResponse,
+  generateWorkoutPlan,
   sendCoachMessage,
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
+import { getChatMessagePromptContent } from '../utils/prompts';
+import { processWorkoutPlanResponse } from '../utils/workoutAI';
 
 // Local avatar image for Loggy
 export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
@@ -40,6 +45,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 
 export type UseChatMessagesResult = {
   messages: ExtendedIMessage[];
+  pendingCoachMessage: ExtendedIMessage | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   isSending: boolean;
@@ -47,6 +53,8 @@ export type UseChatMessagesResult = {
   loadMore: () => Promise<void>;
   sendMessage: (text: string) => Promise<void>;
   sessionId: string | null;
+  addPendingCoachMessage: (msg: ExtendedIMessage) => void;
+  clearPendingCoachMessage: () => void;
 };
 
 type AISettings = {
@@ -96,6 +104,7 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
 export function useChatMessages(): UseChatMessagesResult {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
+  const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -104,6 +113,8 @@ export function useChatMessages(): UseChatMessagesResult {
 
   // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
+  // Ref mirror for pendingCoachMessage to avoid stale closure in sendMessage
+  const pendingCoachMessageRef = useRef<ExtendedIMessage | null>(null);
 
   // Resolve or create session ID on mount
   useEffect(() => {
@@ -209,6 +220,16 @@ export function useChatMessages(): UseChatMessagesResult {
     }
   }, [isLoadingMore, hasMore, sessionId, currentOffset]);
 
+  const addPendingCoachMessage = useCallback((msg: ExtendedIMessage) => {
+    pendingCoachMessageRef.current = msg;
+    setPendingCoachMessage(msg);
+  }, []);
+
+  const clearPendingCoachMessage = useCallback(() => {
+    pendingCoachMessageRef.current = null;
+    setPendingCoachMessage(null);
+  }, []);
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isSending || !sessionId) {
@@ -217,11 +238,23 @@ export function useChatMessages(): UseChatMessagesResult {
 
       setIsSending(true);
       try {
-        // 1. Snapshot history BEFORE saving the new user message to avoid duplication
-        const history: ChatHistoryEntry[] = rawMessagesRef.current.map((record) => ({
-          role: record.sender,
-          content: record.summarizedMessage ?? record.message,
-        }));
+        // 1. Check for pending chat intention (e.g., GENERATE_MY_WORKOUTS)
+        const pendingIntention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
+
+        // 1b. Commit any in-memory pending coach message to DB so it's in history context
+        const pendingMsg = pendingCoachMessageRef.current;
+        if (pendingMsg) {
+          const pendingRecord = await ChatService.saveMessage({
+            sessionId,
+            sender: 'coach',
+            message: pendingMsg.text as string,
+            summarizedMessage: (pendingMsg.text as string).substring(0, 200),
+          });
+          rawMessagesRef.current = [...rawMessagesRef.current, pendingRecord];
+          setCurrentOffset((prev) => prev + 1);
+          pendingCoachMessageRef.current = null;
+          setPendingCoachMessage(null);
+        }
 
         // 2. Persist user message and prepend to UI immediately
         const userRecord = await ChatService.saveMessage({
@@ -273,20 +306,83 @@ export function useChatMessages(): UseChatMessagesResult {
           return;
         }
 
-        // 4. Call AI
-        const reply: CoachResponse = await sendCoachMessage(aiConfig, history, text.trim());
+        // 4. Build chat history with system context and compression
+        // Cap at 20 messages, use summarized_message if available
+        const maxHistoryLength = 20;
+        const slicedHistory = rawMessagesRef.current.slice(-maxHistoryLength);
 
-        // 4b. If the AI returned a summary of the user's message, persist it
+        // Build history entries with system message prepended
+        const systemMessage = await getChatMessagePromptContent();
+        const history: ChatHistoryEntry[] = [
+          {
+            role: 'user',
+            content: systemMessage,
+          },
+          ...slicedHistory.map((record) => ({
+            role: record.sender as 'user' | 'coach',
+            content: record.summarizedMessage ?? record.message,
+          })),
+        ];
+
+        // 5. Route based on pending intention or default to chat
+        let reply: CoachResponse | null = null;
+        let payloadJson: string | undefined = undefined;
+
+        if (pendingIntention === GENERATE_MY_WORKOUTS) {
+          // Generate workout from chat history
+          const textOnlyHistory = slicedHistory
+            .filter((m) => m.sender === 'user')
+            .map((m) => ({
+              role: 'user' as const,
+              content: m.message,
+            }));
+
+          const workoutPlan = await generateWorkoutPlan(aiConfig, textOnlyHistory);
+
+          if (workoutPlan) {
+            // Process the workout plan and create templates in database
+            const processResult = await processWorkoutPlanResponse(workoutPlan, sessionId);
+
+            reply = {
+              msg4User: `I've created ${processResult.templateIds.length} workouts for you! 💪 ${processResult.description}`,
+              sumMsg: 'Generated workout plan',
+            };
+
+            // Store workout plan metadata in payload_json for UI rendering
+            payloadJson = JSON.stringify({
+              type: 'workoutPlan',
+              templateIds: processResult.templateIds,
+              count: processResult.templateIds.length,
+            });
+
+            await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
+          } else {
+            reply = {
+              msg4User: "Sorry, I couldn't generate a workout plan. Please try again.",
+              sumMsg: 'Workout generation failed',
+            };
+          }
+        } else {
+          // Default: send regular chat message
+          reply = await sendCoachMessage(aiConfig, history.slice(1), text.trim()); // slice(1) to exclude system message from standard chat
+        }
+
+        if (!reply) {
+          throw new Error('No response from AI');
+        }
+
+        // 5b. If the AI returned a summary of the user's message, persist it
         if (reply.sumUserMsg) {
           await ChatService.updateMessageSummary(userRecord, reply.sumUserMsg);
         }
 
-        // 5. Persist coach reply and prepend to UI
+        // 6. Persist coach reply and prepend to UI
         const coachRecord = await ChatService.saveMessage({
           sessionId,
           sender: 'coach',
           message: reply.msg4User,
           summarizedMessage: reply.sumMsg,
+          payloadJson,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
         setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
@@ -313,6 +409,7 @@ export function useChatMessages(): UseChatMessagesResult {
 
   return {
     messages,
+    pendingCoachMessage,
     isLoading,
     isLoadingMore,
     isSending,
@@ -320,5 +417,7 @@ export function useChatMessages(): UseChatMessagesResult {
     loadMore,
     sendMessage,
     sessionId,
+    addPendingCoachMessage,
+    clearPendingCoachMessage,
   };
 }

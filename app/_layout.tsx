@@ -16,6 +16,7 @@ import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
 import { UnreadChatProvider } from '../components/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
+import { configureDailyTasks } from '../utils/configureDailyTasks';
 import { captureException } from '../utils/sentry';
 
 const queryClient = new QueryClient({
@@ -74,6 +75,8 @@ function RootLayout() {
     healthDataSyncService
       .syncFromHealthConnect({ lookbackDays: 7 })
       .catch((err) => console.warn('[boot sync] Health Connect sync error:', err));
+
+    configureDailyTasks().catch((err) => console.warn('[configureDailyTasks] Startup error:', err));
   }, []);
 
   useEffect(() => {
