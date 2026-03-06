@@ -1,4 +1,6 @@
+import { useRef, useState } from 'react';
 import { Text, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useTheme } from '../hooks/useTheme';
@@ -60,6 +62,10 @@ export type LineChartProps = {
   marginBottom?: number;
   /** Custom className for the container */
   className?: string;
+  /** Enable touch interaction to show a tooltip on press (default: false) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded y value) */
+  tooltipFormatter?: (point: LineChartDataPoint) => string;
 };
 
 const INTERPOLATION_TO_CURVE: Record<
@@ -74,6 +80,9 @@ const INTERPOLATION_TO_CURVE: Record<
   stepBefore: 'stepBefore',
   stepAfter: 'stepAfter',
 };
+
+const TOOLTIP_WIDTH = 90;
+const TOOLTIP_HEIGHT = 36;
 
 export function LineChart({
   data,
@@ -97,8 +106,28 @@ export function LineChart({
   marginTop = 16,
   marginBottom = 16,
   className,
+  interactive = true,
+  tooltipFormatter,
 }: LineChartProps) {
   const theme = useTheme();
+  const [activePoint, setActivePoint] = useState<LineChartDataPoint | null>(null);
+  const containerWidthRef = useRef(0);
+  const activeXPos = useSharedValue(0);
+  const activeYPos = useSharedValue(0);
+
+  const cursorLineStyle = useAnimatedStyle(() => ({
+    left: activeXPos.value,
+  }));
+
+  const activeDotStyle = useAnimatedStyle(() => ({
+    left: activeXPos.value - 6,
+    top: activeYPos.value - 6,
+  }));
+
+  const tooltipStyle = useAnimatedStyle(() => ({
+    left: Math.max(0, activeXPos.value - TOOLTIP_WIDTH / 2),
+    top: Math.max(0, activeYPos.value - TOOLTIP_HEIGHT - 12),
+  }));
 
   if (data.length === 0) {
     return null;
@@ -110,13 +139,34 @@ export function LineChart({
   const lineColorResolved = lineColor ?? theme.colors.accent.primary;
   const areaColorResolved = areaColor ?? theme.colors.accent.primary30;
 
+  const handleTouchAt = (touchX: number) => {
+    const w = containerWidthRef.current;
+    if (w === 0) {
+      return;
+    }
+    const domainX = xDomainFinal[0] + (touchX / w) * (xDomainFinal[1] - xDomainFinal[0]);
+    const nearest = data.reduce((prev, curr) =>
+      Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
+    );
+    const pixelX = ((nearest.x - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0])) * w;
+    const pixelY = ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
+    activeXPos.value = pixelX;
+    activeYPos.value = pixelY;
+    setActivePoint(nearest);
+  };
+
   // CartesianChart (victory-native) uses standard math coordinates: y=0 at bottom, y increases upward.
   // Callers provide values where high metric = high y = near top of chart.
   const chartData = data as { x: number; y: number }[];
 
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
-      <View style={{ height, position: 'relative' }}>
+      <View
+        style={{ height, position: 'relative' }}
+        onLayout={(e) => {
+          containerWidthRef.current = e.nativeEvent.layout.width;
+        }}
+      >
         <CartesianChart
           data={chartData}
           xKey="x"
@@ -162,10 +212,89 @@ export function LineChart({
             </>
           )}
         </CartesianChart>
+        {interactive ? (
+          <View
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
+          />
+        ) : null}
+        {interactive && activePoint ? (
+          <>
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                cursorLineStyle,
+                {
+                  position: 'absolute',
+                  width: 1,
+                  top: 0,
+                  bottom: 0,
+                  backgroundColor: theme.colors.border.light,
+                  opacity: 0.8,
+                },
+              ]}
+            />
+            <Animated.View
+              pointerEvents="none"
+              style={[
+                activeDotStyle,
+                {
+                  position: 'absolute',
+                  width: 12,
+                  height: 12,
+                  borderRadius: 6,
+                  backgroundColor: lineColorResolved,
+                  borderWidth: 2,
+                  borderColor: theme.colors.background.card,
+                },
+              ]}
+            />
+            {activePoint ? (
+              <Animated.View
+                pointerEvents="none"
+                style={[
+                  tooltipStyle,
+                  {
+                    position: 'absolute',
+                    width: TOOLTIP_WIDTH,
+                    height: TOOLTIP_HEIGHT,
+                    backgroundColor: theme.colors.background.card,
+                    borderRadius: 6,
+                    paddingHorizontal: 8,
+                    paddingVertical: 6,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 4,
+                    elevation: 4,
+                    zIndex: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                ]}
+              >
+                <Text
+                  style={{
+                    color: theme.colors.text.primary,
+                    fontSize: 12,
+                    fontWeight: '600',
+                    textAlign: 'center',
+                  }}
+                >
+                  {tooltipFormatter
+                    ? tooltipFormatter(activePoint)
+                    : String(Math.round(activePoint.y * 10) / 10)}
+                </Text>
+              </Animated.View>
+            ) : null}
+          </>
+        ) : null}
         {yAxisLabels?.map(({ label, yDomainValue }) => {
           const yRange = yDomainFinal[1] - yDomainFinal[0];
-          const topOffset =
-            (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
+          const topOffset = (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
           return (
             <Text
               key={label}

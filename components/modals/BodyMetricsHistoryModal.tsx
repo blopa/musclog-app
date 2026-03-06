@@ -298,7 +298,9 @@ export default function BodyMetricsHistoryModal({
 
   // Y-axis labels (min, mid, max) with display values
   const yAxisLabels = useMemo(() => {
-    if (!allMetricsForChart || allMetricsForChart.length === 0) return [];
+    if (!allMetricsForChart || allMetricsForChart.length === 0) {
+      return [];
+    }
 
     const storedValues = allMetricsForChart.map((m) => m.decrypted.value);
     const minStored = Math.min(...storedValues);

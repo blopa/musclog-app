@@ -1,5 +1,13 @@
 import { Text, View } from 'react-native';
-import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
+import {
+  VictoryArea,
+  VictoryAxis,
+  VictoryChart,
+  VictoryLine,
+  VictoryScatter,
+  VictoryTooltip,
+  VictoryVoronoiContainer,
+} from 'victory';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -58,6 +66,10 @@ export type LineChartProps = {
   marginBottom?: number;
   /** Custom className for the container */
   className?: string;
+  /** Enable touch/hover interaction to show a tooltip (default: false) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded y value) */
+  tooltipFormatter?: (point: LineChartDataPoint) => string;
 };
 
 /**
@@ -99,6 +111,8 @@ export function LineChart({
   marginTop = 16,
   marginBottom = 16,
   className,
+  interactive = true,
+  tooltipFormatter,
 }: LineChartProps) {
   const theme = useTheme();
 
@@ -120,12 +134,29 @@ export function LineChart({
   // Last data point for the circle marker
   const lastPoint = data[data.length - 1];
 
+  const containerComponent = interactive ? (
+    <VictoryVoronoiContainer
+      voronoiDimension="x"
+      labels={({ datum }: { datum: LineChartDataPoint }) =>
+        tooltipFormatter ? tooltipFormatter(datum) : String(Math.round(datum.y * 10) / 10)
+      }
+      labelComponent={
+        <VictoryTooltip
+          style={{ fontSize: 11, fontWeight: '600' }}
+          flyoutStyle={{ fill: 'white', stroke: '#e5e7eb', strokeWidth: 1 }}
+          flyoutPadding={{ top: 6, bottom: 6, left: 10, right: 10 }}
+        />
+      }
+    />
+  ) : undefined;
+
   return (
     <View className={className || `relative w-full`} style={{ marginTop }}>
       <VictoryChart
         height={height}
         padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
         domain={{ x: xDomainFinal, y: yDomainFinal }}
+        containerComponent={containerComponent}
         style={{
           parent: {
             height,
