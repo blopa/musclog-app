@@ -1,7 +1,7 @@
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -73,6 +73,7 @@ export default function BodyMetricsHistoryModal({
   const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -380,6 +381,7 @@ export default function BodyMetricsHistoryModal({
       scrollable={false}
     >
       <ScrollView
+        ref={scrollViewRef}
         className="flex-1"
         showsVerticalScrollIndicator={false}
         style={{ backgroundColor: theme.colors.background.primary }}
@@ -522,7 +524,13 @@ export default function BodyMetricsHistoryModal({
                   </View>
 
                   {/* Chart */}
-                  <LineChart data={chartData} xAxisLabels={xAxisLabels} yAxisLabels={yAxisLabels} />
+                  <LineChart
+                    data={chartData}
+                    xAxisLabels={xAxisLabels}
+                    yAxisLabels={yAxisLabels}
+                    onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
+                    onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
+                  />
                 </View>
               </GenericCard>
             ) : (

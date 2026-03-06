@@ -66,6 +66,10 @@ export type LineChartProps = {
   interactive?: boolean;
   /** Format the tooltip label for a given data point (default: shows rounded y value) */
   tooltipFormatter?: (point: LineChartDataPoint) => string;
+  /** Called when the user starts touching the chart — use to disable parent ScrollView */
+  onInteractionStart?: () => void;
+  /** Called when the user stops touching the chart — use to re-enable parent ScrollView */
+  onInteractionEnd?: () => void;
 };
 
 const INTERPOLATION_TO_CURVE: Record<
@@ -108,6 +112,8 @@ export function LineChart({
   className,
   interactive = true,
   tooltipFormatter,
+  onInteractionStart,
+  onInteractionEnd,
 }: LineChartProps) {
   const theme = useTheme();
   const [activePoint, setActivePoint] = useState<LineChartDataPoint | null>(null);
@@ -217,8 +223,11 @@ export function LineChart({
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
-            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onResponderTerminationRequest={() => false}
+            onResponderGrant={(e) => { onInteractionStart?.(); handleTouchAt(e.nativeEvent.locationX); }}
             onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onResponderRelease={() => onInteractionEnd?.()}
+            onResponderTerminate={() => onInteractionEnd?.()}
           />
         ) : null}
         {interactive && activePoint ? (

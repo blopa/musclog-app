@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -33,6 +33,7 @@ export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
@@ -341,6 +342,7 @@ export default function NutritionGoalsResults() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <ScrollView
+        ref={scrollViewRef}
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: theme.spacing.padding['xl'] }}
@@ -1023,6 +1025,8 @@ export default function NutritionGoalsResults() {
                           Math.ceil(Math.max(...projectionData.map((d) => d.y)) * 1.05),
                         ]}
                         marginBottom={4}
+                        onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
+                        onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
                       />
                     </View>
                   ) : null}

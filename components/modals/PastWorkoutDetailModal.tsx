@@ -1,7 +1,8 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, Trophy } from 'lucide-react-native';
-import { createElement, useState } from 'react';
+import { createElement, useRef, useState } from 'react';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
@@ -118,9 +119,11 @@ type VolumeTrendCardProps = {
   percentage: number;
   data: LineChartDataPoint[];
   labels: string[];
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
 };
 
-function VolumeTrendCard({ percentage, data, labels }: VolumeTrendCardProps) {
+function VolumeTrendCard({ percentage, data, labels, onInteractionStart, onInteractionEnd }: VolumeTrendCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -150,6 +153,8 @@ function VolumeTrendCard({ percentage, data, labels }: VolumeTrendCardProps) {
           xAxisLabels={labels}
           marginTop={8}
           marginBottom={8}
+          onInteractionStart={onInteractionStart}
+          onInteractionEnd={onInteractionEnd}
         />
       </View>
     </GenericCard>
@@ -369,6 +374,7 @@ export default function PastWorkoutDetailModal({
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, reload } =
     usePastWorkoutDetail({
@@ -424,6 +430,7 @@ export default function PastWorkoutDetailModal({
         title={workout.name}
         subtitle={formatDate(workout.date)}
         headerRight={headerRight}
+        scrollViewRef={scrollViewRef}
       >
         <View className="flex-1 gap-5 p-4">
           {saveError ? (
@@ -452,6 +459,8 @@ export default function PastWorkoutDetailModal({
               percentage={workout.volumeTrend.percentage}
               data={workout.volumeTrend.data}
               labels={workout.volumeTrend.labels}
+              onInteractionStart={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: false })}
+              onInteractionEnd={() => scrollViewRef.current?.setNativeProps({ scrollEnabled: true })}
             />
           ) : null}
 

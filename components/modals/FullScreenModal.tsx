@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,6 +18,7 @@ type FullScreenModalProps = {
   scrollable?: boolean;
   withGradient?: boolean;
   showHeader?: boolean;
+  scrollViewRef?: RefObject<ScrollView>;
 };
 
 export function FullScreenModal({
@@ -31,6 +32,7 @@ export function FullScreenModal({
   footer,
   withGradient = false,
   showHeader = true,
+  scrollViewRef,
 }: FullScreenModalProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -109,6 +111,7 @@ export function FullScreenModal({
         <View className="flex-1">
           {scrollable ? (
             <ScrollView
+              ref={scrollViewRef}
               className="flex-1"
               showsVerticalScrollIndicator={false}
               style={webScrollViewStyle}
