@@ -60,6 +60,8 @@ export type LineChartProps = {
   gridTickValues?: number[];
   /** Custom X-axis labels to display below the chart */
   xAxisLabels?: string[];
+  /** Y-axis labels overlaid on the chart (no-op on web) */
+  yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
   marginTop?: number;
   /** Custom margin bottom for X-axis labels (default: 16) */
