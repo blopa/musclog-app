@@ -65,7 +65,7 @@ export function EditFitnessDetailsBody({
   const theme = useTheme();
   const { t } = useTranslation();
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
-  const [weight, setWeight] = useState(initialData?.weight ?? '0.0');
+  const [weight, setWeight] = useState(parseFloat(initialData?.weight || '0.0').toFixed(2));
   const [height, setHeight] = useState(initialData?.height ?? '0');
   const [weightGoal, setWeightGoal] = useState<WeightGoal>(initialData?.weightGoal ?? 'maintain');
   const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>(
@@ -301,7 +301,7 @@ export function EditFitnessDetailsBody({
             <View className="flex-1">
               <TextInput
                 label={t('editFitnessDetails.currentWeight')}
-                value={parseFloat(weight).toFixed(1)}
+                value={weight}
                 onChangeText={setWeight}
                 placeholder="0.0"
                 keyboardType="numeric"
@@ -316,7 +316,7 @@ export function EditFitnessDetailsBody({
             <View className="flex-1">
               <TextInput
                 label={t('editFitnessDetails.height')}
-                value={parseFloat(height).toFixed(0)}
+                value={height}
                 onChangeText={setHeight}
                 placeholder="0"
                 keyboardType="numeric"
