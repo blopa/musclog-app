@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, Heart, Moon, Ruler, Scale, Settings, Sun } from 'lucide-react-native';
+import { ChevronRight, Heart, Moon, RefreshCw, Ruler, Scale, Settings, Sun } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
+import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
 import { SettingsCard } from '../cards/SettingsCard';
+import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
@@ -44,6 +46,7 @@ export function BasicSettingsModal({
 }: BasicSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { syncNow, isSyncing, isSyncEnabled } = useSyncTracking();
 
   // Use debounced settings for instant UI updates
   const {
@@ -276,8 +279,26 @@ export function BasicSettingsModal({
             }
           />
 
+          {isSyncEnabled ? (
+            <View className="mt-3">
+              <Button
+                label={
+                  isSyncing
+                    ? t('settings.basicSettings.syncing')
+                    : t('settings.basicSettings.syncNow')
+                }
+                onPress={syncNow}
+                icon={RefreshCw}
+                variant="secondary"
+                size="sm"
+                width="full"
+                loading={isSyncing}
+              />
+            </View>
+          ) : null}
+
           <Text
-            className="mt-0 px-8 text-center text-xs"
+            className="mt-3 px-8 text-center text-xs"
             style={{ color: theme.colors.text.tertiary }}
           >
             {t('settings.basicSettings.healthDataPrivacy')}

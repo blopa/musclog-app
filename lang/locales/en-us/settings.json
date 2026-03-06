@@ -19,7 +19,9 @@
       "writeHealthData": "Write Health Data",
       "healthData": "Health Data",
       "healthDataSubtitle": "Sync your workouts and body metrics",
-      "healthDataPrivacy": "Your health data is only stored locally."
+      "healthDataPrivacy": "Your health data is only stored locally.",
+      "syncNow": "Sync Now",
+      "syncing": "Syncing..."
     },
     "advancedSettings": {
       "title": "Advanced Settings",
