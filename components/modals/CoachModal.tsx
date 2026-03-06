@@ -146,7 +146,15 @@ const renderAvatar = (props: any, theme: Theme) => {
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
   }
-  return <Image source={AI_COACH_AVATAR} style={styles.avatar} resizeMode="cover" />;
+  return (
+    <View style={[styles.avatar, { overflow: 'hidden' }]}>
+      <Image
+        source={AI_COACH_AVATAR}
+        style={{ width: theme.size['8'], height: theme.size['8'] }}
+        resizeMode="cover"
+      />
+    </View>
+  );
 };
 
 const renderDay = (props: any, t: TFunction, theme: Theme) => {
@@ -353,8 +361,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           <View className="relative">
             <Image
               source={AI_COACH_AVATAR}
-              className="h-10 w-10 rounded-full"
+              className="rounded-full"
               style={{
+                width: theme.size['10'],
+                height: theme.size['10'],
                 borderWidth: theme.borderWidth.medium,
                 borderColor: theme.colors.accent.primary40,
               }}
