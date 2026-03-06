@@ -44,16 +44,51 @@ export class NutritionCheckinService {
     nutritionGoalId: string,
     data: NutritionCheckinInput
   ): Promise<NutritionCheckin> {
-    const now = Date.now();
-    return await database.get<NutritionCheckin>('nutrition_checkins').create((r) => {
-      r.nutritionGoalId = nutritionGoalId;
-      r.checkinDate = data.checkinDate;
-      r.targetWeight = data.targetWeight;
-      r.targetBodyFat = data.targetBodyFat;
-      r.targetBmi = data.targetBmi;
-      r.targetFfmi = data.targetFfmi;
-      r.createdAt = now;
-      r.updatedAt = now;
+    return await database.write(async () => {
+      const now = Date.now();
+      return await database.get<NutritionCheckin>('nutrition_checkins').create((r) => {
+        r.nutritionGoalId = nutritionGoalId;
+        r.checkinDate = data.checkinDate;
+        r.targetWeight = data.targetWeight;
+        r.targetBodyFat = data.targetBodyFat;
+        r.targetBmi = data.targetBmi;
+        r.targetFfmi = data.targetFfmi;
+        r.createdAt = now;
+        r.updatedAt = now;
+      });
+    });
+  }
+
+  /**
+   * Create multiple check-ins for a nutrition goal in a single batch operation.
+   */
+  static async createBatch(
+    nutritionGoalId: string,
+    checkins: NutritionCheckinInput[]
+  ): Promise<NutritionCheckin[]> {
+    if (checkins.length === 0) {
+      return [];
+    }
+
+    return await database.write(async () => {
+      const now = Date.now();
+      const collection = database.get<NutritionCheckin>('nutrition_checkins');
+
+      const preparedRecords = checkins.map((data) =>
+        collection.prepareCreate((r) => {
+          r.nutritionGoalId = nutritionGoalId;
+          r.checkinDate = data.checkinDate;
+          r.targetWeight = data.targetWeight;
+          r.targetBodyFat = data.targetBodyFat;
+          r.targetBmi = data.targetBmi;
+          r.targetFfmi = data.targetFfmi;
+          r.createdAt = now;
+          r.updatedAt = now;
+        })
+      );
+
+      await database.batch(...preparedRecords);
+      return preparedRecords;
     });
   }
 

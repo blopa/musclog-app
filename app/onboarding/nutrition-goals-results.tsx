@@ -14,7 +14,11 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
-import { NutritionGoalService, UserMetricService } from '../../database/services';
+import {
+  NutritionCheckinService,
+  NutritionGoalService,
+  UserMetricService,
+} from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useSettings } from '../../hooks/useSettings';
 import {
@@ -22,6 +26,7 @@ import {
   estimateTargetBodyFatWhenCutting,
   ffmiFromWeightHeightAndBodyFat,
   fiberFromCalories,
+  generateWeeklyCheckins,
   inchesToCm,
   NutritionPlan,
 } from '../../utils/nutritionCalculator';
@@ -277,7 +282,10 @@ export default function NutritionGoalsResults() {
             ? ffmiFromWeightHeightAndBodyFat(parsedPlan.projectedWeightKg, heightM, bodyFatForFfmi)
             : 0;
 
-        await NutritionGoalService.saveGoals({
+        const startDate = Date.now();
+        const targetDate = startDate + parsedPlan.projectionDays * 24 * 60 * 60 * 1000;
+
+        const savedGoal = await NutritionGoalService.saveGoals({
           totalCalories: parsedPlan.targetCalories,
           protein: parsedPlan.protein,
           carbs: parsedPlan.carbs,
@@ -288,8 +296,23 @@ export default function NutritionGoalsResults() {
           targetBodyFat,
           targetBMI,
           targetFFMI,
-          targetDate: Date.now() + parsedPlan.projectionDays * 24 * 60 * 60 * 1000,
+          targetDate,
         });
+
+        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+        if (targetDate - startDate > oneWeekMs) {
+          const weeklyData = generateWeeklyCheckins(
+            parsedPlan,
+            startDate,
+            targetDate,
+            heightM,
+            currentBodyFatPercent
+          );
+
+          if (weeklyData.length > 0) {
+            await NutritionCheckinService.createBatch(savedGoal.id, weeklyData);
+          }
+        }
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
