@@ -17,6 +17,7 @@ import { LineChart } from '../LineChart';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
+import AddUserMetricEntryModal from './AddUserMetricEntryModal';
 import { FullScreenModal } from './FullScreenModal';
 
 // UI-facing metric keys
@@ -73,6 +74,7 @@ export default function BodyMetricsHistoryModal({
   const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
+  const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const metricOptions = [
@@ -359,8 +361,7 @@ export default function BodyMetricsHistoryModal({
   }, [allMetricsForChart]);
 
   const handleNewMetric = () => {
-    // TODO: Open add new metric modal or form
-    console.log('New metric pressed');
+    setIsAddMetricVisible(true);
   };
 
   return (
@@ -629,6 +630,10 @@ export default function BodyMetricsHistoryModal({
           <View className="h-24" />
         </View>
       </ScrollView>
+      <AddUserMetricEntryModal
+        visible={isAddMetricVisible}
+        onClose={() => setIsAddMetricVisible(false)}
+      />
     </FullScreenModal>
   );
 }
