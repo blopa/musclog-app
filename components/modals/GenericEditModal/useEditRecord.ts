@@ -31,6 +31,7 @@ const ENTITY_TABLE_MAP: Record<DataLogModalVariant, string> = {
   workoutTemplate: 'workout_templates',
   userMetric: 'user_metrics',
   nutritionGoal: 'nutrition_goals',
+  chatMessage: 'chat_messages',
 };
 
 export function useEditRecord(

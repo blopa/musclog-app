@@ -7,6 +7,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import {
+  ChatService,
   ExerciseService,
   FoodPortionService,
   FoodService,
@@ -17,6 +18,7 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '../../database/services';
+import { useChatMessageDataLogs } from '../../hooks/useChatMessageDataLogs';
 import { useExerciseDataLogs } from '../../hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '../../hooks/useFoodDataLogs';
 import { useFoodPortionDataLogs } from '../../hooks/useFoodPortionDataLogs';
@@ -56,7 +58,8 @@ export type DataLogModalVariant =
   | 'workoutLog'
   | 'workoutTemplate'
   | 'userMetric'
-  | 'nutritionGoal';
+  | 'nutritionGoal'
+  | 'chatMessage';
 
 export type DataLogModalTranslations = {
   title: string;
@@ -340,6 +343,29 @@ export function getDataLogModalTranslations(
     };
   }
 
+  if (variant === 'chatMessage') {
+    return {
+      title: t('coach.chatMessages.title', 'Chat Messages'),
+      searchPlaceholder: t('coach.chatMessages.searchPlaceholder', 'Search messages...'),
+      noItemsText: t('coach.chatMessages.noMessages', 'No messages yet'),
+      noItemsDesc: t('coach.chatMessages.noMessagesDesc', 'Start a conversation with Loggy'),
+      endOfHistoryText: t('coach.chatMessages.endOfHistory', 'All messages loaded'),
+      menuTitle: t('coach.chatMessages.messageOptions', 'Message options'),
+      favoriteAddTitle: '',
+      favoriteRemoveTitle: '',
+      favoriteAddDesc: '',
+      favoriteRemoveDesc: '',
+      editTitle: t('coach.chatMessages.editMessage', 'Edit message'),
+      editDesc: t('coach.chatMessages.editMessageDesc', 'Change the message text'),
+      duplicateTitle: '',
+      duplicateDesc: '',
+      deleteTitle: t('coach.chatMessages.deleteMessage', 'Delete message'),
+      deleteDesc: t('coach.chatMessages.deleteMessageDesc', 'Permanently remove this message'),
+      formatCaloriesMacros: () => '',
+      formatItemSubtitle: (item) => item.chatMessageText ?? '',
+    };
+  }
+
   // Exhaustive: should not reach (all variants handled above)
   return {
     title: '',
@@ -378,6 +404,8 @@ export function getEmptyStateIconName(
       return 'scale';
     case 'nutritionGoal':
       return 'flag';
+    case 'chatMessage':
+      return 'chat';
     // meal, nutrition_log, food and any other fallback
     default:
       return 'restaurant-menu';
@@ -407,6 +435,7 @@ export type DataLogDisplayItem = {
   goalCalories?: number; // Optional - only nutrition goals have this
   goalEatingPhase?: string; // Optional - only nutrition goals have this
   goalTargetWeight?: number; // Optional - only nutrition goals have this
+  chatMessageText?: string; // Optional - only chat messages have this
 };
 
 export type DataLogModalData = {
@@ -750,6 +779,7 @@ export function DataLogModal({
           break;
         case 'userMetric':
         case 'nutritionGoal':
+        case 'chatMessage':
           // These variants don't support duplicate
           break;
       }
@@ -835,6 +865,9 @@ export function DataLogModal({
         case 'nutritionGoal':
           await NutritionGoalService.deleteGoal(selectedItem.id);
           break;
+        case 'chatMessage':
+          await ChatService.deleteMessage(selectedItem.id);
+          break;
       }
       await refresh();
       setDeleteModalVisible(false);
@@ -894,6 +927,7 @@ export function DataLogModal({
       'food',
       'nutrition_log',
       'nutritionGoal',
+      'chatMessage',
     ];
 
     // Add Edit menu item only if supported
@@ -908,25 +942,36 @@ export function DataLogModal({
       });
     }
 
-    // Add common menu items (duplicate and delete)
-    menuItems.push(
-      {
+    // Add duplicate only for variants that support it
+    const duplicateSupportedVariants: DataLogModalVariant[] = [
+      'meal',
+      'food',
+      'foodPortion',
+      'exercise',
+      'workoutTemplate',
+      'workoutLog',
+      'nutrition_log',
+    ];
+
+    if (duplicateSupportedVariants.includes(variant)) {
+      menuItems.push({
         icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
         title: translations.duplicateTitle,
         description: translations.duplicateDesc,
         onPress: handleDuplicate,
-      },
-      {
-        icon: DeleteIcon,
-        iconColor: theme.colors.status.error50,
-        iconBgColor: theme.colors.status.error10,
-        title: translations.deleteTitle,
-        description: translations.deleteDesc,
-        onPress: handleDelete,
-      }
-    );
+      });
+    }
+
+    menuItems.push({
+      icon: DeleteIcon,
+      iconColor: theme.colors.status.error50,
+      iconBgColor: theme.colors.status.error10,
+      title: translations.deleteTitle,
+      description: translations.deleteDesc,
+      onPress: handleDelete,
+    });
 
     return menuItems;
   };
@@ -1549,6 +1594,38 @@ export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalPro
       visible={visible}
       onClose={onClose}
       variant="userMetric"
+      searchQuery={searchQuery}
+      onSearchQueryChange={setSearchQuery}
+      dayGroups={dayGroups as DataLogModalData['dayGroups']}
+      isLoading={isLoading}
+      isLoadingMore={isLoadingMore}
+      hasMore={hasMore}
+      loadMore={loadMore}
+      refresh={refresh}
+    />
+  );
+}
+
+// Wrapper: owns search state and calls only useChatMessageDataLogs
+type ChatMessageDataModalProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export function ChatMessageDataModal({ visible, onClose }: ChatMessageDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } =
+    useChatMessageDataLogs({
+      visible,
+      batchSize: 30,
+      searchQuery,
+    });
+
+  return (
+    <DataLogModal
+      visible={visible}
+      onClose={onClose}
+      variant="chatMessage"
       searchQuery={searchQuery}
       onSearchQueryChange={setSearchQuery}
       dayGroups={dayGroups as DataLogModalData['dayGroups']}

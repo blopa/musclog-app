@@ -70,6 +70,38 @@ export class ChatService {
     });
   }
 
+  static async updateMessage(recordId: string, message: string): Promise<void> {
+    const record = await database.get<ChatMessage>('chat_messages').find(recordId);
+    await database.write(async () => {
+      await record.update((r) => {
+        r.message = message;
+        r.updatedAt = Date.now();
+      });
+    });
+  }
+
+  static async deleteMessage(recordId: string): Promise<void> {
+    const record = await database.get<ChatMessage>('chat_messages').find(recordId);
+    await database.write(async () => {
+      await record.update((r) => {
+        r.deletedAt = Date.now();
+        r.updatedAt = Date.now();
+      });
+    });
+  }
+
+  static async getAllMessages(limit: number, offset: number): Promise<ChatMessage[]> {
+    return await database
+      .get<ChatMessage>('chat_messages')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('created_at', Q.desc),
+        Q.skip(offset),
+        Q.take(limit)
+      )
+      .fetch();
+  }
+
   static async deleteSession(sessionId: string): Promise<void> {
     const messages = await database
       .get<ChatMessage>('chat_messages')

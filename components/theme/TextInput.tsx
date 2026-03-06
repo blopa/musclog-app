@@ -15,6 +15,8 @@ type TestInputProps = {
   onFocus?: () => void;
   onBlur?: () => void;
   selectTextOnFocus?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
 };
 
 const ANIMATION_DURATION = 100;
@@ -36,6 +38,8 @@ export function TextInput({
   onBlur,
   required = false,
   selectTextOnFocus = true,
+  multiline = false,
+  numberOfLines = 4,
 }: TestInputProps) {
   const theme = useTheme();
 
@@ -90,7 +94,10 @@ export function TextInput({
         {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}
       </View>
       {Platform.OS === 'web' ? (
-        <View className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 focus-within:border-accent-primary/50 focus-within:shadow-md">
+        <View
+          // TODO: use classnames
+          className={`${multiline ? 'min-h-14 py-3' : 'h-14'} w-full flex-row ${multiline ? 'items-start' : 'items-center'} rounded-lg border-2 border-white/10 bg-bg-card px-4 focus-within:border-accent-primary/50 focus-within:shadow-md`}
+        >
           <RNTextInput
             className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
             placeholder={placeholder}
@@ -103,6 +110,9 @@ export function TextInput({
             onBlur={handleBlur}
             style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
             selectTextOnFocus={selectTextOnFocus}
+            multiline={multiline}
+            numberOfLines={multiline ? numberOfLines : undefined}
+            textAlignVertical={multiline ? 'top' : 'center'}
           />
           {icon ? (
             <View className="absolute right-4 items-center justify-center">{icon}</View>
@@ -110,7 +120,8 @@ export function TextInput({
         </View>
       ) : (
         <Animated.View
-          className="h-14 w-full flex-row items-center rounded-lg border-2 bg-bg-card px-4"
+          // TODO: use classnames
+          className={`${multiline ? 'min-h-14 py-3' : 'h-14'} w-full flex-row ${multiline ? 'items-start' : 'items-center'} rounded-lg border-2 bg-bg-card px-4`}
           style={{
             borderColor,
             shadowColor: theme.colors.accent.primary,
@@ -133,6 +144,9 @@ export function TextInput({
             onBlur={handleBlur}
             style={{ borderWidth: theme.borderWidth.none, minWidth: 0 }}
             selectTextOnFocus={selectTextOnFocus}
+            multiline={multiline}
+            numberOfLines={multiline ? numberOfLines : undefined}
+            textAlignVertical={multiline ? 'top' : 'center'}
           />
           {icon ? (
             <View className="absolute right-4 items-center justify-center">{icon}</View>

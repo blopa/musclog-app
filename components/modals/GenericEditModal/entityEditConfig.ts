@@ -3,6 +3,7 @@ import type { Model } from '@nozbe/watermelondb';
 import type { Units } from '../../../constants/settings';
 import type UserMetric from '../../../database/models/UserMetric';
 import {
+  ChatService,
   ExerciseService,
   FoodPortionService,
   FoodService,
@@ -427,6 +428,18 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         },
       ];
 
+    case 'chatMessage':
+      return [
+        {
+          type: 'text',
+          key: 'message',
+          label: 'Message',
+          placeholder: 'Type your message...',
+          required: true,
+          multiline: true,
+        },
+      ];
+
     default:
       // For unsupported entity types, return empty array
       return [];
@@ -515,6 +528,11 @@ export async function getInitialValues(
         targetFFMI: recordAny.targetFfmi ?? 0,
       };
 
+    case 'chatMessage':
+      return {
+        message: recordAny.message ?? '',
+      };
+
     default:
       return {};
   }
@@ -522,6 +540,9 @@ export async function getInitialValues(
 
 /**
  * Save updated values to the database via service layer
+ * @param entityType
+ * @param recordId
+ * @param values
  * @param context - Optional context e.g. { units } for userMetric weight/height conversion
  */
 export async function saveRecord(
@@ -631,6 +652,10 @@ export async function saveRecord(
       });
       break;
     }
+
+    case 'chatMessage':
+      await ChatService.updateMessage(recordId, values.message as string);
+      break;
 
     default:
       throw new Error(`Saving not implemented for entity type: ${entityType}`);

@@ -1,5 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, Heart, Moon, RefreshCw, Ruler, Scale, Settings, Sun } from 'lucide-react-native';
+import {
+  ChevronRight,
+  Heart,
+  Moon,
+  RefreshCw,
+  Ruler,
+  Scale,
+  Settings,
+  Sun,
+} from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';

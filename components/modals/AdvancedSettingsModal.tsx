@@ -8,6 +8,7 @@ import {
   Download,
   Dumbbell,
   Flag,
+  MessageSquare,
   Target,
   TrendingUp,
   Upload,
@@ -28,6 +29,7 @@ import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { CenteredModal } from './CenteredModal';
 import {
+  ChatMessageDataModal,
   ExerciseDataModal,
   FoodDataModal,
   FoodPortionDataModal,
@@ -133,6 +135,7 @@ export function AdvancedSettingsModal({
   const [showMetricsModal, setShowMetricsModal] = useState(false);
   const [showExercisesModal, setShowExercisesModal] = useState(false);
   const [showNutritionGoalsModal, setShowNutritionGoalsModal] = useState(false);
+  const [showChatMessagesModal, setShowChatMessagesModal] = useState(false);
   const bugReportItems = [
     {
       key: 'bug-report',
@@ -359,6 +362,24 @@ export function AdvancedSettingsModal({
                 <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
               }
             />
+            <SettingsCard
+              icon={<MessageSquare size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              iconContainerStyle={{
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.sm,
+                backgroundColor: theme.colors.accent.primary20,
+              }}
+              title={t('settings.chatMessages.title', 'Chat Messages')}
+              subtitle={t(
+                'settings.chatMessages.subtitle',
+                'View and edit your conversation history'
+              )}
+              onPress={() => setShowChatMessagesModal(true)}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              }
+            />
           </View>
 
           <Text
@@ -507,6 +528,10 @@ export function AdvancedSettingsModal({
       <NutritionGoalDataModal
         visible={showNutritionGoalsModal}
         onClose={() => setShowNutritionGoalsModal(false)}
+      />
+      <ChatMessageDataModal
+        visible={showChatMessagesModal}
+        onClose={() => setShowChatMessagesModal(false)}
       />
     </>
   );

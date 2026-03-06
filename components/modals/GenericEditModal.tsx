@@ -129,6 +129,8 @@ export function GenericEditModal({
               textField.placeholder ? t(textField.placeholder, textField.placeholder) : undefined
             }
             required={textField.required}
+            multiline={textField.multiline}
+            numberOfLines={textField.multiline ? 6 : undefined}
           />
         );
       }
