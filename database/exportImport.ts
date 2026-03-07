@@ -212,6 +212,15 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     return idMaps[table]?.[oldId];
   };
 
+  const parseMicrosJson = (microsJson: string): any | undefined => {
+    try {
+      const parsed = JSON.parse(microsJson);
+      return typeof parsed === 'object' && parsed !== null ? parsed : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
   for (const tableName of RESTORE_ORDER) {
     const rows = dbData[tableName];
     if (!Array.isArray(rows)) {
@@ -268,15 +277,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             loggedFiber: Number(raw.logged_fiber ?? 0),
             loggedMicros:
               typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-                // TODO: avoid using IIFE
-              ? (() => {
-                    try {
-                      const p = JSON.parse(raw.logged_micros_json as string);
-                      return typeof p === 'object' && p !== null ? p : undefined;
-                    } catch {
-                      return undefined;
-                    }
-                  })()
+                ? parseMicrosJson(raw.logged_micros_json)
                 : undefined,
           };
           const encrypted = await encryptNutritionLogSnapshot(snapshot);
