@@ -431,11 +431,32 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   };
 }
 
-// TODO: try to get the name from different places
-export function getProductName(product: any) {
-  // also try product_name_en, product_name_de, etc
-  // also try product.product.product_name
-  return product.product_name || i18n.t('food.unknownFood');
+/**
+ * Extracts the product name from an Open Food Facts JSON response.
+ * Handles nested objects and multiple localized name fields.
+ */
+export function getProductName(response: any): string {
+  // 1. Handle the case where the full API response is passed vs. just the inner product object
+  const product = response?.product || response;
+
+  if (!product) {
+    return i18n.t('food.unknownFood');
+  }
+
+  // 2. Define priority for name fields
+  // product_name is usually the "main" name provided by the API
+  // product_name_en and others are localized backups
+  // generic_name is a fallback if the brand name is missing
+  const name =
+    product.product_name ||
+    product.product_name_en ||
+    product.product_name_de ||
+    product.product_name_nl ||
+    product.product_name_fr ||
+    product.generic_name;
+
+  // 3. Return the found name or the i18n fallback
+  return name?.trim() || i18n.t('food.unknownFood');
 }
 
 // Export the properties array for reference
