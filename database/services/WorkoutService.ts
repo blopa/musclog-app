@@ -412,6 +412,54 @@ export class WorkoutService {
   }
 
   /**
+   * Pure helper: build enriched set objects from log exercises and raw set records.
+   * Uses _raw on set records so we always read actual DB values.
+   * Shared by getWorkoutWithDetails and reactive observable pipelines.
+   */
+  static buildEnrichedSetsFromRecords(
+    logExercises: { id: string; exerciseId: string; groupId?: string; notes?: string }[],
+    rawSets: (
+      | WorkoutLogSet
+      | { id: string; logExerciseId: string; _raw: Record<string, unknown> }
+    )[]
+  ): EnrichedWorkoutLogSet[] {
+    const logExerciseMap = new Map<
+      string,
+      { exerciseId: string; groupId?: string; notes?: string }
+    >();
+    logExercises.forEach((le) => {
+      logExerciseMap.set(le.id, {
+        exerciseId: le.exerciseId,
+        groupId: le.groupId,
+        notes: le.notes,
+      });
+    });
+    return rawSets.map((set) => {
+      const logExercise = logExerciseMap.get(set.logExerciseId);
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        id: set.id,
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        reps: (r.reps as number) ?? 0,
+        weight: (r.weight as number) ?? 0,
+        partials: (r.partials as number | undefined) ?? (set as WorkoutLogSet).partials,
+        restTimeAfter: (r.rest_time_after as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        isSkipped: (r.is_skipped as boolean | undefined) ?? (set as WorkoutLogSet).isSkipped,
+        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+        updatedAt: (r.updated_at as number) ?? 0,
+        deletedAt: (r.deleted_at as number | undefined) ?? (set as WorkoutLogSet).deletedAt,
+        exerciseId: logExercise?.exerciseId ?? '',
+        groupId: logExercise?.groupId,
+        notes: logExercise?.notes,
+      } as EnrichedWorkoutLogSet;
+    });
+  }
+
+  /**
    * Get workout log with all sets and exercise details.
    * Returns enriched sets with exerciseId, groupId, and notes denormalized from WorkoutLogExercise.
    */
@@ -449,43 +497,15 @@ export class WorkoutService {
             .fetch()
         : [];
 
-    const logExerciseMap = new Map<
-      string,
-      { exerciseId: string; groupId?: string; notes?: string }
-    >();
-    logExercises.forEach((le) => {
-      logExerciseMap.set(le.id, {
+    const sets = WorkoutService.buildEnrichedSetsFromRecords(
+      logExercises.map((le) => ({
+        id: le.id,
         exerciseId: le.exerciseId,
         groupId: le.groupId,
         notes: le.notes,
-      });
-    });
-
-    // Build plain enriched objects from stored data. Use _raw so we always read the actual DB values
-    // (Model getters can sometimes be non-enumerable or not copy correctly in all environments).
-    const sets: EnrichedWorkoutLogSet[] = rawSets.map((set) => {
-      const logExercise = logExerciseMap.get(set.logExerciseId);
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
-      return {
-        id: set.id,
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        reps: (r.reps as number) ?? 0,
-        weight: (r.weight as number) ?? 0,
-        partials: (r.partials as number | undefined) ?? set.partials,
-        restTimeAfter: (r.rest_time_after as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: (r.is_skipped as boolean | undefined) ?? set.isSkipped,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
-        isDropSet: (r.is_drop_set as boolean) ?? false,
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-        updatedAt: (r.updated_at as number) ?? 0,
-        deletedAt: (r.deleted_at as number | undefined) ?? set.deletedAt,
-        exerciseId: logExercise?.exerciseId ?? '',
-        groupId: logExercise?.groupId,
-        notes: logExercise?.notes,
-      } as EnrichedWorkoutLogSet;
-    });
+      })),
+      rawSets
+    );
 
     const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
     const exercises =
