@@ -324,6 +324,7 @@ export function useChatMessages(): UseChatMessagesResult {
             sessionId,
             sender: 'coach',
             message:
+              // TODO: use i18n
               'AI features are not configured. Please add a Gemini or OpenAI API key in Settings.',
           });
           rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
@@ -396,6 +397,7 @@ export function useChatMessages(): UseChatMessagesResult {
             const processResult = await processWorkoutPlanResponse(workoutPlan, sessionId);
 
             reply = {
+              // TODO: use i18n
               msg4User: `I've created ${processResult.templateIds.length} workouts for you! 💪 ${processResult.description}`,
               sumMsg: 'Generated workout plan',
             };
@@ -410,6 +412,7 @@ export function useChatMessages(): UseChatMessagesResult {
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
           } else {
             reply = {
+              // TODO: use i18n
               msg4User: "Sorry, I couldn't generate a workout plan. Please try again.",
               sumMsg: 'Workout generation failed',
             };
@@ -445,6 +448,7 @@ export function useChatMessages(): UseChatMessagesResult {
           const errorRecord = await ChatService.saveMessage({
             sessionId,
             sender: 'coach',
+            // TODO: use i18n
             message: 'Sorry, something went wrong. Please try again.',
           });
 

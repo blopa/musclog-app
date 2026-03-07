@@ -143,15 +143,7 @@ export async function processWorkoutPlanResponse(
       createdTemplateIds.push(template.id);
     }
 
-    // Save AI feedback message to chat
-    await ChatService.saveMessage({
-      sessionId,
-      sender: 'coach',
-      message: response.description,
-      messageType: 'text',
-      summarizedMessage: response.description.substring(0, 200),
-    });
-
+    // reply that combines "I've created N workouts for you!" with response.description
     return {
       templateIds: createdTemplateIds,
       description: response.description,
