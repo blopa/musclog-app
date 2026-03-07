@@ -895,75 +895,28 @@ export default function WorkoutSessionScreen() {
 
           {/* Stats Cards */}
           <View className="mt-8 flex-row gap-3 px-6">
-            {!isStatsDataLoaded ? (
-              // Show loading skeleton
-              <>
-                <View 
-                  className="flex-1 rounded-xl p-6" 
-                  style={{ backgroundColor: theme.colors.background.card }}
-                >
-                  <View 
-                    className="mb-2 h-4 w-12 rounded-full" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                  <View 
-                    className="mt-2 h-16 w-20 rounded-full self-center" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                </View>
-                <View 
-                  className="flex-1 rounded-xl p-6" 
-                  style={{ backgroundColor: theme.colors.background.card }}
-                >
-                  <View 
-                    className="mb-2 h-4 w-12 rounded-full" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                  <View 
-                    className="mt-2 h-16 w-20 rounded-full self-center" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                </View>
-                <View 
-                  className="flex-1 rounded-xl p-6" 
-                  style={{ backgroundColor: theme.colors.background.card }}
-                >
-                  <View 
-                    className="mb-2 h-4 w-12 rounded-full" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                  <View 
-                    className="mt-2 h-16 w-20 rounded-full self-center" 
-                    style={{ backgroundColor: theme.colors.border.light }}
-                  />
-                </View>
-              </>
-            ) : (
-              <>
-                <WorkoutStatCard
-                  title={t('workoutSession.weight')}
-                  value={weight}
-                  unit={t(weightUnitKey)}
-                  onPress={() => {
-                    setIsEditSetModalVisible(true);
-                  }}
-                />
-                <WorkoutStatCard
-                  title={t('workoutSession.reps')}
-                  value={reps}
-                  onPress={() => {
-                    setIsEditSetModalVisible(true);
-                  }}
-                />
-                <WorkoutStatCard
-                  title={t('workoutSession.partials')}
-                  value={partials === 0 ? '-' : partials}
-                  onPress={() => {
-                    setIsEditSetModalVisible(true);
-                  }}
-                />
-              </>
-            )}
+            <WorkoutStatCard
+              title={t('workoutSession.weight')}
+              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : weight}
+              unit={isStatsDataLoaded ? t(weightUnitKey) : undefined}
+              onPress={() => {
+                setIsEditSetModalVisible(true);
+              }}
+            />
+            <WorkoutStatCard
+              title={t('workoutSession.reps')}
+              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : reps}
+              onPress={() => {
+                setIsEditSetModalVisible(true);
+              }}
+            />
+            <WorkoutStatCard
+              title={t('workoutSession.partials')}
+              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : (partials === 0 ? '-' : partials)}
+              onPress={() => {
+                setIsEditSetModalVisible(true);
+              }}
+            />
           </View>
 
           {/* Previous & History */}
