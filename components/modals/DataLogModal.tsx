@@ -221,17 +221,7 @@ export function getDataLogModalTranslations(
           status: item.isCompleted
             ? t('workoutLog.manageWorkoutLogData.statusCompleted')
             : t('workoutLog.manageWorkoutLogData.statusInProgress'),
-          volume:
-          // TODO: use a helper function here to avoid nested ternary
-            item.totalVolume != null
-              ? t('workoutLog.manageWorkoutLogData.volumeFormat', {
-                  volume:
-                    units != null
-                      ? Number(kgToDisplay(item.totalVolume, units).toFixed(1))
-                      : item.totalVolume,
-                  unit: unitLabel,
-                })
-              : '—',
+          volume: formatWorkoutVolume(item.totalVolume, units, unitLabel, t),
         }),
     };
   }
@@ -465,6 +455,26 @@ export function getEmptyStateIconName(
     default:
       return 'restaurant-menu';
   }
+}
+
+// Helper: format workout volume with unit conversion
+function formatWorkoutVolume(
+  totalVolume: number | undefined,
+  units: Units | undefined,
+  unitLabel: string,
+  t: TFunction
+): string {
+  if (totalVolume == null) {
+    return '—';
+  }
+
+  const displayVolume =
+    units != null ? Number(kgToDisplay(totalVolume, units).toFixed(1)) : totalVolume;
+
+  return t('workoutLog.manageWorkoutLogData.volumeFormat', {
+    volume: displayVolume,
+    unit: unitLabel,
+  });
 }
 
 // Base type that MealDataDisplayItem, FoodDataDisplayItem, ExerciseDataDisplayItem, and WorkoutLogDataDisplayItem satisfy

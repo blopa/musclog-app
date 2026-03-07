@@ -239,6 +239,34 @@ export default function NutritionGoalsResults() {
     return `${format(lowDisplay)}–${format(highDisplay)}`;
   }, [maintenanceMuscleRange, units]);
 
+  // Helper functions to format weight values consistently
+  const formatProjectedWeight = useMemo(() => {
+    if (!displayData) {
+      return '0';
+    }
+
+    const d = kgToDisplay(displayData.projectedWeight, units);
+    return d % 1 === 0 ? String(d) : d.toFixed(1);
+  }, [displayData, units]);
+
+  const formatEstimatedFatChange = useMemo(() => {
+    if (!displayData) {
+      return '0';
+    }
+
+    const d = kgToDisplay(displayData.estimatedFatChangeKg ?? 0, units);
+    return d % 1 === 0 ? d : d.toFixed(1);
+  }, [displayData, units]);
+
+  const formatEstimatedLeanChange = useMemo(() => {
+    if (!displayData) {
+      return '0';
+    }
+
+    const d = kgToDisplay(displayData.estimatedLeanChangeKg ?? 0, units);
+    return d % 1 === 0 ? d : d.toFixed(1);
+  }, [displayData, units]);
+
   const handleAccept = async () => {
     if (!displayData) {
       return;
@@ -975,11 +1003,7 @@ export default function NutritionGoalsResults() {
                       }}
                     >
                       {t('nutritionGoals.results.projectionDescription', {
-                        // TODO: move this to a helper function in a useMemo to avoid IFEE
-                        value: (() => {
-                          const d = kgToDisplay(displayData.projectedWeight, units);
-                          return d % 1 === 0 ? String(d) : d.toFixed(1);
-                        })(),
+                        value: formatProjectedWeight,
                         unit: t(weightUnitKey),
                         days: displayData.projectionDays,
                       })}
@@ -1001,11 +1025,7 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionFat', {
-                              // TODO: move this to a helper function in a useMemo to avoid IFEE
-                              value: (() => {
-                                const d = kgToDisplay(displayData.estimatedFatChangeKg ?? 0, units);
-                                return d % 1 === 0 ? d : d.toFixed(1);
-                              })(),
+                              value: formatEstimatedFatChange,
                               unit: t(weightUnitKey),
                             })}
                           </Text>
@@ -1018,14 +1038,7 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionLean', {
-                              // TODO: move this to a helper function in a useMemo to avoid IFEE
-                              value: (() => {
-                                const d = kgToDisplay(
-                                  displayData.estimatedLeanChangeKg ?? 0,
-                                  units
-                                );
-                                return d % 1 === 0 ? d : d.toFixed(1);
-                              })(),
+                              value: formatEstimatedLeanChange,
                               unit: t(weightUnitKey),
                             })}
                           </Text>

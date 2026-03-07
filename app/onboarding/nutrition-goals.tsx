@@ -30,7 +30,7 @@ export default function NutritionGoalsScreen() {
   // We prefer this over the DB goal in initialGoals when present.
   useEffect(() => {
     let isMounted = true;
-    (async () => {
+    const doTask = async () => {
       try {
         const raw = await AsyncStorage.getItem(TEMP_NUTRITION_PLAN);
         if (!raw || !isMounted) {
@@ -43,7 +43,10 @@ export default function NutritionGoalsScreen() {
       } catch {
         // ignore parse errors
       }
-    })();
+    };
+
+    doTask();
+
     return () => {
       isMounted = false;
     };

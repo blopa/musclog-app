@@ -216,7 +216,7 @@ export default function RestTimerScreen() {
     setRestTime((prev) => {
       const next = Math.max(0, prev - 5);
       // Persist change to DB
-      (async () => {
+      const doTask = async () => {
         try {
           if (workoutLog && completedSet) {
             await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
@@ -224,7 +224,10 @@ export default function RestTimerScreen() {
         } catch (err) {
           console.error('Error saving rest time:', err);
         }
-      })();
+      };
+
+      doTask();
+
       return next;
     });
   };
@@ -232,7 +235,7 @@ export default function RestTimerScreen() {
   const handlePlus5s = () => {
     setRestTime((prev) => {
       const next = prev + 5;
-      (async () => {
+      const doTask = async () => {
         try {
           if (workoutLog && completedSet) {
             await workoutLog.updateSet(completedSet.set.id, { restTimeAfter: next });
@@ -240,7 +243,10 @@ export default function RestTimerScreen() {
         } catch (err) {
           console.error('Error saving rest time:', err);
         }
-      })();
+      };
+
+      doTask();
+
       return next;
     });
   };

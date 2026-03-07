@@ -139,7 +139,7 @@ class HealthConnectService {
       return Promise.resolve();
     }
 
-    // Create new initialization promise
+    // TODO: avoid using IIFE
     this.initializationPromise = (async () => {
       try {
         this.status = HealthConnectStatus.INITIALIZING;

@@ -268,7 +268,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             loggedFiber: Number(raw.logged_fiber ?? 0),
             loggedMicros:
               typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-                ? (() => {
+                // TODO: avoid using IIFE
+              ? (() => {
                     try {
                       const p = JSON.parse(raw.logged_micros_json as string);
                       return typeof p === 'object' && p !== null ? p : undefined;

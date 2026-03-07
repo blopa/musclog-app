@@ -400,7 +400,7 @@ export function FoodMealDetailsModal({
       }
     });
 
-    (async () => {
+    const doTask = async () => {
       try {
         const grams = await foodLog.getGramWeight();
         if (!cancelled && typeof grams === 'number' && !Number.isNaN(grams)) {
@@ -409,7 +409,9 @@ export function FoodMealDetailsModal({
       } catch (e) {
         // ignore
       }
-    })();
+    };
+
+    doTask();
 
     return () => {
       cancelled = true;
