@@ -182,6 +182,7 @@ export default function WorkoutSummaryScreen() {
             volume: volumeStr,
             duration: durationStr,
             personalRecords: prsCount,
+            weightUnit,
           }),
         });
 

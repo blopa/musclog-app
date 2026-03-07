@@ -15,7 +15,7 @@ import {
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
 import { getChatMessagePromptContent } from '../utils/prompts';
-import { processWorkoutPlanResponse } from '../utils/workoutAI';
+import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
 // Local avatar image for Loggy
 export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
@@ -343,31 +343,37 @@ export function useChatMessages(): UseChatMessagesResult {
         const systemMessage = await getChatMessagePromptContent();
 
         // Workout-completed messages are shown as Loggy in the UI but sent to the LLM as user
-        // messages with rich content (e.g. "I have just completed the X workout, took me Y...")
-        const historyEntryForRecord = (record: ChatMessage): ChatHistoryEntry => {
+        // messages with rich content. We always recompute from payload so old messages get the
+        // full JSON/linguistic summary too.
+        const buildHistoryEntry = async (record: ChatMessage): Promise<ChatHistoryEntry> => {
           let role: 'user' | 'coach' = record.sender as 'user' | 'coach';
+          let content = record.summarizedMessage ?? record.message;
           if (record.payloadJson) {
             try {
               const payload = JSON.parse(record.payloadJson);
-              if (payload.type === 'workoutCompleted') {
+              if (payload.type === 'workoutCompleted' && payload.workoutLogId) {
                 role = 'user';
+                content = await buildWorkoutCompletedSummaryForLLM(payload.workoutLogId, {
+                  volumeStr: payload.volume ?? '0',
+                  durationStr: payload.duration ?? '0m',
+                  personalRecords: payload.personalRecords ?? 0,
+                  weightUnit: payload.weightUnit ?? 'kg',
+                  format: 'json',
+                });
               }
             } catch {
-              // ignore
+              // ignore malformed payload
             }
           }
-          return {
-            role,
-            content: record.summarizedMessage ?? record.message,
-          };
+          return { role, content };
         };
 
+        const historyEntries = await Promise.all(
+          historyWithoutCurrentMessage.map(buildHistoryEntry)
+        );
         const history: ChatHistoryEntry[] = [
-          {
-            role: 'user',
-            content: systemMessage,
-          },
-          ...historyWithoutCurrentMessage.map(historyEntryForRecord),
+          { role: 'user', content: systemMessage },
+          ...historyEntries,
         ];
 
         // 5. Route based on pending intention or default to chat
