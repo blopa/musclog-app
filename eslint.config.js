@@ -32,6 +32,10 @@ module.exports = defineConfig([
       'simple-import-sort/exports': 'warn',
       // turn off other conflicting sort rules
       'sort-imports': 'off',
+      // 'react-hooks/exhaustive-deps': [
+      //   'error',
+      //   { enableDangerousAutofixThisMayCauseInfiniteLoops: true },
+      // ],
     },
   },
   {
