@@ -97,7 +97,7 @@ export function PortionSizesPickerModal({
         iconColor: theme.colors.text.black,
       };
     });
-  }, [portions]);
+  }, [portions, theme.colors.accent.primary, theme.colors.text.black]);
 
   // Filter options based on search query
   const filteredOptions = useMemo(() => {

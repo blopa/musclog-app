@@ -408,7 +408,7 @@ export function useNutritionLogs({
     hasLoadedInitial.current = true;
 
     return () => subscription.unsubscribe();
-  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType]);
+  }, [enableReactivity, visible, mode, date, startDate, endDate, mealType, loadInitialLogs]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(

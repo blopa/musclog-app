@@ -278,7 +278,16 @@ export function useMeals({
     refresh();
 
     return () => subscription.unsubscribe();
-  }, [enableReactivity, visible, mode, sortBy, sortOrder, refresh]);
+  }, [
+    enableReactivity,
+    visible,
+    mode,
+    sortBy,
+    sortOrder,
+    refresh,
+    loadMealWithFoods,
+    loadInitialMeals,
+  ]);
 
   // Memoized result for basic modes
   const basicResult = useMemo(

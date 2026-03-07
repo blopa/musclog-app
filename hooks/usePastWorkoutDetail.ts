@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { database } from '../database';
@@ -92,7 +92,10 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     return () => subExercises.unsubscribe();
   }, [visible, workoutId, loadWorkoutData]);
 
-  // After we have rawSets, also observe set rows so edits/completions trigger reload
+  // After we have rawSets, also observe set rows so edits/completions trigger reload. Debounce to avoid storm.
+  const loadWorkoutDataRef = useRef(loadWorkoutData);
+  loadWorkoutDataRef.current = loadWorkoutData;
+
   useEffect(() => {
     if (!visible || !workoutId || !logExerciseIdsKey) {
       return;
@@ -111,21 +114,34 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
         Q.sortBy('set_order', Q.asc)
       );
 
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    const DEBOUNCE_MS = 300;
+
     const subSets = setsQuery.observe().subscribe({
-      next: async () => {
-        try {
-          await loadWorkoutData();
-        } catch (err) {
-          console.error('Error handling sets subscription update:', err);
+      next: () => {
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
         }
+
+        debounceTimer = setTimeout(() => {
+          debounceTimer = null;
+          loadWorkoutDataRef
+            .current()
+            .catch((err) => console.error('Error handling sets subscription update:', err));
+        }, DEBOUNCE_MS);
       },
       error: (err) => {
         console.error('Workout sets subscription error:', err);
       },
     });
 
-    return () => subSets.unsubscribe();
-  }, [visible, workoutId, logExerciseIdsKey, loadWorkoutData]);
+    return () => {
+      subSets.unsubscribe();
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
+  }, [visible, workoutId, logExerciseIdsKey]);
 
   return {
     workout,

@@ -393,7 +393,7 @@ export default function SmartCameraModal({
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [cameraMode, t]);
+  }, [cameraMode, processAiPhoto, t]);
 
   if (!visible) {
     isSearchingBarcodeRef.current = false;

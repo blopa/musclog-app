@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
@@ -134,7 +134,10 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
     }
   }, [templateId]);
 
-  // Observe templates table to trigger reload when data changes
+  // Observe templates and template_exercises to trigger reload. Debounce to avoid duplicate loads when both emit.
+  const loadDataRef = useRef(loadData);
+  loadDataRef.current = loadData;
+
   useEffect(() => {
     if (!templateId) {
       setTemplate(null);
@@ -145,34 +148,37 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
       return;
     }
 
-    // Initial load
     loadData();
 
-    // Subscribe to template changes to trigger reload
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    const scheduleReload = () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        loadDataRef.current();
+      }, 200);
+    };
+
     const templateSubscription = database
       .get<WorkoutTemplate>('workout_templates')
       .query(Q.where('id', templateId), Q.where('deleted_at', Q.eq(null)))
       .observe()
       .subscribe({
-        next: () => {
-          // Re-load all data when template changes
-          loadData();
-        },
+        next: scheduleReload,
         error: (err) => {
           console.error('Error observing template:', err);
           setError(err instanceof Error ? err.message : 'Failed to observe template');
         },
       });
 
-    // Subscribe to template exercises changes
     const exercisesSubscription = database
       .get<WorkoutTemplateExercise>('workout_template_exercises')
       .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
       .observe()
       .subscribe({
-        next: () => {
-          loadData();
-        },
+        next: scheduleReload,
         error: (err) => {
           console.error('Error observing template exercises:', err);
         },
@@ -181,6 +187,9 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
     return () => {
       templateSubscription.unsubscribe();
       exercisesSubscription.unsubscribe();
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
     };
   }, [templateId, loadData]);
 

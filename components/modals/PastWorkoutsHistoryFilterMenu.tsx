@@ -101,7 +101,7 @@ export function PastWorkoutsHistoryFilterMenu({
         icon: <Calendar size={theme.iconSize.sm} color={theme.colors.text.secondary} />,
       },
     ],
-    [t]
+    [t, theme.colors.text.secondary, theme.iconSize.sm]
   );
 
   const muscleGroups = useMemo(

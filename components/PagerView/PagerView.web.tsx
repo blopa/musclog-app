@@ -1,5 +1,13 @@
 import { animated, config, useSpring } from '@react-spring/web';
-import { forwardRef, ReactNode, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  forwardRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { View } from 'react-native';
 
 import type { PagerViewRef } from './types';
@@ -23,7 +31,10 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
     const totalPages = childrenArray.length;
 
     // Calculate the percentage to translate based on page index and total pages
-    const getTranslateX = (pageIndex: number) => -(pageIndex * (100 / totalPages));
+    const getTranslateX = useCallback(
+      (pageIndex: number) => -(pageIndex * (100 / totalPages)),
+      [totalPages]
+    );
 
     // Animate the translateX transform based on current page
     const [springProps, api] = useSpring(() => ({

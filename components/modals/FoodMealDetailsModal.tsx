@@ -247,7 +247,7 @@ export function FoodMealDetailsModal({
         return null;
       }
     },
-    [units]
+    [generatePortionName, units]
   );
 
   const getDefaultServingSize = useCallback(async () => {
@@ -340,6 +340,7 @@ export function FoodMealDetailsModal({
     meal,
     getDefaultServingSize,
     onBarcodeLookupComplete,
+    initialServingSize,
   ]);
 
   // Load meal nutrients when meal is provided
@@ -902,16 +903,17 @@ export function FoodMealDetailsModal({
     nutritionalData.saturatedFat,
     nutritionalData.sodium,
     isFavorite,
+    matchedPortion,
     selectedDate,
     selectedMeal,
     servingSize,
-    mealPortionMultiplier,
     onAddFood,
     onClose,
     onFoodTracked,
     showSnackbar,
     t,
     onLogMeal,
+    mealPortionMultiplier,
   ]);
 
   // Handlers for FoodNotFoundModal actions — close Food Details modal too so parent can resume camera.

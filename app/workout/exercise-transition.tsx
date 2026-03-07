@@ -167,6 +167,7 @@ export default function NewExerciseTransitionScreen() {
     router,
     t,
     weightUnitKey,
+    units,
   ]);
 
   const handleStartNextExercise = () => {

@@ -239,7 +239,6 @@ export default function BodyMetricsHistoryModal({
       theme.colors.text.primary,
       theme.colors.text.secondary,
       getDisplayValue,
-      units,
     ]
   );
 

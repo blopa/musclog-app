@@ -537,9 +537,9 @@ export function FoodSearchModal({
   }, [mealCardsData, searchQuery]);
 
   // Helper function to format count with "99+" limit
-  const formatCount = (count: number): string => {
+  const formatCount = useCallback((count: number): string => {
     return count > 99 ? '99+' : count.toString();
-  };
+  }, []);
 
   // Get filtered results based on active filter
   const filteredResults = useMemo(() => {

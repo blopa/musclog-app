@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
@@ -122,15 +122,17 @@ export default function RestTimerScreen() {
   }, [completedSet]);
 
   // Navigate after rest: skip exercise-transition when next set is in same superset group
-  const navigateToNextScreen = () => {
+  const navigateToNextScreen = useCallback(() => {
     if (!workoutLogId) {
       router.back();
       return;
     }
+
     if (!nextSet) {
       router.replace(`/workout/workout-session?workoutLogId=${workoutLogId}`);
       return;
     }
+
     const sameSupersetGroup =
       completedSet &&
       nextSet.set.groupId &&
@@ -151,7 +153,7 @@ export default function RestTimerScreen() {
     router.replace(
       `/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
     );
-  };
+  }, [completedSet, nextSet, router, workoutLogId]);
 
   // Rest timer countdown: run one interval when loading finishes and restTime > 0.
   // Do NOT depend on restTime so we don't clear/recreate the interval every second.
