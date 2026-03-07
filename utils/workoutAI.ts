@@ -161,6 +161,81 @@ export async function processWorkoutPlanResponse(
   }
 }
 
+export type WorkoutCompletedSummaryFormat = 'linguistic' | 'json';
+
+/**
+ * Build a summary of a completed workout for the LLM, as if the user said it.
+ * - linguistic: natural language (e.g. "I have just completed the My Workout workout. It took me 10 minutes...")
+ * - json: same intro then a minimal JSON dump for the LLM to parse
+ */
+export async function buildWorkoutCompletedSummaryForLLM(
+  workoutLogId: string,
+  options: {
+    volumeStr: string;
+    durationStr: string;
+    personalRecords: number;
+    weightUnit?: string;
+    format?: WorkoutCompletedSummaryFormat;
+  }
+): Promise<string> {
+  const unit = options.weightUnit ?? 'kg';
+  const format = options.format ?? 'json';
+  try {
+    const { workoutLog, sets, exercises } =
+      await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
+    const byExercise = new Map<string, { reps: number; weight: number }[]>();
+    for (const set of sets) {
+      const ex = exerciseMap.get(set.exerciseId ?? '');
+      if (!ex) {
+        continue;
+      }
+      const name = ex.name ?? 'Exercise';
+      if (!byExercise.has(name)) {
+        byExercise.set(name, []);
+      }
+      byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: set.weight ?? 0 });
+    }
+
+    if (format === 'json') {
+      const workoutData = {
+        workoutName: workoutLog.workoutName,
+        duration: options.durationStr,
+        totalVolume: options.volumeStr,
+        personalRecords: options.personalRecords,
+        caloriesBurned:
+          workoutLog.caloriesBurned != null && workoutLog.caloriesBurned > 0
+            ? workoutLog.caloriesBurned
+            : undefined,
+        exercises: Array.from(byExercise.entries()).map(([name, setList]) => ({
+          name,
+          sets: setList.map((s) => ({ reps: s.reps, weight: s.weight })),
+        })),
+      };
+      const jsonStr = JSON.stringify(workoutData, null, 2);
+      return `I have just completed the workout "${workoutLog.workoutName}":\n${jsonStr}`;
+    }
+
+    const exerciseParts = Array.from(byExercise.entries()).map(([name, setList]) => {
+      const parts = setList.map((s) => `${s.reps} reps @ ${s.weight} ${unit}`);
+      const summary =
+        setList.length === 1 ? parts[0] : `${setList.length} sets: ${parts.join(', ')}`;
+      return `${name} (${summary})`;
+    });
+    const calories =
+      workoutLog.caloriesBurned != null && workoutLog.caloriesBurned > 0
+        ? ` Calories burned: ${workoutLog.caloriesBurned}.`
+        : '';
+    const prLine =
+      options.personalRecords > 0 ? ` ${options.personalRecords} new personal record(s).` : '';
+
+    return `I have just completed the "${workoutLog.workoutName}" workout. It took me ${options.durationStr}. Total volume: ${options.volumeStr}.${prLine} Exercises: ${exerciseParts.join('; ')}.${calories}`.trim();
+  } catch (error) {
+    console.error('[workoutAI] buildWorkoutCompletedSummaryForLLM error:', error);
+    return `I have just completed a workout. ${options.durationStr}, total volume ${options.volumeStr}.`;
+  }
+}
+
 /**
  * Prepare completed workout data for AI analysis
  * Formats workout details in a structure suitable for AI prompts

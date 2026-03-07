@@ -333,21 +333,41 @@ export function useChatMessages(): UseChatMessagesResult {
         }
 
         // 4. Build chat history with system context and compression
-        // Cap at 20 messages, use summarized_message if available
+        // Cap at 20 messages, use summarized_message if available.
+        // Exclude the current user message from history — we pass it separately to sendCoachMessage
+        // so it is not sent twice to the LLM.
         const maxHistoryLength = 20;
         const slicedHistory = rawMessagesRef.current.slice(-maxHistoryLength);
+        const historyWithoutCurrentMessage = slicedHistory.slice(0, -1);
 
-        // Build history entries with system message prepended
         const systemMessage = await getChatMessagePromptContent();
+
+        // Workout-completed messages are shown as Loggy in the UI but sent to the LLM as user
+        // messages with rich content (e.g. "I have just completed the X workout, took me Y...")
+        const historyEntryForRecord = (record: ChatMessage): ChatHistoryEntry => {
+          let role: 'user' | 'coach' = record.sender as 'user' | 'coach';
+          if (record.payloadJson) {
+            try {
+              const payload = JSON.parse(record.payloadJson);
+              if (payload.type === 'workoutCompleted') {
+                role = 'user';
+              }
+            } catch {
+              // ignore
+            }
+          }
+          return {
+            role,
+            content: record.summarizedMessage ?? record.message,
+          };
+        };
+
         const history: ChatHistoryEntry[] = [
           {
             role: 'user',
             content: systemMessage,
           },
-          ...slicedHistory.map((record) => ({
-            role: record.sender as 'user' | 'coach',
-            content: record.summarizedMessage ?? record.message,
-          })),
+          ...historyWithoutCurrentMessage.map(historyEntryForRecord),
         ];
 
         // 5. Route based on pending intention or default to chat

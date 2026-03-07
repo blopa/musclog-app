@@ -17,7 +17,7 @@ import { getAccessToken } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
-import { processFeedbackResponse } from '../../utils/workoutAI';
+import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
 
 async function resolveAIConfig(): Promise<CoachAIConfig | null> {
   try {
@@ -157,16 +157,24 @@ export default function WorkoutSummaryScreen() {
             : 0;
         setPersonalRecords(prsCount);
 
-        // Save workout completion message to the shared coach chat session
+        // Build rich summary for the LLM (as if the user said "I just completed...")
+        const llmSummary = await buildWorkoutCompletedSummaryForLLM(workoutLogId, {
+          volumeStr,
+          durationStr,
+          personalRecords: prsCount,
+          weightUnit,
+          format: 'json',
+        });
+
+        // Save workout completion message to the shared coach chat session.
+        // UI shows it as a card from Loggy; when sending to the LLM we use llmSummary as a user message.
         await ChatService.saveMessage({
           sessionId: chatSessionId,
           sender: 'coach',
           message: t('workoutSummary.completedMessage', {
             workoutName: completedWorkout.workoutName,
           }),
-          summarizedMessage: t('workoutSummary.completedSummary', {
-            workoutName: completedWorkout.workoutName,
-          }),
+          summarizedMessage: llmSummary,
           payloadJson: JSON.stringify({
             type: 'workoutCompleted',
             workoutLogId,
