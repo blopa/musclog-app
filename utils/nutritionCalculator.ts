@@ -396,17 +396,100 @@ export function calculateBMR(
   return Math.round(base - 78);
 }
 
-// ---------------------------------------------------------------------------
-// Step 2 – TDEE
-// ---------------------------------------------------------------------------
+export interface TDEEParams {
+  totalCalories?: number;
+  totalDays?: number;
+  initialWeight?: number;
+  finalWeight?: number;
+  initialFatPercentage?: number;
+  finalFatPercentage?: number;
+  bmr?: number;
+  activityLevel?: number;
+}
 
 /**
- * Calculate Total Daily Energy Expenditure from BMR and activity level.
+ * Calculates the empirical Total Daily Energy Expenditure (TDEE) based on actual
+ * caloric intake and physiological changes in body composition over a period of time.
+ * * This uses a thermodynamic model where the cost to BUILD tissue is separated
+ * from the energy LIBERATED by breaking down stored tissue.
+ * * @param params - The parameters required for the TDEE calculation.
+ * @param params.totalCalories - Total calories consumed over the period
+ * @param params.totalDays - Number of days in the tracking period
+ * @param params.initialWeight - Starting body weight in kg
+ * @param params.finalWeight - Ending body weight in kg
+ * @param params.initialFatPercentage - (Optional) Starting body fat percentage (0-100)
+ * @param params.finalFatPercentage - (Optional) Ending body fat percentage (0-100)
+ * @param params.bmr - (Optional) Basal Metabolic Rate for standard estimation
+ * @param params.activityLevel - (Optional) Activity level index
+ * @returns Average daily TDEE in kcal, or 0 if days is invalid
  */
-export function calculateTDEE(bmr: number, activityLevel: number): number {
-  const multiplier = ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55;
-  return Math.round(bmr * multiplier);
-}
+export const calculateTDEE = ({
+  totalCalories,
+  totalDays,
+  initialWeight,
+  finalWeight,
+  initialFatPercentage,
+  finalFatPercentage,
+  bmr,
+  activityLevel,
+}: TDEEParams): number => {
+  if (bmr && activityLevel) {
+    // Assuming ACTIVITY_MULTIPLIERS is defined in the surrounding scope
+    const multiplier = ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55;
+    return Math.round(bmr * multiplier);
+  }
+
+  // Guard against divide-by-zero or negative time inputs
+  // Note: Since totalDays is optional, safely fallback if undefined
+  if (!totalDays || totalDays <= 0) {
+    return 0;
+  }
+
+  // Non-null assertions or fallback values might be needed if these are purely optional,
+  // but keeping your original math logic intact:
+  const weightDifference = (finalWeight || 0) - (initialWeight || 0);
+
+  // Default macro-composition assumptions if exact Body Fat % is missing
+  // Losing weight: Assumes 75% fat loss, 25% lean mass loss (Standard Forbes Curve approximation)
+  // Gaining weight: Assumes 50% fat gain, 50% lean mass gain (Intermediate lifter baseline)
+  let fatDifference = weightDifference * (weightDifference < 0 ? 0.75 : 0.5);
+
+  // We use "Lean Difference" rather than "Muscle Difference" as any non-fat change
+  // involves water, glycogen, and structural proteins (Lean Body Mass).
+  let leanDifference = weightDifference * (weightDifference < 0 ? 0.25 : 0.5);
+
+  // If Body Fat % is provided, calculate the exact lipid vs lean mass shift
+  if (
+    initialFatPercentage !== undefined &&
+    finalFatPercentage !== undefined &&
+    initialWeight &&
+    finalWeight
+  ) {
+    const initialFatMass = (initialFatPercentage * initialWeight) / 100;
+    const finalFatMass = (finalFatPercentage * finalWeight) / 100;
+
+    fatDifference = finalFatMass - initialFatMass;
+    leanDifference = weightDifference - fatDifference;
+  }
+
+  // Apply specific thermodynamic constants based on tissue fate (Anabolism vs Catabolism)
+  // Positive difference (building tissue) uses the high construction cost.
+  // Negative difference (liberating tissue) uses the actual stored energy density.
+  const leanCalories =
+    leanDifference > 0
+      ? leanDifference * CALORIES_BUILD_KG_MUSCLE
+      : leanDifference * CALORIES_STORED_KG_MUSCLE;
+
+  const fatCalories =
+    fatDifference > 0
+      ? fatDifference * CALORIES_BUILD_KG_FAT
+      : fatDifference * CALORIES_STORED_KG_FAT;
+
+  // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
+  // Note: If tissue is lost, fatCalories/leanCalories are negative, effectively
+  // *adding* that liberated energy to the TDEE calculation, which is physiologically correct.
+  return ((totalCalories || 0) - (fatCalories + leanCalories)) / totalDays;
+};
 
 // ---------------------------------------------------------------------------
 // Step 3 – Calorie target
@@ -808,7 +891,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     : calculateBMR(gender, weightKg, heightCm, age);
 
   // Step 2 – TDEE
-  const tdee = calculateTDEE(bmr, activityLevel);
+  const tdee = calculateTDEE({ bmr, activityLevel });
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
   const targetCalories = calculateTargetCalories(tdee, weightGoal, {
@@ -839,7 +922,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     // Higher body fat → lower LBM → lower BMR (pessimistic / min calories)
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
-    const tdeeLow = calculateTDEE(bmrLow, activityLevel);
+    const tdeeLow = calculateTDEE({ bmr: bmrLow, activityLevel });
     minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, {
       gender,
       bmr: bmrLow,
@@ -850,7 +933,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
-    const tdeeHigh = calculateTDEE(bmrHigh, activityLevel);
+    const tdeeHigh = calculateTDEE({ bmr: bmrHigh, activityLevel });
     maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, {
       gender,
       bmr: bmrHigh,
