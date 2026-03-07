@@ -405,15 +405,13 @@ export function useChatMessages(): UseChatMessagesResult {
         let payloadJson: string | undefined = undefined;
 
         if (pendingIntention === GENERATE_MY_WORKOUTS) {
-          // Generate workout from chat history
-          const textOnlyHistory = slicedHistory
-            .filter((m) => m.sender === 'user')
-            .map((m) => ({
-              role: 'user' as const,
-              content: m.message,
-            }));
+          // Pass last 6 conversation entries + current message so the model has context and sees recent back-and-forth (same idea as Analyze Progress / Nutrition Check)
+          const recentConversation = [
+            ...historyEntries.slice(-6),
+            { role: 'user' as const, content: text.trim() },
+          ];
 
-          const workoutPlan = await generateWorkoutPlan(aiConfig, textOnlyHistory);
+          const workoutPlan = await generateWorkoutPlan(aiConfig, recentConversation);
 
           if (workoutPlan) {
             // Process the workout plan and create templates in database
