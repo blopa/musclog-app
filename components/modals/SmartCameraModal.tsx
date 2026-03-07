@@ -989,6 +989,7 @@ export default function SmartCameraModal({
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
             onFoodTracked={handleClose}
             isAiEnabled={isAiEnabled}
+            canEdit={!!productFromAiLabel}
           />
         ) : null}
 

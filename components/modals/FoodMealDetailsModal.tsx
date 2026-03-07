@@ -1,8 +1,21 @@
 import { format, isSameDay } from 'date-fns';
-import { BookmarkPlus, Calendar, Edit, PlusCircle, RefreshCcwDot } from 'lucide-react-native';
+import {
+  BarChart,
+  BookmarkPlus,
+  Calendar,
+  Cookie,
+  Droplet,
+  Dumbbell,
+  Edit,
+  Edit3,
+  Pencil,
+  PlusCircle,
+  RefreshCcwDot,
+  ScanLine,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
@@ -31,11 +44,14 @@ import {
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
+import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
+import { MacroInput } from '../MacroInput';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
+import { TextInput } from '../theme/TextInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -62,6 +78,8 @@ type FoodDetailsModalProps = {
   onFoodTracked?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
+  /** When true, show an edit control so the user can correct name, barcode, and macros (e.g. for AI-sourced data). */
+  canEdit?: boolean;
 };
 
 export function FoodMealDetailsModal({
@@ -80,6 +98,7 @@ export function FoodMealDetailsModal({
   onBarcodeLookupComplete,
   onFoodTracked,
   isAiEnabled = true,
+  canEdit = false,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -129,6 +148,24 @@ export function FoodMealDetailsModal({
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
   const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
+  /** User edits to AI-sourced product (name, barcode, per-100g macros). */
+  const [editedOverrides, setEditedOverrides] = useState<{
+    name?: string;
+    barcode?: string;
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+  } | null>(null);
+  const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
+  const [editForm, setEditForm] = useState<{
+    name: string;
+    barcode: string;
+    calories: string;
+    protein: string;
+    carbs: string;
+    fat: string;
+  } | null>(null);
 
   // Helper function to determine the mode based on available data
   const getMode = (): 'meal' | 'foodLog' | 'food' | 'barcode' | null => {
@@ -562,10 +599,27 @@ export function FoodMealDetailsModal({
     mealNutrients,
   ]);
 
-  const nutritionalData = getNutritionalData();
+  const baseNutritionalData = getNutritionalData();
+  const nutritionalData =
+    editedOverrides &&
+    (editedOverrides.calories != null ||
+      editedOverrides.protein != null ||
+      editedOverrides.carbs != null ||
+      editedOverrides.fat != null)
+      ? {
+          ...baseNutritionalData,
+          calories: editedOverrides.calories ?? baseNutritionalData.calories,
+          protein: editedOverrides.protein ?? baseNutritionalData.protein,
+          carbs: editedOverrides.carbs ?? baseNutritionalData.carbs,
+          fat: editedOverrides.fat ?? baseNutritionalData.fat,
+        }
+      : baseNutritionalData;
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
   const getFoodMealName = useCallback(() => {
+    if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
+      return editedOverrides.name.trim();
+    }
     if (meal) {
       return meal.name || t('meals.history.unknownMeal');
     }
@@ -589,7 +643,16 @@ export function FoodMealDetailsModal({
     }
 
     return t('food.unknownFood');
-  }, [productDetails, productFromSearch, food, localFood, foodLogDecrypted, meal, t]);
+  }, [
+    editedOverrides?.name,
+    productDetails,
+    productFromSearch,
+    food,
+    localFood,
+    foodLogDecrypted,
+    meal,
+    t,
+  ]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
@@ -836,11 +899,22 @@ export function FoodMealDetailsModal({
       }
 
       // Handle API food: use preloaded search product or barcode-fetched product
-      const productToSave =
+      let productToSave =
         productFromSearch ??
         (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null);
       if (!productToSave) {
         throw new Error('Product details not loaded');
+      }
+      // Apply user edits (e.g. from AI-sourced data) to name and barcode
+      if (editedOverrides) {
+        const codeFromProduct = (productToSave as { code?: string }).code;
+        productToSave = {
+          ...productToSave,
+          product_name:
+            (editedOverrides.name?.trim() || getProductName(productToSave)).trim() ||
+            getProductName(productToSave),
+          code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
+        } as typeof productToSave;
       }
 
       // Save product to local database (search result has same shape as V3 for our usage)
@@ -899,6 +973,7 @@ export function FoodMealDetailsModal({
     localFood,
     productFromSearch,
     productDetails,
+    editedOverrides,
     nutritionalData.calories,
     nutritionalData.protein,
     nutritionalData.carbs,
@@ -920,6 +995,58 @@ export function FoodMealDetailsModal({
     onLogMeal,
     mealPortionMultiplier,
   ]);
+
+  const handleOpenEditPopUp = useCallback(() => {
+    const productCode =
+      (productFromSearch && 'code' in productFromSearch
+        ? (productFromSearch as { code?: string }).code
+        : undefined) ?? '';
+    setEditForm({
+      name: getFoodMealName(),
+      barcode: barcode ?? productCode ?? '',
+      calories: String(baseNutritionalData.calories),
+      protein: String(baseNutritionalData.protein),
+      carbs: String(baseNutritionalData.carbs),
+      fat: String(baseNutritionalData.fat),
+    });
+    setIsEditPopUpVisible(true);
+  }, [
+    getFoodMealName,
+    baseNutritionalData.calories,
+    baseNutritionalData.protein,
+    baseNutritionalData.carbs,
+    baseNutritionalData.fat,
+    barcode,
+    productFromSearch,
+  ]);
+
+  const handleSaveEditPopUp = useCallback(() => {
+    if (!editForm) {
+      return;
+    }
+    const cal = Number(editForm.calories);
+    const pro = Number(editForm.protein);
+    const carb = Number(editForm.carbs);
+    const f = Number(editForm.fat);
+    setEditedOverrides({
+      name: editForm.name.trim() || undefined,
+      barcode: editForm.barcode.trim() || undefined,
+      calories: Number.isFinite(cal) ? cal : undefined,
+      protein: Number.isFinite(pro) ? pro : undefined,
+      carbs: Number.isFinite(carb) ? carb : undefined,
+      fat: Number.isFinite(f) ? f : undefined,
+    });
+    setEditForm(null);
+    setIsEditPopUpVisible(false);
+  }, [editForm]);
+
+  const handleEditFormNumericChange = useCallback(
+    (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
+      const numericValue = value.replace(/[^0-9.]/g, '');
+      setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
+    },
+    []
+  );
 
   // Handlers for FoodNotFoundModal actions — close Food Details modal too so parent can resume camera.
   const handleTryAiScan = useCallback(() => {
@@ -945,10 +1072,12 @@ export function FoodMealDetailsModal({
     onClose();
   }, [onClose]);
 
-  // Reset matched portion when modal closes
+  // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
     if (!visible) {
       setMatchedPortion(null);
+      setEditedOverrides(null);
+      setIsEditPopUpVisible(false);
     }
   }, [visible]);
 
@@ -1040,7 +1169,24 @@ export function FoodMealDetailsModal({
         <View className="flex-1 px-4 pb-6">
           {/* Food Info Card */}
           <View className="mt-6">
-            <FoodInfoCard food={scaledFood} />
+            <View className="relative">
+              <FoodInfoCard food={scaledFood} />
+              {canEdit && mode !== 'meal' ? (
+                <Pressable
+                  onPress={handleOpenEditPopUp}
+                  className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
+                  style={{
+                    elevation: 2,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 2,
+                  }}
+                >
+                  <Edit3 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+                </Pressable>
+              ) : null}
+            </View>
 
             {/* Additional Nutritional Info - only show for foods, not meals */}
             {mode !== 'meal' &&
@@ -1249,6 +1395,150 @@ export function FoodMealDetailsModal({
           />
         ) : null}
       </FullScreenModal>
+
+      {/* Edit food info (AI-sourced data) */}
+      <BottomPopUp
+        visible={isEditPopUpVisible ? editForm !== null : false}
+        onClose={() => {
+          setIsEditPopUpVisible(false);
+          setEditForm(null);
+        }}
+        title={t('food.foodDetails.editFoodInfo', 'Edit food info')}
+        subtitle={t(
+          'food.foodDetails.editFoodInfoSubtitle',
+          'Correct name, barcode or macros if the AI got them wrong.'
+        )}
+        headerIcon={
+          <View
+            className="h-10 w-10 items-center justify-center rounded-full"
+            style={{ backgroundColor: theme.colors.status.purple20 }}
+          >
+            <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          </View>
+        }
+        footer={
+          <Button
+            label={t('common.save', 'Save')}
+            variant="gradientCta"
+            size="sm"
+            width="full"
+            onPress={handleSaveEditPopUp}
+          />
+        }
+      >
+        {editForm ? (
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            className="gap-5"
+          >
+            {/* Food Name - same style as CreateCustomFoodModal */}
+            <TextInput
+              label={t('food.foodDetails.foodName', 'Food name')}
+              value={editForm.name}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, name: text } : null))
+              }
+              placeholder={t('food.foodDetails.foodNamePlaceholder', 'e.g. Greek Yogurt')}
+              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            />
+
+            {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
+            <View className="relative">
+              <TextInput
+                label={t('food.foodDetails.barcode', 'Barcode')}
+                value={editForm.barcode}
+                onChangeText={(text) =>
+                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
+                }
+                placeholder={t('food.foodDetails.barcodePlaceholder', 'Scan or enter barcode')}
+                keyboardType="numeric"
+              />
+              <View
+                className="absolute right-2 items-center justify-center rounded-lg"
+                style={{
+                  ...(Platform.OS !== 'web'
+                    ? { top: theme.size['14'] / 2 }
+                    : { top: theme.size['18'] / 2 }),
+                  width: theme.size['10'],
+                  height: theme.size['10'],
+                  backgroundColor: theme.colors.accent.primary10,
+                }}
+              >
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+            </View>
+
+            {/* Macronutrients - card layout like CreateCustomFoodModal */}
+            <View className="flex-row items-center gap-2">
+              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients', 'Macronutrients')}
+              </Text>
+            </View>
+
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              {t('food.foodDetails.macrosPer100g', 'Per 100g')}
+            </Text>
+
+            <MacroInput
+              label={t('food.newCustomFood.calories', 'Calories')}
+              value={editForm.calories}
+              onChange={handleEditFormNumericChange('calories')}
+              topRightElement={
+                <View
+                  className="rounded-full px-2"
+                  style={{
+                    paddingVertical: theme.spacing.padding.xsHalf,
+                    backgroundColor: theme.colors.accent.primary10,
+                  }}
+                >
+                  <Text className="text-xs font-medium text-accent-primary">
+                    {t('food.common.kcal')}
+                  </Text>
+                </View>
+              }
+              variant="default"
+              size="full"
+            />
+
+            <View className="flex-row flex-wrap gap-4">
+              <MacroInput
+                label={t('food.newCustomFood.protein', 'Protein')}
+                value={editForm.protein}
+                onChange={handleEditFormNumericChange('protein')}
+                topRightElement={
+                  <Dumbbell
+                    size={theme.iconSize.sm}
+                    color={theme.colors.status.emeraldLight}
+                  />
+                }
+                variant="success"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.carbs', 'Carbs')}
+                value={editForm.carbs}
+                onChange={handleEditFormNumericChange('carbs')}
+                topRightElement={
+                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+                }
+                variant="warning"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.fat', 'Fat')}
+                value={editForm.fat}
+                onChange={handleEditFormNumericChange('fat')}
+                topRightElement={
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                }
+                variant="error"
+                size="half"
+              />
+            </View>
+          </KeyboardAvoidingView>
+        ) : null}
+      </BottomPopUp>
     </>
   );
 }
