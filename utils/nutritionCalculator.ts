@@ -405,6 +405,7 @@ export interface TDEEParams {
   finalFatPercentage?: number;
   bmr?: number;
   activityLevel?: number;
+  liftingExperience?: LiftingExperience;
 }
 
 /**
@@ -421,18 +422,22 @@ export interface TDEEParams {
  * @param params.finalFatPercentage - (Optional) Ending body fat percentage (0-100)
  * @param params.bmr - (Optional) Basal Metabolic Rate for standard estimation
  * @param params.activityLevel - (Optional) Activity level index
+ * @param params.liftingExperience - (Optional) Dictates tissue partitioning when building mass
  * @returns Average daily TDEE in kcal, or 0 if days is invalid
  */
-export const calculateTDEE = ({
-  totalCalories,
-  totalDays,
-  initialWeight,
-  finalWeight,
-  initialFatPercentage,
-  finalFatPercentage,
-  bmr,
-  activityLevel,
-}: TDEEParams): number => {
+export const calculateTDEE = (params: TDEEParams): number => {
+  const {
+    totalCalories,
+    totalDays,
+    initialWeight,
+    finalWeight,
+    initialFatPercentage,
+    finalFatPercentage,
+    bmr,
+    activityLevel,
+    liftingExperience,
+  } = params;
+
   if (bmr && activityLevel) {
     // Assuming ACTIVITY_MULTIPLIERS is defined in the surrounding scope
     const multiplier = ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55;
@@ -449,16 +454,10 @@ export const calculateTDEE = ({
   // but keeping your original math logic intact:
   const weightDifference = (finalWeight || 0) - (initialWeight || 0);
 
-  // Default macro-composition assumptions if exact Body Fat % is missing
-  // Losing weight: Assumes 75% fat loss, 25% lean mass loss (Standard Forbes Curve approximation)
-  // Gaining weight: Assumes 50% fat gain, 50% lean mass gain (Intermediate lifter baseline)
-  let fatDifference = weightDifference * (weightDifference < 0 ? 0.75 : 0.5);
+  let fatDifference: number;
+  let leanDifference: number;
 
-  // We use "Lean Difference" rather than "Muscle Difference" as any non-fat change
-  // involves water, glycogen, and structural proteins (Lean Body Mass).
-  let leanDifference = weightDifference * (weightDifference < 0 ? 0.25 : 0.5);
-
-  // If Body Fat % is provided, calculate the exact lipid vs lean mass shift
+  // If exact Body Fat % is provided, calculate the exact lipid vs lean mass shift
   if (
     initialFatPercentage !== undefined &&
     finalFatPercentage !== undefined &&
@@ -470,6 +469,20 @@ export const calculateTDEE = ({
 
     fatDifference = finalFatMass - initialFatMass;
     leanDifference = weightDifference - fatDifference;
+  } else {
+    // If not provided, leverage our advanced Forbes Curve / Experience partition models!
+    const assumedInitialFatMass = initialWeight
+      ? initialWeight * (initialFatPercentage !== undefined ? initialFatPercentage / 100 : 0.25)
+      : 0;
+
+    const comp = getWeightChangeComposition(
+      assumedInitialFatMass,
+      weightDifference,
+      liftingExperience
+    );
+
+    fatDifference = comp.fatChangeKg;
+    leanDifference = comp.leanChangeKg;
   }
 
   // Apply specific thermodynamic constants based on tissue fate (Anabolism vs Catabolism)
@@ -700,6 +713,7 @@ export function bmiFromWeightAndHeightM(weightKg: number, heightM: number): numb
   if (heightM <= 0) {
     return 0;
   }
+
   return parseFloat((weightKg / (heightM * heightM)).toFixed(1));
 }
 
@@ -820,7 +834,10 @@ export function generateWeeklyCheckins(
         const weightGained = intermediateWeight - currentWeightKg;
         if (weightGained > 0) {
           const currentFatKg = currentWeightKg * (currentBodyFatPercent / 100);
-          const fatGainedKg = weightGained * 0.5;
+          // PHYSIOLOGY FIX: Use accurate fat fraction based on experience instead of hardcoded 0.5
+          const fatFraction = getGainFatFraction(plan.liftingExperience);
+          const fatGainedKg = weightGained * fatFraction;
+
           const newFatKg = currentFatKg + fatGainedKg;
           intermediateBodyFat = parseFloat(
             Math.max(0, Math.min(100, (newFatKg / intermediateWeight) * 100)).toFixed(1)
