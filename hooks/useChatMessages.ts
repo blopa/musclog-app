@@ -12,6 +12,8 @@ import {
   type CoachAIConfig,
   type CoachResponse,
   generateWorkoutPlan,
+  getNutritionInsights,
+  getRecentWorkoutsInsights,
   sendCoachMessage,
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
@@ -89,6 +91,10 @@ export type UseChatMessagesResult = {
   clearFailedMessageText: () => void;
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
+  /** One-tap: request workout progress insight for last 7 days and append as coach message. */
+  requestProgressInsight: () => Promise<void>;
+  /** One-tap: request nutrition insight for last 7 days and append as coach message. */
+  requestNutritionInsight: () => Promise<void>;
 };
 
 type AISettings = {
@@ -483,6 +489,148 @@ export function useChatMessages(): UseChatMessagesResult {
     [sessionId, isSending, t, clearFailedMessageText]
   );
 
+  const requestProgressInsight = useCallback(async () => {
+    if (isSending) {
+      return;
+    }
+    let sid = sessionId;
+    if (!sid) {
+      sid = ChatService.generateSessionId();
+      await setCurrentChatSessionId(sid);
+      setSessionId(sid);
+    }
+    setEphemeralErrorMessage(null);
+    setIsSending(true);
+    try {
+      const [
+        enableGoogleGemini,
+        enableOpenAi,
+        googleGeminiApiKey,
+        googleGeminiModel,
+        openAiApiKey,
+        openAiModel,
+      ] = await Promise.all([
+        SettingsService.getEnableGoogleGemini(),
+        SettingsService.getEnableOpenAi(),
+        SettingsService.getGoogleGeminiApiKey(),
+        SettingsService.getGoogleGeminiModel(),
+        SettingsService.getOpenAiApiKey(),
+        SettingsService.getOpenAiModel(),
+      ]);
+      const aiConfig = await resolveAIConfig({
+        enableGoogleGemini,
+        enableOpenAi,
+        googleGeminiApiKey,
+        googleGeminiModel,
+        openAiApiKey,
+        openAiModel,
+      });
+      if (!aiConfig) {
+        setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
+        return;
+      }
+      const end = new Date();
+      const start = new Date();
+      start.setDate(start.getDate() - 7);
+      const startDate = start.toISOString().split('T')[0];
+      const endDate = end.toISOString().split('T')[0];
+      const result = await getRecentWorkoutsInsights(aiConfig, startDate, endDate);
+      if (!result?.trim()) {
+        setEphemeralErrorMessage(t('coach.errors.progressInsightFailed'));
+        return;
+      }
+      const coachRecord = await ChatService.saveMessage({
+        sessionId: sid,
+        sender: 'coach',
+        message: result,
+        summarizedMessage: result.substring(0, 200),
+      });
+      rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
+      setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
+      setCurrentOffset((prev) => prev + 1);
+    } catch (error) {
+      console.error('[useChatMessages] requestProgressInsight error:', error);
+      setEphemeralErrorMessage(t('coach.errors.progressInsightFailed'));
+    } finally {
+      setIsSending(false);
+    }
+  }, [sessionId, isSending, t]);
+
+  const requestNutritionInsight = useCallback(async () => {
+    if (isSending) {
+      return;
+    }
+
+    let sid = sessionId;
+
+    if (!sid) {
+      sid = ChatService.generateSessionId();
+      await setCurrentChatSessionId(sid);
+      setSessionId(sid);
+    }
+    setEphemeralErrorMessage(null);
+    setIsSending(true);
+
+    try {
+      const [
+        enableGoogleGemini,
+        enableOpenAi,
+        googleGeminiApiKey,
+        googleGeminiModel,
+        openAiApiKey,
+        openAiModel,
+      ] = await Promise.all([
+        SettingsService.getEnableGoogleGemini(),
+        SettingsService.getEnableOpenAi(),
+        SettingsService.getGoogleGeminiApiKey(),
+        SettingsService.getGoogleGeminiModel(),
+        SettingsService.getOpenAiApiKey(),
+        SettingsService.getOpenAiModel(),
+      ]);
+
+      const aiConfig = await resolveAIConfig({
+        enableGoogleGemini,
+        enableOpenAi,
+        googleGeminiApiKey,
+        googleGeminiModel,
+        openAiApiKey,
+        openAiModel,
+      });
+
+      if (!aiConfig) {
+        setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
+        return;
+      }
+
+      const end = new Date();
+      const start = new Date();
+      start.setDate(start.getDate() - 7);
+      const startDate = start.toISOString().split('T')[0];
+      const endDate = end.toISOString().split('T')[0];
+      const result = await getNutritionInsights(aiConfig, startDate, endDate);
+      if (!result?.trim()) {
+        setEphemeralErrorMessage(t('coach.errors.nutritionInsightFailed'));
+        return;
+      }
+
+      const coachRecord = await ChatService.saveMessage({
+        sessionId: sid,
+        sender: 'coach',
+        message: result,
+        summarizedMessage: result.substring(0, 200),
+      });
+
+      rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
+      setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
+      setCurrentOffset((prev) => prev + 1);
+    } catch (error) {
+      console.error('[useChatMessages] requestNutritionInsight error:', error);
+      setEphemeralErrorMessage(t('coach.errors.nutritionInsightFailed'));
+    } finally {
+      setIsSending(false);
+    }
+  }, [sessionId, isSending, t]);
+
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
     if (!ephemeralErrorMessage) {
       return null;
@@ -510,5 +658,7 @@ export function useChatMessages(): UseChatMessagesResult {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    requestProgressInsight,
+    requestNutritionInsight,
   };
 }

@@ -368,6 +368,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    requestProgressInsight,
+    requestNutritionInsight,
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const [isOnline, setIsOnline] = useState(true);
@@ -508,8 +510,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
+          onPress={requestProgressInsight}
+          disabled={isSending}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{ borderColor: theme.colors.border.light }}
+          style={{
+            borderColor: theme.colors.border.light,
+            opacity: isSending ? 0.6 : 1,
+          }}
         >
           <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
           <Text className="text-sm font-medium text-text-primary">
@@ -517,8 +524,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
+          onPress={requestNutritionInsight}
+          disabled={isSending}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{ borderColor: theme.colors.border.light }}
+          style={{
+            borderColor: theme.colors.border.light,
+            opacity: isSending ? 0.6 : 1,
+          }}
         >
           <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
           <Text className="text-sm font-medium text-text-primary">
@@ -529,7 +541,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     );
   }, [
     handleGenerateWorkouts,
+    isSending,
     pendingIntention,
+    requestProgressInsight,
+    requestNutritionInsight,
     t,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,

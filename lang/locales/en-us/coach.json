@@ -16,7 +16,9 @@
     "errors": {
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
-      "generalError": "Sorry, something went wrong. Please try again."
+      "generalError": "Sorry, something went wrong. Please try again.",
+      "progressInsightFailed": "Could not analyze progress. Try again later.",
+      "nutritionInsightFailed": "Could not check nutrition. Try again later."
     },
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}"
