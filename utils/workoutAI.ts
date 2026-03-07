@@ -81,9 +81,9 @@ export async function processWorkoutPlanResponse(
   try {
     const createdTemplateIds: string[] = [];
 
-    // Get all exercises to match by name
+    // Get all exercises to look up by id (AI returns exerciseId)
     const allExercises = await ExerciseService.getAllExercises();
-    const exercisesByName = new Map(allExercises.map((ex) => [ex.name.toLowerCase(), ex]));
+    const exercisesById = new Map(allExercises.map((ex) => [ex.id, ex]));
 
     // Create a template for each workout plan
     for (const plan of response.workoutPlan) {
@@ -91,16 +91,17 @@ export async function processWorkoutPlanResponse(
       const exercises: ExerciseInWorkout[] = [];
 
       for (const aiExercise of plan.exercises) {
-        // Find exercise by name (case-insensitive)
-        const matchedExercise = exercisesByName.get(aiExercise.name.toLowerCase());
+        const exerciseId =
+          typeof aiExercise.exerciseId === 'string' ? aiExercise.exerciseId : String(aiExercise.exerciseId);
+        const matchedExercise = exercisesById.get(exerciseId);
         if (!matchedExercise) {
-          console.warn(`[workoutAI] Exercise not found: ${aiExercise.name}`);
+          console.warn(`[workoutAI] Exercise not found for id: ${exerciseId}`);
           continue;
         }
 
         exercises.push({
           id: matchedExercise.id,
-          label: matchedExercise.name,
+          label: matchedExercise.name ?? '',
           description: `${aiExercise.sets}x${aiExercise.reps}`,
           icon: undefined,
           iconBgColor: '',

@@ -53,7 +53,7 @@ export type WorkoutPlan = {
   description?: string;
   recurringOnWeekDay: string;
   exercises: {
-    name: string;
+    exerciseId: string;
     reps: number;
     sets: number;
     oneRepMaxPercentage: number;

@@ -205,12 +205,7 @@ export const createWorkoutPlanPrompt = async (
   let exercisesList = '[]';
   try {
     const exercises = await ExerciseService.getAllExercises();
-    const list = exercises.map((e) => ({
-      name: e.name,
-      muscleGroup: e.muscleGroup,
-      equipmentType: e.equipmentType,
-      mechanicType: e.mechanicType,
-    }));
+    const list = exercises.map((e) => ({ id: e.id, name: e.name ?? '' }));
     exercisesList = JSON.stringify(list, null, 2);
   } catch (error) {
     console.error('Error fetching exercises for workout plan prompt:', error);
@@ -220,7 +215,11 @@ export const createWorkoutPlanPrompt = async (
     getBaseSystemPrompt(language),
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
-    `Please only use the exercises from the following list: ${exercisesList}`,
+    'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
+    `Available exercises (id, name):`,
+    '```json',
+    exercisesList,
+    '```',
     userDetails,
   ].join('\n');
 };
@@ -738,13 +737,14 @@ export const getGenerateWorkoutPlanFunctions = ():
                 },
                 exercises: {
                   type: 'array',
-                  description: 'List of exercises in this workout',
+                  description: 'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
                   items: {
                     type: 'object',
                     properties: {
-                      name: {
+                      exerciseId: {
                         type: 'string',
-                        description: 'Exercise name (should match available exercises in database)',
+                        description:
+                          'The exact id of the exercise from the available exercises list (required)',
                       },
                       reps: {
                         type: 'number',
@@ -759,7 +759,7 @@ export const getGenerateWorkoutPlanFunctions = ():
                         description: 'Percentage of estimated 1RM to use (e.g., 75 for 75%)',
                       },
                     },
-                    required: ['name', 'reps', 'sets', 'oneRepMaxPercentage'],
+                    required: ['exerciseId', 'reps', 'sets', 'oneRepMaxPercentage'],
                   },
                 },
               },
