@@ -292,17 +292,8 @@ export function useChatMessages(): UseChatMessagesResult {
         // 1. Check for pending chat intention (e.g., GENERATE_MY_WORKOUTS)
         const pendingIntention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
 
-        // 1b. Commit any in-memory pending coach message to DB so it's in history context
-        const pendingMsg = pendingCoachMessageRef.current;
-        if (pendingMsg) {
-          const pendingRecord = await ChatService.saveMessage({
-            sessionId,
-            sender: 'coach',
-            message: pendingMsg.text as string,
-            summarizedMessage: (pendingMsg.text as string).substring(0, 200),
-          });
-          rawMessagesRef.current = [...rawMessagesRef.current, pendingRecord];
-          setCurrentOffset((prev) => prev + 1);
+        // 1b. Clear in-memory pending coach message (visual-only; do not save to DB or send to API)
+        if (pendingCoachMessageRef.current) {
           pendingCoachMessageRef.current = null;
           setPendingCoachMessage(null);
         }

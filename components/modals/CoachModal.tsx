@@ -3,7 +3,6 @@ import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
-  Mic,
   PlusCircle,
   Send as SendIcon,
   TrendingUp,
@@ -285,9 +284,6 @@ function ComposerWithRestoredText({
           multiline: true,
         }}
       />
-      <Pressable className="p-2" onPress={() => console.log('Mic pressed')}>
-        <Mic size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-      </Pressable>
     </View>
   );
 }
