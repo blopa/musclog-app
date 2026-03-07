@@ -337,6 +337,24 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     loadIntention();
   }, [visible]);
 
+  // When messages change and we're in workout-gen mode, sync with AsyncStorage so we turn off
+  // the "Workout Gen." pill as soon as the LLM response is saved (useChatMessages clears the key)
+  useEffect(() => {
+    if (!visible || pendingIntention !== GENERATE_MY_WORKOUTS) {
+      return;
+    }
+
+    const syncIntention = async () => {
+      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
+      if (!intention) {
+        setPendingIntention(null);
+        clearPendingCoachMessage();
+      }
+    };
+
+    syncIntention();
+  }, [visible, pendingIntention, messages, clearPendingCoachMessage]);
+
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
