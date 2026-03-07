@@ -12,6 +12,27 @@ export type { ProductStateV3 as ProductState, ProductV2, ProductV3, V2SearchResu
 // Type for search results (using V2 types from the library)
 export type SearchResultProduct = ProductV2;
 
+/**
+ * OFF product name fields used by getProductName (aligned with OFF Data fields / API).
+ * @see https://wiki.openfoodfacts.org/Data_fields
+ * @see https://openfoodfacts.github.io/openfoodfacts-server/api/ref-v2/
+ * Localized: product_name_LANG, generic_name_LANG (e.g. product_name_en, generic_name_fr).
+ */
+export interface ProductNameFields {
+  product_name?: string;
+  product_name_en?: string;
+  product_name_nl?: string;
+  product_name_fr?: string;
+  product_name_de?: string;
+  abbreviated_product_name?: string;
+  generic_name?: string;
+  generic_name_en?: string;
+  brands?: string;
+  categories?: string;
+  lang?: string;
+  [key: string]: string | undefined;
+}
+
 // Structured nutriments shape built by mapOpenFoodFactsProduct (not the raw API shape)
 export interface MappedNutriments {
   macronutrients?: {

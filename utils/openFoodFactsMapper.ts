@@ -1,6 +1,11 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
 import i18n from '../lang/lang';
-import { SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
+import {
+  ProductNameFields,
+  ProductV3,
+  SearchResultProduct,
+  SuccessFoodProductState,
+} from '../types/openFoodFacts';
 
 // All possible Open Food Facts nutriment properties
 const NUTRIMENT_PROPERTIES = [
@@ -438,41 +443,57 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   };
 }
 
-// TODO: instead of any, use the possible types passed to this function (by scanning the codebase)
-export function getProductName(data: any): string {
-  // Handle search results (array) vs single product (object)
+/**
+ * All possible types passed to getProductName across the codebase:
+ * - SearchResultProduct (V2 search result item)
+ * - ProductV3 (V3 product, e.g. from FoodService.createFromV3Product)
+ * - SuccessFoodProductState (V3 barcode-detail response with .product)
+ * - Wrapper shapes from API: { product } or { products: [...] }
+ */
+export type GetProductNameInput =
+  | SearchResultProduct
+  | ProductV3
+  | SuccessFoodProductState
+  | { product?: SearchResultProduct | ProductV3 }
+  | { products?: (SearchResultProduct | ProductV3)[] };
+
+export function getProductName(data: GetProductNameInput | null | undefined): string {
+  // OFF API: single product has .product, search has .products[], or payload is the product itself
+  type WithOptional = { product?: unknown; products?: unknown[] };
   const product =
-    data?.product || (Array.isArray(data?.products) ? data.products[0] : data);
+    (data as WithOptional)?.product ||
+    (Array.isArray((data as WithOptional)?.products) ? (data as WithOptional).products?.[0] : data);
 
   if (!product) {
     return i18n.t('food.unknownFood');
   }
 
-  // 1. Try the standard name fields
-  let name =
-    product.product_name ||
-    product[`product_name_${product.lang}`] || // Dynamic lookup based on product's main lang
-    product.product_name_en ||
-    product.product_name_nl ||
-    product.product_name_fr ||
-    product.product_name_de;
+  const p = product as ProductNameFields;
 
-  // 2. Fallback to Abbreviated Name (Receipt/Small UI names)
+  // 1. Try the standard name fields (OFF: product_name, product_name_LANG)
+  let name: string | undefined =
+    p.product_name ||
+    p[`product_name_${p.lang}`] || // Dynamic lookup based on product's main lang
+    p.product_name_en ||
+    p.product_name_nl ||
+    p.product_name_fr ||
+    p.product_name_de;
+
+  // 2. Fallback to Abbreviated Name (OFF: abbreviated_product_name, receipt/small UI names)
   if (!name) {
-    name = product.abbreviated_product_name;
+    name = p.abbreviated_product_name;
   }
 
-  // 3. Fallback to Generic Names (Common names)
+  // 3. Fallback to Generic Names (OFF: generic_name, generic_name_LANG)
   if (!name) {
-    name =
-      product.generic_name || product[`generic_name_${product.lang}`] || product.generic_name_en;
+    name = p.generic_name || p[`generic_name_${p.lang}`] || p.generic_name_en;
   }
 
   // 4. Ultimate Fallback: Brand + Category
   // Returns something like "Milbona (Yogurts)" instead of "Unknown"
-  if (!name && product.brands) {
-    const category = product.categories?.split(',')[0]; // Take the first category
-    name = category ? `${product.brands} (${category})` : product.brands;
+  if (!name && p.brands) {
+    const category = p.categories?.split(',')[0]; // Take the first category
+    name = category ? `${p.brands} (${category})` : p.brands;
   }
 
   return name?.trim() || i18n.t('food.unknownFood');
