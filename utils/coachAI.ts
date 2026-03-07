@@ -287,8 +287,8 @@ async function generateText(
   systemPrompt: string,
   userMessage: string = INSIGHTS_USER_MESSAGE
 ): Promise<string> {
-  // TODO: use lang
   const lang = config.language ?? 'en-US';
+  const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -296,7 +296,7 @@ async function generateText(
         apiKey: config.apiKey,
         model: config.model,
       },
-      [{ text: systemPrompt } as Part]
+      [{ text: promptWithLang } as Part]
     );
 
     const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
@@ -309,7 +309,7 @@ async function generateText(
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: promptWithLang },
       { role: 'user', content: userMessage },
     ],
   });
@@ -378,12 +378,12 @@ function getSchemaFromFunctionDeclaration(fn: {
 async function generateStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
-  userMessage: string, // TODO: the "user message" (when we generate it) needs to be translated
+  userMessage: string, // TODO: the "user message" (when we generate it) needs to be translated - for this TODO you need to find the places that uses this function
   schema: object,
   schemaName: string = 'response'
 ): Promise<T | null> {
-  // TODO: shouldn't we use lang?
   const lang = config.language ?? 'en-US';
+  const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -395,7 +395,7 @@ async function generateStructured<T>(
           responseSchema: schema,
         },
       },
-      [{ text: systemPrompt } as Part]
+      [{ text: promptWithLang } as Part]
     );
     const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
     const result = await genModel.generateContent({ contents });
@@ -414,7 +414,7 @@ async function generateStructured<T>(
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: promptWithLang },
       { role: 'user', content: userMessage },
     ],
     response_format: {
@@ -833,11 +833,15 @@ export async function extractMacrosFromLabelText(
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
   try {
+    const hasContext = context && (context.description.trim() || context.tags.length > 0);
+    if (!ocrText.trim() && !hasContext) {
+      return null;
+    }
+
     const systemPrompt = getExtractMacrosFromLabelTextPrompt();
     const fns = getEstimateMacrosFunctions(true);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
-    // TODO: if no text extracted AND no context, then just fails the request
     let userMessage = ocrText.trim() || 'No text extracted from the label.';
     if (context && (context.description.trim() || context.tags.length > 0)) {
       const parts: string[] = [];
