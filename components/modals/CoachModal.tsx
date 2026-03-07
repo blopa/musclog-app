@@ -2,13 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
-import {
-  PlusCircle,
-  Send as SendIcon,
-  TrendingUp,
-  UtensilsCrossed,
-  X,
-} from 'lucide-react-native';
+import { PlusCircle, Send as SendIcon, TrendingUp, UtensilsCrossed, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -58,10 +52,7 @@ import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 const WORKOUT_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC8wdyvHF33Emd_otj2gCXb_-DtuZnk1Yynloi9mvz8s2ZtTJ1fFbg_J8B8x02R5Njk5nPX1SonjXw5sEU1gwylKXq3buzHpa2EoRQfBpA6BTNRGfSjYnqBMRSyDW7tl5DHtCWM5DOUd91Ka2gB8Y-rdvJB99_hQED2ZIqMdcWkgxVdv_pRnWFXwFirvEOSMuCveL2ZxoS3oQpkrQoYXVBSunvPf8QQ6xtQQw-v_r9wOPDB6W6pKw22mPLs0nsdG-MkvUJTj7VCxnSe';
 
-const getPendingIntentionDisplayText = (
-  pendingIntention: string,
-  t: TFunction
-): string => {
+const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
       return 'Workout Gen.';

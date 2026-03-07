@@ -1,5 +1,18 @@
 {
   "workout": {
+    "import": {
+      "characters": "Characters",
+      "emptyData": "Please paste or enter workout data.",
+      "formatInfo": "Paste or type your workout log (e.g. from a note or app). AI will parse it and create sessions.",
+      "import": "Import",
+      "importWorkouts": "Import Workouts",
+      "instructions": "Paste your workout data below. Supported: free text, bullet lists, or structured logs.",
+      "pasteWorkoutDataPlaceholder": "Paste workout data here...",
+      "processing": "Processing...",
+      "processingData": "Workouts imported successfully.",
+      "processingFailed": "Could not process the data. Please check the format and try again.",
+      "supportedFormats": "Supported formats"
+    },
     "sessionOverview": "Session Overview",
     "startWorkout": "Start Workout",
     "resumeSession": "Resume Session",

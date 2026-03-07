@@ -70,6 +70,10 @@
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",
       "dangerZone": "DANGER ZONE"
     },
+    "chatMessages": {
+      "title": "Chat Messages",
+      "subtitle": "View and edit your conversation history"
+    },
     "aiSettings": {
       "title": "AI Settings",
       "googleGeminiIntegration": "GOOGLE GEMINI INTEGRATION",

@@ -13,6 +13,7 @@ import { initReactI18next } from 'react-i18next';
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
 import enUsAddMeal from './locales/en-us/addMeal.json';
+import enUsAi from './locales/en-us/ai.json';
 import enUsBodyFat from './locales/en-us/body_fat.json';
 import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
 import enUsCamera from './locales/en-us/camera.json';
@@ -90,6 +91,7 @@ const resources = {
       ...enUsCommon,
       ...enUsAccessToken,
       ...enUsAddMeal,
+      ...enUsAi,
       ...enUsBodyFat,
       ...enUsBodyMetrics,
       ...enUsCamera,
