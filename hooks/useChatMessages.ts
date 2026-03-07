@@ -453,7 +453,14 @@ export function useChatMessages(): UseChatMessagesResult {
           start.setDate(start.getDate() - 7);
           const startDate = start.toISOString().split('T')[0];
           const endDate = end.toISOString().split('T')[0];
-          const result = await getRecentWorkoutsInsights(aiConfig, startDate, endDate, text.trim());
+          const recentConversation = historyEntries.slice(-3);
+          const result = await getRecentWorkoutsInsights(
+            aiConfig,
+            startDate,
+            endDate,
+            text.trim(),
+            recentConversation
+          );
           if (!result?.trim()) {
             if (userRecord) {
               const recordId = userRecord.id;
@@ -474,7 +481,14 @@ export function useChatMessages(): UseChatMessagesResult {
           start.setDate(start.getDate() - 7);
           const startDate = start.toISOString().split('T')[0];
           const endDate = end.toISOString().split('T')[0];
-          const result = await getNutritionInsights(aiConfig, startDate, endDate, text.trim());
+          const recentConversation = historyEntries.slice(-3);
+          const result = await getNutritionInsights(
+            aiConfig,
+            startDate,
+            endDate,
+            text.trim(),
+            recentConversation
+          );
           if (!result?.trim()) {
             if (userRecord) {
               const recordId = userRecord.id;

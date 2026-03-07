@@ -318,6 +318,49 @@ async function generateText(
   return raw.trim();
 }
 
+/**
+ * Generate text with recent conversation history so the model keeps context.
+ * Sends system prompt, then history (last N messages), then final user message.
+ */
+async function generateTextWithHistory(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  recentConversation: ChatHistoryEntry[],
+  finalUserMessage: string
+): Promise<string> {
+  if (config.provider === 'gemini') {
+    const genModel = await configureBasicGenAI(
+      {
+        accessToken: config.accessToken,
+        apiKey: config.apiKey,
+        model: config.model,
+      },
+      [{ text: systemPrompt } as Part]
+    );
+    const contents = buildGeminiContents(recentConversation, finalUserMessage);
+    const result = await genModel.generateContent({ contents });
+    const raw = extractRawText(result.response);
+    return raw?.trim() ?? '';
+  }
+
+  const client = new OpenAI({ apiKey: config.apiKey });
+  const historyMessages = recentConversation.map((e) => ({
+    role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+    content: e.content,
+  }));
+  const completion = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      ...historyMessages,
+      { role: 'user', content: finalUserMessage },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content ?? '';
+  return raw.trim();
+}
+
 function getSchemaFromFunctionDeclaration(fn: {
   parameters?: { type?: string; properties?: object; required?: string[] };
 }): object {
@@ -497,20 +540,33 @@ export async function sendCoachMessage(
 /**
  * Get nutrition insights for a date range.
  * Optional userRemarks are passed to the model so it can factor them into the analysis.
+ * Optional recentConversation (e.g. last 3 messages) gives the model context so it doesn't reply as if starting fresh.
  */
 export async function getNutritionInsights(
   config: CoachAIConfig,
   startDate: string,
   endDate: string,
-  userRemarks?: string
+  userRemarks?: string,
+  recentConversation?: ChatHistoryEntry[]
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang);
-    const userMessage = userRemarks?.trim()
+    const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
-    const text = await generateText(config, systemPrompt, userMessage);
+
+    if (recentConversation?.length) {
+      const text = await generateTextWithHistory(
+        config,
+        systemPrompt,
+        recentConversation,
+        finalUserMessage
+      );
+      return text || null;
+    }
+
+    const text = await generateText(config, systemPrompt, finalUserMessage);
     return text || null;
   } catch (error) {
     console.error('[coachAI] getNutritionInsights error:', error);
@@ -619,21 +675,33 @@ export async function getRecentWorkoutInsights(
 /**
  * Get insights about recent workouts in a date range.
  * Optional userRemarks are passed to the model so it can factor them into the analysis.
+ * Optional recentConversation (e.g. last 3 messages) gives the model context so it doesn't reply as if starting fresh.
  */
 export async function getRecentWorkoutsInsights(
   config: CoachAIConfig,
   startDate: string,
   endDate: string,
-  userRemarks?: string
+  userRemarks?: string,
+  recentConversation?: ChatHistoryEntry[]
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang);
-    const userMessage = userRemarks?.trim()
+    const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
 
-    const text = await generateText(config, systemPrompt, userMessage);
+    if (recentConversation?.length) {
+      const text = await generateTextWithHistory(
+        config,
+        systemPrompt,
+        recentConversation,
+        finalUserMessage
+      );
+      return text || null;
+    }
+
+    const text = await generateText(config, systemPrompt, finalUserMessage);
     return text || null;
   } catch (error) {
     console.error('[coachAI] getRecentWorkoutsInsights error:', error);
