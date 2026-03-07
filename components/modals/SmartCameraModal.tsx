@@ -1,5 +1,4 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
-import { readAsStringAsync } from 'expo-file-system/legacy';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,9 +25,8 @@ import {
   type CoachAIConfig,
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
-  type MacroEstimate,
 } from '../../utils/coachAI';
-import { detectBarcodes, openCropperAsync } from '../../utils/file';
+import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
 import { getAccessToken } from '../../utils/googleAuth';
 import { performOcr } from '../../utils/ocr';
 import { showSnackbar } from '../../utils/snackbarService';
@@ -194,7 +192,7 @@ export default function SmartCameraModal({
           }
         };
 
-        const base64 = await readAsStringAsync(fileUri, {
+        const base64 = await readFileAsStringAsync(fileUri, {
           encoding: 'base64',
         } as { encoding: 'base64' });
         const aiConfig = await resolveAIConfig();

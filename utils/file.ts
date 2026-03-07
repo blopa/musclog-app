@@ -8,6 +8,7 @@ import * as Sharing from 'expo-sharing';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -125,4 +126,8 @@ export async function deleteExerciseImage(imageUri: string): Promise<void> {
 
 export async function openCropperAsync(options: OpenCropperOptions) {
   return ExpoImageCropTool.openCropperAsync(options);
+}
+
+export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {
+  return readAsStringAsync(fileUri, options);
 }

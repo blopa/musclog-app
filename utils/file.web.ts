@@ -111,3 +111,8 @@ export async function detectBarcodes(imageUri: string) {
 export async function openCropperAsync(options: any) {
   return options.imageUri;
 }
+
+export async function readFileAsStringAsync(options: any) {
+  // TODO: implement this
+  return '';
+}
