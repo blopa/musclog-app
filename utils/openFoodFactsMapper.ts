@@ -468,35 +468,51 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
     return i18n.t('food.unknownFood');
   }
 
-  const p = product as ProductNameFields;
+  const p = product as Record<string, unknown>;
 
   // 1. Try the standard name fields (OFF: product_name, product_name_LANG)
   let name: string | undefined =
-    p.product_name ||
-    p[`product_name_${p.lang}`] || // Dynamic lookup based on product's main lang
-    p.product_name_en ||
-    p.product_name_nl ||
-    p.product_name_fr ||
-    p.product_name_de;
+    (p.product_name as string) ||
+    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined) ||
+    (p.product_name_en as string) ||
+    (p.product_name_nl as string) ||
+    (p.product_name_fr as string) ||
+    (p.product_name_de as string);
+
+  // 1b. V3 API often has only product_name_<lang> (e.g. product_name_en) without product_name – scan for any
+  if (!name && typeof p === 'object' && p !== null) {
+    for (const key of Object.keys(p)) {
+      if (key.startsWith('product_name_') && key !== 'product_name') {
+        const val = p[key];
+        if (typeof val === 'string' && val.trim()) {
+          name = val;
+          break;
+        }
+      }
+    }
+  }
 
   // 2. Fallback to Abbreviated Name (OFF: abbreviated_product_name, receipt/small UI names)
   if (!name) {
-    name = p.abbreviated_product_name;
+    name = p.abbreviated_product_name as string;
   }
 
   // 3. Fallback to Generic Names (OFF: generic_name, generic_name_LANG)
   if (!name) {
-    name = p.generic_name || p[`generic_name_${p.lang}`] || p.generic_name_en;
+    name =
+      (p.generic_name as string) ||
+      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined) ||
+      (p.generic_name_en as string);
   }
 
   // 4. Ultimate Fallback: Brand + Category
   // Returns something like "Milbona (Yogurts)" instead of "Unknown"
   if (!name && p.brands) {
-    const category = p.categories?.split(',')[0]; // Take the first category
-    name = category ? `${p.brands} (${category})` : p.brands;
+    const category = (p.categories as string)?.split(',')[0];
+    name = category ? `${p.brands} (${category})` : (p.brands as string);
   }
 
-  return name?.trim() || i18n.t('food.unknownFood');
+  return (name && name.trim()) ? name.trim() : i18n.t('food.unknownFood');
 }
 
 // Export the properties array for reference

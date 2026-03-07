@@ -579,13 +579,15 @@ export function FoodMealDetailsModal({
       return foodLogDecrypted.loggedFoodName.trim();
     }
 
-    if (getProductName(productFromSearch)) {
+    // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
+    if (isSuccessFoodDetailProductState(productDetails)) {
+      return getProductName(productDetails.product);
+    }
+
+    if (productFromSearch) {
       return getProductName(productFromSearch);
     }
 
-    if (isSuccessFoodDetailProductState(productDetails)) {
-      return getProductName(productDetails);
-    }
     return t('food.unknownFood');
   }, [productDetails, productFromSearch, food, localFood, foodLogDecrypted, meal, t]);
 
