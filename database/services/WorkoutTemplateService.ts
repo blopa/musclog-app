@@ -141,9 +141,9 @@ export class WorkoutTemplateService {
       const setsCount = exerciseSets.length;
 
       const equipmentType = exercise.equipmentType?.toLowerCase() || '';
+      const bodyweightTranslation = i18n.t('exercises.equipmentTypes.bodyweight').toLowerCase();
       const isBodyweight =
-        // TODO: for "body weight", use i18n
-        equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
+        equipmentType.includes('bodyweight') || equipmentType.includes(bodyweightTranslation);
 
       const Icon = isBodyweight ? User : Dumbbell;
       const iconBgColor = isBodyweight
@@ -151,10 +151,9 @@ export class WorkoutTemplateService {
         : theme.colors.accent.primary10;
       const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 
-      // TODO: use i18n here
       const description = firstSet
-        ? `${setsCount} sets × ${firstSet.targetReps} reps`
-        : `${setsCount} sets`;
+        ? i18n.t('workouts.addExercise.exerciseDescription', { sets: setsCount, reps: firstSet.targetReps })
+        : i18n.t('workouts.browseTemplatesModal.stats.setsQty', { count: setsCount });
 
       exercisesInWorkout.push({
         id: exercise.id,

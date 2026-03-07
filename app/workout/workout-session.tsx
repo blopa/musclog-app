@@ -486,8 +486,7 @@ export default function WorkoutSessionScreen() {
       parts.push(exercise.equipmentType);
     }
 
-    // TODO: use i18n here
-    return parts.join(' • ') || 'Exercise';
+    return parts.join(' • ') || t('exercises.manageExerciseData.unknownExercise');
   };
 
   if (isLoading) {
