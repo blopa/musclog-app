@@ -141,6 +141,7 @@ export default function WorkoutSessionScreen() {
   const [reps, setReps] = useState(0);
   const [partials, setPartials] = useState(0);
   const [repsInReserve, setRepsInReserve] = useState(0);
+  const [isStatsDataLoaded, setIsStatsDataLoaded] = useState(false);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
@@ -170,6 +171,9 @@ export default function WorkoutSessionScreen() {
       setReps(currentSetData.set.reps ?? 0);
       setPartials(currentSetData.set.partials || 0);
       setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
+      setIsStatsDataLoaded(true);
+    } else {
+      setIsStatsDataLoaded(false);
     }
   }, [currentSetData, units]);
 
@@ -891,28 +895,75 @@ export default function WorkoutSessionScreen() {
 
           {/* Stats Cards */}
           <View className="mt-8 flex-row gap-3 px-6">
-            <WorkoutStatCard
-              title={t('workoutSession.weight')}
-              value={weight}
-              unit={t(weightUnitKey)}
-              onPress={() => {
-                setIsEditSetModalVisible(true);
-              }}
-            />
-            <WorkoutStatCard
-              title={t('workoutSession.reps')}
-              value={reps}
-              onPress={() => {
-                setIsEditSetModalVisible(true);
-              }}
-            />
-            <WorkoutStatCard
-              title={t('workoutSession.partials')}
-              value={partials === 0 ? '-' : partials}
-              onPress={() => {
-                setIsEditSetModalVisible(true);
-              }}
-            />
+            {!isStatsDataLoaded ? (
+              // Show loading skeleton
+              <>
+                <View 
+                  className="flex-1 rounded-xl p-6" 
+                  style={{ backgroundColor: theme.colors.background.card }}
+                >
+                  <View 
+                    className="mb-2 h-4 w-12 rounded-full" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                  <View 
+                    className="mt-2 h-16 w-20 rounded-full self-center" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                </View>
+                <View 
+                  className="flex-1 rounded-xl p-6" 
+                  style={{ backgroundColor: theme.colors.background.card }}
+                >
+                  <View 
+                    className="mb-2 h-4 w-12 rounded-full" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                  <View 
+                    className="mt-2 h-16 w-20 rounded-full self-center" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                </View>
+                <View 
+                  className="flex-1 rounded-xl p-6" 
+                  style={{ backgroundColor: theme.colors.background.card }}
+                >
+                  <View 
+                    className="mb-2 h-4 w-12 rounded-full" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                  <View 
+                    className="mt-2 h-16 w-20 rounded-full self-center" 
+                    style={{ backgroundColor: theme.colors.border.light }}
+                  />
+                </View>
+              </>
+            ) : (
+              <>
+                <WorkoutStatCard
+                  title={t('workoutSession.weight')}
+                  value={weight}
+                  unit={t(weightUnitKey)}
+                  onPress={() => {
+                    setIsEditSetModalVisible(true);
+                  }}
+                />
+                <WorkoutStatCard
+                  title={t('workoutSession.reps')}
+                  value={reps}
+                  onPress={() => {
+                    setIsEditSetModalVisible(true);
+                  }}
+                />
+                <WorkoutStatCard
+                  title={t('workoutSession.partials')}
+                  value={partials === 0 ? '-' : partials}
+                  onPress={() => {
+                    setIsEditSetModalVisible(true);
+                  }}
+                />
+              </>
+            )}
           </View>
 
           {/* Previous & History */}
