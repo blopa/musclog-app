@@ -1,4 +1,4 @@
-import { NutritionService, UserMetricService } from '../database/services';
+import { NutritionService , UserMetricService } from '../database/services';
 import { lbsToKg } from './nutritionCalculator';
 
 const LOOKBACK_DAYS = 30;
@@ -26,7 +26,6 @@ export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
   units?: 'metric' | 'imperial';
 }): Promise<HistoricalNutritionParams | null> {
-  // TODO: why is units never user?
   const { asOfDate = new Date(), units = 'metric' } = options;
 
   const endOfDay = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
@@ -51,7 +50,8 @@ export async function getHistoricalNutritionParams(options: {
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
-      const valueKg = d.unit === 'lbs' ? lbsToKg(d.value) : d.value;
+      const isLbs = d.unit === 'lbs' || (d.unit == null && units === 'imperial');
+      const valueKg = isLbs ? lbsToKg(d.value) : d.value;
       return { date: m.date, valueKg };
     })
   );
