@@ -431,31 +431,43 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   };
 }
 
-/**
- * Extracts the product name from an Open Food Facts JSON response.
- * Handles nested objects and multiple localized name fields.
- */
-export function getProductName(response: any): string {
-  // 1. Handle the case where the full API response is passed vs. just the inner product object
-  const product = response?.product || response;
+// TODO: instead of any, use the possible types passed to this function (by scanning the codebase)
+export function getProductName(data: any): string {
+  // Handle search results (array) vs single product (object)
+  const product =
+    data?.product || (Array.isArray(data?.products) ? data.products[0] : data);
 
   if (!product) {
     return i18n.t('food.unknownFood');
   }
 
-  // 2. Define priority for name fields
-  // product_name is usually the "main" name provided by the API
-  // product_name_en and others are localized backups
-  // generic_name is a fallback if the brand name is missing
-  const name =
+  // 1. Try the standard name fields
+  let name =
     product.product_name ||
+    product[`product_name_${product.lang}`] || // Dynamic lookup based on product's main lang
     product.product_name_en ||
-    product.product_name_de ||
     product.product_name_nl ||
     product.product_name_fr ||
-    product.generic_name;
+    product.product_name_de;
 
-  // 3. Return the found name or the i18n fallback
+  // 2. Fallback to Abbreviated Name (Receipt/Small UI names)
+  if (!name) {
+    name = product.abbreviated_product_name;
+  }
+
+  // 3. Fallback to Generic Names (Common names)
+  if (!name) {
+    name =
+      product.generic_name || product[`generic_name_${product.lang}`] || product.generic_name_en;
+  }
+
+  // 4. Ultimate Fallback: Brand + Category
+  // Returns something like "Milbona (Yogurts)" instead of "Unknown"
+  if (!name && product.brands) {
+    const category = product.categories?.split(',')[0]; // Take the first category
+    name = category ? `${product.brands} (${category})` : product.brands;
+  }
+
   return name?.trim() || i18n.t('food.unknownFood');
 }
 
