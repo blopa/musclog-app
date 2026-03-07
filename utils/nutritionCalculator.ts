@@ -28,6 +28,20 @@ export interface NutritionCalculatorInput {
    * uncertainty band produces min/max calorie targets.
    */
   bodyFatPercent?: number;
+
+  // --- Empirical TDEE Tracking Data ---
+  /** (Optional) Total calories consumed over a continuous tracking period */
+  historicalTotalCalories?: number;
+  /** (Optional) Number of days in the tracking period */
+  historicalTotalDays?: number;
+  /** (Optional) User's starting weight (kg) at the beginning of the period */
+  historicalInitialWeightKg?: number;
+  /** (Optional) User's ending weight (kg) at the end of the period */
+  historicalFinalWeightKg?: number;
+  /** (Optional) User's starting body fat % at the beginning of the period */
+  historicalInitialFatPercent?: number;
+  /** (Optional) User's ending body fat % at the end of the period */
+  historicalFinalFatPercent?: number;
 }
 
 export interface NutritionPlan {
@@ -409,21 +423,16 @@ export interface TDEEParams {
 }
 
 /**
- * Calculates the empirical Total Daily Energy Expenditure (TDEE) based on actual
- * caloric intake and physiological changes in body composition over a period of time.
- * * This uses a thermodynamic model where the cost to BUILD tissue is separated
- * from the energy LIBERATED by breaking down stored tissue.
- * * @param params - The parameters required for the TDEE calculation.
- * @param params.totalCalories - Total calories consumed over the period
- * @param params.totalDays - Number of days in the tracking period
- * @param params.initialWeight - Starting body weight in kg
- * @param params.finalWeight - Ending body weight in kg
- * @param params.initialFatPercentage - (Optional) Starting body fat percentage (0-100)
- * @param params.finalFatPercentage - (Optional) Ending body fat percentage (0-100)
- * @param params.bmr - (Optional) Basal Metabolic Rate for standard estimation
- * @param params.activityLevel - (Optional) Activity level index
- * @param params.liftingExperience - (Optional) Dictates tissue partitioning when building mass
- * @returns Average daily TDEE in kcal, or 0 if days is invalid
+ * Calculates Total Daily Energy Expenditure (TDEE).
+ * * PRIORITIZES EMPIRICAL DATA (The "Adaptive" or "Observed" TDEE method)
+ * By strictly applying the First Law of Thermodynamics, if we know total energy in (calories)
+ * and total change in energy stores (weight/tissue fluctuation), we can perfectly
+ * reverse-engineer the energy out (TDEE).
+ * * Research Basis:
+ * - Hall, K. D. (2008). What is the Required Energy Deficit per unit Weight Loss?
+ * - Forbes, G. B. (1987). Human Body Composition: Growth, Aging, Nutrition, and Activity.
+ * * If empirical tracking data is absent, falls back to standard population-based
+ * statistical estimation (BMR * Activity Multiplier).
  */
 export const calculateTDEE = (params: TDEEParams): number => {
   const {
@@ -438,70 +447,67 @@ export const calculateTDEE = (params: TDEEParams): number => {
     liftingExperience,
   } = params;
 
+  // 1. EMPIRICAL / OBSERVED TDEE
+  // Execute only if we have sufficient historical tracking data
+  if (
+    totalDays !== undefined &&
+    totalDays > 0 &&
+    totalCalories !== undefined &&
+    initialWeight !== undefined &&
+    finalWeight !== undefined
+  ) {
+    const weightDifference = finalWeight - initialWeight;
+
+    let fatDifference: number;
+    let leanDifference: number;
+
+    // If exact Body Fat % changes are tracked, calculate the exact lipid vs lean mass shift
+    if (initialFatPercentage !== undefined && finalFatPercentage !== undefined) {
+      const initialFatMass = (initialFatPercentage * initialWeight) / 100;
+      const finalFatMass = (finalFatPercentage * finalWeight) / 100;
+
+      fatDifference = finalFatMass - initialFatMass;
+      leanDifference = weightDifference - fatDifference;
+    } else {
+      // If no exact body fat % data, leverage our advanced Forbes Curve / Experience partition models!
+      const assumedInitialFatMass =
+        initialWeight * (initialFatPercentage !== undefined ? initialFatPercentage / 100 : 0.25);
+
+      const comp = getWeightChangeComposition(
+        assumedInitialFatMass,
+        weightDifference,
+        liftingExperience
+      );
+
+      fatDifference = comp.fatChangeKg;
+      leanDifference = comp.leanChangeKg;
+    }
+
+    // Apply specific thermodynamic constants based on tissue fate (Anabolism vs Catabolism)
+    const leanCalories =
+      leanDifference > 0
+        ? leanDifference * CALORIES_BUILD_KG_MUSCLE
+        : leanDifference * CALORIES_STORED_KG_MUSCLE;
+
+    const fatCalories =
+      fatDifference > 0
+        ? fatDifference * CALORIES_BUILD_KG_FAT
+        : fatDifference * CALORIES_STORED_KG_FAT;
+
+    // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
+    // If tissue is lost, fatCalories/leanCalories are negative, effectively ADDING
+    // the liberated energy back into the TDEE pool, which is physiologically accurate.
+    return Math.round((totalCalories - (fatCalories + leanCalories)) / totalDays);
+  }
+
+  // 2. STATISTICAL FALLBACK
+  // Used for new users or when tracking data is missing
   if (bmr && activityLevel) {
-    // Assuming ACTIVITY_MULTIPLIERS is defined in the surrounding scope
     const multiplier = ACTIVITY_MULTIPLIERS[activityLevel] ?? 1.55;
     return Math.round(bmr * multiplier);
   }
 
-  // Guard against divide-by-zero or negative time inputs
-  // Note: Since totalDays is optional, safely fallback if undefined
-  if (!totalDays || totalDays <= 0) {
-    return 0;
-  }
-
-  // Non-null assertions or fallback values might be needed if these are purely optional,
-  // but keeping your original math logic intact:
-  const weightDifference = (finalWeight || 0) - (initialWeight || 0);
-
-  let fatDifference: number;
-  let leanDifference: number;
-
-  // If exact Body Fat % is provided, calculate the exact lipid vs lean mass shift
-  if (
-    initialFatPercentage !== undefined &&
-    finalFatPercentage !== undefined &&
-    initialWeight &&
-    finalWeight
-  ) {
-    const initialFatMass = (initialFatPercentage * initialWeight) / 100;
-    const finalFatMass = (finalFatPercentage * finalWeight) / 100;
-
-    fatDifference = finalFatMass - initialFatMass;
-    leanDifference = weightDifference - fatDifference;
-  } else {
-    // If not provided, leverage our advanced Forbes Curve / Experience partition models!
-    const assumedInitialFatMass = initialWeight
-      ? initialWeight * (initialFatPercentage !== undefined ? initialFatPercentage / 100 : 0.25)
-      : 0;
-
-    const comp = getWeightChangeComposition(
-      assumedInitialFatMass,
-      weightDifference,
-      liftingExperience
-    );
-
-    fatDifference = comp.fatChangeKg;
-    leanDifference = comp.leanChangeKg;
-  }
-
-  // Apply specific thermodynamic constants based on tissue fate (Anabolism vs Catabolism)
-  // Positive difference (building tissue) uses the high construction cost.
-  // Negative difference (liberating tissue) uses the actual stored energy density.
-  const leanCalories =
-    leanDifference > 0
-      ? leanDifference * CALORIES_BUILD_KG_MUSCLE
-      : leanDifference * CALORIES_STORED_KG_MUSCLE;
-
-  const fatCalories =
-    fatDifference > 0
-      ? fatDifference * CALORIES_BUILD_KG_FAT
-      : fatDifference * CALORIES_STORED_KG_FAT;
-
-  // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
-  // Note: If tissue is lost, fatCalories/leanCalories are negative, effectively
-  // *adding* that liberated energy to the TDEE calculation, which is physiologically correct.
-  return ((totalCalories || 0) - (fatCalories + leanCalories)) / totalDays;
+  return 0; // Failsafe
 };
 
 // ---------------------------------------------------------------------------
@@ -880,13 +886,13 @@ export function generateWeeklyCheckins(
  *
  * Science basis:
  * - BMR: Katch-McArdle (when body fat is available) or Mifflin-St Jeor
- * - TDEE: Standard Harris-Benedict activity multipliers
+ * - TDEE: Empirical thermodynamic model (if tracking data provided), else Harris-Benedict
  * - Calorie adjustment: ±250–500 kcal depending on goal
  * - Macros: Percentage-split method per goal type
- * - Projection: Linear model based on ~7700 kcal per kg
+ * - Projection: Hall/Forbes composition-aware model
  *
- * When body fat is provided, a ±4% uncertainty band is applied to produce
- * `minTargetCalories` / `maxTargetCalories` reflecting measurement error.
+ * When body fat is provided (and empirical TDEE isn't overriding), a ±4% uncertainty
+ * band is applied to produce `minTargetCalories` / `maxTargetCalories`.
  */
 export function calculateNutritionPlan(input: NutritionCalculatorInput): NutritionPlan {
   const {
@@ -898,6 +904,13 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     weightGoal,
     fitnessGoal,
     bodyFatPercent,
+    // Empirical tracking fields
+    historicalTotalCalories,
+    historicalTotalDays,
+    historicalInitialWeightKg,
+    historicalFinalWeightKg,
+    historicalInitialFatPercent,
+    historicalFinalFatPercent,
   } = input;
 
   const useBodyFat = isValidBodyFat(bodyFatPercent);
@@ -908,7 +921,20 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     : calculateBMR(gender, weightKg, heightCm, age);
 
   // Step 2 – TDEE
-  const tdee = calculateTDEE({ bmr, activityLevel });
+  // Uses empirical tracking data if available, otherwise falls back to BMR + Activity Level
+  const sharedTdeeParams: TDEEParams = {
+    bmr,
+    activityLevel,
+    liftingExperience: input.liftingExperience,
+    totalCalories: historicalTotalCalories,
+    totalDays: historicalTotalDays,
+    initialWeight: historicalInitialWeightKg,
+    finalWeight: historicalFinalWeightKg,
+    initialFatPercentage: historicalInitialFatPercent,
+    finalFatPercentage: historicalFinalFatPercent,
+  };
+
+  const tdee = calculateTDEE(sharedTdeeParams);
 
   // Step 3 – Calorie target (driven by weight goal: lose / maintain / gain)
   const targetCalories = calculateTargetCalories(tdee, weightGoal, {
@@ -939,7 +965,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     // Higher body fat → lower LBM → lower BMR (pessimistic / min calories)
     const highBF = Math.min(bodyFatPercent + BODY_FAT_UNCERTAINTY, 99);
     const bmrLow = calculateBMRKatchMcArdle(weightKg, highBF);
-    const tdeeLow = calculateTDEE({ bmr: bmrLow, activityLevel });
+    const tdeeLow = calculateTDEE({ ...sharedTdeeParams, bmr: bmrLow });
     minTargetCalories = calculateTargetCalories(tdeeLow, weightGoal, {
       gender,
       bmr: bmrLow,
@@ -950,7 +976,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     // Lower body fat → higher LBM → higher BMR (optimistic / max calories)
     const lowBF = Math.max(bodyFatPercent - BODY_FAT_UNCERTAINTY, 1);
     const bmrHigh = calculateBMRKatchMcArdle(weightKg, lowBF);
-    const tdeeHigh = calculateTDEE({ bmr: bmrHigh, activityLevel });
+    const tdeeHigh = calculateTDEE({ ...sharedTdeeParams, bmr: bmrHigh });
     maxTargetCalories = calculateTargetCalories(tdeeHigh, weightGoal, {
       gender,
       bmr: bmrHigh,

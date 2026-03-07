@@ -69,32 +69,32 @@ describe('calculateTDEE', () => {
   const bmr = 1780;
 
   it('applies sedentary multiplier (1.2)', () => {
-    expect(calculateTDEE(bmr, 1)).toBe(Math.round(1780 * 1.2));
+    expect(calculateTDEE({ bmr, activityLevel: 1 })).toBe(Math.round(1780 * 1.2));
   });
 
   it('applies light multiplier (1.375)', () => {
-    expect(calculateTDEE(bmr, 2)).toBe(Math.round(1780 * 1.375));
+    expect(calculateTDEE({ bmr, activityLevel: 2 })).toBe(Math.round(1780 * 1.375));
   });
 
   it('applies moderate multiplier (1.55)', () => {
-    expect(calculateTDEE(bmr, 3)).toBe(Math.round(1780 * 1.55));
+    expect(calculateTDEE({ bmr, activityLevel: 3 })).toBe(Math.round(1780 * 1.55));
   });
 
   it('applies active multiplier (1.725)', () => {
-    expect(calculateTDEE(bmr, 4)).toBe(Math.round(1780 * 1.725));
+    expect(calculateTDEE({ bmr, activityLevel: 4 })).toBe(Math.round(1780 * 1.725));
   });
 
   it('applies super active multiplier (1.9)', () => {
-    expect(calculateTDEE(bmr, 5)).toBe(Math.round(1780 * 1.9));
+    expect(calculateTDEE({ bmr, activityLevel: 5 })).toBe(Math.round(1780 * 1.9));
   });
 
   it('falls back to moderate multiplier for unknown level', () => {
-    expect(calculateTDEE(bmr, 99)).toBe(Math.round(1780 * 1.55));
+    expect(calculateTDEE({ bmr, activityLevel: 99 })).toBe(Math.round(1780 * 1.55));
   });
 
   it('increases with activity level', () => {
-    const sedentary = calculateTDEE(bmr, 1);
-    const superActive = calculateTDEE(bmr, 5);
+    const sedentary = calculateTDEE({ bmr, activityLevel: 1 });
+    const superActive = calculateTDEE({ bmr, activityLevel: 5 });
     expect(superActive).toBeGreaterThan(sedentary);
   });
 });

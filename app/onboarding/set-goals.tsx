@@ -18,6 +18,7 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { getHistoricalNutritionParams } from '../../utils/historicalNutritionParams';
 import {
   bmiFromWeightAndHeightM,
   calculateNutritionPlan,
@@ -381,6 +382,8 @@ export default function SetGoals() {
 
     const age = user.getAge();
 
+    const historical = await getHistoricalNutritionParams({ units });
+
     const input: NutritionCalculatorInput = {
       gender: user.gender,
       weightKg,
@@ -393,6 +396,7 @@ export default function SetGoals() {
       ...(rawBodyFat !== undefined &&
         rawBodyFat >= 5 &&
         rawBodyFat <= 60 && { bodyFatPercent: rawBodyFat }),
+      ...(historical ?? {}),
     };
 
     const plan = calculateNutritionPlan(input);
