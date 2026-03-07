@@ -49,6 +49,7 @@ import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { MacroInput } from '../MacroInput';
 import { ServingSizeSelector } from '../ServingSizeSelector';
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
@@ -158,6 +159,7 @@ export function FoodMealDetailsModal({
     fat?: number;
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
+  const [showBarcodeScannerInEdit, setShowBarcodeScannerInEdit] = useState(false);
   const [editForm, setEditForm] = useState<{
     name: string;
     barcode: string;
@@ -1078,6 +1080,7 @@ export function FoodMealDetailsModal({
       setMatchedPortion(null);
       setEditedOverrides(null);
       setIsEditPopUpVisible(false);
+      setShowBarcodeScannerInEdit(false);
     }
   }, [visible]);
 
@@ -1450,7 +1453,7 @@ export function FoodMealDetailsModal({
                 placeholder={t('food.foodDetails.barcodePlaceholder')}
                 keyboardType="numeric"
               />
-              <View
+              <Pressable
                 className="absolute right-2 items-center justify-center rounded-lg"
                 style={{
                   ...(Platform.OS !== 'web'
@@ -1460,9 +1463,10 @@ export function FoodMealDetailsModal({
                   height: theme.size['10'],
                   backgroundColor: theme.colors.accent.primary10,
                 }}
+                onPress={() => setShowBarcodeScannerInEdit(true)}
               >
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </View>
+              </Pressable>
             </View>
 
             {/* Macronutrients - card layout like CreateCustomFoodModal */}
@@ -1533,6 +1537,15 @@ export function FoodMealDetailsModal({
           </KeyboardAvoidingView>
         ) : null}
       </BottomPopUp>
+
+      <BarcodeCameraModal
+        visible={showBarcodeScannerInEdit}
+        onClose={() => setShowBarcodeScannerInEdit(false)}
+        onBarcodeScanned={(data) => {
+          setEditForm((prev) => (prev ? { ...prev, barcode: data } : null));
+          setShowBarcodeScannerInEdit(false);
+        }}
+      />
     </>
   );
 }

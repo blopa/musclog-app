@@ -157,6 +157,9 @@
       "createCustomFood": "Create Custom Food",
       "trackCustomMeal": "Track Custom Meal"
     },
+    "portions": {
+      "100g": "Standard"
+    },
     "common": {
       "kcal": "kcal"
     },
