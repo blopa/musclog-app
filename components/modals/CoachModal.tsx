@@ -58,6 +58,22 @@ import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 const WORKOUT_IMAGE_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC8wdyvHF33Emd_otj2gCXb_-DtuZnk1Yynloi9mvz8s2ZtTJ1fFbg_J8B8x02R5Njk5nPX1SonjXw5sEU1gwylKXq3buzHpa2EoRQfBpA6BTNRGfSjYnqBMRSyDW7tl5DHtCWM5DOUd91Ka2gB8Y-rdvJB99_hQED2ZIqMdcWkgxVdv_pRnWFXwFirvEOSMuCveL2ZxoS3oQpkrQoYXVBSunvPf8QQ6xtQQw-v_r9wOPDB6W6pKw22mPLs0nsdG-MkvUJTj7VCxnSe';
 
+const getPendingIntentionDisplayText = (
+  pendingIntention: string,
+  t: TFunction
+): string => {
+  switch (pendingIntention) {
+    case GENERATE_MY_WORKOUTS:
+      return 'Workout Gen.';
+    case ANALYZE_PROGRESS:
+      return t('coach.actions.analyzeProgress');
+    case NUTRITION_CHECK:
+      return t('coach.actions.nutritionCheck');
+    default:
+      return pendingIntention;
+  }
+};
+
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
 const renderMessageText = (props: any, theme: Theme) => {
@@ -329,14 +345,7 @@ const renderInputToolbar = (
               style={{ backgroundColor: theme.colors.accent.primary }}
             />
             <Text className="text-xs font-medium text-text-primary">
-              {/*TODO: use a helper function instead of nested ternary*/}
-              {pendingIntention === GENERATE_MY_WORKOUTS
-                ? 'Workout Gen.'
-                : pendingIntention === ANALYZE_PROGRESS
-                  ? t('coach.actions.analyzeProgress')
-                  : pendingIntention === NUTRITION_CHECK
-                    ? t('coach.actions.nutritionCheck')
-                    : pendingIntention}
+              {getPendingIntentionDisplayText(pendingIntention, t)}
             </Text>
             <Pressable onPress={onClearIntention} className="p-0.5">
               <X size={14} color={theme.colors.accent.primary} />
