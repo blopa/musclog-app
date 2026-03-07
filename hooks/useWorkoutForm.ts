@@ -20,6 +20,7 @@ import {
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
 } from '../utils/workout';
+import { useSettings } from './useSettings';
 
 export interface UseWorkoutFormParams {
   templateId?: string;
@@ -39,6 +40,7 @@ export interface AddExerciseData {
 export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { units } = useSettings();
   const router = useRouter();
   const isEditMode = !!templateId;
 
@@ -130,6 +132,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
           weight: exerciseData.weight,
           isBodyweight: exerciseData.isBodyweight,
           groupId: undefined,
+          units,
         });
 
         setExerciseMetadata((prev) => {

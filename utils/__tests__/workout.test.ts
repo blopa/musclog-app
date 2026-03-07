@@ -251,6 +251,20 @@ describe('utils/workout', () => {
       it('should format decimal values correctly', () => {
         expect(formatExerciseDescription(3.5, 10.5)).toBe('3.5 sets × 10.5 reps');
       });
+
+      it('should include weight for non-bodyweight exercises', () => {
+        expect(formatExerciseDescription(3, 10, 60, false)).toBe('3 sets × 10 reps @ 60kg');
+        expect(formatExerciseDescription(4, 8, 22.5, false)).toBe('4 sets × 8 reps @ 22.5kg');
+      });
+
+      it('should not include weight for bodyweight exercises', () => {
+        expect(formatExerciseDescription(3, 10, 60, true)).toBe('3 sets × 10 reps');
+        expect(formatExerciseDescription(4, 8, 0, false)).toBe('4 sets × 8 reps');
+      });
+
+      it('should not include weight when weight is undefined', () => {
+        expect(formatExerciseDescription(3, 10, undefined, false)).toBe('3 sets × 10 reps');
+      });
     });
   });
 
@@ -301,6 +315,7 @@ describe('utils/workout', () => {
         expect(result.icon).toBe(Dumbbell);
         expect(result.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(result.iconColor).toBe(theme.colors.accent.primary);
+        expect(result.description).toBe('3 sets × 10 reps @ 60kg');
       });
 
       it('should include groupId when provided', () => {

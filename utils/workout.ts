@@ -2,11 +2,14 @@ import type { LucideIcon } from 'lucide-react-native';
 import { Dumbbell, User } from 'lucide-react-native';
 
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
+import type { Units } from '../constants/settings';
 import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import i18n from '../lang/lang';
 import { theme } from '../theme';
+import { kgToDisplay } from './unitConversion';
+import { getWeightUnit } from './units';
 
 // ============================================================================
 // Day Mapping Utilities
@@ -71,9 +74,28 @@ export function getExerciseIconConfig(isBodyweight: boolean): ExerciseIconConfig
 }
 
 /**
- * Format exercise description from sets and reps
+ * Format exercise description from sets, reps, and optionally weight
  */
-export function formatExerciseDescription(sets: number, reps: number): string {
+export function formatExerciseDescription(
+  sets: number,
+  reps: number,
+  weight?: number,
+  isBodyweight?: boolean,
+  units?: Units
+): string {
+  if (weight !== undefined && weight > 0 && !isBodyweight && units) {
+    const displayWeight = kgToDisplay(weight, units);
+    const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+    const unit = getWeightUnit(units);
+
+    return i18n.t('workouts.addExercise.exerciseDescriptionWithWeight', {
+      sets,
+      reps,
+      weight: rounded,
+      unit,
+    });
+  }
+
   return i18n.t('workouts.addExercise.exerciseDescription', { sets, reps });
 }
 
@@ -99,6 +121,7 @@ export interface CreateExerciseOptionParams {
   weight: number;
   isBodyweight: boolean;
   groupId?: string;
+  units?: Units;
 }
 
 /**
@@ -106,8 +129,7 @@ export interface CreateExerciseOptionParams {
  * This combines exercise info with metadata (sets/reps/weight)
  */
 export function createExerciseOption(params: CreateExerciseOptionParams): SelectorOption<string> {
-  // TODO: why is weight no being used? Isn't it needed here?
-  const { exercise, sets, reps, weight, isBodyweight, groupId } = params;
+  const { exercise, sets, reps, weight, isBodyweight, groupId, units } = params;
 
   const isBodyweightType = isBodyweightExercise(exercise.equipmentType) || isBodyweight;
   const iconConfig = getExerciseIconConfig(isBodyweightType);
@@ -115,7 +137,7 @@ export function createExerciseOption(params: CreateExerciseOptionParams): Select
   return {
     id: exercise.id,
     label: exercise.name ?? '',
-    description: formatExerciseDescription(sets, reps),
+    description: formatExerciseDescription(sets, reps, weight, isBodyweightType, units),
     icon: iconConfig.icon,
     iconBgColor: iconConfig.iconBgColor,
     iconColor: iconConfig.iconColor,
