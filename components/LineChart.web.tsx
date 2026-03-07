@@ -60,7 +60,7 @@ export type LineChartProps = {
   gridTickValues?: number[];
   /** Custom X-axis labels to display below the chart */
   xAxisLabels?: string[];
-  /** Y-axis labels overlaid on the chart (no-op on web) */
+  /** Y-axis labels overlaid on the chart */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
   marginTop?: number;
@@ -114,6 +114,7 @@ export function LineChart({
   gridLineColor,
   gridTickValues,
   xAxisLabels,
+  yAxisLabels,
   marginTop = 16,
   marginBottom = 16,
   className,
@@ -162,6 +163,28 @@ export function LineChart({
 
   return (
     <View className={className || `relative w-full`} style={{ marginTop }}>
+      {/* Y-axis labels overlaid on the chart */}
+      {yAxisLabels?.map(({ label, yDomainValue }) => {
+        const yRange = yDomainFinal[1] - yDomainFinal[0];
+        const topOffset = (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
+        return (
+          <Text
+            key={label}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 6,
+              top: topOffset - 6,
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              color: theme.colors.text.tertiary,
+              zIndex: 1,
+            }}
+          >
+            {label}
+          </Text>
+        );
+      })}
       <VictoryChart
         height={height}
         padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
