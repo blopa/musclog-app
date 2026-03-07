@@ -12,14 +12,20 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ExerciseService, GoogleAuthService } from '../../database/services';
+import { SettingsService } from '../../database/services/SettingsService';
 import { useTheme } from '../../hooks/useTheme';
+import { type CoachAIConfig, parsePastWorkouts } from '../../utils/coachAI';
+import { getAccessToken } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
+import { processParsedWorkouts } from '../../utils/workoutAI';
 import { FullScreenModal } from './FullScreenModal';
 
 type ImportWorkoutsModalProps = {
   visible: boolean;
   onClose: () => void;
-  onWorkoutsImported?: (entries: any[]) => void;
+  /** Called with parsed entries and the created workout log IDs (for navigation or refresh). */
+  onWorkoutsImported?: (entries: any[], workoutLogIds: string[]) => void;
 };
 
 // TODO: improve UI, remove mocked data and implement usage of this component
@@ -42,23 +48,73 @@ export function ImportWorkoutsModal({
 
     setIsProcessing(true);
     try {
-      // TODO: Implement full flow with AI
-      // 1. Get AI config from settings
-      // 2. Call parsePastWorkouts(config, rawText)
-      // 3. Show confirmation modal with parsed entries
-      // 4. On confirm, save entries via WorkoutService
+      const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
+        try {
+          const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+          if (oauthGeminiEnabled) {
+            const accessToken = await getAccessToken();
+            if (accessToken) {
+              return {
+                provider: 'gemini',
+                accessToken,
+                model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+              };
+            }
+          }
+          const enableGemini = await SettingsService.getEnableGoogleGemini();
+          const geminiKey = await SettingsService.getGoogleGeminiApiKey();
+          if (enableGemini && geminiKey) {
+            return {
+              provider: 'gemini',
+              apiKey: geminiKey,
+              model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+            };
+          }
+          const enableOpenAi = await SettingsService.getEnableOpenAi();
+          const openAiKey = await SettingsService.getOpenAiApiKey();
+          if (enableOpenAi && openAiKey) {
+            return {
+              provider: 'openai',
+              apiKey: openAiKey,
+              model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
+            };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      };
 
-      console.log('[ImportWorkouts] Processing raw workout data...');
-      console.log('[ImportWorkouts] Raw text:', rawText);
+      const aiConfig = await resolveAIConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('ai.settings.notConfigured'));
+        setIsProcessing(false);
+        return;
+      }
 
+      const exercises = await ExerciseService.getAllExercises();
+      const exerciseNames = exercises.map((e) => e.name ?? '').filter(Boolean);
+      const parsed = await parsePastWorkouts(aiConfig, rawText.trim(), exerciseNames);
+
+      if (!parsed || parsed.length === 0) {
+        showSnackbar('error', t('workout.import.processingFailed'));
+        setIsProcessing(false);
+        return;
+      }
+
+      const { workoutLogIds, count } = await processParsedWorkouts(parsed);
       showSnackbar('success', t('workout.import.processingData'));
+      onWorkoutsImported?.(parsed, workoutLogIds);
+      if (count > 0) {
+        onClose();
+      }
     } catch (error) {
       console.error('[ImportWorkouts] Error:', error);
       showSnackbar('error', t('workout.import.processingFailed'));
     } finally {
       setIsProcessing(false);
     }
-  }, [rawText, t]);
+  }, [rawText, t, onWorkoutsImported, onClose]);
 
   const handleClose = useCallback(() => {
     setRawText('');

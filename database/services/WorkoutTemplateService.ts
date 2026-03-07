@@ -96,6 +96,18 @@ export class WorkoutTemplateService {
   }
 
   /**
+   * Get a template by exact name (for AI context: upcoming workout details).
+   * Returns null if not found or multiple exist (first match by created_at asc).
+   */
+  static async getTemplateByName(name: string): Promise<WorkoutTemplate | null> {
+    const templates = await database
+      .get<WorkoutTemplate>('workout_templates')
+      .query(Q.where('name', name), Q.where('deleted_at', Q.eq(null)), Q.take(1))
+      .fetch();
+    return templates[0] ?? null;
+  }
+
+  /**
    * Convert template exercises and sets to ExerciseInWorkout array
    */
   static async convertTemplateExercisesToUI(

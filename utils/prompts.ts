@@ -2,7 +2,15 @@ import { FunctionDeclaration } from '@google/generative-ai';
 import OpenAI from 'openai';
 
 import { User } from '../database/models';
-import { NutritionService, UserService } from '../database/services';
+import {
+  ExerciseService,
+  NutritionGoalService,
+  NutritionService,
+  UserMetricService,
+  UserService,
+  WorkoutService,
+  WorkoutTemplateService,
+} from '../database/services';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -71,6 +79,72 @@ export const getUserDetailsPrompt = (
   return summary;
 };
 
+/** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI) */
+function buildWorkoutSummaryFromDetails(details: {
+  workoutLog: {
+    workoutName: string;
+    startedAt: number;
+    completedAt?: number;
+    totalVolume?: number;
+    exhaustionLevel?: number;
+    workoutScore?: number;
+  };
+  sets: {
+    exerciseId?: string;
+    reps?: number;
+    weight?: number;
+    partials?: number;
+    repsInReserve?: number;
+  }[];
+  exercises: { id: string; name?: string; muscleGroup?: string }[];
+}): string {
+  const { workoutLog, sets, exercises } = details;
+  const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
+  const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
+  for (const set of sets) {
+    const exercise = exerciseMap.get(set.exerciseId ?? '');
+    if (!exercise) {
+      continue;
+    }
+    const name = exercise.name ?? 'Unknown';
+    if (!exercisesByName.has(name)) {
+      exercisesByName.set(name, { sets: [], exercise });
+    }
+    exercisesByName.get(name)!.sets.push(set);
+  }
+  const workoutData = {
+    title: workoutLog.workoutName,
+    date: new Date(workoutLog.startedAt).toISOString(),
+    duration: workoutLog.completedAt
+      ? Math.round((workoutLog.completedAt - workoutLog.startedAt) / 60000)
+      : 0,
+    totalVolume: workoutLog.totalVolume,
+    exhaustionLevel: workoutLog.exhaustionLevel,
+    workoutScore: workoutLog.workoutScore,
+    exercises: Array.from(exercisesByName.entries()).map(([name, data]) => ({
+      name,
+      muscleGroup: data.exercise.muscleGroup,
+      sets: data.sets.map((set) => ({
+        reps: set.reps,
+        weight: set.weight,
+        partials: set.partials ?? 0,
+        repsInReserve: set.repsInReserve ?? 0,
+      })),
+    })),
+  };
+  return JSON.stringify(workoutData);
+}
+
+async function buildWorkoutSummaryJson(workoutLogId: string): Promise<string> {
+  try {
+    const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    return buildWorkoutSummaryFromDetails(details);
+  } catch (error) {
+    console.error('[prompts] buildWorkoutSummaryJson error:', error);
+    return '{}';
+  }
+}
+
 /**
  * Full chat system message with user context and recent workouts
  * Call this on chat session init to build the system message
@@ -81,11 +155,24 @@ export const getChatMessagePromptContent = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch last 4 recent workouts via WorkoutService
-  // Format them as JSON for AI consumption
-  const recentWorkoutsJson = '[]'; // Placeholder - implement with WorkoutService
+  let recentWorkoutsJson = '[]';
+  try {
+    const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
+    const summaries: string[] = [];
+    for (const log of recentLogs) {
+      const json = await buildWorkoutSummaryJson(log.id);
+      if (json !== '{}') {
+        summaries.push(json);
+      }
+    }
+    recentWorkoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
+  } catch (error) {
+    console.error('Error fetching recent workouts for chat prompt:', error);
+  }
 
   const sections = [
     getBaseSystemPrompt(language),
@@ -111,10 +198,23 @@ export const createWorkoutPlanPrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch all exercises from ExerciseService
-  const exercisesList = '[exercises would be listed here]'; // Placeholder
+  let exercisesList = '[]';
+  try {
+    const exercises = await ExerciseService.getAllExercises();
+    const list = exercises.map((e) => ({
+      name: e.name,
+      muscleGroup: e.muscleGroup,
+      equipmentType: e.equipmentType,
+      mechanicType: e.mechanicType,
+    }));
+    exercisesList = JSON.stringify(list, null, 2);
+  } catch (error) {
+    console.error('Error fetching exercises for workout plan prompt:', error);
+  }
 
   return [
     getBaseSystemPrompt(language),
@@ -135,7 +235,9 @@ export const getNutritionInsightsPrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
   // Fetch nutrition data via NutritionService
   // Format as: { date, calories, protein, carbs, fat }[]
@@ -190,9 +292,34 @@ export const getNutritionInsightsPrompt = async (
     nutritionData = '[]'; // Fallback to empty array
   }
 
-  // TODO: Fetch user metrics via UserMetricService
-  // Format as: { date, weight, fatPercentage }[]
-  const metricsData = '[]'; // Placeholder
+  let metricsData = '[]';
+  try {
+    const startTs = startDateObj.getTime();
+    const endTs = endDateObj.getTime();
+    const [weightMetrics, bodyFatMetrics] = await Promise.all([
+      UserMetricService.getMetricsHistory('weight', { startDate: startTs, endDate: endTs }),
+      UserMetricService.getMetricsHistory('body_fat', { startDate: startTs, endDate: endTs }),
+    ]);
+    const byDate = new Map<string, { weight?: number; fatPercentage?: number }>();
+    for (const m of weightMetrics) {
+      const { value } = await m.getDecrypted();
+      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const existing = byDate.get(dateKey) ?? {};
+      byDate.set(dateKey, { ...existing, weight: value });
+    }
+    for (const m of bodyFatMetrics) {
+      const { value } = await m.getDecrypted();
+      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const existing = byDate.get(dateKey) ?? {};
+      byDate.set(dateKey, { ...existing, fatPercentage: value });
+    }
+    const metricsArray = Array.from(byDate.entries())
+      .map(([date, v]) => ({ date, ...v }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    metricsData = JSON.stringify(metricsArray, null, 2);
+  } catch (error) {
+    console.error('Error fetching user metrics for nutrition prompt:', error);
+  }
 
   const diffInDays = Math.floor(
     (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
@@ -224,10 +351,26 @@ export const getRecentWorkoutsInsightsPrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch recent workouts via WorkoutService
-  const workoutsJson = '[]'; // Placeholder
+  let workoutsJson = '[]';
+  try {
+    const startTs = new Date(startDate).setHours(0, 0, 0, 0);
+    const endTs = new Date(endDate).setHours(23, 59, 59, 999);
+    const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
+    const summaries: string[] = [];
+    for (const log of logs) {
+      const json = await buildWorkoutSummaryJson(log.id);
+      if (json !== '{}') {
+        summaries.push(json);
+      }
+    }
+    workoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
+  } catch (error) {
+    console.error('Error fetching recent workouts for insights prompt:', error);
+  }
 
   const diffInDays = Math.floor(
     (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
@@ -254,10 +397,24 @@ export const getCalculateNextWorkoutVolumePrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch all past occurrences of this workout
-  const pastOccurrencesJson = '[]'; // Placeholder
+  let pastOccurrencesJson = '[]';
+  try {
+    const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
+    const summaries: string[] = [];
+    for (const log of logs) {
+      const json = await buildWorkoutSummaryJson(log.id);
+      if (json !== '{}') {
+        summaries.push(json);
+      }
+    }
+    pastOccurrencesJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
+  } catch (error) {
+    console.error('Error fetching past occurrences for volume prompt:', error);
+  }
 
   return [
     getBaseSystemPrompt(language),
@@ -283,10 +440,58 @@ export const getWorkoutInsightsPrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch workout template details
-  const workoutJson = '{}'; // Placeholder
+  let workoutJson = '{}';
+  try {
+    const template = await WorkoutTemplateService.getTemplateByName(workoutTitle);
+    if (template) {
+      const {
+        template: t,
+        templateExercises,
+        sets,
+      } = await WorkoutTemplateService.getTemplateWithDetails(template.id);
+      const exerciseIds = [...new Set(templateExercises.map((te) => te.exerciseId))];
+      const exercises =
+        exerciseIds.length > 0
+          ? await ExerciseService.getAllExercises().then((all) =>
+              all.filter((e) => exerciseIds.includes(e.id))
+            )
+          : [];
+      const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+      const setsByTe = new Map<string, typeof sets>();
+      for (const s of sets) {
+        if (!setsByTe.has(s.templateExerciseId)) {
+          setsByTe.set(s.templateExerciseId, []);
+        }
+        setsByTe.get(s.templateExerciseId)!.push(s);
+      }
+      const exercisesForJson = templateExercises.map((te) => {
+        const exercise = exerciseMap.get(te.exerciseId);
+        const setList = setsByTe.get(te.id) ?? [];
+        return {
+          name: exercise?.name ?? 'Unknown',
+          muscleGroup: exercise?.muscleGroup,
+          sets: setList.length,
+          targetReps: setList.map((s) => s.targetReps),
+          targetWeight: setList.map((s) => s.targetWeight),
+        };
+      });
+      workoutJson = JSON.stringify(
+        {
+          name: t.name,
+          description: t.description,
+          exercises: exercisesForJson,
+        },
+        null,
+        2
+      );
+    }
+  } catch (error) {
+    console.error('Error fetching workout template for insights prompt:', error);
+  }
 
   return [
     getBaseSystemPrompt(language),
@@ -301,18 +506,21 @@ export const getWorkoutInsightsPrompt = async (
 };
 
 /**
- * System prompt for single recent workout insights
+ * System prompt for single recent workout insights.
+ * When workoutJson is provided (e.g. from getRecentWorkoutInsightsPromptByLogId), it is used; otherwise placeholder.
  */
 export const getRecentWorkoutInsightsPrompt = async (
   workoutTitle: string,
   language: string = 'en-US',
-  eatingPhase?: string
+  eatingPhase?: string,
+  workoutJson?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch single completed workout event
-  const workoutJson = '{}'; // Placeholder
+  const resolvedJson = workoutJson ?? '{}';
 
   return [
     getBaseSystemPrompt(language),
@@ -321,9 +529,27 @@ export const getRecentWorkoutInsightsPrompt = async (
     userDetails,
     'Completed workout:',
     '```json',
-    workoutJson,
+    resolvedJson,
     '```',
   ].join('\n');
+};
+
+/**
+ * Build system prompt for single recent workout insights by workout log id (fetches workout and injects JSON).
+ */
+export const getRecentWorkoutInsightsPromptByLogId = async (
+  workoutLogId: string,
+  language: string = 'en-US',
+  eatingPhase?: string
+): Promise<string> => {
+  const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+  const workoutJson = buildWorkoutSummaryFromDetails(details);
+  return getRecentWorkoutInsightsPrompt(
+    details.workoutLog.workoutName,
+    language,
+    eatingPhase,
+    workoutJson
+  );
 };
 
 /**
@@ -335,10 +561,24 @@ export const getWorkoutVolumeInsightsPrompt = async (
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
-  const userDetails = getUserDetailsPrompt(user, eatingPhase);
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  // TODO: Fetch all historical occurrences sorted by date
-  const historyJson = '[]'; // Placeholder
+  let historyJson = '[]';
+  try {
+    const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
+    const summaries: string[] = [];
+    for (const log of logs) {
+      const json = await buildWorkoutSummaryJson(log.id);
+      if (json !== '{}') {
+        summaries.push(json);
+      }
+    }
+    historyJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
+  } catch (error) {
+    console.error('Error fetching workout volume history for prompt:', error);
+  }
 
   return [
     getBaseSystemPrompt(language),

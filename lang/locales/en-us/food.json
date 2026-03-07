@@ -227,7 +227,9 @@
       "noBarcodeFound": "No barcode found",
       "photoCaptured": "Photo captured successfully",
       "cameraError": "Camera error. Please try again.",
-      "uploadFromGallery": "Choose from gallery"
+      "uploadFromGallery": "Choose from gallery",
+      "aiAnalysisFailed": "AI analysis failed. Please try again.",
+      "aiNotConfigured": "AI is not configured. Add a Gemini or OpenAI API key in Settings."
     },
     "aiNutritionContext": {
       "title": "Add Context for AI",

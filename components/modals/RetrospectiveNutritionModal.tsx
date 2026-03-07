@@ -12,7 +12,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { GoogleAuthService } from '../../database/services';
+import { SettingsService } from '../../database/services/SettingsService';
 import { useTheme } from '../../hooks/useTheme';
+import { type CoachAIConfig, parseRetrospectiveNutrition } from '../../utils/coachAI';
+import { getAccessToken } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -44,23 +48,68 @@ export function RetrospectiveNutritionModal({
 
     setIsProcessing(true);
     try {
-      // TODO: Implement full flow with AI
-      // 1. Get AI config from settings
-      // 2. Call parseRetrospectiveNutrition(config, description, targetDate)
-      // 3. Show confirmation modal with results
-      // 4. On confirm, save entries via NutritionService
+      const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
+        try {
+          const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+          if (oauthGeminiEnabled) {
+            const accessToken = await getAccessToken();
+            if (accessToken) {
+              return {
+                provider: 'gemini',
+                accessToken,
+                model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+              };
+            }
+          }
+          const enableGemini = await SettingsService.getEnableGoogleGemini();
+          const geminiKey = await SettingsService.getGoogleGeminiApiKey();
+          if (enableGemini && geminiKey) {
+            return {
+              provider: 'gemini',
+              apiKey: geminiKey,
+              model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+            };
+          }
+          const enableOpenAi = await SettingsService.getEnableOpenAi();
+          const openAiKey = await SettingsService.getOpenAiApiKey();
+          if (enableOpenAi && openAiKey) {
+            return {
+              provider: 'openai',
+              apiKey: openAiKey,
+              model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
+            };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      };
 
-      console.log('[RetrospectiveNutrition] Processing description for date:', targetDate);
-      console.log('[RetrospectiveNutrition] Description:', description);
+      const aiConfig = await resolveAIConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('ai.settings.notConfigured'));
+        setIsProcessing(false);
+        return;
+      }
+
+      const targetDateStr = targetDate.toISOString().split('T')[0];
+      const parsed = await parseRetrospectiveNutrition(aiConfig, description.trim(), targetDateStr);
+      if (!parsed || parsed.length === 0) {
+        showSnackbar('error', t('nutrition.processingFailed'));
+        setIsProcessing(false);
+        return;
+      }
 
       showSnackbar('success', t('nutrition.processingDescription'));
+      onNutritionEntered?.(parsed);
+      onClose();
     } catch (error) {
       console.error('[RetrospectiveNutrition] Error:', error);
       showSnackbar('error', t('nutrition.processingFailed'));
     } finally {
       setIsProcessing(false);
     }
-  }, [description, targetDate, t]);
+  }, [description, targetDate, t, onNutritionEntered, onClose]);
 
   const handleClose = useCallback(() => {
     setDescription('');

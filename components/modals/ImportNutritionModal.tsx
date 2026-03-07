@@ -12,7 +12,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { GoogleAuthService } from '../../database/services';
+import { SettingsService } from '../../database/services/SettingsService';
 import { useTheme } from '../../hooks/useTheme';
+import { type CoachAIConfig, parsePastNutrition } from '../../utils/coachAI';
+import { getAccessToken } from '../../utils/googleAuth';
 import { showSnackbar } from '../../utils/snackbarService';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -42,23 +46,67 @@ export function ImportNutritionModal({
 
     setIsProcessing(true);
     try {
-      // TODO: Implement full flow with AI
-      // 1. Get AI config from settings
-      // 2. Call parsePastNutrition(config, rawText)
-      // 3. Show confirmation modal with parsed entries
-      // 4. On confirm, save entries via NutritionService
+      const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
+        try {
+          const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
+          if (oauthGeminiEnabled) {
+            const accessToken = await getAccessToken();
+            if (accessToken) {
+              return {
+                provider: 'gemini',
+                accessToken,
+                model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+              };
+            }
+          }
+          const enableGemini = await SettingsService.getEnableGoogleGemini();
+          const geminiKey = await SettingsService.getGoogleGeminiApiKey();
+          if (enableGemini && geminiKey) {
+            return {
+              provider: 'gemini',
+              apiKey: geminiKey,
+              model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+            };
+          }
+          const enableOpenAi = await SettingsService.getEnableOpenAi();
+          const openAiKey = await SettingsService.getOpenAiApiKey();
+          if (enableOpenAi && openAiKey) {
+            return {
+              provider: 'openai',
+              apiKey: openAiKey,
+              model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
+            };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      };
 
-      console.log('[ImportNutrition] Processing raw nutrition data...');
-      console.log('[ImportNutrition] Raw text:', rawText);
+      const aiConfig = await resolveAIConfig();
+      if (!aiConfig) {
+        showSnackbar('error', t('ai.settings.notConfigured'));
+        setIsProcessing(false);
+        return;
+      }
+
+      const parsed = await parsePastNutrition(aiConfig, rawText.trim());
+      if (!parsed || parsed.length === 0) {
+        showSnackbar('error', t('nutrition.processingFailed'));
+        setIsProcessing(false);
+        return;
+      }
 
       showSnackbar('success', t('nutrition.processingData'));
+      onNutritionImported?.(parsed);
+      onClose();
     } catch (error) {
       console.error('[ImportNutrition] Error:', error);
       showSnackbar('error', t('nutrition.processingFailed'));
     } finally {
       setIsProcessing(false);
     }
-  }, [rawText, t]);
+  }, [rawText, t, onNutritionImported, onClose]);
 
   const handleClose = useCallback(() => {
     setRawText('');

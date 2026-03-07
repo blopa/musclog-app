@@ -228,8 +228,7 @@ export default function WorkoutSummaryScreen() {
         return;
       }
 
-      const { workoutLog } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-      const feedback = await getRecentWorkoutInsights(aiConfig, workoutLog.workoutName);
+      const feedback = await getRecentWorkoutInsights(aiConfig, workoutLogId);
 
       if (feedback) {
         await processFeedbackResponse(feedback, sessionId);

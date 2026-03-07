@@ -2,6 +2,26 @@ import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
 import { configureBasicGenAI } from './gemini';
+import {
+  createWorkoutPlanPrompt,
+  getCalculateNextWorkoutVolumeFunctions,
+  getCalculateNextWorkoutVolumePrompt,
+  getEstimateMacrosFunctions,
+  getEstimateNutritionFromPhotoPrompt,
+  getExtractMacrosFromLabelPrompt,
+  getGenerateWorkoutPlanFunctions,
+  getNutritionInsightsPrompt,
+  getParsePastNutritionFunctions,
+  getParsePastNutritionPrompt,
+  getParsePastWorkoutsFunctions,
+  getParsePastWorkoutsPrompt,
+  getParseRetrospectiveNutritionFunctions,
+  getRecentWorkoutInsightsPromptByLogId,
+  getRecentWorkoutsInsightsPrompt,
+  getRetrospectiveNutritionPrompt,
+  getWorkoutInsightsPrompt,
+  getWorkoutVolumeInsightsPrompt,
+} from './prompts';
 
 export type CoachAIProvider = 'gemini' | 'openai';
 
@@ -258,6 +278,200 @@ async function sendViaOpenAI(
   return parseCoachResponse(raw);
 }
 
+// --- Helpers for insight/parsing/vision ---
+
+const INSIGHTS_USER_MESSAGE = 'Based on the data above, provide your analysis and insights.';
+
+async function generateText(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  userMessage: string = INSIGHTS_USER_MESSAGE
+): Promise<string> {
+  // TODO: use lang
+  const lang = config.language ?? 'en-US';
+  if (config.provider === 'gemini') {
+    const genModel = await configureBasicGenAI(
+      {
+        accessToken: config.accessToken,
+        apiKey: config.apiKey,
+        model: config.model,
+      },
+      [{ text: systemPrompt } as Part]
+    );
+
+    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const result = await genModel.generateContent({ contents });
+    const raw = extractRawText(result.response);
+    return raw?.trim() ?? '';
+  }
+
+  const client = new OpenAI({ apiKey: config.apiKey });
+  const completion = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage },
+    ],
+  });
+
+  const raw = completion.choices[0]?.message?.content ?? '';
+  return raw.trim();
+}
+
+function getSchemaFromFunctionDeclaration(fn: {
+  parameters?: { type?: string; properties?: object; required?: string[] };
+}): object {
+  const p = fn.parameters;
+  if (!p || typeof p !== 'object') {
+    return { type: 'object', properties: {}, required: [] };
+  }
+  return {
+    type: p.type ?? 'object',
+    properties: p.properties ?? {},
+    required: p.required ?? [],
+  };
+}
+
+async function generateStructured<T>(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  userMessage: string, // TODO: the "user message" (when we generate it) needs to be translated
+  schema: object,
+  schemaName: string = 'response'
+): Promise<T | null> {
+  // TODO: shouldn't we use lang?
+  const lang = config.language ?? 'en-US';
+  if (config.provider === 'gemini') {
+    const genModel = await configureBasicGenAI(
+      {
+        accessToken: config.accessToken,
+        apiKey: config.apiKey,
+        model: config.model,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: schema,
+        },
+      },
+      [{ text: systemPrompt } as Part]
+    );
+    const contents: Content[] = [{ parts: [{ text: userMessage } as Part], role: 'user' }];
+    const result = await genModel.generateContent({ contents });
+    const raw = extractRawText(result.response);
+    if (!raw?.trim()) {
+      return null;
+    }
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      return JSON.parse(clean) as T;
+    } catch {
+      return null;
+    }
+  }
+  const client = new OpenAI({ apiKey: config.apiKey });
+  const completion = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userMessage },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: schemaName,
+        strict: true,
+        schema: { ...schema, additionalProperties: false },
+      },
+    },
+  });
+  const raw = completion.choices[0]?.message?.content ?? '';
+  if (!raw?.trim()) {
+    return null;
+  }
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function generateWithImageStructured<T>(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  base64Image: string,
+  mimeType: string,
+  schema: object,
+  schemaName: string = 'response'
+): Promise<T | null> {
+  if (config.provider === 'gemini') {
+    const genModel = await configureBasicGenAI(
+      {
+        accessToken: config.accessToken,
+        apiKey: config.apiKey,
+        model: config.model,
+        generationConfig: {
+          responseMimeType: 'application/json',
+          responseSchema: schema,
+        },
+      },
+      [{ text: systemPrompt } as Part]
+    );
+    const contents: Content[] = [
+      {
+        parts: [
+          { text: 'Analyze this image and return the structured data.' } as Part,
+          { inlineData: { mimeType, data: base64Image } } as Part,
+        ],
+        role: 'user',
+      },
+    ];
+    const result = await genModel.generateContent({ contents });
+    const raw = extractRawText(result.response);
+    if (!raw?.trim()) {
+      return null;
+    }
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      return JSON.parse(clean) as T;
+    } catch {
+      return null;
+    }
+  }
+  const client = new OpenAI({ apiKey: config.apiKey });
+  const dataUrl = `data:${mimeType};base64,${base64Image}`;
+  const completion = await client.chat.completions.create({
+    model: config.model,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Analyze this image and return the structured data.' },
+          { type: 'image_url', image_url: { url: dataUrl } },
+        ],
+      },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: schemaName,
+        strict: true,
+        schema: { ...schema, additionalProperties: false },
+      },
+    },
+  });
+  const raw = completion.choices[0]?.message?.content ?? '';
+  if (!raw?.trim()) {
+    return null;
+  }
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean) as T;
+  } catch {
+    return null;
+  }
+}
+
 export async function sendCoachMessage(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
@@ -284,9 +498,10 @@ export async function getNutritionInsights(
   endDate: string
 ): Promise<string | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] getNutritionInsights not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang);
+    const text = await generateText(config, systemPrompt);
+    return text || null;
   } catch (error) {
     console.error('[coachAI] getNutritionInsights error:', error);
     return null;
@@ -301,9 +516,23 @@ export async function generateWorkoutPlan(
   history: ChatHistoryEntry[]
 ): Promise<GenerateWorkoutPlanResponse | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] generateWorkoutPlan not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await createWorkoutPlanPrompt(lang);
+    const userMessage =
+      history.length > 0
+        ? history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
+          '\n\nGenerate a workout plan based on this conversation.'
+        : 'Generate a basic weekly workout plan (e.g. 3-day split).';
+    const fns = getGenerateWorkoutPlanFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<GenerateWorkoutPlanResponse>(
+      config,
+      systemPrompt,
+      userMessage,
+      schema,
+      'generateWorkoutPlan'
+    );
+    return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] generateWorkoutPlan error:', error);
     return null;
@@ -319,9 +548,22 @@ export async function calculateNextWorkoutVolume(
   completedWorkoutData: any
 ): Promise<CalculateVolumeResponse | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] calculateNextWorkoutVolume not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getCalculateNextWorkoutVolumePrompt(workoutTitle, lang);
+    const userMessage =
+      typeof completedWorkoutData === 'string'
+        ? completedWorkoutData
+        : JSON.stringify(completedWorkoutData ?? {}, null, 2);
+    const fns = getCalculateNextWorkoutVolumeFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<CalculateVolumeResponse>(
+      config,
+      systemPrompt,
+      userMessage,
+      schema,
+      'calculateNextWorkoutVolume'
+    );
+    return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] calculateNextWorkoutVolume error:', error);
     return null;
@@ -336,9 +578,10 @@ export async function getWorkoutInsights(
   workoutTitle: string
 ): Promise<string | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] getWorkoutInsights not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang);
+    const text = await generateText(config, systemPrompt);
+    return text || null;
   } catch (error) {
     console.error('[coachAI] getWorkoutInsights error:', error);
     return null;
@@ -346,16 +589,17 @@ export async function getWorkoutInsights(
 }
 
 /**
- * Get feedback on a recently completed workout
+ * Get feedback on a recently completed workout (by workout log id).
  */
 export async function getRecentWorkoutInsights(
   config: CoachAIConfig,
-  workoutTitle: string
+  workoutLogId: string
 ): Promise<string | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] getRecentWorkoutInsights not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang);
+    const text = await generateText(config, systemPrompt);
+    return text || null;
   } catch (error) {
     console.error('[coachAI] getRecentWorkoutInsights error:', error);
     return null;
@@ -371,9 +615,10 @@ export async function getRecentWorkoutsInsights(
   endDate: string
 ): Promise<string | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] getRecentWorkoutsInsights not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang);
+    const text = await generateText(config, systemPrompt);
+    return text || null;
   } catch (error) {
     console.error('[coachAI] getRecentWorkoutsInsights error:', error);
     return null;
@@ -388,9 +633,10 @@ export async function getWorkoutVolumeInsights(
   workoutTitle: string
 ): Promise<string | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] getWorkoutVolumeInsights not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang);
+    const text = await generateText(config, systemPrompt);
+    return text || null;
   } catch (error) {
     console.error('[coachAI] getWorkoutVolumeInsights error:', error);
     return null;
@@ -405,9 +651,20 @@ export async function estimateNutritionFromPhoto(
   base64Image: string
 ): Promise<MacroEstimate | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI vision
-    console.warn('[coachAI] estimateNutritionFromPhoto not yet implemented');
-    return null;
+    const systemPrompt = getEstimateNutritionFromPhotoPrompt();
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    const fns = getEstimateMacrosFunctions(false);
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateWithImageStructured<MacroEstimate>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'estimateMacros'
+    );
+    return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] estimateNutritionFromPhoto error:', error);
     return null;
@@ -422,9 +679,20 @@ export async function extractMacrosFromLabelPhoto(
   base64Image: string
 ): Promise<MacroEstimate | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI vision
-    console.warn('[coachAI] extractMacrosFromLabelPhoto not yet implemented');
-    return null;
+    const systemPrompt = getExtractMacrosFromLabelPrompt();
+    const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+    const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    const fns = getEstimateMacrosFunctions(true);
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateWithImageStructured<MacroEstimate>(
+      config,
+      systemPrompt,
+      base64,
+      mimeType,
+      schema,
+      'estimateMacros'
+    );
+    return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
     return null;
@@ -440,9 +708,18 @@ export async function parsePastWorkouts(
   exerciseNames: string[]
 ): Promise<ParsedWorkout[] | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] parsePastWorkouts not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
+    const fns = getParsePastWorkoutsFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
+      config,
+      systemPrompt,
+      'Parse the workouts and return the structured list.',
+      schema,
+      'parsePastWorkouts'
+    );
+    return parsed?.pastWorkouts ?? null;
   } catch (error) {
     console.error('[coachAI] parsePastWorkouts error:', error);
     return null;
@@ -457,9 +734,18 @@ export async function parsePastNutrition(
   userMessage: string
 ): Promise<ParsedNutrition[] | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] parsePastNutrition not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = getParsePastNutritionPrompt(userMessage, lang);
+    const fns = getParsePastNutritionFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<{ pastNutrition: ParsedNutrition[] }>(
+      config,
+      systemPrompt,
+      'Parse the nutrition data and return the structured list.',
+      schema,
+      'parsePastNutrition'
+    );
+    return parsed?.pastNutrition ?? null;
   } catch (error) {
     console.error('[coachAI] parsePastNutrition error:', error);
     return null;
@@ -475,28 +761,21 @@ export async function parseRetrospectiveNutrition(
   targetDate: string
 ): Promise<NutritionEntry[] | null> {
   try {
-    // TODO: Implement via Gemini/OpenAI
-    console.warn('[coachAI] parseRetrospectiveNutrition not yet implemented');
-    return null;
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
+    const fns = getParseRetrospectiveNutritionFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<{ nutritionEntries: NutritionEntry[] }>(
+      config,
+      systemPrompt,
+      'Parse the meals and return the structured list.',
+      schema,
+      'parseRetrospectiveNutrition'
+    );
+
+    return parsed?.nutritionEntries ?? null;
   } catch (error) {
     console.error('[coachAI] parseRetrospectiveNutrition error:', error);
-    return null;
-  }
-}
-
-/**
- * Generate an exercise image via AI
- */
-export async function generateExerciseImage(
-  config: CoachAIConfig,
-  exerciseName: string
-): Promise<string | null> {
-  try {
-    // TODO: Implement via Gemini/OpenAI vision
-    console.warn('[coachAI] generateExerciseImage not yet implemented');
-    return null;
-  } catch (error) {
-    console.error('[coachAI] generateExerciseImage error:', error);
     return null;
   }
 }
