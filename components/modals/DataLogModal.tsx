@@ -5,6 +5,7 @@ import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import type { Units } from '../../constants/settings';
 import { database } from '../../database';
 import {
   ChatService,
@@ -32,6 +33,8 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
+import { kgToDisplay } from '../../utils/unitConversion';
+import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { useSnackbar } from '../SnackbarContext';
@@ -93,8 +96,13 @@ export type DataLogModalTranslations = {
 
 export function getDataLogModalTranslations(
   variant: DataLogModalVariant,
-  t: TFunction
+  t: TFunction,
+  options?: { units: Units }
 ): DataLogModalTranslations {
+  const units = options?.units;
+  const weightUnitKey = units != null ? getWeightUnitI18nKey(units) : null;
+  const unitLabel = weightUnitKey != null ? t(weightUnitKey) : 'kg';
+
   if (variant === 'meal') {
     return {
       title: t('food.meals.manageMealData.title'),
@@ -214,8 +222,15 @@ export function getDataLogModalTranslations(
             ? t('workoutLog.manageWorkoutLogData.statusCompleted')
             : t('workoutLog.manageWorkoutLogData.statusInProgress'),
           volume:
+          // TODO: use a helper function here to avoid nested ternary
             item.totalVolume != null
-              ? t('workoutLog.manageWorkoutLogData.volumeFormat', { volume: item.totalVolume })
+              ? t('workoutLog.manageWorkoutLogData.volumeFormat', {
+                  volume:
+                    units != null
+                      ? Number(kgToDisplay(item.totalVolume, units).toFixed(1))
+                      : item.totalVolume,
+                  unit: unitLabel,
+                })
               : '—',
         }),
     };
@@ -341,7 +356,11 @@ export function getDataLogModalTranslations(
         t('goalsManagement.manageGoalData.subtitleFormat', {
           calories: Number((item.goalCalories ?? 0).toFixed(0)),
           phase: item.goalEatingPhase ?? '',
-          targetWeight: Number((item.goalTargetWeight ?? 0).toFixed(1)),
+          targetWeight:
+            units != null && item.goalTargetWeight != null
+              ? Number(kgToDisplay(item.goalTargetWeight, units).toFixed(1))
+              : Number((item.goalTargetWeight ?? 0).toFixed(1)),
+          unit: unitLabel,
         }),
     };
   }
@@ -367,8 +386,12 @@ export function getDataLogModalTranslations(
       formatCaloriesMacros: () => '',
       formatItemSubtitle: (item) =>
         t('goalsManagement.manageCheckinData.subtitleFormat', {
-          targetWeight: Number((item.checkinTargetWeight ?? 0).toFixed(1)),
+          targetWeight:
+            units != null && item.checkinTargetWeight != null
+              ? Number(kgToDisplay(item.checkinTargetWeight, units).toFixed(1))
+              : Number((item.checkinTargetWeight ?? 0).toFixed(1)),
           targetBodyFat: Number((item.checkinTargetBodyFat ?? 0).toFixed(1)),
+          unit: unitLabel,
         }),
     };
   }
@@ -504,7 +527,7 @@ export function DataLogModal({
 }: DataLogModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiFeaturesEnabled, units } = useSettings();
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -524,7 +547,7 @@ export function DataLogModal({
   const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
   const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
 
-  const translations = getDataLogModalTranslations(variant, t);
+  const translations = getDataLogModalTranslations(variant, t, { units });
 
   // Edit modal integration
   const {

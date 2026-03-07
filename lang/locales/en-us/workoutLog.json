@@ -16,7 +16,7 @@
       "detailFormat": "{{status}} • {{volume}}",
       "statusCompleted": "Completed",
       "statusInProgress": "In progress",
-      "volumeFormat": "{{volume}} kg",
+      "volumeFormat": "{{volume}} {{unit}}",
       "unknownWorkout": "Unknown Workout"
     }
   }

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
 import DashedButton from '../theme/DashedButton';
@@ -42,6 +43,9 @@ function SetCard({
   const displayIndex = Number.isFinite(index) ? index + 1 : 1;
 
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const weightLabelKey =
+    units === 'imperial' ? 'workoutDetail.inputs.weightLbs' : 'workoutDetail.inputs.weightKg';
 
   return (
     <View className="mb-4">
@@ -94,7 +98,7 @@ function SetCard({
             {/* Inputs */}
             <View className="mb-4 grid grid-cols-2 gap-4">
               <NewNumericalInput
-                label={t('workoutDetail.inputs.weightKg')}
+                label={t(weightLabelKey)}
                 value={item.weight}
                 onChange={(v) => onChange(item.id, { weight: v })}
                 min={0}

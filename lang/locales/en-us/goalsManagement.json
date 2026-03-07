@@ -25,7 +25,7 @@
       "duplicateGoalDesc": "Create a copy to use as a new goal",
       "deleteGoal": "Delete goal",
       "deleteGoalDesc": "Remove this goal from history",
-      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} kg",
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} {{unit}}",
       "phaseCut": "Cut",
       "phaseMaintain": "Maintain",
       "phaseBulk": "Bulk"
@@ -41,7 +41,7 @@
       "editCheckinDesc": "Change check-in targets",
       "deleteCheckin": "Delete check-in",
       "deleteCheckinDesc": "Permanently remove this check-in",
-      "subtitleFormat": "Target {{targetWeight}} kg • {{targetBodyFat}}% body fat",
+      "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
       "checkinDate": "Check-in Date"
     }
   }

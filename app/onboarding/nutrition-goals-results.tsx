@@ -227,6 +227,18 @@ export default function NutritionGoalsResults() {
     return ranges[exp] ?? ranges.intermediate;
   }, [parsedPlan?.liftingExperience]);
 
+  const maintenanceMuscleRangeDisplay = useMemo(() => {
+    const parts = maintenanceMuscleRange.split('–').map((s) => parseFloat(s.trim()));
+    if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) {
+      return maintenanceMuscleRange;
+    }
+
+    const lowDisplay = kgToDisplay(parts[0], units);
+    const highDisplay = kgToDisplay(parts[1], units);
+    const format = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1));
+    return `${format(lowDisplay)}–${format(highDisplay)}`;
+  }, [maintenanceMuscleRange, units]);
+
   const handleAccept = async () => {
     if (!displayData) {
       return;
@@ -325,7 +337,7 @@ export default function NutritionGoalsResults() {
     }
   };
 
-  // Formatted weight change with sign (in display unit)
+  // Formatted weight change with sign, numeric only (unit shown separately)
   const formattedWeightChange = useMemo(() => {
     if (!displayData) {
       return '0';
@@ -335,8 +347,8 @@ export default function NutritionGoalsResults() {
     const endDisplay = kgToDisplay(displayData.startWeight + displayData.weightChange, units);
     const changeDisplay = endDisplay - startDisplay;
     const sign = changeDisplay > 0 ? '+' : '';
-    return `${sign}${changeDisplay % 1 === 0 ? changeDisplay : changeDisplay.toFixed(1)} ${t(weightUnitKey)}`;
-  }, [displayData, units, t, weightUnitKey]);
+    return `${sign}${changeDisplay % 1 === 0 ? changeDisplay : changeDisplay.toFixed(1)}`;
+  }, [displayData, units]);
 
   // Loading state for manual flow
   if (!aiGenerated && isLoadingGoal) {
@@ -910,7 +922,8 @@ export default function NutritionGoalsResults() {
                   >
                     {t('nutritionGoals.results.projectionMaintenanceMuscleGain', {
                       days: displayData.projectionDays,
-                      range: maintenanceMuscleRange,
+                      range: maintenanceMuscleRangeDisplay,
+                      unit: t(weightUnitKey),
                     })}
                   </Text>
                 </View>
@@ -948,7 +961,7 @@ export default function NutritionGoalsResults() {
                           fontWeight: theme.typography.fontWeight.bold,
                         }}
                       >
-                        kg
+                        {t(weightUnitKey)}
                       </Text>
                     </View>
                     <Text
@@ -962,13 +975,12 @@ export default function NutritionGoalsResults() {
                       }}
                     >
                       {t('nutritionGoals.results.projectionDescription', {
-                        weight:
-                          (() => {
-                            const d = kgToDisplay(displayData.projectedWeight, units);
-                            return d % 1 === 0 ? String(d) : d.toFixed(1);
-                          })() +
-                          ' ' +
-                          t(weightUnitKey),
+                        // TODO: move this to a helper function in a useMemo to avoid IFEE
+                        value: (() => {
+                          const d = kgToDisplay(displayData.projectedWeight, units);
+                          return d % 1 === 0 ? String(d) : d.toFixed(1);
+                        })(),
+                        unit: t(weightUnitKey),
                         days: displayData.projectionDays,
                       })}
                     </Text>
@@ -989,10 +1001,12 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionFat', {
-                              kg: (() => {
+                              // TODO: move this to a helper function in a useMemo to avoid IFEE
+                              value: (() => {
                                 const d = kgToDisplay(displayData.estimatedFatChangeKg ?? 0, units);
-                                return `${d % 1 === 0 ? d : d.toFixed(1)} ${t(weightUnitKey)}`;
+                                return d % 1 === 0 ? d : d.toFixed(1);
                               })(),
+                              unit: t(weightUnitKey),
                             })}
                           </Text>
                           <Text
@@ -1004,13 +1018,15 @@ export default function NutritionGoalsResults() {
                             }}
                           >
                             {t('nutritionGoals.results.projectionLean', {
-                              kg: (() => {
+                              // TODO: move this to a helper function in a useMemo to avoid IFEE
+                              value: (() => {
                                 const d = kgToDisplay(
                                   displayData.estimatedLeanChangeKg ?? 0,
                                   units
                                 );
-                                return `${d % 1 === 0 ? d : d.toFixed(1)} ${t(weightUnitKey)}`;
+                                return d % 1 === 0 ? d : d.toFixed(1);
                               })(),
+                              unit: t(weightUnitKey),
                             })}
                           </Text>
                         </View>

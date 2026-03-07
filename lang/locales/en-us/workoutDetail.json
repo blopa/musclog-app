@@ -19,6 +19,7 @@
     "rir": "RIR (Reps in Reserve)",
     "inputs": {
       "weightKg": "Weight (kg)",
+      "weightLbs": "Weight (lbs)",
       "restSec": "Rest (sec)"
     }
   }

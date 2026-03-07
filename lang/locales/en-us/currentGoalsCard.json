@@ -11,6 +11,7 @@
     "bmi": "BMI",
     "g": "g",
     "kg": "kg",
+    "lbs": "lbs",
     "percent": "%"
   }
 }
