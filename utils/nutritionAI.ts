@@ -1,3 +1,8 @@
+import { Q } from '@nozbe/watermelondb';
+
+import { database } from '../database';
+import Food from '../database/models/Food';
+import { FoodService, NutritionService } from '../database/services';
 import type { MacroEstimate, NutritionEntry } from './coachAI';
 
 /**
@@ -21,10 +26,29 @@ export function normalizeMacrosByGrams(macros: MacroEstimate, grams: number): Ma
   };
 }
 
+const mapMealTypeToDb = (
+  mealType: number
+): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' => {
+  switch (mealType) {
+    case 1:
+      return 'breakfast';
+    case 2:
+      return 'lunch';
+    case 3:
+      return 'dinner';
+    case 4:
+      return 'snack';
+    case 5:
+      return 'other';
+    default:
+      return 'other';
+  }
+};
+
 /**
  * Process parsed nutrition entries from AI for database storage
  * Maps meal type numbers to database format
- * Encrypts sensitive data if needed
+ * Creates or finds foods and logs them via NutritionService
  */
 export async function processParsedNutritionEntries(
   entries: NutritionEntry[],
@@ -43,21 +67,67 @@ export async function processParsedNutritionEntries(
     sugar?: number;
   }[]
 > {
-  // TODO: Implement database storage with NutritionService
-  // This is a placeholder for the structure
+  // Map meal type numbers to database MealType strings
 
-  return entries.map((entry) => ({
-    foodTitle: entry.productTitle,
-    calories: entry.calories,
-    carbs: entry.carbs,
-    fat: entry.fat,
-    protein: entry.protein,
-    mealType: entry.mealType, // 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack, 5=Other
-    date,
-    fiber: entry.fiber,
-    sodium: entry.sodium,
-    sugar: entry.sugar,
-  }));
+  const results = [];
+
+  for (const entry of entries) {
+    try {
+      // Try to find existing food by name (exact match)
+      let food: Food | null = null;
+      try {
+        const existingFoods = await database
+          .get<Food>('foods')
+          .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', entry.productTitle))
+          .fetch();
+        food = existingFoods.length > 0 ? existingFoods[0] : null;
+      } catch (error) {
+        // Food not found, we'll create a new one
+      }
+
+      // Create new food if not found
+      if (!food) {
+        food = await FoodService.createCustomFood(entry.productTitle, {
+          calories: entry.calories,
+          protein: entry.protein,
+          carbs: entry.carbs,
+          fat: entry.fat,
+          fiber: entry.fiber,
+          sugar: entry.sugar,
+          sodium: entry.sodium,
+        });
+      }
+
+      // Log the food using NutritionService
+      const mealType = mapMealTypeToDb(entry.mealType);
+      await NutritionService.logFood(
+        food.id,
+        date,
+        mealType,
+        1, // Default amount of 1 serving
+        undefined, // No specific portion
+        undefined // No external ID
+      );
+
+      results.push({
+        foodTitle: entry.productTitle,
+        calories: entry.calories,
+        carbs: entry.carbs,
+        fat: entry.fat,
+        protein: entry.protein,
+        mealType: entry.mealType,
+        date,
+        fiber: entry.fiber,
+        sodium: entry.sodium,
+        sugar: entry.sugar,
+      });
+    } catch (error) {
+      console.error('Error processing nutrition entry:', entry, error);
+      // Continue with next entry even if one fails
+    }
+  }
+
+  return results;
 }
 
 /**

@@ -152,7 +152,10 @@ export class WorkoutTemplateService {
       const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 
       const description = firstSet
-        ? i18n.t('workouts.addExercise.exerciseDescription', { sets: setsCount, reps: firstSet.targetReps })
+        ? i18n.t('workouts.addExercise.exerciseDescription', {
+            sets: setsCount,
+            reps: firstSet.targetReps,
+          })
         : i18n.t('workouts.browseTemplatesModal.stats.setsQty', { count: setsCount });
 
       exercisesInWorkout.push({

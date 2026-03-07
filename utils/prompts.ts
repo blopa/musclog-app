@@ -2,7 +2,7 @@ import { FunctionDeclaration } from '@google/generative-ai';
 import OpenAI from 'openai';
 
 import { User } from '../database/models';
-import { UserService } from '../database/services';
+import { NutritionService, UserService } from '../database/services';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -137,9 +137,58 @@ export const getNutritionInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const userDetails = getUserDetailsPrompt(user, eatingPhase);
 
-  // TODO: Fetch nutrition data via NutritionService
+  // Fetch nutrition data via NutritionService
   // Format as: { date, calories, protein, carbs, fat }[]
-  const nutritionData = '[]'; // Placeholder
+  const startDateObj = new Date(startDate);
+  const endDateObj = new Date(endDate);
+
+  let nutritionData = '[]';
+  try {
+    const logs = await NutritionService.getNutritionLogsForDateRange(startDateObj, endDateObj);
+
+    // Group logs by date and calculate daily totals
+    const dailyNutritionMap = new Map<
+      string,
+      { calories: number; protein: number; carbs: number; fat: number }
+    >();
+
+    for (const log of logs) {
+      try {
+        const nutrients = await log.getNutrients();
+        const dateKey = new Date(log.date ?? Date.now()).toISOString().split('T')[0]; // YYYY-MM-DD format
+
+        const existing = dailyNutritionMap.get(dateKey) || {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+        };
+
+        dailyNutritionMap.set(dateKey, {
+          calories: existing.calories + nutrients.calories,
+          protein: existing.protein + nutrients.protein,
+          carbs: existing.carbs + nutrients.carbs,
+          fat: existing.fat + nutrients.fat,
+        });
+      } catch (error) {
+        console.error('Error getting nutrients for log:', error);
+        continue;
+      }
+    }
+
+    // Convert to array format and sort by date
+    const nutritionArray = Array.from(dailyNutritionMap.entries())
+      .map(([date, nutrition]) => ({
+        date,
+        ...nutrition,
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    nutritionData = JSON.stringify(nutritionArray, null, 2);
+  } catch (error) {
+    console.error('Error fetching nutrition data:', error);
+    nutritionData = '[]'; // Fallback to empty array
+  }
 
   // TODO: Fetch user metrics via UserMetricService
   // Format as: { date, weight, fatPercentage }[]

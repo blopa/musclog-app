@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { ReactNode, useMemo } from 'react';
 import { Animated, Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
@@ -95,8 +96,14 @@ export function TextInput({
       </View>
       {Platform.OS === 'web' ? (
         <View
-          // TODO: use classnames
-          className={`${multiline ? 'min-h-14 py-3' : 'h-14'} w-full flex-row ${multiline ? 'items-start' : 'items-center'} rounded-lg border-2 border-white/10 bg-bg-card px-4 focus-within:border-accent-primary/50 focus-within:shadow-md`}
+          className={classNames(
+            'w-full flex-row rounded-lg border-2 bg-bg-card px-4',
+            {
+              'min-h-14 items-start py-3': multiline,
+              'h-14 items-center': !multiline,
+            },
+            'border-white/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
+          )}
         >
           <RNTextInput
             className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
@@ -120,8 +127,10 @@ export function TextInput({
         </View>
       ) : (
         <Animated.View
-          // TODO: use classnames
-          className={`${multiline ? 'min-h-14 py-3' : 'h-14'} w-full flex-row ${multiline ? 'items-start' : 'items-center'} rounded-lg border-2 bg-bg-card px-4`}
+          className={classNames('w-full flex-row rounded-lg border-2 bg-bg-card px-4', {
+            'min-h-14 items-start py-3': multiline,
+            'h-14 items-center': !multiline,
+          })}
           style={{
             borderColor,
             shadowColor: theme.colors.accent.primary,

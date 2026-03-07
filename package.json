@@ -6,6 +6,7 @@
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
     "lint:eslint-fix": "eslint . --fix",
+    "lint:all": "git add . && npm run lint:eslint-fix && npm run format && npm run prebuild && npm run typecheck",
     "bump": "ncu -u -t minor",
     "bump-any": "ncu -u",
     "clear-cache": "rm -rf node_modules/.cache /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",

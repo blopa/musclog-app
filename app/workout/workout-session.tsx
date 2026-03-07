@@ -894,7 +894,7 @@ export default function WorkoutSessionScreen() {
                 style={{ backgroundColor: theme.colors.background.white5 }}
                 onPress={() => setIsNotesExpanded(!isNotesExpanded)}
               >
-                <Text 
+                <Text
                   className="text-sm text-text-secondary"
                   numberOfLines={isNotesExpanded ? undefined : 1}
                   ellipsizeMode="tail"
@@ -909,7 +909,13 @@ export default function WorkoutSessionScreen() {
           <View className="mt-8 flex-row gap-3 px-6">
             <WorkoutStatCard
               title={t('workoutSession.weight')}
-              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : weight}
+              value={
+                !isStatsDataLoaded ? (
+                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                ) : (
+                  weight
+                )
+              }
               unit={isStatsDataLoaded ? t(weightUnitKey) : undefined}
               onPress={() => {
                 setIsEditSetModalVisible(true);
@@ -917,14 +923,28 @@ export default function WorkoutSessionScreen() {
             />
             <WorkoutStatCard
               title={t('workoutSession.reps')}
-              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : reps}
+              value={
+                !isStatsDataLoaded ? (
+                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                ) : (
+                  reps
+                )
+              }
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
             />
             <WorkoutStatCard
               title={t('workoutSession.partials')}
-              value={!isStatsDataLoaded ? <ActivityIndicator size="small" color={theme.colors.text.primary} /> : (partials === 0 ? '-' : partials)}
+              value={
+                !isStatsDataLoaded ? (
+                  <ActivityIndicator size="small" color={theme.colors.text.primary} />
+                ) : partials === 0 ? (
+                  '-'
+                ) : (
+                  partials
+                )
+              }
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}

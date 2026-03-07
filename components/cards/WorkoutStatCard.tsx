@@ -23,9 +23,7 @@ export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCard
           <Text className="text-5xl font-bold text-text-primary">{value}</Text>
         ) : (
           // React element (ActivityIndicator)
-          <View className="h-16 items-center justify-center">
-            {value}
-          </View>
+          <View className="h-16 items-center justify-center">{value}</View>
         )}
         {unit ? <Text className="mt-1 text-lg text-text-secondary">{unit}</Text> : null}
       </View>
