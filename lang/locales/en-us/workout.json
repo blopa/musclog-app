@@ -25,7 +25,9 @@
     "summary": {
       "failedToLoad": "Failed to load",
       "noWorkoutId": "No workout ID",
-      "unableToLoad": "Unable to load"
+      "unableToLoad": "Unable to load",
+      "feedbackReceived": "Workout feedback submitted successfully.",
+      "failedToGetFeedback": "Could not get feedback. Please try again."
     }
   }
 }

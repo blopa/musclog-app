@@ -242,7 +242,9 @@ export default function WorkoutSummaryScreen() {
       if (feedback) {
         await processFeedbackResponse(feedback, sessionId);
         setUnreadCount((prev) => prev + 1);
-        showSnackbar('success', t('workout.summary.feedbackReceived'));
+        showSnackbar('success', t('workout.summary.feedbackReceived'), {
+          action: t('snackbar.ok'),
+        });
         router.replace('/');
       } else {
         showSnackbar('error', t('workout.summary.failedToGetFeedback'));
