@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
@@ -6,16 +6,32 @@ import { Path, Svg } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 
 export const CameraProcessingIndicator = ({
-  isAi = false,
   cameraMode = null,
 }: {
-  isAi?: boolean;
   cameraMode?: 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan' | null;
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  const getProcessingText = useCallback(() => {
+    switch (cameraMode) {
+      case 'ai-label-scan':
+        return t('camera.processing.aiAnalyzingFood');
+      case 'ai-meal-photo':
+        return t('camera.processing.aiAnalyzingMeal');
+      default:
+        return t('camera.processing.analyzingImage');
+    }
+  }, [cameraMode, t]);
+
+  const getSubText = useCallback(() => {
+    const isAiMode = cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo';
+    return isAiMode
+      ? t('camera.processing.processingNutrients')
+      : t('camera.processing.processingData');
+  }, [cameraMode, t]);
 
   useEffect(() => {
     const spin = Animated.loop(
@@ -108,20 +124,14 @@ export const CameraProcessingIndicator = ({
           className="text-center text-xl font-semibold"
           style={{ color: theme.colors.text.white }}
         >
-          {cameraMode === 'ai-label-scan'
-            ? t('camera.processing.aiAnalyzingFood')
-            : cameraMode === 'ai-meal-photo'
-              ? t('camera.processing.aiAnalyzingMeal')
-              : t('camera.processing.analyzingImage')}
+          {getProcessingText()}
         </Text>
 
         <Text
           className="mt-2 text-center text-xs uppercase tracking-widest"
           style={{ color: theme.colors.accent.secondary }}
         >
-          {isAi
-            ? t('camera.processing.processingNutrients')
-            : t('camera.processing.processingData')}
+          {getSubText()}
         </Text>
       </View>
     </View>

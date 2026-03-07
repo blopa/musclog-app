@@ -1,6 +1,7 @@
 {
   "coach": {
     "title": "Chat",
+    "you": "You",
     "name": "Loggy",
     "status": "Online",
     "statusOffline": "Offline",
@@ -19,6 +20,18 @@
     },
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}"
+    },
+    "chatMessages": {
+      "title": "Chat Messages",
+      "searchPlaceholder": "Search messages...",
+      "noMessages": "No messages yet",
+      "noMessagesDesc": "Start a conversation with Loggy",
+      "endOfHistory": "All messages loaded",
+      "messageOptions": "Message options",
+      "editMessage": "Edit message",
+      "editMessageDesc": "Change the message text",
+      "deleteMessage": "Delete message",
+      "deleteMessageDesc": "Permanently remove this message"
     }
   }
 }

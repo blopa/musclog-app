@@ -672,22 +672,12 @@ export default function SmartCameraModal({
           </View>
 
           {/* Loading Overlay - barcode lookup */}
-          {isSearchingBarcode ? (
+          {isSearchingBarcode || isProcessingAi ? (
             <View
               className="absolute inset-0 z-30"
               style={{ backgroundColor: theme.colors.overlay.black90 }}
             >
-              <CameraProcessingIndicator />
-            </View>
-          ) : null}
-
-          {/* Loading Overlay - AI/OCR processing */}
-          {isProcessingAi ? (
-            <View
-              className="absolute inset-0 z-30"
-              style={{ backgroundColor: theme.colors.overlay.black90 }}
-            >
-              <CameraProcessingIndicator isAi={true} cameraMode={cameraMode} />
+              <CameraProcessingIndicator cameraMode={cameraMode} />
             </View>
           ) : null}
 

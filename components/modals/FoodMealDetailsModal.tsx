@@ -46,8 +46,8 @@ import {
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
-import { MacroInput } from '../MacroInput';
 import { FilterTabs } from '../FilterTabs';
+import { MacroInput } from '../MacroInput';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
@@ -1404,9 +1404,7 @@ export function FoodMealDetailsModal({
           setEditForm(null);
         }}
         title={t('food.foodDetails.editFoodInfo')}
-        subtitle={t(
-          'food.foodDetails.editFoodInfoSubtitle'
-        )}
+        subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
         headerIcon={
           <View
             className="h-10 w-10 items-center justify-center rounded-full"
@@ -1506,10 +1504,7 @@ export function FoodMealDetailsModal({
                 value={editForm.protein}
                 onChange={handleEditFormNumericChange('protein')}
                 topRightElement={
-                  <Dumbbell
-                    size={theme.iconSize.sm}
-                    color={theme.colors.status.emeraldLight}
-                  />
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 }
                 variant="success"
                 size="half"

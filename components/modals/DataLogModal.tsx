@@ -1209,9 +1209,7 @@ export function DataLogModal({
   };
 
   // Unify load more button to size="md" and consistent labels
-  const loadingLabel = isLoadingMore
-    ? t('common.loading')
-    : t('bodyMetrics.history.loadMore');
+  const loadingLabel = isLoadingMore ? t('common.loading') : t('bodyMetrics.history.loadMore');
 
   return (
     <>

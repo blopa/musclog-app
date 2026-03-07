@@ -161,6 +161,13 @@
       "kcal": "kcal"
     },
     "foodDetails": {
+      "editFoodInfo": "Edit food info",
+      "editFoodInfoSubtitle": "Correct name, barcode or macros if the AI got them wrong.",
+      "foodName": "Food name",
+      "foodNamePlaceholder": "e.g. Greek Yogurt",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "Scan or enter barcode",
+      "macrosPer100g": "Per 100g",
       "foodTitle": "Food Details",
       "mealTitle": "Meal Details",
       "servingSize": "Serving Size",

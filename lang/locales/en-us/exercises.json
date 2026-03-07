@@ -104,6 +104,7 @@
       "title": "Manage Exercise Data",
       "searchPlaceholder": "Search exercises...",
       "noExercises": "No exercises yet",
+      "noExercisesDesc": "Create custom exercises to see them here",
       "endOfHistory": "End of exercise history",
       "exerciseOptions": "Exercise Options",
       "editExercise": "Edit Exercise",
