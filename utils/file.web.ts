@@ -108,11 +108,40 @@ export async function detectBarcodes(imageUri: string) {
   return quaggaResult?.codeResult?.code ?? null;
 }
 
-export async function openCropperAsync(options: any) {
-  return options.imageUri;
+export async function openCropperAsync(options: any): Promise<{ path: string }> {
+  // Return same shape as native (ExpoImageCropTool) so callers can use cropped.path
+  return { path: options.imageUri };
 }
 
-export async function readFileAsStringAsync(options: any) {
-  // TODO: implement this
-  return '';
+export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
+  try {
+    // Fetch the file from the URI
+    const response = await fetch(fileUri);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.statusText}`);
+    }
+
+    const blob = await response.blob();
+
+    // If encoding is 'base64', convert to base64
+    if (options.encoding === 'base64') {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          // Remove data URL prefix (e.g., "data:image/jpeg;base64,")
+          const base64Data = result.split(',')[1];
+          resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    // Default: return as text
+    return await blob.text();
+  } catch (error) {
+    console.error('[file.web.ts] Error reading file:', error);
+    throw error;
+  }
 }

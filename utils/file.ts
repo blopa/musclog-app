@@ -1,6 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
@@ -8,7 +9,6 @@ import * as Sharing from 'expo-sharing';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
-import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);

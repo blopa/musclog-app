@@ -512,7 +512,7 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
     name = category ? `${p.brands} (${category})` : (p.brands as string);
   }
 
-  return (name && name.trim()) ? name.trim() : i18n.t('food.unknownFood');
+  return name && name.trim() ? name.trim() : i18n.t('food.unknownFood');
 }
 
 // Export the properties array for reference
