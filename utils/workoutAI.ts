@@ -92,7 +92,10 @@ export async function processWorkoutPlanResponse(
 
       for (const aiExercise of plan.exercises) {
         const exerciseId =
-          typeof aiExercise.exerciseId === 'string' ? aiExercise.exerciseId : String(aiExercise.exerciseId);
+          typeof aiExercise.exerciseId === 'string'
+            ? aiExercise.exerciseId
+            : String(aiExercise.exerciseId);
+
         const matchedExercise = exercisesById.get(exerciseId);
         if (!matchedExercise) {
           console.warn(`[workoutAI] Exercise not found for id: ${exerciseId}`);

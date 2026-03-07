@@ -207,11 +207,17 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
   return null;
 };
 
-const renderSend = (props: SendProps<ExtendedIMessage>, theme: Theme) => {
+const renderSend = (
+  props: SendProps<ExtendedIMessage>,
+  theme: Theme,
+  failedMessageText: string | null
+) => {
   const styles = getStyles(theme);
+  // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
+  const effectiveText = (failedMessageText ?? props.text ?? '').trim();
 
   return (
-    <Send {...props} containerStyle={styles.sendContainer}>
+    <Send {...props} text={effectiveText} containerStyle={styles.sendContainer}>
       <View
         className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
         style={{ backgroundColor: theme.colors.accent.primary }}
@@ -222,13 +228,50 @@ const renderSend = (props: SendProps<ExtendedIMessage>, theme: Theme) => {
   );
 };
 
-const renderComposer = (props: ComposerProps, t: TFunction, theme: Theme) => {
+/** ComposerProps from gifted-chat may use a different name for the text callback; we use a relaxed type for our overrides. */
+type ComposerPropsWithText = ComposerProps & {
+  text?: string;
+  onTextChanged?: (text: string) => void;
+};
+
+/** Wrapper so we can run an effect to sync restored (failed) message text into GiftedChat's state when user taps Send without typing. */
+function ComposerWithRestoredText({
+  props,
+  t,
+  theme,
+  failedMessageText,
+  clearFailedMessageText,
+}: {
+  props: ComposerProps;
+  t: TFunction;
+  theme: Theme;
+  failedMessageText: string | null;
+  clearFailedMessageText: () => void;
+}) {
   const styles = getStyles(theme);
+  const propsWithText = props as ComposerPropsWithText;
+
+  // When we have restored text, sync it into GiftedChat's internal state so Send uses it
+  useEffect(() => {
+    if (failedMessageText != null && propsWithText.onTextChanged) {
+      propsWithText.onTextChanged(failedMessageText);
+    }
+    // Intentionally not including props to run only when failedMessageText is set
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [failedMessageText]);
+
+  const text = failedMessageText !== null ? failedMessageText : propsWithText.text;
+  const onTextChanged = (newText: string) => {
+    if (failedMessageText !== null) {
+      clearFailedMessageText();
+    }
+    propsWithText.onTextChanged?.(newText);
+  };
 
   return (
     <View style={styles.composerWrapper}>
       <Composer
-        {...props}
+        {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
           ...props.textInputProps,
           style: [styles.composerTextInput, props.textInputProps?.style],
@@ -242,7 +285,23 @@ const renderComposer = (props: ComposerProps, t: TFunction, theme: Theme) => {
       </Pressable>
     </View>
   );
-};
+}
+
+const renderComposer = (
+  props: ComposerProps,
+  t: TFunction,
+  theme: Theme,
+  failedMessageText: string | null,
+  clearFailedMessageText: () => void
+) => (
+  <ComposerWithRestoredText
+    props={props}
+    t={t}
+    theme={theme}
+    failedMessageText={failedMessageText}
+    clearFailedMessageText={clearFailedMessageText}
+  />
+);
 
 const renderInputToolbar = (
   props: InputToolbarProps<ExtendedIMessage>,
@@ -306,6 +365,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     sendMessage,
     addPendingCoachMessage,
     clearPendingCoachMessage,
+    failedMessageText,
+    clearFailedMessageText,
+    ephemeralErrorAsMessage,
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const [isOnline, setIsOnline] = useState(true);
@@ -374,7 +436,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     };
   }, []);
 
-  const displayMessages = pendingCoachMessage ? [pendingCoachMessage, ...messages] : messages;
+  const displayMessages = [
+    ...(ephemeralErrorAsMessage ? [ephemeralErrorAsMessage] : []),
+    ...(pendingCoachMessage ? [pendingCoachMessage] : []),
+    ...messages,
+  ];
 
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
@@ -552,8 +618,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderInputToolbar={(props) =>
               renderInputToolbar(props, theme, pendingIntention, handleClearIntention)
             }
-            renderComposer={(props) => renderComposer(props, t, theme)}
-            renderSend={(props) => renderSend(props, theme)}
+            renderComposer={(props) =>
+              renderComposer(props, t, theme, failedMessageText, clearFailedMessageText)
+            }
+            renderSend={(props) => renderSend(props, theme, failedMessageText)}
             renderAccessory={renderAccessory}
             renderDay={(props) => renderDay(props, t, theme)}
             scrollToBottomComponent={() => null}

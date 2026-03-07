@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
 
@@ -41,13 +41,15 @@ export interface ExtendedIMessage extends IMessage {
 const INITIAL_LIMIT = 10;
 const BATCH_SIZE = 10;
 
+const COACH_USER = { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR };
+
 function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
   const isCoach = record.sender === 'coach';
   const msg: ExtendedIMessage = {
     _id: record.id,
     text: record.message,
     createdAt: new Date(record.createdAt),
-    user: isCoach ? { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR } : { _id: 1 },
+    user: isCoach ? COACH_USER : { _id: 1 },
   };
 
   if (record.payloadJson) {
@@ -82,6 +84,11 @@ export type UseChatMessagesResult = {
   sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
   clearPendingCoachMessage: () => void;
+  /** When set, the last send failed and this text should be shown in the input so the user can retry. */
+  failedMessageText: string | null;
+  clearFailedMessageText: () => void;
+  /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
+  ephemeralErrorAsMessage: ExtendedIMessage | null;
 };
 
 type AISettings = {
@@ -138,6 +145,8 @@ export function useChatMessages(): UseChatMessagesResult {
   const [isSending, setIsSending] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
+  const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
+  const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
 
   // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
@@ -258,13 +267,20 @@ export function useChatMessages(): UseChatMessagesResult {
     setPendingCoachMessage(null);
   }, []);
 
+  const clearFailedMessageText = useCallback(() => {
+    setFailedMessageText(null);
+  }, []);
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isSending || !sessionId) {
         return;
       }
 
+      setEphemeralErrorMessage(null); // Clear any previous error when user sends again
+      clearFailedMessageText(); // Clear input immediately when user sends; if request fails we set it again
       setIsSending(true);
+      let userRecord: ChatMessage | null = null;
       try {
         // 1. Check for pending chat intention (e.g., GENERATE_MY_WORKOUTS)
         const pendingIntention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
@@ -285,13 +301,13 @@ export function useChatMessages(): UseChatMessagesResult {
         }
 
         // 2. Persist user message and prepend to UI immediately
-        const userRecord = await ChatService.saveMessage({
+        userRecord = await ChatService.saveMessage({
           sessionId,
           sender: 'user',
           message: text.trim(),
         });
         rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
-        setMessages((prev) => [toGiftedMessage(userRecord), ...prev]);
+        setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
         setCurrentOffset((prev) => prev + 1);
 
         // 3. Read AI settings from DB
@@ -322,14 +338,14 @@ export function useChatMessages(): UseChatMessagesResult {
 
         if (!aiConfig) {
           console.warn('[useChatMessages] No AI provider configured');
-          const errorRecord = await ChatService.saveMessage({
-            sessionId,
-            sender: 'coach',
-            message: t('coach.errors.aiNotConfigured'),
-          });
-          rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
-          setMessages((prev) => [toGiftedMessage(errorRecord), ...prev]);
-          setCurrentOffset((prev) => prev + 1);
+          if (userRecord) {
+            const recordId = userRecord.id;
+            await ChatService.deleteMessage(recordId);
+            rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+            setMessages((prev) => prev.filter((m) => m._id !== recordId));
+          }
+          setFailedMessageText(text.trim());
+          setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
           return;
         }
 
@@ -413,10 +429,16 @@ export function useChatMessages(): UseChatMessagesResult {
 
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
           } else {
-            reply = {
-              msg4User: t('coach.errors.workoutGenerationFailed'),
-              sumMsg: 'Workout generation failed',
-            };
+            // Revert user message and restore text to input so user can retry
+            if (userRecord) {
+              const recordId = userRecord.id;
+              await ChatService.deleteMessage(recordId);
+              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+              setMessages((prev) => prev.filter((m) => m._id !== recordId));
+            }
+            setFailedMessageText(text.trim());
+            setEphemeralErrorMessage(t('coach.errors.workoutGenerationFailed'));
+            return;
           }
         } else {
           // Default: send regular chat message
@@ -428,7 +450,7 @@ export function useChatMessages(): UseChatMessagesResult {
         }
 
         // 5b. If the AI returned a summary of the user's message, persist it
-        if (reply.sumUserMsg) {
+        if (reply.sumUserMsg && userRecord) {
           await ChatService.updateMessageSummary(userRecord, reply.sumUserMsg);
         }
 
@@ -445,23 +467,33 @@ export function useChatMessages(): UseChatMessagesResult {
         setCurrentOffset((prev) => prev + 1);
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
-        if (sessionId) {
-          const errorRecord = await ChatService.saveMessage({
-            sessionId,
-            sender: 'coach',
-            message: t('coach.errors.generalError'),
-          });
-
-          rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
-          setMessages((prev) => [toGiftedMessage(errorRecord), ...prev]);
-          setCurrentOffset((prev) => prev + 1);
+        if (sessionId && userRecord) {
+          // Revert user message and restore text to input so user can retry
+          const recordId = userRecord.id;
+          await ChatService.deleteMessage(recordId).catch(() => {});
+          rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+          setMessages((prev) => prev.filter((m) => m._id !== recordId));
+          setFailedMessageText(text.trim());
+          setEphemeralErrorMessage(t('coach.errors.generalError'));
         }
       } finally {
         setIsSending(false);
       }
     },
-    [sessionId, isSending, t]
+    [sessionId, isSending, t, clearFailedMessageText]
   );
+
+  const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
+    if (!ephemeralErrorMessage) {
+      return null;
+    }
+    return {
+      _id: 'ephemeral-error',
+      text: ephemeralErrorMessage,
+      createdAt: new Date(),
+      user: COACH_USER,
+    };
+  }, [ephemeralErrorMessage]);
 
   return {
     messages,
@@ -475,5 +507,8 @@ export function useChatMessages(): UseChatMessagesResult {
     sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
+    failedMessageText,
+    clearFailedMessageText,
+    ephemeralErrorAsMessage,
   };
 }

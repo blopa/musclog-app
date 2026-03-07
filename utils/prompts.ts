@@ -737,7 +737,8 @@ export const getGenerateWorkoutPlanFunctions = ():
                 },
                 exercises: {
                   type: 'array',
-                  description: 'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
+                  description:
+                    'List of exercises in this workout. Use the exact exercise id from the available exercises list.',
                   items: {
                     type: 'object',
                     properties: {
