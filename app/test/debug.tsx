@@ -26,8 +26,6 @@ const APP_SCREENS = [
   { name: 'Home', route: '/', category: 'Main' },
   { name: 'Profile', route: '/profile', category: 'Main' },
   { name: 'Food', route: '/nutrition/food', category: 'Nutrition' },
-  { name: 'Meals', route: '/nutrition/meals', category: 'Nutrition' },
-  { name: 'AI Camera', route: '/nutrition/ai-camera', category: 'Nutrition' },
   { name: 'Workouts', route: '/workout/workouts', category: 'Workout' },
   { name: 'Workout Session', route: '/workout/workout-session', category: 'Workout' },
   { name: 'Workout Summary', route: '/workout/workout-summary', category: 'Workout' },
