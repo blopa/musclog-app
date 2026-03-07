@@ -11,6 +11,14 @@
       "analyzeProgress": "Analyze Progress",
       "nutritionCheck": "Nutrition Check"
     },
-    "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train."
+    "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
+    "errors": {
+      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
+      "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
+      "generalError": "Sorry, something went wrong. Please try again."
+    },
+    "success": {
+      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}"
+    }
   }
 }

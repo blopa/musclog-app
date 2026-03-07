@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
 
 import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../constants/chat';
@@ -128,6 +129,7 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
 }
 
 export function useChatMessages(): UseChatMessagesResult {
+  const { t } = useTranslation();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
@@ -323,9 +325,7 @@ export function useChatMessages(): UseChatMessagesResult {
           const errorRecord = await ChatService.saveMessage({
             sessionId,
             sender: 'coach',
-            message:
-              // TODO: use i18n
-              'AI features are not configured. Please add a Gemini or OpenAI API key in Settings.',
+            message: t('coach.errors.aiNotConfigured'),
           });
           rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
           setMessages((prev) => [toGiftedMessage(errorRecord), ...prev]);
@@ -397,8 +397,10 @@ export function useChatMessages(): UseChatMessagesResult {
             const processResult = await processWorkoutPlanResponse(workoutPlan, sessionId);
 
             reply = {
-              // TODO: use i18n
-              msg4User: `I've created ${processResult.templateIds.length} workouts for you! 💪 ${processResult.description}`,
+              msg4User: t('coach.success.workoutPlanGenerated', {
+                count: processResult.templateIds.length,
+                description: processResult.description,
+              }),
               sumMsg: 'Generated workout plan',
             };
 
@@ -412,8 +414,7 @@ export function useChatMessages(): UseChatMessagesResult {
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
           } else {
             reply = {
-              // TODO: use i18n
-              msg4User: "Sorry, I couldn't generate a workout plan. Please try again.",
+              msg4User: t('coach.errors.workoutGenerationFailed'),
               sumMsg: 'Workout generation failed',
             };
           }
@@ -448,8 +449,7 @@ export function useChatMessages(): UseChatMessagesResult {
           const errorRecord = await ChatService.saveMessage({
             sessionId,
             sender: 'coach',
-            // TODO: use i18n
-            message: 'Sorry, something went wrong. Please try again.',
+            message: t('coach.errors.generalError'),
           });
 
           rawMessagesRef.current = [...rawMessagesRef.current, errorRecord];
@@ -460,7 +460,7 @@ export function useChatMessages(): UseChatMessagesResult {
         setIsSending(false);
       }
     },
-    [sessionId, isSending]
+    [sessionId, isSending, t]
   );
 
   return {
