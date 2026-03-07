@@ -213,4 +213,42 @@ describe('getHistoricalNutritionParams', () => {
     expect(result!.historicalInitialWeightKg).toBeCloseTo(72, 1);
     expect(result!.historicalFinalWeightKg).toBeCloseTo(70, 1);
   });
+
+  it('when useWeeklyAverages is true, uses average of first week for initial and last week for final', async () => {
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const msPerWeek = 7 * msPerDay;
+    // Week 0 (days 0-6): weights 72, 73 → avg 72.5
+    const w0a = makeWeightMetric(startTs + 1 * msPerDay, 72);
+    const w0b = makeWeightMetric(startTs + 3 * msPerDay, 73);
+    // Week 3 (days 21-27): weights 69, 70 → avg 69.5
+    const w3a = makeWeightMetric(startTs + 22 * msPerDay, 69);
+    const w3b = makeWeightMetric(startTs + 25 * msPerDay, 70);
+    mockGetMetricsHistory.mockImplementation(async (type: string) => {
+      if (type === 'weight') {
+        return [w3b, w3a, w0b, w0a];
+      }
+      return [];
+    });
+    mockGetRangeNutrients.mockResolvedValue({
+      calories: 52500,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+    });
+    mockGetNutritionLogsForDateRange.mockResolvedValue(
+      Array.from({ length: 10 }, (_, i) => makeNutritionLog(startTs + i * msPerDay))
+    );
+
+    const result = await getHistoricalNutritionParams({
+      asOfDate: fixedEndDate,
+      useWeeklyAverages: true,
+    });
+    expect(result).not.toBeNull();
+    expect(result!.historicalInitialWeightKg).toBe(72.5);
+    expect(result!.historicalFinalWeightKg).toBe(69.5);
+    expect(result!.historicalTotalCalories).toBe(52500);
+    expect(result!.historicalTotalDays).toBe(30);
+  });
 });

@@ -3,6 +3,49 @@ import { lbsToKg } from './nutritionCalculator';
 
 const LOOKBACK_DAYS = 30;
 const MIN_DAYS_WITH_NUTRITION = 7;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MS_PER_WEEK = 7 * MS_PER_DAY;
+
+function average(values: number[]): number {
+  if (values.length === 0) {
+    return 0;
+  }
+  return values.reduce((a, b) => a + b, 0) / values.length;
+}
+
+function weekIndex(dateTs: number, startTs: number): number {
+  return Math.floor((dateTs - startTs) / MS_PER_WEEK);
+}
+
+function bucketByWeek(
+  points: { date: number; valueKg: number }[],
+  startTs: number
+): Map<number, { date: number; valueKg: number }[]> {
+  const map = new Map<number, { date: number; valueKg: number }[]>();
+  for (const p of points) {
+    const w = weekIndex(p.date, startTs);
+    if (!map.has(w)) {
+      map.set(w, []);
+    }
+    map.get(w)!.push(p);
+  }
+  return map;
+}
+
+function bucketByWeekBodyFat(
+  points: { date: number; value: number }[],
+  startTs: number
+): Map<number, { date: number; value: number }[]> {
+  const map = new Map<number, { date: number; value: number }[]>();
+  for (const p of points) {
+    const w = weekIndex(p.date, startTs);
+    if (!map.has(w)) {
+      map.set(w, []);
+    }
+    map.get(w)!.push(p);
+  }
+  return map;
+}
 
 export interface HistoricalNutritionParams {
   historicalTotalCalories: number;
@@ -25,8 +68,9 @@ export interface HistoricalNutritionParams {
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
   units?: 'metric' | 'imperial';
+  useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
-  const { asOfDate = new Date(), units = 'metric' } = options;
+  const { asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
 
   const endOfDay = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
   const endTs = endOfDay.getTime();
@@ -61,8 +105,23 @@ export async function getHistoricalNutritionParams(options: {
     return null;
   }
 
-  const initialWeight = weightWithDecrypted[0].valueKg;
-  const finalWeight = weightWithDecrypted[weightWithDecrypted.length - 1].valueKg;
+  let initialWeight: number;
+  let finalWeight: number;
+
+  if (useWeeklyAverages) {
+    const weightByWeek = bucketByWeek(weightWithDecrypted, startTs);
+    const weekIndices = Array.from(weightByWeek.keys()).sort((a, b) => a - b);
+    if (weekIndices.length < 2) {
+      return null;
+    }
+    initialWeight = average(weightByWeek.get(weekIndices[0])!.map((x) => x.valueKg));
+    finalWeight = average(
+      weightByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.valueKg)
+    );
+  } else {
+    initialWeight = weightWithDecrypted[0].valueKg;
+    finalWeight = weightWithDecrypted[weightWithDecrypted.length - 1].valueKg;
+  }
 
   let initialFatPercent: number | undefined;
   let finalFatPercent: number | undefined;
@@ -75,8 +134,22 @@ export async function getHistoricalNutritionParams(options: {
       })
     );
     bodyFatWithDecrypted.sort((a, b) => a.date - b.date);
-    initialFatPercent = bodyFatWithDecrypted[0].value;
-    finalFatPercent = bodyFatWithDecrypted[bodyFatWithDecrypted.length - 1].value;
+    if (useWeeklyAverages) {
+      const bodyFatByWeek = bucketByWeekBodyFat(bodyFatWithDecrypted, startTs);
+      const weekIndices = Array.from(bodyFatByWeek.keys()).sort((a, b) => a - b);
+      if (weekIndices.length >= 2) {
+        initialFatPercent = average(bodyFatByWeek.get(weekIndices[0])!.map((x) => x.value));
+        finalFatPercent = average(
+          bodyFatByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.value)
+        );
+      } else {
+        initialFatPercent = bodyFatWithDecrypted[0].value;
+        finalFatPercent = bodyFatWithDecrypted[bodyFatWithDecrypted.length - 1].value;
+      }
+    } else {
+      initialFatPercent = bodyFatWithDecrypted[0].value;
+      finalFatPercent = bodyFatWithDecrypted[bodyFatWithDecrypted.length - 1].value;
+    }
   }
 
   return {
