@@ -13,6 +13,7 @@
     "workoutCompleted": "Workout Completed!",
     "viewDetails": "View Details",
     "getFeedback": "Get AI Feedback",
+    "gettingFeedback": "Getting feedback...",
     "completedMessage": "You have completed the {{workoutName}} workout",
     "completedSummary": "Workout completed: {{workoutName}}"
   }

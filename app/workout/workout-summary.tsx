@@ -243,8 +243,7 @@ export default function WorkoutSummaryScreen() {
         await processFeedbackResponse(feedback, sessionId);
         setUnreadCount((prev) => prev + 1);
         showSnackbar('success', t('workout.summary.feedbackReceived'));
-        // Navigate to chat to show the feedback
-        router.push('/coach');
+        router.replace('/');
       } else {
         showSnackbar('error', t('workout.summary.failedToGetFeedback'));
       }
@@ -282,7 +281,8 @@ export default function WorkoutSummaryScreen() {
     <WorkoutSummaryCelebration
       onGoHome={handleGoHome}
       onShareSummary={handleShareSummary}
-      onGetFeedback={isFeedbackLoading ? undefined : handleGetFeedback}
+      onGetFeedback={handleGetFeedback}
+      isGetFeedbackLoading={isFeedbackLoading}
       totalTime={totalTime}
       volume={volume}
       personalRecords={personalRecords}

@@ -14,6 +14,7 @@ type WorkoutSummaryCelebrationProps = {
   onGoHome: () => void;
   onShareSummary?: () => void;
   onGetFeedback?: () => void;
+  isGetFeedbackLoading?: boolean;
   totalTime?: string; // e.g., "45m"
   volume?: string; // e.g., "12,450 kg"
   personalRecords?: number; // e.g., 2
@@ -24,6 +25,7 @@ export function WorkoutSummaryCelebration({
   onGoHome,
   onShareSummary,
   onGetFeedback,
+  isGetFeedbackLoading = false,
   totalTime = '45m',
   volume = '12,450 kg',
   personalRecords = 2,
@@ -143,12 +145,18 @@ export function WorkoutSummaryCelebration({
           {/* Get Feedback Button */}
           {onGetFeedback ? (
             <Button
-              label={t('workoutSummary.getFeedback')}
+              label={
+                isGetFeedbackLoading
+                  ? t('workoutSummary.gettingFeedback', 'Getting feedback...')
+                  : t('workoutSummary.getFeedback')
+              }
               icon={MessageCircle}
               variant="secondary"
               size="md"
               width="full"
               onPress={onGetFeedback}
+              disabled={isGetFeedbackLoading}
+              loading={isGetFeedbackLoading}
               style={{ marginBottom: theme.spacing.padding.base }}
             />
           ) : null}
