@@ -401,8 +401,13 @@ async function generateWithImageStructured<T>(
   base64Image: string,
   mimeType: string,
   schema: object,
-  schemaName: string = 'response'
+  schemaName: string = 'response',
+  userMessageSuffix?: string
 ): Promise<T | null> {
+  const userText =
+    'Analyze this image and return the structured data.' +
+    (userMessageSuffix?.trim() ? `\n\n${userMessageSuffix.trim()}` : '');
+
   if (config.provider === 'gemini') {
     const genModel = await configureBasicGenAI(
       {
@@ -419,7 +424,7 @@ async function generateWithImageStructured<T>(
     const contents: Content[] = [
       {
         parts: [
-          { text: 'Analyze this image and return the structured data.' } as Part,
+          { text: userText } as Part,
           { inlineData: { mimeType, data: base64Image } } as Part,
         ],
         role: 'user',
@@ -446,7 +451,7 @@ async function generateWithImageStructured<T>(
       {
         role: 'user',
         content: [
-          { type: 'text', text: 'Analyze this image and return the structured data.' },
+          { type: 'text', text: userText },
           { type: 'image_url', image_url: { url: dataUrl } },
         ],
       },
@@ -644,11 +649,20 @@ export async function getWorkoutVolumeInsights(
 }
 
 /**
+ * Optional context from the user to improve meal photo estimation (e.g. description + tags).
+ */
+export type MealPhotoContext = {
+  description: string;
+  tags: string[];
+};
+
+/**
  * Estimate nutrition from a meal photo
  */
 export async function estimateNutritionFromPhoto(
   config: CoachAIConfig,
-  base64Image: string
+  base64Image: string,
+  context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
   try {
     const systemPrompt = getEstimateNutritionFromPhotoPrompt();
@@ -656,13 +670,27 @@ export async function estimateNutritionFromPhoto(
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
     const fns = getEstimateMacrosFunctions(false);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+    let userMessageSuffix: string | undefined;
+    if (context && (context.description.trim() || context.tags.length > 0)) {
+      const parts: string[] = [];
+      if (context.description.trim()) {
+        parts.push(`User description: ${context.description.trim()}`);
+      }
+      if (context.tags.length > 0) {
+        parts.push(`Tags: ${context.tags.join(', ')}`);
+      }
+      userMessageSuffix = parts.join('\n');
+    }
+
     const parsed = await generateWithImageStructured<MacroEstimate>(
       config,
       systemPrompt,
       base64,
       mimeType,
       schema,
-      'estimateMacros'
+      'estimateMacros',
+      userMessageSuffix
     );
     return parsed ?? null;
   } catch (error) {
