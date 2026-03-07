@@ -2,6 +2,8 @@
   "food": {
     "unknownFood": "Unknown Food",
     "customFood": "Custom Food",
+    "generic": "Generic",
+    "notAvailable": "N/A",
     "descriptionFormat": "{{brand}} • {{calories}} kcal per {{amount}} {{unit}}",
     "unitGrams": "g",
     "unitOz": "oz",
