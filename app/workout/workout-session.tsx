@@ -466,6 +466,7 @@ export default function WorkoutSessionScreen() {
       // For now, use default image. In production, you'd load from imageUrl
       return require('../../assets/icon.png');
     }
+
     return require('../../assets/icon.png');
   };
 
@@ -474,14 +475,18 @@ export default function WorkoutSessionScreen() {
     if (!currentSetData) {
       return '';
     }
+
     const exercise = currentSetData.exercise;
     const parts = [];
     if (exercise.muscleGroup) {
-      parts.push(exercise.muscleGroup);
+      parts.push(t(exercise.muscleGroup));
     }
+
     if (exercise.equipmentType) {
       parts.push(exercise.equipmentType);
     }
+
+    // TODO: use i18n here
     return parts.join(' • ') || 'Exercise';
   };
 
