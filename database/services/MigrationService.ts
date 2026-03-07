@@ -18,8 +18,10 @@ import {
   User,
   UserMetric,
   WorkoutLog,
+  WorkoutLogExercise,
   WorkoutLogSet,
   WorkoutTemplate,
+  WorkoutTemplateExercise,
   WorkoutTemplateSet,
 } from '../models';
 
@@ -1308,36 +1310,69 @@ export class MigrationService {
         [oldWorkout.id]
       )) as Record<string, any>[];
 
+      // Group sets by exerciseId to create exercise blocks
+      const setsByExercise = new Map<string, Record<string, any>[]>();
+      const exerciseOrder: string[] = [];
+
       for (const oldSet of oldSets) {
         const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
         if (!newExerciseId) {
           continue;
         }
 
+        if (!setsByExercise.has(newExerciseId)) {
+          setsByExercise.set(newExerciseId, []);
+          exerciseOrder.push(newExerciseId);
+        }
+        setsByExercise.get(newExerciseId)!.push(oldSet);
+      }
+
+      // Create exercise blocks and their sets
+      let exerciseIdx = 1;
+      for (const exerciseId of exerciseOrder) {
+        const exerciseSets = setsByExercise.get(exerciseId)!;
+        const firstSet = exerciseSets[0];
+
         try {
-          await database.write(async () => {
-            await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-              ts.templateId = newTemplateId;
-              ts.exerciseId = newExerciseId;
-              ts.targetReps = Number(oldSet.reps) ?? 0;
-              ts.targetWeight = Number(oldSet.weight) ?? 0;
-              ts.restTimeAfter =
-                oldSet.restTime != null && oldSet.restTime !== ''
-                  ? Number(oldSet.restTime)
+          // Create template exercise block
+          const templateExercise = await database.write(async () =>
+            database.get<WorkoutTemplateExercise>('workout_template_exercises').create((te) => {
+              te.templateId = newTemplateId;
+              te.exerciseId = exerciseId;
+              te.exerciseOrder = exerciseIdx++;
+              te.groupId = firstSet.supersetName || undefined;
+              const createdAt = this.convertTimestamp(firstSet.createdAt);
+              te.createdAt = createdAt;
+              te.updatedAt = createdAt;
+            })
+          );
+
+          // Create sets linked to the exercise block
+          for (const oldSet of exerciseSets) {
+            await database.write(async () => {
+              await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
+                ts.templateExerciseId = templateExercise.id;
+                ts.targetReps = Number(oldSet.reps) ?? 0;
+                ts.targetWeight = Number(oldSet.weight) ?? 0;
+                ts.restTimeAfter =
+                  oldSet.restTime != null && oldSet.restTime !== ''
+                    ? Number(oldSet.restTime)
+                    : undefined;
+                ts.setOrder = Number(oldSet.setOrder) ?? 0;
+                ts.isDropSet = Boolean(oldSet.isDropSet);
+                const createdAt = this.convertTimestamp(oldSet.createdAt);
+                ts.createdAt = createdAt;
+                ts.updatedAt = createdAt;
+                ts.deletedAt = oldSet.deletedAt
+                  ? this.convertTimestamp(oldSet.deletedAt)
                   : undefined;
-              ts.setOrder = Number(oldSet.setOrder) ?? 0;
-              ts.groupId = oldSet.supersetName || undefined;
-              ts.isDropSet = Boolean(oldSet.isDropSet);
-              const createdAt = this.convertTimestamp(oldSet.createdAt);
-              ts.createdAt = createdAt;
-              ts.updatedAt = createdAt;
-              ts.deletedAt = oldSet.deletedAt ? this.convertTimestamp(oldSet.deletedAt) : undefined;
+              });
             });
-          });
-          migratedCount++;
-          reportProgress?.(migratedCount, totalForProgress);
+            migratedCount++;
+            reportProgress?.(migratedCount, totalForProgress);
+          }
         } catch (error) {
-          console.error('Error migrating template set:', error, 'Data:', oldSet);
+          console.error('Error migrating template exercise/set:', error, 'Data:', firstSet);
           throw new Error(
             `Failed to migrate template set: ${error instanceof Error ? error.message : String(error)}`
           );
@@ -1390,39 +1425,72 @@ export class MigrationService {
         [oldEvent.id]
       )) as Record<string, any>[];
 
+      // Group sets by exerciseId to create exercise blocks
+      const setsByExercise = new Map<string, Record<string, any>[]>();
+      const exerciseOrder: string[] = [];
+
       for (const oldSet of oldSets) {
         const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
         if (!newExerciseId) {
           continue;
         }
 
-        const difficultyLevel = Math.min(10, Math.max(1, Number(oldSet.difficultyLevel) ?? 0));
+        if (!setsByExercise.has(newExerciseId)) {
+          setsByExercise.set(newExerciseId, []);
+          exerciseOrder.push(newExerciseId);
+        }
+        setsByExercise.get(newExerciseId)!.push(oldSet);
+      }
+
+      // Create exercise blocks and their sets
+      let exerciseIdx = 1;
+      for (const exerciseId of exerciseOrder) {
+        const exerciseSets = setsByExercise.get(exerciseId)!;
+        const firstSet = exerciseSets[0];
 
         try {
-          await database.write(async () => {
-            await database.get<WorkoutLogSet>('workout_log_sets').create((ls) => {
-              ls.workoutLogId = newLogId;
-              ls.exerciseId = newExerciseId;
-              ls.reps = Number(oldSet.reps) ?? 0;
-              ls.weight = Number(oldSet.weight) ?? 0;
-              ls.partials = undefined;
-              ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
-              ls.repsInReserve = 0;
-              ls.difficultyLevel = difficultyLevel;
-              ls.groupId = oldSet.supersetName || undefined;
-              ls.isDropSet = Boolean(oldSet.isDropSet);
-              ls.setOrder = Number(oldSet.setOrder) ?? 0;
-              const createdAt = this.convertTimestamp(oldSet.createdAt);
-              ls.createdAt = createdAt;
-              ls.updatedAt = createdAt;
-              ls.deletedAt = oldSet.deletedAt ? this.convertTimestamp(oldSet.deletedAt) : undefined;
-              ls.isSkipped = undefined;
+          // Create log exercise block
+          const logExercise = await database.write(async () =>
+            database.get<WorkoutLogExercise>('workout_log_exercises').create((le) => {
+              le.workoutLogId = newLogId;
+              le.exerciseId = exerciseId;
+              le.exerciseOrder = exerciseIdx++;
+              le.groupId = firstSet.supersetName || undefined;
+              const createdAt = this.convertTimestamp(firstSet.createdAt);
+              le.createdAt = createdAt;
+              le.updatedAt = createdAt;
+            })
+          );
+
+          // Create sets linked to the exercise block
+          for (const oldSet of exerciseSets) {
+            const difficultyLevel = Math.min(10, Math.max(1, Number(oldSet.difficultyLevel) ?? 0));
+
+            await database.write(async () => {
+              await database.get<WorkoutLogSet>('workout_log_sets').create((ls) => {
+                ls.logExerciseId = logExercise.id;
+                ls.reps = Number(oldSet.reps) ?? 0;
+                ls.weight = Number(oldSet.weight) ?? 0;
+                ls.partials = undefined;
+                ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
+                ls.repsInReserve = 0;
+                ls.difficultyLevel = difficultyLevel;
+                ls.isDropSet = Boolean(oldSet.isDropSet);
+                ls.setOrder = Number(oldSet.setOrder) ?? 0;
+                const createdAt = this.convertTimestamp(oldSet.createdAt);
+                ls.createdAt = createdAt;
+                ls.updatedAt = createdAt;
+                ls.deletedAt = oldSet.deletedAt
+                  ? this.convertTimestamp(oldSet.deletedAt)
+                  : undefined;
+                ls.isSkipped = undefined;
+              });
             });
-          });
-          migratedCount++;
-          reportProgress?.(migratedCount, totalForProgress);
+            migratedCount++;
+            reportProgress?.(migratedCount, totalForProgress);
+          }
         } catch (error) {
-          console.error('Error migrating log set:', error, 'Data:', oldSet);
+          console.error('Error migrating log exercise/set:', error, 'Data:', firstSet);
           throw new Error(
             `Failed to migrate log set: ${error instanceof Error ? error.message : String(error)}`
           );

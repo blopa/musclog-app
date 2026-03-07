@@ -203,13 +203,34 @@ export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
 }
 
 /**
+ * Creates a mock WorkoutTemplateExercise model
+ */
+export function createMockWorkoutTemplateExercise(overrides: Partial<any> = {}) {
+  return {
+    id: 'template-exercise-1',
+    templateId: 'template-1',
+    exerciseId: 'exercise-1',
+    exerciseOrder: 1,
+    groupId: undefined,
+    notes: undefined,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    update: jest.fn((callback) => {
+      callback({ updatedAt: Date.now() });
+      return Promise.resolve();
+    }),
+    ...overrides,
+  };
+}
+
+/**
  * Creates a mock WorkoutTemplateSet model
  */
 export function createMockWorkoutTemplateSet(overrides: Partial<any> = {}) {
   return {
     id: 'template-set-1',
-    templateId: 'template-1',
-    exerciseId: 'exercise-1',
+    templateExerciseId: 'template-exercise-1',
     targetReps: 10,
     targetWeight: 100,
     setOrder: 1,

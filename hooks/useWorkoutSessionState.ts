@@ -1,9 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
+import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import {
   getEffectiveOrder,
@@ -24,21 +25,24 @@ export type PreviousSetInfo = {
   exerciseId: string;
 };
 
+export type EnrichedWorkoutLogSet = WorkoutLogSet & {
+  exerciseId: string;
+  groupId?: string;
+  notes?: string;
+};
+
 /**
- * Centralized hook for workout session state: loads log, sets, exercises,
+ * Centralized hook for workout session state: loads log, exercises, sets,
  * observes sets for live updates, and derives current / next / previous set
  * in superset-effective order.
- *
- * Use this when you need a single source of truth for "what set is next"
- * (e.g. session screen, rest timer). WorkoutService remains for one-off
- * or non-React callers.
  */
 export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
-  const [sets, setSets] = useState<WorkoutLogSet[]>([]);
+  const [logExercises, setLogExercises] = useState<WorkoutLogExercise[]>([]);
+  const [sets, setSets] = useState<EnrichedWorkoutLogSet[]>([]);
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [currentSet, setCurrentSet] = useState<WorkoutLogSet | null>(null);
-  const [nextSet, setNextSet] = useState<WorkoutLogSet | null>(null);
+  const [currentSet, setCurrentSet] = useState<EnrichedWorkoutLogSet | null>(null);
+  const [nextSet, setNextSet] = useState<EnrichedWorkoutLogSet | null>(null);
   const [previousSet, setPreviousSet] = useState<PreviousSetInfo | null>(null);
   const [progress, setProgress] = useState<WorkoutSessionProgress>({
     totalSets: 0,
@@ -60,18 +64,72 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       }
       setWorkoutLog(log);
 
-      const workoutSets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
+      const workoutLogExercises = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
         .query(
           Q.where('workout_log_id', logId),
           Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('set_order', Q.asc)
+          Q.sortBy('exercise_order', Q.asc)
         )
         .fetch();
 
-      setSets(workoutSets);
+      setLogExercises(workoutLogExercises);
 
-      const exerciseIds = [...new Set(workoutSets.map((s) => s.exerciseId).filter(Boolean))];
+      const logExerciseIds = workoutLogExercises.map((le) => le.id);
+      const workoutSets =
+        logExerciseIds.length > 0
+          ? await database
+              .get<WorkoutLogSet>('workout_log_sets')
+              .query(
+                Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+                Q.where('deleted_at', Q.eq(null)),
+                Q.sortBy('set_order', Q.asc)
+              )
+              .fetch()
+          : [];
+
+      const logExerciseMap = new Map<
+        string,
+        { exerciseId: string; groupId?: string; notes?: string }
+      >();
+      workoutLogExercises.forEach((le) => {
+        logExerciseMap.set(le.id, {
+          exerciseId: le.exerciseId,
+          groupId: le.groupId,
+          notes: le.notes,
+        });
+      });
+
+      // Build plain enriched objects from stored data using _raw so we always read actual DB values
+      const enrichedSets: EnrichedWorkoutLogSet[] = workoutSets.map((set) => {
+        const logExercise = logExerciseMap.get(set.logExerciseId);
+        const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+        return {
+          id: set.id,
+          logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+          reps: (r.reps as number) ?? 0,
+          weight: (r.weight as number) ?? 0,
+          partials: (r.partials as number | undefined) ?? set.partials,
+          restTimeAfter: (r.rest_time_after as number) ?? 0,
+          repsInReserve: (r.reps_in_reserve as number) ?? 0,
+          isSkipped: (r.is_skipped as boolean | undefined) ?? set.isSkipped,
+          difficultyLevel: (r.difficulty_level as number) ?? 0,
+          isDropSet: (r.is_drop_set as boolean) ?? false,
+          setOrder: (r.set_order as number) ?? 0,
+          createdAt: (r.created_at as number) ?? 0,
+          updatedAt: (r.updated_at as number) ?? 0,
+          deletedAt: (r.deleted_at as number | undefined) ?? set.deletedAt,
+          exerciseId: logExercise?.exerciseId ?? '',
+          groupId: logExercise?.groupId,
+          notes: logExercise?.notes,
+        } as EnrichedWorkoutLogSet;
+      });
+
+      setSets(enrichedSets);
+
+      const exerciseIds = [
+        ...new Set(workoutLogExercises.map((le) => le.exerciseId).filter(Boolean)),
+      ];
       const exerciseList =
         exerciseIds.length > 0
           ? await database
@@ -82,17 +140,17 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
 
       setExercises(exerciseList);
 
-      const completedSets = workoutSets.filter((s) => (s.difficultyLevel ?? 0) > 0).length;
-      const skippedSets = workoutSets.filter((s) => s.isSkipped).length;
-      const totalSets = workoutSets.length;
+      const completedSets = enrichedSets.filter((s) => (s.difficultyLevel ?? 0) > 0).length;
+      const skippedSets = enrichedSets.filter((s) => s.isSkipped).length;
+      const totalSets = enrichedSets.length;
       const isComplete = completedSets + skippedSets === totalSets && totalSets > 0;
 
-      const current = getFirstUnloggedInEffectiveOrder(workoutSets);
-      const next = current ? getNextSetInEffectiveOrder(workoutSets, current.setOrder ?? 0) : null;
+      const current = getFirstUnloggedInEffectiveOrder(enrichedSets);
+      const next = current ? getNextSetInEffectiveOrder(enrichedSets, current.setOrder ?? 0) : null;
 
       let prev: PreviousSetInfo | null = null;
       if (current) {
-        const effectiveOrder = getEffectiveOrder(workoutSets);
+        const effectiveOrder = getEffectiveOrder(enrichedSets);
         const currentIdx = effectiveOrder.findIndex((s) => s.id === current.id);
         if (currentIdx > 0) {
           for (let i = currentIdx - 1; i >= 0; i--) {
@@ -130,6 +188,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   useEffect(() => {
     if (!workoutLogId) {
       setWorkoutLog(null);
+      setLogExercises([]);
       setSets([]);
       setExercises([]);
       setCurrentSet(null);
@@ -143,30 +202,61 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
     loadWorkoutData(workoutLogId);
   }, [workoutLogId, loadWorkoutData]);
 
+  // Stable key so we only re-subscribe when the set of log exercise IDs actually changes,
+  // not when loadWorkoutData updates state with a new array reference (which would cause an infinite loop).
+  const logExerciseIdsKey = useMemo(
+    () =>
+      logExercises
+        .map((le) => le.id)
+        .sort()
+        .join(','),
+    [logExercises]
+  );
+
+  const loadWorkoutDataRef = useRef(loadWorkoutData);
+  loadWorkoutDataRef.current = loadWorkoutData;
+
   useEffect(() => {
-    if (!workoutLog?.id) {
+    if (!workoutLog?.id || !logExerciseIdsKey) {
       return;
     }
 
+    const logId = workoutLog.id;
+    // Derive IDs from the stable key so we don't depend on logExercises (which would cause an infinite loop when loadWorkoutData updates it)
+    const logExerciseIds = logExerciseIdsKey.split(',').filter(Boolean);
     const query = database
       .get<WorkoutLogSet>('workout_log_sets')
       .query(
-        Q.where('workout_log_id', workoutLog.id),
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('set_order', Q.asc)
       );
 
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    const DEBOUNCE_MS = 350;
+
     const subscription = query.observe().subscribe({
       next: () => {
-        loadWorkoutData(workoutLog.id);
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
+        }
+        debounceTimer = setTimeout(() => {
+          debounceTimer = null;
+          loadWorkoutDataRef.current(logId);
+        }, DEBOUNCE_MS);
       },
       error: (err) => {
         console.error('Error observing workout sets:', err);
       },
     });
 
-    return () => subscription.unsubscribe();
-  }, [workoutLog?.id, loadWorkoutData]);
+    return () => {
+      subscription.unsubscribe();
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
+  }, [workoutLog?.id, logExerciseIdsKey]);
 
   const refresh = useCallback(() => {
     if (workoutLogId) {
@@ -176,6 +266,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
 
   return {
     workoutLog,
+    logExercises,
     sets,
     exercises,
     currentSet,

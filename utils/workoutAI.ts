@@ -167,19 +167,27 @@ export async function processWorkoutPlanResponse(
  */
 export async function prepareWorkoutDataForAI(workoutLogId: string): Promise<string> {
   try {
-    const { workoutLog, sets } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+    const { workoutLog, sets, exercises } =
+      await WorkoutService.getWorkoutWithDetails(workoutLogId);
 
-    // Build a formatted workout summary for AI
-    const exercisesByName = new Map<string, { sets: typeof sets; exercise: any }>();
+    // Create exercise lookup map
+    const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
+
+    // Build a formatted workout summary for AI, grouped by exercise
+    const exercisesByName = new Map<
+      string,
+      { sets: typeof sets; exercise: (typeof exercises)[0] }
+    >();
 
     for (const set of sets) {
-      if (!set.exercise) {
+      const exercise = exerciseMap.get(set.exerciseId);
+      if (!exercise) {
         continue;
       }
 
-      const exerciseName = set.exercise.name;
+      const exerciseName = exercise.name;
       if (!exercisesByName.has(exerciseName)) {
-        exercisesByName.set(exerciseName, { sets: [], exercise: set.exercise });
+        exercisesByName.set(exerciseName, { sets: [], exercise });
       }
       exercisesByName.get(exerciseName)!.sets.push(set);
     }

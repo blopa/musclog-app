@@ -31,6 +31,8 @@
       "restTime": "Rest Time",
       "seconds": "sec",
       "dropSet": "Drop set",
+      "notes": "Notes",
+      "notesPlaceholder": "Machine settings, grip variations, etc.",
       "muscleGroups": {
         "all": "All",
         "chest": "Chest",

@@ -1,6 +1,7 @@
-import { Model, Query } from '@nozbe/watermelondb';
+import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';
 import WorkoutTemplate from './WorkoutTemplate';
 
@@ -8,7 +9,7 @@ export default class WorkoutLog extends Model {
   static table = 'workout_logs';
 
   static associations = {
-    workout_log_sets: { type: 'has_many' as const, foreignKey: 'workout_log_id' },
+    workout_log_exercises: { type: 'has_many' as const, foreignKey: 'workout_log_id' },
     workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
   };
 
@@ -27,11 +28,26 @@ export default class WorkoutLog extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
+  @children('workout_log_exercises') logExercises!: Query<WorkoutLogExercise>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
 
+  async getAllSets(): Promise<WorkoutLogSet[]> {
+    const logExercises = await this.logExercises.fetch();
+    const activeExercises = logExercises.filter((le) => !le.deletedAt);
+    const exerciseIds = activeExercises.map((le) => le.id);
+
+    if (exerciseIds.length === 0) {
+      return [];
+    }
+
+    return await this.collections
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+  }
+
   async calculateVolume(): Promise<number> {
-    const sets = await this.logSets.fetch();
+    const sets = await this.getAllSets();
     return sets.reduce((total: number, set: WorkoutLogSet) => {
       return total + set.reps * set.weight;
     }, 0);
@@ -56,8 +72,7 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot update sets in a completed workout');
     }
 
-    const sets = (await this.logSets?.fetch()) ?? [];
-    const set = sets.find((s: WorkoutLogSet) => s.id === setId);
+    const set = await this.collections.get<WorkoutLogSet>('workout_log_sets').find(setId);
 
     if (!set) {
       throw new Error(`Set with id ${setId} not found`);
@@ -65,7 +80,6 @@ export default class WorkoutLog extends Model {
 
     const now = Date.now();
 
-    // Update the set first
     await set.update((updatedSet: WorkoutLogSet) => {
       if (data.reps !== undefined) {
         updatedSet.reps = data.reps;
@@ -87,7 +101,7 @@ export default class WorkoutLog extends Model {
       }
       if (data.difficultyLevel !== undefined) {
         if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
-          throw new Error('Difficulty level must be between1 and 10');
+          throw new Error('Difficulty level must be between 1 and 10');
         }
         updatedSet.difficultyLevel = data.difficultyLevel;
       }
@@ -97,7 +111,6 @@ export default class WorkoutLog extends Model {
       updatedSet.updatedAt = now;
     });
 
-    // Update parent log (we're already inside a @writer, so call this.update directly)
     await this.update((log) => {
       log.updatedAt = now;
     });
@@ -115,17 +128,30 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot add exercises to a completed workout');
     }
 
-    const sets = (await this.logSets?.fetch()) ?? [];
-    const maxOrder =
-      sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
-    const newOrder = setOrder ?? maxOrder + 1;
-
-    const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
     const now = Date.now();
+    const allSets = await this.getAllSets();
+    const maxSetOrder =
+      allSets.length > 0 ? Math.max(...allSets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
+    const newSetOrder = setOrder ?? maxSetOrder + 1;
+
+    const logExercises = await this.logExercises.fetch();
+    const maxExerciseOrder =
+      logExercises.length > 0 ? Math.max(...logExercises.map((le) => le.exerciseOrder ?? 0)) : 0;
+
+    const logExercisesCollection =
+      this.collections.get<WorkoutLogExercise>('workout_log_exercises');
+    const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
+
+    const logExercise = await logExercisesCollection.create((le) => {
+      le.workoutLogId = this.id;
+      le.exerciseId = exerciseId;
+      le.exerciseOrder = maxExerciseOrder + 1;
+      le.createdAt = now;
+      le.updatedAt = now;
+    });
 
     const newSet = await logSetsCollection.create((logSet) => {
-      logSet.workoutLogId = this.id;
-      logSet.exerciseId = exerciseId;
+      logSet.logExerciseId = logExercise.id;
       logSet.reps = reps;
       logSet.weight = weight;
       logSet.partials = partials ?? 0;
@@ -133,7 +159,7 @@ export default class WorkoutLog extends Model {
       logSet.repsInReserve = 0;
       logSet.difficultyLevel = 0;
       logSet.isDropSet = false;
-      logSet.setOrder = newOrder;
+      logSet.setOrder = newSetOrder;
       logSet.createdAt = now;
       logSet.updatedAt = now;
     });
@@ -145,10 +171,6 @@ export default class WorkoutLog extends Model {
     return newSet;
   }
 
-  /**
-   * Add multiple empty sets for an exercise (e.g. for free training session).
-   * Creates N sets with reps/weight 0, restTimeAfter 60, difficultyLevel 0.
-   */
   @writer
   async addAdHocExerciseSets(exerciseId: string, numberOfSets: number): Promise<WorkoutLogSet[]> {
     if (this.completedAt) {
@@ -159,17 +181,30 @@ export default class WorkoutLog extends Model {
       throw new Error('numberOfSets must be at least 1');
     }
 
-    const sets = (await this.logSets?.fetch()) ?? [];
-    const maxOrder =
-      sets.length > 0 ? Math.max(...sets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
-
-    const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
     const now = Date.now();
+    const allSets = await this.getAllSets();
+    const maxSetOrder =
+      allSets.length > 0 ? Math.max(...allSets.map((s: WorkoutLogSet) => s.setOrder ?? 0)) : 0;
+
+    const logExercises = await this.logExercises.fetch();
+    const maxExerciseOrder =
+      logExercises.length > 0 ? Math.max(...logExercises.map((le) => le.exerciseOrder ?? 0)) : 0;
+
+    const logExercisesCollection =
+      this.collections.get<WorkoutLogExercise>('workout_log_exercises');
+    const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
+
+    const logExercise = logExercisesCollection.prepareCreate((le) => {
+      le.workoutLogId = this.id;
+      le.exerciseId = exerciseId;
+      le.exerciseOrder = maxExerciseOrder + 1;
+      le.createdAt = now;
+      le.updatedAt = now;
+    });
 
     const preparedSets = Array.from({ length: numberOfSets }, (_, i) =>
       logSetsCollection.prepareCreate((logSet) => {
-        logSet.workoutLogId = this.id;
-        logSet.exerciseId = exerciseId;
+        logSet.logExerciseId = logExercise.id;
         logSet.reps = 0;
         logSet.weight = 0;
         logSet.partials = 0;
@@ -178,23 +213,22 @@ export default class WorkoutLog extends Model {
         logSet.difficultyLevel = 0;
         logSet.isSkipped = false;
         logSet.isDropSet = false;
-        logSet.setOrder = maxOrder + i + 1;
+        logSet.setOrder = maxSetOrder + i + 1;
         logSet.createdAt = now;
         logSet.updatedAt = now;
       })
     );
 
-    await this.collection.database.batch(...preparedSets);
+    await this.collection.database.batch(logExercise, ...preparedSets);
 
     await this.update((log) => {
       log.updatedAt = now;
     });
 
-    // Return the newly created sets by fetching after batch
-    const allSets = await this.logSets.fetch();
-    const newOrderStart = maxOrder + 1;
-    return allSets.filter(
-      (s: WorkoutLogSet) => (s.setOrder ?? 0) >= newOrderStart && s.exerciseId === exerciseId
+    const newOrderStart = maxSetOrder + 1;
+    const refreshedSets = await this.getAllSets();
+    return refreshedSets.filter(
+      (s: WorkoutLogSet) => (s.setOrder ?? 0) >= newOrderStart && s.logExerciseId === logExercise.id
     );
   }
 
@@ -204,8 +238,7 @@ export default class WorkoutLog extends Model {
       throw new Error('Cannot remove sets from a completed workout');
     }
 
-    const sets = (await this.logSets?.fetch()) ?? [];
-    const set = sets.find((s: WorkoutLogSet) => s.id === setId);
+    const set = await this.collections.get<WorkoutLogSet>('workout_log_sets').find(setId);
 
     if (!set) {
       throw new Error(`Set with id ${setId} not found`);
@@ -213,7 +246,6 @@ export default class WorkoutLog extends Model {
 
     await set.markAsDeleted();
 
-    // Update parent log (we're already inside a @writer, so call this.update directly)
     await this.update((log) => {
       log.updatedAt = Date.now();
     });
@@ -235,9 +267,6 @@ export default class WorkoutLog extends Model {
     });
   }
 
-  /**
-   * Update post-workout feedback (exhaustion and score). Call after workout is completed.
-   */
   @writer
   async updateFeedback(feedback: {
     exhaustionLevel?: number;

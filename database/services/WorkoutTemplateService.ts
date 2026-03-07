@@ -15,6 +15,7 @@ import Schedule from '../models/Schedule';
 import Setting from '../models/Setting';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutTemplate from '../models/WorkoutTemplate';
+import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
 import { WorkoutTemplateRepository } from '../repositories/WorkoutTemplateRepository';
 import { UserMetricService } from './UserMetricService';
@@ -22,21 +23,22 @@ import { UserService } from './UserService';
 
 /**
  * Exercise data for workout template creation/editing.
- * Combines Exercise model fields with WorkoutTemplateSet data and UI-specific properties.
+ * Combines Exercise model fields with WorkoutTemplateExercise and WorkoutTemplateSet data.
  */
 export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
-  label: string; // UI label (derived from exercise name)
-  description: string; // UI description (formatted sets/reps)
+  label: string;
+  description: string;
   icon: any;
   iconBgColor: string;
   iconColor: string;
-  groupId?: string; // UI-only for grouping
-  sets: number; // From WorkoutTemplateSet aggregation
-  reps: number; // From WorkoutTemplateSet
-  weight: number; // From WorkoutTemplateSet
-  isBodyweight: boolean; // Derived from Exercise.equipmentType
-  restTimeAfter?: number; // From WorkoutTemplateSet
-  isDropSet?: boolean; // From WorkoutTemplateSet (true if any set in exercise is a drop set)
+  groupId?: string;
+  notes?: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  isBodyweight: boolean;
+  restTimeAfter?: number;
+  isDropSet?: boolean;
 };
 
 export interface SaveTemplateData {
@@ -53,47 +55,59 @@ export interface SaveTemplateData {
 
 export class WorkoutTemplateService {
   /**
-   * Get template with all details (sets and schedule)
+   * Get template with all details (exercises, sets, and schedule)
    */
   static async getTemplateWithDetails(templateId: string): Promise<{
     template: WorkoutTemplate;
+    templateExercises: WorkoutTemplateExercise[];
     sets: WorkoutTemplateSet[];
     schedule: Schedule[];
   }> {
     const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
 
-    // Fetch template sets ordered by set_order
-    const sets = await database
-      .get<WorkoutTemplateSet>('workout_template_sets')
+    const templateExercises = await database
+      .get<WorkoutTemplateExercise>('workout_template_exercises')
       .query(
         Q.where('template_id', templateId),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('set_order', Q.asc)
+        Q.sortBy('exercise_order', Q.asc)
       )
       .fetch();
 
-    // Fetch schedule entries
+    const templateExerciseIds = templateExercises.map((te) => te.id);
+    const sets =
+      templateExerciseIds.length > 0
+        ? await database
+            .get<WorkoutTemplateSet>('workout_template_sets')
+            .query(
+              Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('set_order', Q.asc)
+            )
+            .fetch()
+        : [];
+
     const schedule = await database
       .get<Schedule>('schedules')
       .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    return { template, sets, schedule };
+    return { template, templateExercises, sets, schedule };
   }
 
   /**
-   * Convert template sets to ExerciseInWorkout array
-   * Groups sets by exercise and aggregates the data
+   * Convert template exercises and sets to ExerciseInWorkout array
    */
-  static async convertSetsToExercises(sets: WorkoutTemplateSet[]): Promise<ExerciseInWorkout[]> {
-    if (sets.length === 0) {
+  static async convertTemplateExercisesToUI(
+    templateExercises: WorkoutTemplateExercise[],
+    sets: WorkoutTemplateSet[]
+  ): Promise<ExerciseInWorkout[]> {
+    if (templateExercises.length === 0) {
       return [];
     }
 
-    // Get unique exercise IDs
-    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+    const exerciseIds = [...new Set(templateExercises.map((te) => te.exerciseId))];
 
-    // Fetch exercise details
     const exercises = await database
       .get<Exercise>('exercises')
       .query(
@@ -102,75 +116,63 @@ export class WorkoutTemplateService {
       )
       .fetch();
 
-    // Create map for quick lookup
     const exerciseMap = new Map<string, Exercise>();
     exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-    // Group sets by exercise
-    const exerciseGroups = new Map<string, WorkoutTemplateSet[]>();
+    const setsByTemplateExercise = new Map<string, WorkoutTemplateSet[]>();
     sets.forEach((set) => {
-      const exerciseId = set.exerciseId ?? '';
-      if (!exerciseGroups.has(exerciseId)) {
-        exerciseGroups.set(exerciseId, []);
+      const teId = set.templateExerciseId;
+      if (!setsByTemplateExercise.has(teId)) {
+        setsByTemplateExercise.set(teId, []);
       }
-      exerciseGroups.get(exerciseId)!.push(set);
+      setsByTemplateExercise.get(teId)!.push(set);
     });
 
-    // Convert to ExerciseInWorkout format
     const exercisesInWorkout: ExerciseInWorkout[] = [];
-    exerciseGroups.forEach((exerciseSets, exerciseId) => {
-      const exercise = exerciseMap.get(exerciseId);
-      if (!exercise) {
-        return;
-      } // Skip if exercise not found
 
-      // Get the first set's data (all sets for same exercise should have same reps/weight)
+    for (const templateExercise of templateExercises) {
+      const exercise = exerciseMap.get(templateExercise.exerciseId);
+      if (!exercise) {
+        continue;
+      }
+
+      const exerciseSets = setsByTemplateExercise.get(templateExercise.id) ?? [];
       const firstSet = exerciseSets[0];
       const setsCount = exerciseSets.length;
 
-      // Determine icon and colors based on exercise type
       const equipmentType = exercise.equipmentType?.toLowerCase() || '';
       const isBodyweight =
+        // TODO: for "body weight", use i18n
         equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
 
-      // Get icon based on exercise type
       const Icon = isBodyweight ? User : Dumbbell;
-
-      // Get colors based on exercise type
       const iconBgColor = isBodyweight
         ? theme.colors.background.white5
         : theme.colors.accent.primary10;
       const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 
-      // Generate description
-      const weightText = isBodyweight ? 'bodyweight' : `${firstSet.targetWeight} kg`;
-      const description = `${setsCount} sets × ${firstSet.targetReps} reps`;
+      // TODO: use i18n here
+      const description = firstSet
+        ? `${setsCount} sets × ${firstSet.targetReps} reps`
+        : `${setsCount} sets`;
 
       exercisesInWorkout.push({
-        id: exerciseId,
+        id: exercise.id,
         label: exercise.name ?? '',
         description,
         icon: Icon,
         iconBgColor,
         iconColor,
-        groupId: firstSet.groupId, // Load groupId from database
-        sets: setsCount,
-        reps: firstSet.targetReps ?? 0,
-        weight: firstSet.targetWeight ?? 0,
+        groupId: templateExercise.groupId,
+        notes: templateExercise.notes,
+        sets: setsCount || 1,
+        reps: firstSet?.targetReps ?? 0,
+        weight: firstSet?.targetWeight ?? 0,
         isBodyweight,
-        restTimeAfter: firstSet.restTimeAfter,
+        restTimeAfter: firstSet?.restTimeAfter,
         isDropSet: exerciseSets.some((s) => s.isDropSet),
       });
-    });
-
-    // Sort by set_order of first set in each group
-    exercisesInWorkout.sort((a, b) => {
-      const aSets = exerciseGroups.get(a.id)!;
-      const bSets = exerciseGroups.get(b.id)!;
-      const aOrder = aSets[0].setOrder;
-      const bOrder = bSets[0].setOrder;
-      return (aOrder ?? 0) - (bOrder ?? 0);
-    });
+    }
 
     return exercisesInWorkout;
   }
@@ -184,9 +186,7 @@ export class WorkoutTemplateService {
     return await database.write(async () => {
       let template: WorkoutTemplate;
 
-      // Create or update template
       if (data.templateId) {
-        // Update existing template
         template = await database.get<WorkoutTemplate>('workout_templates').find(data.templateId);
         await template.update((t) => {
           t.name = data.name;
@@ -199,20 +199,37 @@ export class WorkoutTemplateService {
           t.updatedAt = now;
         });
 
-        // Soft delete existing template sets
-        const existingSets = await database
-          .get<WorkoutTemplateSet>('workout_template_sets')
+        const existingTemplateExercises = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
           .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
           .fetch();
 
-        for (const set of existingSets) {
-          await set.update((s) => {
-            s.deletedAt = now;
-            s.updatedAt = now;
+        const existingTemplateExerciseIds = existingTemplateExercises.map((te) => te.id);
+
+        if (existingTemplateExerciseIds.length > 0) {
+          const existingSets = await database
+            .get<WorkoutTemplateSet>('workout_template_sets')
+            .query(
+              Q.where('template_exercise_id', Q.oneOf(existingTemplateExerciseIds)),
+              Q.where('deleted_at', Q.eq(null))
+            )
+            .fetch();
+
+          for (const set of existingSets) {
+            await set.update((s) => {
+              s.deletedAt = now;
+              s.updatedAt = now;
+            });
+          }
+        }
+
+        for (const te of existingTemplateExercises) {
+          await te.update((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
           });
         }
 
-        // Soft delete existing schedule entries
         const existingSchedule = await database
           .get<Schedule>('schedules')
           .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
@@ -225,7 +242,6 @@ export class WorkoutTemplateService {
           });
         }
       } else {
-        // Create new template
         template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
@@ -233,34 +249,43 @@ export class WorkoutTemplateService {
           t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
           t.icon = data.icon ?? undefined;
           t.weekDaysJson = data.weekDaysJson || undefined;
-          t.isArchived = false; // Default to not archived
+          t.isArchived = false;
           t.createdAt = now;
           t.updatedAt = now;
         });
       }
 
-      // Create template sets
+      const templateExercisesCollection = database.get<WorkoutTemplateExercise>(
+        'workout_template_exercises'
+      );
       const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
+
+      const preparedExercises: WorkoutTemplateExercise[] = [];
       const preparedSets: WorkoutTemplateSet[] = [];
 
-      // Calculate set_order based on exercise order
-      // set_order is continuous across all exercises in the workout
-      // Example: Exercise 1 (3 sets) = orders 1,2,3; Exercise 2 (2 sets) = orders 4,5
-      let currentOrder = 0;
-      data.exercises.forEach((exercise) => {
-        // Create sets for this exercise
-        // All sets for this exercise will have sequential order starting from currentOrder + 1
-        for (let set = 1; set <= exercise.sets; set++) {
-          currentOrder++; // Increment first, then assign (so first set is 1, not 0)
+      let currentSetOrder = 0;
+
+      data.exercises.forEach((exercise, exerciseIndex) => {
+        const templateExercise = templateExercisesCollection.prepareCreate((te) => {
+          te.templateId = template.id;
+          te.exerciseId = exercise.id;
+          te.notes = exercise.notes;
+          te.exerciseOrder = exerciseIndex + 1;
+          te.groupId = exercise.groupId;
+          te.createdAt = now;
+          te.updatedAt = now;
+        });
+        preparedExercises.push(templateExercise);
+
+        for (let setNum = 1; setNum <= exercise.sets; setNum++) {
+          currentSetOrder++;
           preparedSets.push(
             templateSetsCollection.prepareCreate((ts) => {
-              ts.templateId = template.id;
-              ts.exerciseId = exercise.id;
+              ts.templateExerciseId = templateExercise.id;
               ts.targetReps = exercise.reps;
               ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
-              ts.restTimeAfter = exercise.restTimeAfter ?? 60; // Default to 60 seconds if not provided
-              ts.setOrder = currentOrder;
-              ts.groupId = exercise.groupId; // Persist groupId from UI
+              ts.restTimeAfter = exercise.restTimeAfter ?? 60;
+              ts.setOrder = currentSetOrder;
               ts.isDropSet = exercise.isDropSet ?? false;
               ts.createdAt = now;
               ts.updatedAt = now;
@@ -269,13 +294,10 @@ export class WorkoutTemplateService {
         }
       });
 
-      // Batch create all template sets
-      if (preparedSets.length > 0) {
-        await database.batch(...preparedSets);
+      if (preparedExercises.length > 0 || preparedSets.length > 0) {
+        await database.batch(...preparedExercises, ...preparedSets);
       }
 
-      // Create schedule entries
-      // WeekdayPicker indices: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
       const schedulesCollection = database.get<Schedule>('schedules');
       const preparedSchedules: Schedule[] = [];
 
@@ -292,7 +314,6 @@ export class WorkoutTemplateService {
         }
       });
 
-      // Batch create all schedule entries
       if (preparedSchedules.length > 0) {
         await database.batch(...preparedSchedules);
       }
@@ -364,12 +385,8 @@ export class WorkoutTemplateService {
     duration?: string;
     image?: any;
   }> {
-    // Get exercise count from template sets (count unique exercises)
-    const templateSets = (await template.templateSets?.fetch()) ?? [];
-    const uniqueExerciseIds = new Set(
-      templateSets.filter((set) => !set.deletedAt).map((set) => set.exerciseId)
-    );
-    const exerciseCount = uniqueExerciseIds.size;
+    const templateExercises = (await template.templateExercises?.fetch()) ?? [];
+    const exerciseCount = templateExercises.filter((te) => !te.deletedAt).length;
 
     // Get last completed workout log for this template
     const workoutLogs = await database
@@ -802,8 +819,8 @@ export class WorkoutTemplateService {
    */
   static async duplicateTemplate(templateId: string): Promise<WorkoutTemplate> {
     return await database.write(async () => {
-      // Get template with all details (sets and schedule)
-      const { template, sets, schedule } = await this.getTemplateWithDetails(templateId);
+      const { template, templateExercises, sets, schedule } =
+        await this.getTemplateWithDetails(templateId);
 
       if (template.deletedAt) {
         throw new Error('Cannot duplicate deleted template');
@@ -811,7 +828,6 @@ export class WorkoutTemplateService {
 
       const now = Date.now();
 
-      // Create new template with "(Copy)" suffix
       const newTemplate = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
         t.name = `${template.name} (Copy)`;
         t.description = template.description;
@@ -824,24 +840,49 @@ export class WorkoutTemplateService {
         t.updatedAt = now;
       });
 
-      // Copy all template sets
-      const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
-      const preparedSets = sets.map((set) =>
-        templateSetsCollection.prepareCreate((ts) => {
-          ts.templateId = newTemplate.id;
-          ts.exerciseId = set.exerciseId;
-          ts.targetReps = set.targetReps;
-          ts.targetWeight = set.targetWeight;
-          ts.restTimeAfter = set.restTimeAfter;
-          ts.setOrder = set.setOrder;
-          ts.groupId = set.groupId;
-          ts.isDropSet = set.isDropSet;
-          ts.createdAt = now;
-          ts.updatedAt = now;
-        })
+      const templateExercisesCollection = database.get<WorkoutTemplateExercise>(
+        'workout_template_exercises'
       );
+      const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
 
-      // Copy all schedule entries
+      const oldToNewExerciseId = new Map<string, WorkoutTemplateExercise>();
+      const preparedExercises: WorkoutTemplateExercise[] = [];
+      const preparedSets: WorkoutTemplateSet[] = [];
+
+      for (const te of templateExercises) {
+        const newExercise = templateExercisesCollection.prepareCreate((newTe) => {
+          newTe.templateId = newTemplate.id;
+          newTe.exerciseId = te.exerciseId;
+          newTe.notes = te.notes;
+          newTe.exerciseOrder = te.exerciseOrder;
+          newTe.groupId = te.groupId;
+          newTe.createdAt = now;
+          newTe.updatedAt = now;
+        });
+        preparedExercises.push(newExercise);
+        oldToNewExerciseId.set(te.id, newExercise);
+      }
+
+      for (const set of sets) {
+        const newExercise = oldToNewExerciseId.get(set.templateExerciseId);
+        if (!newExercise) {
+          continue;
+        }
+
+        preparedSets.push(
+          templateSetsCollection.prepareCreate((ts) => {
+            ts.templateExerciseId = newExercise.id;
+            ts.targetReps = set.targetReps;
+            ts.targetWeight = set.targetWeight;
+            ts.restTimeAfter = set.restTimeAfter;
+            ts.setOrder = set.setOrder;
+            ts.isDropSet = set.isDropSet;
+            ts.createdAt = now;
+            ts.updatedAt = now;
+          })
+        );
+      }
+
       const schedulesCollection = database.get<Schedule>('schedules');
       const preparedSchedules = schedule.map((sched) =>
         schedulesCollection.prepareCreate((s) => {
@@ -853,8 +894,7 @@ export class WorkoutTemplateService {
         })
       );
 
-      // Batch commit all sets and schedules atomically
-      await database.batch(...preparedSets, ...preparedSchedules);
+      await database.batch(...preparedExercises, ...preparedSets, ...preparedSchedules);
 
       return newTemplate;
     });
@@ -869,29 +909,23 @@ export class WorkoutTemplateService {
       name: string;
       description?: string;
       exerciseCount: number;
-      lastCompleted?: string; // Formatted relative date string
+      lastCompleted?: string;
       lastCompletedTimestamp?: number;
-      duration?: string; // Formatted duration string
+      duration?: string;
       image?: any;
     }[]
   > {
-    // Fetch all archived templates
     const templates = await WorkoutTemplateRepository.getArchived().fetch();
 
-    // Process each template to get metadata (same logic as getAllTemplatesWithMetadata)
     const templatesWithMetadata = await Promise.all(
       templates.map(async (template) => {
-        // Get template sets to count exercises
-        const sets = await database
-          .get<WorkoutTemplateSet>('workout_template_sets')
+        const templateExercises = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
           .query(Q.where('template_id', template.id), Q.where('deleted_at', Q.eq(null)))
           .fetch();
 
-        // Get unique exercise count
-        const uniqueExerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
-        const exerciseCount = uniqueExerciseIds.length;
+        const exerciseCount = templateExercises.length;
 
-        // Get last completed workout log for this template
         const workoutLogs = await database
           .get<WorkoutLog>('workout_logs')
           .query(
@@ -968,8 +1002,10 @@ export class WorkoutTemplateService {
    * Includes the template name, optional description, and bullet-listed exercise names.
    */
   static async getShareMessage(templateId: string): Promise<string> {
-    const { template, sets } = await this.getTemplateWithDetails(templateId);
-    const exerciseIds = [...new Set(sets.map((s) => s.exerciseId).filter(Boolean))] as string[];
+    const { template, templateExercises } = await this.getTemplateWithDetails(templateId);
+    const exerciseIds = [
+      ...new Set(templateExercises.map((te) => te.exerciseId).filter(Boolean)),
+    ] as string[];
     const exercises =
       exerciseIds.length > 0
         ? await database
@@ -977,8 +1013,8 @@ export class WorkoutTemplateService {
             .query(Q.where('id', Q.oneOf(exerciseIds)))
             .fetch()
         : [];
-    const exerciseNames = exerciseIds
-      .map((id) => exercises.find((e) => e.id === id)?.name)
+    const exerciseNames = templateExercises
+      .map((te) => exercises.find((e) => e.id === te.exerciseId)?.name)
       .filter(Boolean) as string[];
     const lines = [
       template.name ?? '',
@@ -994,20 +1030,33 @@ export class WorkoutTemplateService {
   static async deleteTemplate(id: string): Promise<void> {
     return await database.write(async (writer) => {
       const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
-      // Use callWriter to avoid nested writes since markAsDeleted is a @writer method
       await writer.callWriter(() => template.markAsDeleted());
 
-      // Also soft-delete all associated sets
-      const sets = await database
-        .get<WorkoutTemplateSet>('workout_template_sets')
+      const templateExercises = await database
+        .get<WorkoutTemplateExercise>('workout_template_exercises')
         .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      for (const set of sets) {
-        await writer.callWriter(() => set.markAsDeleted());
+      const templateExerciseIds = templateExercises.map((te) => te.id);
+
+      if (templateExerciseIds.length > 0) {
+        const sets = await database
+          .get<WorkoutTemplateSet>('workout_template_sets')
+          .query(
+            Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+
+        for (const set of sets) {
+          await writer.callWriter(() => set.markAsDeleted());
+        }
       }
 
-      // Also soft-delete all associated schedules
+      for (const te of templateExercises) {
+        await writer.callWriter(() => te.markAsDeleted());
+      }
+
       const schedules = await database
         .get<Schedule>('schedules')
         .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))

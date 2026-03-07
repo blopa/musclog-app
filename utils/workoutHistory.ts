@@ -6,8 +6,8 @@ import type { Units } from '../constants/settings';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { WorkoutAnalytics } from '../database/services/WorkoutAnalytics';
+import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
+import { WorkoutAnalytics } from '../database/services';
 import { theme } from '../theme';
 import { getWeightUnitI18nKey } from './units';
 
@@ -127,14 +127,14 @@ export function getWorkoutTypeFromName(name: string): WorkoutType | null {
  */
 export async function getMuscleGroupsFromWorkout(workoutId: string): Promise<string[]> {
   try {
-    // Get all sets for this workout
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
+    // Get all log exercises for this workout
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
       .query(Q.where('workout_log_id', workoutId), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    // Get unique exercise IDs
-    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId))];
+    // Get unique exercise IDs from log exercises
+    const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))];
 
     if (exerciseIds.length === 0) {
       return [];

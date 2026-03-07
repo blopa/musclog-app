@@ -2,8 +2,8 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, writer } from '@nozbe/watermelondb/decorators';
 
 import WorkoutLog from './WorkoutLog';
-import WorkoutLogSet from './WorkoutLogSet';
-import WorkoutTemplateSet from './WorkoutTemplateSet';
+import WorkoutLogExercise from './WorkoutLogExercise';
+import WorkoutTemplateExercise from './WorkoutTemplateExercise';
 
 export type MuscleGroup =
   | 'chest'
@@ -37,8 +37,8 @@ export default class Exercise extends Model {
   static table = 'exercises';
 
   static associations = {
-    workout_template_sets: { type: 'has_many' as const, foreignKey: 'exercise_id' },
-    workout_log_sets: { type: 'has_many' as const, foreignKey: 'exercise_id' },
+    workout_template_exercises: { type: 'has_many' as const, foreignKey: 'exercise_id' },
+    workout_log_exercises: { type: 'has_many' as const, foreignKey: 'exercise_id' },
   };
 
   @field('name') name!: string;
@@ -52,21 +52,17 @@ export default class Exercise extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
-  @children('workout_log_sets') logSets!: Query<WorkoutLogSet>;
+  @children('workout_template_exercises') templateExercises!: Query<WorkoutTemplateExercise>;
+  @children('workout_log_exercises') logExercises!: Query<WorkoutLogExercise>;
 
   @writer
   async markAsDeleted(): Promise<void> {
-    // Check if exercise is referenced in any workout logs (historical data)
-    const logSets = await this.logSets.fetch();
+    const logExercises = await this.logExercises.fetch();
+    const activeLogExercises = logExercises.filter((le: WorkoutLogExercise) => !le.deletedAt);
 
-    // Filter out soft-deleted sets
-    const activeLogSets = logSets.filter((set: WorkoutLogSet) => !set.deletedAt);
-
-    if (activeLogSets.length > 0) {
-      // Check if any of these sets belong to completed workouts (immutable historical data)
+    if (activeLogExercises.length > 0) {
       const workoutLogIds = [
-        ...new Set(activeLogSets.map((set: WorkoutLogSet) => set.workoutLogId)),
+        ...new Set(activeLogExercises.map((le: WorkoutLogExercise) => le.workoutLogId)),
       ];
       const workoutLogs = await this.collections
         .get<WorkoutLog>('workout_logs')
@@ -82,7 +78,6 @@ export default class Exercise extends Model {
       }
     }
 
-    // Safe to soft delete
     const now = Date.now();
     await this.update((exercise) => {
       exercise.deletedAt = now;

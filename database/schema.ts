@@ -50,17 +50,32 @@ export const schema = appSchema({
       ],
     }),
 
+    // THE BLUEPRINT EXERCISES: Exercise blocks within a workout template
+    // This intermediate entity allows the same exercise to appear multiple times
+    // with different notes/configurations
+    tableSchema({
+      name: 'workout_template_exercises',
+      columns: [
+        { name: 'template_id', type: 'string', isIndexed: true },
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'exercise_order', type: 'number' },
+        { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // THE BLUEPRINT SETS: The default reps/weight for a routine
     tableSchema({
       name: 'workout_template_sets',
       columns: [
-        { name: 'template_id', type: 'string', isIndexed: true },
-        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'template_exercise_id', type: 'string', isIndexed: true },
         { name: 'target_reps', type: 'number' },
         { name: 'target_weight', type: 'number' },
         { name: 'rest_time_after', type: 'number', isOptional: true },
         { name: 'set_order', type: 'number' },
-        { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'is_drop_set', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
@@ -89,18 +104,32 @@ export const schema = appSchema({
       ],
     }),
 
+    // THE HISTORY EXERCISES: Exercise blocks within a logged workout session
+    tableSchema({
+      name: 'workout_log_exercises',
+      columns: [
+        { name: 'workout_log_id', type: 'string', isIndexed: true },
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'template_exercise_id', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'exercise_order', type: 'number' },
+        { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // THE HISTORY SETS: What actually happened
     tableSchema({
       name: 'workout_log_sets',
       columns: [
-        { name: 'workout_log_id', type: 'string', isIndexed: true }, // Link to the history log
-        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'log_exercise_id', type: 'string', isIndexed: true }, // Link to the log exercise block
         { name: 'reps', type: 'number' },
         { name: 'weight', type: 'number' },
         { name: 'partials', type: 'number', isOptional: true }, // Partial reps (defaults to 0)
         { name: 'rest_time_after', type: 'number' },
         { name: 'reps_in_reserve', type: 'number' },
-        { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'is_skipped', type: 'boolean', isOptional: true },
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'is_drop_set', type: 'boolean' },

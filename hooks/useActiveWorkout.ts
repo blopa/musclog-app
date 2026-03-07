@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Exercise from '../database/models/Exercise';
-import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { WorkoutService } from '../database/services';
 import { captureException } from '../utils/sentry';
 import {
@@ -9,21 +8,22 @@ import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
 } from '../utils/workoutSupersetOrder';
-import { useWorkoutSessionState } from './useWorkoutSessionState';
+import { type EnrichedWorkoutLogSet, useWorkoutSessionState } from './useWorkoutSessionState';
 
 export type CurrentSetData = {
-  set: WorkoutLogSet;
+  set: EnrichedWorkoutLogSet;
   exercise: Exercise;
   setNumber: number;
   totalSetsInExercise: number;
   exerciseNumber: number;
+  notes?: string;
   previousSet?: {
     weight: number;
     reps: number;
     exerciseId: string;
   };
   nextSet?: {
-    set: WorkoutLogSet;
+    set: EnrichedWorkoutLogSet;
     exercise: Exercise;
   };
 };
@@ -94,7 +94,7 @@ export function useActiveWorkout(workoutLogId?: string) {
     }
 
     const effectiveOrder = getEffectiveOrder(sets);
-    let currentSet: WorkoutLogSet | null = null;
+    let currentSet: EnrichedWorkoutLogSet | null = null;
 
     if (targetExerciseId) {
       currentSet =
@@ -120,7 +120,7 @@ export function useActiveWorkout(workoutLogId?: string) {
       return null;
     }
 
-    const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+    const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((s) => {
       const eid = s.exerciseId ?? '';
       if (!exerciseGroups.has(eid)) {
@@ -133,7 +133,7 @@ export function useActiveWorkout(workoutLogId?: string) {
     });
 
     const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId ?? '') ?? [];
-    const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet.id) + 1 || 1;
+    const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet!.id) + 1 || 1;
     const totalSetsInExercise = currentExerciseSets.length;
 
     const exerciseOrder = [...new Set(effectiveOrder.map((s) => s.exerciseId).filter(Boolean))];
@@ -157,6 +157,7 @@ export function useActiveWorkout(workoutLogId?: string) {
       setNumber,
       totalSetsInExercise,
       exerciseNumber,
+      notes: currentSet.notes,
       previousSet: sessionPreviousSet ?? undefined,
       nextSet: nextSetData,
     };
@@ -182,7 +183,8 @@ export function useActiveWorkout(workoutLogId?: string) {
     setTargetExerciseId(exerciseId);
   }, []);
   const getExerciseSets = useCallback(
-    (exerciseId: string): WorkoutLogSet[] => sets.filter((s) => s.exerciseId === exerciseId),
+    (exerciseId: string): EnrichedWorkoutLogSet[] =>
+      sets.filter((s) => s.exerciseId === exerciseId),
     [sets]
   );
 

@@ -6,7 +6,7 @@ import type { Units } from '../constants/settings';
 import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
-import { WorkoutAnalytics, WorkoutService } from '../database/services';
+import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
@@ -172,7 +172,7 @@ async function calculateVolumeTrend(
  */
 export async function transformWorkoutToDetailData(
   workoutLog: WorkoutLog,
-  sets: WorkoutLogSet[],
+  sets: EnrichedWorkoutLogSet[],
   exercises: Exercise[],
   t: TFunction,
   units: Units
@@ -180,7 +180,7 @@ export async function transformWorkoutToDetailData(
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-  const setsByExercise = new Map<string, WorkoutLogSet[]>();
+  const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
   sets.forEach((set) => {
     const exerciseId = set.exerciseId ?? '';
     if (!setsByExercise.has(exerciseId)) {

@@ -120,10 +120,11 @@ describe('hooks/useWorkoutForm', () => {
     // Ensure service mocks resolve immediately
     mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
       template: {} as any,
+      templateExercises: [],
       sets: [],
       schedule: [],
     });
-    mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+    mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue([]);
     mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
   });
 
@@ -174,12 +175,14 @@ describe('hooks/useWorkoutForm', () => {
         },
       ];
 
+      const mockTemplateExercises = [] as any;
       mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
         template: mockTemplate as any,
+        templateExercises: mockTemplateExercises,
         sets: mockSets as any,
         schedule: mockSchedule as any,
       });
-      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue(
+      mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue(
         mockExercisesInWorkout as any
       );
       // Mock transformScheduleDays to return the correct indices for Monday (0) and Wednesday (2)
@@ -195,7 +198,10 @@ describe('hooks/useWorkoutForm', () => {
       expect(result.current.description).toBe('Workout description');
       expect(result.current.selectedDays).toEqual([0, 2]);
       expect(mockWorkoutTemplateService.getTemplateWithDetails).toHaveBeenCalledWith('template-1');
-      expect(mockWorkoutTemplateService.convertSetsToExercises).toHaveBeenCalledWith(mockSets);
+      expect(mockWorkoutTemplateService.convertTemplateExercisesToUI).toHaveBeenCalledWith(
+        mockTemplateExercises,
+        mockSets
+      );
     });
 
     it('should handle loading error', async () => {
@@ -236,15 +242,17 @@ describe('hooks/useWorkoutForm', () => {
         name: 'My Workout',
         description: null,
       };
+      const mockTemplateExercises = [] as any;
       const mockSets = [] as ExerciseMetadata[];
       const mockSchedule = [{ dayOfWeek: 'Monday' }];
 
       mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
         template: mockTemplate as any,
+        templateExercises: mockTemplateExercises,
         sets: mockSets as any,
         schedule: mockSchedule as any,
       });
-      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+      mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue([]);
       mockWorkoutUtils.transformScheduleDays.mockReturnValue([0]);
 
       const { result } = renderHook(() => useWorkoutForm({ templateId: 'template-1' }));
@@ -261,15 +269,17 @@ describe('hooks/useWorkoutForm', () => {
         name: 'My Workout',
         description: undefined,
       };
+      const mockTemplateExercises = [] as any;
       const mockSets = [] as ExerciseMetadata[];
       const mockSchedule = [{ dayOfWeek: 'Monday' }];
 
       mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
         template: mockTemplate as any,
+        templateExercises: mockTemplateExercises,
         sets: mockSets as any,
         schedule: mockSchedule as any,
       });
-      mockWorkoutTemplateService.convertSetsToExercises.mockResolvedValue([]);
+      mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue([]);
       mockWorkoutUtils.transformScheduleDays.mockReturnValue([0]);
 
       const { result } = renderHook(() => useWorkoutForm({ templateId: 'template-1' }));

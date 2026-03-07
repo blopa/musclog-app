@@ -13,8 +13,10 @@ export { default as Setting } from './Setting';
 export { default as User } from './User';
 export { default as UserMetric } from './UserMetric';
 export { default as WorkoutLog } from './WorkoutLog';
+export { default as WorkoutLogExercise } from './WorkoutLogExercise';
 export { default as WorkoutLogSet } from './WorkoutLogSet';
 export { default as WorkoutTemplate } from './WorkoutTemplate';
+export { default as WorkoutTemplateExercise } from './WorkoutTemplateExercise';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types

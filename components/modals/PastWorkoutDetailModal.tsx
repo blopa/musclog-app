@@ -7,8 +7,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
-import { WorkoutService } from '../../database/services';
+import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
@@ -394,7 +393,7 @@ export default function PastWorkoutDetailModal({
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [previewWorkoutData, setPreviewWorkoutData] = useState<{
     workoutLog: WorkoutLog;
-    sets: WorkoutLogSet[];
+    sets: EnrichedWorkoutLogSet[];
     exercises: Exercise[];
   } | null>(null);
 

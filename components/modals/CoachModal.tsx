@@ -2,7 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
-import { Mic, PlusCircle, Send as SendIcon, TrendingUp, UtensilsCrossed, X, } from 'lucide-react-native';
+import {
+  Mic,
+  PlusCircle,
+  Send as SendIcon,
+  TrendingUp,
+  UtensilsCrossed,
+  X,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,7 +36,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../../constants/chat';
-import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages, } from '../../hooks/useChatMessages';
+import {
+  AI_COACH_AVATAR,
+  type ExtendedIMessage,
+  useChatMessages,
+} from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';

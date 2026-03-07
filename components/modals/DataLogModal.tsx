@@ -663,17 +663,41 @@ export function DataLogModal({
 
   const checkExerciseDependencies = async (exerciseId: string): Promise<string | null> => {
     try {
-      // Check if exercise is used in any workout templates
-      const templateSets = await database
-        .get('workout_template_sets')
+      // Templates: sets link via workout_template_exercises (template_exercise_id), not exercise_id
+      const templateExercises = await database
+        .get('workout_template_exercises')
         .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      // Check if exercise is used in any workout logs
-      const logSets = await database
-        .get('workout_log_sets')
+      const templateExerciseIds = templateExercises.map((te) => te.id);
+      const templateSets =
+        templateExerciseIds.length > 0
+          ? await database
+              .get('workout_template_sets')
+              .query(
+                Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+                Q.where('deleted_at', Q.eq(null))
+              )
+              .fetch()
+          : [];
+
+      // Logs: sets link via workout_log_exercises (log_exercise_id), not exercise_id
+      const logExercises = await database
+        .get('workout_log_exercises')
         .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
+
+      const logExerciseIds = logExercises.map((le) => le.id);
+      const logSets =
+        logExerciseIds.length > 0
+          ? await database
+              .get('workout_log_sets')
+              .query(
+                Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+                Q.where('deleted_at', Q.eq(null))
+              )
+              .fetch()
+          : [];
 
       if (templateSets.length > 0 || logSets.length > 0) {
         const parts = [];

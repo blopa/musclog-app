@@ -13,8 +13,10 @@ import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogExercise from '../models/WorkoutLogExercise';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
+import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
 import { ExerciseService, MealService } from '../services';
 
@@ -136,54 +138,89 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           });
         templatesCreated++;
 
-        // Use the same groupId for both exercises
+        // Use the same groupId for the first two exercises (superset)
         const groupId = 'seed-group-1';
+
+        // Create template exercises first, then their sets
+        const benchExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = groupedTestTemplate!.id;
+            te.exerciseId = benchPress.id;
+            te.exerciseOrder = 1;
+            te.groupId = groupId;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = groupedTestTemplate!.id;
-          ts.exerciseId = benchPress.id;
+          ts.templateExerciseId = benchExercise.id;
           ts.targetReps = 8;
           ts.targetWeight = 70;
           ts.restTimeAfter = 60;
           ts.setOrder = 1;
-          ts.groupId = groupId;
           ts.createdAt = now;
           ts.updatedAt = now;
         });
 
+        const ohpExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = groupedTestTemplate!.id;
+            te.exerciseId = overheadPress.id;
+            te.exerciseOrder = 2;
+            te.groupId = groupId;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = groupedTestTemplate!.id;
-          ts.exerciseId = overheadPress.id;
+          ts.templateExerciseId = ohpExercise.id;
           ts.targetReps = 8;
           ts.targetWeight = 40;
           ts.restTimeAfter = 60;
           ts.setOrder = 2;
-          ts.groupId = groupId;
           ts.createdAt = now;
           ts.updatedAt = now;
         });
 
-        // Add an ungrouped exercise (no groupId)
+        // Add ungrouped exercises
+        const bicepExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = groupedTestTemplate!.id;
+            te.exerciseId = bicepCurl.id;
+            te.exerciseOrder = 3;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = groupedTestTemplate!.id;
-          ts.exerciseId = bicepCurl.id;
+          ts.templateExerciseId = bicepExercise.id;
           ts.targetReps = 10;
           ts.targetWeight = 15;
           ts.restTimeAfter = 45;
           ts.setOrder = 3;
-          // No groupId set here (ungrouped)
           ts.createdAt = now;
           ts.updatedAt = now;
         });
 
-        // Add an ungrouped exercise (no groupId)
+        const tricepExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = groupedTestTemplate!.id;
+            te.exerciseId = tricepExtension.id;
+            te.exerciseOrder = 4;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = groupedTestTemplate!.id;
-          ts.exerciseId = tricepExtension.id;
+          ts.templateExerciseId = tricepExercise.id;
           ts.targetReps = 10;
           ts.targetWeight = 15;
           ts.restTimeAfter = 45;
-          ts.setOrder = 3;
-          // No groupId set here (ungrouped)
+          ts.setOrder = 4;
           ts.createdAt = now;
           ts.updatedAt = now;
         });
@@ -207,10 +244,19 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         });
         templatesCreated++;
 
-        // Create template sets for Upper Body Power
+        // Create template exercises and their sets for Upper Body Power
+        const ubBenchExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = upperBodyTemplate!.id;
+            te.exerciseId = benchPress.id;
+            te.exerciseOrder = 1;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
+
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = upperBodyTemplate!.id;
-          ts.exerciseId = benchPress.id;
+          ts.templateExerciseId = ubBenchExercise.id;
           ts.targetReps = 8;
           ts.targetWeight = 80;
           ts.restTimeAfter = 60;
@@ -218,9 +264,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
+        const ubOhpExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = upperBodyTemplate!.id;
+            te.exerciseId = overheadPress.id;
+            te.exerciseOrder = 2;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = upperBodyTemplate!.id;
-          ts.exerciseId = overheadPress.id;
+          ts.templateExerciseId = ubOhpExercise.id;
           ts.targetReps = 10;
           ts.targetWeight = 50;
           ts.restTimeAfter = 60;
@@ -228,9 +283,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
+        const ubLatExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = upperBodyTemplate!.id;
+            te.exerciseId = latPulldown.id;
+            te.exerciseOrder = 3;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = upperBodyTemplate!.id;
-          ts.exerciseId = latPulldown.id;
+          ts.templateExerciseId = ubLatExercise.id;
           ts.targetReps = 10;
           ts.targetWeight = 70;
           ts.restTimeAfter = 60;
@@ -238,9 +302,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
+        const ubBicepExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = upperBodyTemplate!.id;
+            te.exerciseId = bicepCurl.id;
+            te.exerciseOrder = 4;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = upperBodyTemplate!.id;
-          ts.exerciseId = bicepCurl.id;
+          ts.templateExerciseId = ubBicepExercise.id;
           ts.targetReps = 12;
           ts.targetWeight = 15;
           ts.restTimeAfter = 60;
@@ -260,10 +333,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         });
         templatesCreated++;
 
-        // Create template sets for Leg Day
+        // Create template exercises and their sets for Leg Day
+        const ldSquatExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = legDayTemplate!.id;
+            te.exerciseId = squat.id;
+            te.exerciseOrder = 1;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = legDayTemplate!.id;
-          ts.exerciseId = squat.id;
+          ts.templateExerciseId = ldSquatExercise.id;
           ts.targetReps = 8;
           ts.targetWeight = 120;
           ts.restTimeAfter = 60;
@@ -271,9 +352,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
+        const ldLegPressExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = legDayTemplate!.id;
+            te.exerciseId = legPress.id;
+            te.exerciseOrder = 2;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = legDayTemplate!.id;
-          ts.exerciseId = legPress.id;
+          ts.templateExerciseId = ldLegPressExercise.id;
           ts.targetReps = 12;
           ts.restTimeAfter = 60;
           ts.targetWeight = 180;
@@ -281,9 +371,18 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           ts.createdAt = now;
           ts.updatedAt = now;
         });
+
+        const ldDeadliftExercise = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .create((te) => {
+            te.templateId = legDayTemplate!.id;
+            te.exerciseId = deadlift.id;
+            te.exerciseOrder = 3;
+            te.createdAt = now;
+            te.updatedAt = now;
+          });
         await database.get<WorkoutTemplateSet>('workout_template_sets').create((ts) => {
-          ts.templateId = legDayTemplate!.id;
-          ts.exerciseId = deadlift.id;
+          ts.templateExerciseId = ldDeadliftExercise.id;
           ts.targetReps = 6;
           ts.targetWeight = 140;
           ts.restTimeAfter = 60;
@@ -323,24 +422,35 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             log.updatedAt = now;
           });
 
-          // Create sets and calculate total volume
+          // Create log exercises and their sets, and calculate total volume
           let totalVolume = 0;
           let setOrder = 1;
+          let exerciseOrder = 1;
 
           for (const exerciseData of exerciseSets) {
+            // Create the log exercise block
+            const logExercise = await database
+              .get<WorkoutLogExercise>('workout_log_exercises')
+              .create((le) => {
+                le.workoutLogId = workoutLog.id;
+                le.exerciseId = exerciseData.exercise.id;
+                le.exerciseOrder = exerciseOrder++;
+                le.groupId = exerciseData.groupId;
+                le.createdAt = now;
+                le.updatedAt = now;
+              });
+
             for (const set of exerciseData.sets) {
               const setVolume = set.weight * set.reps;
               totalVolume += setVolume;
 
               await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
-                logSet.workoutLogId = workoutLog.id;
-                logSet.exerciseId = exerciseData.exercise.id;
+                logSet.logExerciseId = logExercise.id;
                 logSet.reps = set.reps;
                 logSet.weight = set.weight;
                 logSet.restTimeAfter = 60; // 60 seconds rest
                 logSet.difficultyLevel = 7; // RPE 7
                 logSet.isDropSet = false;
-                logSet.groupId = exerciseData.groupId;
                 logSet.setOrder = setOrder;
                 logSet.createdAt = now;
                 logSet.updatedAt = now;
@@ -611,6 +721,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
 
         let totalVolume = 0;
         let setOrder = 1;
+        let exerciseOrder = 1;
         const pushDaySets = [
           {
             exercise: benchPress,
@@ -640,17 +751,27 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
         ];
 
         for (const exerciseData of pushDaySets) {
+          // Create log exercise block first
+          const logExercise = await database
+            .get<WorkoutLogExercise>('workout_log_exercises')
+            .create((le) => {
+              le.workoutLogId = pushDayLog.id;
+              le.exerciseId = exerciseData.exercise.id;
+              le.exerciseOrder = exerciseOrder++;
+              le.groupId = exerciseData.groupId;
+              le.createdAt = now;
+              le.updatedAt = now;
+            });
+
           for (const set of exerciseData.sets) {
             totalVolume += set.weight * set.reps;
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
-              logSet.workoutLogId = pushDayLog.id;
-              logSet.exerciseId = exerciseData.exercise.id;
+              logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;
               logSet.weight = set.weight;
               logSet.restTimeAfter = 60;
               logSet.difficultyLevel = 7;
               logSet.isDropSet = false;
-              logSet.groupId = exerciseData.groupId;
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;
@@ -746,24 +867,35 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
           log.updatedAt = now;
         });
 
-        // Create sets and calculate total volume
+        // Create log exercises and their sets, and calculate total volume
         let totalVolume = 0;
         let setOrder = 1;
+        let exerciseOrder = 1;
 
         for (const exerciseData of exerciseSets) {
+          // Create log exercise block first
+          const logExercise = await database
+            .get<WorkoutLogExercise>('workout_log_exercises')
+            .create((le) => {
+              le.workoutLogId = workoutLog.id;
+              le.exerciseId = exerciseData.exercise.id;
+              le.exerciseOrder = exerciseOrder++;
+              le.groupId = exerciseData.groupId;
+              le.createdAt = now;
+              le.updatedAt = now;
+            });
+
           for (const set of exerciseData.sets) {
             const setVolume = set.weight * set.reps;
             totalVolume += setVolume;
 
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
-              logSet.workoutLogId = workoutLog.id;
-              logSet.exerciseId = exerciseData.exercise.id;
+              logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;
               logSet.weight = set.weight;
               logSet.restTimeAfter = 60; // 60 seconds rest
               logSet.difficultyLevel = 7; // RPE 7
               logSet.isDropSet = false;
-              logSet.groupId = exerciseData.groupId;
               logSet.setOrder = setOrder;
               logSet.createdAt = now;
               logSet.updatedAt = now;

@@ -5,12 +5,13 @@ import { Pressable, Text, View } from 'react-native';
 
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
+import type { EnrichedWorkoutLogSet } from '../../database/services';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { Button } from '../theme/Button';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
@@ -25,8 +26,8 @@ export type WorkoutHistoryModalProps = {
   workoutLog?: WorkoutLog | null;
   // When isPreview is true: workoutTemplate is required
   workoutTemplate?: WorkoutTemplate | null;
-  sets?: WorkoutLogSet[];
-  templateSets?: WorkoutTemplateSet[];
+  sets?: EnrichedWorkoutLogSet[];
+  templateSets?: (WorkoutTemplateSet | EnrichedWorkoutTemplateSet)[];
   exercises?: Exercise[];
   currentSetOrder?: number | null;
   isPreview?: boolean;
@@ -72,9 +73,9 @@ export function WorkoutSessionHistoryModal({
       const exerciseMap = new Map<string, Exercise>();
       exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-      const exerciseGroups = new Map<string, WorkoutTemplateSet[]>();
+      const exerciseGroups = new Map<string, (WorkoutTemplateSet | EnrichedWorkoutTemplateSet)[]>();
       templateSets.forEach((set) => {
-        const exerciseId = set.exerciseId ?? '';
+        const exerciseId = (set as EnrichedWorkoutTemplateSet).exerciseId ?? '';
         if (!exerciseGroups.has(exerciseId)) {
           exerciseGroups.set(exerciseId, []);
         }
@@ -136,7 +137,7 @@ export function WorkoutSessionHistoryModal({
       const exerciseMap = new Map<string, Exercise>();
       exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
 
-      const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+      const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
       sets.forEach((set) => {
         const exerciseId = set.exerciseId ?? '';
         if (!exerciseGroups.has(exerciseId)) {

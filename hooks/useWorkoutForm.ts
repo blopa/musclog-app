@@ -14,6 +14,7 @@ import {
   type ExerciseMetadata,
   exercisesToWorkoutFormat,
   extractExerciseMetadata,
+  formatExerciseDescription,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
@@ -30,8 +31,9 @@ export interface AddExerciseData {
   reps: number;
   weight: number;
   isBodyweight: boolean;
-  restTimeAfter?: number; // Rest time in seconds after completing this set
+  restTimeAfter?: number;
   isDropSet?: boolean;
+  notes?: string;
 }
 
 export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
@@ -63,7 +65,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
 
     setIsLoading(true);
     try {
-      const { template, sets, schedule } =
+      const { template, templateExercises, sets, schedule } =
         await WorkoutTemplateService.getTemplateWithDetails(templateId);
 
       setWorkoutTitle(template.name ?? '');
@@ -72,7 +74,6 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
       setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
       setIcon(template.icon ?? undefined);
 
-      // Load week days from weekDaysJson if available, otherwise use schedule
       if (template.weekDaysJson && template.weekDaysJson.length > 0) {
         setSelectedDays(template.weekDaysJson);
       } else {
@@ -80,7 +81,10 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         setSelectedDays(dayIndices);
       }
 
-      const exercisesInWorkout = await WorkoutTemplateService.convertSetsToExercises(sets);
+      const exercisesInWorkout = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        templateExercises,
+        sets
+      );
 
       const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
       setExercises(exerciseOptions);
@@ -135,9 +139,10 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
             reps: exerciseData.reps,
             weight: exerciseData.weight,
             isBodyweight: exerciseData.isBodyweight,
-            restTimeAfter: exerciseData.restTimeAfter ?? 60, // Default to 60 seconds if not provided
+            restTimeAfter: exerciseData.restTimeAfter ?? 60,
             groupId: undefined,
             isDropSet: exerciseData.isDropSet ?? false,
+            notes: exerciseData.notes,
           });
           return updated;
         });
@@ -203,19 +208,46 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
   }, []);
 
   const handleDeleteExercises = useCallback((exerciseIds: string[]) => {
-    // Remove exercises from the list
     setExercises((prev) => prev.filter((exercise) => !exerciseIds.includes(exercise.id)));
 
-    // Remove metadata for deleted exercises
     setExerciseMetadata((prev) => {
       const updated = new Map(prev);
       exerciseIds.forEach((id) => updated.delete(id));
       return updated;
     });
 
-    // Clear selection after deletion
     setSelectedExercises([]);
   }, []);
+
+  const handleUpdateExerciseNotes = useCallback(
+    (exerciseId: string, notes: string | undefined) => {
+      setExerciseMetadata((prev) => {
+        const updated = new Map(prev);
+        const existing = updated.get(exerciseId);
+        if (existing) {
+          updated.set(exerciseId, { ...existing, notes });
+        }
+        return updated;
+      });
+
+      setExercises((prev) =>
+        prev.map((ex) => {
+          if (ex.id === exerciseId) {
+            const meta = exerciseMetadata.get(exerciseId);
+            const baseDescription = meta
+              ? formatExerciseDescription(meta.sets, meta.reps)
+              : ex.description.replace(' • 📝', '');
+            return {
+              ...ex,
+              description: notes ? `${baseDescription} • 📝` : baseDescription,
+            };
+          }
+          return ex;
+        })
+      );
+    },
+    [exerciseMetadata]
+  );
 
   return {
     // State
@@ -249,5 +281,6 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     handleSave,
     handleExerciseOrderChange,
     handleDeleteExercises,
+    handleUpdateExerciseNotes,
   };
 }

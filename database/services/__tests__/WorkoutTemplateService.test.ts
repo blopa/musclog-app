@@ -10,6 +10,7 @@ import {
   createMockSchedule,
   createMockWorkoutLog,
   createMockWorkoutTemplate,
+  createMockWorkoutTemplateExercise,
   createMockWorkoutTemplateSet,
 } from './helpers';
 
@@ -226,24 +227,33 @@ describe('WorkoutTemplateService', () => {
     });
   });
 
-  describe('convertSetsToExercises', () => {
+  describe('convertTemplateExercisesToUI', () => {
     it('should group sets by exercise correctly', async () => {
-      const set1 = createMockWorkoutTemplateSet({
+      const templateExercise1 = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+      const templateExercise2 = createMockWorkoutTemplateExercise({
+        id: 'te-2',
+        exerciseId: 'ex-2',
+        exerciseOrder: 2,
+      });
+
+      const set1 = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 1,
       });
-
       const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 2,
       });
-
       const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
+        templateExerciseId: 'te-2',
         targetReps: 12,
         targetWeight: 80,
         setOrder: 3,
@@ -254,7 +264,6 @@ describe('WorkoutTemplateService', () => {
         name: 'Bench Press',
         equipmentType: 'barbell',
       });
-
       const exercise2 = createMockExercise({
         id: 'ex-2',
         name: 'Squat',
@@ -270,7 +279,10 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2, set3] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise1, templateExercise2] as any,
+        [set1, set2, set3] as any
+      );
 
       expect(result).toHaveLength(2);
       expect(result[0].id).toBe('ex-1');
@@ -280,8 +292,14 @@ describe('WorkoutTemplateService', () => {
     });
 
     it('should get exercise details from database', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 1,
@@ -302,14 +320,23 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
       expect(result[0].label).toBe('Bench Press');
     });
 
     it('should determine icon based on equipment type (bodyweight)', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 0,
         setOrder: 1,
@@ -330,14 +357,23 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
       expect(result[0].isBodyweight).toBe(true);
     });
 
     it('should determine icon based on equipment type (weighted)', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 1,
@@ -358,14 +394,23 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
       expect(result[0].isBodyweight).toBe(false);
     });
 
     it('should handle exercise with null/undefined equipmentType', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 1,
@@ -386,24 +431,31 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
-      expect(result[0].isBodyweight).toBe(false); // Should default to false when equipmentType is null
+      expect(result[0].isBodyweight).toBe(false);
     });
 
     it('should calculate sets count correctly', async () => {
-      const set1 = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set1 = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         setOrder: 1,
       });
-
       const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
+        templateExerciseId: 'te-1',
         setOrder: 2,
       });
-
       const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
+        templateExerciseId: 'te-1',
         setOrder: 3,
       });
 
@@ -422,14 +474,23 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2, set3] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set1, set2, set3] as any
+      );
 
       expect(result[0].sets).toBe(3);
     });
 
     it('should generate description correctly', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         targetReps: 10,
         targetWeight: 100,
         setOrder: 1,
@@ -450,26 +511,34 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
       expect(result[0].description).toBe('1 sets × 10 reps');
     });
 
-    it('should sort by set_order', async () => {
-      const set1 = createMockWorkoutTemplateSet({
+    it('should sort by exercise order', async () => {
+      const templateExercise1 = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
-        setOrder: 3,
+        exerciseOrder: 3,
       });
-
-      const set2 = createMockWorkoutTemplateSet({
+      const templateExercise2 = createMockWorkoutTemplateExercise({
+        id: 'te-2',
         exerciseId: 'ex-2',
-        setOrder: 1,
+        exerciseOrder: 1,
+      });
+      const templateExercise3 = createMockWorkoutTemplateExercise({
+        id: 'te-3',
+        exerciseId: 'ex-3',
+        exerciseOrder: 2,
       });
 
-      const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-3',
-        setOrder: 2,
-      });
+      const set1 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-1', setOrder: 3 });
+      const set2 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-2', setOrder: 1 });
+      const set3 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-3', setOrder: 2 });
 
       const exercise1 = createMockExercise({
         id: 'ex-1',
@@ -496,22 +565,31 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2, set3] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise1, templateExercise2, templateExercise3] as any,
+        [set1, set2, set3] as any
+      );
 
       expect(result[0].id).toBe('ex-2');
       expect(result[1].id).toBe('ex-3');
       expect(result[2].id).toBe('ex-1');
     });
 
-    it('should return empty array when no sets', async () => {
-      const result = await WorkoutTemplateService.convertSetsToExercises([]);
+    it('should return empty array when no template exercises', async () => {
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI([], []);
 
       expect(result).toEqual([]);
     });
 
     it('should skip exercises not found', async () => {
-      const set = createMockWorkoutTemplateSet({
+      const templateExercise = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+
+      const set = createMockWorkoutTemplateSet({
+        templateExerciseId: 'te-1',
         setOrder: 1,
       });
 
@@ -524,94 +602,32 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise] as any,
+        [set] as any
+      );
 
       expect(result).toEqual([]);
     });
 
-    it('should set groupId to undefined when there is a gap in set_order', async () => {
-      // Exercise 1: set_order 1-3 (continuous)
-      const set1 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 1,
-      });
-      const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 2,
-      });
-      const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 3,
-      });
-
-      // Exercise 2: set_order 5-6 (gap between 3 and 5)
-      const set4 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 5,
-      });
-      const set5 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 6,
-      });
-
-      const exercise1 = createMockExercise({
-        id: 'ex-1',
-        name: 'Exercise 1',
-        equipmentType: 'barbell',
-      });
-      const exercise2 = createMockExercise({
-        id: 'ex-2',
-        name: 'Exercise 2',
-        equipmentType: 'barbell',
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([exercise1, exercise2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await WorkoutTemplateService.convertSetsToExercises([
-        set1,
-        set2,
-        set3,
-        set4,
-        set5,
-      ] as any);
-
-      // Exercise 2 should have undefined groupId due to gap
-      const ex2 = result.find((ex) => ex.id === 'ex-2');
-      expect(ex2?.groupId).toBeUndefined();
-    });
-
     it('should handle grouping when exercises have the same groupId', async () => {
-      // This tests that groupId is read directly from the database
-      // Exercise 1: set_order 1-2, grouped
-      const set1 = createMockWorkoutTemplateSet({
+      const templateExercise1 = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
-        setOrder: 1,
+        exerciseOrder: 1,
         groupId: 'group-test-123',
       });
-      const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 2,
+      const templateExercise2 = createMockWorkoutTemplateExercise({
+        id: 'te-2',
+        exerciseId: 'ex-2',
+        exerciseOrder: 2,
         groupId: 'group-test-123',
       });
 
-      // Exercise 2: set_order 3-4, same group
-      const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 3,
-        groupId: 'group-test-123',
-      });
-      const set4 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 4,
-        groupId: 'group-test-123',
-      });
+      const set1 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-1', setOrder: 1 });
+      const set2 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-1', setOrder: 2 });
+      const set3 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-2', setOrder: 3 });
+      const set4 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-2', setOrder: 4 });
 
       const exercise1 = createMockExercise({
         id: 'ex-1',
@@ -633,35 +649,33 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([
-        set1,
-        set2,
-        set3,
-        set4,
-      ] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise1, templateExercise2] as any,
+        [set1, set2, set3, set4] as any
+      );
 
-      // Both exercises should have the same groupId from database
-      const ex1 = result.find((ex) => ex.id === 'ex-1');
-      const ex2 = result.find((ex) => ex.id === 'ex-2');
+      const ex1 = result.find((ex: ExerciseInWorkout) => ex.id === 'ex-1');
+      const ex2 = result.find((ex: ExerciseInWorkout) => ex.id === 'ex-2');
       expect(ex1?.groupId).toBe('group-test-123');
       expect(ex2?.groupId).toBe('group-test-123');
     });
 
-    it('should handle case when index > 0 and lastSetOrderEnd is null (else branch)', async () => {
-      // This tests that groupId comes from database, not inference
-      // Exercise 1: set_order 1 (single set), grouped
-      const set1 = createMockWorkoutTemplateSet({
+    it('should handle exercises without groupId', async () => {
+      const templateExercise1 = createMockWorkoutTemplateExercise({
+        id: 'te-1',
         exerciseId: 'ex-1',
-        setOrder: 1,
-        groupId: 'group-test-456',
+        exerciseOrder: 1,
+        groupId: undefined,
+      });
+      const templateExercise2 = createMockWorkoutTemplateExercise({
+        id: 'te-2',
+        exerciseId: 'ex-2',
+        exerciseOrder: 2,
+        groupId: undefined,
       });
 
-      // Exercise 2: set_order 2, same group
-      const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 2,
-        groupId: 'group-test-456',
-      });
+      const set1 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-1', setOrder: 1 });
+      const set2 = createMockWorkoutTemplateSet({ templateExerciseId: 'te-2', setOrder: 2 });
 
       const exercise1 = createMockExercise({
         id: 'ex-1',
@@ -683,117 +697,16 @@ describe('WorkoutTemplateService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2] as any);
+      const result = await WorkoutTemplateService.convertTemplateExercisesToUI(
+        [templateExercise1, templateExercise2] as any,
+        [set1, set2] as any
+      );
 
-      // Both exercises should exist
       expect(result).toHaveLength(2);
-      // Both exercises should have the same groupId from database
-      const ex1 = result.find((ex) => ex.id === 'ex-1');
-      const ex2 = result.find((ex) => ex.id === 'ex-2');
-      expect(ex1?.groupId).toBe('group-test-456');
-      expect(ex2?.groupId).toBe('group-test-456');
-    });
-
-    it('should handle case when index > 0 and lastSetOrderEnd is null (uncovered branch)', async () => {
-      // Test the branch where lastSetOrderEnd !== null evaluates to false
-      // This happens when index > 0 but lastSetOrderEnd is null
-      // To trigger this, we need exercises where the first exercise has no sets
-      // Actually, this is tricky because lastSetOrderEnd is always set at line 186
-      // The uncovered branch is the condition check itself when it's false
-      // We'll test with a gap that makes the condition check happen
-
-      // Exercise 1: set_order 1-2
-      const set1 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 1,
-      });
-      const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 2,
-      });
-
-      // Exercise 2: set_order 5 (gap, so lastSetOrderEnd from ex1 is 2, but ex2 starts at 5)
-      // This will hit the else branch at line 180-183, but we need to test line 167 condition
-      const set3 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 5,
-      });
-
-      const exercise1 = createMockExercise({
-        id: 'ex-1',
-        name: 'Exercise 1',
-        equipmentType: 'barbell',
-      });
-      const exercise2 = createMockExercise({
-        id: 'ex-2',
-        name: 'Exercise 2',
-        equipmentType: 'barbell',
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([exercise1, exercise2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2, set3] as any);
-
-      // Exercise 2 should have undefined groupId due to gap
-      const ex2 = result.find((ex) => ex.id === 'ex-2');
+      const ex1 = result.find((ex: ExerciseInWorkout) => ex.id === 'ex-1');
+      const ex2 = result.find((ex: ExerciseInWorkout) => ex.id === 'ex-2');
+      expect(ex1?.groupId).toBeUndefined();
       expect(ex2?.groupId).toBeUndefined();
-    });
-
-    it('should handle case when index > 0 and lastSetOrderEnd is null (line 167 false branch)', async () => {
-      // Test that groupId comes directly from database, not inference logic
-      // Exercise 1: single set with set_order 1, grouped
-      const set1 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-1',
-        setOrder: 1,
-        groupId: 'group-test-789',
-      });
-
-      // Exercise 2: single set with set_order 2, same group
-      const set2 = createMockWorkoutTemplateSet({
-        exerciseId: 'ex-2',
-        setOrder: 2,
-        groupId: 'group-test-789',
-      });
-
-      const exercise1 = createMockExercise({
-        id: 'ex-1',
-        name: 'Exercise 1',
-        equipmentType: 'barbell',
-      });
-      const exercise2 = createMockExercise({
-        id: 'ex-2',
-        name: 'Exercise 2',
-        equipmentType: 'barbell',
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([exercise1, exercise2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await WorkoutTemplateService.convertSetsToExercises([set1, set2] as any);
-
-      // Both exercises should exist
-      expect(result).toHaveLength(2);
-      // Both exercises should have the groupId from database
-      const ex1 = result.find((ex) => ex.id === 'ex-1');
-      const ex2 = result.find((ex) => ex.id === 'ex-2');
-      expect(ex1).toBeDefined();
-      expect(ex2).toBeDefined();
-      // GroupId should come directly from database, not be inferred
-      expect(ex1?.groupId).toBe('group-test-789');
-      expect(ex2?.groupId).toBe('group-test-789');
     });
   });
 

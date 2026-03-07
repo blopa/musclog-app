@@ -1,25 +1,21 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
-import Exercise from './Exercise';
-import WorkoutLog from './WorkoutLog';
+import WorkoutLogExercise from './WorkoutLogExercise';
 
 export default class WorkoutLogSet extends Model {
   static table = 'workout_log_sets';
 
   static associations = {
-    workout_logs: { type: 'belongs_to' as const, key: 'workout_log_id' },
-    exercises: { type: 'belongs_to' as const, key: 'exercise_id' },
+    workout_log_exercises: { type: 'belongs_to' as const, key: 'log_exercise_id' },
   };
 
-  @field('workout_log_id') workoutLogId!: string;
-  @field('exercise_id') exerciseId!: string;
+  @field('log_exercise_id') logExerciseId!: string;
   @field('reps') reps!: number;
   @field('weight') weight!: number;
   @field('partials') partials?: number;
   @field('rest_time_after') restTimeAfter!: number;
   @field('reps_in_reserve') repsInReserve!: number;
-  @field('group_id') groupId?: string;
   @field('is_skipped') isSkipped?: boolean;
   @field('difficulty_level') difficultyLevel!: number;
   @field('is_drop_set') isDropSet!: boolean;
@@ -28,10 +24,8 @@ export default class WorkoutLogSet extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_logs', 'workout_log_id') workoutLog!: WorkoutLog;
-  @relation('exercises', 'exercise_id') exercise!: Exercise;
+  @relation('workout_log_exercises', 'log_exercise_id') logExercise!: WorkoutLogExercise;
 
-  // Validation helpers (validation is enforced in WorkoutLog.updateSet())
   get isValidDifficultyLevel(): boolean {
     return this.difficultyLevel >= 1 && this.difficultyLevel <= 10;
   }
@@ -46,5 +40,14 @@ export default class WorkoutLogSet extends Model {
 
   get volume(): number {
     return this.reps * this.weight;
+  }
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
   }
 }

@@ -3,7 +3,13 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogExercise from '../models/WorkoutLogExercise';
 import WorkoutLogSet from '../models/WorkoutLogSet';
+
+type EnrichedSet = WorkoutLogSet & {
+  exerciseId: string;
+  workoutLogId: string;
+};
 
 export interface PersonalRecord {
   exerciseId: string;
@@ -48,14 +54,117 @@ export class WorkoutAnalytics {
   }
 
   /**
+   * Get enriched sets for a workout log (sets with exerciseId and workoutLogId denormalized)
+   */
+  private static async getEnrichedSetsForWorkout(workoutLog: WorkoutLog): Promise<EnrichedSet[]> {
+    const logExercises = await workoutLog.logExercises.fetch();
+    const activeExercises = logExercises.filter((le) => !le.deletedAt);
+
+    if (activeExercises.length === 0) {
+      return [];
+    }
+
+    const logExerciseIds = activeExercises.map((le) => le.id);
+    const rawSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const logExerciseMap = new Map<string, { exerciseId: string; workoutLogId: string }>();
+    activeExercises.forEach((le) => {
+      logExerciseMap.set(le.id, { exerciseId: le.exerciseId, workoutLogId: le.workoutLogId });
+    });
+
+    // Build plain objects from _raw so we always read actual DB values
+    return rawSets.map((set) => {
+      const data = logExerciseMap.get(set.logExerciseId);
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        id: set.id,
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        reps: (r.reps as number) ?? 0,
+        weight: (r.weight as number) ?? 0,
+        partials: r.partials as number | undefined,
+        restTimeAfter: (r.rest_time_after as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        isSkipped: r.is_skipped as boolean | undefined,
+        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+        updatedAt: (r.updated_at as number) ?? 0,
+        deletedAt: r.deleted_at as number | undefined,
+        exerciseId: data?.exerciseId ?? '',
+        workoutLogId: data?.workoutLogId ?? '',
+      } as EnrichedSet;
+    });
+  }
+
+  /**
+   * Get all historical enriched sets for an exercise (excluding a specific workout)
+   */
+  private static async getHistoricalSetsForExercise(
+    exerciseId: string,
+    excludeWorkoutId: string
+  ): Promise<EnrichedSet[]> {
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(
+        Q.where('exercise_id', exerciseId),
+        Q.where('workout_log_id', Q.notEq(excludeWorkoutId)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return [];
+    }
+
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const rawSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const logExerciseMap = new Map<string, { exerciseId: string; workoutLogId: string }>();
+    logExercises.forEach((le) => {
+      logExerciseMap.set(le.id, { exerciseId: le.exerciseId, workoutLogId: le.workoutLogId });
+    });
+
+    // Build plain objects from _raw so we always read actual DB values
+    return rawSets.map((set) => {
+      const data = logExerciseMap.get(set.logExerciseId);
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        id: set.id,
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        reps: (r.reps as number) ?? 0,
+        weight: (r.weight as number) ?? 0,
+        partials: r.partials as number | undefined,
+        restTimeAfter: (r.rest_time_after as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        isSkipped: r.is_skipped as boolean | undefined,
+        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+        updatedAt: (r.updated_at as number) ?? 0,
+        deletedAt: r.deleted_at as number | undefined,
+        exerciseId: data?.exerciseId ?? '',
+        workoutLogId: data?.workoutLogId ?? '',
+      } as EnrichedSet;
+    });
+  }
+
+  /**
    * Detect personal records in a completed workout log
    */
   static async detectPersonalRecords(workoutLog: WorkoutLog): Promise<PersonalRecord[]> {
     const records: PersonalRecord[] = [];
-    const sets = (await workoutLog.logSets?.fetch()) ?? [];
+    const sets = await this.getEnrichedSetsForWorkout(workoutLog);
 
     // Group sets by exercise
-    const exerciseSets = new Map<string, WorkoutLogSet[]>();
+    const exerciseSets = new Map<string, EnrichedSet[]>();
     for (const set of sets) {
       const exerciseId = set.exerciseId ?? '';
       if (!exerciseSets.has(exerciseId)) {
@@ -73,27 +182,25 @@ export class WorkoutAnalytics {
         return currentVolume > bestVolume ? current : best;
       });
 
-      // Get all historical sets for this exercise (excluding current workout and deleted sets)
-      const historicalSets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
-        .query(
-          Q.where('exercise_id', exerciseId),
-          Q.where('workout_log_id', Q.notEq(workoutLog.id)),
-          Q.where('deleted_at', Q.eq(null))
-        )
-        .fetch();
+      // Get all historical sets for this exercise (excluding current workout)
+      const historicalSets = await this.getHistoricalSetsForExercise(exerciseId, workoutLog.id);
 
       // Get historical sets only from completed workouts
+      const uniqueWorkoutIds = [...new Set(historicalSets.map((s) => s.workoutLogId ?? ''))].filter(
+        Boolean
+      );
       const completedWorkoutIds = new Set(
-        (
-          await database
-            .get<WorkoutLog>('workout_logs')
-            .query(
-              Q.where('completed_at', Q.notEq(null)),
-              Q.where('id', Q.oneOf(historicalSets.map((s) => s.workoutLogId ?? '')))
-            )
-            .fetch()
-        ).map((log) => log.id)
+        uniqueWorkoutIds.length > 0
+          ? (
+              await database
+                .get<WorkoutLog>('workout_logs')
+                .query(
+                  Q.where('completed_at', Q.notEq(null)),
+                  Q.where('id', Q.oneOf(uniqueWorkoutIds))
+                )
+                .fetch()
+            ).map((log) => log.id)
+          : []
       );
 
       const validHistoricalSets = historicalSets.filter((s) =>
@@ -246,11 +353,50 @@ export class WorkoutAnalytics {
     exerciseId: string,
     timeframe?: { startDate: number; endDate: number }
   ): Promise<ProgressiveOverloadDataPoint[]> {
-    let query = database
-      .get<WorkoutLogSet>('workout_log_sets')
-      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)));
+    // First get all log exercises for this exercise
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
-    const sets = await query.fetch();
+    if (logExercises.length === 0) {
+      return [];
+    }
+
+    // Get all sets for these log exercises
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const rawSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    // Create a map to get workoutLogId from logExerciseId
+    const logExerciseMap = new Map<string, string>();
+    logExercises.forEach((le) => {
+      logExerciseMap.set(le.id, le.workoutLogId);
+    });
+
+    // Build plain objects from _raw so we always read actual DB values
+    const sets = rawSets.map((set) => {
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        id: set.id,
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        reps: (r.reps as number) ?? 0,
+        weight: (r.weight as number) ?? 0,
+        partials: r.partials as number | undefined,
+        restTimeAfter: (r.rest_time_after as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        isSkipped: r.is_skipped as boolean | undefined,
+        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+        updatedAt: (r.updated_at as number) ?? 0,
+        deletedAt: r.deleted_at as number | undefined,
+        workoutLogId: logExerciseMap.get(set.logExerciseId) ?? '',
+      };
+    });
 
     // Filter by timeframe if provided
     let validSets = sets;
@@ -282,7 +428,7 @@ export class WorkoutAnalytics {
     }
 
     // Group by workout and get best set per workout
-    const workoutData = new Map<string, WorkoutLogSet>();
+    const workoutData = new Map<string, (typeof sets)[0]>();
 
     for (const set of validSets) {
       const workoutLogId = set.workoutLogId ?? '';
@@ -338,7 +484,7 @@ export class WorkoutAnalytics {
 
     // Process each workout
     for (const workout of validWorkouts) {
-      const sets = (await workout.logSets?.fetch()) ?? [];
+      const sets = await this.getEnrichedSetsForWorkout(workout);
 
       for (const set of sets) {
         try {

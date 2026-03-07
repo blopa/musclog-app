@@ -15,12 +15,19 @@ import { database } from '../index';
 import Exercise from '../models/Exercise';
 import Schedule from '../models/Schedule';
 import WorkoutLog from '../models/WorkoutLog';
+import WorkoutLogExercise from '../models/WorkoutLogExercise';
 import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
+
+export type EnrichedWorkoutLogSet = WorkoutLogSet & {
+  exerciseId: string;
+  groupId?: string;
+  notes?: string;
+};
 
 export class WorkoutService {
   /**
@@ -405,12 +412,14 @@ export class WorkoutService {
   }
 
   /**
-   * Get workout log with all sets and exercise details
+   * Get workout log with all sets and exercise details.
+   * Returns enriched sets with exerciseId, groupId, and notes denormalized from WorkoutLogExercise.
    */
   static async getWorkoutWithDetails(workoutLogId: string): Promise<{
     workoutLog: WorkoutLog;
-    sets: WorkoutLogSet[];
+    sets: EnrichedWorkoutLogSet[];
     exercises: Exercise[];
+    logExercises: WorkoutLogExercise[];
   }> {
     const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
 
@@ -418,16 +427,67 @@ export class WorkoutService {
       throw new Error('Workout log has been deleted');
     }
 
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
       .query(
         Q.where('workout_log_id', workoutLogId),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('set_order', Q.asc)
+        Q.sortBy('exercise_order', Q.asc)
       )
       .fetch();
 
-    const exerciseIds = [...new Set(sets.map((set) => set.exerciseId ?? ''))].filter(Boolean);
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const rawSets =
+      logExerciseIds.length > 0
+        ? await database
+            .get<WorkoutLogSet>('workout_log_sets')
+            .query(
+              Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('set_order', Q.asc)
+            )
+            .fetch()
+        : [];
+
+    const logExerciseMap = new Map<
+      string,
+      { exerciseId: string; groupId?: string; notes?: string }
+    >();
+    logExercises.forEach((le) => {
+      logExerciseMap.set(le.id, {
+        exerciseId: le.exerciseId,
+        groupId: le.groupId,
+        notes: le.notes,
+      });
+    });
+
+    // Build plain enriched objects from stored data. Use _raw so we always read the actual DB values
+    // (Model getters can sometimes be non-enumerable or not copy correctly in all environments).
+    const sets: EnrichedWorkoutLogSet[] = rawSets.map((set) => {
+      const logExercise = logExerciseMap.get(set.logExerciseId);
+      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      return {
+        id: set.id,
+        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
+        reps: (r.reps as number) ?? 0,
+        weight: (r.weight as number) ?? 0,
+        partials: (r.partials as number | undefined) ?? set.partials,
+        restTimeAfter: (r.rest_time_after as number) ?? 0,
+        repsInReserve: (r.reps_in_reserve as number) ?? 0,
+        isSkipped: (r.is_skipped as boolean | undefined) ?? set.isSkipped,
+        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        isDropSet: (r.is_drop_set as boolean) ?? false,
+        setOrder: (r.set_order as number) ?? 0,
+        createdAt: (r.created_at as number) ?? 0,
+        updatedAt: (r.updated_at as number) ?? 0,
+        deletedAt: (r.deleted_at as number | undefined) ?? set.deletedAt,
+        exerciseId: logExercise?.exerciseId ?? '',
+        groupId: logExercise?.groupId,
+        notes: logExercise?.notes,
+      } as EnrichedWorkoutLogSet;
+    });
+
+    const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
     const exercises =
       exerciseIds.length > 0
         ? await database
@@ -440,6 +500,7 @@ export class WorkoutService {
       workoutLog,
       sets,
       exercises,
+      logExercises,
     };
   }
 
@@ -475,6 +536,7 @@ export class WorkoutService {
       }
 
       const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
+      const logExercisesCollection = database.get<WorkoutLogExercise>('workout_log_exercises');
 
       // Perform direct writes so we can edit sets even if the workout is marked completed.
       // This intentionally bypasses WorkoutLog.updateSet which prevents edits on completed workouts.
@@ -491,13 +553,56 @@ export class WorkoutService {
           }
         }
 
+        // Get existing log exercises for this workout
+        const existingLogExercises = await logExercisesCollection
+          .query(Q.where('workout_log_id', workoutLogId), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        // Create a map of exerciseId -> logExerciseId for quick lookup
+        const exerciseToLogExerciseMap = new Map<string, string>();
+        existingLogExercises.forEach((le) => {
+          exerciseToLogExerciseMap.set(le.exerciseId, le.id);
+        });
+
+        // Track max exercise order for creating new log exercises
+        let maxExerciseOrder = existingLogExercises.reduce(
+          (max, le) => Math.max(max, le.exerciseOrder ?? 0),
+          0
+        );
+
         for (const update of updates) {
           try {
             if (update.isNew && update.exerciseId) {
-              // Create a new set
+              // For new sets, find or create the log exercise block
+              let logExerciseId = exerciseToLogExerciseMap.get(update.exerciseId);
+
+              if (!logExerciseId) {
+                // Create a new log exercise block for this exercise
+                maxExerciseOrder++;
+                const newLogExercise = await logExercisesCollection.create((le) => {
+                  le.workoutLogId = workoutLogId;
+                  le.exerciseId = update.exerciseId!;
+                  le.exerciseOrder = maxExerciseOrder;
+                  le.groupId = update.groupId;
+                  le.createdAt = Date.now();
+                  le.updatedAt = Date.now();
+                });
+                logExerciseId = newLogExercise.id;
+                exerciseToLogExerciseMap.set(update.exerciseId, logExerciseId);
+              } else if (update.groupId !== undefined) {
+                // Update groupId on existing log exercise if provided
+                const existingLE = existingLogExercises.find((le) => le.id === logExerciseId);
+                if (existingLE && existingLE.groupId !== update.groupId) {
+                  await existingLE.update((le) => {
+                    le.groupId = update.groupId;
+                    le.updatedAt = Date.now();
+                  });
+                }
+              }
+
+              // Create a new set linked to the log exercise
               await logSetsCollection.create((logSet) => {
-                logSet.workoutLogId = workoutLogId;
-                logSet.exerciseId = update.exerciseId!;
+                logSet.logExerciseId = logExerciseId!;
                 logSet.reps = update.reps ?? 0;
                 logSet.weight = update.weight ?? 0;
                 logSet.partials = update.partials ?? 0;
@@ -506,8 +611,7 @@ export class WorkoutService {
                 logSet.difficultyLevel = update.difficultyLevel ?? 0;
                 logSet.isSkipped = update.isSkipped ?? false;
                 logSet.isDropSet = update.isDropSet ?? false;
-                logSet.groupId = update.groupId;
-                logSet.setOrder = update.setOrder ?? 0; // Caller can provide order
+                logSet.setOrder = update.setOrder ?? 0;
                 logSet.createdAt = Date.now();
                 logSet.updatedAt = Date.now();
               });
@@ -539,9 +643,6 @@ export class WorkoutService {
                 if (update.isDropSet !== undefined) {
                   s.isDropSet = update.isDropSet;
                 }
-                if (update.groupId !== undefined) {
-                  s.groupId = update.groupId;
-                }
                 if (update.setOrder !== undefined) {
                   s.setOrder = update.setOrder;
                 }
@@ -552,21 +653,6 @@ export class WorkoutService {
             console.warn(`Failed to update set ${update.setId}:`, err);
           }
         }
-
-        // Recalculate total volume and update parent workout log
-        const sets = await logSetsCollection
-          .query(Q.where('workout_log_id', workoutLogId), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        const totalVolume = sets.reduce(
-          (sum: number, s: WorkoutLogSet) => sum + ((s.reps ?? 0) * (s.weight ?? 0) || 0),
-          0
-        );
-
-        await workoutLog.update((log) => {
-          log.totalVolume = totalVolume;
-          log.updatedAt = Date.now();
-        });
       });
 
       const finalTotal = await workoutLog.calculateVolume();
@@ -600,20 +686,14 @@ export class WorkoutService {
   }
 
   /**
-   * Get the current set (first unlogged set in superset-effective order) for a workout
+   * Get the current set (first unlogged set in superset-effective order) for a workout.
+   * Returns enriched set with exerciseId denormalized.
    */
   static async getCurrentSet(workoutLogId: string): Promise<{
-    set: WorkoutLogSet;
+    set: EnrichedWorkoutLogSet;
     exercise: Exercise;
   } | null> {
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
-      .query(
-        Q.where('workout_log_id', workoutLogId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('set_order', Q.asc)
-      )
-      .fetch();
+    const { sets } = await this.getWorkoutWithDetails(workoutLogId);
 
     const currentSet = getFirstUnloggedInEffectiveOrder(sets);
     if (!currentSet) {
@@ -625,23 +705,17 @@ export class WorkoutService {
   }
 
   /**
-   * Get the next set (in superset-effective order) after the set with the given set_order
+   * Get the next set (in superset-effective order) after the set with the given set_order.
+   * Returns enriched set with exerciseId denormalized.
    */
   static async getNextSet(
     workoutLogId: string,
     currentSetOrder: number
   ): Promise<{
-    set: WorkoutLogSet;
+    set: EnrichedWorkoutLogSet;
     exercise: Exercise;
   } | null> {
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
-      .query(
-        Q.where('workout_log_id', workoutLogId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('set_order', Q.asc)
-      )
-      .fetch();
+    const { sets } = await this.getWorkoutWithDetails(workoutLogId);
 
     const nextSet = getNextSetInEffectiveOrder(sets, currentSetOrder);
     if (!nextSet) {
@@ -661,14 +735,7 @@ export class WorkoutService {
     currentSetOrder: number | null;
     exerciseGrouping: Map<string, number[]>; // exerciseId -> set_order[]
   }> {
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
-      .query(
-        Q.where('workout_log_id', workoutLogId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('set_order', Q.asc)
-      )
-      .fetch();
+    const { sets } = await this.getWorkoutWithDetails(workoutLogId);
 
     const totalSets = sets.length;
     const completedSets = sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
@@ -702,20 +769,29 @@ export class WorkoutService {
       // Use callWriter to avoid nested writes since markAsDeleted is a @writer method
       await writer.callWriter(() => workoutLog.markAsDeleted());
 
-      // Also soft-delete all associated sets
-      const sets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
+      // Also soft-delete all associated log exercises and their sets
+      const logExercises = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
         .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      for (const set of sets) {
-        await writer.callWriter(() => set.markAsDeleted());
+      for (const logExercise of logExercises) {
+        const sets = await database
+          .get<WorkoutLogSet>('workout_log_sets')
+          .query(Q.where('log_exercise_id', logExercise.id), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        for (const set of sets) {
+          await writer.callWriter(() => set.markAsDeleted());
+        }
+
+        await writer.callWriter(() => logExercise.markAsDeleted());
       }
     });
   }
 
   /**
-   * Duplicate workout log (create a copy with all sets, marked as not completed)
+   * Duplicate workout log (create a copy with all exercise blocks and sets, marked as not completed)
    */
   static async duplicateWorkoutLog(id: string): Promise<WorkoutLog> {
     return await database.write(async () => {
@@ -727,13 +803,13 @@ export class WorkoutService {
 
       const now = Date.now();
 
-      // Get all sets from the original workout
-      const originalSets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
+      // Get all log exercises from the original workout
+      const originalLogExercises = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
         .query(
           Q.where('workout_log_id', id),
           Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('set_order', Q.asc)
+          Q.sortBy('exercise_order', Q.asc)
         )
         .fetch();
 
@@ -752,24 +828,46 @@ export class WorkoutService {
         log.updatedAt = now;
       });
 
-      // Copy all sets (reset to unlogged state)
-      for (const originalSet of originalSets) {
-        await database.get<WorkoutLogSet>('workout_log_sets').create((set) => {
-          set.workoutLogId = newLog.id;
-          set.exerciseId = originalSet.exerciseId;
-          set.setOrder = originalSet.setOrder;
-          set.groupId = originalSet.groupId;
-          set.reps = 0; // Reset actual values
-          set.weight = 0;
-          set.partials = 0;
-          set.restTimeAfter = originalSet.restTimeAfter;
-          set.repsInReserve = 0;
-          set.difficultyLevel = 0; // Unlogged
-          set.isSkipped = false;
-          set.isDropSet = originalSet.isDropSet;
-          set.createdAt = now;
-          set.updatedAt = now;
-        });
+      // Copy all log exercises and their sets
+      for (const originalLogExercise of originalLogExercises) {
+        const newLogExercise = await database
+          .get<WorkoutLogExercise>('workout_log_exercises')
+          .create((le) => {
+            le.workoutLogId = newLog.id;
+            le.exerciseId = originalLogExercise.exerciseId;
+            le.exerciseOrder = originalLogExercise.exerciseOrder;
+            le.groupId = originalLogExercise.groupId;
+            le.notes = originalLogExercise.notes;
+            le.createdAt = now;
+            le.updatedAt = now;
+          });
+
+        // Get and copy all sets for this log exercise
+        const originalSets = await database
+          .get<WorkoutLogSet>('workout_log_sets')
+          .query(
+            Q.where('log_exercise_id', originalLogExercise.id),
+            Q.where('deleted_at', Q.eq(null)),
+            Q.sortBy('set_order', Q.asc)
+          )
+          .fetch();
+
+        for (const originalSet of originalSets) {
+          await database.get<WorkoutLogSet>('workout_log_sets').create((set) => {
+            set.logExerciseId = newLogExercise.id;
+            set.setOrder = originalSet.setOrder;
+            set.reps = 0; // Reset actual values
+            set.weight = 0;
+            set.partials = 0;
+            set.restTimeAfter = originalSet.restTimeAfter;
+            set.repsInReserve = 0;
+            set.difficultyLevel = 0; // Unlogged
+            set.isSkipped = false;
+            set.isDropSet = originalSet.isDropSet;
+            set.createdAt = now;
+            set.updatedAt = now;
+          });
+        }
       }
 
       return newLog;

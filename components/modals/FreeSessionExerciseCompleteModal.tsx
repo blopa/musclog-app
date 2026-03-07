@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import type { EnrichedWorkoutLogSet } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -22,7 +22,7 @@ type FreeSessionExerciseCompleteModalProps = {
   visible: boolean;
   onClose: () => void;
   exerciseName: string;
-  sets: WorkoutLogSet[];
+  sets: EnrichedWorkoutLogSet[];
   exerciseId: string;
   units: Units;
   /** Optional exercise image URL; if not set, the workout icon (dumbbell/bodyweight) is shown. */

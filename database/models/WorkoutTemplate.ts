@@ -1,17 +1,19 @@
-import { Model, Query } from '@nozbe/watermelondb';
+import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
 import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
+import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutTemplateExercise from './WorkoutTemplateExercise';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 
 export default class WorkoutTemplate extends Model {
   static table = 'workout_templates';
 
   static associations = {
-    workout_template_sets: { type: 'has_many' as const, foreignKey: 'template_id' },
+    workout_template_exercises: { type: 'has_many' as const, foreignKey: 'template_id' },
     schedules: { type: 'has_many' as const, foreignKey: 'template_id' },
     workout_logs: { type: 'has_many' as const, foreignKey: 'template_id' },
   };
@@ -23,14 +25,13 @@ export default class WorkoutTemplate extends Model {
   @field('type') type?: string;
   @json('week_days_json', (data: any) => {
     if (data === null || data === undefined) {
-      return undefined; // Allow null/undefined (optional field)
+      return undefined;
     }
 
     if (!Array.isArray(data)) {
       throw new Error('week_days_json must be an array of day indices');
     }
 
-    // Validate each day index is a number between 0 and 6
     for (const day of data) {
       if (typeof day !== 'number' || !Number.isInteger(day) || day < 0 || day > 6) {
         throw new Error(
@@ -39,7 +40,6 @@ export default class WorkoutTemplate extends Model {
       }
     }
 
-    // Remove duplicates and sort for consistency
     return [...new Set(data)].sort((a, b) => a - b);
   })
   weekDaysJson?: number[];
@@ -48,13 +48,16 @@ export default class WorkoutTemplate extends Model {
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_sets') templateSets!: Query<WorkoutTemplateSet>;
+  @children('workout_template_exercises') templateExercises!: Query<WorkoutTemplateExercise>;
   @children('schedules') schedules!: Query<Schedule>;
   @children('workout_logs') workoutLogs!: Query<WorkoutLog>;
 
   @writer
   async startWorkout(): Promise<WorkoutLog> {
-    const templateSets = (await this.templateSets?.fetch()) ?? [];
+    const templateExercises = (await this.templateExercises?.fetch()) ?? [];
+    const activeTemplateExercises = templateExercises.filter(
+      (te: WorkoutTemplateExercise) => !te.deletedAt
+    );
     const now = Date.now();
 
     // Create the workout log
@@ -71,28 +74,71 @@ export default class WorkoutTemplate extends Model {
       log.updatedAt = now;
     });
 
-    // Prepare all log sets from template sets
+    // Create log exercises from template exercises
+    const logExercisesCollection =
+      this.collections.get<WorkoutLogExercise>('workout_log_exercises');
     const logSetsCollection = this.collections.get<WorkoutLogSet>('workout_log_sets');
-    const preparedSets = templateSets.map((templateSet: WorkoutTemplateSet) =>
-      logSetsCollection.prepareCreate((logSet) => {
-        logSet.workoutLogId = workoutLog.id;
-        logSet.exerciseId = templateSet.exerciseId;
-        logSet.reps = templateSet.targetReps;
-        logSet.weight = templateSet.targetWeight;
-        logSet.partials = 0;
-        logSet.restTimeAfter = templateSet.restTimeAfter ?? 0;
-        logSet.repsInReserve = 0;
-        logSet.difficultyLevel = 0;
-        logSet.groupId = templateSet.groupId;
-        logSet.isDropSet = templateSet.isDropSet;
-        logSet.setOrder = templateSet.setOrder;
-        logSet.createdAt = now;
-        logSet.updatedAt = now;
-      })
-    );
 
-    // Batch commit all log sets atomically
-    await this.collection.database.batch(...preparedSets);
+    const preparedLogExercises: WorkoutLogExercise[] = [];
+    const preparedLogSets: WorkoutLogSet[] = [];
+
+    // Track mapping from template exercise ID to log exercise for set creation
+    const templateExerciseToLogExercise = new Map<string, WorkoutLogExercise>();
+
+    // First, prepare all log exercises
+    for (const templateExercise of activeTemplateExercises) {
+      const logExercise = logExercisesCollection.prepareCreate((le) => {
+        le.workoutLogId = workoutLog.id;
+        le.exerciseId = templateExercise.exerciseId;
+        le.templateExerciseId = templateExercise.id;
+        le.notes = templateExercise.notes;
+        le.exerciseOrder = templateExercise.exerciseOrder;
+        le.groupId = templateExercise.groupId;
+        le.createdAt = now;
+        le.updatedAt = now;
+      });
+      preparedLogExercises.push(logExercise);
+      templateExerciseToLogExercise.set(templateExercise.id, logExercise);
+    }
+
+    // Fetch all template sets for these exercises
+    const templateExerciseIds = activeTemplateExercises.map((te) => te.id);
+    const templateSets =
+      templateExerciseIds.length > 0
+        ? await this.collections
+            .get<WorkoutTemplateSet>('workout_template_sets')
+            .query(
+              Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+              Q.where('deleted_at', Q.eq(null))
+            )
+            .fetch()
+        : [];
+
+    // Prepare all log sets from template sets
+    for (const templateSet of templateSets) {
+      const logExercise = templateExerciseToLogExercise.get(templateSet.templateExerciseId);
+      if (!logExercise) {
+        continue;
+      }
+
+      const logSet = logSetsCollection.prepareCreate((ls) => {
+        ls.logExerciseId = logExercise.id;
+        ls.reps = templateSet.targetReps;
+        ls.weight = templateSet.targetWeight;
+        ls.partials = 0;
+        ls.restTimeAfter = templateSet.restTimeAfter ?? 0;
+        ls.repsInReserve = 0;
+        ls.difficultyLevel = 0;
+        ls.isDropSet = templateSet.isDropSet;
+        ls.setOrder = templateSet.setOrder;
+        ls.createdAt = now;
+        ls.updatedAt = now;
+      });
+      preparedLogSets.push(logSet);
+    }
+
+    // Batch commit all log exercises and log sets atomically
+    await this.collection.database.batch(...preparedLogExercises, ...preparedLogSets);
 
     return workoutLog;
   }

@@ -12,6 +12,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
+import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
@@ -79,15 +80,30 @@ export default function NewExerciseTransitionScreen() {
         }
 
         const nextEx = await database.get<Exercise>('exercises').find(params.nextExerciseId);
-        const sets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
+
+        // Sets are linked via workout_log_exercises (no workout_log_id or exercise_id on workout_log_sets)
+        const logExercisesForNext = await database
+          .get<WorkoutLogExercise>('workout_log_exercises')
           .query(
             Q.where('workout_log_id', params.workoutLogId),
             Q.where('exercise_id', params.nextExerciseId),
             Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('set_order', Q.asc)
+            Q.sortBy('exercise_order', Q.asc)
           )
           .fetch();
+
+        const logExerciseIds = logExercisesForNext.map((le) => le.id);
+        const sets =
+          logExerciseIds.length > 0
+            ? await database
+                .get<WorkoutLogSet>('workout_log_sets')
+                .query(
+                  Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+                  Q.where('deleted_at', Q.eq(null)),
+                  Q.sortBy('set_order', Q.asc)
+                )
+                .fetch()
+            : [];
 
         const targetSets = sets.length;
         const firstSet = sets[0];

@@ -1,9 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { database } from '../database';
-import { WorkoutService } from '../database/services/WorkoutService';
+import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
+import WorkoutLogSet from '../database/models/WorkoutLogSet';
+import { WorkoutService } from '../database/services';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
 import { useSettings } from './useSettings';
 
@@ -45,27 +47,73 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     }
   }, [workoutId, t, units]);
 
-  // Observe workout_log_sets for reactive updates while modal is visible.
+  // Stable key from rawSets log exercise IDs so we can subscribe to set changes
+  const logExerciseIdsKey = useMemo(
+    () =>
+      rawSets?.length
+        ? [
+            ...new Set(
+              rawSets.map((s: { logExerciseId?: string }) => s.logExerciseId).filter(Boolean)
+            ),
+          ]
+            .sort()
+            .join(',')
+        : '',
+    [rawSets]
+  );
+
+  // Observe workout_log_exercises and workout_log_sets so we reload when structure or set data changes
   useEffect(() => {
     if (!visible || !workoutId) {
       setWorkout(null);
+      setRawSets(null);
       return;
     }
 
-    // Query sets for this workout
     const query = database
-      .get('workout_log_sets')
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('workout_log_id', workoutId), Q.where('deleted_at', Q.eq(null)));
+
+    const subExercises = query.observe().subscribe({
+      next: async () => {
+        try {
+          await loadWorkoutData();
+        } catch (err) {
+          console.error('Error handling log exercises subscription update:', err);
+        }
+      },
+      error: (err) => {
+        console.error('Workout log exercises subscription error:', err);
+      },
+    });
+
+    loadWorkoutData();
+
+    return () => subExercises.unsubscribe();
+  }, [visible, workoutId, loadWorkoutData]);
+
+  // After we have rawSets, also observe set rows so edits/completions trigger reload
+  useEffect(() => {
+    if (!visible || !workoutId || !logExerciseIdsKey) {
+      return;
+    }
+
+    const logExerciseIds = logExerciseIdsKey.split(',').filter(Boolean);
+    if (logExerciseIds.length === 0) {
+      return;
+    }
+
+    const setsQuery = database
+      .get<WorkoutLogSet>('workout_log_sets')
       .query(
-        Q.where('workout_log_id', workoutId),
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('set_order', Q.asc)
       );
 
-    const subscription = query.observe().subscribe({
-      next: async (sets: any[]) => {
+    const subSets = setsQuery.observe().subscribe({
+      next: async () => {
         try {
-          setRawSets(sets as any[]);
-          // Re-load and transform workout details when sets change
           await loadWorkoutData();
         } catch (err) {
           console.error('Error handling sets subscription update:', err);
@@ -76,11 +124,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       },
     });
 
-    // Trigger an initial load
-    loadWorkoutData();
-
-    return () => subscription.unsubscribe();
-  }, [visible, workoutId, loadWorkoutData]);
+    return () => subSets.unsubscribe();
+  }, [visible, workoutId, logExerciseIdsKey, loadWorkoutData]);
 
   return {
     workout,

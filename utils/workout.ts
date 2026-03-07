@@ -86,9 +86,10 @@ export interface ExerciseMetadata {
   reps: number;
   weight: number;
   isBodyweight: boolean;
-  restTimeAfter?: number; // Rest time in seconds after completing this set
+  restTimeAfter?: number;
   groupId?: string;
   isDropSet?: boolean;
+  notes?: string;
 }
 
 export interface CreateExerciseOptionParams {
@@ -105,6 +106,7 @@ export interface CreateExerciseOptionParams {
  * This combines exercise info with metadata (sets/reps/weight)
  */
 export function createExerciseOption(params: CreateExerciseOptionParams): SelectorOption<string> {
+  // TODO: why is weight no being used? Isn't it needed here?
   const { exercise, sets, reps, weight, isBodyweight, groupId } = params;
 
   const isBodyweightType = isBodyweightExercise(exercise.equipmentType) || isBodyweight;
@@ -137,6 +139,7 @@ export function extractExerciseMetadata(exercise: ExerciseInWorkout): ExerciseMe
     restTimeAfter: exercise.restTimeAfter,
     groupId: exercise.groupId,
     isDropSet: exercise.isDropSet,
+    notes: exercise.notes,
   };
 }
 
@@ -154,15 +157,15 @@ export function updateMetadataWithGroupIds(
     if (existing) {
       updated.set(ex.id, { ...existing, groupId: ex.groupId });
     } else {
-      // Create default metadata if it doesn't exist
       updated.set(ex.id, {
         sets: 3,
         reps: 10,
         weight: 0,
         isBodyweight: false,
-        restTimeAfter: 60, // Default to 60 seconds
+        restTimeAfter: 60,
         groupId: ex.groupId,
         isDropSet: false,
+        notes: undefined,
       });
     }
   });
@@ -183,9 +186,10 @@ export function exercisesToWorkoutFormat(
       reps: 10,
       weight: 0,
       isBodyweight: false,
-      restTimeAfter: 60, // Default to 60 seconds
+      restTimeAfter: 60,
       groupId: undefined,
       isDropSet: false,
+      notes: undefined,
     };
 
     return {
@@ -196,6 +200,7 @@ export function exercisesToWorkoutFormat(
       iconBgColor: ex.iconBgColor,
       iconColor: ex.iconColor,
       groupId: ex.groupId || meta.groupId,
+      notes: meta.notes,
       sets: meta.sets,
       reps: meta.reps,
       weight: meta.weight,
@@ -219,7 +224,7 @@ export function transformExercisesToOptions(
   return exercisesInWorkout.map((ex) => ({
     id: ex.id,
     label: ex.label,
-    description: ex.description,
+    description: ex.notes ? `${ex.description} • 📝` : ex.description,
     icon: ex.icon,
     iconBgColor: ex.iconBgColor,
     iconColor: ex.iconColor,

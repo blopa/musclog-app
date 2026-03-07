@@ -17,8 +17,10 @@ import Setting from './models/Setting';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
 import WorkoutLog from './models/WorkoutLog';
+import WorkoutLogExercise from './models/WorkoutLogExercise';
 import WorkoutLogSet from './models/WorkoutLogSet';
 import WorkoutTemplate from './models/WorkoutTemplate';
+import WorkoutTemplateExercise from './models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 
 // Create database instance
@@ -32,9 +34,11 @@ export const database = new Database({
     User,
     Setting,
     WorkoutTemplate,
+    WorkoutTemplateExercise,
     Schedule,
     WorkoutTemplateSet,
     WorkoutLog,
+    WorkoutLogExercise,
     WorkoutLogSet,
     NutritionGoal,
     NutritionCheckin,

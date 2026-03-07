@@ -70,7 +70,7 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { Button } from '../../components/theme/Button';
-import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { EnrichedWorkoutLogSet } from '../../database/services';
 
 export default function ModalsTestScreen() {
   // Nutrition Goals Modal
@@ -1744,6 +1744,7 @@ export default function ModalsTestScreen() {
           [
             {
               id: '1',
+              logExerciseId: 'test-log-exercise-id',
               exerciseId: 'test-exercise-id',
               reps: 10,
               weight: 80,
@@ -1752,13 +1753,14 @@ export default function ModalsTestScreen() {
             },
             {
               id: '2',
+              logExerciseId: 'test-log-exercise-id',
               exerciseId: 'test-exercise-id',
               reps: 8,
               weight: 85,
               difficultyLevel: 9,
               isSkipped: false,
             },
-          ] as WorkoutLogSet[]
+          ] as EnrichedWorkoutLogSet[]
         }
         units="metric"
         onAddNextExercise={() => console.log('Add next exercise pressed')}

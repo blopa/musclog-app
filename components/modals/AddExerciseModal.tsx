@@ -106,6 +106,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [weight, setWeight] = useState('60');
   const [restTime, setRestTime] = useState('60'); // Rest time in seconds
   const [isDropSet, setIsDropSet] = useState(false);
+  const [notes, setNotes] = useState('');
 
   // Use the useExercises hook
   const { exercises: allExercises, isLoading } = useExercises({
@@ -185,12 +186,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     [t]
   );
 
-  // Reset selection and drop-set when modal opens
+  // Reset selection, drop-set, and notes when modal opens
   useEffect(() => {
     if (visible) {
       setSelectedExerciseId(null);
       selectedExerciseIdRef.current = null;
       setIsDropSet(false);
+      setNotes('');
     }
   }, [visible]);
 
@@ -267,7 +269,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
   const handleAdd = () => {
     if (!selectedExerciseId) {
-      return; // Don't add if no exercise selected
+      return;
     }
     onAddExercise?.({
       exerciseId: selectedExerciseId,
@@ -275,8 +277,9 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       reps: parseInt(reps),
       weight: parseFloat(weight),
       isBodyweight,
-      restTimeAfter: parseInt(restTime) || 60, // Default to 60 if invalid
+      restTimeAfter: parseInt(restTime) || 60,
       isDropSet,
+      notes: notes.trim() || undefined,
     });
     onClose();
   };
@@ -497,6 +500,18 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               />
             </View>
           </View>
+        </View>
+
+        {/* Notes Section */}
+        <View className="mt-6">
+          <TextInput
+            label={t('workouts.addExercise.notes')}
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={t('workouts.addExercise.notesPlaceholder')}
+            multiline
+            numberOfLines={3}
+          />
         </View>
       </View>
     </FullScreenModal>

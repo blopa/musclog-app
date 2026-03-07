@@ -47,6 +47,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutActionButton } from '../../components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
+import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
@@ -240,10 +241,23 @@ export default function WorkoutSessionScreen() {
 
   // Check from DB whether all sets are done (don't rely on React state which may be stale after updateSet)
   const checkAllSetsDoneFromDb = useCallback(async (logId: string): Promise<boolean> => {
-    const logSets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
+    // First get all log exercises for this workout
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
       .query(Q.where('workout_log_id', logId), Q.where('deleted_at', Q.eq(null)))
       .fetch();
+
+    if (logExercises.length === 0) {
+      return false;
+    }
+
+    // Get all sets for these log exercises
+    const logExerciseIds = logExercises.map((le) => le.id);
+    const logSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
     if (logSets.length === 0) {
       return false;
     }
@@ -392,23 +406,24 @@ export default function WorkoutSessionScreen() {
 
     try {
       setIsSaving(true);
-      // Update all remaining sets of the same exercise
-      const exerciseSets = await database
-        .get<WorkoutLogSet>('workout_log_sets')
-        .query(
-          Q.where('workout_log_id', workoutLog.id),
-          Q.where('exercise_id', currentSetData.set.exerciseId ?? ''),
-          Q.where('set_order', Q.gte(currentSetData.set.setOrder ?? 0))
-        )
-        .fetch();
 
-      // Update all sets to use new exercise
+      // Find the log exercise that the current set belongs to and update its exerciseId
+      const logExerciseId = currentSetData.set.logExerciseId;
+      if (!logExerciseId) {
+        console.error('No logExerciseId found for current set');
+        return;
+      }
+
+      const logExercise = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
+        .find(logExerciseId);
+
+      // Update the log exercise's exerciseId (this affects all sets in this block)
       await database.write(async () => {
-        for (const set of exerciseSets) {
-          await set.update((s) => {
-            s.exerciseId = exercise.id;
-          });
-        }
+        await logExercise.update((le) => {
+          le.exerciseId = exercise.id;
+          le.updatedAt = Date.now();
+        });
       });
 
       await refresh();
@@ -864,6 +879,14 @@ export default function WorkoutSessionScreen() {
               ) : null}
               <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
+            {currentSetData.notes ? (
+              <View
+                className="mt-3 rounded-lg p-3"
+                style={{ backgroundColor: theme.colors.background.white5 }}
+              >
+                <Text className="text-sm text-text-secondary">📝 {currentSetData.notes}</Text>
+              </View>
+            ) : null}
           </View>
 
           {/* Stats Cards */}

@@ -24,5 +24,5 @@ export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
-export { WorkoutService } from './WorkoutService';
+export { type EnrichedWorkoutLogSet, WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';
