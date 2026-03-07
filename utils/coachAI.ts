@@ -1,6 +1,7 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
+import i18n from '../lang/lang';
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
@@ -378,7 +379,7 @@ function getSchemaFromFunctionDeclaration(fn: {
 async function generateStructured<T>(
   config: CoachAIConfig,
   systemPrompt: string,
-  userMessage: string, // TODO: the "user message" (when we generate it) needs to be translated - for this TODO you need to find the places that uses this function
+  userMessage: string,
   schema: object,
   schemaName: string = 'response'
 ): Promise<T | null> {
@@ -584,11 +585,18 @@ export async function generateWorkoutPlan(
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await createWorkoutPlanPrompt(lang);
+    const instruction =
+      history.length > 0
+        ? i18n.t('coach.aiInstructions.generateWorkoutPlanWithHistory', { lng: lang })
+        : i18n.t('coach.aiInstructions.generateWorkoutPlanDefault', { lng: lang });
+
     const userMessage =
       history.length > 0
         ? history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
-          '\n\nGenerate a workout plan based on this conversation.'
-        : 'Generate a basic weekly workout plan (e.g. 3-day split).';
+          '\n\n' +
+          instruction
+        : instruction;
+
     const fns = getGenerateWorkoutPlanFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<GenerateWorkoutPlanResponse>(
@@ -887,7 +895,7 @@ export async function parsePastWorkouts(
     const parsed = await generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
       config,
       systemPrompt,
-      'Parse the workouts and return the structured list.',
+      i18n.t('coach.aiInstructions.parseWorkouts', { lng: lang }),
       schema,
       'parsePastWorkouts'
     );
@@ -913,7 +921,7 @@ export async function parsePastNutrition(
     const parsed = await generateStructured<{ pastNutrition: ParsedNutrition[] }>(
       config,
       systemPrompt,
-      'Parse the nutrition data and return the structured list.',
+      i18n.t('coach.aiInstructions.parseNutrition', { lng: lang }),
       schema,
       'parsePastNutrition'
     );
@@ -940,7 +948,7 @@ export async function parseRetrospectiveNutrition(
     const parsed = await generateStructured<{ nutritionEntries: NutritionEntry[] }>(
       config,
       systemPrompt,
-      'Parse the meals and return the structured list.',
+      i18n.t('coach.aiInstructions.parseRetrospectiveNutrition', { lng: lang }),
       schema,
       'parseRetrospectiveNutrition'
     );

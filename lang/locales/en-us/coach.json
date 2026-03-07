@@ -25,6 +25,13 @@
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}"
     },
+    "aiInstructions": {
+      "parseWorkouts": "Parse the workouts and return the structured list.",
+      "parseNutrition": "Parse the nutrition data and return the structured list.",
+      "parseRetrospectiveNutrition": "Parse the meals and return the structured list.",
+      "generateWorkoutPlanWithHistory": "Generate a workout plan based on this conversation.",
+      "generateWorkoutPlanDefault": "Generate a basic weekly workout plan (e.g. 3-day split)."
+    },
     "chatMessages": {
       "title": "Chat Messages",
       "searchPlaceholder": "Search messages...",
