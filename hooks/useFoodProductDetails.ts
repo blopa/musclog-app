@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
 import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
+import { getProductName } from '../utils/openFoodFactsMapper';
 
 /**
  * WORKAROUND: We do not use @openfoodfacts/openfoodfacts-nodejs for product-by-barcode
@@ -83,7 +84,7 @@ export function useFoodSearch(searchTerm: string) {
       }
 
       const products: SearchResultProduct[] = result.products.filter(
-        (product: SearchResultProduct) => product.product_name
+        (product: SearchResultProduct) => getProductName(product)
       );
 
       return products;

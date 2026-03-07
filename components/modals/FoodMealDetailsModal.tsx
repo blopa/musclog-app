@@ -27,6 +27,7 @@ import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
+  getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
@@ -312,7 +313,7 @@ export function FoodMealDetailsModal({
 
     const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
-    if (productFromSearch?.product_name && nutriments) {
+    if (getProductName(productFromSearch) && nutriments) {
       setIsFoodDetailsModalVisible(true);
       const loadDefaultSize = async () => {
         const defaultG = await getDefaultServingSize();
@@ -564,7 +565,7 @@ export function FoodMealDetailsModal({
   const nutritionalData = getNutritionalData();
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
-  const getProductName = useCallback(() => {
+  const getFoodMealName = useCallback(() => {
     if (meal) {
       return meal.name || t('meals.history.unknownMeal');
     }
@@ -578,12 +579,12 @@ export function FoodMealDetailsModal({
       return foodLogDecrypted.loggedFoodName.trim();
     }
 
-    if (productFromSearch?.product_name) {
-      return productFromSearch.product_name;
+    if (getProductName(productFromSearch)) {
+      return getProductName(productFromSearch);
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
-      return productDetails.product.product_name || t('food.unknownFood');
+      return getProductName(productDetails);
     }
     return t('food.unknownFood');
   }, [productDetails, productFromSearch, food, localFood, foodLogDecrypted, meal, t]);
@@ -652,7 +653,7 @@ export function FoodMealDetailsModal({
     // For meals, scale nutrients by portion multiplier
     if (meal && mealNutrients) {
       return {
-        name: getProductName(),
+        name: getFoodMealName(),
         category: getProductCategory(),
         calories: Math.round(mealNutrients.calories * mealPortionMultiplier),
         protein: Math.round(mealNutrients.protein * mealPortionMultiplier * 10) / 10,
@@ -664,7 +665,7 @@ export function FoodMealDetailsModal({
     // For foods, scale by serving size
     const scaleFactor = servingSize / 100; // API data is per 100g
     return {
-      name: getProductName(),
+      name: getFoodMealName(),
       category: getProductCategory(),
       calories: Math.round(nutritionalData.calories * scaleFactor),
       protein: Math.round(nutritionalData.protein * scaleFactor * 10) / 10,
@@ -673,7 +674,7 @@ export function FoodMealDetailsModal({
     };
   }, [
     getProductCategory,
-    getProductName,
+    getFoodMealName,
     meal,
     mealNutrients,
     mealPortionMultiplier,

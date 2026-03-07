@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
 import { ProductV3 } from '../../types/openFoodFacts';
+import { getProductName } from '../../utils/openFoodFactsMapper';
 import { database } from '../index';
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
@@ -54,7 +55,7 @@ export class FoodService {
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
-        food.name = product.product_name || 'Unknown Product';
+        food.name = getProductName(product);
         food.brand = product.brands;
         food.barcode = product.code;
         food.imageUrl = product.image_url; // Save image URL from API

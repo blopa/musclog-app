@@ -8,7 +8,11 @@ import {
   SearchResultProduct,
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
-import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
+import {
+  getNutrimentsWithFallback,
+  getProductName,
+  mapOpenFoodFactsProduct,
+} from '../utils/openFoodFactsMapper';
 import { gramsToDisplay } from '../utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
 import { useFoods } from './useFoods';
@@ -139,7 +143,7 @@ export function useUnifiedFoodSearch({
         }
 
         const products: SearchResultProduct[] = result.products.filter(
-          (product: SearchResultProduct) => product.product_name
+          (product: SearchResultProduct) => getProductName(product)
         );
 
         return products;

@@ -1,4 +1,5 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
+import i18n from '../lang/lang';
 import { SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
 
 // All possible Open Food Facts nutriment properties
@@ -368,8 +369,8 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
 
   return {
     id: product.code || String(Math.random()),
-    name: product.product_name || 'Unknown Product',
-    description: `${product.brands || product.generic_name || 'Generic'} • ${calories ? `${calories} kcal` : 'N/A'}`,
+    name: getProductName(product),
+    description: `${product.brands || product.generic_name || 'Generic'} • ${calories ? `${calories} kcal` : 'N/A'}`, // TODO: use i18n
     brand: product.brands,
     imageUrl: product.image_url,
     serving_size: product.serving_size,
@@ -428,6 +429,13 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
     source: 'api' as const,
     _raw: product,
   };
+}
+
+// TODO: try to get the name from different places
+export function getProductName(product: any) {
+  // also try product_name_en, product_name_de, etc
+  // also try product.product.product_name
+  return product.product_name || i18n.t('food.unknownFood');
 }
 
 // Export the properties array for reference
