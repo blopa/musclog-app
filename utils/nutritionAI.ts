@@ -16,13 +16,13 @@ export function normalizeMacrosByGrams(macros: MacroEstimate, grams: number): Ma
   const factor = 100 / grams;
 
   return {
-    ...macros,
+    name: macros.name,
     kcal: Math.round(macros.kcal * factor),
-    kj: Math.round(macros.kj * factor),
     carbs: Math.round(macros.carbs * factor * 10) / 10,
     fat: Math.round(macros.fat * factor * 10) / 10,
     protein: Math.round(macros.protein * factor * 10) / 10,
     grams: 100,
+    barcode: macros.barcode,
   };
 }
 

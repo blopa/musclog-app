@@ -639,6 +639,9 @@ export const getRetrospectiveNutritionPrompt = (
   ].join('\n');
 };
 
+const MACRO_CALORIE_NOTE =
+  'Keep in mind the relation between macros and calories: 1g protein ≈ 4 kcal, 1g carbs ≈ 4 kcal, 1g fat ≈ 9 kcal, 1g fiber ≈ 2 kcal. Ensure your kcal estimate is consistent with the macros you return.';
+
 /**
  * System prompt for meal photo nutrition estimation
  */
@@ -648,6 +651,7 @@ export const getEstimateNutritionFromPhotoPrompt = (): string => {
     'Analyze the provided food photo and estimate the macronutrients.',
     'Be as accurate as possible based on portion size visible in the image.',
     'If uncertain about portion size, provide estimates for a typical serving.',
+    MACRO_CALORIE_NOTE,
     'Return structured nutritional data.',
   ].join('\n');
 };
@@ -661,7 +665,23 @@ export const getExtractMacrosFromLabelPrompt = (): string => {
     'Use OCR to read all text from the provided nutrition label image.',
     'Extract all nutritional information: calories, protein, carbs, fat, fiber, sugars, sodium, etc.',
     'If a barcode or EAN code is visible (typically 8-14 digits), extract it as well.',
+    MACRO_CALORIE_NOTE,
     'Return the extracted nutritional data in structured format.',
+  ].join('\n');
+};
+
+/**
+ * System prompt for extracting macros from OCR text (no image).
+ * Used when the app runs OCR first and sends only the text to the AI.
+ */
+export const getExtractMacrosFromLabelTextPrompt = (): string => {
+  return [
+    'You are an expert at reading and extracting data from nutrition labels.',
+    'The following text was extracted by OCR from a nutrition label image. Extract all nutritional information: calories (kcal), protein, carbs, fat, fiber, sugars, sodium, etc.',
+    'If a barcode or EAN code appears in the text (typically 8-14 digits), extract it as well.',
+    MACRO_CALORIE_NOTE,
+    'Return the extracted nutritional data in the same structured format as for label images (name, kcal, carbs, fat, protein, grams; optional barcode).',
+    'Use the product name or a short description as "name" if present in the text.',
   ].join('\n');
 };
 
@@ -1037,10 +1057,6 @@ export const getEstimateMacrosFunctions = (
       type: 'number',
       description: 'Kilocalories',
     },
-    kj: {
-      type: 'number',
-      description: 'Kilojoules',
-    },
     carbs: {
       type: 'number',
       description: 'Carbohydrates in grams',
@@ -1074,8 +1090,8 @@ export const getEstimateMacrosFunctions = (
         type: 'object',
         properties,
         required: includeBarcode
-          ? ['name', 'kcal', 'kj', 'carbs', 'fat', 'protein', 'grams']
-          : ['name', 'kcal', 'kj', 'carbs', 'fat', 'protein', 'grams'],
+          ? ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams']
+          : ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams'],
       },
     },
   ];

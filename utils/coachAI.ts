@@ -9,6 +9,7 @@ import {
   getEstimateMacrosFunctions,
   getEstimateNutritionFromPhotoPrompt,
   getExtractMacrosFromLabelPrompt,
+  getExtractMacrosFromLabelTextPrompt,
   getGenerateWorkoutPlanFunctions,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
@@ -80,7 +81,6 @@ export type CalculateVolumeResponse = {
 export type MacroEstimate = {
   name: string;
   kcal: number;
-  kj: number;
   carbs: number;
   fat: number;
   protein: number;
@@ -704,7 +704,8 @@ export async function estimateNutritionFromPhoto(
  */
 export async function extractMacrosFromLabelPhoto(
   config: CoachAIConfig,
-  base64Image: string
+  base64Image: string,
+  context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
   try {
     const systemPrompt = getExtractMacrosFromLabelPrompt();
@@ -712,17 +713,77 @@ export async function extractMacrosFromLabelPhoto(
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
     const fns = getEstimateMacrosFunctions(true);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+    let userMessageSuffix: string | undefined;
+    if (context && (context.description.trim() || context.tags.length > 0)) {
+      const parts: string[] = [];
+      if (context.description.trim()) {
+        parts.push(`User description: ${context.description.trim()}`);
+      }
+
+      if (context.tags.length > 0) {
+        parts.push(`Tags: ${context.tags.join(', ')}`);
+      }
+
+      userMessageSuffix = parts.join('\n');
+    }
+
     const parsed = await generateWithImageStructured<MacroEstimate>(
       config,
       systemPrompt,
       base64,
       mimeType,
       schema,
-      'estimateMacros'
+      'estimateMacros',
+      userMessageSuffix
     );
     return parsed ?? null;
   } catch (error) {
     console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
+    return null;
+  }
+}
+
+/**
+ * Extract macros from OCR text of a nutrition label (no image sent to AI).
+ * Use when the app has already run OCR and only the text is available.
+ */
+export async function extractMacrosFromLabelText(
+  config: CoachAIConfig,
+  ocrText: string,
+  context?: MealPhotoContext | null
+): Promise<MacroEstimate | null> {
+  try {
+    const systemPrompt = getExtractMacrosFromLabelTextPrompt();
+    const fns = getEstimateMacrosFunctions(true);
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+    // TODO: if no text extracted AND no context, then just fails the request
+    let userMessage = ocrText.trim() || 'No text extracted from the label.';
+    if (context && (context.description.trim() || context.tags.length > 0)) {
+      const parts: string[] = [];
+      if (context.description.trim()) {
+        parts.push(`User description: ${context.description.trim()}`);
+      }
+
+      if (context.tags.length > 0) {
+        parts.push(`Tags: ${context.tags.join(', ')}`);
+      }
+
+      userMessage += '\n\n' + parts.join('\n');
+    }
+
+    const parsed = await generateStructured<MacroEstimate>(
+      config,
+      systemPrompt,
+      userMessage,
+      schema,
+      'estimateMacros'
+    );
+
+    return parsed ?? null;
+  } catch (error) {
+    console.error('[coachAI] extractMacrosFromLabelText error:', error);
     return null;
   }
 }

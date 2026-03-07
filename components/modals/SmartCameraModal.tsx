@@ -25,6 +25,8 @@ import {
   type CoachAIConfig,
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
+  extractMacrosFromLabelText,
+  type MacroEstimate,
 } from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
 import { getAccessToken } from '../../utils/googleAuth';
@@ -83,17 +85,34 @@ export default function SmartCameraModal({
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isSearchingBarcode, setIsSearchingBarcode] = useState(false);
   const isSearchingBarcodeRef = useRef(false);
+  const [isProcessingAi, setIsProcessingAi] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [cameraResumeKey, setCameraResumeKey] = useState(0);
 
-  // When any overlay modal is open (Food Not Found or Food Details), the camera must be inactive
-  // so the feed is not live behind the modal. Food Not Found can be shown by SmartCameraModal
-  // (take picture/gallery, no barcode) or by FoodMealDetailsModal (barcode scanned but product not in DB).
+  // When any overlay modal is open (Food Not Found or Food Details) or we're processing AI/OCR,
+  // the camera must be inactive so the feed is not live behind the modal.
   const isCameraActive =
-    visible && !isSearchingBarcode && !isFoodNotFoundModalVisible && !isFoodDetailsModalVisible;
+    visible &&
+    !isSearchingBarcode &&
+    !isProcessingAi &&
+    !isFoodNotFoundModalVisible &&
+    !isFoodDetailsModalVisible;
+
+  /** Map AI macro result to the shape LogMealModal expects (calories from kcal). */
+  const mapMacroEstimateToMeal = useCallback(
+    (result: MacroEstimate) => ({
+      name: result.name,
+      type: t('meals.customMeal'),
+      calories: result.kcal,
+      protein: result.protein,
+      carbs: result.carbs,
+      fat: result.fat,
+    }),
+    [t]
+  );
 
   // Update camera mode when mode prop changes
   useEffect(() => {
@@ -154,6 +173,7 @@ export default function SmartCameraModal({
 
   const processAiPhoto = useCallback(
     async (fileUri: string) => {
+      setIsProcessingAi(true);
       try {
         const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
           try {
@@ -192,44 +212,75 @@ export default function SmartCameraModal({
           }
         };
 
-        const base64 = await readFileAsStringAsync(fileUri, {
-          encoding: 'base64',
-        } as { encoding: 'base64' });
-        const aiConfig = await resolveAIConfig();
-        if (!aiConfig) {
-          showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
-          return;
-        }
-
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi) {
             const text = await performOcr(fileUri);
-            if (text?.trim()) {
-              showSnackbar('success', t('food.aiCamera.photoCaptured'));
-            } else {
+            if (!text?.trim()) {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+              return;
             }
-          } else {
-            const result = await extractMacrosFromLabelPhoto(aiConfig, base64);
+
+            const aiConfig = await resolveAIConfig();
+            if (!aiConfig) {
+              showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
+              return;
+            }
+
+            const result = await extractMacrosFromLabelText(aiConfig, text, aiContext ?? undefined);
             if (result) {
               showSnackbar(
                 'success',
                 `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
               );
-              setSelectedMealForLogging(result);
+
+              setSelectedMealForLogging(mapMacroEstimateToMeal(result));
+              setIsLogMealModalVisible(true);
+            } else {
+              showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+            }
+          } else {
+            const base64 = await readFileAsStringAsync(fileUri, {
+              encoding: 'base64',
+            } as { encoding: 'base64' });
+
+            const aiConfig = await resolveAIConfig();
+            if (!aiConfig) {
+              showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
+              return;
+            }
+
+            const result = await extractMacrosFromLabelPhoto(
+              aiConfig,
+              base64,
+              aiContext ?? undefined
+            );
+            if (result) {
+              showSnackbar(
+                'success',
+                `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
+              );
+              setSelectedMealForLogging(mapMacroEstimateToMeal(result));
               setIsLogMealModalVisible(true);
             } else {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
             }
           }
         } else if (cameraMode === 'ai-meal-photo') {
+          const base64 = await readFileAsStringAsync(fileUri, {
+            encoding: 'base64',
+          } as { encoding: 'base64' });
+          const aiConfig = await resolveAIConfig();
+          if (!aiConfig) {
+            showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
+            return;
+          }
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
           if (result) {
             showSnackbar(
               'success',
               `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
             );
-            setSelectedMealForLogging(result);
+            setSelectedMealForLogging(mapMacroEstimateToMeal(result));
             setIsLogMealModalVisible(true);
           } else {
             showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
@@ -238,9 +289,11 @@ export default function SmartCameraModal({
       } catch (error) {
         console.error('[SmartCamera] Error processing AI photo:', error);
         showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+      } finally {
+        setIsProcessingAi(false);
       }
     },
-    [cameraMode, t, useOcrBeforeAi, aiContext]
+    [cameraMode, t, useOcrBeforeAi, aiContext, mapMacroEstimateToMeal]
   );
 
   const handleTakePicture = useCallback(async () => {
@@ -591,13 +644,23 @@ export default function SmartCameraModal({
             </Pressable>
           </View>
 
-          {/* Loading Overlay */}
+          {/* Loading Overlay - barcode lookup */}
           {isSearchingBarcode ? (
             <View
               className="absolute inset-0 z-30"
               style={{ backgroundColor: theme.colors.overlay.black90 }}
             >
               <CameraProcessingIndicator />
+            </View>
+          ) : null}
+
+          {/* Loading Overlay - AI/OCR processing */}
+          {isProcessingAi ? (
+            <View
+              className="absolute inset-0 z-30"
+              style={{ backgroundColor: theme.colors.overlay.black90 }}
+            >
+              <CameraProcessingIndicator isAi={true} />
             </View>
           ) : null}
 
