@@ -162,6 +162,7 @@ export default function WorkoutSessionScreen() {
   } | null>(null);
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isNotesExpanded, setIsNotesExpanded] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -884,12 +885,19 @@ export default function WorkoutSessionScreen() {
               <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
             {currentSetData.notes ? (
-              <View
+              <Pressable
                 className="mt-3 rounded-lg p-3"
                 style={{ backgroundColor: theme.colors.background.white5 }}
+                onPress={() => setIsNotesExpanded(!isNotesExpanded)}
               >
-                <Text className="text-sm text-text-secondary">📝 {currentSetData.notes}</Text>
-              </View>
+                <Text 
+                  className="text-sm text-text-secondary"
+                  numberOfLines={isNotesExpanded ? undefined : 1}
+                  ellipsizeMode="tail"
+                >
+                  📝 {currentSetData.notes}
+                </Text>
+              </Pressable>
             ) : null}
           </View>
 
