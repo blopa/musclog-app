@@ -45,14 +45,18 @@ export function WorkoutOptionsModal({
       description: t('workoutOptions.previewWorkoutDesc'),
       onPress: () => onPreviewWorkout?.(),
     },
-    {
-      icon: Settings,
-      iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
-      title: t('workoutOptions.workoutSettings'),
-      description: t('workoutOptions.workoutSettingsDesc'),
-      onPress: () => onWorkoutSettings?.(),
-    },
+    ...(onWorkoutSettings
+      ? [
+          {
+            icon: Settings,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('workoutOptions.workoutSettings'),
+            description: t('workoutOptions.workoutSettingsDesc'),
+            onPress: () => onWorkoutSettings?.(),
+          },
+        ]
+      : []),
     {
       icon: Square,
       iconColor: theme.colors.status.error,

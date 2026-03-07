@@ -1021,7 +1021,8 @@ export default function WorkoutSessionScreen() {
           visible={isOptionsModalVisible}
           onClose={() => setIsOptionsModalVisible(false)}
           onPreviewWorkout={() => setIsWorkoutOverviewModalVisible(true)}
-          onWorkoutSettings={() => router.push('/workout-settings')}
+          // TODO: uncomment once we have workout settings
+          // onWorkoutSettings={() => router.push('/workout-settings')}
           onEndWorkout={() => {
             setIsOptionsModalVisible(false);
             setIsEndWorkoutModalVisible(true);

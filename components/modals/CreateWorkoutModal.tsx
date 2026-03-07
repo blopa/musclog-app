@@ -59,7 +59,7 @@ export default function CreateWorkoutModal({
     handleSave,
     handleExerciseOrderChange,
     handleDeleteExercises,
-  } = useWorkoutForm({ templateId });
+  } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
   const volumeOptions = [
     { label: t('createWorkout.volumeCalculation.none'), value: 'none' },

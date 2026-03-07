@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,6 +23,7 @@ import { useSettings } from './useSettings';
 
 export interface UseWorkoutFormParams {
   templateId?: string;
+  onSaveSuccess?: () => void;
 }
 
 export interface AddExerciseData {
@@ -37,11 +37,10 @@ export interface AddExerciseData {
   notes?: string;
 }
 
-export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
+export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormParams = {}) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
-  const router = useRouter();
   const isEditMode = !!templateId;
 
   const [workoutTitle, setWorkoutTitle] = useState('');
@@ -156,7 +155,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         showSnackbar('error', t('createWorkout.addExerciseError'));
       }
     },
-    [t, showSnackbar]
+    [units, showSnackbar, t]
   );
 
   const handleSave = useCallback(async () => {
@@ -182,7 +181,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
         selectedDays,
       });
 
-      router.back();
+      onSaveSuccess?.();
     } catch (error) {
       console.error('Error saving template:', error);
       showSnackbar('error', t('createWorkout.saveError'));
@@ -200,7 +199,7 @@ export function useWorkoutForm({ templateId }: UseWorkoutFormParams = {}) {
     selectedDays,
     isEditMode,
     templateId,
-    router,
+    onSaveSuccess,
     t,
     showSnackbar,
   ]);

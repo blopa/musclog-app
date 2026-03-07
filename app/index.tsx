@@ -451,6 +451,7 @@ export default function HomeScreen() {
           }}
           onProfilePress={() => router.push('/profile')}
           onSettingsPress={() => router.push('/settings')}
+          // TODO: update this route navigation
           onProgressPress={() => router.push('/progress')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
