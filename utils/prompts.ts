@@ -1,16 +1,19 @@
 import { FunctionDeclaration } from '@google/generative-ai';
 import OpenAI from 'openai';
 
+import type { Units } from '../constants/settings';
 import { User } from '../database/models';
 import {
   ExerciseService,
   NutritionGoalService,
   NutritionService,
+  SettingsService,
   UserMetricService,
   UserService,
   WorkoutService,
   WorkoutTemplateService,
 } from '../database/services';
+import { kgToDisplay } from './unitConversion';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -79,25 +82,29 @@ export const getUserDetailsPrompt = (
   return summary;
 };
 
-/** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI) */
-function buildWorkoutSummaryFromDetails(details: {
-  workoutLog: {
-    workoutName: string;
-    startedAt: number;
-    completedAt?: number;
-    totalVolume?: number;
-    exhaustionLevel?: number;
-    workoutScore?: number;
-  };
-  sets: {
-    exerciseId?: string;
-    reps?: number;
-    weight?: number;
-    partials?: number;
-    repsInReserve?: number;
-  }[];
-  exercises: { id: string; name?: string; muscleGroup?: string }[];
-}): string {
+/** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
+ * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs"). */
+function buildWorkoutSummaryFromDetails(
+  details: {
+    workoutLog: {
+      workoutName: string;
+      startedAt: number;
+      completedAt?: number;
+      totalVolume?: number;
+      exhaustionLevel?: number;
+      workoutScore?: number;
+    };
+    sets: {
+      exerciseId?: string;
+      reps?: number;
+      weight?: number;
+      partials?: number;
+      repsInReserve?: number;
+    }[];
+    exercises: { id: string; name?: string; muscleGroup?: string }[];
+  },
+  units?: Units
+): string {
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
   const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
@@ -112,33 +119,48 @@ function buildWorkoutSummaryFromDetails(details: {
     }
     exercisesByName.get(name)!.sets.push(set);
   }
+
+  const totalVolumeKg = workoutLog.totalVolume ?? 0;
+  const totalVolumeWithUnit =
+    units !== undefined
+      ? `${Math.round(kgToDisplay(totalVolumeKg, units))} ${units === 'imperial' ? 'lbs' : 'kg'}`
+      : totalVolumeKg;
+
   const workoutData = {
     title: workoutLog.workoutName,
     date: new Date(workoutLog.startedAt).toISOString(),
     duration: workoutLog.completedAt
       ? Math.round((workoutLog.completedAt - workoutLog.startedAt) / 60000)
       : 0,
-    totalVolume: workoutLog.totalVolume,
+    totalVolume: totalVolumeWithUnit,
     exhaustionLevel: workoutLog.exhaustionLevel,
     workoutScore: workoutLog.workoutScore,
-    exercises: Array.from(exercisesByName.entries()).map(([name, data]) => ({
-      name,
-      muscleGroup: data.exercise.muscleGroup,
-      sets: data.sets.map((set) => ({
-        reps: set.reps,
-        weight: set.weight,
-        partials: set.partials ?? 0,
-        repsInReserve: set.repsInReserve ?? 0,
-      })),
-    })),
+    exercises: Array.from(exercisesByName.entries()).map(([name, data]) => {
+      const base = {
+        name,
+        sets: data.sets.map((set) => ({
+          reps: set.reps,
+          weight: set.weight,
+          partials: set.partials ?? 0,
+          repsInReserve: set.repsInReserve ?? 0,
+        })),
+      };
+
+      if (units === undefined) {
+        return { ...base, muscleGroup: data.exercise.muscleGroup };
+      }
+
+      return base;
+    }),
   };
   return JSON.stringify(workoutData);
 }
 
-async function buildWorkoutSummaryJson(workoutLogId: string): Promise<string> {
+async function buildWorkoutSummaryJson(workoutLogId: string, units?: Units): Promise<string> {
   try {
+    const resolvedUnits = units ?? (await SettingsService.getUnits());
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-    return buildWorkoutSummaryFromDetails(details);
+    return buildWorkoutSummaryFromDetails(details, resolvedUnits);
   } catch (error) {
     console.error('[prompts] buildWorkoutSummaryJson error:', error);
     return '{}';
@@ -161,10 +183,11 @@ export const getChatMessagePromptContent = async (
 
   let recentWorkoutsJson = '[]';
   try {
+    const units = await SettingsService.getUnits();
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
     const summaries: string[] = [];
     for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id);
+      const json = await buildWorkoutSummaryJson(log.id, units);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -356,12 +379,13 @@ export const getRecentWorkoutsInsightsPrompt = async (
 
   let workoutsJson = '[]';
   try {
+    const units = await SettingsService.getUnits();
     const startTs = new Date(startDate).setHours(0, 0, 0, 0);
     const endTs = new Date(endDate).setHours(23, 59, 59, 999);
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id);
+      const json = await buildWorkoutSummaryJson(log.id, units);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -402,10 +426,11 @@ export const getCalculateNextWorkoutVolumePrompt = async (
 
   let pastOccurrencesJson = '[]';
   try {
+    const units = await SettingsService.getUnits();
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id);
+      const json = await buildWorkoutSummaryJson(log.id, units);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -542,7 +567,8 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
   eatingPhase?: string
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-  const workoutJson = buildWorkoutSummaryFromDetails(details);
+  const units = await SettingsService.getUnits();
+  const workoutJson = buildWorkoutSummaryFromDetails(details, units);
   return getRecentWorkoutInsightsPrompt(
     details.workoutLog.workoutName,
     language,
@@ -566,10 +592,11 @@ export const getWorkoutVolumeInsightsPrompt = async (
 
   let historyJson = '[]';
   try {
+    const units = await SettingsService.getUnits();
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id);
+      const json = await buildWorkoutSummaryJson(log.id, units);
       if (json !== '{}') {
         summaries.push(json);
       }

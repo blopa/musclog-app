@@ -35,7 +35,12 @@ import {
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS } from '../../constants/chat';
+import {
+  ANALYZE_PROGRESS,
+  CHAT_INTENTION_KEY,
+  GENERATE_MY_WORKOUTS,
+  NUTRITION_CHECK,
+} from '../../constants/chat';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
@@ -307,7 +312,8 @@ const renderInputToolbar = (
   props: InputToolbarProps<ExtendedIMessage>,
   theme: Theme,
   pendingIntention: string | null,
-  onClearIntention: () => void
+  onClearIntention: () => void,
+  t: TFunction
 ) => {
   const styles = getStyles(theme);
 
@@ -327,7 +333,14 @@ const renderInputToolbar = (
               style={{ backgroundColor: theme.colors.accent.primary }}
             />
             <Text className="text-xs font-medium text-text-primary">
-              {pendingIntention === GENERATE_MY_WORKOUTS ? 'Workout Gen.' : pendingIntention}
+              {/*TODO: use a helper function instead of nested ternary*/}
+              {pendingIntention === GENERATE_MY_WORKOUTS
+                ? 'Workout Gen.'
+                : pendingIntention === ANALYZE_PROGRESS
+                  ? t('coach.actions.analyzeProgress')
+                  : pendingIntention === NUTRITION_CHECK
+                    ? t('coach.actions.nutritionCheck')
+                    : pendingIntention}
             </Text>
             <Pressable onPress={onClearIntention} className="p-0.5">
               <X size={14} color={theme.colors.accent.primary} />
@@ -368,8 +381,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
-    requestProgressInsight,
-    requestNutritionInsight,
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const [isOnline, setIsOnline] = useState(true);
@@ -401,10 +412,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     loadIntention();
   }, [visible]);
 
-  // When messages change and we're in workout-gen mode, sync with AsyncStorage so we turn off
-  // the "Workout Gen." pill as soon as the LLM response is saved (useChatMessages clears the key)
+  // When messages change and a pending intention is set, sync with AsyncStorage so we turn off
+  // the pill as soon as the LLM response is saved (useChatMessages clears the key)
   useEffect(() => {
-    if (!visible || pendingIntention !== GENERATE_MY_WORKOUTS) {
+    if (!visible || !pendingIntention) {
       return;
     }
 
@@ -471,6 +482,40 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     }
   }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
+  const handleAnalyzeProgress = useCallback(async () => {
+    if (pendingIntention === ANALYZE_PROGRESS) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, ANALYZE_PROGRESS);
+      setPendingIntention(ANALYZE_PROGRESS);
+      addPendingCoachMessage({
+        _id: `pending-analyze-progress-${Date.now()}`,
+        text: t('coach.analyzeProgressPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+
+  const handleNutritionCheck = useCallback(async () => {
+    if (pendingIntention === NUTRITION_CHECK) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, NUTRITION_CHECK);
+      setPendingIntention(NUTRITION_CHECK);
+      addPendingCoachMessage({
+        _id: `pending-nutrition-check-${Date.now()}`,
+        text: t('coach.nutritionCheckPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+
   const handleClearIntention = useCallback(async () => {
     await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
     setPendingIntention(null);
@@ -510,12 +555,18 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
-          onPress={requestProgressInsight}
-          disabled={isSending}
+          onPress={handleAnalyzeProgress}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
-            borderColor: theme.colors.border.light,
-            opacity: isSending ? 0.6 : 1,
+            borderColor:
+              pendingIntention === ANALYZE_PROGRESS
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === ANALYZE_PROGRESS ? 2 : 1,
+            backgroundColor:
+              pendingIntention === ANALYZE_PROGRESS
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
           }}
         >
           <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
@@ -524,12 +575,18 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
-          onPress={requestNutritionInsight}
-          disabled={isSending}
+          onPress={handleNutritionCheck}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
-            borderColor: theme.colors.border.light,
-            opacity: isSending ? 0.6 : 1,
+            borderColor:
+              pendingIntention === NUTRITION_CHECK
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === NUTRITION_CHECK ? 2 : 1,
+            backgroundColor:
+              pendingIntention === NUTRITION_CHECK
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
           }}
         >
           <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
@@ -540,11 +597,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       </ScrollView>
     );
   }, [
+    handleAnalyzeProgress,
     handleGenerateWorkouts,
-    isSending,
+    handleNutritionCheck,
     pendingIntention,
-    requestProgressInsight,
-    requestNutritionInsight,
     t,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
@@ -631,7 +687,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderAvatar={(props) => renderAvatar(props, theme)}
             renderCustomView={(props) => renderCustomView(props, handleViewWorkoutDetails)}
             renderInputToolbar={(props) =>
-              renderInputToolbar(props, theme, pendingIntention, handleClearIntention)
+              renderInputToolbar(props, theme, pendingIntention, handleClearIntention, t)
             }
             renderComposer={(props) =>
               renderComposer(props, t, theme, failedMessageText, clearFailedMessageText)

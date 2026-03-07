@@ -495,17 +495,22 @@ export async function sendCoachMessage(
  */
 
 /**
- * Get nutrition insights for a date range
+ * Get nutrition insights for a date range.
+ * Optional userRemarks are passed to the model so it can factor them into the analysis.
  */
 export async function getNutritionInsights(
   config: CoachAIConfig,
   startDate: string,
-  endDate: string
+  endDate: string,
+  userRemarks?: string
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang);
-    const text = await generateText(config, systemPrompt);
+    const userMessage = userRemarks?.trim()
+      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
+      : INSIGHTS_USER_MESSAGE;
+    const text = await generateText(config, systemPrompt, userMessage);
     return text || null;
   } catch (error) {
     console.error('[coachAI] getNutritionInsights error:', error);
@@ -612,17 +617,23 @@ export async function getRecentWorkoutInsights(
 }
 
 /**
- * Get insights about recent workouts in a date range
+ * Get insights about recent workouts in a date range.
+ * Optional userRemarks are passed to the model so it can factor them into the analysis.
  */
 export async function getRecentWorkoutsInsights(
   config: CoachAIConfig,
   startDate: string,
-  endDate: string
+  endDate: string,
+  userRemarks?: string
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
     const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang);
-    const text = await generateText(config, systemPrompt);
+    const userMessage = userRemarks?.trim()
+      ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
+      : INSIGHTS_USER_MESSAGE;
+
+    const text = await generateText(config, systemPrompt, userMessage);
     return text || null;
   } catch (error) {
     console.error('[coachAI] getRecentWorkoutsInsights error:', error);
