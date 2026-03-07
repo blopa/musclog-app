@@ -21,6 +21,7 @@ import { type MealType } from '../../database/models';
 import { GoogleAuthService } from '../../database/services';
 import { SettingsService } from '../../database/services/SettingsService';
 import { useTheme } from '../../hooks/useTheme';
+import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
   type CoachAIConfig,
   estimateNutritionFromPhoto,
@@ -87,6 +88,8 @@ export default function SmartCameraModal({
   const isSearchingBarcodeRef = useRef(false);
   const [isProcessingAi, setIsProcessingAi] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
+  /** Synthetic product from AI label (OCR or vision) for FoodMealDetailsModal */
+  const [productFromAiLabel, setProductFromAiLabel] = useState<SearchResultProduct | null>(null);
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -114,6 +117,23 @@ export default function SmartCameraModal({
     [t]
   );
 
+  /** Map AI label macro result to synthetic SearchResultProduct for FoodMealDetailsModal. */
+  const macroEstimateToSearchResultProduct = useCallback(
+    (result: MacroEstimate): SearchResultProduct =>
+      ({
+        product_name: result.name,
+        nutriments: {
+          'energy-kcal': result.kcal,
+          'energy-kcal_100g': result.kcal,
+          proteins_100g: result.protein,
+          carbohydrates_100g: result.carbs,
+          fat_100g: result.fat,
+        },
+        serving_size: result.grams ?? 100,
+      }) as unknown as SearchResultProduct,
+    []
+  );
+
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
@@ -122,14 +142,14 @@ export default function SmartCameraModal({
     }
   }, [mode, isAiEnabled]);
 
-  // Show appropriate modal based on product details availability
+  // Show FoodMealDetailsModal when we have a barcode (lookup) or AI label result (synthetic product)
   useEffect(() => {
-    if (detectedBarcode) {
+    if (detectedBarcode || productFromAiLabel) {
       setIsFoodDetailsModalVisible(true);
     } else {
       setIsFoodDetailsModalVisible(false);
     }
-  }, [detectedBarcode]);
+  }, [detectedBarcode, productFromAiLabel]);
 
   // Pulse animation for AI detecting indicator
   useEffect(() => {
@@ -232,9 +252,8 @@ export default function SmartCameraModal({
                 'success',
                 `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
               );
-
-              setSelectedMealForLogging(mapMacroEstimateToMeal(result));
-              setIsLogMealModalVisible(true);
+              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
+              setIsFoodDetailsModalVisible(true);
             } else {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
             }
@@ -259,8 +278,8 @@ export default function SmartCameraModal({
                 'success',
                 `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
               );
-              setSelectedMealForLogging(mapMacroEstimateToMeal(result));
-              setIsLogMealModalVisible(true);
+              setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
+              setIsFoodDetailsModalVisible(true);
             } else {
               showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
             }
@@ -293,7 +312,14 @@ export default function SmartCameraModal({
         setIsProcessingAi(false);
       }
     },
-    [cameraMode, t, useOcrBeforeAi, aiContext, mapMacroEstimateToMeal]
+    [
+      cameraMode,
+      t,
+      useOcrBeforeAi,
+      aiContext,
+      mapMacroEstimateToMeal,
+      macroEstimateToSearchResultProduct,
+    ]
   );
 
   const handleTakePicture = useCallback(async () => {
@@ -378,6 +404,7 @@ export default function SmartCameraModal({
   const handleFoodDetailsClose = useCallback(() => {
     setIsFoodDetailsModalVisible(false);
     setDetectedBarcode(null);
+    setProductFromAiLabel(null);
     isSearchingBarcodeRef.current = false;
     setIsSearchingBarcode(false);
     setCameraResumeKey((k) => k + 1);
@@ -957,7 +984,8 @@ export default function SmartCameraModal({
           <FoodMealDetailsModal
             visible={isFoodDetailsModalVisible}
             onClose={handleFoodDetailsClose}
-            barcode={detectedBarcode}
+            barcode={productFromAiLabel ? null : detectedBarcode}
+            productFromSearch={productFromAiLabel ?? undefined}
             onBarcodeLookupComplete={handleBarcodeLookupComplete}
             onFoodTracked={handleClose}
             isAiEnabled={isAiEnabled}
