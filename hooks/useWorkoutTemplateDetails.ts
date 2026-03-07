@@ -148,7 +148,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
       return;
     }
 
-    loadData();
+    loadDataRef.current();
 
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
     const scheduleReload = () => {
@@ -191,7 +191,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
         clearTimeout(debounceTimer);
       }
     };
-  }, [templateId, loadData]);
+  }, [templateId]);
 
   return {
     template,
