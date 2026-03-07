@@ -9,7 +9,6 @@ const OCR_LANGS = 'eng+spa+por+nld+deu+fra';
  * Supports English, Spanish, Portuguese, Dutch, German and French.
  */
 export async function performOcr(imageUri: string): Promise<string | null> {
-  console.log('Lets do the ocr');
   try {
     const worker = await createWorker(OCR_LANGS);
     const {
@@ -18,7 +17,6 @@ export async function performOcr(imageUri: string): Promise<string | null> {
     await worker.terminate();
 
     const trimmedText = text.trim();
-    debugger;
     return trimmedText.length > 0 ? trimmedText : null;
   } catch (error) {
     console.error('[OCR] Error recognizing text:', error);
