@@ -69,7 +69,7 @@ function foodToDisplayItem(
 
   return {
     id: food.id,
-    name: food.name || t('food.manageFoodLibrary.unknownFood', 'Unknown'),
+    name: food.name || t('food.manageFoodLibrary.unknownFood'),
     calories: Math.round(food.calories),
     protein: Math.round(food.protein),
     carbs: Math.round(food.carbs),

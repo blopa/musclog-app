@@ -46,7 +46,7 @@ function templateToDisplayItem(
   return {
     id: template.id,
     name:
-      template.name || t('workouts.manageWorkoutTemplateData.unknownTemplate', 'Unknown Template'),
+      template.name || t('workouts.manageWorkoutTemplateData.unknownTemplate'),
     icon: 'fitness-center',
     iconColor: iconColor.color,
     iconBgColor: iconColor.bg,

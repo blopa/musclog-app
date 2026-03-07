@@ -84,7 +84,7 @@ async function logToDisplayItemWithT(
     return {
       id: log.id,
       logId: log.id,
-      name: displayName || food?.name || t('food.manageFoodData.unknownFood', 'Unknown'),
+      name: displayName || food?.name || t('food.manageFoodData.unknownFood'),
       calories: Math.round(nutrients.calories),
       protein: Math.round(nutrients.protein),
       carbs: Math.round(nutrients.carbs),

@@ -46,7 +46,7 @@ function workoutLogToDisplayItem(
 ): WorkoutLogDataDisplayItem {
   return {
     id: log.id,
-    name: log.workoutName || t('workoutLog.manageWorkoutLogData.unknownWorkout', 'Unknown Workout'),
+    name: log.workoutName || t('workoutLog.manageWorkoutLogData.unknownWorkout'),
     icon: 'fitness-center',
     iconColor: iconColors.color,
     iconBgColor: iconColors.bg,

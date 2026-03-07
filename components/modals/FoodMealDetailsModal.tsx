@@ -1403,10 +1403,9 @@ export function FoodMealDetailsModal({
           setIsEditPopUpVisible(false);
           setEditForm(null);
         }}
-        title={t('food.foodDetails.editFoodInfo', 'Edit food info')}
+        title={t('food.foodDetails.editFoodInfo')}
         subtitle={t(
-          'food.foodDetails.editFoodInfoSubtitle',
-          'Correct name, barcode or macros if the AI got them wrong.'
+          'food.foodDetails.editFoodInfoSubtitle'
         )}
         headerIcon={
           <View
@@ -1433,24 +1432,24 @@ export function FoodMealDetailsModal({
           >
             {/* Food Name - same style as CreateCustomFoodModal */}
             <TextInput
-              label={t('food.foodDetails.foodName', 'Food name')}
+              label={t('food.foodDetails.foodName')}
               value={editForm.name}
               onChangeText={(text) =>
                 setEditForm((prev) => (prev ? { ...prev, name: text } : null))
               }
-              placeholder={t('food.foodDetails.foodNamePlaceholder', 'e.g. Greek Yogurt')}
+              placeholder={t('food.foodDetails.foodNamePlaceholder')}
               icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
             />
 
             {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
             <View className="relative">
               <TextInput
-                label={t('food.foodDetails.barcode', 'Barcode')}
+                label={t('food.foodDetails.barcode')}
                 value={editForm.barcode}
                 onChangeText={(text) =>
                   setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
-                placeholder={t('food.foodDetails.barcodePlaceholder', 'Scan or enter barcode')}
+                placeholder={t('food.foodDetails.barcodePlaceholder')}
                 keyboardType="numeric"
               />
               <View
@@ -1472,16 +1471,16 @@ export function FoodMealDetailsModal({
             <View className="flex-row items-center gap-2">
               <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
               <Text className="text-xl font-bold text-text-primary">
-                {t('food.newCustomFood.macronutrients', 'Macronutrients')}
+                {t('food.newCustomFood.macronutrients')}
               </Text>
             </View>
 
             <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-              {t('food.foodDetails.macrosPer100g', 'Per 100g')}
+              {t('food.foodDetails.macrosPer100g')}
             </Text>
 
             <MacroInput
-              label={t('food.newCustomFood.calories', 'Calories')}
+              label={t('food.newCustomFood.calories')}
               value={editForm.calories}
               onChange={handleEditFormNumericChange('calories')}
               topRightElement={
@@ -1503,7 +1502,7 @@ export function FoodMealDetailsModal({
 
             <View className="flex-row flex-wrap gap-4">
               <MacroInput
-                label={t('food.newCustomFood.protein', 'Protein')}
+                label={t('food.newCustomFood.protein')}
                 value={editForm.protein}
                 onChange={handleEditFormNumericChange('protein')}
                 topRightElement={
@@ -1516,7 +1515,7 @@ export function FoodMealDetailsModal({
                 size="half"
               />
               <MacroInput
-                label={t('food.newCustomFood.carbs', 'Carbs')}
+                label={t('food.newCustomFood.carbs')}
                 value={editForm.carbs}
                 onChange={handleEditFormNumericChange('carbs')}
                 topRightElement={
@@ -1526,7 +1525,7 @@ export function FoodMealDetailsModal({
                 size="half"
               />
               <MacroInput
-                label={t('food.newCustomFood.fat', 'Fat')}
+                label={t('food.newCustomFood.fat')}
                 value={editForm.fat}
                 onChange={handleEditFormNumericChange('fat')}
                 topRightElement={

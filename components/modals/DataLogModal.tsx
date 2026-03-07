@@ -107,7 +107,7 @@ export function getDataLogModalTranslations(
     return {
       title: t('food.meals.manageMealData.title'),
       searchPlaceholder: t('food.meals.manageMealData.searchPlaceholder'),
-      noItemsText: t('food.meals.manageMealData.noMeals', 'No meals yet'),
+      noItemsText: t('food.meals.manageMealData.noMeals'),
       noItemsDesc: t(
         'food.meals.manageMealData.noMealsDesc',
         'Create custom meals to see them here'
@@ -132,7 +132,7 @@ export function getDataLogModalTranslations(
     return {
       title: t('exercises.manageExerciseData.title'),
       searchPlaceholder: t('exercises.manageExerciseData.searchPlaceholder'),
-      noItemsText: t('exercises.manageExerciseData.noExercises', 'No exercises yet'),
+      noItemsText: t('exercises.manageExerciseData.noExercises'),
       noItemsDesc: t(
         'exercises.manageExerciseData.noExercisesDesc',
         'Create custom exercises to see them here'
@@ -171,7 +171,7 @@ export function getDataLogModalTranslations(
     return {
       title: t('workouts.manageWorkoutTemplateData.title'),
       searchPlaceholder: t('workouts.manageWorkoutTemplateData.searchPlaceholder'),
-      noItemsText: t('workouts.manageWorkoutTemplateData.noTemplates', 'No workout templates yet'),
+      noItemsText: t('workouts.manageWorkoutTemplateData.noTemplates'),
       noItemsDesc: t(
         'workouts.manageWorkoutTemplateData.noTemplatesDesc',
         'Create workout templates to see them here'
@@ -198,7 +198,7 @@ export function getDataLogModalTranslations(
     return {
       title: t('workoutLog.manageWorkoutLogData.title'),
       searchPlaceholder: t('workoutLog.manageWorkoutLogData.searchPlaceholder'),
-      noItemsText: t('workoutLog.manageWorkoutLogData.noWorkoutLogs', 'No workout logs yet'),
+      noItemsText: t('workoutLog.manageWorkoutLogData.noWorkoutLogs'),
       noItemsDesc: t(
         'workoutLog.manageWorkoutLogData.noWorkoutLogsDesc',
         'Complete workouts to see them here'
@@ -388,22 +388,22 @@ export function getDataLogModalTranslations(
 
   if (variant === 'chatMessage') {
     return {
-      title: t('coach.chatMessages.title', 'Chat Messages'),
-      searchPlaceholder: t('coach.chatMessages.searchPlaceholder', 'Search messages...'),
-      noItemsText: t('coach.chatMessages.noMessages', 'No messages yet'),
-      noItemsDesc: t('coach.chatMessages.noMessagesDesc', 'Start a conversation with Loggy'),
-      endOfHistoryText: t('coach.chatMessages.endOfHistory', 'All messages loaded'),
-      menuTitle: t('coach.chatMessages.messageOptions', 'Message options'),
+      title: t('coach.chatMessages.title'),
+      searchPlaceholder: t('coach.chatMessages.searchPlaceholder'),
+      noItemsText: t('coach.chatMessages.noMessages'),
+      noItemsDesc: t('coach.chatMessages.noMessagesDesc'),
+      endOfHistoryText: t('coach.chatMessages.endOfHistory'),
+      menuTitle: t('coach.chatMessages.messageOptions'),
       favoriteAddTitle: '',
       favoriteRemoveTitle: '',
       favoriteAddDesc: '',
       favoriteRemoveDesc: '',
-      editTitle: t('coach.chatMessages.editMessage', 'Edit message'),
-      editDesc: t('coach.chatMessages.editMessageDesc', 'Change the message text'),
+      editTitle: t('coach.chatMessages.editMessage'),
+      editDesc: t('coach.chatMessages.editMessageDesc'),
       duplicateTitle: '',
       duplicateDesc: '',
-      deleteTitle: t('coach.chatMessages.deleteMessage', 'Delete message'),
-      deleteDesc: t('coach.chatMessages.deleteMessageDesc', 'Permanently remove this message'),
+      deleteTitle: t('coach.chatMessages.deleteMessage'),
+      deleteDesc: t('coach.chatMessages.deleteMessageDesc'),
       formatCaloriesMacros: () => '',
       formatItemSubtitle: (item) => item.chatMessageText ?? '',
     };
@@ -1210,8 +1210,8 @@ export function DataLogModal({
 
   // Unify load more button to size="md" and consistent labels
   const loadingLabel = isLoadingMore
-    ? t('common.loading', 'Loading...')
-    : t('bodyMetrics.history.loadMore', 'Load More');
+    ? t('common.loading')
+    : t('bodyMetrics.history.loadMore');
 
   return (
     <>
@@ -1342,7 +1342,7 @@ export function DataLogModal({
         onConfirm={handleConfirmDelete}
         title={translations.deleteTitle}
         message={t('common.deleteConfirmMessage', { name: selectedItem?.name || '' })}
-        confirmLabel={t('common.delete', 'Delete')}
+        confirmLabel={t('common.delete')}
         variant="destructive"
         isLoading={isDeleting}
         warning={dependencyWarning}

@@ -49,7 +49,7 @@ function exerciseToDisplayItem(
 
   return {
     id: exercise.id,
-    name: exercise.name || t('exercises.manageExerciseData.unknownExercise', 'Unknown Exercise'),
+    name: exercise.name || t('exercises.manageExerciseData.unknownExercise'),
     icon: 'fitness-center',
     iconColor: colors.color,
     iconBgColor: colors.bg,

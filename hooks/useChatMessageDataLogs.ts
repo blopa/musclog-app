@@ -163,7 +163,7 @@ export function useChatMessageDataLogs({
       const colors = isUser ? userColor : coachColor;
       return {
         id: record.id,
-        name: isUser ? t('coach.you', 'You') : t('coach.name', 'Loggy'),
+        name: isUser ? t('coach.you') : t('coach.name'),
         messageText: truncate(record.message, PREVIEW_LENGTH),
         icon: isUser ? 'person' : 'smart-toy',
         iconColor: colors.color,
