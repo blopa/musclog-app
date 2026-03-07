@@ -5,7 +5,13 @@ import { Path, Svg } from 'react-native-svg';
 
 import { useTheme } from '../hooks/useTheme';
 
-export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) => {
+export const CameraProcessingIndicator = ({
+  isAi = false,
+  cameraMode = null,
+}: {
+  isAi?: boolean;
+  cameraMode?: 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan' | null;
+}) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const spinAnim = useRef(new Animated.Value(0)).current;
@@ -102,7 +108,11 @@ export const CameraProcessingIndicator = ({ isAi = false }: { isAi?: boolean }) 
           className="text-center text-xl font-semibold"
           style={{ color: theme.colors.text.white }}
         >
-          {isAi ? t('camera.processing.aiAnalyzingMeal') : t('camera.processing.analyzingImage')}
+          {cameraMode === 'ai-label-scan'
+            ? t('camera.processing.aiAnalyzingFood')
+            : cameraMode === 'ai-meal-photo'
+              ? t('camera.processing.aiAnalyzingMeal')
+              : t('camera.processing.analyzingImage')}
         </Text>
 
         <Text

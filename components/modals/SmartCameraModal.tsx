@@ -687,7 +687,7 @@ export default function SmartCameraModal({
               className="absolute inset-0 z-30"
               style={{ backgroundColor: theme.colors.overlay.black90 }}
             >
-              <CameraProcessingIndicator isAi={true} />
+              <CameraProcessingIndicator isAi={true} cameraMode={cameraMode} />
             </View>
           ) : null}
 
