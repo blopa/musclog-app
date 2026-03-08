@@ -16,6 +16,7 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useTheme } from '../../hooks/useTheme';
+import { getExerciseImageUri } from '../../utils/file';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
@@ -342,7 +343,7 @@ export default function WorkoutSessionOverviewModal({
       exerciseList.push({
         id: exercise.id,
         name: exercise.name ?? '',
-        imageUrl: exercise.imageUrl || '',
+        imageUrl: exercise.imageUrl || getExerciseImageUri(exercise.id),
         status,
         setsCompleted: completedSets,
         totalSets,

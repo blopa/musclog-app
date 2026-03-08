@@ -55,6 +55,8 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { getExerciseImageSource } from '../../utils/exerciseImage';
+import {  getExerciseImageUri } from '../../utils/file';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
@@ -460,17 +462,6 @@ export default function WorkoutSessionScreen() {
     }
   };
 
-  // Get exercise image - use default if not available
-  const getExerciseImage = () => {
-    if (currentSetData?.exercise.imageUrl) {
-      // TODO: Load exercise images from imageUrl instead of using default
-      // For now, use default image. In production, you'd load from imageUrl
-      return require('../../assets/icon.png');
-    }
-
-    return require('../../assets/icon.png');
-  };
-
   // Get exercise category string
   const getExerciseCategory = () => {
     if (!currentSetData) {
@@ -701,7 +692,7 @@ export default function WorkoutSessionScreen() {
             sets={sets}
             exerciseId={completedExerciseForModal.exerciseId}
             units={units}
-            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
+            exerciseImageUrl={getExerciseImageUri(completedExerciseForModal.exerciseId)}
             equipmentType={completedExerciseForModal.equipmentType}
             onAddNextExercise={() => {
               setIsFreeSessionCompleteModalVisible(false);
@@ -832,7 +823,7 @@ export default function WorkoutSessionScreen() {
     );
   }
 
-  const exerciseImage = getExerciseImage();
+  const exerciseImage = getExerciseImageSource(currentSetData.exercise.id);
   const exerciseCategory = getExerciseCategory();
   const previousSet = currentSetData.previousSet;
 
@@ -1202,7 +1193,7 @@ export default function WorkoutSessionScreen() {
           sets={sets}
           exerciseId={completedExerciseForModal.exerciseId}
           units={units}
-          exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
+          exerciseImageUrl={getExerciseImageUri(completedExerciseForModal.exerciseId)}
           equipmentType={completedExerciseForModal.equipmentType}
           onAddNextExercise={() => {
             setIsFreeSessionCompleteModalVisible(false);

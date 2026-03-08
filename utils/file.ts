@@ -6,9 +6,11 @@ import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
+import { Image } from 'react-native';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
+import { getExerciseImageSource } from './exerciseImage';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -130,4 +132,14 @@ export async function openCropperAsync(options: OpenCropperOptions) {
 
 export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {
   return readAsStringAsync(fileUri, options);
+}
+
+/**
+ * Returns a URI string for the exercise image by ID (for components that use source={{ uri }}).
+ */
+export function getExerciseImageUri(exerciseId: string | undefined | null): string {
+  const source = getExerciseImageSource(exerciseId);
+  const resolved = Image.resolveAssetSource(source);
+
+  return resolved?.uri ?? '';
 }
