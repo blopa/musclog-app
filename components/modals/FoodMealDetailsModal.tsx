@@ -123,6 +123,10 @@ export function FoodMealDetailsModal({
 
   const [servingSize, setServingSize] = useState(100);
   const [mealPortionMultiplier, setMealPortionMultiplier] = useState(1);
+  /** Total weight of the meal in grams (sum of all ingredients). Used when tracking a saved meal. */
+  const [totalMealGrams, setTotalMealGrams] = useState(0);
+  /** Amount in grams to log (user-editable). Defaults to totalMealGrams so "1 full meal". */
+  const [mealAmountGrams, setMealAmountGrams] = useState(0);
   const [selectedMeal, setSelectedMeal] = useState<MealType>(
     initialMealType ?? inferMealTypeFromTime()
   );
@@ -383,17 +387,22 @@ export function FoodMealDetailsModal({
     initialServingSize,
   ]);
 
-  // Load meal nutrients when meal is provided
+  // Load meal nutrients and total grams when meal is provided
   useEffect(() => {
     if (!meal) {
       setMealNutrients(null);
+      setTotalMealGrams(0);
+      setMealAmountGrams(0);
       return;
     }
 
     const loadMealNutrients = async () => {
       setIsLoadingMealNutrients(true);
       try {
-        const nutrients = await meal.getTotalNutrients();
+        const [nutrients, mealWithFoods] = await Promise.all([
+          meal.getTotalNutrients(),
+          MealService.getMealWithFoods(meal.id),
+        ]);
         setMealNutrients({
           calories: Math.round(nutrients.calories),
           protein: Math.round(nutrients.protein * 10) / 10,
@@ -401,9 +410,23 @@ export function FoodMealDetailsModal({
           fat: Math.round(nutrients.fat * 10) / 10,
           fiber: Math.round(nutrients.fiber * 10) / 10,
         });
+        if (mealWithFoods?.foods) {
+          let totalGrams = 0;
+          for (const mf of mealWithFoods.foods) {
+            totalGrams += await mf.getGramWeight();
+          }
+          const rounded = Math.round(totalGrams);
+          setTotalMealGrams(rounded);
+          setMealAmountGrams(rounded > 0 ? rounded : 100);
+        } else {
+          setTotalMealGrams(0);
+          setMealAmountGrams(100);
+        }
       } catch (error) {
         console.error('Error loading meal nutrients:', error);
         setMealNutrients({ calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+        setTotalMealGrams(0);
+        setMealAmountGrams(100);
       } finally {
         setIsLoadingMealNutrients(false);
       }
@@ -715,17 +738,22 @@ export function FoodMealDetailsModal({
     }
   }, [productFromSearch, productDetails, getDefaultServingSize]);
 
+  // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
+  const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
+  const mealScaleFactor =
+    meal && totalMealGrams > 0 ? effectiveMealAmountGrams / totalMealGrams : mealPortionMultiplier;
+
   // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
-    // For meals, scale nutrients by portion multiplier
+    // For meals, scale nutrients by amount in grams (mealScaleFactor)
     if (meal && mealNutrients) {
       return {
         name: getFoodMealName(),
         category: getProductCategory(),
-        calories: Math.round(mealNutrients.calories * mealPortionMultiplier),
-        protein: Math.round(mealNutrients.protein * mealPortionMultiplier * 10) / 10,
-        carbs: Math.round(mealNutrients.carbs * mealPortionMultiplier * 10) / 10,
-        fat: Math.round(mealNutrients.fat * mealPortionMultiplier * 10) / 10,
+        calories: Math.round(mealNutrients.calories * mealScaleFactor),
+        protein: Math.round(mealNutrients.protein * mealScaleFactor * 10) / 10,
+        carbs: Math.round(mealNutrients.carbs * mealScaleFactor * 10) / 10,
+        fat: Math.round(mealNutrients.fat * mealScaleFactor * 10) / 10,
       };
     }
 
@@ -744,7 +772,7 @@ export function FoodMealDetailsModal({
     getFoodMealName,
     meal,
     mealNutrients,
-    mealPortionMultiplier,
+    mealScaleFactor,
     nutritionalData.calories,
     nutritionalData.carbs,
     nutritionalData.fat,
@@ -778,13 +806,13 @@ export function FoodMealDetailsModal({
             throw new Error('Failed to get meal foods');
           }
 
-          // Log each food in the meal, scaled by the portion multiplier
+          // Log each food in the meal, scaled by (amount in g / total meal g)
           for (const mealFood of mealWithFoods.foods) {
             await NutritionService.logFood(
               mealFood.foodId,
               selectedDate,
               selectedMeal,
-              mealFood.amount * mealPortionMultiplier,
+              mealFood.amount * mealScaleFactor,
               mealFood.portionId
             );
           }
@@ -995,7 +1023,7 @@ export function FoodMealDetailsModal({
     showSnackbar,
     t,
     onLogMeal,
-    mealPortionMultiplier,
+    mealScaleFactor,
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
@@ -1163,7 +1191,7 @@ export function FoodMealDetailsModal({
               size="sm"
               width="full"
               onPress={handleAddFood}
-              disabled={isAddingFood}
+              disabled={isAddingFood || (mode === 'meal' && mealAmountGrams < 1)}
               loading={isAddingFood}
             />
           </View>
@@ -1251,7 +1279,7 @@ export function FoodMealDetailsModal({
             {mode !== 'meal' ? (
               <ServingSizeSelector value={servingSize} onChange={setServingSize} />
             ) : (
-              /* Portion Selector - only for meals */
+              /* Portion Selector - only for meals (UI: servings; logic: grams) */
               <View className="mt-6 w-full">
                 <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
                   {t('food.foodDetails.portionSize')}
@@ -1260,75 +1288,75 @@ export function FoodMealDetailsModal({
                   className="rounded-xl border bg-bg-cardDark p-3"
                   style={{ borderColor: theme.colors.background.white10 }}
                 >
-                  {/* Multiplier Stepper */}
                   <View className="mb-4 flex-row items-center gap-3">
                     <Pressable
                       className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
                       style={{ borderColor: theme.colors.background.white5 }}
-                      onPress={() =>
-                        setMealPortionMultiplier((prev) =>
-                          Math.max(0.25, Math.round((prev - 0.25) * 100) / 100)
-                        )
-                      }
+                      onPress={() => {
+                        if (totalMealGrams <= 0) return;
+                        setMealAmountGrams((prev) => Math.max(10, Math.round(prev - 10)));
+                      }}
                       disabled={isLoadingMealNutrients}
                     >
                       <Text className="text-2xl font-bold text-text-secondary">−</Text>
                     </Pressable>
                     <View className="flex-1 items-center justify-center">
                       <Text className="text-4xl font-black text-text-primary">
-                        {mealPortionMultiplier % 1 === 0
-                          ? `${mealPortionMultiplier}`
-                          : `${mealPortionMultiplier}`}
+                        {totalMealGrams > 0 ? mealAmountGrams : '0'}
                       </Text>
                       <Text className="mt-1 text-xs text-text-secondary">
-                        {t('food.foodDetails.servings')}
+                        {t('food.unitGrams')}
                       </Text>
                     </View>
                     <Pressable
                       className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
-                      onPress={() =>
-                        setMealPortionMultiplier((prev) => Math.round((prev + 0.25) * 100) / 100)
-                      }
+                      onPress={() => {
+                        if (totalMealGrams <= 0) return;
+                        setMealAmountGrams((prev) => Math.min(99999, Math.round(prev + 10)));
+                      }}
                       disabled={isLoadingMealNutrients}
                     >
                       <Text className="text-2xl font-bold text-accent-primary">+</Text>
                     </Pressable>
                   </View>
-                  {/* Quick Presets */}
                   <View className="flex-row justify-center gap-2 pb-1">
-                    {[0.5, 1, 1.5, 2].map((preset) => (
-                      <Pressable
-                        key={preset}
-                        className="rounded-full border px-4"
-                        style={{
-                          paddingVertical: theme.spacing.padding['1half'],
-                          backgroundColor:
-                            mealPortionMultiplier === preset
+                    {[0.5, 1, 1.5, 2].map((preset) => {
+                      const currentMult =
+                        totalMealGrams > 0 ? mealAmountGrams / totalMealGrams : 1;
+                      const isSelected = Math.abs(currentMult - preset) < 0.01;
+                      return (
+                        <Pressable
+                          key={preset}
+                          className="rounded-full border px-4"
+                          style={{
+                            paddingVertical: theme.spacing.padding['1half'],
+                            backgroundColor: isSelected
                               ? theme.colors.accent.primary10
                               : 'transparent',
-                          borderColor:
-                            mealPortionMultiplier === preset
+                            borderColor: isSelected
                               ? theme.colors.accent.primary20
                               : theme.colors.background.white5,
-                          opacity: isLoadingMealNutrients ? 0.5 : 1,
-                        }}
-                        onPress={() => setMealPortionMultiplier(preset)}
-                        disabled={isLoadingMealNutrients}
-                      >
-                        <Text
-                          className="text-xs font-medium"
-                          style={{
-                            color:
-                              mealPortionMultiplier === preset
+                            opacity: isLoadingMealNutrients ? 0.5 : 1,
+                          }}
+                          onPress={() =>
+                            setMealAmountGrams(Math.round(totalMealGrams * preset))
+                          }
+                          disabled={isLoadingMealNutrients || totalMealGrams <= 0}
+                        >
+                          <Text
+                            className="text-xs font-medium"
+                            style={{
+                              color: isSelected
                                 ? theme.colors.accent.primary
                                 : theme.colors.text.secondary,
-                            fontWeight: mealPortionMultiplier === preset ? '700' : '500',
-                          }}
-                        >
-                          {preset === 0.5 ? '½' : preset === 1 ? '1' : preset === 1.5 ? '1½' : '2'}×
-                        </Text>
-                      </Pressable>
-                    ))}
+                              fontWeight: isSelected ? '700' : '500',
+                            }}
+                          >
+                            {preset === 0.5 ? '½' : preset === 1 ? '1' : preset === 1.5 ? '1½' : '2'}×
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
                   </View>
                 </View>
               </View>
