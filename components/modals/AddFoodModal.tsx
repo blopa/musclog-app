@@ -162,6 +162,16 @@ export function AddFoodModal({
                 />
               ) : null}
               <TrackingMethodButton
+                icon={PlusCircle}
+                title={t('food.addFoodModal.quickTrackMeal')}
+                description={t('food.addFoodModal.quickTrackMealDescription')}
+                iconBgColor={theme.colors.status.purple10}
+                onPress={() => {
+                  onQuickTrackMealPress?.();
+                  onClose();
+                }}
+              />
+              <TrackingMethodButton
                 icon={ScanLine}
                 title={t('food.addFoodModal.scanBarcode.title')}
                 description={t('food.addFoodModal.scanBarcode.description')}
@@ -178,16 +188,6 @@ export function AddFoodModal({
                 iconBgColor={theme.colors.background.secondaryDark}
                 onPress={() => {
                   onSearchFoodPress?.();
-                  onClose();
-                }}
-              />
-              <TrackingMethodButton
-                icon={PlusCircle}
-                title={t('food.addFoodModal.quickTrackMeal')}
-                description={t('food.addFoodModal.quickTrackMealDescription')}
-                iconBgColor={theme.colors.status.purple10}
-                onPress={() => {
-                  onQuickTrackMealPress?.();
                   onClose();
                 }}
               />
