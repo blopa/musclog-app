@@ -24,12 +24,12 @@ import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
+import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
-import { QuickTrackMealModal } from '../../components/modals/QuickTrackMealModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
@@ -704,11 +704,12 @@ export default function FoodScreen() {
         />
       ) : null}
 
-      {/* Quick Track Meal Modal */}
+      {/* Quick Track Meal (CreateMealModal in quickTrack mode) */}
       {isQuickTrackMealModalVisible ? (
-        <QuickTrackMealModal
+        <CreateMealModal
           visible={isQuickTrackMealModalVisible}
           onClose={() => setIsQuickTrackMealModalVisible(false)}
+          mode="quickTrack"
           logDate={selectedDate}
           onTracked={() => {
             refresh();

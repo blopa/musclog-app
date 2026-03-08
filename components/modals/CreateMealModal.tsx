@@ -1,24 +1,90 @@
-import { Apple, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
+import { format } from 'date-fns';
+import type { TFunction } from 'i18next';
+import {
+  Apple,
+  Calendar,
+  Check,
+  CheckCircle2,
+  Coffee,
+  Moon,
+  MoreHorizontal,
+  Plus,
+  Trash2,
+  Utensils,
+} from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, Text, TextInput, View } from 'react-native';
 
+import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
-import { MealService } from '../../database/services';
+import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
 import { useTheme } from '../../hooks/useTheme';
+import type { Theme } from '../../theme';
+import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
+import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+
+const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
+  {
+    id: 'breakfast',
+    label: t('food.meals.breakfast'),
+    description: t('food.meals.descriptions.breakfast'),
+    icon: Coffee,
+    iconBgColor: theme.colors.status.warning10,
+    iconColor: theme.colors.status.warning,
+  },
+  {
+    id: 'lunch',
+    label: t('food.meals.lunch'),
+    description: t('food.meals.descriptions.lunch'),
+    icon: Utensils,
+    iconBgColor: theme.colors.status.info10,
+    iconColor: theme.colors.status.info,
+  },
+  {
+    id: 'dinner',
+    label: t('food.meals.dinner'),
+    description: t('food.meals.descriptions.dinner'),
+    icon: Moon,
+    iconBgColor: theme.colors.status.purple10,
+    iconColor: theme.colors.status.purple,
+  },
+  {
+    id: 'snack',
+    label: t('food.meals.snacks'),
+    description: t('food.meals.descriptions.snack'),
+    icon: Apple,
+    iconBgColor: theme.colors.status.success20,
+    iconColor: theme.colors.status.success,
+  },
+  {
+    id: 'other',
+    label: t('food.meals.trackOther'),
+    description: t('food.meals.trackOther'),
+    icon: MoreHorizontal,
+    iconBgColor: theme.colors.status.gray10,
+    iconColor: theme.colors.text.secondary,
+  },
+];
 
 type CreateMealModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: () => void; // Callback to refresh meals list
   meal?: Meal; // When provided, the modal operates in edit mode
+  /** When 'quickTrack', show date/meal type/track flow and optional save to My Meals. */
+  mode?: 'create' | 'quickTrack';
+  /** For quickTrack mode: default date to log to. */
+  logDate?: Date;
+  /** For quickTrack mode: called after ingredients are logged (and optionally meal saved). */
+  onTracked?: () => void;
 };
 
 const MacroCard = ({
@@ -222,7 +288,15 @@ const MealMacrosSummary = ({
   );
 };
 
-export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealModalProps) {
+export function CreateMealModal({
+  visible,
+  onClose,
+  onSave,
+  meal,
+  mode = 'create',
+  logDate,
+  onTracked,
+}: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
@@ -230,12 +304,25 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
   const [isFocused, setIsFocused] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
+  const [saveToMyMeals, setSaveToMyMeals] = useState(false);
 
-  const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(meal);
+  const isQuickTrack = mode === 'quickTrack';
+  const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(
+    isQuickTrack ? undefined : meal
+  );
 
   useEffect(() => {
     setMealName(meal?.name ?? '');
   }, [meal]);
+
+  useEffect(() => {
+    if (visible && isQuickTrack && logDate) {
+      setSelectedDate(logDate);
+    }
+  }, [visible, isQuickTrack, logDate]);
 
   // Calculate total macros from ingredients
   const totalMacros = useMemo(() => {
@@ -249,6 +336,53 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
       { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
   }, [ingredients]);
+
+  const handleTrack = async () => {
+    if (ingredients.length === 0) {
+      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'), {
+        action: t('common.ok'),
+      });
+      return;
+    }
+    if (saveToMyMeals && !mealName.trim()) {
+      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'), {
+        action: t('common.ok'),
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (saveToMyMeals) {
+        await MealService.createMealFromFoods(
+          mealName.trim(),
+          ingredients.map((ing) => ({ foodId: ing.foodId, amount: ing.amount })),
+          ''
+        );
+      }
+      for (const ing of ingredients) {
+        await NutritionService.logFood(
+          ing.foodId,
+          selectedDate,
+          selectedMealType,
+          ing.amount,
+          undefined
+        );
+      }
+      onTracked?.();
+      onClose();
+      showSnackbar('success', t('food.quickTrackMeal.successMessage'), {
+        action: t('snackbar.ok'),
+      });
+    } catch (error) {
+      console.error('Error tracking quick meal:', error);
+      showSnackbar('error', t('food.quickTrackMeal.errorMessage'), {
+        action: t('snackbar.ok'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSave = async () => {
     // Validate meal name
@@ -320,11 +454,16 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
     if (isSaving) {
       return t('common.saving');
     }
+    if (isQuickTrack) {
+      return t('food.quickTrackMeal.trackMeal');
+    }
     if (meal) {
       return t('common.save');
     }
     return t('food.createMeal.saveMeal');
   };
+
+  const mealTypeOptions = useMemo(() => getMealTypeOptions(theme, t), [theme, t]);
 
   const handleAddFoods = (selectedFoods: { food: Food; amount: number }[]) => {
     const newIngredients: Ingredient[] = selectedFoods.map((item) => {
@@ -349,8 +488,14 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={meal ? t('food.meals.manageMealData.editMeal') : t('food.createMeal.title')}
-      headerRight={<MenuButton size="md" className="p-2" />}
+      title={
+        isQuickTrack
+          ? t('food.quickTrackMeal.title')
+          : meal
+            ? t('food.meals.manageMealData.editMeal')
+            : t('food.createMeal.title')
+      }
+      headerRight={isQuickTrack ? undefined : <MenuButton size="md" className="p-2" />}
       footer={
         <View className="px-4 pb-8 pt-2">
           <Button
@@ -358,9 +503,9 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
             variant="gradientCta"
             size="md"
             width="full"
-            icon={isSaving ? undefined : CheckCircle2}
-            onPress={handleSave}
-            disabled={isSaving}
+            icon={isSaving ? undefined : isQuickTrack ? Check : CheckCircle2}
+            onPress={isQuickTrack ? handleTrack : handleSave}
+            disabled={isSaving || (isQuickTrack && ingredients.length === 0)}
           />
           {isSaving ? (
             <View
@@ -377,51 +522,53 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
       }
     >
       <View className="flex-1 px-4 py-6">
-        {/* Meal Name Input Section */}
-        <View className="mb-6 space-y-2">
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xs,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
-              marginLeft: theme.spacing.margin.xs,
-            }}
-          >
-            {t('food.createMeal.mealName')}
-          </Text>
-          <View
-            style={{
-              height: theme.components.button.height.md,
-              backgroundColor: theme.colors.background.card,
-              borderRadius: theme.borderRadius.md,
-              borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
-              borderColor: isFocused ? theme.colors.accent.primary : theme.colors.border.light,
-              paddingHorizontal: theme.spacing.padding.base,
-              justifyContent: 'center',
-              shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
-              shadowOffset: theme.shadowOffset.zero,
-              shadowOpacity: theme.colors.opacity.subtle,
-              shadowRadius: theme.shadows.radius8.shadowRadius,
-              elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
-            }}
-          >
-            <TextInput
-              value={mealName}
-              onChangeText={setMealName}
-              placeholder={t('food.createMeal.mealNamePlaceholder')}
-              placeholderTextColor={theme.colors.text.tertiary}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+        {/* Meal Name Input Section (create/edit only) */}
+        {!isQuickTrack ? (
+          <View className="mb-6 space-y-2">
+            <Text
               style={{
-                fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.primary,
-                borderWidth: theme.borderWidth.none,
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: theme.colors.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: theme.typography.letterSpacing.extraWide,
+                marginLeft: theme.spacing.margin.xs,
               }}
-            />
+            >
+              {t('food.createMeal.mealName')}
+            </Text>
+            <View
+              style={{
+                height: theme.components.button.height.md,
+                backgroundColor: theme.colors.background.card,
+                borderRadius: theme.borderRadius.md,
+                borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
+                borderColor: isFocused ? theme.colors.accent.primary : theme.colors.border.light,
+                paddingHorizontal: theme.spacing.padding.base,
+                justifyContent: 'center',
+                shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
+                shadowOffset: theme.shadowOffset.zero,
+                shadowOpacity: theme.colors.opacity.subtle,
+                shadowRadius: theme.shadows.radius8.shadowRadius,
+                elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
+              }}
+            >
+              <TextInput
+                value={mealName}
+                onChangeText={setMealName}
+                placeholder={t('food.createMeal.mealNamePlaceholder')}
+                placeholderTextColor={theme.colors.text.tertiary}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                style={{
+                  fontSize: theme.typography.fontSize.base,
+                  color: theme.colors.text.primary,
+                  borderWidth: theme.borderWidth.none,
+                }}
+              />
+            </View>
           </View>
-        </View>
+        ) : null}
 
         {/* Total Nutrition Card */}
         <MealMacrosSummary calories={totalMacros.calories} macros={totalMacros} />
@@ -593,11 +740,157 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
                   color: theme.colors.text.secondary,
                 }}
               >
-                {t('food.createMeal.addFoodItem')}
+                {isQuickTrack
+                  ? t('food.quickTrackMeal.addIngredient')
+                  : t('food.createMeal.addFoodItem')}
               </Text>
             </Pressable>
           </View>
         </View>
+
+        {/* Quick Track: Date, meal type, save toggle, optional meal name */}
+        {isQuickTrack ? (
+          <>
+            <View className="mb-6">
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  fontWeight: theme.typography.fontWeight.bold,
+                  color: theme.colors.text.secondary,
+                  textTransform: 'uppercase',
+                  letterSpacing: theme.typography.letterSpacing.extraWide,
+                  marginLeft: theme.spacing.margin.xs,
+                  marginBottom: theme.spacing.padding.sm,
+                }}
+              >
+                {t('food.quickTrackMeal.date')}
+              </Text>
+              <Pressable
+                onPress={() => setShowDatePicker(true)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: theme.spacing.gap.sm,
+                  padding: theme.spacing.padding.base,
+                  backgroundColor: theme.colors.background.card,
+                  borderRadius: theme.borderRadius.lg,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.border.light,
+                }}
+              >
+                <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    fontWeight: theme.typography.fontWeight.medium,
+                    color: theme.colors.text.primary,
+                  }}
+                >
+                  {format(selectedDate, 'yyyy-MM-dd')}
+                </Text>
+              </Pressable>
+            </View>
+
+            <View className="mb-6">
+              <OptionsSelector<MealType>
+                title={t('food.quickTrackMeal.mealType')}
+                options={mealTypeOptions}
+                selectedId={selectedMealType}
+                onSelect={setSelectedMealType}
+              />
+            </View>
+
+            <View
+              className="mb-6"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: theme.spacing.padding.md,
+                backgroundColor: theme.colors.background.card,
+                borderRadius: theme.borderRadius.lg,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.border.light,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.base,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.primary,
+                  }}
+                >
+                  {t('food.quickTrackMeal.saveToMyMeals')}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.text.secondary,
+                    marginTop: theme.spacing.padding.xsHalf,
+                  }}
+                >
+                  {t('food.quickTrackMeal.saveToMyMealsDescription')}
+                </Text>
+              </View>
+              <Switch
+                value={saveToMyMeals}
+                onValueChange={setSaveToMyMeals}
+                trackColor={{
+                  false: theme.colors.background.white10,
+                  true: theme.colors.accent.primary40,
+                }}
+                thumbColor={
+                  saveToMyMeals ? theme.colors.accent.primary : theme.colors.text.tertiary
+                }
+              />
+            </View>
+
+            {saveToMyMeals ? (
+              <View className="mb-6 space-y-2">
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: theme.colors.text.secondary,
+                    textTransform: 'uppercase',
+                    letterSpacing: theme.typography.letterSpacing.extraWide,
+                    marginLeft: theme.spacing.margin.xs,
+                  }}
+                >
+                  {t('food.quickTrackMeal.mealName')}
+                </Text>
+                <View
+                  style={{
+                    height: theme.components.button.height.md,
+                    backgroundColor: theme.colors.background.card,
+                    borderRadius: theme.borderRadius.md,
+                    borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
+                    borderColor: isFocused
+                      ? theme.colors.accent.primary
+                      : theme.colors.border.light,
+                    paddingHorizontal: theme.spacing.padding.base,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <TextInput
+                    value={mealName}
+                    onChangeText={setMealName}
+                    placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
+                    placeholderTextColor={theme.colors.text.tertiary}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    style={{
+                      fontSize: theme.typography.fontSize.base,
+                      color: theme.colors.text.primary,
+                      borderWidth: theme.borderWidth.none,
+                    }}
+                  />
+                </View>
+              </View>
+            ) : null}
+          </>
+        ) : null}
       </View>
 
       {isAddFoodVisible ? (
@@ -605,6 +898,18 @@ export function CreateMealModal({ visible, onClose, onSave, meal }: CreateMealMo
           visible={isAddFoodVisible}
           onClose={() => setIsAddFoodVisible(false)}
           onAddFoods={handleAddFoods}
+        />
+      ) : null}
+
+      {isQuickTrack ? (
+        <DatePickerModal
+          visible={showDatePicker}
+          onClose={() => setShowDatePicker(false)}
+          selectedDate={selectedDate}
+          onDateSelect={(date) => {
+            setSelectedDate(date);
+            setShowDatePicker(false);
+          }}
         />
       ) : null}
     </FullScreenModal>
