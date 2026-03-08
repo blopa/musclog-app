@@ -3,7 +3,7 @@ import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from './AreaChart';
 export type MetabolicFlowChartProps = {
   /** Data points with x, protein, carbohydrates (or use default sample) */
   data?: AreaChartDatum[];
-  /** Height of the chart (default: 200) */
+  /** Height of the chart (default: 280) */
   height?: number;
   /** Override title (default: 'Metabolic Flow') */
   title?: string;
@@ -27,7 +27,7 @@ const DEFAULT_DATA: AreaChartDatum[] = [
 
 export function MetabolicFlowChart({
   data = DEFAULT_DATA,
-  height = 200,
+  height = 280,
   title = 'Metabolic Flow',
   subtitle = 'Burn Composition',
   className,
@@ -44,7 +44,7 @@ export function MetabolicFlowChart({
       yDomain={[0, 100]}
       showGridLines={false}
       marginTop={0}
-      marginBottom={24}
+      marginBottom={12}
     />
   );
 }

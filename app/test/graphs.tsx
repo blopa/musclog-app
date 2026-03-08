@@ -55,6 +55,15 @@ export default function GraphsTestScreen() {
     { x: 6, segments: [7, 5, 4, 6] },
   ]);
 
+  // Sample data for MetabolicFlowChart (dashboard card: protein + carbohydrates)
+  const [metabolicFlowData, setMetabolicFlowData] = useState<AreaChartDatum[]>([
+    { x: 0, protein: 60, carbohydrates: 40 },
+    { x: 125, protein: 70, carbohydrates: 50 },
+    { x: 250, protein: 50, carbohydrates: 85 },
+    { x: 375, protein: 65, carbohydrates: 70 },
+    { x: 500, protein: 55, carbohydrates: 55 },
+  ]);
+
   // Sample data for AreaChart (Metabolic Flow: fat, carb & protein burn over time)
   const areaChartSeries: AreaChartSeriesConfig[] = [
     { key: 'protein', label: 'Protein', color: '#BF5AF2', value: '23%' },
@@ -177,6 +186,17 @@ export default function GraphsTestScreen() {
   };
 
   // Generate random AreaChart data
+  const generateRandomMetabolicFlowData = () => {
+    const xPoints = [0, 125, 250, 375, 500];
+    setMetabolicFlowData(
+      xPoints.map((x) => ({
+        x,
+        protein: Math.floor(Math.random() * 60) + 10,
+        carbohydrates: Math.floor(Math.random() * 70) + 20,
+      }))
+    );
+  };
+
   const generateRandomAreaChartData = () => {
     setAreaChartData(
       Array.from({ length: 5 }, (_, i) => ({
@@ -214,6 +234,7 @@ export default function GraphsTestScreen() {
     generateRandomLineData();
     generateRandomBarData();
     generateRandomStackedBarData();
+    generateRandomMetabolicFlowData();
     generateRandomAreaChartData();
     generateRandomMultipleLinesData();
     generateRandomBarLineData();
@@ -268,10 +289,18 @@ export default function GraphsTestScreen() {
                 />
               </View>
               <View
-                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg"
-                style={{ minWidth: 280 }}
+                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-4 shadow-lg"
+                style={{ minWidth: 320 }}
               >
-                <MetabolicFlowChart height={200} />
+                <View className="mb-2 flex-row justify-end">
+                  <Button
+                    label="Random Data"
+                    variant="outline"
+                    size="sm"
+                    onPress={generateRandomMetabolicFlowData}
+                  />
+                </View>
+                <MetabolicFlowChart data={metabolicFlowData} height={280} />
               </View>
             </View>
 
@@ -431,13 +460,22 @@ export default function GraphsTestScreen() {
               Multiple overlapping area series with optional peak marker and legend (e.g. Metabolic
               Flow).
             </Text>
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomAreaChartData}
+              />
+            </View>
             <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
               <AreaChart
                 title="Metabolic Flow"
                 subtitle="Fat, Carb & Protein Burn"
                 data={areaChartData}
                 series={areaChartSeries}
-                height={200}
+                height={280}
                 yDomain={[0, 100]}
                 xAxisLabels={['08:00', '12:00', '16:00', '20:00', '00:00']}
                 yAxisLabels={[
