@@ -9,7 +9,7 @@ import {
   isSuccessFoodDetailProductState,
 } from '../../types/guards/openFoodFacts';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
-import { getNutrimentsWithFallback, getNutrimentValue, mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
+import { getNutrimentsWithFallback, getNutrimentValue, getProductName, mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -97,7 +97,7 @@ export function ScannedFoodDetailsModal({
     
     // Extract nutritional values for FoodInfoCard
     const foodInfo = {
-      name: product.product_name || product.generic_name || t('food.unknownFood'),
+      name: getProductName(product),
       category: product.categories?.split(',')[0] || t('food.generic'),
       calories: Math.round(getNutrimentValue(nutriments, 'energy-kcal') || 0),
       protein: Math.round(getNutrimentValue(nutriments, 'proteins') || 0),
@@ -142,7 +142,7 @@ export function ScannedFoodDetailsModal({
 
     return (
       <Button
-        label={t('food.addFoodItemToMeal.addSelectedFoods', { count: 1 })}
+        label={t('food.addFoodItemToMeal.addFoodToMeal')}
         variant="gradientCta"
         size="md"
         width="full"

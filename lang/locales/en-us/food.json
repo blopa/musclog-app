@@ -216,6 +216,7 @@
       "title": "Add Food",
       "selectedCount": "{{count}} Selected",
       "addSelectedFoods": "Add {{count}} Selected Foods",
+      "addFoodToMeal": "Add food to meal",
       "searchFood": "Search Food",
       "searchPlaceholder": "Search food (e.g. Chicken)...",
       "searchResults": "Search Results",

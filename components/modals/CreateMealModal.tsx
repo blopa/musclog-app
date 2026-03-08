@@ -619,19 +619,6 @@ export function CreateMealModal({
             >
               {t('food.createMeal.ingredients', { count: ingredients.length })}
             </Text>
-            <Pressable>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.accent.primary,
-                  textTransform: 'uppercase',
-                  letterSpacing: theme.typography.letterSpacing.wider,
-                }}
-              >
-                {t('food.createMeal.editList')}
-              </Text>
-            </Pressable>
           </View>
 
           <View style={{ gap: theme.spacing.gap.md }}>
