@@ -24,6 +24,7 @@ import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMeal
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
+import { ServingSizeSelector } from '../ServingSizeSelector';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
@@ -308,6 +309,7 @@ export function CreateMealModal({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [saveToMyMeals, setSaveToMyMeals] = useState(false);
+  const [mealAmountGrams, setMealAmountGrams] = useState(0);
 
   const isQuickTrack = mode === 'quickTrack';
   const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(
@@ -337,6 +339,18 @@ export function CreateMealModal({
     );
   }, [ingredients]);
 
+  // Total meal weight in grams (quickTrack: for serving selector and scaling)
+  const totalMealGrams = useMemo(
+    () => ingredients.reduce((sum, ing) => sum + ing.amount, 0),
+    [ingredients]
+  );
+
+  useEffect(() => {
+    if (isQuickTrack) {
+      setMealAmountGrams(totalMealGrams);
+    }
+  }, [isQuickTrack, totalMealGrams]);
+
   const handleTrack = async () => {
     if (ingredients.length === 0) {
       showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'), {
@@ -360,12 +374,13 @@ export function CreateMealModal({
           ''
         );
       }
+      const scale = totalMealGrams > 0 ? mealAmountGrams / totalMealGrams : 1;
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
           selectedDate,
           selectedMealType,
-          ing.amount,
+          ing.amount * scale,
           undefined
         );
       }
@@ -505,7 +520,9 @@ export function CreateMealModal({
             width="full"
             icon={isSaving ? undefined : isQuickTrack ? Check : CheckCircle2}
             onPress={isQuickTrack ? handleTrack : handleSave}
-            disabled={isSaving || (isQuickTrack && ingredients.length === 0)}
+            disabled={
+              isSaving || (isQuickTrack && (ingredients.length === 0 || mealAmountGrams < 1))
+            }
           />
           {isSaving ? (
             <View
@@ -571,7 +588,22 @@ export function CreateMealModal({
         ) : null}
 
         {/* Total Nutrition Card */}
-        <MealMacrosSummary calories={totalMacros.calories} macros={totalMacros} />
+        <MealMacrosSummary
+          calories={
+            isQuickTrack && totalMealGrams > 0
+              ? totalMacros.calories * (mealAmountGrams / totalMealGrams)
+              : totalMacros.calories
+          }
+          macros={
+            isQuickTrack && totalMealGrams > 0
+              ? {
+                  protein: totalMacros.protein * (mealAmountGrams / totalMealGrams),
+                  carbs: totalMacros.carbs * (mealAmountGrams / totalMealGrams),
+                  fat: totalMacros.fat * (mealAmountGrams / totalMealGrams),
+                }
+              : totalMacros
+          }
+        />
 
         {/* Ingredients Section */}
         <View className="mb-6">
@@ -748,9 +780,25 @@ export function CreateMealModal({
           </View>
         </View>
 
-        {/* Quick Track: Date, meal type, save toggle, optional meal name */}
+        {/* Quick Track: Serving size (grams), date, meal type, save toggle, optional meal name */}
         {isQuickTrack ? (
           <>
+            <View style={{ marginBottom: theme.spacing.margin.xl }}>
+              <ServingSizeSelector
+                value={mealAmountGrams}
+                onChange={(v) => setMealAmountGrams(Math.round(v))}
+                quickSizes={
+                  totalMealGrams > 0
+                    ? [
+                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
+                        { label: '1×', value: totalMealGrams },
+                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
+                        { label: '2×', value: totalMealGrams * 2 },
+                      ]
+                    : []
+                }
+              />
+            </View>
             <View className="mb-6">
               <Text
                 style={{
