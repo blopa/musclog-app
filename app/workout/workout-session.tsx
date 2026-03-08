@@ -55,8 +55,6 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
-import { getExerciseImageSource } from '../../utils/exerciseImage';
-import { getExerciseImageUri } from '../../utils/file';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
@@ -692,7 +690,7 @@ export default function WorkoutSessionScreen() {
             sets={sets}
             exerciseId={completedExerciseForModal.exerciseId}
             units={units}
-            exerciseImageUrl={getExerciseImageUri(completedExerciseForModal.exerciseId)}
+            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
             equipmentType={completedExerciseForModal.equipmentType}
             onAddNextExercise={() => {
               setIsFreeSessionCompleteModalVisible(false);
@@ -823,7 +821,9 @@ export default function WorkoutSessionScreen() {
     );
   }
 
-  const exerciseImage = getExerciseImageSource(currentSetData.exercise.id);
+  const exerciseImage = currentSetData.exercise.imageUrl?.trim()
+    ? { uri: currentSetData.exercise.imageUrl }
+    : require('../../assets/exercises/fallback.webp');
   const exerciseCategory = getExerciseCategory();
   const previousSet = currentSetData.previousSet;
 
@@ -1193,7 +1193,7 @@ export default function WorkoutSessionScreen() {
           sets={sets}
           exerciseId={completedExerciseForModal.exerciseId}
           units={units}
-          exerciseImageUrl={getExerciseImageUri(completedExerciseForModal.exerciseId)}
+          exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
           equipmentType={completedExerciseForModal.equipmentType}
           onAddNextExercise={() => {
             setIsFreeSessionCompleteModalVisible(false);

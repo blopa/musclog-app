@@ -273,6 +273,7 @@ export const schema = appSchema({
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
 
+        // { name: 'note', type: 'string', isOptional: true }, // <--- TODO: add this column and update the Models, Services and Hooks, etc.
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
         { name: 'created_at', type: 'number' },

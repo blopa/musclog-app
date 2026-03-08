@@ -229,12 +229,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           setPreviousSet(payload.previousSet);
           setProgress(payload.progress);
           setError(null);
-          // Only clear loading when we have meaningful data. combineLatest can emit first with
-          // empty logExercises (before the query resolves), which would show 0 for weight/reps
-          // briefly; keep loading until exercises have loaded so the first paint has real values.
-          if (payload.logExercises.length > 0) {
-            setIsLoading(false);
-          }
+          setIsLoading(false);
         },
         error: (err) => {
           console.error('Error in workout session pipeline:', err);

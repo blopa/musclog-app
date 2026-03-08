@@ -7,7 +7,6 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import { useTheme } from '../../hooks/useTheme';
-import { getExerciseImageUri } from '../../utils/file';
 import { Accordion } from '../theme/Accordion';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
@@ -33,6 +32,8 @@ const mapEquipmentTypeToType = (equipmentType: string): string => {
       return 'equipment';
   }
 };
+
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
 
 // Exercise list item component
 function ExerciseListItem({
@@ -60,17 +61,11 @@ function ExerciseListItem({
         className="h-14 w-14 rounded-lg bg-bg-card"
         style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}
       >
-        {imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            className="h-full w-full rounded-lg"
-            resizeMode="cover"
-          />
-        ) : (
-          <View className="h-full w-full items-center justify-center">
-            <Dumbbell size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-          </View>
-        )}
+        <Image
+          source={imageUrl?.trim() ? { uri: imageUrl } : FALLBACK_EXERCISE_IMAGE}
+          className="h-full w-full rounded-lg"
+          resizeMode="cover"
+        />
       </View>
       <View className="flex-1">
         <Text className="text-base font-medium text-text-primary">{name}</Text>
@@ -230,13 +225,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
     console.log('Exercise pressed:', exercise.name);
   };
 
-  const getExerciseImageUrl = (exercise: ExerciseData) => {
-    if (exercise.imageUrl?.trim()) {
-      return exercise.imageUrl;
-    }
-
-    return getExerciseImageUri(exercise.id);
-  };
+  const getExerciseImageUrl = (exercise: ExerciseData) => exercise.imageUrl ?? '';
 
   return (
     <FullScreenModal

@@ -1,6 +1,12 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  documentDirectory,
+  downloadAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
@@ -10,7 +16,6 @@ import { Image } from 'react-native';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
-import { getExerciseImageSource } from './exerciseImage';
 
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
@@ -135,11 +140,45 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 }
 
 /**
- * Returns a URI string for the exercise image by ID (for components that use source={{ uri }}).
+ * Copies a bundled exercise image (from require()) to the app's document directory.
+ * Handles both file:// (production) and http:// (Metro dev) asset URIs.
+ *
+ * @param assetSource - The result of require() for the image (or getBundledExerciseImageSourceByIndex).
+ * @param destFilename - Filename to use in document/exercises/ (e.g. exercise-{id}.webp).
+ * @returns The permanent file:// URI to store in the database, or throws on failure.
  */
-export function getExerciseImageUri(exerciseId: string | undefined | null): string {
-  const source = getExerciseImageSource(exerciseId);
-  const resolved = Image.resolveAssetSource(source);
+export async function copyBundledExerciseImageToDocument(
+  assetSource: number,
+  destFilename: string
+): Promise<string> {
+  const exercisesDir = new Directory(Paths.document, 'exercises');
+  if (!exercisesDir.exists) {
+    exercisesDir.create();
+  }
 
-  return resolved?.uri ?? '';
+  const resolved = Image.resolveAssetSource(assetSource);
+  const sourceUri = resolved?.uri ?? '';
+
+  if (!sourceUri) {
+    throw new Error('Could not resolve bundled asset URI');
+  }
+
+  const destFile = new File(exercisesDir, destFilename);
+
+  if (sourceUri.startsWith('file://')) {
+    const srcFile = new File(sourceUri);
+    srcFile.copy(destFile);
+    return destFile.uri;
+  }
+
+  if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
+    if (!documentDirectory) {
+      throw new Error('Document directory is not available');
+    }
+    const destUri = `${documentDirectory}exercises/${destFilename}`;
+    await downloadAsync(sourceUri, destUri);
+    return destUri;
+  }
+
+  throw new Error(`Unsupported asset URI scheme: ${sourceUri.slice(0, 20)}...`);
 }

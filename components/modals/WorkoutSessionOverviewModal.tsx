@@ -16,13 +16,14 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useTheme } from '../../hooks/useTheme';
-import { getExerciseImageUri } from '../../utils/file';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 
@@ -150,7 +151,7 @@ function ExerciseCard({
               }`}
             >
               <Image
-                source={{ uri: imageUrl }}
+                source={imageUrl?.trim() ? { uri: imageUrl } : FALLBACK_EXERCISE_IMAGE}
                 style={{ width: '100%', height: '100%' }}
                 resizeMode="cover"
               />
@@ -343,7 +344,7 @@ export default function WorkoutSessionOverviewModal({
       exerciseList.push({
         id: exercise.id,
         name: exercise.name ?? '',
-        imageUrl: exercise.imageUrl || getExerciseImageUri(exercise.id),
+        imageUrl: exercise.imageUrl || '',
         status,
         setsCompleted: completedSets,
         totalSets,
