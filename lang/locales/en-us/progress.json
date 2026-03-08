@@ -1,0 +1,9 @@
+{
+  "progress": {
+    "metabolicSummary": "Metabolic Summary",
+    "currentTdee": "Current TDEE",
+    "basedOnRecentActivity": "BASED ON RECENT ACTIVITY & NUTRITION",
+    "basedOnActivityLevel": "BASED ON ACTIVITY LEVEL & STATS",
+    "kcalPerDay": "kcal/day"
+  }
+}

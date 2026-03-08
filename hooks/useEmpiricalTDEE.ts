@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '../database/services';
-import { calculateTDEE,lbsToKg  } from '../utils/nutritionCalculator';
+import { calculateTDEE, lbsToKg } from '../utils/nutritionCalculator';
 import { useSettings } from './useSettings';
 import { useUser } from './useUser';
 import { useUserMetrics } from './useUserMetrics';
@@ -66,7 +66,13 @@ async function getHistoricalNutritionParamsCustom(options: {
   units?: 'metric' | 'imperial';
   useWeeklyAverages?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
-  const { lookbackDays, minNutritionDays, asOfDate = new Date(), units = 'metric', useWeeklyAverages = true } = options;
+  const {
+    lookbackDays,
+    minNutritionDays,
+    asOfDate = new Date(),
+    units = 'metric',
+    useWeeklyAverages = true,
+  } = options;
 
   const endOfDay = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
   const endTs = endOfDay.getTime();
@@ -203,14 +209,14 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
       try {
         setHistoricalLoading(true);
         setError(null);
-        
+
         const data = await getHistoricalNutritionParamsCustom({
           lookbackDays,
           minNutritionDays,
           units,
           useWeeklyAverages,
         });
-        
+
         setHistoricalData(data);
       } catch (err) {
         console.error('Error fetching historical nutrition data:', err);
@@ -255,7 +261,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         tdeeParams.totalDays = historicalData.historicalTotalDays;
         tdeeParams.initialWeight = historicalData.historicalInitialWeightKg;
         tdeeParams.finalWeight = historicalData.historicalFinalWeightKg;
-        
+
         if (historicalData.historicalInitialFatPercent !== undefined) {
           tdeeParams.initialFatPercentage = historicalData.historicalInitialFatPercent;
         }

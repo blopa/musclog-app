@@ -65,6 +65,7 @@ import enUsSnackbar from './locales/en-us/snackbar.json';
 import enUsStartWorkout from './locales/en-us/startWorkout.json';
 import timePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
+import enUsProgress from './locales/en-us/progress.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWorkout from './locales/en-us/workout.json';
 import enUsWorkoutLogSets from './locales/en-us/workout_log_sets.json';
@@ -155,6 +156,7 @@ const resources = {
       ...enUsYourGoogleAuthExpiredReauth,
       ...enUsConnectGoogleAccount,
       ...enUsDatePicker,
+      ...enUsProgress,
       ...timePicker,
     },
   },

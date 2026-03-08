@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -10,12 +11,8 @@ type TdeeCardProps = {
   tagText?: string;
 };
 
-export function TdeeCard({
-  tdeeValue = 2000,
-  // TODO: use i18n
-  subtitle = 'Current TDEE',
-  tagText = 'BASED ON RECENT ACTIVITY & NUTRITION',
-}: TdeeCardProps) {
+export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
@@ -29,18 +26,22 @@ export function TdeeCard({
             color={theme.colors.status.emeraldLight}
           />
           <Text className="text-sm font-medium" style={{ color: theme.colors.status.emeraldLight }}>
-            Metabolic Summary
+            {t('progress.metabolicSummary')}
           </Text>
         </View>
 
         {/* Main TDEE value */}
         <Text className="text-3xl font-bold tracking-tight text-white">
           {tdeeValue.toLocaleString()}{' '}
-          <Text className="text-lg font-normal text-text-secondary">kcal/day</Text>
+          <Text className="text-lg font-normal text-text-secondary">
+            {t('progress.kcalPerDay')}
+          </Text>
         </Text>
 
         {/* Subtitle */}
-        <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+        <Text className="mt-1 text-sm text-text-secondary">
+          {subtitle || t('progress.currentTdee')}
+        </Text>
 
         {/* Tag at bottom */}
         <View
@@ -51,7 +52,7 @@ export function TdeeCard({
             className="text-[10px] font-bold uppercase tracking-wider"
             style={{ color: theme.colors.status.emeraldLight }}
           >
-            {tagText}
+            {tagText || t('progress.basedOnRecentActivity')}
           </Text>
         </View>
       </View>
