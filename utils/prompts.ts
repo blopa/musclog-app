@@ -91,13 +91,25 @@ export const getUserDetailsPrompt = async (
       let displayValue: number;
       let displayUnit: string;
 
-      // TODO: does this logic cover all scenarios?
-      if (weightUnit === 'lbs' && unit === 'kg') {
+      // Handle all unit conversion scenarios
+      const storedUnit = unit || 'kg'; // Default to kg if no unit stored
+      
+      if (weightUnit === 'lbs' && storedUnit === 'kg') {
+        // User wants lbs, stored in kg - convert
         displayValue = Math.round(convert(value, 'kg').to('lb'));
         displayUnit = 'lb';
-      } else {
+      } else if (weightUnit === 'kg' && storedUnit === 'lbs') {
+        // User wants kg, stored in lbs - convert
+        displayValue = Math.round(convert(value, 'lb').to('kg'));
+        displayUnit = 'kg';
+      } else if (weightUnit === 'kg') {
+        // User wants kg - either stored in kg or no conversion needed
         displayValue = Math.round(value);
-        displayUnit = unit || 'kg';
+        displayUnit = 'kg';
+      } else {
+        // User wants lbs - either stored in lbs or no conversion needed
+        displayValue = Math.round(value);
+        displayUnit = 'lb';
       }
 
       parts.push(`current weight is ${displayValue} ${displayUnit}`);
