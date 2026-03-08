@@ -2,6 +2,7 @@ import {
   Clock,
   Edit,
   MoreHorizontal,
+  PlusCircle,
   QrCode,
   ScanLine,
   Search,
@@ -27,6 +28,7 @@ type AddFoodModalProps = {
   onSearchFoodPress?: () => void;
   onCreateCustomFoodPress?: () => void;
   onTrackCustomMealPress?: () => void;
+  onQuickTrackMealPress?: () => void;
   isAiEnabled?: boolean;
 };
 
@@ -39,6 +41,7 @@ export function AddFoodModal({
   onSearchFoodPress,
   onCreateCustomFoodPress,
   onTrackCustomMealPress,
+  onQuickTrackMealPress,
   isAiEnabled = true,
 }: AddFoodModalProps) {
   const theme = useTheme();
@@ -175,6 +178,16 @@ export function AddFoodModal({
                 iconBgColor={theme.colors.background.secondaryDark}
                 onPress={() => {
                   onSearchFoodPress?.();
+                  onClose();
+                }}
+              />
+              <TrackingMethodButton
+                icon={PlusCircle}
+                title={t('food.addFoodModal.quickTrackMeal')}
+                description={t('food.addFoodModal.quickTrackMealDescription')}
+                iconBgColor={theme.colors.status.purple10}
+                onPress={() => {
+                  onQuickTrackMealPress?.();
                   onClose();
                 }}
               />

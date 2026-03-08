@@ -29,6 +29,7 @@ import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsMod
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
+import { QuickTrackMealModal } from '../../components/modals/QuickTrackMealModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
@@ -58,6 +59,7 @@ export default function FoodScreen() {
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
+  const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
@@ -694,6 +696,23 @@ export default function FoodScreen() {
           onTrackCustomMealPress={() => {
             setIsMyMealsModalVisible(true);
             setIsAddFoodModalVisible(false);
+          }}
+          onQuickTrackMealPress={() => {
+            setIsQuickTrackMealModalVisible(true);
+            setIsAddFoodModalVisible(false);
+          }}
+        />
+      ) : null}
+
+      {/* Quick Track Meal Modal */}
+      {isQuickTrackMealModalVisible ? (
+        <QuickTrackMealModal
+          visible={isQuickTrackMealModalVisible}
+          onClose={() => setIsQuickTrackMealModalVisible(false)}
+          logDate={selectedDate}
+          onTracked={() => {
+            refresh();
+            setIsQuickTrackMealModalVisible(false);
           }}
         />
       ) : null}

@@ -155,7 +155,27 @@
         "description": "Search our database of 2M+ items"
       },
       "createCustomFood": "Create Custom Food",
-      "trackCustomMeal": "Track Custom Meal"
+      "trackCustomMeal": "Track Custom Meal",
+      "quickTrackMeal": "Quick Track Meal",
+      "quickTrackMealDescription": "Build a meal, track it now. Optionally save to My Meals."
+    },
+    "quickTrackMeal": {
+      "title": "Quick Track Meal",
+      "ingredients": "Ingredients",
+      "ingredientsCount_one": "{{count}} ingredient",
+      "ingredientsCount_other": "{{count}} ingredients",
+      "addIngredient": "Add ingredient",
+      "date": "Date",
+      "mealType": "Meal type",
+      "saveToMyMeals": "Save to My Meals",
+      "saveToMyMealsDescription": "Save this meal to My Meals for later",
+      "mealName": "Meal name",
+      "mealNamePlaceholder": "e.g. Post-workout breakfast",
+      "trackMeal": "Track Meal",
+      "addOneIngredient": "Add at least one ingredient",
+      "mealNameRequired": "Enter a meal name when saving to My Meals",
+      "successMessage": "Meal tracked",
+      "errorMessage": "Something went wrong. Please try again."
     },
     "portions": {
       "100g": "Standard"
