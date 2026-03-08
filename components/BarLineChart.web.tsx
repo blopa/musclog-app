@@ -198,7 +198,7 @@ export function BarLineChart({
         >
           <VictoryChart
             height={chartHeight}
-            padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 0, right: 0 }}
+            padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 40, right: 0 }}
             domain={{ x: chartXDomain, y: [stepsMin, stepsMax] }}
             minDomain={{ y: stepsMin }}
             maxDomain={{ y: stepsMax }}
