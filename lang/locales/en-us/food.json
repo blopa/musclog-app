@@ -261,7 +261,9 @@
       "cameraError": "Camera error. Please try again.",
       "uploadFromGallery": "Choose from gallery",
       "aiAnalysisFailed": "AI analysis failed. Please try again.",
-      "aiNotConfigured": "AI is not configured. Add a Gemini or OpenAI API key in Settings."
+      "aiNotConfigured": "AI is not configured. Add a Gemini or OpenAI API key in Settings.",
+      "mealLoggedSuccess": "Meal logged successfully!",
+      "mealLoggingFailed": "Failed to log meal. Please try again."
     },
     "aiNutritionContext": {
       "title": "Add Context for AI",

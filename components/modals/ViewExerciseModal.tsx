@@ -12,6 +12,7 @@ import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
 import { ExerciseService, WorkoutAnalytics } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
@@ -25,7 +26,6 @@ import { GenericEditModal } from './GenericEditModal';
 import { getEditFields } from './GenericEditModal/entityEditConfig';
 import type { EditFormValues } from './GenericEditModal/types';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 export type ViewExerciseModalProps = {
   visible: boolean;
@@ -347,8 +347,7 @@ export default function ViewExerciseModal({
     },
   ];
 
-  const displayName =
-    exercise?.name ?? t('exercises.manageExerciseData.unknownExercise');
+  const displayName = exercise?.name ?? t('exercises.manageExerciseData.unknownExercise');
   const primaryMuscle =
     exercise?.muscleGroup != null
       ? String(exercise.muscleGroup).charAt(0).toUpperCase() + String(exercise.muscleGroup).slice(1)
@@ -391,9 +390,7 @@ export default function ViewExerciseModal({
         {isLoadingData || !exercise ? (
           <View className="flex-1 items-center justify-center p-8">
             <Text style={{ color: theme.colors.text.secondary }}>
-              {isLoadingData
-                ? t('common.loading')
-                : t('common.notFound')}
+              {isLoadingData ? t('common.loading') : t('common.notFound')}
             </Text>
           </View>
         ) : (

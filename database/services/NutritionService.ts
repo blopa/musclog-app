@@ -556,4 +556,96 @@ export class NutritionService {
       });
     });
   }
+
+  /**
+   * Log a custom AI-generated meal. Creates a temporary food entry and logs it.
+   */
+  static async logCustomMeal(
+    mealData: {
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber?: number;
+    },
+    date: Date,
+    mealType: MealType,
+    amount: number = 100 // Default to 100g for custom meals
+  ): Promise<NutritionLog> {
+    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+    const log = await database.write(async () => {
+      const now = Date.now();
+
+      // Create a temporary food entry for the AI-generated meal
+      const tempFood = await database.get<Food>('foods').create((food) => {
+        food.isAiGenerated = true;
+        food.name = mealData.name;
+        food.brand = undefined;
+        food.barcode = undefined;
+        food.calories = mealData.calories;
+        food.protein = mealData.protein;
+        food.carbs = mealData.carbs;
+        food.fat = mealData.fat;
+        food.fiber = mealData.fiber ?? 0;
+        food.micros = {
+          sugar: 0,
+          sodium: 0,
+        };
+        food.isFavorite = false;
+        food.createdAt = now;
+        food.updatedAt = now;
+      });
+
+      // Create encrypted snapshot for the nutrition log
+      const encrypted = await encryptNutritionLogSnapshot({
+        loggedFoodName: mealData.name,
+        loggedCalories: mealData.calories,
+        loggedProtein: mealData.protein,
+        loggedCarbs: mealData.carbs,
+        loggedFat: mealData.fat,
+        loggedFiber: mealData.fiber ?? 0,
+        loggedMicros: {},
+      });
+
+      return await database.get<NutritionLog>('nutrition_logs').create((record) => {
+        record.foodId = tempFood.id;
+        record.date = dateTimestamp;
+        record.type = mealType;
+        record.amount = amount;
+        record.loggedFoodNameRaw = encrypted.loggedFoodName;
+        record.loggedCaloriesRaw = encrypted.loggedCalories;
+        record.loggedProteinRaw = encrypted.loggedProtein;
+        record.loggedCarbsRaw = encrypted.loggedCarbs;
+        record.loggedFatRaw = encrypted.loggedFat;
+        record.loggedFiberRaw = encrypted.loggedFiber;
+        record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+        record.createdAt = now;
+        record.updatedAt = now;
+      });
+    });
+
+    // Write to Health Connect (Android only)
+    if (Platform.OS === 'android') {
+      const [nutrients, snapshot] = await Promise.all([
+        log.getNutrients(),
+        log.getDecryptedSnapshot(),
+      ]);
+
+      await writeNutritionLogToHealthConnect({
+        logId: log.id,
+        date: dateTimestamp,
+        mealType,
+        foodName: snapshot.loggedFoodName ?? '',
+        calories: nutrients.calories,
+        protein: nutrients.protein,
+        carbs: nutrients.carbs,
+        fat: nutrients.fat,
+        fiber: nutrients.fiber,
+      }).catch(() => undefined); // Silently ignore Health Connect errors
+    }
+
+    return log;
+  }
 }

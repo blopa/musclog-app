@@ -18,8 +18,7 @@ import { Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
-import { GoogleAuthService } from '../../database/services';
-import { SettingsService } from '../../database/services/SettingsService';
+import { GoogleAuthService,NutritionService, SettingsService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
@@ -217,6 +216,7 @@ export default function SmartCameraModal({
                 model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
               };
             }
+
             const enableOpenAi = await SettingsService.getEnableOpenAi();
             const openAiKey = await SettingsService.getOpenAiApiKey();
             if (enableOpenAi && openAiKey) {
@@ -250,6 +250,7 @@ export default function SmartCameraModal({
             if (result) {
               showSnackbar(
                 'success',
+                // TODO: use i18n
                 `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
               );
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
@@ -276,6 +277,7 @@ export default function SmartCameraModal({
             if (result) {
               showSnackbar(
                 'success',
+                // TODO: use i18n
                 `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
               );
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
@@ -293,12 +295,15 @@ export default function SmartCameraModal({
             showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
             return;
           }
+
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
           if (result) {
             showSnackbar(
               'success',
+              // TODO: use i18n
               `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
             );
+
             setSelectedMealForLogging(mapMacroEstimateToMeal(result));
             setIsLogMealModalVisible(true);
           } else {
@@ -1035,11 +1040,33 @@ export default function SmartCameraModal({
               setSelectedMealForLogging(null);
             }}
             meal={selectedMealForLogging}
-            onLogMeal={(date, mealType) => {
-              // TODO: Implement meal logging functionality with date and meal type
-              console.log('Logging meal:', selectedMealForLogging, 'on', date, 'as', mealType);
-              setIsLogMealModalVisible(false);
-              setSelectedMealForLogging(null);
+            // TODO: move to a function with useCallback
+            onLogMeal={async (date, mealType) => {
+              try {
+                if (!selectedMealForLogging) {
+                  showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
+                  return;
+                }
+
+                await NutritionService.logCustomMeal(
+                  {
+                    name: selectedMealForLogging.name,
+                    calories: selectedMealForLogging.calories,
+                    protein: selectedMealForLogging.protein,
+                    carbs: selectedMealForLogging.carbs,
+                    fat: selectedMealForLogging.fat,
+                  },
+                  date,
+                  mealType
+                );
+
+                showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
+                setIsLogMealModalVisible(false);
+                setSelectedMealForLogging(null);
+              } catch (error) {
+                console.error('Error logging meal:', error);
+                showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
+              }
             }}
           />
         ) : null}

@@ -7,12 +7,12 @@ import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import { useTheme } from '../../hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { Accordion } from '../theme/Accordion';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 import ViewExerciseModal from './ViewExerciseModal';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 // Type for exercise data used in the component
 type ExerciseData = {

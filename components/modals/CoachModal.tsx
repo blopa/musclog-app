@@ -51,6 +51,7 @@ import {
 } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -60,7 +61,6 @@ import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
-import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {

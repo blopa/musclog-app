@@ -7,7 +7,12 @@ import { ActivityIndicator, Share, View } from 'react-native';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { ChatService, GoogleAuthService, WorkoutAnalytics, WorkoutService } from '../../database/services';
+import {
+  ChatService,
+  GoogleAuthService,
+  WorkoutAnalytics,
+  WorkoutService,
+} from '../../database/services';
 import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
