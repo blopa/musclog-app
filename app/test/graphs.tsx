@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ActivityRingsChart } from '../../components/ActivityRingsChart';
 import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '../../components/AreaChart';
 import { BarChart, BarChartDataPoint } from '../../components/BarChart';
 import { BarLineChart, BarLineChartDatum } from '../../components/BarLineChart';
+import { CycleTrackingChart } from '../../components/CycleTrackingChart';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
+import { MetabolicFlowChart } from '../../components/MetabolicFlowChart';
 import {
   MultipleLinesChart,
   MultipleLinesChartDatum,
@@ -15,6 +18,7 @@ import { SpiderChart } from '../../components/SpiderChart';
 import { StackedBarChart, StackedBarChartDatum } from '../../components/StackedBarChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
+import { TrainingConsistencyChart } from '../../components/TrainingConsistencyChart';
 
 export default function GraphsTestScreen() {
   // Sample data for LineChart
@@ -70,7 +74,7 @@ export default function GraphsTestScreen() {
     { key: 'active', label: 'Active', color: '#00FFA2', value: '2,450 kcal' },
     { key: 'resting', label: 'Resting', color: '#00E5FF', value: '1,820 kcal', dashed: true },
   ];
-  const [multipleLinesData] = useState<MultipleLinesChartDatum[]>([
+  const [multipleLinesData, setMultipleLinesData] = useState<MultipleLinesChartDatum[]>([
     { x: 0, active: 65, resting: 50 },
     { x: 1, active: 45, resting: 55 },
     { x: 2, active: 55, resting: 60 },
@@ -90,6 +94,14 @@ export default function GraphsTestScreen() {
     { x: 5, steps: 9000, heartRate: 80 },
     { x: 6, steps: 6500, heartRate: 70 },
   ]);
+
+  // Sample data for SpiderChart (Performance Profile values)
+  const [spiderChartValues, setSpiderChartValues] = useState<number[]>([85, 72, 90, 45, 78]);
+
+  // Sample data for TrainingConsistencyChart (12 weeks × 7 days, values 0–5)
+  const [consistencyData, setConsistencyData] = useState<number[]>(
+    () => Array.from({ length: 12 * 7 }, () => Math.floor(Math.random() * 6)) // 0–5
+  );
 
   // Sample data for MacrosPizzaChart
   const [macrosData, setMacrosData] = useState({
@@ -164,6 +176,52 @@ export default function GraphsTestScreen() {
     });
   };
 
+  // Generate random AreaChart data
+  const generateRandomAreaChartData = () => {
+    setAreaChartData(
+      Array.from({ length: 5 }, (_, i) => ({
+        x: i,
+        protein: Math.floor(Math.random() * 40) + 15,
+        fats: Math.floor(Math.random() * 50) + 40,
+        carbs: Math.floor(Math.random() * 50) + 45,
+      }))
+    );
+  };
+
+  // Generate random MultipleLinesChart data
+  const generateRandomMultipleLinesData = () => {
+    setMultipleLinesData(
+      Array.from({ length: 7 }, (_, i) => ({
+        x: i,
+        active: Math.floor(Math.random() * 60) + 35,
+        resting: Math.floor(Math.random() * 50) + 35,
+      }))
+    );
+  };
+
+  // Generate random SpiderChart values
+  const generateRandomSpiderData = () => {
+    setSpiderChartValues(Array.from({ length: 5 }, () => Math.floor(Math.random() * 50) + 40));
+  };
+
+  // Generate random TrainingConsistencyChart data
+  const generateRandomConsistencyData = () => {
+    setConsistencyData(Array.from({ length: 12 * 7 }, () => Math.floor(Math.random() * 6)));
+  };
+
+  // Randomize all charts
+  const randomizeAllCharts = () => {
+    generateRandomLineData();
+    generateRandomBarData();
+    generateRandomStackedBarData();
+    generateRandomAreaChartData();
+    generateRandomMultipleLinesData();
+    generateRandomBarLineData();
+    generateRandomMacros();
+    generateRandomSpiderData();
+    generateRandomConsistencyData();
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -171,9 +229,66 @@ export default function GraphsTestScreen() {
           {/* Header */}
           <View className="mb-8">
             <Text className="mb-2 text-3xl font-bold text-text-primary">Graphs Test</Text>
-            <Text className="text-base text-text-secondary">
+            <Text className="mb-4 text-base text-text-secondary">
               Test various graph components in the app
             </Text>
+            <Button
+              label="Randomize all charts"
+              variant="outline"
+              size="sm"
+              onPress={randomizeAllCharts}
+            />
+          </View>
+
+          {/* Health Overview - Dashboard charts */}
+          <View className="mb-10">
+            <Text className="mb-2 text-3xl font-bold tracking-tight text-text-primary">
+              Health Overview
+            </Text>
+            <Text className="mb-6 text-base text-text-secondary">
+              Daily progress and hormonal cycle tracking.
+            </Text>
+
+            <View className="flex-row flex-wrap gap-6">
+              <View
+                className="flex-1 rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg"
+                style={{ minWidth: 280, maxWidth: 400 }}
+              >
+                <ActivityRingsChart
+                  title="Daily Goals"
+                  subtitle="Activity Rings"
+                  rings={[
+                    { progress: 0.8, color: '#00FFA2', label: 'Move', value: '80%' },
+                    { progress: 0.65, color: '#00E5FF', label: 'Steps', value: '65%' },
+                    { progress: 0.45, color: '#BF5AF2', label: 'Rest', value: '45%' },
+                  ]}
+                  centerValue="82"
+                  centerLabel="Score"
+                  size={224}
+                />
+              </View>
+              <View
+                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg"
+                style={{ minWidth: 280 }}
+              >
+                <MetabolicFlowChart height={200} />
+              </View>
+            </View>
+
+            <View className="mt-6 rounded-[2.5rem] border border-border-default bg-bg-card p-6 shadow-lg">
+              <CycleTrackingChart
+                title="Cycle Tracking"
+                phaseLabel="Follicular Phase • Day 12"
+                badge={{ title: 'Conception Chance', value: 'Peak Window' }}
+                segments={[
+                  { width: 0.2, color: '#BF5AF2', label: 'Menstrual', opacity: 0.6 },
+                  { width: 0.3, color: '#00FFA2', label: 'Follicular', opacity: 0.4 },
+                  { width: 0.15, color: '#FF9F21', label: 'Ovulatory', opacity: 0.7 },
+                  { width: 0.35, color: '#00E5FF', label: 'Luteal', opacity: 0.4 },
+                ]}
+                todayPosition={0.42}
+              />
+            </View>
           </View>
 
           {/* Line Chart Section */}
@@ -368,6 +483,46 @@ export default function GraphsTestScreen() {
             </View>
           </View>
 
+          {/* Training Consistency Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Training Consistency Chart
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Grid of intensity cells (e.g. last 12 weeks) with goal percentage.
+            </Text>
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomConsistencyData}
+              />
+            </View>
+            <View className="rounded-lg border border-border-default bg-bg-card p-6">
+              <TrainingConsistencyChart
+                title="Training Consistency"
+                subtitle="Last 12 Weeks"
+                percentage={
+                  consistencyData.length > 0
+                    ? Math.round(
+                        (consistencyData.reduce((a, b) => a + b, 0) /
+                          (5 * consistencyData.length)) *
+                          100
+                      )
+                    : 0
+                }
+                percentageLabel="GOAL REACHED"
+                data={consistencyData}
+                rowsPerColumn={7}
+                columns={12}
+                gridHeight={128}
+                accentColor="#00FFA2"
+              />
+            </View>
+          </View>
+
           {/* Spider Chart Section (Performance Profile) */}
           <View className="mb-8">
             <Text className="mb-2 text-lg font-bold text-text-primary">Spider Chart</Text>
@@ -379,7 +534,7 @@ export default function GraphsTestScreen() {
                 title="Performance Profile"
                 subtitle="Weekly Analysis"
                 axes={['Strength', 'Stamina', 'Recovery', 'Flexibility', 'Speed']}
-                values={[85, 72, 90, 45, 78]}
+                values={spiderChartValues}
                 centerScore={88}
                 centerScoreLabel="PTS"
                 primaryFocus="Power Output"
