@@ -249,7 +249,7 @@ export function AddFoodItemToMealModal({
   };
 
   const handleBarcodeScanned = (scannedBarcode: string) => {
-    console.log('Barcode scanned:', scannedBarcode);
+    // TODO: open a modal showing the details of the food, with an button to "add it to meal"
     setShowBarcodeScanner(false);
   };
 
@@ -295,7 +295,7 @@ export function AddFoodItemToMealModal({
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
             icon={
               <Pressable onPress={openBarcodeScanner}>
-                <ScanLine size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
             }
           />
