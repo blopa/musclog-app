@@ -1,5 +1,6 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
+import { Unit } from 'convert';
 
 import { decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 
@@ -61,6 +62,6 @@ export default class UserMetric extends Model {
       decryptOptionalString(this.unitRaw),
     ]);
 
-    return { value, unit: unit || undefined, date: this.date };
+    return { value, unit: unit as Unit || undefined, date: this.date };
   }
 }

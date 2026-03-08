@@ -1,5 +1,5 @@
 import { FunctionDeclaration } from '@google/generative-ai';
-import convert from 'convert';
+import convert, { Unit } from 'convert';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -87,32 +87,17 @@ export const getUserDetailsPrompt = async (
     ]);
 
     if (latestWeight) {
-      const { value, unit } = await latestWeight.getDecrypted();
-      let displayValue: number;
-      let displayUnit: string;
+      const { value, unit: storedUnit = 'kg' } = await latestWeight.getDecrypted();
 
-      // Handle all unit conversion scenarios
-      const storedUnit = unit || 'kg'; // Default to kg if no unit stored
-      
-      if (weightUnit === 'lbs' && storedUnit === 'kg') {
-        // User wants lbs, stored in kg - convert
-        displayValue = Math.round(convert(value, 'kg').to('lb'));
-        displayUnit = 'lb';
-      } else if (weightUnit === 'kg' && storedUnit === 'lbs') {
-        // User wants kg, stored in lbs - convert
-        displayValue = Math.round(convert(value, 'lb').to('kg'));
-        displayUnit = 'kg';
-      } else if (weightUnit === 'kg') {
-        // User wants kg - either stored in kg or no conversion needed
-        displayValue = Math.round(value);
-        displayUnit = 'kg';
-      } else {
-        // User wants lbs - either stored in lbs or no conversion needed
-        displayValue = Math.round(value);
-        displayUnit = 'lb';
-      }
+      // 1. Ensure our strings are treated as valid Units
+      const fromUnit = storedUnit as Unit;
+      const toUnit = weightUnit as Unit;
 
-      parts.push(`current weight is ${displayValue} ${displayUnit}`);
+      // 2. Perform the conversion logic
+      const finalValue = fromUnit === toUnit ? value : convert(value, fromUnit).to(toUnit);
+
+      const displayValue = Math.round(finalValue);
+      parts.push(`current weight is ${displayValue} ${weightUnit}`);
     }
 
     if (latestBodyFat) {
