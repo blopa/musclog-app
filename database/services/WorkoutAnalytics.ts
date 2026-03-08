@@ -513,4 +513,69 @@ export class WorkoutAnalytics {
       exerciseCount: data.exercises.size,
     }));
   }
+
+  /**
+   * Get personal best weight for an exercise (from completed workout logs).
+   * Returns the highest weight ever logged for that exercise, or null if none.
+   */
+  static async getPersonalBestForExercise(
+    exerciseId: string
+  ): Promise<{ weight: number; unit: string } | null> {
+    const dataPoints = await this.getProgressiveOverloadData(exerciseId);
+    if (dataPoints.length === 0) {
+      return null;
+    }
+
+    const best = dataPoints.reduce((max, dp) => (dp.weight > max.weight ? dp : max), dataPoints[0]);
+    return { weight: Math.round(best.weight * 10) / 10, unit: 'KG' }; // TODO: use i18n and get units from settings
+  }
+
+  /**
+   * Get average frequency (times per week) an exercise was performed over the last N weeks.
+   */
+  static async getAverageFrequencyPerWeek(
+    exerciseId: string,
+    weeks: number = 12
+  ): Promise<{ value: number; unit: string }> {
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return { value: 0, unit: 'x / wk' }; // TODO: use i18n
+    }
+
+    const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
+    const cutoff = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000;
+
+    const completedLogs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('id', Q.oneOf(workoutLogIds)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('completed_at', Q.gte(cutoff))
+      )
+      .fetch();
+
+    const uniqueWorkoutsPerWeek = new Map<number, Set<string>>();
+    for (const log of completedLogs) {
+      const completedAt = log.completedAt ?? 0;
+      const weekStart =
+        Math.floor(completedAt / (7 * 24 * 60 * 60 * 1000)) * (7 * 24 * 60 * 60 * 1000);
+      if (!uniqueWorkoutsPerWeek.has(weekStart)) {
+        uniqueWorkoutsPerWeek.set(weekStart, new Set());
+      }
+      uniqueWorkoutsPerWeek.get(weekStart)!.add(log.id);
+    }
+
+    const totalWeeks = Math.max(1, weeks);
+    const totalOccurrences = Array.from(uniqueWorkoutsPerWeek.values()).reduce(
+      (sum, set) => sum + set.size,
+      0
+    );
+
+    const value = Math.round((totalOccurrences / totalWeeks) * 10) / 10;
+    return { value, unit: 'x / wk' }; // TODO: use i18n
+  }
 }

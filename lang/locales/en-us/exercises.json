@@ -95,7 +95,10 @@
       "duplicate": "Duplicate",
       "duplicateDescription": "Create a copy of this exercise",
       "delete": "Delete",
-      "deleteDescription": "Remove this exercise permanently"
+      "deleteDescription": "Remove this exercise permanently",
+      "duplicateSuccess": "Exercise duplicated",
+      "couldNotOpenLink": "Could not open link",
+      "usedInTemplatesShort": "Template"
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Are you sure you want to delete this exercise? This action cannot be undone.",

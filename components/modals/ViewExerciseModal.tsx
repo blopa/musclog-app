@@ -1,76 +1,323 @@
+import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, Copy, Heart, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { Image, Linking, ScrollView, Share, Text, View } from 'react-native';
 
+import { database } from '../../database';
+import type ExerciseModel from '../../database/models/Exercise';
+import WorkoutTemplate from '../../database/models/WorkoutTemplate';
+import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
+import { ExerciseService, WorkoutAnalytics } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
+import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
+import { ConfirmationModal } from './ConfirmationModal';
+import type { DataLogModalVariant } from './DataLogModal';
 import { FullScreenModal } from './FullScreenModal';
+import { GenericEditModal } from './GenericEditModal';
+import { getEditFields } from './GenericEditModal/entityEditConfig';
+import type { EditFormValues } from './GenericEditModal/types';
+import { useEditRecord } from './GenericEditModal/useEditRecord';
 
-// TODO: Replace mock data with actual exercise data from props or API
-const EXERCISE_STATIC = {
-  name: 'Incline Dumbbell Press',
-  primaryMuscle: 'Chest',
-  equipment: 'Dumbbell',
-  mechanic: 'Compound',
-  personalBest: { value: 85, unit: 'KG' },
-  avgFrequency: { value: 2.4, unit: 'x / wk' },
-  workouts: [
-    { id: '1', name: 'Push Day Hypertrophy', subtitle: 'Last performed 2 days ago', icon: Zap },
-    { id: '2', name: 'Upper Body Blast', subtitle: 'Created on Oct 12, 2023', icon: Zap },
-    { id: '3', name: 'Full Body Foundation', subtitle: 'Used in 12 sessions', icon: Heart },
-  ],
-};
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/icon.png');
 
-type ViewExerciseModalProps = {
+export type ViewExerciseModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** When only exerciseId is provided, exercise is fetched from the database. */
+  exerciseId?: string | null;
+  /** Pre-loaded exercise (e.g. from list). If both are provided, exerciseId is used to fetch fresh data when visible. */
+  exercise?: ExerciseModel | null;
+  onExerciseDeleted?: () => void;
+  onExerciseUpdated?: () => void;
+  onExerciseDuplicated?: () => void;
 };
 
-// TODO: use this modal in the app, not only in the test screen
-export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
+export default function ViewExerciseModal({
+  visible,
+  onClose,
+  exerciseId,
+  exercise: exerciseProp,
+  onExerciseDeleted,
+  onExerciseUpdated,
+  onExerciseDuplicated,
+}: ViewExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { showSnackbar } = useSnackbar();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [exercise, setExercise] = useState<ExerciseModel | null>(null);
+  const [personalBest, setPersonalBest] = useState<{ value: number; unit: string } | null>(null);
+  const [avgFrequency, setAvgFrequency] = useState<{ value: number; unit: string }>({
+    value: 0,
+    unit: 'x / wk',
+  });
+  const [workouts, setWorkouts] = useState<
+    { id: string; name: string; subtitle: string; icon: typeof Zap }[]
+  >([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dependencyWarning, setDependencyWarning] = useState<string | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editRecordId, setEditRecordId] = useState<string | null>(null);
 
-  const EXERCISE_DATA = {
-    ...EXERCISE_STATIC,
-    workouts: EXERCISE_STATIC.workouts.map((w) => ({
-      ...w,
-      iconGradient: [theme.colors.status.indigo600, theme.colors.status.indigo600] as const,
-    })),
-  };
+  const resolvedId = exerciseId ?? exerciseProp?.id ?? null;
 
-  // TODO: Load actual exercise images instead of using placeholder
-  // For now, using a placeholder image - replace with actual exercise image
-  const backgroundImage = require('../../assets/icon.png');
+  const {
+    initialValues: editInitialValues,
+    isLoading: isLoadingEdit,
+    error: editError,
+    save: saveEdit,
+  } = useEditRecord('exercise' as DataLogModalVariant, editRecordId, editModalVisible);
+  const editFields = getEditFields('exercise');
+
+  const loadExercise = useCallback(async () => {
+    if (!resolvedId) {
+      setExercise(exerciseProp ?? null);
+      setIsLoadingData(false);
+      return;
+    }
+    try {
+      const fetched = await ExerciseService.getExerciseById(resolvedId);
+      setExercise(fetched ?? exerciseProp ?? null);
+    } catch {
+      setExercise(exerciseProp ?? null);
+    } finally {
+      setIsLoadingData(false);
+    }
+  }, [resolvedId, exerciseProp]);
+
+  const loadStatsAndWorkouts = useCallback(
+    async (ex: ExerciseModel | null) => {
+      if (!ex?.id) {
+        setPersonalBest(null);
+        setAvgFrequency({ value: 0, unit: 'x / wk' });
+        setWorkouts([]);
+        return;
+      }
+      try {
+        const [pb, freq] = await Promise.all([
+          WorkoutAnalytics.getPersonalBestForExercise(ex.id),
+          WorkoutAnalytics.getAverageFrequencyPerWeek(ex.id),
+        ]);
+        setPersonalBest(pb ? { value: pb.weight, unit: pb.unit } : null);
+        setAvgFrequency(freq);
+
+        const templateExercises = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .query(Q.where('exercise_id', ex.id), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        const templateIds = [...new Set(templateExercises.map((te) => te.templateId))];
+        if (templateIds.length === 0) {
+          setWorkouts([]);
+          return;
+        }
+
+        const templates = await database
+          .get<WorkoutTemplate>('workout_templates')
+          .query(Q.where('id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        const workoutItems = templates.map((template) => ({
+          id: template.id,
+          name: template.name ?? t('workouts.unnamed'),
+          subtitle: template.description
+            ? template.description
+            : t('exercises.viewExercise.usedInTemplatesShort'),
+          icon: Zap,
+        }));
+        setWorkouts(workoutItems);
+      } catch {
+        setPersonalBest(null);
+        setAvgFrequency({ value: 0, unit: 'x / wk' });
+        setWorkouts([]);
+      }
+    },
+    [t]
+  );
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    setIsLoadingData(true);
+    loadExercise();
+  }, [visible, resolvedId, loadExercise]);
+
+  useEffect(() => {
+    if (!exercise) {
+      return;
+    }
+
+    loadStatsAndWorkouts(exercise);
+  }, [exercise, exercise?.id, loadStatsAndWorkouts]);
+
+  const backgroundImage = exercise?.imageUrl?.trim()
+    ? { uri: exercise.imageUrl }
+    : FALLBACK_EXERCISE_IMAGE;
 
   const handleWatchTechnique = () => {
-    // TODO: Navigate to technique video or open modal
-    console.log('Watch technique');
+    const name = encodeURIComponent(exercise?.name ?? '');
+    const url = `https://www.youtube.com/results?search_query=${name}+exercise+technique`;
+    Linking.openURL(url).catch(() => {
+      showSnackbar('error', t('common.error'), {
+        subtitle: t('exercises.viewExercise.couldNotOpenLink'),
+      });
+    });
   };
 
   const handleWorkoutPress = (workoutId: string) => {
-    // TODO: Navigate to workout detail
-    console.log('Navigate to workout:', workoutId);
+    onClose();
+    router.push(`/workout/workouts?previewTemplateId=${workoutId}`);
+  };
+
+  const checkExerciseDependencies = async (id: string): Promise<string | null> => {
+    try {
+      const templateExercises = await database
+        .get<WorkoutTemplateExercise>('workout_template_exercises')
+        .query(Q.where('exercise_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      const templateExerciseIds = templateExercises.map((te) => te.id);
+      const templateSets =
+        templateExerciseIds.length > 0
+          ? await database
+              .get('workout_template_sets')
+              .query(
+                Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+                Q.where('deleted_at', Q.eq(null))
+              )
+              .fetch()
+          : [];
+      const logExercises = await database
+        .get('workout_log_exercises')
+        .query(Q.where('exercise_id', id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      const logExerciseIds = logExercises.map((le) => le.id);
+      const logSets =
+        logExerciseIds.length > 0
+          ? await database
+              .get('workout_log_sets')
+              .query(
+                Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+                Q.where('deleted_at', Q.eq(null))
+              )
+              .fetch()
+          : [];
+
+      if (templateSets.length > 0 || logSets.length > 0) {
+        const parts = [];
+        if (templateSets.length > 0) {
+          parts.push(
+            t('exercises.manageExerciseData.usedInTemplates', { count: templateSets.length })
+          );
+        }
+        if (logSets.length > 0) {
+          parts.push(t('exercises.manageExerciseData.usedInLogs', { count: logSets.length }));
+        }
+        return parts.join('. ');
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  };
+
+  const handleEdit = () => {
+    setIsMenuVisible(false);
+    if (exercise?.id) {
+      setEditRecordId(exercise.id);
+      setEditModalVisible(true);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalVisible(false);
+    setEditRecordId(null);
+  };
+
+  const handleSaveEdit = async (values: EditFormValues) => {
+    await saveEdit(values);
+    if (exercise?.id) {
+      const updated = await ExerciseService.getExerciseById(exercise.id);
+      setExercise(updated ?? exercise);
+    }
+    onExerciseUpdated?.();
+  };
+
+  const handleShare = () => {
+    setIsMenuVisible(false);
+    const name = exercise?.name ?? '';
+    const muscleGroup = exercise?.muscleGroup ?? '';
+    const equipment = exercise?.equipmentType ?? '';
+    const message = [name, muscleGroup, equipment].filter(Boolean).join(' · ');
+    Share.share({
+      message,
+      title: name,
+    }).catch(() => {});
+  };
+
+  const handleDuplicate = async () => {
+    setIsMenuVisible(false);
+    if (!exercise?.id) {
+      return;
+    }
+    try {
+      await ExerciseService.duplicateExercise(exercise.id);
+      showSnackbar('success', t('exercises.viewExercise.duplicateSuccess'));
+      onExerciseDuplicated?.();
+    } catch {
+      showSnackbar('error', t('common.duplicateFailed'));
+    }
+  };
+
+  const handleDeletePress = () => {
+    setIsMenuVisible(false);
+    if (!exercise?.id) {
+      return;
+    }
+    checkExerciseDependencies(exercise.id).then((warning) => {
+      setDependencyWarning(warning);
+      setDeleteConfirmVisible(true);
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!exercise?.id) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await ExerciseService.deleteExercise(exercise.id);
+      setDeleteConfirmVisible(false);
+      onClose();
+      onExerciseDeleted?.();
+      showSnackbar('success', t('common.deleteSuccess'));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t('common.deleteFailed');
+      showSnackbar('error', msg);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const menuItems: BottomPopUpMenuItem[] = [
     {
       icon: Pencil,
-      iconColor: theme.colors.accent.secondary, // Vibrant emerald/teal green
-      iconBgColor: theme.colors.background.iconDarker, // Lighter shade of dark green
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.editExercise'),
       description: t('exercises.viewExercise.editExerciseDescription'),
-      onPress: () => {
-        // TODO: Implement exercise editing functionality
-        console.log('Edit exercise');
-      },
+      onPress: handleEdit,
     },
     {
       icon: Share2,
@@ -78,10 +325,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.share'),
       description: t('exercises.viewExercise.shareDescription'),
-      onPress: () => {
-        // TODO: Implement exercise sharing functionality
-        console.log('Share exercise');
-      },
+      onPress: handleShare,
     },
     {
       icon: Copy,
@@ -89,10 +333,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.duplicate'),
       description: t('exercises.viewExercise.duplicateDescription'),
-      onPress: () => {
-        // TODO: Implement exercise duplication functionality
-        console.log('Duplicate exercise');
-      },
+      onPress: handleDuplicate,
     },
     {
       icon: Trash2,
@@ -102,236 +343,288 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       description: t('exercises.viewExercise.deleteDescription'),
       titleColor: theme.colors.status.error,
       descriptionColor: theme.colors.status.error,
-      onPress: () => {
-        // TODO: Implement exercise deletion functionality
-        console.log('Delete exercise');
-      },
+      onPress: handleDeletePress,
     },
   ];
 
+  const displayName =
+    exercise?.name ?? t('exercises.manageExerciseData.unknownExercise');
+  const primaryMuscle =
+    exercise?.muscleGroup != null
+      ? String(exercise.muscleGroup).charAt(0).toUpperCase() + String(exercise.muscleGroup).slice(1)
+      : '—';
+  const equipment =
+    exercise?.equipmentType != null
+      ? String(exercise.equipmentType).charAt(0).toUpperCase() +
+        String(exercise.equipmentType).slice(1).replace('_', ' ')
+      : '—';
+  const mechanic =
+    exercise?.mechanicType != null
+      ? String(exercise.mechanicType).charAt(0).toUpperCase() +
+        String(exercise.mechanicType).slice(1)
+      : '—';
+
+  const workoutsWithTheme = workouts.map((w) => ({
+    ...w,
+    iconGradient: [theme.colors.status.indigo600, theme.colors.status.indigo600] as const,
+  }));
+
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={EXERCISE_DATA.name}
-      headerRight={
-        <MenuButton
-          size="lg"
-          color={theme.colors.text.white}
-          onPress={() => setIsMenuVisible(true)}
-          className="h-10 w-10"
-        />
-      }
-    >
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Hero Section with Background Image */}
-        <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
-          {/* Background Image */}
-          <Image
-            source={backgroundImage}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100%',
-              height: '100%',
-              opacity: theme.colors.opacity.medium,
-            }}
-            resizeMode="cover"
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={displayName}
+        headerRight={
+          <MenuButton
+            size="lg"
+            color={theme.colors.text.white}
+            onPress={() => setIsMenuVisible(true)}
+            className="h-10 w-10"
           />
-
-          {/* Content Overlay */}
-          <LinearGradient
-            colors={theme.colors.gradients.overlayDark}
-            locations={[0, 0.7, 1]}
-            className="absolute bottom-0 left-0 right-0"
-            style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}
-          >
-            <Button
-              label={t('exercises.viewExercise.watchTechnique')}
-              onPress={handleWatchTechnique}
-              icon={Video}
-              iconColor={theme.colors.accent.secondary}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              style={{ alignSelf: 'flex-start' }}
-            />
-
-            <Text className="mb-6 text-4xl font-bold" style={{ color: theme.colors.text.white }}>
-              {EXERCISE_DATA.name}
+        }
+      >
+        {isLoadingData || !exercise ? (
+          <View className="flex-1 items-center justify-center p-8">
+            <Text style={{ color: theme.colors.text.secondary }}>
+              {isLoadingData
+                ? t('common.loading')
+                : t('common.notFound')}
             </Text>
-
-            {/* Tags */}
-            <View className="mb-6 flex-row flex-wrap gap-3">
-              <LinearGradient
-                colors={theme.colors.gradients.blueEmerald}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                style={{
-                  borderRadius: theme.borderRadius.full,
-                }}
-              >
-                <Text
-                  className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}
-                >
-                  {t('exercises.viewExercise.primaryMuscle')}
-                </Text>
-                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                  {EXERCISE_DATA.primaryMuscle}
-                </Text>
-              </LinearGradient>
-              <View
-                className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                style={{
-                  backgroundColor: theme.colors.background.darkGreenVariant,
-                  borderColor: theme.colors.background.gray700,
-                }}
-              >
-                <Text
-                  className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}
-                >
-                  {t('exercises.viewExercise.equipment')}
-                </Text>
-                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                  {EXERCISE_DATA.equipment}
-                </Text>
-              </View>
-              <View
-                className="flex-row items-center gap-2 rounded-full border px-4 py-2"
-                style={{
-                  backgroundColor: theme.colors.background.darkGreenVariant,
-                  borderColor: theme.colors.background.gray700,
-                }}
-              >
-                <Text
-                  className="text-xs font-medium uppercase tracking-wide"
-                  style={{ color: theme.colors.overlay.white80 }}
-                >
-                  {t('exercises.viewExercise.mechanic')}
-                </Text>
-                <Text className="font-bold" style={{ color: theme.colors.text.white }}>
-                  {EXERCISE_DATA.mechanic}
-                </Text>
-              </View>
-            </View>
-          </LinearGradient>
-        </View>
-
-        {/* Stats Cards */}
-        <View className="px-6 py-6" style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}>
-          <GenericCard variant="default" size="sm">
-            <View className="p-6">
-              <Text
-                className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {t('exercises.viewExercise.personalBest')}
-              </Text>
-              <View className="flex-row items-baseline gap-2">
-                <Text
-                  className="text-5xl font-bold"
-                  style={{ color: theme.colors.accent.secondary }}
-                >
-                  {EXERCISE_DATA.personalBest.value}
-                </Text>
-                <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                  {EXERCISE_DATA.personalBest.unit}
-                </Text>
-              </View>
-            </View>
-          </GenericCard>
-          <GenericCard variant="default" size="sm">
-            <View className="p-6">
-              <Text
-                className="mb-2 text-xs font-medium uppercase tracking-wide"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {t('exercises.viewExercise.avgFrequency')}
-              </Text>
-              <View className="flex-row items-baseline gap-2">
-                <Text
-                  className="text-5xl font-bold"
-                  style={{ color: theme.colors.status.indigoLight }}
-                >
-                  {EXERCISE_DATA.avgFrequency.value}
-                </Text>
-                <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                  {EXERCISE_DATA.avgFrequency.unit}
-                </Text>
-              </View>
-            </View>
-          </GenericCard>
-        </View>
-
-        {/* Workouts Section */}
-        <View className="px-6 py-4">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
-              {t('exercises.viewExercise.workoutsUsingThis')}
-            </Text>
-            <View
-              className="rounded-full px-3 py-1.5"
-              style={{ backgroundColor: theme.colors.accent.secondary20 }}
-            >
-              <Text className="text-xs font-bold" style={{ color: theme.colors.accent.secondary }}>
-                {EXERCISE_DATA.workouts.length} {t('exercises.viewExercise.templates')}
-              </Text>
-            </View>
           </View>
-
-          <View style={{ gap: theme.spacing.gap.md }}>
-            {EXERCISE_DATA.workouts.map((workout) => (
-              <SettingsCard
-                key={workout.id}
-                icon={
-                  <LinearGradient
-                    colors={workout.iconGradient}
-                    className="h-full w-full items-center justify-center"
-                    style={{ borderRadius: theme.borderRadius['2xl'] }}
-                  >
-                    <workout.icon
-                      size={theme.iconSize['3xl']}
-                      color={theme.colors.text.white}
-                      fill={workout.id === '2' ? theme.colors.text.white : 'none'}
-                    />
-                  </LinearGradient>
-                }
-                title={workout.name}
-                subtitle={workout.subtitle}
-                onPress={() => handleWorkoutPress(workout.id)}
-                rightIcon={
-                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                }
-                iconContainerStyle={{
-                  width: theme.size['16'],
-                  height: theme.size['16'],
-                  borderRadius: theme.borderRadius['2xl'],
-                  padding: theme.spacing.padding.zero,
-                  overflow: 'hidden',
+        ) : (
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
+              <Image
+                source={backgroundImage}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: theme.colors.opacity.medium,
                 }}
+                resizeMode="cover"
               />
-            ))}
-          </View>
-        </View>
+              <LinearGradient
+                colors={theme.colors.gradients.overlayDark}
+                locations={[0, 0.7, 1]}
+                className="absolute bottom-0 left-0 right-0"
+                style={{ padding: theme.spacing.padding.xl, zIndex: theme.zIndex.overlayLow }}
+              >
+                <Button
+                  label={t('exercises.viewExercise.watchTechnique')}
+                  onPress={handleWatchTechnique}
+                  icon={Video}
+                  iconColor={theme.colors.accent.secondary}
+                  variant="secondary"
+                  size="sm"
+                  width="auto"
+                  style={{ alignSelf: 'flex-start' }}
+                />
+                <Text
+                  className="mb-6 text-4xl font-bold"
+                  style={{ color: theme.colors.text.white }}
+                >
+                  {displayName}
+                </Text>
+                <View className="mb-6 flex-row flex-wrap gap-3">
+                  <LinearGradient
+                    colors={theme.colors.gradients.blueEmerald}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                    style={{ borderRadius: theme.borderRadius.full }}
+                  >
+                    <Text
+                      className="text-xs font-medium uppercase tracking-wide"
+                      style={{ color: theme.colors.overlay.white80 }}
+                    >
+                      {t('exercises.viewExercise.primaryMuscle')}
+                    </Text>
+                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                      {primaryMuscle}
+                    </Text>
+                  </LinearGradient>
+                  <View
+                    className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                    style={{
+                      backgroundColor: theme.colors.background.darkGreenVariant,
+                      borderColor: theme.colors.background.gray700,
+                    }}
+                  >
+                    <Text
+                      className="text-xs font-medium uppercase tracking-wide"
+                      style={{ color: theme.colors.overlay.white80 }}
+                    >
+                      {t('exercises.viewExercise.equipment')}
+                    </Text>
+                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                      {equipment}
+                    </Text>
+                  </View>
+                  <View
+                    className="flex-row items-center gap-2 rounded-full border px-4 py-2"
+                    style={{
+                      backgroundColor: theme.colors.background.darkGreenVariant,
+                      borderColor: theme.colors.background.gray700,
+                    }}
+                  >
+                    <Text
+                      className="text-xs font-medium uppercase tracking-wide"
+                      style={{ color: theme.colors.overlay.white80 }}
+                    >
+                      {t('exercises.viewExercise.mechanic')}
+                    </Text>
+                    <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                      {mechanic}
+                    </Text>
+                  </View>
+                </View>
+              </LinearGradient>
+            </View>
 
-        {/* Bottom spacing for button */}
-        <View style={{ height: theme.size['100'] }} />
-      </ScrollView>
+            <View
+              className="px-6 py-6"
+              style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}
+            >
+              <GenericCard variant="default" size="sm">
+                <View className="p-6">
+                  <Text
+                    className="mb-2 text-xs font-medium uppercase tracking-wide"
+                    style={{ color: theme.colors.text.secondary }}
+                  >
+                    {t('exercises.viewExercise.personalBest')}
+                  </Text>
+                  <View className="flex-row items-baseline gap-2">
+                    <Text
+                      className="text-5xl font-bold"
+                      style={{ color: theme.colors.accent.secondary }}
+                    >
+                      {personalBest != null ? personalBest.value : '—'}
+                    </Text>
+                    <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
+                      {personalBest?.unit ?? 'KG'}
+                    </Text>
+                  </View>
+                </View>
+              </GenericCard>
+              <GenericCard variant="default" size="sm">
+                <View className="p-6">
+                  <Text
+                    className="mb-2 text-xs font-medium uppercase tracking-wide"
+                    style={{ color: theme.colors.text.secondary }}
+                  >
+                    {t('exercises.viewExercise.avgFrequency')}
+                  </Text>
+                  <View className="flex-row items-baseline gap-2">
+                    <Text
+                      className="text-5xl font-bold"
+                      style={{ color: theme.colors.status.indigoLight }}
+                    >
+                      {avgFrequency.value}
+                    </Text>
+                    <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
+                      {avgFrequency.unit}
+                    </Text>
+                  </View>
+                </View>
+              </GenericCard>
+            </View>
 
-      {/* More Options Menu */}
-      <BottomPopUpMenu
-        visible={isMenuVisible}
-        onClose={() => setIsMenuVisible(false)}
-        title={EXERCISE_DATA.name}
-        subtitle={t('exercises.viewExercise.exerciseOptions')}
-        items={menuItems}
+            <View className="px-6 py-4">
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
+                  {t('exercises.viewExercise.workoutsUsingThis')}
+                </Text>
+                <View
+                  className="rounded-full px-3 py-1.5"
+                  style={{ backgroundColor: theme.colors.accent.secondary20 }}
+                >
+                  <Text
+                    className="text-xs font-bold"
+                    style={{ color: theme.colors.accent.secondary }}
+                  >
+                    {workoutsWithTheme.length} {t('exercises.viewExercise.templates')}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ gap: theme.spacing.gap.md }}>
+                {workoutsWithTheme.map((workout) => (
+                  <SettingsCard
+                    key={workout.id}
+                    icon={
+                      <LinearGradient
+                        colors={workout.iconGradient}
+                        className="h-full w-full items-center justify-center"
+                        style={{ borderRadius: theme.borderRadius['2xl'] }}
+                      >
+                        <workout.icon
+                          size={theme.iconSize['3xl']}
+                          color={theme.colors.text.white}
+                          fill="none"
+                        />
+                      </LinearGradient>
+                    }
+                    title={workout.name}
+                    subtitle={workout.subtitle}
+                    onPress={() => handleWorkoutPress(workout.id)}
+                    rightIcon={
+                      <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+                    }
+                    iconContainerStyle={{
+                      width: theme.size['16'],
+                      height: theme.size['16'],
+                      borderRadius: theme.borderRadius['2xl'],
+                      padding: theme.spacing.padding.zero,
+                      overflow: 'hidden',
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+            <View style={{ height: theme.size['100'] }} />
+          </ScrollView>
+        )}
+
+        <BottomPopUpMenu
+          visible={isMenuVisible}
+          onClose={() => setIsMenuVisible(false)}
+          title={displayName}
+          subtitle={t('exercises.viewExercise.exerciseOptions')}
+          items={menuItems}
+        />
+      </FullScreenModal>
+
+      <ConfirmationModal
+        visible={deleteConfirmVisible}
+        onClose={() => setDeleteConfirmVisible(false)}
+        onConfirm={handleConfirmDelete}
+        title={t('exercises.viewExercise.delete')}
+        message={t('exercises.manageExerciseData.deleteExerciseWarning')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
+        isLoading={isDeleting}
+        warning={dependencyWarning}
       />
-    </FullScreenModal>
+
+      <GenericEditModal
+        visible={editModalVisible}
+        onClose={handleCloseEditModal}
+        title={t('exercises.viewExercise.editExercise')}
+        fields={editFields}
+        initialValues={editInitialValues}
+        onSave={handleSaveEdit}
+        isLoading={isLoadingEdit}
+        loadError={editError ?? undefined}
+      />
+    </>
   );
 }

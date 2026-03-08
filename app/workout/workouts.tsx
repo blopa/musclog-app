@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Plus, Search, WifiOff, X } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Share, View } from 'react-native';
 
@@ -35,7 +35,16 @@ import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiFeaturesEnabled } = useSettings();
+
+  // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
+  useEffect(() => {
+    const id = params.previewTemplateId;
+    if (id?.trim()) {
+      setPreviewTemplateId(id.trim());
+    }
+  }, [params.previewTemplateId]);
 
   const FILTER_TABS = [
     { id: 'all', label: t('workouts.filters.all') },

@@ -11,6 +11,7 @@ import { Accordion } from '../theme/Accordion';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
+import ViewExerciseModal from './ViewExerciseModal';
 
 // Type for exercise data used in the component
 type ExerciseData = {
@@ -109,6 +110,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   const [searchQuery, setSearchQuery] = useState('');
   const [exercises, setExercises] = useState<ExerciseData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewExerciseId, setViewExerciseId] = useState<string | null>(null);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     chest: true, // Chest starts open
   });
@@ -144,41 +146,6 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
 
   // Load exercises from database
   useEffect(() => {
-    const loadExercises = async () => {
-      try {
-        setIsLoading(true);
-        const exercisesCollection = database.get<Exercise>('exercises');
-
-        // Try query with deleted_at filter first
-        let fetchedExercises = await exercisesCollection
-          .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('name', Q.asc))
-          .fetch();
-
-        // Fallback: if filtered query returns 0, fetch all and filter manually
-        // This handles cases where deletedAt might be undefined instead of null
-        if (fetchedExercises.length === 0) {
-          const allExercises = await exercisesCollection.query().fetch();
-          fetchedExercises = allExercises
-            .filter((e) => !e.deletedAt)
-            .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
-        }
-
-        const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
-          id: exercise.id,
-          name: exercise.name ?? '',
-          type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
-          muscleGroup: exercise.muscleGroup ?? '',
-          imageUrl: exercise.imageUrl || undefined,
-        }));
-
-        setExercises(exercisesData);
-      } catch (error) {
-        console.error('Error loading exercises:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadExercises();
   }, []);
 
@@ -221,8 +188,43 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   };
 
   const handleExercisePress = (exercise: ExerciseData) => {
-    // TODO: Open exercise details modal
-    console.log('Exercise pressed:', exercise.name);
+    setViewExerciseId(exercise.id);
+  };
+
+  const loadExercises = async () => {
+    try {
+      setIsLoading(true);
+      const exercisesCollection = database.get<Exercise>('exercises');
+      let fetchedExercises = await exercisesCollection
+        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('name', Q.asc))
+        .fetch();
+      if (fetchedExercises.length === 0) {
+        const allExercises = await exercisesCollection.query().fetch();
+        fetchedExercises = allExercises
+          .filter((e) => !e.deletedAt)
+          .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+      }
+      const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name ?? '',
+        type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
+        muscleGroup: exercise.muscleGroup ?? '',
+        imageUrl: exercise.imageUrl || undefined,
+      }));
+      setExercises(exercisesData);
+    } catch (error) {
+      console.error('Error loading exercises:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewExerciseClose = () => {
+    setViewExerciseId(null);
+  };
+
+  const handleExerciseDeletedOrUpdated = () => {
+    loadExercises();
   };
 
   const getExerciseImageUrl = (exercise: ExerciseData) => exercise.imageUrl ?? '';
@@ -318,6 +320,15 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
             })
         )}
       </ScrollView>
+
+      <ViewExerciseModal
+        visible={viewExerciseId !== null}
+        onClose={handleViewExerciseClose}
+        exerciseId={viewExerciseId}
+        onExerciseDeleted={handleExerciseDeletedOrUpdated}
+        onExerciseUpdated={handleExerciseDeletedOrUpdated}
+        onExerciseDuplicated={handleExerciseDeletedOrUpdated}
+      />
     </FullScreenModal>
   );
 }
