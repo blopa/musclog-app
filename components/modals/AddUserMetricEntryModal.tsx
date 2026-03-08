@@ -17,6 +17,7 @@ import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { TextInput } from '../theme/TextInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 import { TimePickerModal } from './TimePickerModal';
@@ -65,6 +66,7 @@ export default function AddUserMetricEntryModal({
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [note, setNote] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
@@ -114,6 +116,7 @@ export default function AddUserMetricEntryModal({
     if (visible) {
       setWeight(units === 'imperial' ? kgToDisplay(DEFAULT_WEIGHT_KG, units) : DEFAULT_WEIGHT_KG);
       setHeight(units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM);
+      setNote(''); // Reset note when modal opens
     }
   }, [visible, units]);
 
@@ -174,10 +177,30 @@ export default function AddUserMetricEntryModal({
       const heightCm = displayToCm(height, units);
 
       const [encWeight, encBodyFat, encHeight, encMood] = await Promise.all([
-        encryptUserMetricFields({ value: weightKg, unit: 'kg', date: dateTimestamp }),
-        encryptUserMetricFields({ value: bodyFat, unit: '%', date: dateTimestamp }),
-        encryptUserMetricFields({ value: heightCm, unit: 'cm', date: dateTimestamp }),
-        encryptUserMetricFields({ value: mood, unit: '', date: dateTimestamp }),
+        encryptUserMetricFields({
+          value: weightKg,
+          unit: 'kg',
+          note: note.trim() || undefined,
+          date: dateTimestamp,
+        }),
+        encryptUserMetricFields({
+          value: bodyFat,
+          unit: '%',
+          note: note.trim() || undefined,
+          date: dateTimestamp,
+        }),
+        encryptUserMetricFields({
+          value: heightCm,
+          unit: 'cm',
+          note: note.trim() || undefined,
+          date: dateTimestamp,
+        }),
+        encryptUserMetricFields({
+          value: mood,
+          unit: '',
+          note: note.trim() || undefined,
+          date: dateTimestamp,
+        }),
       ]);
 
       await database.write(async () => {
@@ -185,6 +208,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'weight' as UserMetricType;
           metric.valueRaw = encWeight.value;
           metric.unitRaw = encWeight.unit;
+          metric.noteRaw = encWeight.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
@@ -194,6 +218,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'body_fat' as UserMetricType;
           metric.valueRaw = encBodyFat.value;
           metric.unitRaw = encBodyFat.unit;
+          metric.noteRaw = encBodyFat.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
@@ -203,6 +228,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'height' as UserMetricType;
           metric.valueRaw = encHeight.value;
           metric.unitRaw = encHeight.unit;
+          metric.noteRaw = encHeight.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
@@ -212,6 +238,7 @@ export default function AddUserMetricEntryModal({
           metric.type = 'mood' as UserMetricType;
           metric.valueRaw = encMood.value;
           metric.unitRaw = encMood.unit;
+          metric.noteRaw = encMood.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
@@ -363,6 +390,18 @@ export default function AddUserMetricEntryModal({
             formattedValue={formatTime(selectedTime)}
             noCard={true}
           />
+
+          {/* Note Section */}
+          <View>
+            <TextInput
+              label={t('bodyMetrics.addEntry.note')}
+              value={note}
+              onChangeText={setNote}
+              placeholder={t('bodyMetrics.addEntry.notePlaceholder')}
+              multiline
+              numberOfLines={3}
+            />
+          </View>
         </View>
       </View>
     );
