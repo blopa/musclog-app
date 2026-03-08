@@ -413,7 +413,7 @@ export class NutritionService {
    * Get most eaten foods
    */
   static async getMostEatenFoods(limit: number = 10): Promise<{ food: Food; count: number }[]> {
-    // This is a simplified version - in a real app you might want to add a counter table
+    // TODO: This is a simplified version - consider adding a counter table for accurate counts
     const logs = await database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)))

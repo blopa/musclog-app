@@ -280,7 +280,7 @@ export class MealService {
    * Get meal suggestions based on recent foods
    */
   static async getMealSuggestions(limit: number = 5): Promise<Meal[]> {
-    // This is a simplified version - you could implement more sophisticated logic
+    // TODO: Implement more sophisticated meal suggestion logic (e.g. based on recent foods, preferences)
     return await this.getAllMeals()
       .then((meals) => meals.filter((meal) => !meal.isFavorite))
       .then((meals) => meals.slice(0, limit));

@@ -725,6 +725,7 @@ export async function saveRecord(
     }
 
     default:
+      // Implement saving for this entity type or remove from supported types
       throw new Error(`Saving not implemented for entity type: ${entityType}`);
   }
 }

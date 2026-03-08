@@ -153,7 +153,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
                   unread={'unread' in notification ? notification.unread : undefined}
                   hasAction={'hasAction' in notification ? notification.hasAction : undefined}
                   onActionPress={() => {
-                    // Handle start workout action
+                    // TODO: Implement start workout action when notification has action
                   }}
                 />
               ))}

@@ -465,7 +465,7 @@ export default function HomeScreen() {
           visible={isNotificationsVisible}
           onClose={() => setIsNotificationsVisible(false)}
           onClearAll={() => {
-            // Handle clear all notifications
+            // TODO: Implement clear all notifications once we have notifications in the app
             console.log('Clear all notifications');
           }}
         />
@@ -531,6 +531,7 @@ export default function HomeScreen() {
           visible={isNutritionGoalsVisible}
           onClose={() => setIsNutritionGoalsVisible(false)}
           onSave={(goals) => {
+            // TODO: Implement nutrition goals persistence
             console.log('Nutrition goals saved:', goals);
             setIsNutritionGoalsVisible(false);
           }}
@@ -584,6 +585,7 @@ export default function HomeScreen() {
           visible={isCreateCustomFoodVisible}
           onClose={() => setIsCreateCustomFoodVisible(false)}
           onSave={(data) => {
+            // TODO: Implement custom food creation and persistence
             console.log('Custom food saved:', data);
             setIsCreateCustomFoodVisible(false);
           }}

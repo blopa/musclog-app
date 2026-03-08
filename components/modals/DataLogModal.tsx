@@ -782,7 +782,7 @@ export function DataLogModal({
   const checkWorkoutLogDependencies = async (logId: string): Promise<string | null> => {
     try {
       // For simplicity, we'll just warn that this might be the active workout
-      // In a real implementation, you'd check against the current active workout state
+      // TODO: In a real implementation, check against the current active workout state
       return t('workoutLog.manageWorkoutLogData.deleteLogWarning');
     } catch (error) {
       console.error('Error checking workout log dependencies:', error);
@@ -793,7 +793,7 @@ export function DataLogModal({
   const checkNutritionGoalDependencies = async (goalId: string): Promise<string | null> => {
     try {
       // For simplicity, we'll just warn that this might be the active goal
-      // In a real implementation, you'd check against the current active goal state
+      // TODO: In a real implementation, check against the current active goal state
       return t('goalsManagement.manageGoalData.deleteGoalWarning');
     } catch (error) {
       console.error('Error checking nutrition goal dependencies:', error);

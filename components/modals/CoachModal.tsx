@@ -614,7 +614,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   ]);
 
   const headerRight = useMemo(
-    () => <MenuButton size="lg" onPress={() => {}} className="h-10 w-10 active:bg-white/5" />,
+    () => (
+      <MenuButton
+        size="lg"
+        onPress={() => {
+          // TODO: Implement coach modal header menu (e.g. settings or options)
+        }}
+        className="h-10 w-10 active:bg-white/5"
+      />
+    ),
     []
   );
 

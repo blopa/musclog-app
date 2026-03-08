@@ -86,6 +86,7 @@ export function MealEstimationModal({
   };
 
   const handleEditItem = (item: IdentifiedItem) => {
+    // TODO: Implement edit item modal for meal estimation
     // In a real app, this would open an edit modal for the item
     console.log('Edit Item', `Editing ${item.name}`);
   };
