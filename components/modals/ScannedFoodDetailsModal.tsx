@@ -12,8 +12,8 @@ import type { SearchResultProduct } from '../../types/openFoodFacts';
 import { getNutrimentsWithFallback, getNutrimentValue, mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
+import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
-import { StepperInput } from '../theme/StepperInput';
 
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
@@ -109,25 +109,17 @@ export function ScannedFoodDetailsModal({
       <View>
         <FoodInfoCard food={foodInfo} />
         
-        <View
-          style={{
-            marginTop: theme.spacing.padding.lg,
-            padding: theme.spacing.padding.md,
-            backgroundColor: theme.colors.background.card,
-            borderRadius: theme.borderRadius.md,
-            borderWidth: theme.borderWidth.thin,
-            borderColor: theme.colors.border.light,
-          }}
-        >
-          <StepperInput
-            label={t('food.addFoodItemToMeal.amount')}
-            value={amount}
-            onChangeValue={setAmount}
-            onIncrement={() => setAmount(amount + 1)}
-            onDecrement={() => setAmount(Math.max(0, amount - 1))}
-            unit="g"
-          />
-        </View>
+        <ServingSizeSelector
+          value={amount}
+          onChange={setAmount}
+          quickSizes={[
+            { label: '50g', value: 50 },
+            { label: '100g', value: 100 },
+            { label: '150g', value: 150 },
+            { label: '200g', value: 200 },
+            { label: '250g', value: 250 },
+          ]}
+        />
 
         {product.brands ? <Text
             style={{
