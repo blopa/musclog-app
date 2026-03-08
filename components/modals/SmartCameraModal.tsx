@@ -18,7 +18,7 @@ import { Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
-import { GoogleAuthService,NutritionService, SettingsService } from '../../database/services';
+import { GoogleAuthService, NutritionService, SettingsService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {

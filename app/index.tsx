@@ -38,6 +38,7 @@ import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { GOOGLE_REDIRECT_URI_MOBILE, TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
 import { type MealType } from '../database/models';
+import { FoodService, NutritionGoalService } from '../database/services';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
@@ -530,10 +531,16 @@ export default function HomeScreen() {
         <NutritionGoalsModal
           visible={isNutritionGoalsVisible}
           onClose={() => setIsNutritionGoalsVisible(false)}
-          onSave={(goals) => {
-            // TODO: Implement nutrition goals persistence
-            console.log('Nutrition goals saved:', goals);
-            setIsNutritionGoalsVisible(false);
+          onSave={async (goals) => {
+            try {
+              await NutritionGoalService.saveGoals(goals);
+              // Optionally trigger a refresh of the current goal
+              // The useDailyNutritionSummary hook should automatically pick up the change
+              setIsNutritionGoalsVisible(false);
+            } catch (error) {
+              console.error('Failed to save nutrition goals:', error);
+              // TODO: Show error snackbar to user
+            }
           }}
         />
       ) : null}
@@ -584,10 +591,30 @@ export default function HomeScreen() {
         <CreateCustomFoodModal
           visible={isCreateCustomFoodVisible}
           onClose={() => setIsCreateCustomFoodVisible(false)}
-          onSave={(data) => {
-            // TODO: Implement custom food creation and persistence
-            console.log('Custom food saved:', data);
-            setIsCreateCustomFoodVisible(false);
+          onSave={async (data) => {
+            try {
+              await FoodService.createCustomFood(
+                data.name,
+                {
+                  calories: data.calories,
+                  protein: data.protein,
+                  carbs: data.carbs,
+                  fat: data.fat,
+                  fiber: data.fiber,
+                  sugar: data.sugar,
+                  saturatedFat: data.saturatedFat,
+                  sodium: data.sodium,
+                },
+                data.servingAmount,
+                data.servingUnit,
+                data.brand
+              );
+              setIsCreateCustomFoodVisible(false);
+              // TODO: Optionally refresh food list or navigate to food detail
+            } catch (error) {
+              console.error('Failed to create custom food:', error);
+              // TODO: Show error snackbar to user
+            }
           }}
           isAiEnabled={isAiFeaturesEnabled}
         />

@@ -509,7 +509,9 @@ export default function ViewExerciseModal({
                       {personalBest != null ? personalBest.value : '—'}
                     </Text>
                     <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {personalBest ? t(`exercises.units.${personalBest.unit}`) : t('exercises.units.kg')}
+                      {personalBest
+                        ? t(`exercises.units.${personalBest.unit}`)
+                        : t('exercises.units.kg')}
                     </Text>
                   </View>
                 </View>
