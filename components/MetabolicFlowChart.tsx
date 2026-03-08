@@ -44,7 +44,7 @@ export function MetabolicFlowChart({
       yDomain={[0, 100]}
       showGridLines={false}
       marginTop={0}
-      marginBottom={12}
+      marginBottom={8}
     />
   );
 }

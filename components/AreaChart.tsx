@@ -77,7 +77,7 @@ export function AreaChart({
   gridLineColor,
   areaOpacity = 0.35,
   marginTop = 8,
-  marginBottom = 12,
+  marginBottom = 8,
   className,
 }: AreaChartProps) {
   const theme = useTheme();
@@ -107,7 +107,7 @@ export function AreaChart({
   return (
     <View className={className} style={{ marginTop }}>
       {title != null || subtitle != null ? (
-        <View style={{ marginBottom: 8 }}>
+        <View style={{ marginBottom: 0 }}>
           {title != null ? (
             <Text
               className="text-xl font-semibold text-text-primary"
@@ -135,8 +135,8 @@ export function AreaChart({
               position: 'absolute',
               left: 0,
               top: 0,
-              bottom: marginBottom + 8,
-              width: 24,
+              bottom: marginBottom + 4,
+              width: 20,
               justifyContent: 'space-between',
               zIndex: 2,
             }}
@@ -160,10 +160,10 @@ export function AreaChart({
         <View
           style={{
             position: 'absolute',
-            left: 24,
-            right: 24,
+            left: 20,
+            right: 20,
             top: 0,
-            bottom: marginBottom + 8,
+            bottom: marginBottom + 4,
           }}
           onLayout={(e) => {
             setChartWidth(e.nativeEvent.layout.width);
@@ -236,7 +236,7 @@ export function AreaChart({
             style={{
               position: 'absolute',
               left:
-                24 +
+                20 +
                 ((peakDataX - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0] || 1)) *
                   chartWidth -
                 PEAK_LABEL_WIDTH / 2,
@@ -273,9 +273,9 @@ export function AreaChart({
         <View
           className="flex-row justify-between px-1"
           style={{
-            marginTop: 6,
-            paddingLeft: 24,
-            paddingRight: 24,
+            marginTop: 4,
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
           {xAxisLabels.map((label, index) => (
@@ -291,8 +291,8 @@ export function AreaChart({
         <View
           className="flex-row justify-around border-t border-border-default"
           style={{
-            marginTop: 12,
-            paddingTop: 12,
+            marginTop: 8,
+            paddingTop: 8,
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,
           }}

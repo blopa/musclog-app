@@ -62,7 +62,7 @@ export function AreaChart({
   gridLineColor,
   areaOpacity = 0.35,
   marginTop = 8,
-  marginBottom = 12,
+  marginBottom = 8,
   className,
 }: AreaChartProps) {
   const theme = useTheme();
@@ -72,7 +72,7 @@ export function AreaChart({
   }
 
   const xDomainFinal: [number, number] = xDomain ?? [data[0].x, data[data.length - 1].x];
-  const xAxisGap = 6;
+  const xAxisGap = 4;
   const chartHeight = height - marginBottom - xAxisGap;
   const gridColor = gridLineColor ?? theme.colors.border.light;
   const mutedColor = theme.colors.text.tertiary ?? '#7E8A87';
@@ -87,13 +87,13 @@ export function AreaChart({
       : null;
 
   // Tighter, symmetric padding so the chart uses the card space well
-  const padding = { top: 12, bottom: 20, left: 24, right: 24 };
+  const padding = { top: 2, bottom: 14, left: 20, right: 20 };
   const yTickValues = yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100];
 
   return (
     <View className={className} style={{ marginTop, width: '100%', minWidth: 320 }}>
       {title != null || subtitle != null ? (
-        <View style={{ marginBottom: 8 }}>
+        <View style={{ marginBottom: 0 }}>
           {title != null ? (
             <Text
               className="text-xl font-semibold text-text-primary"
@@ -239,8 +239,8 @@ export function AreaChart({
           className="flex-row justify-between px-1"
           style={{
             marginTop: xAxisGap,
-            paddingLeft: 24,
-            paddingRight: 24,
+            paddingLeft: 20,
+            paddingRight: 20,
           }}
         >
           {xAxisLabels.map((label, index) => (
@@ -255,8 +255,8 @@ export function AreaChart({
         <View
           className="flex-row justify-around border-t border-border-default"
           style={{
-            marginTop: 12,
-            paddingTop: 12,
+            marginTop: 8,
+            paddingTop: 8,
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,
           }}
