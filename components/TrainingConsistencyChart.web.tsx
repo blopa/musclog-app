@@ -42,8 +42,7 @@ export function TrainingConsistencyChart({
   const colCount = Math.ceil(cells.length / rowCount) || columns;
 
   // Explicit dimensions so the grid renders on web (flex:1 + minHeight:0 often fails in RNW)
-  const cellHeight =
-    rowCount > 0 ? (gridHeight - (rowCount - 1) * gap) / rowCount : 0;
+  const cellHeight = rowCount > 0 ? (gridHeight - (rowCount - 1) * gap) / rowCount : 0;
 
   return (
     <View className={className}>

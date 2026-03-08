@@ -82,17 +82,15 @@ export function StackedBarChart({
     stackColors?.[3] ?? DEFAULT_COLORS[3],
   ];
 
-  // Build cumulative values per stack and flatten to chart data with s0, s1, s2, s3
-  const chartData: { x: number; s0: number; s1: number; s2: number; s3: number }[] = data.map(
-    (d) => {
-      const segs = [d.segments[0] ?? 0, d.segments[1] ?? 0, d.segments[2] ?? 0, d.segments[3] ?? 0];
-      let c0 = segs[0];
-      let c1 = c0 + segs[1];
-      let c2 = c1 + segs[2];
-      let c3 = c2 + segs[3];
-      return { x: d.x, s0: c0, s1: c1, s2: c2, s3: c3 };
-    }
-  );
+  // victory-native StackedBar expects raw segment values; it handles stacking internally
+  const chartData: { x: number; seg0: number; seg1: number; seg2: number; seg3: number }[] =
+    data.map((d) => ({
+      x: d.x,
+      seg0: d.segments[0] ?? 0,
+      seg1: d.segments[1] ?? 0,
+      seg2: d.segments[2] ?? 0,
+      seg3: d.segments[3] ?? 0,
+    }));
 
   const xMin = xDomain?.[0] ?? Math.min(...data.map((d) => d.x));
   const xMax = xDomain?.[1] ?? Math.max(...data.map((d) => d.x));
@@ -102,10 +100,10 @@ export function StackedBarChart({
   const xLabelPosition = (index: number) => (data[index].x - xDomainMin) / xDomainSpan;
 
   const maxTotal = Math.max(
-    ...chartData.map((d) => d.s3),
-    ...chartData.map((d) => d.s2),
-    ...chartData.map((d) => d.s1),
-    ...chartData.map((d) => d.s0),
+    ...data.map(
+      (d) =>
+        (d.segments[0] ?? 0) + (d.segments[1] ?? 0) + (d.segments[2] ?? 0) + (d.segments[3] ?? 0)
+    ),
     1
   );
   const yMin = yDomain?.[0] ?? 0;
@@ -117,7 +115,7 @@ export function StackedBarChart({
         <CartesianChart
           data={chartData}
           xKey="x"
-          yKeys={['s0', 's1', 's2', 's3']}
+          yKeys={['seg0', 'seg1', 'seg2', 'seg3']}
           domain={{ x: [xMin, xMax], y: [yMin, yMax] }}
           domainPadding={domainPadding}
           padding={0}
@@ -128,7 +126,7 @@ export function StackedBarChart({
         >
           {({ points, chartBounds }) => (
             <StackedBar
-              points={[points.s0, points.s1, points.s2, points.s3]}
+              points={[points.seg0, points.seg1, points.seg2, points.seg3]}
               chartBounds={chartBounds}
               innerPadding={innerPadding}
               colors={colors}
