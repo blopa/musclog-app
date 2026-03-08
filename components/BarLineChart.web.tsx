@@ -93,6 +93,8 @@ export function BarLineChart({
   const barTopRatio = activeDatum ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip : 0;
   const lineTopRatio = activeDatum ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin) : 0;
   const chartHeight = height;
+  const chartPaddingTop = 6;
+  const chartPaddingBottom = 24;
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
@@ -118,12 +120,13 @@ export function BarLineChart({
       ) : null}
 
       <View style={{ height, position: 'relative' }}>
+        {/* Y-axis labels aligned exactly with VictoryChart plot area */}
         <View
           style={{
             position: 'absolute',
             left: 0,
-            top: 8,
-            bottom: 8,
+            top: chartPaddingTop,
+            bottom: chartPaddingBottom,
             width: 28,
             justifyContent: 'space-between',
             zIndex: 2,
@@ -147,8 +150,8 @@ export function BarLineChart({
           style={{
             position: 'absolute',
             right: 0,
-            top: 8,
-            bottom: 8,
+            top: chartPaddingTop,
+            bottom: chartPaddingBottom,
             width: 28,
             justifyContent: 'space-between',
             alignItems: 'flex-end',
@@ -196,9 +199,11 @@ export function BarLineChart({
           <VictoryChart
             height={chartHeight}
             width={undefined}
-            padding={{ top: 8, bottom: 32, left: 0, right: 0 }}
-            domain={{ x: chartXDomain, y: stepsDomain }}
-            domainPadding={{ x: 40, y: 0 }}
+            padding={{ top: chartPaddingTop, bottom: chartPaddingBottom, left: 0, right: 0 }}
+            domain={{ x: chartXDomain, y: [stepsMin, stepsMax] }}
+            minDomain={{ y: stepsMin }}
+            maxDomain={{ y: stepsMax }}
+            domainPadding={{ x: 40 }}
             style={{ parent: { height: chartHeight, width: '100%', overflow: 'hidden' } }}
           >
             <VictoryAxis
