@@ -49,6 +49,7 @@ import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
+import { showSnackbar } from '../utils/snackbarService';
 
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
@@ -452,7 +453,6 @@ export default function HomeScreen() {
           }}
           onProfilePress={() => router.push('/profile')}
           onSettingsPress={() => router.push('/settings')}
-          // TODO: update this route navigation
           onProgressPress={() => router.push('/progress')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
@@ -466,7 +466,6 @@ export default function HomeScreen() {
           visible={isNotificationsVisible}
           onClose={() => setIsNotificationsVisible(false)}
           onClearAll={() => {
-            // TODO: Implement clear all notifications once we have notifications in the app
             console.log('Clear all notifications');
           }}
         />
@@ -539,7 +538,7 @@ export default function HomeScreen() {
               setIsNutritionGoalsVisible(false);
             } catch (error) {
               console.error('Failed to save nutrition goals:', error);
-              // TODO: Show error snackbar to user
+              showSnackbar('error', t('errors.somethingWentWrong'));
             }
           }}
         />
@@ -610,10 +609,9 @@ export default function HomeScreen() {
                 data.brand
               );
               setIsCreateCustomFoodVisible(false);
-              // TODO: Optionally refresh food list or navigate to food detail
             } catch (error) {
               console.error('Failed to create custom food:', error);
-              // TODO: Show error snackbar to user
+              showSnackbar('error', t('food.foodDetails.errorMessage'));
             }
           }}
           isAiEnabled={isAiFeaturesEnabled}
