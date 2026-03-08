@@ -195,7 +195,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {leftAxisLabels.map((label, i) => (
+          {[...leftAxisLabels].reverse().map((label, i) => (
             <Text
               key={label}
               style={{
@@ -222,7 +222,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {rightAxisLabels.map((label) => (
+          {[...rightAxisLabels].reverse().map((label) => (
             <Text
               key={label}
               style={{

@@ -129,7 +129,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {leftAxisLabels.map((label) => (
+          {[...leftAxisLabels].reverse().map((label) => (
             <Text
               key={label}
               style={{
@@ -155,7 +155,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {rightAxisLabels.map((label) => (
+          {[...rightAxisLabels].reverse().map((label) => (
             <Text
               key={label}
               style={{
@@ -177,6 +177,7 @@ export function BarLineChart({
               right: 32,
               top: 0,
               bottom: 0,
+              overflow: 'hidden',
             },
             onMouseMove: (e: MouseEvent<HTMLElement>) => {
               if (!interactive) {
@@ -195,10 +196,10 @@ export function BarLineChart({
           <VictoryChart
             height={chartHeight}
             width={undefined}
-            padding={{ top: 20, bottom: 44, left: 0, right: 0 }}
+            padding={{ top: 10, bottom: 36, left: 0, right: 0 }}
             domain={{ x: chartXDomain, y: stepsDomain }}
             domainPadding={{ x: 40, y: 0 }}
-            style={{ parent: { height: chartHeight, width: '100%' } }}
+            style={{ parent: { height: chartHeight, width: '100%', overflow: 'hidden' } }}
           >
             <VictoryAxis
               dependentAxis

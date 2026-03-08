@@ -264,8 +264,8 @@ export default function GraphsTestScreen() {
                 height={260}
                 stepsDomain={[0, 12000]}
                 heartRateDomain={[60, 140]}
-                leftAxisLabels={['0', '3k', '6k', '9k', '12k']}
-                rightAxisLabels={['60', '80', '100', '120', '140']}
+                leftAxisLabels={['0', '6k', '12k']}
+                rightAxisLabels={['60', '100', '140']}
                 xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
                 barSeriesLabel="Steps Taken"
                 lineSeriesLabel="Avg Heart Rate"
