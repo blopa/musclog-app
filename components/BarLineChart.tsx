@@ -98,7 +98,9 @@ export function BarLineChart({
     top: Math.max(0, lineTooltipTop.value),
   }));
 
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return null;
+  }
 
   const xDomain: [number, number] = [0, data.length - 1];
   const stepsRange = stepsDomain[1] - stepsDomain[0];
@@ -106,13 +108,19 @@ export function BarLineChart({
 
   const handleTouchAt = (touchX: number) => {
     const w = containerWidthRef.current;
-    if (w === 0) return;
+    if (w === 0) {
+      return;
+    }
     const chartWidth = w - 64;
-    if (chartWidth <= 0) return;
+    if (chartWidth <= 0) {
+      return;
+    }
     const t = Math.max(0, Math.min(1, touchX / chartWidth));
     const index = Math.round(t * (data.length - 1));
     const datum = data[Math.min(index, data.length - 1)];
-    if (!datum) return;
+    if (!datum) {
+      return;
+    }
 
     const idx = Math.min(index, data.length - 1);
     setActiveIndex(idx);
@@ -130,9 +138,15 @@ export function BarLineChart({
 
   const activeDatum = activeIndex != null ? data[activeIndex] : null;
 
+  const xPadding = (xDomain[1] - xDomain[0]) / data.length;
+  const xDomainMin = xDomain[0] - xPadding;
+  const xDomainMax = xDomain[1] + xPadding;
+  const xDomainSpan = xDomainMax - xDomainMin;
+  const xLabelPosition = (index: number) => (index - xDomainMin) / xDomainSpan;
+
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
-      {(title || subtitle) && (
+      {title || subtitle ? (
         <View className="mb-4">
           {title ? (
             <Text
@@ -151,7 +165,7 @@ export function BarLineChart({
             </Text>
           ) : null}
         </View>
-      )}
+      ) : null}
 
       <View
         style={{ height, position: 'relative' }}
@@ -360,29 +374,41 @@ export function BarLineChart({
 
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
-          style={{ marginTop: 8, paddingHorizontal: 28 }}
+          style={{
+            position: 'relative',
+            marginTop: 8,
+            paddingHorizontal: 32,
+            height: 20,
+          }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text
+            <View
               key={index}
               style={{
-                fontSize: theme.typography.fontSize.xxs,
-                fontWeight: '600',
-                color: theme.colors.text.tertiary,
+                position: 'absolute',
+                left: `${xLabelPosition(index) * 100}%`,
+                transform: [{ translateX: -20 }],
+                width: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {label}
-            </Text>
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: '600',
+                  color: theme.colors.text.tertiary,
+                }}
+              >
+                {label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}
 
       {/* Legend */}
-      <View
-        className="flex-row justify-center items-center gap-6"
-        style={{ marginTop: 16 }}
-      >
+      <View className="flex-row items-center justify-center gap-6" style={{ marginTop: 16 }}>
         <View className="flex-row items-center gap-2">
           <View
             style={{

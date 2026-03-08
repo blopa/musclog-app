@@ -1,14 +1,16 @@
+import type { MouseEvent } from 'react';
 import { useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
-import {
-  VictoryAxis,
-  VictoryBar,
-  VictoryChart,
-  VictoryLine,
-  VictoryScatter,
-} from 'victory';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
 import { useTheme } from '../hooks/useTheme';
+
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onMouseMove?: (e: MouseEvent<HTMLElement>) => void;
+  onMouseLeave?: () => void;
+};
 
 export type BarLineChartDatum = {
   x: number;
@@ -65,7 +67,9 @@ export function BarLineChart({
   const lineColorResolved =
     lineColor ?? theme.colors.status?.amber ?? theme.colors.status?.warning ?? '#f59e0b';
 
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return null;
+  }
 
   const xDomain: [number, number] = [0, data.length - 1];
   const stepsMin = stepsDomain[0];
@@ -82,22 +86,20 @@ export function BarLineChart({
     heartRate: d.heartRate,
   }));
 
-  const xPadding = (xDomain[1] - xDomain[0]) / data.length;
-  const paddedXDomain: [number, number] = [xDomain[0] - xPadding, xDomain[1] + xPadding];
+  // Unpadded domain [0, n-1]: Victory maps x to range [0, 1], so bar at index i is at i/(n-1)
+  const chartXDomain: [number, number] = [xDomain[0], xDomain[1]];
+  const n = data.length;
+  const xLabelPosition = (index: number) => (n <= 1 ? 0.5 : index / (n - 1));
 
   const activeDatum = hoveredIndex != null ? data[hoveredIndex] : null;
   const stepsRangeForTooltip = stepsMax - stepsMin;
-  const barTopRatio = activeDatum
-    ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip
-    : 0;
-  const lineTopRatio = activeDatum
-    ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin)
-    : 0;
+  const barTopRatio = activeDatum ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip : 0;
+  const lineTopRatio = activeDatum ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin) : 0;
   const chartHeight = height - 24;
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
-      {(title || subtitle) && (
+      {title || subtitle ? (
         <View className="mb-4">
           {title ? (
             <Text
@@ -116,7 +118,7 @@ export function BarLineChart({
             </Text>
           ) : null}
         </View>
-      )}
+      ) : null}
 
       <View style={{ height, position: 'relative' }}>
         <View
@@ -171,29 +173,33 @@ export function BarLineChart({
         </View>
 
         <View
-          style={{
-            position: 'absolute',
-            left: 32,
-            right: 32,
-            top: 0,
-            bottom: 0,
-          }}
-          onMouseMove={(e) => {
-            if (!interactive) return;
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            const chartWidth = rect.width;
-            const x = e.clientX - rect.left;
-            const t = Math.max(0, Math.min(1, x / chartWidth));
-            const index = Math.round(t * (data.length - 1));
-            setHoveredIndex(Math.min(index, data.length - 1));
-          }}
-          onMouseLeave={() => setHoveredIndex(null)}
+          {...({
+            style: {
+              position: 'absolute',
+              left: 32,
+              right: 32,
+              top: 0,
+              bottom: 0,
+            },
+            onMouseMove: (e: MouseEvent<HTMLElement>) => {
+              if (!interactive) {
+                return;
+              }
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              const chartWidth = rect.width;
+              const x = e.clientX - rect.left;
+              const t = Math.max(0, Math.min(1, x / chartWidth));
+              const index = Math.round(t * (data.length - 1));
+              setHoveredIndex(Math.min(index, data.length - 1));
+            },
+            onMouseLeave: () => setHoveredIndex(null),
+          } as ViewWithMouseProps)}
         >
           <VictoryChart
             height={chartHeight}
             width={undefined}
             padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            domain={{ x: paddedXDomain, y: stepsDomain }}
+            domain={{ x: chartXDomain, y: stepsDomain }}
             style={{ parent: { height: chartHeight, width: '100%' } }}
           >
             <VictoryAxis
@@ -247,15 +253,13 @@ export function BarLineChart({
             />
           </VictoryChart>
 
-          {interactive && activeDatum && (
+          {interactive && activeDatum ? (
             <>
               <View
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
-                  left: `${
-                    ((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100
-                  }%`,
+                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
                   top: barTopRatio * chartHeight - 38,
                   transform: 'translateX(-50%)',
                   width: 72,
@@ -283,9 +287,7 @@ export function BarLineChart({
                 pointerEvents="none"
                 style={{
                   position: 'absolute',
-                  left: `${
-                    ((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100
-                  }%`,
+                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
                   top: lineTopRatio * chartHeight - 38,
                   transform: 'translateX(-50%)',
                   width: 72,
@@ -310,30 +312,41 @@ export function BarLineChart({
                 </Text>
               </View>
             </>
-          )}
+          ) : null}
         </View>
       </View>
 
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            position: 'relative',
             marginTop: 8,
-            paddingHorizontal: 28,
+            paddingHorizontal: 32,
+            height: 20,
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text
+            <View
               key={index}
               style={{
-                fontSize: theme.typography.fontSize.xxs,
-                fontWeight: '600',
-                color: theme.colors.text.tertiary,
+                position: 'absolute',
+                left: `${xLabelPosition(index) * 100}%`,
+                width: 40,
+                marginLeft: -20,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {label}
-            </Text>
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: '600',
+                  color: theme.colors.text.tertiary,
+                }}
+              >
+                {label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

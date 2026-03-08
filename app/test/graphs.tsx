@@ -156,7 +156,7 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Line Chart */}
-            <View className="mb-4 rounded-lg bg-bg-card p-4">
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
               <LineChart
                 data={lineChartData}
                 height={200}
@@ -193,7 +193,7 @@ export default function GraphsTestScreen() {
               />
             </View>
 
-            <View className="mb-4 rounded-lg bg-bg-card p-4">
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
               <BarChart
                 data={barChartData}
                 height={200}
@@ -216,7 +216,8 @@ export default function GraphsTestScreen() {
           <View className="mb-8">
             <Text className="mb-2 text-lg font-bold text-text-primary">Bar + Line Chart</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to see tooltips.
+              Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to
+              see tooltips.
             </Text>
 
             <View className="mb-4 flex-row gap-2">
@@ -229,7 +230,7 @@ export default function GraphsTestScreen() {
               />
             </View>
 
-            <View className="mb-4 rounded-lg bg-bg-card p-4 border border-border-default">
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
               <BarLineChart
                 title="Comprehensive Daily Metrics"
                 subtitle="Steps Taken vs. Heart Rate"
@@ -268,7 +269,7 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Pizza Chart */}
-            <View className="mb-4 items-center rounded-lg bg-bg-card p-4">
+            <View className="mb-4 items-center rounded-lg border border-border-default bg-bg-card p-4">
               <MacrosPizzaChart
                 protein={macrosData.protein}
                 carbs={macrosData.carbs}
@@ -280,7 +281,7 @@ export default function GraphsTestScreen() {
             </View>
 
             {/* Macros Values Display */}
-            <View className="rounded-lg bg-bg-card p-4">
+            <View className="rounded-lg border border-border-default bg-bg-card p-4">
               <Text className="mb-2 text-sm font-semibold text-text-primary">Current Values:</Text>
               <View className="space-y-1">
                 <Text className="text-sm text-text-secondary">Protein: {macrosData.protein}g</Text>
@@ -300,7 +301,7 @@ export default function GraphsTestScreen() {
 
             <View className="space-y-4">
               {/* Small Line Chart */}
-              <View className="rounded-lg bg-bg-card p-4">
+              <View className="rounded-lg border border-border-default bg-bg-card p-4">
                 <Text className="mb-2 text-sm font-semibold text-text-primary">
                   Weight Progress
                 </Text>
@@ -323,7 +324,7 @@ export default function GraphsTestScreen() {
               </View>
 
               {/* Small Pizza Chart */}
-              <View className="rounded-lg bg-bg-card p-4">
+              <View className="rounded-lg border border-border-default bg-bg-card p-4">
                 <Text className="mb-2 text-sm font-semibold text-text-primary">Todays Macros</Text>
                 <View className="items-center">
                   <MacrosPizzaChart
@@ -347,7 +348,7 @@ export default function GraphsTestScreen() {
 
             <View className="space-y-4">
               {/* Line Chart with different interpolation */}
-              <View className="rounded-lg bg-bg-card p-4">
+              <View className="rounded-lg border border-border-default bg-bg-card p-4">
                 <Text className="mb-2 text-sm font-semibold text-text-primary">Step Chart</Text>
                 <LineChart
                   data={[
@@ -365,7 +366,7 @@ export default function GraphsTestScreen() {
               </View>
 
               {/* Pizza Chart without fiber */}
-              <View className="rounded-lg bg-bg-card p-4">
+              <View className="rounded-lg border border-border-default bg-bg-card p-4">
                 <Text className="mb-2 text-sm font-semibold text-text-primary">
                   Basic Macros (No Fiber)
                 </Text>
