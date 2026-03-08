@@ -1275,91 +1275,24 @@ export function FoodMealDetailsModal({
 
           {/* Form Sections */}
           <View className="gap-6">
-            {/* Serving Size - only show for foods, not meals */}
+            {/* Same serving size input for both food and meal (editable, same UX) */}
             {mode !== 'meal' ? (
               <ServingSizeSelector value={servingSize} onChange={setServingSize} />
             ) : (
-              /* Portion Selector - only for meals (UI: servings; logic: grams) */
-              <View className="mt-6 w-full">
-                <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
-                  {t('food.foodDetails.portionSize')}
-                </Text>
-                <View
-                  className="rounded-xl border bg-bg-cardDark p-3"
-                  style={{ borderColor: theme.colors.background.white10 }}
-                >
-                  <View className="mb-4 flex-row items-center gap-3">
-                    <Pressable
-                      className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
-                      style={{ borderColor: theme.colors.background.white5 }}
-                      onPress={() => {
-                        if (totalMealGrams <= 0) return;
-                        setMealAmountGrams((prev) => Math.max(10, Math.round(prev - 10)));
-                      }}
-                      disabled={isLoadingMealNutrients}
-                    >
-                      <Text className="text-2xl font-bold text-text-secondary">−</Text>
-                    </Pressable>
-                    <View className="flex-1 items-center justify-center">
-                      <Text className="text-4xl font-black text-text-primary">
-                        {totalMealGrams > 0 ? mealAmountGrams : '0'}
-                      </Text>
-                      <Text className="mt-1 text-xs text-text-secondary">
-                        {t('food.unitGrams')}
-                      </Text>
-                    </View>
-                    <Pressable
-                      className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
-                      onPress={() => {
-                        if (totalMealGrams <= 0) return;
-                        setMealAmountGrams((prev) => Math.min(99999, Math.round(prev + 10)));
-                      }}
-                      disabled={isLoadingMealNutrients}
-                    >
-                      <Text className="text-2xl font-bold text-accent-primary">+</Text>
-                    </Pressable>
-                  </View>
-                  <View className="flex-row justify-center gap-2 pb-1">
-                    {[0.5, 1, 1.5, 2].map((preset) => {
-                      const currentMult =
-                        totalMealGrams > 0 ? mealAmountGrams / totalMealGrams : 1;
-                      const isSelected = Math.abs(currentMult - preset) < 0.01;
-                      return (
-                        <Pressable
-                          key={preset}
-                          className="rounded-full border px-4"
-                          style={{
-                            paddingVertical: theme.spacing.padding['1half'],
-                            backgroundColor: isSelected
-                              ? theme.colors.accent.primary10
-                              : 'transparent',
-                            borderColor: isSelected
-                              ? theme.colors.accent.primary20
-                              : theme.colors.background.white5,
-                            opacity: isLoadingMealNutrients ? 0.5 : 1,
-                          }}
-                          onPress={() =>
-                            setMealAmountGrams(Math.round(totalMealGrams * preset))
-                          }
-                          disabled={isLoadingMealNutrients || totalMealGrams <= 0}
-                        >
-                          <Text
-                            className="text-xs font-medium"
-                            style={{
-                              color: isSelected
-                                ? theme.colors.accent.primary
-                                : theme.colors.text.secondary,
-                              fontWeight: isSelected ? '700' : '500',
-                            }}
-                          >
-                            {preset === 0.5 ? '½' : preset === 1 ? '1' : preset === 1.5 ? '1½' : '2'}×
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-              </View>
+              <ServingSizeSelector
+                value={mealAmountGrams}
+                onChange={(v) => setMealAmountGrams(Math.round(v))}
+                quickSizes={
+                  totalMealGrams > 0
+                    ? [
+                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
+                        { label: '1×', value: totalMealGrams },
+                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
+                        { label: '2×', value: totalMealGrams * 2 },
+                      ]
+                    : []
+                }
+              />
             )}
 
             {/* Meal Selection */}
