@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BarChart, BarChartDataPoint } from '../../components/BarChart';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
@@ -18,6 +19,16 @@ export default function GraphsTestScreen() {
     { x: 300, y: 48 },
     { x: 350, y: 65 },
     { x: 400, y: 58 },
+  ]);
+
+  // Sample data for BarChart
+  const [barChartData, setBarChartData] = useState<BarChartDataPoint[]>([
+    { x: 1, y: 45 },
+    { x: 2, y: 62 },
+    { x: 3, y: 38 },
+    { x: 4, y: 71 },
+    { x: 5, y: 54 },
+    { x: 6, y: 83 },
   ]);
 
   // Sample data for MacrosPizzaChart
@@ -43,6 +54,18 @@ export default function GraphsTestScreen() {
       });
     }
     setLineChartData(newData);
+  };
+
+  // Generate random bar chart data
+  const generateRandomBarData = () => {
+    const newData: BarChartDataPoint[] = [];
+    for (let i = 1; i <= 6; i++) {
+      newData.push({
+        x: i,
+        y: Math.floor(Math.random() * 60) + 20,
+      });
+    }
+    setBarChartData(newData);
   };
 
   // Generate random macros data
@@ -73,7 +96,7 @@ export default function GraphsTestScreen() {
             <Text className="mb-4 text-sm text-text-secondary">
               Interactive line chart with touch support and tooltips.
             </Text>
-            
+
             {/* Line Chart Controls */}
             <View className="mb-4 flex-row gap-2">
               <Button
@@ -84,24 +107,24 @@ export default function GraphsTestScreen() {
                 onPress={generateRandomLineData}
               />
               <Button
-                label={showGridLines ? "Hide Grid" : "Show Grid"}
+                label={showGridLines ? 'Hide Grid' : 'Show Grid'}
                 variant="outline"
                 size="sm"
                 width="flex-1"
                 onPress={() => setShowGridLines(!showGridLines)}
               />
             </View>
-            
+
             <View className="mb-4 flex-row gap-2">
               <Button
-                label={interactive ? "Disable Touch" : "Enable Touch"}
+                label={interactive ? 'Disable Touch' : 'Enable Touch'}
                 variant="outline"
                 size="sm"
                 width="flex-1"
                 onPress={() => setInteractive(!interactive)}
               />
               <Button
-                label={showLastPoint ? "Hide Point" : "Show Point"}
+                label={showLastPoint ? 'Hide Point' : 'Show Point'}
                 variant="outline"
                 size="sm"
                 width="flex-1"
@@ -130,13 +153,40 @@ export default function GraphsTestScreen() {
             </View>
           </View>
 
+          {/* Bar Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Bar Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Vertical bar chart with theme styling and optional X-axis labels.
+            </Text>
+
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomBarData}
+              />
+            </View>
+
+            <View className="mb-4 rounded-lg bg-bg-card p-4">
+              <BarChart
+                data={barChartData}
+                height={200}
+                showGridLines={showGridLines}
+                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+              />
+            </View>
+          </View>
+
           {/* Macros Pizza Chart Section */}
           <View className="mb-8">
             <Text className="mb-2 text-lg font-bold text-text-primary">Macros Pizza Chart</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Pie chart showing macronutrient distribution.
             </Text>
-            
+
             {/* Pizza Chart Controls */}
             <View className="mb-4 flex-row gap-2">
               <Button
@@ -182,7 +232,9 @@ export default function GraphsTestScreen() {
             <View className="space-y-4">
               {/* Small Line Chart */}
               <View className="rounded-lg bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">Weight Progress</Text>
+                <Text className="mb-2 text-sm font-semibold text-text-primary">
+                  Weight Progress
+                </Text>
                 <LineChart
                   data={[
                     { x: 0, y: 180 },
@@ -245,7 +297,9 @@ export default function GraphsTestScreen() {
 
               {/* Pizza Chart without fiber */}
               <View className="rounded-lg bg-bg-card p-4">
-                <Text className="mb-2 text-sm font-semibold text-text-primary">Basic Macros (No Fiber)</Text>
+                <Text className="mb-2 text-sm font-semibold text-text-primary">
+                  Basic Macros (No Fiber)
+                </Text>
                 <View className="items-center">
                   <MacrosPizzaChart
                     protein={100}
@@ -255,8 +309,8 @@ export default function GraphsTestScreen() {
                     size={80}
                     showInsight={true}
                     insightMessage={{
-                      title: "Balance",
-                      subtitle: "Good Mix"
+                      title: 'Balance',
+                      subtitle: 'Good Mix',
                     }}
                   />
                 </View>

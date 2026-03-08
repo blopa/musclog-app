@@ -1,4 +1,4 @@
-import { NutritionService , UserMetricService } from '../database/services';
+import { NutritionService, UserMetricService } from '../database/services';
 import { lbsToKg } from './nutritionCalculator';
 
 const LOOKBACK_DAYS = 30;
