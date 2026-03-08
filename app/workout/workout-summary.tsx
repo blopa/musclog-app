@@ -7,7 +7,7 @@ import { ActivityIndicator, Share, View } from 'react-native';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
-import { ChatService, GoogleAuthService, WorkoutService } from '../../database/services';
+import { ChatService, GoogleAuthService, WorkoutAnalytics, WorkoutService } from '../../database/services';
 import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
@@ -112,10 +112,7 @@ export default function WorkoutSummaryScreen() {
           completedWorkout = result.workoutLog;
           personalRecordsData = result.personalRecords;
         } else {
-          // For already completed workout, we need to detect PRs separately
-          // TODO: Implement personal records detection for completed workouts
-          // For now, set to empty array - can be enhanced later
-          personalRecordsData = [];
+          personalRecordsData = await WorkoutAnalytics.detectPersonalRecords(workoutLog);
         }
 
         // Calculate total time

@@ -149,6 +149,7 @@ export default function ViewExerciseModal({
     if (!visible) {
       return;
     }
+
     setIsLoadingData(true);
     loadExercise();
   }, [visible, resolvedId, loadExercise]);
