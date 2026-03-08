@@ -249,7 +249,7 @@ export function AddFoodItemToMealModal({
   };
 
   const handleBarcodeScanned = (scannedBarcode: string) => {
-    // TODO: open a modal showing the details of the food, with an button to "add it to meal"
+    // TODO: open a modal showing the details of the food, with an button to "add it to meal" using the FoodInfoCard.tsx modal
     setShowBarcodeScanner(false);
   };
 
