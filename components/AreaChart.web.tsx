@@ -4,8 +4,6 @@ import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } f
 
 import { useTheme } from '../hooks/useTheme';
 
-const PEAK_MARKER_R = 4;
-
 export type AreaChartDatum = { x: number; [key: string]: number };
 
 export type AreaChartSeriesConfig = {
