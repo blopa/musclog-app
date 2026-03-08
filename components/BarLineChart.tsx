@@ -78,6 +78,7 @@ export function BarLineChart({
 }: BarLineChartProps) {
   const theme = useTheme();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
   const chartWidthSv = useSharedValue(0);
 
@@ -138,11 +139,15 @@ export function BarLineChart({
 
   const activeDatum = activeIndex != null ? data[activeIndex] : null;
 
-  const xPadding = (xDomain[1] - xDomain[0]) / data.length;
-  const xDomainMin = xDomain[0] - xPadding;
-  const xDomainMax = xDomain[1] + xPadding;
-  const xDomainSpan = xDomainMax - xDomainMin;
-  const xLabelPosition = (index: number) => (index - xDomainMin) / xDomainSpan;
+  // Match chart's domainPadding (left: 12, right: 12): data x [0, n-1] maps to 12px .. (width - 12)px
+  const CHART_PADDING_X = 12;
+  const LABEL_BOX_WIDTH = 40;
+  const xLabelLeft = (index: number) => {
+    if (labelContainerWidth <= 0) return 0;
+    const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
+    const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
+    return barCenterX - LABEL_BOX_WIDTH / 2;
+  };
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
@@ -380,15 +385,18 @@ export function BarLineChart({
             paddingHorizontal: 32,
             height: 20,
           }}
+          onLayout={(e) => {
+            const w = e.nativeEvent.layout.width;
+            setLabelContainerWidth(Math.max(0, w - 64));
+          }}
         >
           {xAxisLabels.map((label, index) => (
             <View
               key={index}
               style={{
                 position: 'absolute',
-                left: `${xLabelPosition(index) * 100}%`,
-                transform: [{ translateX: -20 }],
-                width: 40,
+                left: xLabelLeft(index),
+                width: LABEL_BOX_WIDTH,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
