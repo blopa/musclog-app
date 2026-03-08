@@ -2,9 +2,16 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '../../components/AreaChart';
 import { BarChart, BarChartDataPoint } from '../../components/BarChart';
 import { BarLineChart, BarLineChartDatum } from '../../components/BarLineChart';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
+import {
+  MultipleLinesChart,
+  MultipleLinesChartDatum,
+  MultipleLinesChartSeriesConfig,
+} from '../../components/MultipleLinesChart';
+import { StackedBarChart, StackedBarChartDatum } from '../../components/StackedBarChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
 
@@ -30,6 +37,46 @@ export default function GraphsTestScreen() {
     { x: 4, y: 71 },
     { x: 5, y: 54 },
     { x: 6, y: 83 },
+  ]);
+
+  // Sample data for StackedBarChart (e.g. spending by category per day)
+  const [stackedBarData, setStackedBarData] = useState<StackedBarChartDatum[]>([
+    { x: 0, segments: [6, 4, 3, 6] },
+    { x: 1, segments: [5, 5, 2, 7] },
+    { x: 2, segments: [4, 3, 4, 3] },
+    { x: 3, segments: [5, 4, 3, 4] },
+    { x: 4, segments: [6, 5, 2, 6] },
+    { x: 5, segments: [3, 2, 2, 4] },
+    { x: 6, segments: [7, 5, 4, 6] },
+  ]);
+
+  // Sample data for AreaChart (Metabolic Flow: fat, carb & protein burn over time)
+  const areaChartSeries: AreaChartSeriesConfig[] = [
+    { key: 'protein', label: 'Protein', color: '#BF5AF2', value: '23%' },
+    { key: 'fats', label: 'Fats', color: '#00E5FF', value: '35%' },
+    { key: 'carbs', label: 'Carbs', color: '#00FFA2', value: '42%' },
+  ];
+  const [areaChartData, setAreaChartData] = useState<AreaChartDatum[]>([
+    { x: 0, protein: 20, fats: 50, carbs: 70 },
+    { x: 1, protein: 25, fats: 55, carbs: 65 },
+    { x: 2, protein: 28, fats: 60, carbs: 55 },
+    { x: 3, protein: 30, fats: 65, carbs: 90 },
+    { x: 4, protein: 22, fats: 55, carbs: 75 },
+  ]);
+
+  // Sample data for MultipleLinesChart (Activity Comparison: Active vs Resting Energy)
+  const multipleLinesSeries: MultipleLinesChartSeriesConfig[] = [
+    { key: 'active', label: 'Active', color: '#00FFA2', value: '2,450 kcal' },
+    { key: 'resting', label: 'Resting', color: '#00E5FF', value: '1,820 kcal', dashed: true },
+  ];
+  const [multipleLinesData] = useState<MultipleLinesChartDatum[]>([
+    { x: 0, active: 65, resting: 50 },
+    { x: 1, active: 45, resting: 55 },
+    { x: 2, active: 55, resting: 60 },
+    { x: 3, active: 82, resting: 40 },
+    { x: 4, active: 45, resting: 40 },
+    { x: 5, active: 55, resting: 50 },
+    { x: 6, active: 40, resting: 48 },
   ]);
 
   // Sample data for BarLineChart (steps + heart rate)
@@ -78,6 +125,21 @@ export default function GraphsTestScreen() {
       });
     }
     setBarChartData(newData);
+  };
+
+  // Generate random StackedBarChart data
+  const generateRandomStackedBarData = () => {
+    setStackedBarData(
+      Array.from({ length: 7 }, (_, i) => ({
+        x: i,
+        segments: [
+          Math.floor(Math.random() * 8) + 2,
+          Math.floor(Math.random() * 6) + 1,
+          Math.floor(Math.random() * 5) + 1,
+          Math.floor(Math.random() * 7) + 2,
+        ] as [number, number, number, number],
+      }))
+    );
   };
 
   // Generate random BarLineChart data
@@ -208,6 +270,99 @@ export default function GraphsTestScreen() {
                   { label: '0', yDomainValue: 0 },
                 ]}
                 tooltipFormatter={(point) => `${Math.round(point.y)}`}
+              />
+            </View>
+          </View>
+
+          {/* Stacked Bar Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Stacked Bar Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Each bar has up to 4 colored segments (e.g. spending by category per day).
+            </Text>
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomStackedBarData}
+              />
+            </View>
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+              <StackedBarChart
+                data={stackedBarData}
+                height={200}
+                yDomain={[0, 25]}
+                stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
+                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                yAxisLabels={[
+                  { label: '25', yDomainValue: 25 },
+                  { label: '20', yDomainValue: 20 },
+                  { label: '15', yDomainValue: 15 },
+                  { label: '10', yDomainValue: 10 },
+                  { label: '5', yDomainValue: 5 },
+                  { label: '0', yDomainValue: 0 },
+                ]}
+              />
+            </View>
+          </View>
+
+          {/* Area Chart Section (Metabolic Flow style) */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Area Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Multiple overlapping area series with optional peak marker and legend (e.g. Metabolic
+              Flow).
+            </Text>
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+              <AreaChart
+                title="Metabolic Flow"
+                subtitle="Fat, Carb & Protein Burn"
+                data={areaChartData}
+                series={areaChartSeries}
+                height={200}
+                yDomain={[0, 100]}
+                xAxisLabels={['08:00', '12:00', '16:00', '20:00', '00:00']}
+                yAxisLabels={[
+                  { label: '100', yDomainValue: 100 },
+                  { label: '75', yDomainValue: 75 },
+                  { label: '50', yDomainValue: 50 },
+                  { label: '25', yDomainValue: 25 },
+                  { label: '0', yDomainValue: 0 },
+                ]}
+                peak={{ seriesKey: 'carbs', pointIndex: 3, label: 'Peak' }}
+              />
+            </View>
+          </View>
+
+          {/* Multiple Lines Chart Section (Activity Comparison) */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Multiple Lines Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Up to 4 lines with optional callout labels and legend (e.g. Active vs. Resting
+              Energy).
+            </Text>
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+              <MultipleLinesChart
+                title="Activity Comparison"
+                subtitle="Active vs. Resting Energy"
+                data={multipleLinesData}
+                series={multipleLinesSeries}
+                height={200}
+                yDomain={[0, 100]}
+                xAxisLabels={['M', 'T', 'W', 'T', 'F', 'S', 'S']}
+                yAxisLabels={[
+                  { label: '100%', yDomainValue: 100 },
+                  { label: '75%', yDomainValue: 75 },
+                  { label: '50%', yDomainValue: 50 },
+                  { label: '25%', yDomainValue: 25 },
+                  { label: '0%', yDomainValue: 0 },
+                ]}
+                callouts={[
+                  { seriesKey: 'active', pointIndex: 3, label: '82%' },
+                  { seriesKey: 'active', pointIndex: 0, label: '65%' },
+                ]}
               />
             </View>
           </View>

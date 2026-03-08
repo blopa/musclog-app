@@ -1,0 +1,192 @@
+import { Text, View } from 'react-native';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
+
+import { useTheme } from '../hooks/useTheme';
+
+export type StackedBarChartDatum = {
+  x: number;
+  segments: [number, number?, number?, number?];
+};
+
+export type StackedBarChartProps = {
+  data: StackedBarChartDatum[];
+  height?: number;
+  stackColors?: [string, string?, string?, string?];
+  innerPadding?: number;
+  showGridLines?: boolean;
+  gridLineColor?: string;
+  xDomain?: [number, number];
+  yDomain?: [number, number];
+  xAxisLabels?: string[];
+  yAxisLabels?: { label: string; yDomainValue: number }[];
+  marginTop?: number;
+  marginBottom?: number;
+  showTotalLabels?: boolean;
+  totalLabelFormatter?: (total: number, datum: StackedBarChartDatum) => string;
+  className?: string;
+  domainPadding?: { left?: number; right?: number; top?: number; bottom?: number };
+};
+
+const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
+
+export function StackedBarChart({
+  data,
+  height = 192,
+  stackColors,
+  innerPadding = 0.2,
+  showGridLines = true,
+  gridLineColor,
+  xDomain,
+  yDomain,
+  xAxisLabels,
+  yAxisLabels,
+  marginTop = 16,
+  marginBottom = 16,
+  className,
+  domainPadding: _domainPadding = { left: 20, right: 20, top: 10 },
+}: StackedBarChartProps) {
+  const theme = useTheme();
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  const colors: string[] = [
+    stackColors?.[0] ?? (theme.colors.accent?.primary as string) ?? DEFAULT_COLORS[0],
+    stackColors?.[1] ?? DEFAULT_COLORS[1],
+    stackColors?.[2] ?? DEFAULT_COLORS[2],
+    stackColors?.[3] ?? DEFAULT_COLORS[3],
+  ];
+
+  const xMin = xDomain?.[0] ?? Math.min(...data.map((d) => d.x));
+  const xMax = xDomain?.[1] ?? Math.max(...data.map((d) => d.x));
+  const maxTotal = Math.max(
+    ...data.map((d) => {
+      const s = d.segments;
+      return (s[0] ?? 0) + (s[1] ?? 0) + (s[2] ?? 0) + (s[3] ?? 0);
+    }),
+    1
+  );
+  const yMin = yDomain?.[0] ?? 0;
+  const yMax = yDomain?.[1] ?? maxTotal;
+
+  const xPadding = (xMax - xMin) / Math.max(data.length, 1);
+  const paddedXDomain: [number, number] = [xMin - xPadding, xMax + xPadding];
+
+  const segmentData = [
+    data.map((d) => ({ x: d.x, y: d.segments[0] ?? 0 })),
+    data.map((d) => ({ x: d.x, y: d.segments[1] ?? 0 })),
+    data.map((d) => ({ x: d.x, y: d.segments[2] ?? 0 })),
+    data.map((d) => ({ x: d.x, y: d.segments[3] ?? 0 })),
+  ];
+
+  const xDomainMin = paddedXDomain[0];
+  const xDomainSpan = paddedXDomain[1] - paddedXDomain[0];
+  const xLabelPosition = (index: number) => (data[index].x - xDomainMin) / xDomainSpan;
+
+  return (
+    <View className={className} style={{ marginTop }}>
+      <View style={{ height, position: 'relative' }}>
+        {yAxisLabels?.map(({ label, yDomainValue }) => {
+          const yRange = yMax - yMin;
+          const topOffset = (1 - (yDomainValue - yMin) / yRange) * height;
+          return (
+            <Text
+              key={label}
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: 6,
+                top: topOffset - 6,
+                fontSize: theme.typography.fontSize.xxs,
+                fontWeight: '600',
+                color: theme.colors.text.tertiary,
+                zIndex: 1,
+              }}
+            >
+              {label}
+            </Text>
+          );
+        })}
+
+        <VictoryChart
+          height={height}
+          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          domain={{ x: paddedXDomain, y: [yMin, yMax] }}
+          style={{ parent: { height, width: '100%' } }}
+        >
+          {showGridLines ? (
+            <VictoryAxis
+              dependentAxis
+              style={{
+                axis: { stroke: 'transparent' },
+                grid: {
+                  stroke: gridLineColor ?? theme.colors.border.light,
+                  strokeDasharray: '4,4',
+                  strokeWidth: 1,
+                },
+                ticks: { stroke: 'transparent' },
+                tickLabels: { fill: 'transparent' },
+              }}
+            />
+          ) : null}
+          <VictoryStack colorScale={colors}>
+            {segmentData.map((segment, i) => (
+              <VictoryBar
+                key={i}
+                data={segment}
+                x="x"
+                y="y"
+                barRatio={1 - innerPadding}
+                cornerRadius={{ top: i === 3 ? 4 : 0 }}
+                style={{ data: { fill: colors[i] } }}
+              />
+            ))}
+          </VictoryStack>
+          <VictoryAxis
+            style={{
+              axis: { stroke: 'transparent' },
+              grid: { stroke: 'transparent' },
+              ticks: { stroke: 'transparent' },
+              tickLabels: { fill: 'transparent' },
+            }}
+          />
+        </VictoryChart>
+      </View>
+
+      {xAxisLabels && xAxisLabels.length > 0 ? (
+        <View
+          style={{
+            position: 'relative',
+            marginTop: 8,
+            height: 20,
+          }}
+        >
+          {xAxisLabels.map((label, index) => (
+            <View
+              key={index}
+              style={{
+                position: 'absolute',
+                left: `${xLabelPosition(index) * 100}%`,
+                marginLeft: -20,
+                width: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: '600',
+                  color: theme.colors.text.tertiary,
+                }}
+              >
+                {label}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
