@@ -86,10 +86,7 @@ export function BarLineChart({
     heartRate: d.heartRate,
   }));
 
-  // Unpadded domain [0, n-1]: Victory maps x to range [0, 1], so bar at index i is at i/(n-1)
   const chartXDomain: [number, number] = [xDomain[0], xDomain[1]];
-  const n = data.length;
-  const xLabelPosition = (index: number) => (n <= 1 ? 0.5 : index / (n - 1));
 
   const activeDatum = hoveredIndex != null ? data[hoveredIndex] : null;
   const stepsRangeForTooltip = stepsMax - stepsMin;
@@ -125,8 +122,8 @@ export function BarLineChart({
           style={{
             position: 'absolute',
             left: 0,
-            top: 12,
-            bottom: 12,
+            top: 8,
+            bottom: 8,
             width: 28,
             justifyContent: 'space-between',
             zIndex: 2,
@@ -150,8 +147,8 @@ export function BarLineChart({
           style={{
             position: 'absolute',
             right: 0,
-            top: 12,
-            bottom: 12,
+            top: 8,
+            bottom: 8,
             width: 28,
             justifyContent: 'space-between',
             alignItems: 'flex-end',
@@ -198,8 +195,9 @@ export function BarLineChart({
           <VictoryChart
             height={chartHeight}
             width={undefined}
-            padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+            padding={{ top: 20, bottom: 44, left: 0, right: 0 }}
             domain={{ x: chartXDomain, y: stepsDomain }}
+            domainPadding={{ x: 40, y: 0 }}
             style={{ parent: { height: chartHeight, width: '100%' } }}
           >
             <VictoryAxis
@@ -219,9 +217,13 @@ export function BarLineChart({
               data={data}
               x="x"
               y="steps"
-              barRatio={0.65}
-              cornerRadius={{ top: 4 }}
-              style={{ data: { fill: barColorResolved } }}
+              cornerRadius={{ top: 6, bottom: 6 }}
+              style={{
+                data: {
+                  fill: barColorResolved,
+                  width: 45,
+                },
+              }}
             />
             <VictoryLine
               data={lineData}
@@ -231,7 +233,7 @@ export function BarLineChart({
               style={{
                 data: {
                   stroke: lineColorResolved,
-                  strokeWidth: 2.5,
+                  strokeWidth: 3,
                   strokeLinecap: 'round',
                 },
               }}
@@ -240,15 +242,27 @@ export function BarLineChart({
               data={lineData}
               x="x"
               y="y"
-              size={4}
-              style={{ data: { fill: lineColorResolved } }}
+              size={6}
+              style={{
+                data: {
+                  fill: lineColorResolved,
+                  stroke: lineColorResolved,
+                  strokeWidth: 2,
+                },
+              }}
             />
             <VictoryAxis
+              tickValues={data.map((_, i) => i)}
+              tickFormat={(t) => (xAxisLabels && xAxisLabels[t] != null ? xAxisLabels[t] : '')}
               style={{
                 axis: { stroke: 'transparent' },
                 grid: { stroke: 'transparent' },
                 ticks: { stroke: 'transparent' },
-                tickLabels: { fill: 'transparent' },
+                tickLabels: {
+                  fill: theme.colors.text.tertiary,
+                  fontSize: 14,
+                  fontWeight: 600,
+                },
               }}
             />
           </VictoryChart>
@@ -316,48 +330,13 @@ export function BarLineChart({
         </View>
       </View>
 
-      {xAxisLabels && xAxisLabels.length > 0 ? (
-        <View
-          style={{
-            position: 'relative',
-            marginTop: 8,
-            paddingHorizontal: 32,
-            height: 20,
-          }}
-        >
-          {xAxisLabels.map((label, index) => (
-            <View
-              key={index}
-              style={{
-                position: 'absolute',
-                left: `${xLabelPosition(index) * 100}%`,
-                width: 40,
-                marginLeft: -20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
-                  color: theme.colors.text.tertiary,
-                }}
-              >
-                {label}
-              </Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'center',
           gap: 24,
-          marginTop: 16,
+          marginTop: 8,
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
