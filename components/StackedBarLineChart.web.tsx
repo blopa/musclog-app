@@ -85,8 +85,7 @@ export function StackedBarLineChart({
     stackColors?.[3] ?? DEFAULT_STACK_COLORS[3],
   ];
   // Use a color distinct from stack (blue, red, yellow, green)
-  const lineColorResolved =
-    lineColor ?? theme.colors.status?.info ?? '#06b6d4';
+  const lineColorResolved = lineColor ?? theme.colors.status.emeraldDark;
 
   if (data.length === 0) {
     return null;
