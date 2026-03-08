@@ -453,6 +453,7 @@ export default function HomeScreen() {
           }}
           onProfilePress={() => router.push('/profile')}
           onSettingsPress={() => router.push('/settings')}
+          // TODO: update this route navigation
           onProgressPress={() => router.push('/progress')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
@@ -466,6 +467,7 @@ export default function HomeScreen() {
           visible={isNotificationsVisible}
           onClose={() => setIsNotificationsVisible(false)}
           onClearAll={() => {
+            // TODO: Implement clear all notifications once we have notifications in the app
             console.log('Clear all notifications');
           }}
         />
