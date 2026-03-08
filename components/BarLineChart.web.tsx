@@ -92,9 +92,9 @@ export function BarLineChart({
   const stepsRangeForTooltip = stepsMax - stepsMin;
   const barTopRatio = activeDatum ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip : 0;
   const lineTopRatio = activeDatum ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin) : 0;
-  const chartHeight = height;
+  const chartHeight = height + 128;
   const chartPaddingTop = 6;
-  const chartPaddingBottom = 24;
+  const chartPaddingBottom = 4;
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
@@ -198,8 +198,7 @@ export function BarLineChart({
         >
           <VictoryChart
             height={chartHeight}
-            width={undefined}
-            padding={{ top: chartPaddingTop, bottom: chartPaddingBottom, left: 0, right: 0 }}
+            padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 0, right: 0 }}
             domain={{ x: chartXDomain, y: [stepsMin, stepsMax] }}
             minDomain={{ y: stepsMin }}
             maxDomain={{ y: stepsMax }}
