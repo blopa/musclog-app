@@ -1,5 +1,11 @@
 import { Text, View } from 'react-native';
-import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
+import {
+  VictoryAxis,
+  VictoryBar,
+  VictoryChart,
+  VictoryTooltip,
+  VictoryVoronoiContainer,
+} from 'victory';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -31,6 +37,8 @@ export type BarChartProps = {
   yDomain?: [number, number];
   /** Custom X-axis labels to display below the chart */
   xAxisLabels?: string[];
+  /** Y-axis labels overlaid on the chart. yDomainValue should be in the y-domain space [yDomain[0], yDomain[1]]. */
+  yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
   marginTop?: number;
   /** Custom margin bottom for X-axis labels (default: 16) */
@@ -39,6 +47,14 @@ export type BarChartProps = {
   className?: string;
   /** Domain padding to prevent first/last bar from being clipped (default: { left: 20, right: 20, top: 10 }) */
   domainPadding?: { left?: number; right?: number; top?: number; bottom?: number };
+  /** Enable touch/hover interaction to show a tooltip (default: true) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded y value) */
+  tooltipFormatter?: (point: BarChartDataPoint) => string;
+  /** No-op on web — only used by native to lock parent ScrollView */
+  onInteractionStart?: () => void;
+  /** No-op on web — only used by native to re-enable parent ScrollView */
+  onInteractionEnd?: () => void;
 };
 
 export function BarChart({
@@ -52,10 +68,13 @@ export function BarChart({
   xDomain,
   yDomain,
   xAxisLabels,
+  yAxisLabels,
   marginTop = 16,
   marginBottom = 16,
   className,
   domainPadding: _domainPadding = { left: 20, right: 20, top: 10 },
+  interactive = true,
+  tooltipFormatter,
 }: BarChartProps) {
   const theme = useTheme();
   const barColorResolved = barColor ?? theme.colors.accent.primary;
@@ -74,12 +93,60 @@ export function BarChart({
   const xPadding = xSpan / data.length;
   const paddedXDomain: [number, number] = [xMin - xPadding, xMax + xPadding];
 
+  const containerComponent = interactive ? (
+    <VictoryVoronoiContainer
+      voronoiDimension="x"
+      labels={({ datum }: { datum: BarChartDataPoint }) =>
+        tooltipFormatter ? tooltipFormatter(datum) : String(Math.round(datum.y * 10) / 10)
+      }
+      labelComponent={
+        <VictoryTooltip
+          style={{
+            fontSize: theme.typography.fontSize.xs,
+            fontWeight: '600',
+            fill: theme.colors.text.black,
+          }}
+          flyoutStyle={{
+            fill: theme.colors.text.white,
+            stroke: theme.colors.background.separatorLight,
+            strokeWidth: 1,
+          }}
+          flyoutPadding={{ top: 6, bottom: 6, left: 10, right: 10 }}
+        />
+      }
+    />
+  ) : undefined;
+
+  const yDomainFinal: [number, number] = [yMin, yMax];
+
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
+      {yAxisLabels?.map(({ label, yDomainValue }) => {
+        const yRange = yDomainFinal[1] - yDomainFinal[0];
+        const topOffset = (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
+        return (
+          <Text
+            key={label}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 6,
+              top: topOffset - 6,
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              color: theme.colors.text.tertiary,
+              zIndex: 1,
+            }}
+          >
+            {label}
+          </Text>
+        );
+      })}
       <VictoryChart
         height={height}
         padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
         domain={{ x: paddedXDomain, y: [yMin, yMax] }}
+        containerComponent={containerComponent}
         style={{
           parent: {
             height,

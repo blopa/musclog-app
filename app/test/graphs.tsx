@@ -176,6 +176,15 @@ export default function GraphsTestScreen() {
                 height={200}
                 showGridLines={showGridLines}
                 xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+                yDomain={[0, 100]}
+                yAxisLabels={[
+                  { label: '100', yDomainValue: 100 },
+                  { label: '75', yDomainValue: 75 },
+                  { label: '50', yDomainValue: 50 },
+                  { label: '25', yDomainValue: 25 },
+                  { label: '0', yDomainValue: 0 },
+                ]}
+                tooltipFormatter={(point) => `${Math.round(point.y)}`}
               />
             </View>
           </View>
