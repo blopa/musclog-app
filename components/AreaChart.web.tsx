@@ -67,6 +67,7 @@ export function AreaChart({
   }
 
   const xDomainFinal: [number, number] = xDomain ?? [data[0].x, data[data.length - 1].x];
+  const chartHeight = height - marginBottom - 16;
   const gridColor = gridLineColor ?? theme.colors.border.light;
 
   const peakSeries = peak ? series.find((s) => s.key === peak.seriesKey) : null;
@@ -101,7 +102,7 @@ export function AreaChart({
         </View>
       ) : null}
 
-      <View style={{ height, position: 'relative' }}>
+      <View style={{ height, position: 'relative', width: '100%' }}>
         {yAxisLabels != null && yAxisLabels.length > 0 ? (
           <View
             style={{
@@ -138,87 +139,95 @@ export function AreaChart({
             bottom: marginBottom + 16,
             minWidth: 200,
           }}
-          onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
+          onLayout={(e) => {
+            const w = e.nativeEvent.layout.width;
+            if (w > 0) {
+              setChartWidth(w);
+            }
+          }}
         >
-          <VictoryChart
-            width={chartWidth > 0 ? chartWidth : 400}
-            height={height - marginBottom - 16}
-            padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            domain={{ x: xDomainFinal, y: yDomain }}
-            style={{
-              parent: {
-                height: height - marginBottom - 16,
-                width: chartWidth > 0 ? chartWidth : 400,
-              },
-            }}
-          >
-            {showGridLines ? (
+          {chartWidth > 0 ? (
+            <VictoryChart
+              width={chartWidth}
+              height={chartHeight}
+              padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              domain={{ x: xDomainFinal, y: yDomain }}
+              domainPadding={{ x: 0, y: 0 }}
+              style={{
+                parent: {
+                  width: chartWidth,
+                  height: chartHeight,
+                },
+              }}
+            >
+              {showGridLines ? (
+                <VictoryAxis
+                  dependentAxis
+                  style={{
+                    axis: { stroke: 'transparent' },
+                    grid: {
+                      stroke: gridColor,
+                      strokeWidth: 1,
+                      opacity: 0.3,
+                    },
+                    ticks: { stroke: 'transparent' },
+                    tickLabels: { fill: 'transparent' },
+                  }}
+                  tickValues={yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100]}
+                />
+              ) : null}
+              {series.map((s, idx) => {
+                const seriesData = data.map((d) => ({
+                  x: d.x,
+                  y: (d as Record<string, number>)[s.key] ?? 0,
+                }));
+                const fillColor = hexToRgba(s.color, areaOpacity);
+                return (
+                  <React.Fragment key={s.key}>
+                    <VictoryArea
+                      data={seriesData}
+                      interpolation="monotoneX"
+                      style={{
+                        data: {
+                          fill: fillColor,
+                        },
+                      }}
+                    />
+                    <VictoryLine
+                      data={seriesData}
+                      interpolation="monotoneX"
+                      style={{
+                        data: {
+                          stroke: s.color,
+                          strokeWidth: idx === series.length - 1 ? 2.5 : 2,
+                          strokeLinecap: 'round',
+                        },
+                      }}
+                    />
+                  </React.Fragment>
+                );
+              })}
+              {peakDatum != null ? (
+                <VictoryScatter
+                  data={[peakDatum]}
+                  size={8}
+                  style={{
+                    data: {
+                      fill: theme.colors.text.white,
+                    },
+                  }}
+                />
+              ) : null}
               <VictoryAxis
-                dependentAxis
                 style={{
                   axis: { stroke: 'transparent' },
-                  grid: {
-                    stroke: gridColor,
-                    strokeWidth: 1,
-                    opacity: 0.3,
-                  },
+                  grid: { stroke: 'transparent' },
                   ticks: { stroke: 'transparent' },
                   tickLabels: { fill: 'transparent' },
                 }}
-                tickValues={yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100]}
               />
-            ) : null}
-            {series.map((s, idx) => {
-              const seriesData = data.map((d) => ({
-                x: d.x,
-                y: (d as Record<string, number>)[s.key] ?? 0,
-              }));
-              const fillColor = hexToRgba(s.color, areaOpacity);
-              return (
-                <React.Fragment key={s.key}>
-                  <VictoryArea
-                    data={seriesData}
-                    interpolation="monotoneX"
-                    style={{
-                      data: {
-                        fill: fillColor,
-                      },
-                    }}
-                  />
-                  <VictoryLine
-                    data={seriesData}
-                    interpolation="monotoneX"
-                    style={{
-                      data: {
-                        stroke: s.color,
-                        strokeWidth: idx === series.length - 1 ? 2.5 : 2,
-                        strokeLinecap: 'round',
-                      },
-                    }}
-                  />
-                </React.Fragment>
-              );
-            })}
-            {peakDatum != null ? (
-              <VictoryScatter
-                data={[peakDatum]}
-                size={8}
-                style={{
-                  data: {
-                    fill: theme.colors.text.white,
-                  },
-                }}
-              />
-            ) : null}
-            <VictoryAxis
-              style={{
-                axis: { stroke: 'transparent' },
-                grid: { stroke: 'transparent' },
-                ticks: { stroke: 'transparent' },
-                tickLabels: { fill: 'transparent' },
-              }}
-            />
-          </VictoryChart>
+            </VictoryChart>
+          ) : null}
         </View>
 
         {peak != null && peak.label != null && peakDatum != null && chartWidth > 0 ? (

@@ -11,6 +11,7 @@ import {
   MultipleLinesChartDatum,
   MultipleLinesChartSeriesConfig,
 } from '../../components/MultipleLinesChart';
+import { SpiderChart } from '../../components/SpiderChart';
 import { StackedBarChart, StackedBarChartDatum } from '../../components/StackedBarChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
@@ -363,6 +364,28 @@ export default function GraphsTestScreen() {
                   { seriesKey: 'active', pointIndex: 3, label: '82%' },
                   { seriesKey: 'active', pointIndex: 0, label: '65%' },
                 ]}
+              />
+            </View>
+          </View>
+
+          {/* Spider Chart Section (Performance Profile) */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Spider Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Radar chart for multi-axis comparison (e.g. Performance Profile).
+            </Text>
+            <View className="rounded-lg border border-border-default bg-bg-card p-6">
+              <SpiderChart
+                title="Performance Profile"
+                subtitle="Weekly Analysis"
+                axes={['Strength', 'Stamina', 'Recovery', 'Flexibility', 'Speed']}
+                values={[85, 72, 90, 45, 78]}
+                centerScore={88}
+                centerScoreLabel="PTS"
+                primaryFocus="Power Output"
+                areaToImprove="Flexibility"
+                dataColor="#00FFA2"
+                size={280}
               />
             </View>
           </View>
