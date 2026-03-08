@@ -15,6 +15,10 @@ import {
 } from '../../components/MultipleLinesChart';
 import { SpiderChart } from '../../components/SpiderChart';
 import { StackedBarChart, StackedBarChartDatum } from '../../components/StackedBarChart';
+import {
+  StackedBarLineChart,
+  StackedBarLineChartDatum,
+} from '../../components/StackedBarLineChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
 import { TrainingConsistencyChart } from '../../components/TrainingConsistencyChart';
@@ -94,6 +98,19 @@ export default function GraphsTestScreen() {
     { x: 6, steps: 6500, heartRate: 70 },
   ]);
 
+  // Sample data for StackedBarLineChart (stacked bars + line, e.g. spending by category + heart rate)
+  const [stackedBarLineChartData, setStackedBarLineChartData] = useState<
+    StackedBarLineChartDatum[]
+  >([
+    { x: 0, segments: [4, 3, 2, 5], lineValue: 72 },
+    { x: 1, segments: [5, 4, 3, 4], lineValue: 78 },
+    { x: 2, segments: [3, 5, 2, 6], lineValue: 68 },
+    { x: 3, segments: [6, 4, 4, 5], lineValue: 82 },
+    { x: 4, segments: [4, 3, 3, 5], lineValue: 74 },
+    { x: 5, segments: [5, 5, 2, 4], lineValue: 76 },
+    { x: 6, segments: [4, 4, 4, 5], lineValue: 70 },
+  ]);
+
   // Sample data for SpiderChart (Performance Profile values)
   const [spiderChartValues, setSpiderChartValues] = useState<number[]>([85, 72, 90, 45, 78]);
 
@@ -161,6 +178,22 @@ export default function GraphsTestScreen() {
         x: i,
         steps: Math.floor(Math.random() * 8000) + 4000,
         heartRate: Math.floor(Math.random() * 50) + 65,
+      }))
+    );
+  };
+
+  // Generate random StackedBarLineChart data
+  const generateRandomStackedBarLineData = () => {
+    setStackedBarLineChartData(
+      Array.from({ length: 7 }, (_, i) => ({
+        x: i,
+        segments: [
+          Math.floor(Math.random() * 5) + 2,
+          Math.floor(Math.random() * 4) + 1,
+          Math.floor(Math.random() * 3) + 1,
+          Math.floor(Math.random() * 5) + 2,
+        ] as [number, number, number, number],
+        lineValue: Math.floor(Math.random() * 40) + 60,
       }))
     );
   };
@@ -271,6 +304,44 @@ export default function GraphsTestScreen() {
                 lineSeriesLabel="Avg Heart Rate"
                 stepsFormatter={(v) => v.toLocaleString()}
                 heartRateFormatter={(v) => `${Math.round(v)} bpm`}
+                interactive={true}
+              />
+            </View>
+          </View>
+
+          {/* Stacked Bar + Line Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Stacked Bar + Line Chart
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Stacked bars (e.g. spending by category) with a line overlay (e.g. heart rate).
+            </Text>
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomStackedBarLineData}
+              />
+            </View>
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+              <StackedBarLineChart
+                title="Daily Breakdown + Heart Rate"
+                subtitle="Stacked total vs. Avg Heart Rate"
+                data={stackedBarLineChartData}
+                height={260}
+                stackedDomain={[0, 25]}
+                lineDomain={[60, 100]}
+                stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
+                leftAxisLabels={['0', '10', '20', '25']}
+                rightAxisLabels={['60', '80', '100']}
+                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                barSeriesLabel="Total"
+                lineSeriesLabel="Avg Heart Rate"
+                totalFormatter={(t) => String(Math.round(t))}
+                lineFormatter={(v) => `${Math.round(v)} bpm`}
                 interactive={true}
               />
             </View>
