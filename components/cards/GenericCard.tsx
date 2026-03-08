@@ -9,7 +9,7 @@ type GenericCardProps = {
   isPopular?: boolean;
   onPress?: () => void;
   variant?: 'default' | 'workout' | 'highlighted' | 'card';
-  backgroundVariant?: 'default' | 'dark-green' | 'gradient' | 'colorful-gradient';
+  backgroundVariant?: 'default' | 'dark-green' | 'gradient' | 'colorful-gradient' | 'tdee';
   isPressable?: boolean;
   size?: 'sm' | 'default' | 'lg';
   containerStyle?: StyleProp<ViewStyle>;
@@ -18,6 +18,13 @@ type GenericCardProps = {
 /**
  * GenericCard - A flexible card component with support for different variants
  * and interactive states.
+ * 
+ * Background Variants:
+ * - 'default': Default styling based on variant
+ * - 'dark-green': Dark green background with elevated shadow
+ * - 'gradient': Gradient background with two blurred circles
+ * - 'colorful-gradient': Colorful gradient background
+ * - 'tdee': Dark card background with neon mint border and single blurred circle effect
  */
 export function GenericCard({
   children,
@@ -38,6 +45,7 @@ export function GenericCard({
   const isCardVariant = variant === 'card';
   const effectiveBackgroundVariant = backgroundVariant ?? variant;
   const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
+  const isTdeeBackground = effectiveBackgroundVariant === 'tdee';
   const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
   const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
   const hasGradientBackground = effectiveBackgroundVariant === 'gradient';
@@ -117,6 +125,15 @@ export function GenericCard({
       return {
         backgroundColor: theme.colors.background.darkGreen80,
         borderColor: theme.colors.background.white5,
+        borderWidth: theme.borderWidth.thin,
+        ...theme.shadows.lg,
+      };
+    }
+
+    if (isTdeeBackground) {
+      return {
+        backgroundColor: theme.colors.background.card,
+        borderColor: theme.colors.status.emerald400_10,
         borderWidth: theme.borderWidth.thin,
         ...theme.shadows.lg,
       };
@@ -266,6 +283,11 @@ export function GenericCard({
             style={{ backgroundColor: theme.colors.accent.secondary10 }}
           />
         </>
+      ) : isTdeeBackground ? (
+        <View
+          className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
+          style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+        />
       ) : undefined}
       {cardContent}
     </View>
