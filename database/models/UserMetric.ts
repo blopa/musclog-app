@@ -1,4 +1,4 @@
-import { Model , Q } from '@nozbe/watermelondb';
+import { Model, Q } from '@nozbe/watermelondb';
 import { children, field, writer } from '@nozbe/watermelondb/decorators';
 import { Unit } from 'convert';
 
@@ -72,10 +72,9 @@ export default class UserMetric extends Model {
   /** Get the note for this metric from the notes table */
   async getNote(): Promise<string | undefined> {
     const notesCollection = this.database.get<UserMetricsNote>('user_metrics_notes');
-    const notes = await notesCollection.query(
-      Q.where('user_metric_id', this.id),
-      Q.where('deleted_at', Q.eq(null))
-    ).fetch();
+    const notes = await notesCollection
+      .query(Q.where('user_metric_id', this.id), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
     return notes[0]?.note;
   }
@@ -87,13 +86,12 @@ export default class UserMetric extends Model {
 
     await database.write(async () => {
       const notesCollection = database.get<UserMetricsNote>('user_metrics_notes');
-      
+
       // First, mark any existing notes as deleted
-      const existingNotes = await notesCollection.query(
-        Q.where('user_metric_id', this.id),
-        Q.where('deleted_at', Q.eq(null))
-      ).fetch();
-      
+      const existingNotes = await notesCollection
+        .query(Q.where('user_metric_id', this.id), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
       for (const existingNote of existingNotes) {
         await existingNote.markAsDeleted();
       }

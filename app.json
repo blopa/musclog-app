@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.1.6",
+    "version": "2.1.7",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
@@ -62,7 +62,8 @@
           "ocrModels": ["latin"],
           "ocrUseBundled": true
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -75,12 +76,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "140"
+      "buildNumber": "141"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "package": "com.werules.logger",
-      "versionCode": 140,
+      "versionCode": 141,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"

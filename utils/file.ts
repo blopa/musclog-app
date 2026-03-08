@@ -1,3 +1,4 @@
+import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import {
@@ -141,7 +142,8 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 
 /**
  * Copies a bundled exercise image (from require()) to the app's document directory.
- * Handles both file:// (production) and http:// (Metro dev) asset URIs.
+ * Handles both file:// (production), http:// (Metro dev), and bundled asset URIs.
+ * Uses expo-asset to properly resolve production assets.
  *
  * @param assetSource - The result of require() for the image (or getBundledExerciseImageSourceByIndex).
  * @param destFilename - Filename to use in document/exercises/ (e.g. exercise-{id}.webp).
@@ -165,12 +167,30 @@ export async function copyBundledExerciseImageToDocument(
 
   const destFile = new File(exercisesDir, destFilename);
 
+  // Handle production bundled assets (e.g., "assets_exercises_1")
+  if (!sourceUri.includes('://') && !sourceUri.startsWith('/')) {
+    try {
+      // Use expo-asset to download and resolve the bundled asset
+      const asset = await Asset.fromModule(assetSource).downloadAsync();
+      if (asset.localUri) {
+        const srcFile = new File(asset.localUri);
+        srcFile.copy(destFile);
+        return destFile.uri;
+      }
+    } catch (error) {
+      console.warn('Failed to resolve bundled asset with expo-asset:', error);
+      // Fall through to other methods
+    }
+  }
+
+  // Handle file:// URIs (production builds with proper file paths)
   if (sourceUri.startsWith('file://')) {
     const srcFile = new File(sourceUri);
     srcFile.copy(destFile);
     return destFile.uri;
   }
 
+  // Handle http:// and https:// URIs (Metro development)
   if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
     if (!documentDirectory) {
       throw new Error('Document directory is not available');
