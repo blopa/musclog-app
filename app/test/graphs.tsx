@@ -8,7 +8,6 @@ import { BarChart, BarChartDataPoint } from '../../components/BarChart';
 import { BarLineChart, BarLineChartDatum } from '../../components/BarLineChart';
 import { CycleTrackingChart } from '../../components/CycleTrackingChart';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
-import { MetabolicFlowChart } from '../../components/MetabolicFlowChart';
 import {
   MultipleLinesChart,
   MultipleLinesChartDatum,
@@ -53,15 +52,6 @@ export default function GraphsTestScreen() {
     { x: 4, segments: [6, 5, 2, 6] },
     { x: 5, segments: [3, 2, 2, 4] },
     { x: 6, segments: [7, 5, 4, 6] },
-  ]);
-
-  // Sample data for MetabolicFlowChart (dashboard card: protein + carbohydrates)
-  const [metabolicFlowData, setMetabolicFlowData] = useState<AreaChartDatum[]>([
-    { x: 0, protein: 60, carbohydrates: 40 },
-    { x: 125, protein: 70, carbohydrates: 50 },
-    { x: 250, protein: 50, carbohydrates: 85 },
-    { x: 375, protein: 65, carbohydrates: 70 },
-    { x: 500, protein: 55, carbohydrates: 55 },
   ]);
 
   // Sample data for AreaChart (Metabolic Flow: fat, carb & protein burn over time)
@@ -185,18 +175,6 @@ export default function GraphsTestScreen() {
     });
   };
 
-  // Generate random AreaChart data
-  const generateRandomMetabolicFlowData = () => {
-    const xPoints = [0, 125, 250, 375, 500];
-    setMetabolicFlowData(
-      xPoints.map((x) => ({
-        x,
-        protein: Math.floor(Math.random() * 60) + 10,
-        carbohydrates: Math.floor(Math.random() * 70) + 20,
-      }))
-    );
-  };
-
   const generateRandomAreaChartData = () => {
     setAreaChartData(
       Array.from({ length: 5 }, (_, i) => ({
@@ -234,7 +212,6 @@ export default function GraphsTestScreen() {
     generateRandomLineData();
     generateRandomBarData();
     generateRandomStackedBarData();
-    generateRandomMetabolicFlowData();
     generateRandomAreaChartData();
     generateRandomMultipleLinesData();
     generateRandomBarLineData();
@@ -287,20 +264,6 @@ export default function GraphsTestScreen() {
                   centerLabel="Score"
                   size={224}
                 />
-              </View>
-              <View
-                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-2 shadow-lg"
-                style={{ minWidth: 320 }}
-              >
-                <View className="mb-0 flex-row justify-end">
-                  <Button
-                    label="Random Data"
-                    variant="outline"
-                    size="sm"
-                    onPress={generateRandomMetabolicFlowData}
-                  />
-                </View>
-                <MetabolicFlowChart data={metabolicFlowData} height={280} />
               </View>
             </View>
 
