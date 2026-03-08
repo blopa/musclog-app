@@ -72,12 +72,13 @@ export class UserMetricService {
   }
 
   /**
-   * Create user metric (encrypts value and unit; date stored plain).
+   * Create user metric (encrypts value, unit, and note; date stored plain).
    */
   static async createMetric(plain: {
     type: UserMetricType | string;
     value: number;
     unit?: string;
+    note?: string;
     date: number;
     timezone: string;
     externalId?: string;
@@ -85,6 +86,7 @@ export class UserMetricService {
     const encrypted = await encryptUserMetricFields({
       value: plain.value,
       unit: plain.unit,
+      note: plain.note,
       date: plain.date,
     });
 
@@ -94,6 +96,7 @@ export class UserMetricService {
         record.externalId = plain.externalId;
         record.valueRaw = encrypted.value;
         record.unitRaw = encrypted.unit;
+        record.noteRaw = encrypted.note;
         record.date = plain.date;
         record.timezone = plain.timezone;
         record.createdAt = Date.now();
@@ -125,13 +128,14 @@ export class UserMetricService {
   }
 
   /**
-   * Update user metric (encrypts value and unit when provided; date stored plain).
+   * Update user metric (encrypts value, unit, and note when provided; date stored plain).
    */
   static async updateMetric(
     id: string,
     updates: {
       value?: number;
       unit?: string;
+      note?: string;
       date?: number;
       type?: UserMetricType | string;
     }
@@ -143,12 +147,14 @@ export class UserMetricService {
         throw new Error('Cannot update deleted metric');
       }
 
-      const valueToWrite = updates.value ?? (await metric.getDecrypted()).value;
+      const decrypted = await metric.getDecrypted();
+      const valueToWrite = updates.value ?? decrypted.value;
       const encrypted =
-        updates.value !== undefined || updates.unit !== undefined
+        updates.value !== undefined || updates.unit !== undefined || updates.note !== undefined
           ? await encryptUserMetricFields({
               value: valueToWrite,
-              unit: updates.unit ?? (await metric.getDecrypted()).unit,
+              unit: updates.unit ?? decrypted.unit,
+              note: updates.note ?? decrypted.note,
               date: updates.date ?? metric.date,
             })
           : null;
@@ -157,6 +163,7 @@ export class UserMetricService {
         if (encrypted) {
           record.valueRaw = encrypted.value;
           record.unitRaw = encrypted.unit;
+          record.noteRaw = encrypted.note;
         }
         if (updates.date !== undefined) {
           record.date = updates.date;

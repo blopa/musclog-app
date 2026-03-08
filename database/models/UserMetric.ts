@@ -7,6 +7,7 @@ import { decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 export interface DecryptedUserMetricFields {
   value: number;
   unit?: string;
+  note?: string;
   date: number;
 }
 
@@ -41,6 +42,7 @@ export default class UserMetric extends Model {
   @field('external_id') externalId?: string;
   @field('value') valueRaw!: string;
   @field('unit') unitRaw?: string;
+  @field('note') noteRaw?: string;
   @field('date') date!: number;
   @field('timezone') timezone!: string;
   @field('created_at') createdAt!: number;
@@ -55,13 +57,14 @@ export default class UserMetric extends Model {
     });
   }
 
-  /** Decrypt value and unit. Date is stored plain. Use for display and calculations. */
+  /** Decrypt value, unit, and note. Date is stored plain. Use for display and calculations. */
   async getDecrypted(): Promise<DecryptedUserMetricFields> {
-    const [value, unit] = await Promise.all([
+    const [value, unit, note] = await Promise.all([
       decryptNumber(this.valueRaw),
       decryptOptionalString(this.unitRaw),
+      decryptOptionalString(this.noteRaw),
     ]);
 
-    return { value, unit: (unit as Unit) || undefined, date: this.date };
+    return { value, unit: (unit as Unit) || undefined, note, date: this.date };
   }
 }

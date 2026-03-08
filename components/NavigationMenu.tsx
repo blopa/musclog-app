@@ -25,6 +25,7 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
     if (path === '/') {
       return pathname === '/';
     }
+
     return pathname.startsWith(path);
   };
 
@@ -194,22 +195,28 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/profile') ? 'bg-bg-navActive' : ''
+                  isActive('/profile') || isActive('/progress') ? 'bg-bg-navActive' : ''
                 }`}
               >
                 <User
                   size={theme.iconSize.md}
                   color={
-                    isActive('/profile') ? theme.colors.accent.primary : theme.colors.text.tertiary
+                    isActive('/profile') || isActive('/progress')
+                      ? theme.colors.accent.primary
+                      : theme.colors.text.tertiary
                   }
                   strokeWidth={
-                    isActive('/profile') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                    isActive('/profile') || isActive('/progress')
+                      ? theme.strokeWidth.medium
+                      : theme.borderWidth.medium
                   }
                 />
               </View>
               <Text
                 className={`text-xs font-medium ${
-                  isActive('/profile') ? 'text-text-accent' : 'text-text-tertiary'
+                  isActive('/profile') || isActive('/progress')
+                    ? 'text-text-accent'
+                    : 'text-text-tertiary'
                 }`}
               >
                 {t('home.navigation.profile')}

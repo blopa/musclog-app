@@ -160,15 +160,18 @@ export async function encryptNutritionLogSnapshot(plain: {
   };
 }
 
-/** Batch-encrypt user_metrics value and unit. Date is stored plain (not encrypted). */
+/** Batch-encrypt user_metrics value, unit, and note. Date is stored plain (not encrypted). */
 export async function encryptUserMetricFields(plain: {
   value: number;
   unit?: string;
+  note?: string;
   date: number;
-}): Promise<{ value: string; unit: string }> {
-  const [value, unit] = await Promise.all([
+}): Promise<{ value: string; unit: string; note: string }> {
+  const [value, unit, note] = await Promise.all([
     encryptNumber(plain.value),
     encryptOptionalString(plain.unit),
+    encryptOptionalString(plain.note),
   ]);
-  return { value, unit: unit || '' };
+
+  return { value, unit: unit || '', note: note || '' };
 }
