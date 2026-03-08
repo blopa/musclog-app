@@ -143,7 +143,10 @@ export function BarLineChart({
   const CHART_PADDING_X = 12;
   const LABEL_BOX_WIDTH = 40;
   const xLabelLeft = (index: number) => {
-    if (labelContainerWidth <= 0) return 0;
+    if (labelContainerWidth <= 0) {
+      return 0;
+    }
+
     const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
     const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
     return barCenterX - LABEL_BOX_WIDTH / 2;
@@ -382,12 +385,15 @@ export function BarLineChart({
           style={{
             position: 'relative',
             marginTop: 8,
-            paddingHorizontal: 32,
+            paddingHorizontal: 0,
+            marginLeft: '10%',
+            marginRight: '10%',
             height: 20,
+            width: '80%',
           }}
           onLayout={(e) => {
             const w = e.nativeEvent.layout.width;
-            setLabelContainerWidth(Math.max(0, w - 64));
+            setLabelContainerWidth(Math.max(0, w));
           }}
         >
           {xAxisLabels.map((label, index) => (
