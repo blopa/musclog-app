@@ -9,7 +9,7 @@ import {
   VictoryVoronoiContainer,
 } from 'victory';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 export type LineChartDataPoint = {
   x: number;

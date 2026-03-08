@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
-import type { LineChartDataPoint } from '../components/LineChart';
+import type { LineChartDataPoint } from '../components/charts/LineChart';
 import type { Units } from '../constants/settings';
 import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';

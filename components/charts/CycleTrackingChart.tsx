@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 export type CycleSegmentConfig = {
   /** Width ratio 0–1 (e.g. 0.2 for 20%) */

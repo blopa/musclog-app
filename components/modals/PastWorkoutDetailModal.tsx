@@ -15,7 +15,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
-import { LineChart, LineChartDataPoint } from '../LineChart';
+import { LineChart, LineChartDataPoint } from '../charts/LineChart';
 import { MenuButton } from '../theme/MenuButton';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';

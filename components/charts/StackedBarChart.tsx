@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 /** One bar: x plus up to 4 segment values (e.g. [coffee, chocolate, soda, iceCream]) */
 export type StackedBarChartDatum = {

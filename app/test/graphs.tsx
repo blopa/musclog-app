@@ -2,26 +2,30 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ActivityRingsChart } from '../../components/ActivityRingsChart';
-import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '../../components/AreaChart';
-import { BarChart, BarChartDataPoint } from '../../components/BarChart';
-import { BarLineChart, BarLineChartDatum } from '../../components/BarLineChart';
-import { CycleTrackingChart } from '../../components/CycleTrackingChart';
-import { LineChart, LineChartDataPoint } from '../../components/LineChart';
+import { ActivityRingsChart } from '../../components/charts/ActivityRingsChart';
+import {
+  AreaChart,
+  AreaChartDatum,
+  AreaChartSeriesConfig,
+} from '../../components/charts/AreaChart';
+import { BarChart, BarChartDataPoint } from '../../components/charts/BarChart';
+import { BarLineChart, BarLineChartDatum } from '../../components/charts/BarLineChart';
+import { CycleTrackingChart } from '../../components/charts/CycleTrackingChart';
+import { LineChart, LineChartDataPoint } from '../../components/charts/LineChart';
 import {
   MultipleLinesChart,
   MultipleLinesChartDatum,
   MultipleLinesChartSeriesConfig,
-} from '../../components/MultipleLinesChart';
-import { SpiderChart } from '../../components/SpiderChart';
-import { StackedBarChart, StackedBarChartDatum } from '../../components/StackedBarChart';
+} from '../../components/charts/MultipleLinesChart';
+import { SpiderChart } from '../../components/charts/SpiderChart';
+import { StackedBarChart, StackedBarChartDatum } from '../../components/charts/StackedBarChart';
 import {
   StackedBarLineChart,
   StackedBarLineChartDatum,
-} from '../../components/StackedBarLineChart';
+} from '../../components/charts/StackedBarLineChart';
+import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
-import { TrainingConsistencyChart } from '../../components/TrainingConsistencyChart';
 
 export default function GraphsTestScreen() {
   // Sample data for LineChart

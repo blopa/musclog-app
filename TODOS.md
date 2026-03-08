@@ -84,10 +84,10 @@ To know if AI is enabled, we need to check if:
 
 ### components/LineChart.tsx
 
-| Line                               | TODO                                                                | Priority |
-| ---------------------------------- | ------------------------------------------------------------------- | -------- |
-| [86](components/LineChart.tsx#L86) | Use `lastPointStrokeColor` prop (currently destructured but unused) | Low      |
-| [87](components/LineChart.tsx#L87) | Use `lastPointStrokeWidth` prop (currently destructured but unused) | Low      |
+| Line                                      | TODO                                                                | Priority |
+| ----------------------------------------- | ------------------------------------------------------------------- | -------- |
+| [86](components/charts/LineChart.tsx#L86) | Use `lastPointStrokeColor` prop (currently destructured but unused) | Low      |
+| [87](components/charts/LineChart.tsx#L87) | Use `lastPointStrokeWidth` prop (currently destructured but unused) | Low      |
 
 ### components/
 

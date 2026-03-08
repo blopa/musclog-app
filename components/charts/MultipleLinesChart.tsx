@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
+import { CartesianChart, Line } from 'victory-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
+/** Map chart points to victory-native PointsArray (includes xValue, yValue) */
+function toPointsArray(
+  pts: { x: number; y: number }[]
+): { x: number; y: number; xValue: number; yValue: number }[] {
+  return pts.map((p) => ({ x: p.x, y: p.y, xValue: p.x, yValue: p.y }));
+}
+
+/** One data point: x plus one value per series key (e.g. active, resting) */
 export type MultipleLinesChartDatum = { x: number; [key: string]: number };
 
+/** Config for each line: key in data, label in legend, color, optional legend value (e.g. "2,450 kcal"), optional dashed */
 export type MultipleLinesChartSeriesConfig = {
   key: string;
   label: string;
   color: string;
+  /** Optional value shown in legend (e.g. "2,450 kcal") */
   value?: string;
+  /** Draw line as dashed (default: false) */
   dashed?: boolean;
 };
 
+/** Callout label at a specific data point */
 export type MultipleLinesChartCallout = {
   seriesKey: string;
   pointIndex: number;
@@ -21,21 +33,37 @@ export type MultipleLinesChartCallout = {
 };
 
 export type MultipleLinesChartProps = {
+  /** Chart title */
   title?: string;
+  /** Chart subtitle */
   subtitle?: string;
+  /** Data points; each has x and one numeric value per series key (max 4 series) */
   data: MultipleLinesChartDatum[];
+  /** Series definitions, max 4 (order = draw order) */
   series: MultipleLinesChartSeriesConfig[];
+  /** Height of the chart in pixels (default: 256) */
   height?: number;
+  /** X domain [min, max] (default: from data) */
   xDomain?: [number, number];
+  /** Y domain [min, max] (default: [0, 100]) */
   yDomain?: [number, number];
+  /** X-axis labels below the chart */
   xAxisLabels?: string[];
+  /** Y-axis labels on the left */
   yAxisLabels?: { label: string; yDomainValue: number }[];
+  /** Optional callout labels at specific series/point indices */
   callouts?: MultipleLinesChartCallout[];
+  /** Whether to show grid lines (default: true) */
   showGridLines?: boolean;
+  /** Grid line color (default: theme border) */
   gridLineColor?: string;
+  /** Line stroke width (default: 3) */
   lineWidth?: number;
+  /** Custom margin top (default: 16) */
   marginTop?: number;
+  /** Custom margin bottom for X labels (default: 16) */
   marginBottom?: number;
+  /** Custom className */
   className?: string;
 };
 
@@ -67,11 +95,13 @@ export function MultipleLinesChart({
     return null;
   }
 
+  const yKeys = series.slice(0, 4).map((s) => s.key);
   const xDomainFinal: [number, number] = xDomain ?? [data[0].x, data[data.length - 1].x];
   const yDomainFinal = yDomain;
   const yRange = yDomainFinal[1] - yDomainFinal[0] || 1;
-  const chartHeight = height - marginBottom - 16;
   const gridColor = gridLineColor ?? theme.colors.border.light;
+
+  const chartData = data as Record<string, number>[];
 
   return (
     <View className={className} style={{ marginTop }}>
@@ -134,59 +164,42 @@ export function MultipleLinesChart({
           }}
           onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
         >
-          <VictoryChart
-            height={height}
-            padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          <CartesianChart
+            data={chartData}
+            xKey="x"
+            yKeys={yKeys}
             domain={{ x: xDomainFinal, y: yDomainFinal }}
-            style={{ parent: { height, width: '100%' } }}
+            padding={0}
+            domainPadding={{ left: 0, right: 0, top: 10, bottom: 0 }}
+            axisOptions={{
+              lineColor: showGridLines ? gridColor : 'transparent',
+              labelColor: 'transparent',
+            }}
           >
-            {showGridLines ? (
-              <VictoryAxis
-                dependentAxis
-                style={{
-                  axis: { stroke: 'transparent' },
-                  grid: {
-                    stroke: gridColor,
-                    strokeWidth: 1,
-                    opacity: 0.5,
-                  },
-                  ticks: { stroke: 'transparent' },
-                  tickLabels: { fill: 'transparent' },
-                }}
-                tickValues={yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100]}
-              />
-            ) : null}
-            {series.slice(0, 4).map((s) => {
-              const seriesData = data.map((d) => ({
-                x: d.x,
-                y: (d as Record<string, number>)[s.key] ?? 0,
-              }));
+            {({ points }) => {
+              const ptsMap = points as Record<string, { x: number; y: number }[]>;
               return (
-                <VictoryLine
-                  key={s.key}
-                  data={seriesData}
-                  interpolation="monotoneX"
-                  style={{
-                    data: {
-                      stroke: s.color,
-                      strokeWidth: lineWidth,
-                      strokeLinecap: 'round',
-                      strokeLinejoin: 'round',
-                      strokeDasharray: s.dashed ? '4,4' : undefined,
-                    },
-                  }}
-                />
+                <>
+                  {series.slice(0, 4).map((s) => {
+                    const pts = ptsMap[s.key];
+                    if (!pts || pts.length === 0) {
+                      return null;
+                    }
+                    return (
+                      <Line
+                        key={s.key}
+                        points={toPointsArray(pts)}
+                        curveType="monotoneX"
+                        color={s.color}
+                        strokeWidth={lineWidth}
+                        strokeCap="round"
+                      />
+                    );
+                  })}
+                </>
               );
-            })}
-            <VictoryAxis
-              style={{
-                axis: { stroke: 'transparent' },
-                grid: { stroke: 'transparent' },
-                ticks: { stroke: 'transparent' },
-                tickLabels: { fill: 'transparent' },
-              }}
-            />
-          </VictoryChart>
+            }}
+          </CartesianChart>
         </View>
 
         {callouts.map((callout, idx) => {
@@ -203,7 +216,10 @@ export function MultipleLinesChart({
             32 +
             ((dataX - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0] || 1)) * chartWidth -
             CALLOUT_WIDTH / 2;
-          const pixelY = (1 - (yVal - yDomainFinal[0]) / yRange) * chartHeight - CALLOUT_HEIGHT - 4;
+          const pixelY =
+            (1 - (yVal - yDomainFinal[0]) / yRange) * (height - marginBottom - 16) -
+            CALLOUT_HEIGHT -
+            4;
           return (
             <View
               key={idx}

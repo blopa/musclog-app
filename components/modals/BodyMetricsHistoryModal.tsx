@@ -13,7 +13,7 @@ import { MetricType as AppMetricType } from '../../services/healthDataTransform'
 import { kgToDisplay, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
-import { LineChart } from '../LineChart';
+import { LineChart } from '../charts/LineChart';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { SkeletonLoader } from '../theme/SkeletonLoader';

@@ -10,7 +10,7 @@ import {
   VictoryScatter,
 } from 'victory';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 export type AreaChartDatum = { x: number; [key: string]: number };
 

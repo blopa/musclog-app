@@ -1,46 +1,9 @@
 import { Text, View } from 'react-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 const DEFAULT_NEON = '#00FFA2';
 const DEFAULT_BORDER = '#1C2623';
-
-/**
- * Cell intensity: 0 = empty (border color), 1–5 = neon at 20%, 40%, 60%, 80%, 100%.
- * Value 5 can optionally show a glow (high PR).
- */
-export type TrainingConsistencyChartProps = {
-  /** Chart title */
-  title?: string;
-  /** Subtitle (e.g. "Last 12 Weeks") */
-  subtitle?: string;
-  /** Percentage shown top-right (e.g. 84) */
-  percentage?: number;
-  /** Label below percentage (e.g. "GOAL REACHED") */
-  percentageLabel?: string;
-  /**
-   * Flat array of cell intensities, 0–5.
-   * Grid is filled column-by-column with rowsPerColumn rows per column.
-   * Length should be columns * rowsPerColumn (e.g. 12 * 7 = 84).
-   */
-  data: number[];
-  /** Number of rows per column (e.g. 7 for days per week) (default: 7) */
-  rowsPerColumn?: number;
-  /** Number of columns (e.g. 12 for 12 weeks) (default: 12) */
-  columns?: number;
-  /** Accent color for filled cells (default: mint green) */
-  accentColor?: string;
-  /** Color for empty/low cells (default: theme border) */
-  emptyColor?: string;
-  /** Whether to show glow on max-intensity cells (default: true) */
-  showGlowOnMax?: boolean;
-  /** Height of the grid area in pixels (default: 128) */
-  gridHeight?: number;
-  /** Gap between cells (default: 6) */
-  gap?: number;
-  /** Custom className */
-  className?: string;
-};
 
 const OPACITIES: Record<number, number> = {
   0: 0,
@@ -50,6 +13,8 @@ const OPACITIES: Record<number, number> = {
   4: 0.8,
   5: 1,
 };
+
+export type { TrainingConsistencyChartProps } from './TrainingConsistencyChart';
 
 export function TrainingConsistencyChart({
   title,
@@ -65,7 +30,7 @@ export function TrainingConsistencyChart({
   gridHeight = 128,
   gap = 6,
   className,
-}: TrainingConsistencyChartProps) {
+}: import('./TrainingConsistencyChart').TrainingConsistencyChartProps) {
   const theme = useTheme();
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
   const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
@@ -75,6 +40,9 @@ export function TrainingConsistencyChart({
   const cells = data.slice(0, totalCells);
   const rowCount = rowsPerColumn;
   const colCount = Math.ceil(cells.length / rowCount) || columns;
+
+  // Explicit dimensions so the grid renders on web (flex:1 + minHeight:0 often fails in RNW)
+  const cellHeight = rowCount > 0 ? (gridHeight - (rowCount - 1) * gap) / rowCount : 0;
 
   return (
     <View className={className}>
@@ -128,7 +96,7 @@ export function TrainingConsistencyChart({
         ) : null}
       </View>
 
-      {/* Grid: flow by column, rowsPerColumn rows */}
+      {/* Grid: explicit height per cell so it renders on web */}
       <View
         style={{
           height: gridHeight,
@@ -145,6 +113,7 @@ export function TrainingConsistencyChart({
             style={{
               flex: 1,
               minWidth: 0,
+              height: gridHeight,
               flexDirection: 'column',
               gap,
               justifyContent: 'space-between',
@@ -162,18 +131,14 @@ export function TrainingConsistencyChart({
                 <View
                   key={rowIndex}
                   style={{
-                    flex: 1,
-                    minHeight: 0,
+                    height: cellHeight,
+                    width: '100%',
                     borderRadius: 4,
                     backgroundColor: isEmpty ? borderColor : accentColor,
                     opacity: isEmpty ? 1 : opacity,
                     ...(showGlowOnMax && isMax && !isEmpty
                       ? {
-                          shadowColor: accentColor,
-                          shadowOffset: { width: 0, height: 0 },
-                          shadowOpacity: 0.4,
-                          shadowRadius: 8,
-                          elevation: 4,
+                          boxShadow: `0 0 ${8}px ${accentColor}66`,
                         }
                       : {}),
                   }}

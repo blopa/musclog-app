@@ -1,50 +1,52 @@
 import { useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
+import { CartesianChart, Line, Scatter, StackedBar } from 'victory-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
-export type BarLineChartDatum = {
+export type StackedBarLineChartDatum = {
   /** X value (e.g. 0 = Mon, 1 = Tue, ...) */
   x: number;
-  /** Bar series value (e.g. steps) */
-  steps: number;
+  /** Stacked bar segments (up to 4 values per bar) */
+  segments: [number, number?, number?, number?];
   /** Line series value (e.g. heart rate bpm) */
-  heartRate: number;
+  lineValue: number;
 };
 
-export type BarLineChartProps = {
+export type StackedBarLineChartProps = {
   /** Chart title */
   title?: string;
   /** Chart subtitle */
   subtitle?: string;
-  /** Label for the bar series (left Y-axis, e.g. "Steps Taken") */
+  /** Label for the stacked bar series (left Y-axis) */
   barSeriesLabel?: string;
-  /** Label for the line series (right Y-axis, e.g. "Avg Heart Rate") */
+  /** Label for the line series (right Y-axis) */
   lineSeriesLabel?: string;
   /** Array of data points */
-  data: BarLineChartDatum[];
+  data: StackedBarLineChartDatum[];
   /** Height of the chart in pixels (default: 256) */
   height?: number;
-  /** Bar color (default: theme accent primary / neon) */
-  barColor?: string;
-  /** Line color (default: theme amber/warning for contrast) */
+  /** Colors for each stack layer (default: theme-based; up to 4) */
+  stackColors?: [string, string?, string?, string?];
+  /** Line color (default: theme amber/warning) */
   lineColor?: string;
-  /** Left Y-axis domain [min, max] for bar series (default: [0, 12000]) */
-  stepsDomain?: [number, number];
-  /** Right Y-axis domain [min, max] for line series (default: [60, 140]) */
-  heartRateDomain?: [number, number];
-  /** Left Y-axis tick labels (default: 0, 3k, 6k, 9k, 12k) */
+  /** Left Y-axis domain [min, max] for stacked bars (default: [0, max total]) */
+  stackedDomain?: [number, number];
+  /** Right Y-axis domain [min, max] for line (default: [60, 140]) */
+  lineDomain?: [number, number];
+  /** Padding between bars, 0–1 (default: 0.35) */
+  innerPadding?: number;
+  /** Left Y-axis tick labels */
   leftAxisLabels?: string[];
-  /** Right Y-axis tick labels (default: 60, 80, 100, 120, 140) */
+  /** Right Y-axis tick labels */
   rightAxisLabels?: string[];
   /** X-axis labels (e.g. ['Mon', 'Tue', ...]) */
   xAxisLabels?: string[];
-  /** Format bar tooltip (default: formats steps with commas) */
-  stepsFormatter?: (value: number) => string;
-  /** Format line tooltip (default: value as string) */
-  heartRateFormatter?: (value: number) => string;
+  /** Format stacked total tooltip */
+  totalFormatter?: (total: number, datum: StackedBarLineChartDatum) => string;
+  /** Format line tooltip */
+  lineFormatter?: (value: number) => string;
   /** Enable touch tooltips (default: true) */
   interactive?: boolean;
   /** Custom className for container */
@@ -53,37 +55,51 @@ export type BarLineChartProps = {
 
 const TOOLTIP_WIDTH = 72;
 const TOOLTIP_HEIGHT = 32;
+const LABEL_BOX_WIDTH = 40;
 
-const DEFAULT_LEFT_LABELS = ['0', '3k', '6k', '9k', '12k'];
+const DEFAULT_STACK_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
+const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 
-export function BarLineChart({
+function sumSegments(d: StackedBarLineChartDatum): number {
+  const s = d.segments;
+  return (s[0] ?? 0) + (s[1] ?? 0) + (s[2] ?? 0) + (s[3] ?? 0);
+}
+
+export function StackedBarLineChart({
   title,
   subtitle,
-  barSeriesLabel = 'Steps Taken',
+  barSeriesLabel = 'Total',
   lineSeriesLabel = 'Avg Heart Rate',
   data,
   height = 256,
-  barColor,
+  stackColors,
   lineColor,
-  stepsDomain = [0, 12000],
-  heartRateDomain = [60, 140],
+  stackedDomain,
+  lineDomain = [60, 140],
+  innerPadding = 0.35,
   leftAxisLabels = DEFAULT_LEFT_LABELS,
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
-  stepsFormatter = (v) => v.toLocaleString(),
-  heartRateFormatter = (v) => String(Math.round(v)),
+  totalFormatter = (t) => String(Math.round(t)),
+  lineFormatter = (v) => String(Math.round(v)),
   interactive = true,
   className,
-}: BarLineChartProps) {
+}: StackedBarLineChartProps) {
   const theme = useTheme();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
   const chartWidthSv = useSharedValue(0);
 
-  const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved = lineColor ?? theme.colors.status.amber ?? theme.colors.status.warning;
+  const colors: string[] = [
+    stackColors?.[0] ?? theme.colors.accent.primary ?? DEFAULT_STACK_COLORS[0],
+    stackColors?.[1] ?? DEFAULT_STACK_COLORS[1],
+    stackColors?.[2] ?? DEFAULT_STACK_COLORS[2],
+    stackColors?.[3] ?? DEFAULT_STACK_COLORS[3],
+  ];
+  // Use a color distinct from stack (blue, red, yellow, green) — e.g. purple
+  const lineColorResolved = lineColor ?? theme.colors.status.emeraldDark;
 
   const barTooltipLeft = useSharedValue(0);
   const barTooltipTop = useSharedValue(0);
@@ -103,9 +119,23 @@ export function BarLineChart({
     return null;
   }
 
+  const maxStackTotal = Math.max(...data.map(sumSegments), 1);
+  const stackedDomainResolved: [number, number] = stackedDomain ?? [
+    0,
+    Math.ceil(maxStackTotal * 1.1),
+  ];
   const xDomain: [number, number] = [0, data.length - 1];
-  const stepsRange = stepsDomain[1] - stepsDomain[0];
-  const hrRange = heartRateDomain[1] - heartRateDomain[0];
+  const stackedRange = stackedDomainResolved[1] - stackedDomainResolved[0];
+  const lineRange = lineDomain[1] - lineDomain[0];
+
+  const chartData = data.map((d) => ({
+    x: d.x,
+    seg0: d.segments[0] ?? 0,
+    seg1: d.segments[1] ?? 0,
+    seg2: d.segments[2] ?? 0,
+    seg3: d.segments[3] ?? 0,
+    lineValue: d.lineValue,
+  }));
 
   const handleTouchAt = (touchX: number) => {
     const w = containerWidthRef.current;
@@ -118,35 +148,31 @@ export function BarLineChart({
     }
     const t = Math.max(0, Math.min(1, touchX / chartWidth));
     const index = Math.round(t * (data.length - 1));
-    const datum = data[Math.min(index, data.length - 1)];
+    const idx = Math.min(index, data.length - 1);
+    const datum = data[idx];
     if (!datum) {
       return;
     }
 
-    const idx = Math.min(index, data.length - 1);
     setActiveIndex(idx);
     const barCenterX = (idx / Math.max(1, data.length - 1)) * chartWidth;
-    const barTopY = ((stepsDomain[1] - datum.steps) / stepsRange) * (height - 24) + 12;
+    const total = sumSegments(datum);
+    const barTopY = ((stackedDomainResolved[1] - total) / stackedRange) * (height - 24) + 12;
     barTooltipLeft.value = barCenterX - TOOLTIP_WIDTH / 2;
     barTooltipTop.value = barTopY - TOOLTIP_HEIGHT - 6;
 
-    const lineY = ((heartRateDomain[1] - datum.heartRate) / hrRange) * (height - 24) + 12;
+    const lineY = ((lineDomain[1] - datum.lineValue) / lineRange) * (height - 24) + 12;
     lineTooltipLeft.value = barCenterX - TOOLTIP_WIDTH / 2;
     lineTooltipTop.value = lineY - TOOLTIP_HEIGHT - 6;
   };
 
-  const chartData = data as { x: number; steps: number; heartRate: number }[];
-
   const activeDatum = activeIndex != null ? data[activeIndex] : null;
 
-  // Match chart's domainPadding (left: 12, right: 12): data x [0, n-1] maps to 12px .. (width - 12)px
   const CHART_PADDING_X = 12;
-  const LABEL_BOX_WIDTH = 40;
   const xLabelLeft = (index: number) => {
     if (labelContainerWidth <= 0) {
       return 0;
     }
-
     const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
     const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
     return barCenterX - LABEL_BOX_WIDTH / 2;
@@ -195,7 +221,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {[...leftAxisLabels].reverse().map((label, i) => (
+          {leftAxisLabels.map((label) => (
             <Text
               key={label}
               style={{
@@ -222,7 +248,7 @@ export function BarLineChart({
             zIndex: 2,
           }}
         >
-          {[...rightAxisLabels].reverse().map((label) => (
+          {rightAxisLabels.map((label) => (
             <Text
               key={label}
               style={{
@@ -236,27 +262,26 @@ export function BarLineChart({
           ))}
         </View>
 
-        {/* Chart area inset for axes */}
         <View style={{ position: 'absolute', left: 32, right: 32, top: 0, bottom: 0 }}>
           <CartesianChart
             data={chartData}
             xKey="x"
-            yKeys={['steps', 'heartRate']}
+            yKeys={['seg0', 'seg1', 'seg2', 'seg3', 'lineValue']}
             domain={{ x: xDomain }}
             domainPadding={{ left: 12, right: 12, top: 10, bottom: 0 }}
             padding={0}
             yAxis={[
               {
-                yKeys: ['steps'],
-                domain: stepsDomain,
+                yKeys: ['seg0', 'seg1', 'seg2', 'seg3'],
+                domain: stackedDomainResolved,
                 axisSide: 'left',
                 lineColor: theme.colors.border.light,
                 tickCount: 0,
                 labelColor: 'transparent',
               },
               {
-                yKeys: ['heartRate'],
-                domain: heartRateDomain,
+                yKeys: ['lineValue'],
+                domain: lineDomain,
                 axisSide: 'right',
                 lineColor: theme.colors.border.light,
                 tickCount: 0,
@@ -272,22 +297,24 @@ export function BarLineChart({
           >
             {({ points, chartBounds }) => (
               <>
-                <Bar
-                  points={points.steps}
+                <StackedBar
+                  points={[points.seg0, points.seg1, points.seg2, points.seg3]}
                   chartBounds={chartBounds}
-                  color={barColorResolved}
-                  innerPadding={0.35}
-                  roundedCorners={{ topLeft: 4, topRight: 4 }}
+                  innerPadding={innerPadding}
+                  colors={colors}
+                  barOptions={({ isTop }) =>
+                    isTop ? { roundedCorners: { topLeft: 4, topRight: 4 } } : {}
+                  }
                 />
                 <Line
-                  points={points.heartRate}
+                  points={points.lineValue}
                   curveType="monotoneX"
                   color={lineColorResolved}
                   strokeWidth={2.5}
                   strokeCap="round"
                 />
                 <Scatter
-                  points={points.heartRate}
+                  points={points.lineValue}
                   radius={4}
                   color={lineColorResolved}
                   style="fill"
@@ -327,7 +354,7 @@ export function BarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {stepsFormatter(activeDatum.steps)}
+                  {totalFormatter(sumSegments(activeDatum), activeDatum)}
                 </Text>
               </Animated.View>
               <Animated.View
@@ -359,7 +386,7 @@ export function BarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {heartRateFormatter(activeDatum.heartRate)}
+                  {lineFormatter(activeDatum.lineValue)}
                 </Text>
               </Animated.View>
             </>
@@ -391,10 +418,7 @@ export function BarLineChart({
             height: 20,
             width: '80%',
           }}
-          onLayout={(e) => {
-            const w = e.nativeEvent.layout.width;
-            setLabelContainerWidth(Math.max(0, w));
-          }}
+          onLayout={(e) => setLabelContainerWidth(e.nativeEvent.layout.width)}
         >
           {xAxisLabels.map((label, index) => (
             <View
@@ -421,17 +445,22 @@ export function BarLineChart({
         </View>
       ) : null}
 
-      {/* Legend */}
+      {/* Legend: stacked bar (4 small squares) + line */}
       <View className="flex-row items-center justify-center gap-6" style={{ marginTop: 16 }}>
         <View className="flex-row items-center gap-2">
-          <View
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: 2,
-              backgroundColor: barColorResolved,
-            }}
-          />
+          <View className="flex-row gap-0.5">
+            {colors.slice(0, 4).map((c, i) => (
+              <View
+                key={i}
+                style={{
+                  width: 8,
+                  height: 12,
+                  borderRadius: 1,
+                  backgroundColor: c,
+                }}
+              />
+            ))}
+          </View>
           <Text
             style={{
               fontSize: theme.typography.fontSize.xs,

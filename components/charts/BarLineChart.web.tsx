@@ -2,22 +2,9 @@ import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
-import {
-  VictoryAxis,
-  VictoryBar,
-  VictoryChart,
-  VictoryLine,
-  VictoryScatter,
-  VictoryStack,
-} from 'victory';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
-import { useTheme } from '../hooks/useTheme';
-
-export type StackedBarLineChartDatum = {
-  x: number;
-  segments: [number, number?, number?, number?];
-  lineValue: number;
-};
+import { useTheme } from '../../hooks/useTheme';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
@@ -25,104 +12,86 @@ type ViewWithMouseProps = ViewProps & {
   onMouseLeave?: () => void;
 };
 
-export type StackedBarLineChartProps = {
+export type BarLineChartDatum = {
+  x: number;
+  steps: number;
+  heartRate: number;
+};
+
+export type BarLineChartProps = {
   title?: string;
   subtitle?: string;
   barSeriesLabel?: string;
   lineSeriesLabel?: string;
-  data: StackedBarLineChartDatum[];
+  data: BarLineChartDatum[];
   height?: number;
-  stackColors?: [string, string?, string?, string?];
+  barColor?: string;
   lineColor?: string;
-  stackedDomain?: [number, number];
-  lineDomain?: [number, number];
-  innerPadding?: number;
+  stepsDomain?: [number, number];
+  heartRateDomain?: [number, number];
   leftAxisLabels?: string[];
   rightAxisLabels?: string[];
   xAxisLabels?: string[];
-  totalFormatter?: (total: number, datum: StackedBarLineChartDatum) => string;
-  lineFormatter?: (value: number) => string;
+  stepsFormatter?: (value: number) => string;
+  heartRateFormatter?: (value: number) => string;
   interactive?: boolean;
   className?: string;
 };
 
-const DEFAULT_STACK_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
-const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
+const DEFAULT_LEFT_LABELS = ['0', '3k', '6k', '9k', '12k'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 
-function sumSegments(d: StackedBarLineChartDatum): number {
-  const s = d.segments;
-  return (s[0] ?? 0) + (s[1] ?? 0) + (s[2] ?? 0) + (s[3] ?? 0);
-}
-
-export function StackedBarLineChart({
+export function BarLineChart({
   title,
   subtitle,
-  barSeriesLabel = 'Total',
+  barSeriesLabel = 'Steps Taken',
   lineSeriesLabel = 'Avg Heart Rate',
   data,
   height = 256,
-  stackColors,
+  barColor,
   lineColor,
-  stackedDomain,
-  lineDomain = [60, 140],
-  innerPadding = 0.2,
+  stepsDomain = [0, 12000],
+  heartRateDomain = [60, 140],
   leftAxisLabels = DEFAULT_LEFT_LABELS,
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
-  totalFormatter = (t) => String(Math.round(t)),
-  lineFormatter = (v) => String(Math.round(v)),
+  stepsFormatter = (v) => v.toLocaleString(),
+  heartRateFormatter = (v) => String(Math.round(v)),
   interactive = true,
   className,
-}: StackedBarLineChartProps) {
+}: BarLineChartProps) {
   const theme = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const colors: string[] = [
-    stackColors?.[0] ?? (theme.colors.accent?.primary as string) ?? DEFAULT_STACK_COLORS[0],
-    stackColors?.[1] ?? DEFAULT_STACK_COLORS[1],
-    stackColors?.[2] ?? DEFAULT_STACK_COLORS[2],
-    stackColors?.[3] ?? DEFAULT_STACK_COLORS[3],
-  ];
-  // Use a color distinct from stack (blue, red, yellow, green)
-  const lineColorResolved = lineColor ?? theme.colors.status.emeraldDark;
+  const barColorResolved = barColor ?? theme.colors.accent.primary;
+  const lineColorResolved =
+    lineColor ?? theme.colors.status?.amber ?? theme.colors.status?.warning ?? '#f59e0b';
 
   if (data.length === 0) {
     return null;
   }
 
-  const maxStackTotal = Math.max(...data.map(sumSegments), 1);
-  const stackedMin = stackedDomain?.[0] ?? 0;
-  const stackedMax = stackedDomain?.[1] ?? Math.ceil(maxStackTotal * 1.1);
-  const stackedRange = stackedMax - stackedMin;
-  const lineMin = lineDomain[0];
-  const lineMax = lineDomain[1];
-  const lineRange = lineMax - lineMin;
-
   const xDomain: [number, number] = [0, data.length - 1];
+  const stepsMin = stepsDomain[0];
+  const stepsMax = stepsDomain[1];
+  const hrMin = heartRateDomain[0];
+  const hrMax = heartRateDomain[1];
+  const hrRange = hrMax - hrMin;
+  const stepsRange = stepsMax - stepsMin;
 
-  // Transform line values to stacked scale so line and bars share one y-axis in Victory
+  // Transform heart rate to steps scale so both plot on same chart
   const lineData = data.map((d) => ({
     x: d.x,
-    y: ((d.lineValue - lineMin) / lineRange) * stackedRange + stackedMin,
-    lineValue: d.lineValue,
+    y: ((d.heartRate - hrMin) / hrRange) * stepsRange + stepsMin,
+    heartRate: d.heartRate,
   }));
 
-  const segmentData = [
-    data.map((d) => ({ x: d.x, y: d.segments[0] ?? 0 })),
-    data.map((d) => ({ x: d.x, y: d.segments[1] ?? 0 })),
-    data.map((d) => ({ x: d.x, y: d.segments[2] ?? 0 })),
-    data.map((d) => ({ x: d.x, y: d.segments[3] ?? 0 })),
-  ];
+  const chartXDomain: [number, number] = [xDomain[0], xDomain[1]];
 
   const activeDatum = hoveredIndex != null ? data[hoveredIndex] : null;
-  const barTopRatio = activeDatum
-    ? (stackedMax - sumSegments(activeDatum)) / stackedRange
-    : 0;
-  const lineTopRatio = activeDatum
-    ? (lineMax - activeDatum.lineValue) / lineRange
-    : 0;
-
+  const stepsRangeForTooltip = stepsMax - stepsMin;
+  const barTopRatio = activeDatum ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip : 0;
+  const lineTopRatio = activeDatum ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin) : 0;
   const chartHeight = height + 128;
   const chartPaddingTop = 6;
   const chartPaddingBottom = 4;
@@ -151,6 +120,7 @@ export function StackedBarLineChart({
       ) : null}
 
       <View style={{ height, position: 'relative' }}>
+        {/* Y-axis labels aligned exactly with VictoryChart plot area */}
         <View
           style={{
             position: 'absolute',
@@ -213,7 +183,9 @@ export function StackedBarLineChart({
               overflow: 'hidden',
             },
             onMouseMove: (e: MouseEvent<HTMLElement>) => {
-              if (!interactive) return;
+              if (!interactive) {
+                return;
+              }
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
               const chartWidth = rect.width;
               const x = e.clientX - rect.left;
@@ -226,15 +198,10 @@ export function StackedBarLineChart({
         >
           <VictoryChart
             height={chartHeight}
-            padding={{
-              top: chartPaddingTop,
-              bottom: -chartPaddingBottom,
-              left: 40,
-              right: 0,
-            }}
-            domain={{ x: xDomain, y: [stackedMin, stackedMax] }}
-            minDomain={{ y: stackedMin }}
-            maxDomain={{ y: stackedMax }}
+            padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 40, right: 0 }}
+            domain={{ x: chartXDomain, y: [stepsMin, stepsMax] }}
+            minDomain={{ y: stepsMin }}
+            maxDomain={{ y: stepsMax }}
             domainPadding={{ x: 40 }}
             style={{ parent: { height: chartHeight, width: '100%', overflow: 'hidden' } }}
           >
@@ -251,19 +218,18 @@ export function StackedBarLineChart({
                 tickLabels: { fill: 'transparent' },
               }}
             />
-            <VictoryStack colorScale={colors}>
-              {segmentData.map((segment, i) => (
-                <VictoryBar
-                  key={i}
-                  data={segment}
-                  x="x"
-                  y="y"
-                  barRatio={1 - innerPadding}
-                  cornerRadius={{ top: i === 3 ? 4 : 0 }}
-                  style={{ data: { fill: colors[i] } }}
-                />
-              ))}
-            </VictoryStack>
+            <VictoryBar
+              data={data}
+              x="x"
+              y="steps"
+              cornerRadius={{ top: 6, bottom: 6 }}
+              style={{
+                data: {
+                  fill: barColorResolved,
+                  width: 45,
+                },
+              }}
+            />
             <VictoryLine
               data={lineData}
               x="x"
@@ -333,7 +299,7 @@ export function StackedBarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {totalFormatter(sumSegments(activeDatum), activeDatum)}
+                  {stepsFormatter(activeDatum.steps)}
                 </Text>
               </View>
               <View
@@ -361,7 +327,7 @@ export function StackedBarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {lineFormatter(activeDatum.lineValue)}
+                  {heartRateFormatter(activeDatum.heartRate)}
                 </Text>
               </View>
             </>
@@ -379,19 +345,14 @@ export function StackedBarLineChart({
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={{ flexDirection: 'row', gap: 2 }}>
-            {colors.slice(0, 4).map((c, i) => (
-              <View
-                key={i}
-                style={{
-                  width: 8,
-                  height: 12,
-                  borderRadius: 1,
-                  backgroundColor: c,
-                }}
-              />
-            ))}
-          </View>
+          <View
+            style={{
+              width: 12,
+              height: 12,
+              borderRadius: 2,
+              backgroundColor: barColorResolved,
+            }}
+          />
           <Text
             style={{
               fontSize: theme.typography.fontSize.xs,

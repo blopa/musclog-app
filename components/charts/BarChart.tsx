@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Bar, CartesianChart } from 'victory-native';
 
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '../../hooks/useTheme';
 
 export type BarChartDataPoint = {
   /** X value (category index or numeric label) */
