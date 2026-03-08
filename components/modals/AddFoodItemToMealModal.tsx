@@ -1,5 +1,5 @@
-import { Check, PlusCircle, Search } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { Check, PlusCircle, ScanLine } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -9,6 +9,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodResultCardProps = {
@@ -208,6 +209,7 @@ export function AddFoodItemToMealModal({
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: number }>
   >({});
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
 
   // Fetch foods from database
   const { foods, isLoading } = useFoods({
@@ -246,6 +248,15 @@ export function AddFoodItemToMealModal({
     onClose();
   };
 
+  const handleBarcodeScanned = (scannedBarcode: string) => {
+    console.log('Barcode scanned:', scannedBarcode);
+    setShowBarcodeScanner(false);
+  };
+
+  const openBarcodeScanner = () => {
+    setShowBarcodeScanner(true);
+  };
+
   return (
     <FullScreenModal
       visible={visible}
@@ -282,10 +293,11 @@ export function AddFoodItemToMealModal({
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
-            // TODO: instead of the magnifier icon, let's show the barcode icon with an option
-            // to scan a bar code with the BarcodeCameraModal - look up where this modal is being used to copy the feature
-            // for now, we can just console.log the result from BarcodeCameraModal with onBarcodeScanned
-            icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+            icon={
+              <Pressable onPress={openBarcodeScanner}>
+                <ScanLine size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              </Pressable>
+            }
           />
         </View>
 
@@ -370,6 +382,11 @@ export function AddFoodItemToMealModal({
           </ScrollView>
         )}
       </View>
+      <BarcodeCameraModal
+        visible={showBarcodeScanner}
+        onClose={() => setShowBarcodeScanner(false)}
+        onBarcodeScanned={handleBarcodeScanned}
+      />
     </FullScreenModal>
   );
 }
