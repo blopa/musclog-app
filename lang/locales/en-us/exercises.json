@@ -134,6 +134,13 @@
     "mechanicTypes": {
       "compound": "Compound",
       "isolation": "Isolation"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "lbs"
+    },
+    "frequency": {
+      "perWeek": "{{value}}x / wk"
     }
   }
 }

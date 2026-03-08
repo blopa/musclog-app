@@ -5,6 +5,7 @@ import Exercise from '../models/Exercise';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogExercise from '../models/WorkoutLogExercise';
 import WorkoutLogSet from '../models/WorkoutLogSet';
+import { SettingsService } from './SettingsService';
 
 type EnrichedSet = WorkoutLogSet & {
   exerciseId: string;
@@ -527,7 +528,9 @@ export class WorkoutAnalytics {
     }
 
     const best = dataPoints.reduce((max, dp) => (dp.weight > max.weight ? dp : max), dataPoints[0]);
-    return { weight: Math.round(best.weight * 10) / 10, unit: 'KG' }; // TODO: use i18n and get units from settings
+    const units = await SettingsService.getUnits();
+    const unit = units === 'imperial' ? 'lbs' : 'kg';
+    return { weight: Math.round(best.weight * 10) / 10, unit };
   }
 
   /**
@@ -543,7 +546,7 @@ export class WorkoutAnalytics {
       .fetch();
 
     if (logExercises.length === 0) {
-      return { value: 0, unit: 'x / wk' }; // TODO: use i18n
+      return { value: 0, unit: 'perWeek' };
     }
 
     const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
@@ -576,6 +579,6 @@ export class WorkoutAnalytics {
     );
 
     const value = Math.round((totalOccurrences / totalWeeks) * 10) / 10;
-    return { value, unit: 'x / wk' }; // TODO: use i18n
+    return { value, unit: 'perWeek' };
   }
 }

@@ -57,7 +57,7 @@ export default function ViewExerciseModal({
   const [personalBest, setPersonalBest] = useState<{ value: number; unit: string } | null>(null);
   const [avgFrequency, setAvgFrequency] = useState<{ value: number; unit: string }>({
     value: 0,
-    unit: 'x / wk',
+    unit: 'perWeek',
   });
   const [workouts, setWorkouts] = useState<
     { id: string; name: string; subtitle: string; icon: typeof Zap }[]
@@ -99,7 +99,7 @@ export default function ViewExerciseModal({
     async (ex: ExerciseModel | null) => {
       if (!ex?.id) {
         setPersonalBest(null);
-        setAvgFrequency({ value: 0, unit: 'x / wk' });
+        setAvgFrequency({ value: 0, unit: 'perWeek' });
         setWorkouts([]);
         return;
       }
@@ -108,6 +108,7 @@ export default function ViewExerciseModal({
           WorkoutAnalytics.getPersonalBestForExercise(ex.id),
           WorkoutAnalytics.getAverageFrequencyPerWeek(ex.id),
         ]);
+
         setPersonalBest(pb ? { value: pb.weight, unit: pb.unit } : null);
         setAvgFrequency(freq);
 
@@ -138,7 +139,7 @@ export default function ViewExerciseModal({
         setWorkouts(workoutItems);
       } catch {
         setPersonalBest(null);
-        setAvgFrequency({ value: 0, unit: 'x / wk' });
+        setAvgFrequency({ value: 0, unit: 'perWeek' });
         setWorkouts([]);
       }
     },
@@ -508,7 +509,7 @@ export default function ViewExerciseModal({
                       {personalBest != null ? personalBest.value : '—'}
                     </Text>
                     <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {personalBest?.unit ?? 'KG'}
+                      {personalBest ? t(`exercises.units.${personalBest.unit}`) : t('exercises.units.kg')}
                     </Text>
                   </View>
                 </View>
@@ -529,7 +530,7 @@ export default function ViewExerciseModal({
                       {avgFrequency.value}
                     </Text>
                     <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {avgFrequency.unit}
+                      {t(`exercises.frequency.${avgFrequency.unit}`, { value: avgFrequency.value })}
                     </Text>
                   </View>
                 </View>
