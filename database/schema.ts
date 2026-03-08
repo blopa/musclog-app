@@ -273,13 +273,20 @@ export const schema = appSchema({
         // Encrypted at rest (utils/encryption.ts)
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
-
-        // TODO: instead of a note column, have a user_metrics_notes with user_metrics_id that we can link to user_metrics table
-        // and update all models, services and hooks
-        // no need to encrypt the data from this new notes table
-        { name: 'note', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // User Metrics Notes
+    tableSchema({
+      name: 'user_metrics_notes',
+      columns: [
+        { name: 'user_metric_id', type: 'string', isIndexed: true },
+        { name: 'note', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

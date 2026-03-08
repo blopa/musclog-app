@@ -180,70 +180,77 @@ export default function AddUserMetricEntryModal({
         encryptUserMetricFields({
           value: weightKg,
           unit: 'kg',
-          note: note.trim() || undefined,
           date: dateTimestamp,
         }),
         encryptUserMetricFields({
           value: bodyFat,
           unit: '%',
-          note: note.trim() || undefined,
           date: dateTimestamp,
         }),
         encryptUserMetricFields({
           value: heightCm,
           unit: 'cm',
-          note: note.trim() || undefined,
           date: dateTimestamp,
         }),
         encryptUserMetricFields({
           value: mood,
           unit: '',
-          note: note.trim() || undefined,
           date: dateTimestamp,
         }),
       ]);
 
+      const noteText = note.trim() || undefined;
+
       await database.write(async () => {
-        await database.get<UserMetric>('user_metrics').create((metric) => {
+        const weightMetric = await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'weight' as UserMetricType;
           metric.valueRaw = encWeight.value;
           metric.unitRaw = encWeight.unit;
-          metric.noteRaw = encWeight.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-        await database.get<UserMetric>('user_metrics').create((metric) => {
+
+        const bodyFatMetric = await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'body_fat' as UserMetricType;
           metric.valueRaw = encBodyFat.value;
           metric.unitRaw = encBodyFat.unit;
-          metric.noteRaw = encBodyFat.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-        await database.get<UserMetric>('user_metrics').create((metric) => {
+
+        const heightMetric = await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'height' as UserMetricType;
           metric.valueRaw = encHeight.value;
           metric.unitRaw = encHeight.unit;
-          metric.noteRaw = encHeight.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
-        await database.get<UserMetric>('user_metrics').create((metric) => {
+
+        const moodMetric = await database.get<UserMetric>('user_metrics').create((metric) => {
           metric.type = 'mood' as UserMetricType;
           metric.valueRaw = encMood.value;
           metric.unitRaw = encMood.unit;
-          metric.noteRaw = encMood.note;
           metric.date = dateTimestamp;
           metric.timezone = timezone;
           metric.createdAt = now;
           metric.updatedAt = now;
         });
+
+        // Add notes to all metrics if provided
+        if (noteText) {
+          await Promise.all([
+            weightMetric.setNote(noteText),
+            bodyFatMetric.setNote(noteText),
+            heightMetric.setNote(noteText),
+            moodMetric.setNote(noteText),
+          ]);
+        }
       });
 
       // Call onSave callback if provided
