@@ -11,7 +11,8 @@ type TdeeCardProps = {
 };
 
 export function TdeeCard({
-  tdeeValue = 2850,
+  tdeeValue = 2000,
+  // TODO: use i18n
   subtitle = 'Current TDEE',
   tagText = 'BASED ON RECENT ACTIVITY & NUTRITION',
 }: TdeeCardProps) {
