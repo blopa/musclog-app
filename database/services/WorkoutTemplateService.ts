@@ -651,6 +651,56 @@ export class WorkoutTemplateService {
   }
 
   /**
+   * Get suggested weight (kg) and reps for an exercise when adding to a free session.
+   * Uses user weight, lifting experience, and age (same logic as template creation).
+   * Reps: compound → 10, isolation/machine/etc → 14.
+   */
+  static async getSuggestedWeightAndRepsForExercise(
+    exerciseId: string
+  ): Promise<{ weightKg: number; reps: number }> {
+    const defaultReps = 10;
+    const defaultRepsIsolation = 14;
+
+    let exercise: Exercise | null = null;
+    try {
+      exercise = await database.get<Exercise>('exercises').find(exerciseId);
+    } catch {
+      return { weightKg: 0, reps: defaultReps };
+    }
+
+    const user = await UserService.getCurrentUser();
+    const weightMetric = await UserMetricService.getLatest('weight');
+
+    let userWeightKg = 70;
+    if (weightMetric) {
+      const decrypted = await weightMetric.getDecrypted();
+      userWeightKg = decrypted.value;
+      if (decrypted.unit === 'lbs') {
+        userWeightKg = decrypted.value / 2.20462;
+      }
+    }
+
+    const liftingExperience = user?.liftingExperience || 'intermediate';
+    const age = user ? user.getAge() : 30;
+    const equipmentType = exercise.equipmentType?.toLowerCase() || '';
+    const isBodyweight =
+      equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
+    const loadMultiplier = exercise.loadMultiplier ?? 1.0;
+
+    const weightKg = await this.calculateSuggestedWeight(
+      userWeightKg,
+      loadMultiplier,
+      liftingExperience,
+      age,
+      isBodyweight
+    );
+
+    const reps = exercise.mechanicType === 'compound' ? defaultReps : defaultRepsIsolation;
+
+    return { weightKg, reps };
+  }
+
+  /**
    * Create workout templates from a JSON template, splitting by day
    * Each day becomes a separate workout template
    */

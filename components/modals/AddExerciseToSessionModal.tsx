@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
+import { WorkoutTemplateService } from '../../database/services';
 import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
@@ -128,8 +129,23 @@ export function AddExerciseToSessionModal({
     }
     try {
       setIsSubmitting(true);
+      let suggestedWeightKg: number | undefined;
+      let suggestedReps: number | undefined;
+      try {
+        const suggested =
+          await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise(selectedExerciseId);
+        suggestedWeightKg = suggested.weightKg;
+        suggestedReps = suggested.reps;
+      } catch {
+        // Use defaults (0, 0) if suggestion fails
+      }
+
       const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
-      await log.addAdHocExerciseSets(selectedExerciseId, numberOfSets);
+      await log.addAdHocExerciseSets(selectedExerciseId, numberOfSets, {
+        suggestedWeightKg,
+        suggestedReps,
+      });
+
       onAdded?.();
       onClose();
     } catch (err) {

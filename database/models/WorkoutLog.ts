@@ -172,7 +172,11 @@ export default class WorkoutLog extends Model {
   }
 
   @writer
-  async addAdHocExerciseSets(exerciseId: string, numberOfSets: number): Promise<WorkoutLogSet[]> {
+  async addAdHocExerciseSets(
+    exerciseId: string,
+    numberOfSets: number,
+    options?: { suggestedWeightKg?: number; suggestedReps?: number }
+  ): Promise<WorkoutLogSet[]> {
     if (this.completedAt) {
       throw new Error('Cannot add exercises to a completed workout');
     }
@@ -180,6 +184,9 @@ export default class WorkoutLog extends Model {
     if (numberOfSets < 1) {
       throw new Error('numberOfSets must be at least 1');
     }
+
+    const weight = options?.suggestedWeightKg ?? 30;
+    const reps = options?.suggestedReps ?? 10;
 
     const now = Date.now();
     const allSets = await this.getAllSets();
@@ -205,8 +212,8 @@ export default class WorkoutLog extends Model {
     const preparedSets = Array.from({ length: numberOfSets }, (_, i) =>
       logSetsCollection.prepareCreate((logSet) => {
         logSet.logExerciseId = logExercise.id;
-        logSet.reps = 0;
-        logSet.weight = 0;
+        logSet.reps = reps;
+        logSet.weight = weight;
         logSet.partials = 0;
         logSet.restTimeAfter = 60;
         logSet.repsInReserve = 0;
