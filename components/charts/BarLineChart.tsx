@@ -83,7 +83,7 @@ export function BarLineChart({
   const chartWidthSv = useSharedValue(0);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved = lineColor ?? theme.colors.status.amber ?? theme.colors.status.warning;
+  const lineColorResolved = lineColor ?? theme.colors.background.white;
 
   const barTooltipLeft = useSharedValue(0);
   const barTooltipTop = useSharedValue(0);
@@ -94,6 +94,7 @@ export function BarLineChart({
     left: Math.max(0, Math.min(chartWidthSv.value - TOOLTIP_WIDTH, barTooltipLeft.value)),
     top: Math.max(0, barTooltipTop.value),
   }));
+
   const lineTooltipStyle = useAnimatedStyle(() => ({
     left: Math.max(0, Math.min(chartWidthSv.value - TOOLTIP_WIDTH, lineTooltipLeft.value)),
     top: Math.max(0, lineTooltipTop.value),

@@ -64,8 +64,7 @@ export function BarLineChart({
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved =
-    lineColor ?? theme.colors.status?.amber ?? theme.colors.status?.warning ?? '#f59e0b';
+  const lineColorResolved = lineColor ?? theme.colors.background.white;
 
   if (data.length === 0) {
     return null;
