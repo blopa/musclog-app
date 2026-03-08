@@ -1416,6 +1416,7 @@ export function DataLogModal({
           onClose={() => setCreateWorkoutOptionsModalVisible(false)}
           onGenerateWithAi={() => {
             setCreateWorkoutOptionsModalVisible(false);
+            // TODO: Implement AI workout generation
             // Placeholder for AI workout generation
             showSnackbar('success', t('workouts.aiGeneration.comingSoon'), {
               action: t('common.ok'),
@@ -1427,6 +1428,7 @@ export function DataLogModal({
           }}
           onBrowseTemplates={() => {
             setCreateWorkoutOptionsModalVisible(false);
+            // TODO: Implement template browsing functionality
             // Placeholder for template browsing - could navigate to a template library
             showSnackbar('success', t('workouts.templateBrowser.comingSoon'), {
               action: t('common.ok'),

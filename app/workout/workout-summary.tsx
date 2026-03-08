@@ -113,6 +113,7 @@ export default function WorkoutSummaryScreen() {
           personalRecordsData = result.personalRecords;
         } else {
           // For already completed workout, we need to detect PRs separately
+          // TODO: Implement personal records detection for completed workouts
           // For now, set to empty array - can be enhanced later
           personalRecordsData = [];
         }

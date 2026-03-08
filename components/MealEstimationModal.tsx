@@ -72,6 +72,7 @@ export function MealEstimationModal({
   const estimationData = aiEstimationData || defaultEstimationData;
 
   const handleRetake = () => {
+    // TODO: Implement camera retake functionality
     // Close this modal and trigger camera retake
     onClose();
     // In a real app, you would trigger the camera again
@@ -79,16 +80,18 @@ export function MealEstimationModal({
   };
 
   const handleAddItem = () => {
+    // TODO: Implement food search modal functionality
     // In a real app, this would open a food search modal
-    Alert.alert('Add Item', 'This would open the food search modal');
+    console.log('Add Item', 'This would open the food search modal');
   };
 
   const handleEditItem = (item: IdentifiedItem) => {
     // In a real app, this would open an edit modal for the item
-    Alert.alert('Edit Item', `Editing ${item.name}`);
+    console.log('Edit Item', `Editing ${item.name}`);
   };
 
   const handleDeleteItem = (itemId: string) => {
+    // TODO: use ConfirmationModal instead and i18n for translations
     Alert.alert('Delete Item', 'Are you sure you want to delete this item?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -102,8 +105,9 @@ export function MealEstimationModal({
   };
 
   const handleConfirmAndLog = () => {
+    // TODO: Implement meal logging functionality
     // In a real app, this would save the meal to your nutrition log
-    Alert.alert('Success', 'Meal logged successfully!');
+    console.log('Success', 'Meal logged successfully!');
     onClose();
   };
 

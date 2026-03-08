@@ -75,8 +75,6 @@ export function BarcodeCameraModal({
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedAsset = result.assets[0];
-      console.log('Image selected from gallery:', selectedAsset.uri);
-
       const barcode = await detectBarcodes(selectedAsset.uri);
 
       if (barcode) {

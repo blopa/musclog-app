@@ -225,7 +225,7 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
   };
 
   const handleExercisePress = (exercise: ExerciseData) => {
-    // Navigate to exercise details
+    // TODO: Open exercise details modal
     console.log('Exercise pressed:', exercise.name);
   };
 
@@ -235,14 +235,18 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
     if (exercise.imageUrl) {
       return exercise.imageUrl;
     }
-    // Fallback to placeholder URLs for specific exercises
+
+    // TODO: remove hardcodded images and use actual exercise images
     const exerciseName = exercise.name.toLowerCase();
     if (exerciseName.includes('bench press')) {
       return 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXz6nQajFL_tgGhEPXNVZVozEK5Ya4QQjQF2hmg0PH89Caymd0AePmxB8mLOYSYA7aT8tpNZbG3RhTMAWgRkeiOGdUYTbNbpfyQ6W9Kn5OXb_3p9yk4E_WoPY0gqH_57q1Z3YTc2Y_c66b1NHz4V_nseICUczBPu4NcXLPtwGIIzBSCV33XGjJNjIGOFYwp_84pHRFttrWaCJHGSIgObG3BMIEnZuD90u-5tItaAJMbRbOmCS1FcQEDAMEytVYwcbgqcnBWXiavla3';
     }
+
     if (exerciseName.includes('push')) {
       return 'https://lh3.googleusercontent.com/aida-public/AB6AXuDqglhotlxCz_3guMeb-eE_A3oPVe5qXr479Ac_wnvSNKpPehqecvrGSqQFYsJVb8QmCB8kCjG0jHedr0J8ugplzlG3zSqSNTQoLA_7M30NHWjr2-hTWGGTtxrOy13SQ7MFY-X2A9EnIEYhKp-j77bL2UvjVuDHNLSucSz18V0GnX9UYQbRkQHRT6fwKWNGmrqKoMDlbWb5Gb1djQYoqCYZH0KXkOmp8VF8hl6doVx_uTgO9H3Ae5lE0QhD7O71M5tv8wgej1fMSz9f';
     }
+
+    // TODO: Add more exercise-specific image fallbacks or default placeholder
     return undefined;
   };
 

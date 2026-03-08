@@ -12,7 +12,7 @@ import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { FullScreenModal } from './FullScreenModal';
 
-// Mock data - replace with actual data from props or route params
+// TODO: Replace mock data with actual exercise data from props or API
 const EXERCISE_STATIC = {
   name: 'Incline Dumbbell Press',
   primaryMuscle: 'Chest',
@@ -32,6 +32,7 @@ type ViewExerciseModalProps = {
   onClose: () => void;
 };
 
+// TODO: use this modal in the app, not only in the test screen
 export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -45,16 +46,17 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
     })),
   };
 
+  // TODO: Load actual exercise images instead of using placeholder
   // For now, using a placeholder image - replace with actual exercise image
   const backgroundImage = require('../../assets/icon.png');
 
   const handleWatchTechnique = () => {
-    // Navigate to technique video or open modal
+    // TODO: Navigate to technique video or open modal
     console.log('Watch technique');
   };
 
   const handleWorkoutPress = (workoutId: string) => {
-    // Navigate to workout detail
+    // TODO: Navigate to workout detail
     console.log('Navigate to workout:', workoutId);
   };
 
@@ -66,6 +68,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       title: t('exercises.viewExercise.editExercise'),
       description: t('exercises.viewExercise.editExerciseDescription'),
       onPress: () => {
+        // TODO: Implement exercise editing functionality
         console.log('Edit exercise');
       },
     },
@@ -76,6 +79,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       title: t('exercises.viewExercise.share'),
       description: t('exercises.viewExercise.shareDescription'),
       onPress: () => {
+        // TODO: Implement exercise sharing functionality
         console.log('Share exercise');
       },
     },
@@ -86,6 +90,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       title: t('exercises.viewExercise.duplicate'),
       description: t('exercises.viewExercise.duplicateDescription'),
       onPress: () => {
+        // TODO: Implement exercise duplication functionality
         console.log('Duplicate exercise');
       },
     },
@@ -98,6 +103,7 @@ export default function ViewExerciseModal({ visible, onClose }: ViewExerciseModa
       titleColor: theme.colors.status.error,
       descriptionColor: theme.colors.status.error,
       onPress: () => {
+        // TODO: Implement exercise deletion functionality
         console.log('Delete exercise');
       },
     },

@@ -398,7 +398,6 @@ export default function SmartCameraModal({
 
   const handleApplyContext = useCallback((context: { description: string; tags: string[] }) => {
     setAiContext(context);
-    console.log('Context applied:', context);
   }, []);
 
   const handleFoodDetailsClose = useCallback(() => {
@@ -429,10 +428,6 @@ export default function SmartCameraModal({
 
   const handleSearchAgain = useCallback(() => {
     setCameraMode('barcode-scan');
-  }, []);
-
-  const handleCreateCustom = useCallback(() => {
-    setIsAddFoodModalVisible(true);
   }, []);
 
   const handleAddFoodClose = useCallback(() => {
@@ -1041,6 +1036,7 @@ export default function SmartCameraModal({
             }}
             meal={selectedMealForLogging}
             onLogMeal={(date, mealType) => {
+              // TODO: Implement meal logging functionality with date and meal type
               console.log('Logging meal:', selectedMealForLogging, 'on', date, 'as', mealType);
               setIsLogMealModalVisible(false);
               setSelectedMealForLogging(null);

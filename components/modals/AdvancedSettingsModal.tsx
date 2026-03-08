@@ -123,6 +123,7 @@ export function AdvancedSettingsModal({
         showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
       }
     } else {
+      // TODO: Implement clear app data functionality for iOS
       console.log('Clear app data settings - only available on Android');
     }
   }, [t, showSnackbar]);

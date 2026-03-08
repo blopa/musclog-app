@@ -204,13 +204,13 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
   const handleGenerateMealAI = () => {
     setAddMealModalVisible(false);
-    // Implement generate meal with AI logic
+    // TODO: Implement generate meal with AI logic
     console.log('Generate Meal with AI pressed');
   };
 
   const handleManageCategories = () => {
     setAddMealModalVisible(false);
-    // Implement manage categories logic
+    // TODO: Implement manage categories logic
     console.log('Manage Categories pressed');
   };
 

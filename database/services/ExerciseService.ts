@@ -257,6 +257,7 @@ export class ExerciseService {
    * Get frequently used exercises (based on workout logs)
    */
   static async getFrequentlyUsedExercises(limit: number = 10): Promise<Exercise[]> {
+    // TODO: Implement exercise usage tracking and frequency calculation
     // This is a simplified version - in a real app you might want to add a usage counter
     // For now, we'll return exercises ordered by creation date (most recent first)
     return await database

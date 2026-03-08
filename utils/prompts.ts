@@ -76,9 +76,11 @@ export const getUserDetailsPrompt = (
   }
 
   // Note: Encrypted metrics (weight, body fat %) would need to be decrypted via UserMetricService
+  // TODO: Implement decryption for encrypted user metrics in prompts
   // For now, we note this limitation
   const summary =
     parts.length > 0 ? `The user ${parts.join(', ')}.` : 'User profile information limited.';
+
   return summary;
 };
 

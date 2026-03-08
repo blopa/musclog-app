@@ -463,6 +463,7 @@ export default function WorkoutSessionScreen() {
   // Get exercise image - use default if not available
   const getExerciseImage = () => {
     if (currentSetData?.exercise.imageUrl) {
+      // TODO: Load exercise images from imageUrl instead of using default
       // For now, use default image. In production, you'd load from imageUrl
       return require('../../assets/icon.png');
     }

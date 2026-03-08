@@ -101,6 +101,7 @@ const renderCustomView = (
       />
     );
   }
+
   if (currentMessage?.workout) {
     return (
       <View className="mt-2 w-full max-w-sm">
@@ -111,11 +112,15 @@ const renderCustomView = (
           exerciseCount={currentMessage.workout.exerciseCount}
           calories={currentMessage.workout.calories}
           image={{ uri: WORKOUT_IMAGE_URL }}
-          onStartWorkout={() => console.log('Start workout')}
+          onStartWorkout={() => {
+            // TODO: Implement workout start functionality from coach modal
+            console.log('Start workout');
+          }}
         />
       </View>
     );
   }
+
   return null;
 };
 

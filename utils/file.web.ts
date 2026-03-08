@@ -80,10 +80,13 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
 }
 
 export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
+  // TODO: Implement actual image saving logic for web platform
   return tempUri;
 }
 
-export async function deleteExerciseImage(imageUri: string): Promise<void> {}
+export async function deleteExerciseImage(imageUri: string): Promise<void> {
+  // TODO: Implement actual image deletion logic for web platform
+}
 
 export async function detectBarcodes(imageUri: string) {
   const quaggaResult = await Quagga.decodeSingle({
@@ -109,6 +112,7 @@ export async function detectBarcodes(imageUri: string) {
 }
 
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
+  // TODO: Implement actual image cropping logic for web platform
   // Return same shape as native (ExpoImageCropTool) so callers can use cropped.path
   return { path: options.imageUri };
 }
