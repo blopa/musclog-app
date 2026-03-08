@@ -42,6 +42,7 @@ export function MetabolicFlowChart({
       height={height}
       xDomain={[0, 500]}
       yDomain={[0, 100]}
+      xAxisLabels={['0', '100', '200', '300', '400', '500']}
       showGridLines={false}
       marginTop={0}
       marginBottom={8}

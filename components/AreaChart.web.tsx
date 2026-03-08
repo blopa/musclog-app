@@ -225,7 +225,7 @@ export function AreaChart({
               grid: { stroke: 'transparent' },
               ticks: { stroke: 'transparent' },
               tickLabels: {
-                fill: mutedColor,
+                fill: xAxisLabels != null && xAxisLabels.length > 0 ? 'transparent' : mutedColor,
                 fontSize: 10,
                 fontFamily: 'Inter, sans-serif',
               },
