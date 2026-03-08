@@ -238,6 +238,44 @@ export default function GraphsTestScreen() {
             />
           </View>
 
+          {/* Bar + Line Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Bar + Line Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to
+              see tooltips.
+            </Text>
+
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomBarLineData}
+              />
+            </View>
+
+            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
+              <BarLineChart
+                title="Comprehensive Daily Metrics"
+                subtitle="Steps Taken vs. Heart Rate"
+                data={barLineChartData}
+                height={260}
+                stepsDomain={[0, 12000]}
+                heartRateDomain={[60, 140]}
+                leftAxisLabels={['0', '3k', '6k', '9k', '12k']}
+                rightAxisLabels={['60', '80', '100', '120', '140']}
+                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                barSeriesLabel="Steps Taken"
+                lineSeriesLabel="Avg Heart Rate"
+                stepsFormatter={(v) => v.toLocaleString()}
+                heartRateFormatter={(v) => `${Math.round(v)} bpm`}
+                interactive={true}
+              />
+            </View>
+          </View>
+
           {/* Health Overview - Dashboard charts */}
           <View className="mb-10">
             <Text className="mb-2 text-3xl font-bold tracking-tight text-text-primary">
@@ -542,44 +580,6 @@ export default function GraphsTestScreen() {
                 areaToImprove="Flexibility"
                 dataColor="#00FFA2"
                 size={280}
-              />
-            </View>
-          </View>
-
-          {/* Bar + Line Chart Section */}
-          <View className="mb-8">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Bar + Line Chart</Text>
-            <Text className="mb-4 text-sm text-text-secondary">
-              Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to
-              see tooltips.
-            </Text>
-
-            <View className="mb-4 flex-row gap-2">
-              <Button
-                label="Random Data"
-                variant="outline"
-                size="sm"
-                width="flex-1"
-                onPress={generateRandomBarLineData}
-              />
-            </View>
-
-            <View className="mb-4 rounded-lg border border-border-default bg-bg-card p-4">
-              <BarLineChart
-                title="Comprehensive Daily Metrics"
-                subtitle="Steps Taken vs. Heart Rate"
-                data={barLineChartData}
-                height={260}
-                stepsDomain={[0, 12000]}
-                heartRateDomain={[60, 140]}
-                leftAxisLabels={['0', '3k', '6k', '9k', '12k']}
-                rightAxisLabels={['60', '80', '100', '120', '140']}
-                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-                barSeriesLabel="Steps Taken"
-                lineSeriesLabel="Avg Heart Rate"
-                stepsFormatter={(v) => v.toLocaleString()}
-                heartRateFormatter={(v) => `${Math.round(v)} bpm`}
-                interactive={true}
               />
             </View>
           </View>
