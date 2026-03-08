@@ -3,7 +3,7 @@
  * so we explicitly require each asset. Use getExerciseImageSource or
  * getExerciseImageUri to resolve by exercise ID with fallback.
  */
-const EXERCISE_IMAGES: Record<string, number> = {
+const EXERCISE_IMAGES: Record<string, string> = {
   '1': require('../assets/exercises/1.webp'),
   '2': require('../assets/exercises/2.webp'),
   '3': require('../assets/exercises/3.webp'),
@@ -65,7 +65,7 @@ const FALLBACK_IMAGE = require('../assets/exercises/fallback.webp');
  * Returns the require() source for the exercise image by ID.
  * Use for <ImageBackground source={...} /> or <Image source={...} />.
  */
-export function getExerciseImageSource(exerciseId: string | undefined | null): number {
+export function getExerciseImageSource(exerciseId: string | undefined | null): string {
   if (exerciseId != null && EXERCISE_IMAGES[exerciseId] != null) {
     return EXERCISE_IMAGES[exerciseId];
   }

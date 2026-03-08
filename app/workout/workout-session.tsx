@@ -56,7 +56,7 @@ import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { getExerciseImageSource } from '../../utils/exerciseImage';
-import {  getExerciseImageUri } from '../../utils/file';
+import { getExerciseImageUri } from '../../utils/file';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
