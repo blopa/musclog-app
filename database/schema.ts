@@ -265,6 +265,7 @@ export const schema = appSchema({
 
     // User Metrics
     tableSchema({
+      // track height, weight, fat percentage, flow intensity, energy level, mood, basal body temp, etc.
       name: 'user_metrics',
       columns: [
         { name: 'type', type: 'string', isIndexed: true },
@@ -276,6 +277,22 @@ export const schema = appSchema({
         // { name: 'note', type: 'string', isOptional: true }, // <--- TODO: add this column and update the Models, Services and Hooks, etc.
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // TODO: implement the model, service and hooks for this table
+    tableSchema({
+      name: 'menstrual_cycles',
+      columns: [
+        { name: 'avg_cycle_length', type: 'number' }, // Default 28
+        { name: 'avg_period_duration', type: 'number' }, // Default 5
+        { name: 'use_hormonal_birth_control', type: 'boolean' },
+        { name: 'birth_control_type', type: 'string', isOptional: true }, // 'pill', 'iud', etc.
+        { name: 'last_period_start_date', type: 'number' }, // The "Anchor Date"
+        { name: 'is_active', type: 'boolean' }, // Allow users to turn tracking off
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
