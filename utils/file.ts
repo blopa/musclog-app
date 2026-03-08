@@ -175,6 +175,7 @@ export async function copyBundledExerciseImageToDocument(
     if (!documentDirectory) {
       throw new Error('Document directory is not available');
     }
+
     const destUri = `${documentDirectory}exercises/${destFilename}`;
     await downloadAsync(sourceUri, destUri);
     return destUri;

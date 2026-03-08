@@ -1,7 +1,10 @@
 import { Q } from '@nozbe/watermelondb';
 
 import exercisesData from '../../data/exercisesEnUS.json';
-import { getBundledExerciseImageSourceByIndex } from '../../utils/exerciseImage';
+import {
+  getBundledExerciseImageSourceByIndex,
+  getExerciseImageFilenameByIndex,
+} from '../../utils/exerciseImage';
 import { copyBundledExerciseImageToDocument } from '../../utils/file';
 import { database } from '../index';
 import Exercise, {
@@ -406,10 +409,7 @@ export class ExerciseService {
       const exercisesToCreate = exercisesJson
         .filter((exerciseData) => {
           // Skip if exercise already exists
-          if (existingNames.has(exerciseData.name.toLowerCase())) {
-            return false;
-          }
-          return true;
+          return !existingNames.has(exerciseData.name.toLowerCase());
         })
         .map((exerciseData) => {
           const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
@@ -446,6 +446,7 @@ export class ExerciseService {
         const newExercises = allExercisesAfter.filter((ex) =>
           newlyCreatedNames.has((ex.name ?? '').toLowerCase())
         );
+
         exercises.push(...newExercises);
       }
 
@@ -458,20 +459,21 @@ export class ExerciseService {
       const jsonIndex = exercisesJson.findIndex(
         (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
       );
+
       if (jsonIndex < 0) {
         continue;
       }
+
       try {
         const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
-        const fileUri = await copyBundledExerciseImageToDocument(
-          assetSource,
-          `exercise-${exercise.id}.webp`
-        );
+        const filename = getExerciseImageFilenameByIndex(jsonIndex);
+        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
         updates.push({ exercise, fileUri });
       } catch (err) {
         console.warn('Failed to copy exercise image for', exercise.name, err);
       }
     }
+
     if (updates.length > 0) {
       await database.write(async () => {
         for (const { exercise, fileUri } of updates) {
