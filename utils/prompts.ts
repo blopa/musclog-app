@@ -1,4 +1,5 @@
 import { FunctionDeclaration } from '@google/generative-ai';
+import convert from 'convert';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -14,6 +15,7 @@ import {
   WorkoutTemplateService,
 } from '../database/services';
 import { kgToDisplay } from './unitConversion';
+import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -36,11 +38,10 @@ STRICT GUIDELINES:
 /**
  * One-line user profile summary for context injection
  */
-export const getUserDetailsPrompt = (
+export const getUserDetailsPrompt = async (
   user: User | null,
-  eatingPhase?: string,
-  weightUnit: string = 'kg'
-): string => {
+  eatingPhase?: string
+): Promise<string> => {
   if (!user) {
     return 'User profile information not available.';
   }
@@ -75,9 +76,42 @@ export const getUserDetailsPrompt = (
     parts.push(`lifting experience is "${user.liftingExperience}"`);
   }
 
-  // Note: Encrypted metrics (weight, body fat %) would need to be decrypted via UserMetricService
-  // TODO: Implement decryption for encrypted user metrics in prompts
-  // For now, we note this limitation
+  const units = await SettingsService.getUnits();
+  const weightUnit = getWeightUnit(units);
+
+  // Get and decrypt latest weight and body fat metrics
+  try {
+    const [latestWeight, latestBodyFat] = await Promise.all([
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('body_fat'),
+    ]);
+
+    if (latestWeight) {
+      const { value, unit } = await latestWeight.getDecrypted();
+      let displayValue: number;
+      let displayUnit: string;
+
+      // TODO: does this logic cover all scenarios?
+      if (weightUnit === 'lbs' && unit === 'kg') {
+        displayValue = Math.round(convert(value, 'kg').to('lb'));
+        displayUnit = 'lb';
+      } else {
+        displayValue = Math.round(value);
+        displayUnit = unit || 'kg';
+      }
+
+      parts.push(`current weight is ${displayValue} ${displayUnit}`);
+    }
+
+    if (latestBodyFat) {
+      const { value } = await latestBodyFat.getDecrypted();
+      parts.push(`body fat is ${Math.round(value)}%`);
+    }
+  } catch (error) {
+    console.warn('[prompts] Error decrypting user metrics:', error);
+    // Continue without metrics if decryption fails
+  }
+
   const summary =
     parts.length > 0 ? `The user ${parts.join(', ')}.` : 'User profile information limited.';
 
@@ -181,7 +215,7 @@ export const getChatMessagePromptContent = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let recentWorkoutsJson = '[]';
   try {
@@ -225,7 +259,7 @@ export const createWorkoutPlanPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let exercisesList = '[]';
   try {
@@ -261,7 +295,7 @@ export const getNutritionInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   // Fetch nutrition data via NutritionService
   // Format as: { date, calories, protein, carbs, fat }[]
@@ -377,7 +411,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let workoutsJson = '[]';
   try {
@@ -424,7 +458,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let pastOccurrencesJson = '[]';
   try {
@@ -468,7 +502,7 @@ export const getWorkoutInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let workoutJson = '{}';
   try {
@@ -544,7 +578,7 @@ export const getRecentWorkoutInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   const resolvedJson = workoutJson ?? '{}';
 
@@ -590,7 +624,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
-  const userDetails = getUserDetailsPrompt(user, eatingPhaseResolved);
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
   let historyJson = '[]';
   try {

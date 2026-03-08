@@ -60,6 +60,7 @@ export default class UserMetric extends Model {
       decryptNumber(this.valueRaw),
       decryptOptionalString(this.unitRaw),
     ]);
+
     return { value, unit: unit || undefined, date: this.date };
   }
 }
