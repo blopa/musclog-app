@@ -282,6 +282,9 @@ export function AddFoodItemToMealModal({
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
+            // TODO: instead of the magnifier icon, let's show the barcode icon with an option
+            // to scan a bar code with the BarcodeCameraModal - look up where this modal is being used to copy the feature
+            // for now, we can just console.log the result from BarcodeCameraModal with onBarcodeScanned
             icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
