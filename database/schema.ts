@@ -276,6 +276,7 @@ export const schema = appSchema({
 
         // TODO: instead of a note column, have a user_metrics_notes with user_metrics_id that we can link to user_metrics table
         // and update all models, services and hooks
+        // no need to encrypt the data from notes
         { name: 'note', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
         { name: 'timezone', type: 'string' },
