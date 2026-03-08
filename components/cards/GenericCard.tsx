@@ -18,7 +18,7 @@ type GenericCardProps = {
 /**
  * GenericCard - A flexible card component with support for different variants
  * and interactive states.
- * 
+ *
  * Background Variants:
  * - 'default': Default styling based on variant
  * - 'dark-green': Dark green background with elevated shadow

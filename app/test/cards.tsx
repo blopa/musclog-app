@@ -33,6 +33,7 @@ import { NotificationCard } from '../../components/cards/NotificationCard';
 import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
 import { StatCard } from '../../components/cards/StatCard';
+import { TdeeCard } from '../../components/cards/TdeeCard';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
@@ -458,6 +459,10 @@ export default function CardsTestScreen() {
               iconColor={theme.colors.status.purple}
             />
           </View>
+        </TestSection>
+
+        <TestSection title="TDEE Card" subtitle="Total Daily Energy Expenditure display">
+          <TdeeCard />
         </TestSection>
 
         <View className="h-8" />
