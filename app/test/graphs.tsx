@@ -289,10 +289,10 @@ export default function GraphsTestScreen() {
                 />
               </View>
               <View
-                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-4 shadow-lg"
+                className="flex-[2] rounded-[2.5rem] border border-border-default bg-bg-card p-2 shadow-lg"
                 style={{ minWidth: 320 }}
               >
-                <View className="mb-2 flex-row justify-end">
+                <View className="mb-0 flex-row justify-end">
                   <Button
                     label="Random Data"
                     variant="outline"

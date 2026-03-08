@@ -72,8 +72,10 @@ export function AreaChart({
   }
 
   const xDomainFinal: [number, number] = xDomain ?? [data[0].x, data[data.length - 1].x];
-  const xAxisGap = 2;
-  const chartHeight = height - marginBottom - xAxisGap;
+  const xAxisGap = 0;
+  // Web: tight gap between chart and x-axis labels; marginBottom not used for this
+  const gapChartToLabels = 2;
+  const chartHeight = height - gapChartToLabels - xAxisGap;
   const gridColor = gridLineColor ?? theme.colors.border.light;
   const mutedColor = theme.colors.text.tertiary ?? '#7E8A87';
 
@@ -87,7 +89,7 @@ export function AreaChart({
       : null;
 
   // Web: minimal top/bottom padding so chart uses card space
-  const padding = { top: 0, bottom: 8, left: 20, right: 20 };
+  const padding = { top: 0, bottom: 0, left: 20, right: 20 };
   const yTickValues = yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100];
 
   return (
@@ -105,7 +107,7 @@ export function AreaChart({
           {subtitle != null ? (
             <Text
               className="mt-0.5 text-sm text-text-secondary"
-              style={{ fontSize: theme.typography.fontSize.sm, marginTop: 2 }}
+              style={{ fontSize: theme.typography.fontSize.sm, marginTop: 0 }}
             >
               {subtitle}
             </Text>
@@ -255,9 +257,10 @@ export function AreaChart({
         <View
           className="flex-row justify-around border-t border-border-default"
           style={{
-            marginTop: 4,
-            paddingTop: 4,
-            paddingBottom: 2,
+            marginTop: 14,
+            paddingTop: 10,
+            paddingBottom: 10,
+            paddingHorizontal: 12,
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,
           }}
@@ -278,7 +281,7 @@ export function AreaChart({
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 6,
-                  marginBottom: 4,
+                  marginBottom: 0,
                 }}
               >
                 <View
