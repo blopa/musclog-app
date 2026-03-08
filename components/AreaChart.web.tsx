@@ -72,7 +72,7 @@ export function AreaChart({
   }
 
   const xDomainFinal: [number, number] = xDomain ?? [data[0].x, data[data.length - 1].x];
-  const xAxisGap = 4;
+  const xAxisGap = 2;
   const chartHeight = height - marginBottom - xAxisGap;
   const gridColor = gridLineColor ?? theme.colors.border.light;
   const mutedColor = theme.colors.text.tertiary ?? '#7E8A87';
@@ -86,8 +86,8 @@ export function AreaChart({
         }
       : null;
 
-  // Tighter, symmetric padding so the chart uses the card space well
-  const padding = { top: 2, bottom: 14, left: 20, right: 20 };
+  // Web: minimal top/bottom padding so chart uses card space
+  const padding = { top: 0, bottom: 8, left: 20, right: 20 };
   const yTickValues = yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100];
 
   return (
@@ -182,7 +182,7 @@ export function AreaChart({
           })}
 
           {peakDatum != null ? (
-            <>
+            <View style={{ display: 'contents' }}>
               <VictoryScatter
                 data={[peakDatum]}
                 size={8}
@@ -216,7 +216,7 @@ export function AreaChart({
                   }
                 />
               ) : null}
-            </>
+            </View>
           ) : null}
 
           <VictoryAxis
@@ -255,8 +255,9 @@ export function AreaChart({
         <View
           className="flex-row justify-around border-t border-border-default"
           style={{
-            marginTop: 8,
-            paddingTop: 8,
+            marginTop: 4,
+            paddingTop: 4,
+            paddingBottom: 2,
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,
           }}
