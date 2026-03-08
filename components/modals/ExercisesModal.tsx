@@ -34,7 +34,7 @@ const mapEquipmentTypeToType = (equipmentType: string): string => {
   }
 };
 
-const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
+export const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
 
 // Exercise list item component
 function ExerciseListItem({
@@ -59,12 +59,12 @@ function ExerciseListItem({
       className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay"
     >
       <View
-        className="h-14 w-14 rounded-lg bg-bg-card"
+        className="h-14 w-14 overflow-hidden rounded-lg bg-bg-card"
         style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}
       >
         <Image
           source={imageUrl?.trim() ? { uri: imageUrl } : FALLBACK_EXERCISE_IMAGE}
-          className="h-full w-full rounded-lg"
+          style={{ width: '100%', height: '100%' }}
           resizeMode="cover"
         />
       </View>
