@@ -222,7 +222,9 @@
       "foundItems": "Found {{count}} items",
       "amount": "Amount",
       "noFoods": "No foods available",
-      "noResults": "No results found"
+      "noResults": "No results found",
+      "scannedFoodDetails": "Scanned Food Details",
+      "barcodeNotFound": "Barcode not found in database"
     },
     "createMeal": {
       "title": "Create New Meal",

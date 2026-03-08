@@ -11,6 +11,7 @@ import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
+import { ScannedFoodDetailsModal } from './ScannedFoodDetailsModal';
 
 type FoodResultCardProps = {
   food: Food;
@@ -210,6 +211,8 @@ export function AddFoodItemToMealModal({
     Record<string, { selected: boolean; amount: number }>
   >({});
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   // Fetch foods from database
   const { foods, isLoading } = useFoods({
@@ -248,9 +251,14 @@ export function AddFoodItemToMealModal({
     onClose();
   };
 
+  const handleAddScannedFood = (foodData: { food: any; amount: number }) => {
+    onAddFoods?.([foodData]);
+  };
+
   const handleBarcodeScanned = (scannedBarcode: string) => {
-    // TODO: open a modal showing the details of the food, with an button to "add it to meal" using the FoodInfoCard.tsx modal
+    setScannedBarcode(scannedBarcode);
     setShowBarcodeScanner(false);
+    setShowScannedFoodDetails(true);
   };
 
   const openBarcodeScanner = () => {
@@ -386,6 +394,12 @@ export function AddFoodItemToMealModal({
         visible={showBarcodeScanner}
         onClose={() => setShowBarcodeScanner(false)}
         onBarcodeScanned={handleBarcodeScanned}
+      />
+      <ScannedFoodDetailsModal
+        visible={showScannedFoodDetails}
+        onClose={() => setShowScannedFoodDetails(false)}
+        barcode={scannedBarcode || ''}
+        onAddFood={handleAddScannedFood}
       />
     </FullScreenModal>
   );
