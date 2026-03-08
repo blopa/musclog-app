@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BarChart, BarChartDataPoint } from '../../components/BarChart';
+import { BarLineChart, BarLineChartDatum } from '../../components/BarLineChart';
 import { LineChart, LineChartDataPoint } from '../../components/LineChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
@@ -29,6 +30,17 @@ export default function GraphsTestScreen() {
     { x: 4, y: 71 },
     { x: 5, y: 54 },
     { x: 6, y: 83 },
+  ]);
+
+  // Sample data for BarLineChart (steps + heart rate)
+  const [barLineChartData, setBarLineChartData] = useState<BarLineChartDatum[]>([
+    { x: 0, steps: 6000, heartRate: 75 },
+    { x: 1, steps: 8000, heartRate: 80 },
+    { x: 2, steps: 5500, heartRate: 70 },
+    { x: 3, steps: 10500, heartRate: 85 },
+    { x: 4, steps: 7000, heartRate: 75 },
+    { x: 5, steps: 9000, heartRate: 80 },
+    { x: 6, steps: 6500, heartRate: 70 },
   ]);
 
   // Sample data for MacrosPizzaChart
@@ -66,6 +78,17 @@ export default function GraphsTestScreen() {
       });
     }
     setBarChartData(newData);
+  };
+
+  // Generate random BarLineChart data
+  const generateRandomBarLineData = () => {
+    setBarLineChartData(
+      Array.from({ length: 7 }, (_, i) => ({
+        x: i,
+        steps: Math.floor(Math.random() * 8000) + 4000,
+        heartRate: Math.floor(Math.random() * 50) + 65,
+      }))
+    );
   };
 
   // Generate random macros data
@@ -185,6 +208,43 @@ export default function GraphsTestScreen() {
                   { label: '0', yDomainValue: 0 },
                 ]}
                 tooltipFormatter={(point) => `${Math.round(point.y)}`}
+              />
+            </View>
+          </View>
+
+          {/* Bar + Line Chart Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Bar + Line Chart</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Combined chart with dual Y-axes: steps (bars) and heart rate (line). Touch or hover to see tooltips.
+            </Text>
+
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={generateRandomBarLineData}
+              />
+            </View>
+
+            <View className="mb-4 rounded-lg bg-bg-card p-4 border border-border-default">
+              <BarLineChart
+                title="Comprehensive Daily Metrics"
+                subtitle="Steps Taken vs. Heart Rate"
+                data={barLineChartData}
+                height={260}
+                stepsDomain={[0, 12000]}
+                heartRateDomain={[60, 140]}
+                leftAxisLabels={['0', '3k', '6k', '9k', '12k']}
+                rightAxisLabels={['60', '80', '100', '120', '140']}
+                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                barSeriesLabel="Steps Taken"
+                lineSeriesLabel="Avg Heart Rate"
+                stepsFormatter={(v) => v.toLocaleString()}
+                heartRateFormatter={(v) => `${Math.round(v)} bpm`}
+                interactive={true}
               />
             </View>
           </View>
