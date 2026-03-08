@@ -239,6 +239,8 @@
       "editList": "Edit List",
       "noIngredients": "No Ingredients",
       "addFoodItem": "Add Food Item",
+      "deleteIngredient": "Delete Ingredient",
+      "deleteIngredientWarning": "Are you sure you want to remove this ingredient?",
       "mealNameRequired": "Please enter a meal name",
       "ingredientsRequired": "Please add at least one ingredient",
       "saveFailed": "Failed to save meal. Please try again."

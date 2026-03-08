@@ -5,11 +5,14 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
 import { useTheme } from '../../hooks/useTheme';
-import {
-  isSuccessFoodDetailProductState,
-} from '../../types/guards/openFoodFacts';
+import { isSuccessFoodDetailProductState } from '../../types/guards/openFoodFacts';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
-import { getNutrimentsWithFallback, getNutrimentValue, getProductName, mapOpenFoodFactsProduct } from '../../utils/openFoodFactsMapper';
+import {
+  getNutrimentsWithFallback,
+  getNutrimentValue,
+  getProductName,
+  mapOpenFoodFactsProduct,
+} from '../../utils/openFoodFactsMapper';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -38,7 +41,7 @@ export function ScannedFoodDetailsModal({
     if (isSuccessFoodDetailProductState(productData)) {
       // Map the product data to UnifiedFoodResult format, then to a Food-like object
       const mappedProduct = mapOpenFoodFactsProduct(productData.product as SearchResultProduct);
-      
+
       const foodForMeal = {
         food: {
           id: mappedProduct.id,
@@ -94,7 +97,7 @@ export function ScannedFoodDetailsModal({
 
     const product = productData.product;
     const nutriments = getNutrimentsWithFallback(product);
-    
+
     // Extract nutritional values for FoodInfoCard
     const foodInfo = {
       name: getProductName(product),
@@ -108,7 +111,7 @@ export function ScannedFoodDetailsModal({
     return (
       <View>
         <FoodInfoCard food={foodInfo} />
-        
+
         <ServingSizeSelector
           value={amount}
           onChange={setAmount}
@@ -121,16 +124,18 @@ export function ScannedFoodDetailsModal({
           ]}
         />
 
-        {product.brands ? <Text
+        {product.brands ? (
+          <Text
             style={{
               marginTop: theme.spacing.padding.md,
               fontSize: theme.typography.fontSize.sm,
               color: theme.colors.text.tertiary,
               textAlign: 'center',
             }}
-        >
+          >
             {product.brands}
-          </Text> : null}
+          </Text>
+        ) : null}
       </View>
     );
   };

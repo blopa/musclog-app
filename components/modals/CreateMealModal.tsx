@@ -29,6 +29,7 @@ import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
+import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -305,6 +306,8 @@ export function CreateMealModal({
   const [isFocused, setIsFocused] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
+  const [ingredientToRemoveId, setIngredientToRemoveId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(logDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
@@ -350,6 +353,24 @@ export function CreateMealModal({
       setMealAmountGrams(totalMealGrams);
     }
   }, [isQuickTrack, totalMealGrams]);
+
+  const handleRemoveIngredient = (foodId: string) => {
+    setIngredientToRemoveId(foodId);
+    setIsConfirmationModalVisible(true);
+  };
+
+  const confirmRemoveIngredient = () => {
+    if (ingredientToRemoveId) {
+      removeIngredient(ingredientToRemoveId);
+      setIngredientToRemoveId(null);
+      setIsConfirmationModalVisible(false);
+    }
+  };
+
+  const cancelRemoveIngredient = () => {
+    setIngredientToRemoveId(null);
+    setIsConfirmationModalVisible(false);
+  };
 
   const handleTrack = async () => {
     if (ingredients.length === 0) {
@@ -713,7 +734,7 @@ export function CreateMealModal({
                       </Text>
                     </View>
                   </View>
-                  <Pressable onPress={() => removeIngredient(item.foodId)} className="p-2">
+                  <Pressable onPress={() => handleRemoveIngredient(item.foodId)} className="p-2">
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>
@@ -947,6 +968,15 @@ export function CreateMealModal({
           }}
         />
       ) : null}
+      <ConfirmationModal
+        visible={isConfirmationModalVisible}
+        onClose={cancelRemoveIngredient}
+        onConfirm={confirmRemoveIngredient}
+        title={t('food.createMeal.deleteIngredient')}
+        message={t('food.createMeal.deleteIngredientWarning')}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+      />
     </FullScreenModal>
   );
 }
