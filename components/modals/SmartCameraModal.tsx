@@ -250,8 +250,13 @@ export default function SmartCameraModal({
             if (result) {
               showSnackbar(
                 'success',
-                // TODO: use i18n
-                `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
+                t('food.aiCamera.analysisSuccess', {
+                  name: result.name,
+                  kcal: result.kcal,
+                  protein: result.protein,
+                  carbs: result.carbs,
+                  fat: result.fat,
+                })
               );
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
               setIsFoodDetailsModalVisible(true);
@@ -277,8 +282,13 @@ export default function SmartCameraModal({
             if (result) {
               showSnackbar(
                 'success',
-                // TODO: use i18n
-                `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
+                t('food.aiCamera.analysisSuccess', {
+                  name: result.name,
+                  kcal: result.kcal,
+                  protein: result.protein,
+                  carbs: result.carbs,
+                  fat: result.fat,
+                })
               );
               setProductFromAiLabel(macroEstimateToSearchResultProduct(result));
               setIsFoodDetailsModalVisible(true);
@@ -300,8 +310,13 @@ export default function SmartCameraModal({
           if (result) {
             showSnackbar(
               'success',
-              // TODO: use i18n
-              `${result.name}: ${result.kcal} kcal, P ${result.protein}g C ${result.carbs}g F ${result.fat}g`
+              t('food.aiCamera.analysisSuccess', {
+                name: result.name,
+                kcal: result.kcal,
+                protein: result.protein,
+                carbs: result.carbs,
+                fat: result.fat,
+              })
             );
 
             setSelectedMealForLogging(mapMacroEstimateToMeal(result));
@@ -463,6 +478,37 @@ export default function SmartCameraModal({
   const handleAiCameraPress = useCallback(() => {
     setCameraMode('ai-meal-photo');
   }, []);
+
+  const handleLogMeal = useCallback(
+    async (date: Date, mealType: MealType) => {
+      try {
+        if (!selectedMealForLogging) {
+          showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
+          return;
+        }
+
+        await NutritionService.logCustomMeal(
+          {
+            name: selectedMealForLogging.name,
+            calories: selectedMealForLogging.calories,
+            protein: selectedMealForLogging.protein,
+            carbs: selectedMealForLogging.carbs,
+            fat: selectedMealForLogging.fat,
+          },
+          date,
+          mealType
+        );
+
+        showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
+        setIsLogMealModalVisible(false);
+        setSelectedMealForLogging(null);
+      } catch (error) {
+        console.error('Error logging meal:', error);
+        showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
+      }
+    },
+    [selectedMealForLogging, t]
+  );
 
   const handleScanBarcodePress = useCallback(() => {
     setCameraMode('barcode-scan');
@@ -1040,34 +1086,7 @@ export default function SmartCameraModal({
               setSelectedMealForLogging(null);
             }}
             meal={selectedMealForLogging}
-            // TODO: move to a function with useCallback
-            onLogMeal={async (date, mealType) => {
-              try {
-                if (!selectedMealForLogging) {
-                  showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
-                  return;
-                }
-
-                await NutritionService.logCustomMeal(
-                  {
-                    name: selectedMealForLogging.name,
-                    calories: selectedMealForLogging.calories,
-                    protein: selectedMealForLogging.protein,
-                    carbs: selectedMealForLogging.carbs,
-                    fat: selectedMealForLogging.fat,
-                  },
-                  date,
-                  mealType
-                );
-
-                showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
-                setIsLogMealModalVisible(false);
-                setSelectedMealForLogging(null);
-              } catch (error) {
-                console.error('Error logging meal:', error);
-                showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
-              }
-            }}
+            onLogMeal={handleLogMeal}
           />
         ) : null}
       </View>
