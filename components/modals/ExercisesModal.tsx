@@ -12,6 +12,7 @@ import { SkeletonLoader } from '../theme/SkeletonLoader';
 import { TextInput } from '../theme/TextInput';
 import { FullScreenModal } from './FullScreenModal';
 import ViewExerciseModal from './ViewExerciseModal';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 // Type for exercise data used in the component
 type ExerciseData = {
@@ -33,8 +34,6 @@ const mapEquipmentTypeToType = (equipmentType: string): string => {
       return 'equipment';
   }
 };
-
-export const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
 
 // Exercise list item component
 function ExerciseListItem({

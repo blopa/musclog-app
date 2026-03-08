@@ -20,12 +20,12 @@ import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { ConfirmationModal } from './ConfirmationModal';
 import type { DataLogModalVariant } from './DataLogModal';
-import { FALLBACK_EXERCISE_IMAGE } from './ExercisesModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericEditModal } from './GenericEditModal';
 import { getEditFields } from './GenericEditModal/entityEditConfig';
 import type { EditFormValues } from './GenericEditModal/types';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 export type ViewExerciseModalProps = {
   visible: boolean;

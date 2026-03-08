@@ -88,6 +88,7 @@ export type UseChatMessagesResult = {
   hasMore: boolean;
   loadMore: () => Promise<void>;
   sendMessage: (text: string) => Promise<void>;
+  clearHistory: () => Promise<void>;
   sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
   clearPendingCoachMessage: () => void;
@@ -277,6 +278,27 @@ export function useChatMessages(): UseChatMessagesResult {
   const clearFailedMessageText = useCallback(() => {
     setFailedMessageText(null);
   }, []);
+
+  const clearHistory = useCallback(async () => {
+    if (!sessionId) {
+      return;
+    }
+
+    try {
+      await ChatService.deleteSession(sessionId);
+      rawMessagesRef.current = [];
+      pendingCoachMessageRef.current = null;
+      setMessages([]);
+      setPendingCoachMessage(null);
+      setCurrentOffset(0);
+      setHasMore(false);
+      setFailedMessageText(null);
+      setEphemeralErrorMessage(null);
+    } catch (err) {
+      console.error('[useChatMessages] clearHistory error:', err);
+      throw err;
+    }
+  }, [sessionId]);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -558,6 +580,7 @@ export function useChatMessages(): UseChatMessagesResult {
     hasMore,
     loadMore,
     sendMessage,
+    clearHistory,
     sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,

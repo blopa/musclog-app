@@ -3,7 +3,7 @@
  * Metro requires static require() paths. Single source of truth: keys are the
  * image numbers that exist (1.webp … 105.webp); index i uses (i+1), or fallback.
  */
-const FALLBACK_IMAGE = require('../assets/exercises/fallback.webp');
+export const FALLBACK_EXERCISE_IMAGE = require('../assets/exercises/fallback.webp');
 
 /** Image number (1–105) → require() result. Only keys for existing .webp files. */
 const EXERCISE_IMAGE_ASSETS: Record<number, number> = {
@@ -77,7 +77,7 @@ export function getBundledExerciseImageSourceByIndex(index: number): number {
     }
   }
 
-  return FALLBACK_IMAGE;
+  return FALLBACK_EXERCISE_IMAGE;
 }
 
 /**

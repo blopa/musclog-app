@@ -23,7 +23,8 @@
       "nutritionInsightFailed": "Could not check nutrition. Try again later."
     },
     "success": {
-      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}"
+      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
+      "historyCleared": "Chat history cleared."
     },
     "aiInstructions": {
       "parseWorkouts": "Parse the workouts and return the structured list.",
@@ -43,6 +44,22 @@
       "editMessageDesc": "Change the message text",
       "deleteMessage": "Delete message",
       "deleteMessageDesc": "Permanently remove this message"
+    },
+    "menu": {
+      "title": "Chat options",
+      "clearHistory": "Clear chat history",
+      "clearHistoryDesc": "Delete all messages in this conversation.",
+      "shareHistory": "Share chat history",
+      "shareHistoryDesc": "Export this whole conversation as plain text."
+    },
+    "confirmClear": {
+      "title": "Clear chat history?",
+      "message": "This will permanently delete all messages in this conversation. This cannot be undone."
+    },
+    "share": {
+      "title": "Chat with Loggy",
+      "noMessages": "There is no chat history to share yet.",
+      "failed": "Failed to share chat history. Please try again."
     }
   }
 }

@@ -2,7 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
-import { PlusCircle, Send as SendIcon, TrendingUp, UtensilsCrossed, X } from 'lucide-react-native';
+import {
+  PlusCircle,
+  Send as SendIcon,
+  Share2,
+  Trash2,
+  TrendingUp,
+  UtensilsCrossed,
+  X,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +20,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   View,
@@ -34,6 +43,7 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
 } from '../../constants/chat';
+import { ChatService } from '../../database/services';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
@@ -41,16 +51,16 @@ import {
 } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
+import { useSnackbar } from '../SnackbarContext';
 import { MenuButton } from '../theme/MenuButton';
 import { useUnreadChat } from '../UnreadChatContext';
+import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
-
-// Workout image URL (used for future workout card messages)
-const WORKOUT_IMAGE_URL =
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC8wdyvHF33Emd_otj2gCXb_-DtuZnk1Yynloi9mvz8s2ZtTJ1fFbg_J8B8x02R5Njk5nPX1SonjXw5sEU1gwylKXq3buzHpa2EoRQfBpA6BTNRGfSjYnqBMRSyDW7tl5DHtCWM5DOUd91Ka2gB8Y-rdvJB99_hQED2ZIqMdcWkgxVdv_pRnWFXwFirvEOSMuCveL2ZxoS3oQpkrQoYXVBSunvPf8QQ6xtQQw-v_r9wOPDB6W6pKw22mPLs0nsdG-MkvUJTj7VCxnSe';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
@@ -111,7 +121,7 @@ const renderCustomView = (
           level={currentMessage.workout.level}
           exerciseCount={currentMessage.workout.exerciseCount}
           calories={currentMessage.workout.calories}
-          image={{ uri: WORKOUT_IMAGE_URL }}
+          image={FALLBACK_EXERCISE_IMAGE}
           onStartWorkout={() => {
             // TODO: Implement workout start functionality from coach modal
             console.log('Start workout');
@@ -377,6 +387,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     hasMore,
     loadMore,
     sendMessage,
+    clearHistory,
+    sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,
@@ -384,9 +396,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     ephemeralErrorAsMessage,
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
+  const { showSnackbar } = useSnackbar();
   const [isOnline, setIsOnline] = useState(true);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
+  const [isClearingHistory, setIsClearingHistory] = useState(false);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
@@ -527,6 +543,99 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     setSelectedWorkoutId(workoutLogId);
   }, []);
 
+  const handleShareHistory = useCallback(async () => {
+    if (!sessionId) {
+      showSnackbar('error', t('coach.errors.generalError'), {
+        action: t('snackbar.ok'),
+      });
+      return;
+    }
+
+    try {
+      const records = await ChatService.getSessionMessages(sessionId);
+      if (!records.length) {
+        showSnackbar('error', t('coach.share.noMessages'), {
+          action: t('snackbar.ok'),
+        });
+        return;
+      }
+
+      const sorted = [...records].sort((a, b) => a.createdAt - b.createdAt);
+      const header = t('coach.share.title');
+      const youLabel = t('coach.you');
+      const coachLabel = t('coach.name');
+
+      const lines: string[] = [header, ''];
+
+      for (const record of sorted) {
+        const senderLabel = record.sender === 'user' ? youLabel : coachLabel;
+        const timestamp = new Date(record.createdAt).toLocaleString();
+        lines.push(`${timestamp} - ${senderLabel}: ${record.message}`);
+      }
+
+      await Share.share({ message: lines.join('\n') });
+    } catch (err) {
+      console.error('[CoachModal] shareHistory failed:', err);
+      showSnackbar('error', t('coach.share.failed'), {
+        action: t('snackbar.ok'),
+      });
+    }
+  }, [sessionId, showSnackbar, t]);
+
+  const handleClearHistoryPress = useCallback(() => {
+    setIsMenuVisible(false);
+    setIsClearHistoryModalVisible(true);
+  }, []);
+
+  const handleConfirmClearHistory = useCallback(async () => {
+    try {
+      setIsClearingHistory(true);
+      await clearHistory();
+      showSnackbar('success', t('coach.success.historyCleared'), {
+        action: t('snackbar.ok'),
+      });
+    } catch (err) {
+      console.error('[CoachModal] clearHistory failed:', err);
+      showSnackbar('error', t('coach.errors.generalError'), {
+        action: t('snackbar.ok'),
+      });
+    } finally {
+      setIsClearingHistory(false);
+    }
+  }, [clearHistory, showSnackbar, t]);
+
+  const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
+    () => [
+      {
+        icon: Share2,
+        iconColor: theme.colors.text.primary,
+        iconBgColor: theme.colors.background.iconDarker,
+        title: t('coach.menu.shareHistory'),
+        description: t('coach.menu.shareHistoryDesc'),
+        onPress: handleShareHistory,
+      },
+      {
+        icon: Trash2,
+        iconColor: theme.colors.status.error50,
+        iconBgColor: theme.colors.status.error10,
+        title: t('coach.menu.clearHistory'),
+        description: t('coach.menu.clearHistoryDesc'),
+        titleColor: theme.colors.status.error50,
+        descriptionColor: theme.colors.status.error50,
+        onPress: handleClearHistoryPress,
+      },
+    ],
+    [
+      handleClearHistoryPress,
+      handleShareHistory,
+      t,
+      theme.colors.background.iconDarker,
+      theme.colors.status.error10,
+      theme.colors.status.error50,
+      theme.colors.text.primary,
+    ]
+  );
+
   const renderAccessory = useCallback(() => {
     return (
       <ScrollView
@@ -618,7 +727,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       <MenuButton
         size="lg"
         onPress={() => {
-          // TODO: Implement coach modal header menu (e.g. settings or options)
+          setIsMenuVisible(true);
         }}
         className="h-10 w-10 active:bg-white/5"
       />
@@ -738,6 +847,24 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         visible={!!selectedWorkoutId}
         onClose={() => setSelectedWorkoutId(null)}
         workoutId={selectedWorkoutId || undefined}
+      />
+
+      <BottomPopUpMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        title={t('coach.menu.title')}
+        items={headerMenuItems}
+      />
+
+      <ConfirmationModal
+        visible={isClearHistoryModalVisible}
+        onClose={() => setIsClearHistoryModalVisible(false)}
+        onConfirm={handleConfirmClearHistory}
+        title={t('coach.confirmClear.title')}
+        message={t('coach.confirmClear.message')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
+        isLoading={isClearingHistory}
       />
     </FullScreenModal>
   );
