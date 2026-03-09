@@ -1,16 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  Bell,
-  Clock,
-  Droplet,
-  Flame,
-  Plus,
-  Trophy,
-  UtensilsCrossed,
-  Wheat,
-  Zap,
-} from 'lucide-react-native';
+import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -19,6 +9,7 @@ import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
+import { FoodItemCard } from '../components/cards/FoodItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
 import { CoachModal } from '../components/modals/CoachModal';
@@ -335,22 +326,19 @@ export default function HomeScreen() {
           ) : (
             <View className="gap-3">
               {recentFoods.slice(0, 2).map((food) => (
-                <DetailedItemCard
+                <FoodItemCard
                   key={food.id}
-                  item={{
-                    name: food.name ?? '',
-                    media: food.imageUrl
-                      ? { uri: food.imageUrl }
-                      : { icon: UtensilsCrossed, color: theme.colors.text.secondary },
-                    itemOne: { value: `${Math.round(food.protein ?? 0)}G P`, icon: Zap },
-                    itemTwo: { value: `${Math.round(food.carbs ?? 0)}G C`, icon: Wheat },
-                    itemThree: { value: `${Math.round(food.fat ?? 0)}G F`, icon: Droplet },
+                  name={food.name ?? ''}
+                  calories={Math.round(food.calories ?? 0)}
+                  protein={Math.round(food.protein ?? 0)}
+                  carbs={Math.round(food.carbs ?? 0)}
+                  fat={Math.round(food.fat ?? 0)}
+                  portion={100} // Food model macros are stored per 100g serving
+                  image={food.imageUrl ? { uri: food.imageUrl } : undefined}
+                  onMorePress={() => {
+                    // TODO: Implement food details modal or navigation
+                    console.log('Food details pressed:', food.name);
                   }}
-                  ctaLabel={
-                    <Text className="text-lg font-bold text-text-primary">
-                      {Math.round(food.calories ?? 0)} {t('common.kcal')}
-                    </Text>
-                  }
                 />
               ))}
 
