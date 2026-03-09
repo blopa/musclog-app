@@ -328,7 +328,24 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const protein = getNutrimentValue(nutriments, 'proteins');
   const carbs = getNutrimentValue(nutriments, 'carbohydrates');
   const fat = getNutrimentValue(nutriments, 'fat');
-  const fiber = getNutrimentValue(nutriments, 'fiber') || 0;
+  
+  // Improved fiber extraction with fallback calculation and negative value protection
+  const directFiber = getNutrimentValue(nutriments, 'fiber');
+  let fiber = 0;
+
+  if (directFiber !== undefined && directFiber >= 0) {
+    // Use direct fiber value when available and non-negative
+    fiber = directFiber;
+  } else {
+    // Fallback: calculate from carbohydrates-total - carbohydrates
+    // Only use this if result is positive (some OFF products have inconsistent data)
+    const carbsTotal = getNutrimentValue(nutriments, 'carbohydrates-total');
+    if (carbsTotal !== undefined && carbs !== undefined) {
+      const calculatedFiber = carbsTotal - carbs;
+      fiber = Math.max(0, calculatedFiber); // Clamp to minimum 0 to prevent negative values
+    }
+  }
+
   const sugars = getNutrimentValue(nutriments, 'sugars');
   const saturatedFat = getNutrimentValue(nutriments, 'saturated-fat');
   const sodium = getNutrimentValue(nutriments, 'sodium');
