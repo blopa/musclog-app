@@ -1,4 +1,5 @@
 // Export all models
+export { default as ChatMessage } from './ChatMessage';
 export { default as Exercise } from './Exercise';
 export { default as Food } from './Food';
 export { default as FoodFoodPortion } from './FoodFoodPortion';
@@ -22,6 +23,7 @@ export { default as WorkoutTemplateExercise } from './WorkoutTemplateExercise';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';
 
 // Export types
+export type { ChatMessageType, ChatSender } from './ChatMessage';
 export type { EquipmentType, MechanicType, MuscleGroup } from './Exercise';
 export type { MicrosData } from './Food';
 export type { BirthControlType, MenstrualCycleUpdate } from './MenstrualCycle';

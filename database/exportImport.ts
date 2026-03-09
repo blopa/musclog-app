@@ -37,27 +37,38 @@ const EXPORT_VERSION = 1;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [
+  // Independent master tables
   'exercises',
   'users',
   'foods',
   'food_portions',
-  'nutrition_goals',
-  'nutrition_checkins',
-  'settings',
-  'workout_templates',
   'meals',
+  'workout_templates',
+  'settings',
+  
+  // Template-dependent tables
   'schedules',
   'workout_template_exercises',
   'workout_template_sets',
+  
+  // Food/Meal junction tables
   'food_food_portions',
   'meal_foods',
+  
+  // Goal and tracking tables
+  'nutrition_goals',
+  'nutrition_checkins',
+  'menstrual_cycles',
+  
+  // Log tables (depend on templates and master data)
   'workout_logs',
   'workout_log_exercises',
   'workout_log_sets',
   'nutrition_logs',
   'user_metrics',
   'user_metrics_notes',
-  'menstrual_cycles',
+  
+  // Chat messages (independent)
   'chat_messages',
 ];
 
@@ -329,6 +340,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
                 (rec as any).templateId = mapped;
               } else {
                 (rec as any).templateId = value;
+              }
+            } else if (key === 'template_exercise_id') {
+              const mapped = mapId('workout_template_exercises', value as string);
+              if (mapped != null) {
+                (rec as any).templateExerciseId = mapped;
+              } else {
+                (rec as any).templateExerciseId = value;
               }
             } else if (key === 'exercise_id') {
               const mapped = mapId('exercises', value as string);
