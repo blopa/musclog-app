@@ -31,7 +31,37 @@
     "personalInfo": {
       "title": "Set Personal Information",
       "errorSaving": "Error Saving",
-      "finish": "Finish"
+      "finish": "Finish",
+      "trackCycle": "Track Menstrual Cycle?",
+      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
+    },
+    "cycleSetup": {
+      "anchor": {
+        "title": "Last Period",
+        "description": "When did your last period start? This helps us calibrate your current phase."
+      },
+      "birthControl": {
+        "title": "Hormonal Birth Control",
+        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
+        "none": "None",
+        "pill": "Pill",
+        "iud": "IUD",
+        "implant": "Implant",
+        "other": "Other"
+      },
+      "length": {
+        "title": "Cycle Length",
+        "description": "How long is your typical cycle and period duration?",
+        "cycleLength": "Avg. Cycle Length (Days)",
+        "periodDuration": "Avg. Period Duration (Days)"
+      },
+      "goal": {
+        "title": "Sync Goal",
+        "description": "What is your primary focus for hormonal syncing?",
+        "performance": "Optimize Performance",
+        "symptoms": "Manage Symptoms",
+        "energy": "Predict Energy Lows"
+      }
     },
     "connectGoogle": {
       "title": "Connect Your Google Account",

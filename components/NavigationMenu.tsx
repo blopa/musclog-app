@@ -1,9 +1,19 @@
 import { usePathname, useRouter } from 'expo-router';
-import { Camera, Dumbbell, Home, MessageSquare, User, UtensilsCrossed } from 'lucide-react-native';
+import {
+  Activity,
+  Camera,
+  Dumbbell,
+  Home,
+  MessageSquare,
+  Target,
+  User,
+  UtensilsCrossed,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
@@ -19,6 +29,7 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
   const router = useRouter();
   const pathname = usePathname();
   const { isAiFeaturesEnabled } = useSettings();
+  const { isActive: isCycleTrackingActive } = useMenstrualCycle();
   const unreadChatMessages = useUnreadChatMessages();
 
   const isActive = (path: string) => {
@@ -43,32 +54,49 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
     >
       <SafeAreaView edges={['bottom']}>
         <View className="relative flex-row items-stretch px-6 py-4">
-          {/* Home */}
+          {/* Focus or Home */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
-              if (!isActive('/')) {
-                router.push('/');
+              if (isCycleTrackingActive) {
+                if (!isActive('/focus')) router.push('/focus');
+              } else {
+                if (!isActive('/')) router.push('/');
               }
             }}
           >
             <View
               className={`h-10 w-16 items-center justify-center rounded-lg ${
-                isActive('/') ? 'bg-bg-navActive' : ''
+                (isCycleTrackingActive && isActive('/focus')) || (!isCycleTrackingActive && isActive('/'))
+                  ? 'bg-bg-navActive'
+                  : ''
               }`}
             >
-              <Home
-                size={theme.iconSize.md}
-                color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium}
-              />
+              {isCycleTrackingActive ? (
+                <Target
+                  size={theme.iconSize.md}
+                  color={isActive('/focus') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={
+                    isActive('/focus') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                  }
+                />
+              ) : (
+                <Home
+                  size={theme.iconSize.md}
+                  color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium}
+                />
+              )}
             </View>
             <Text
               className={`text-xs font-medium ${
-                isActive('/') ? 'text-text-accent' : 'text-text-tertiary'
+                (isCycleTrackingActive && isActive('/focus')) ||
+                (!isCycleTrackingActive && isActive('/'))
+                  ? 'text-text-accent'
+                  : 'text-text-tertiary'
               }`}
             >
-              {t('home.navigation.home')}
+              {isCycleTrackingActive ? t('home.navigation.focus', 'Focus') : t('home.navigation.home')}
             </Text>
           </Pressable>
 
@@ -133,32 +161,49 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
             </View>
           </Pressable>
 
-          {/* Food */}
+          {/* Cycle or Food */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
-              if (!isFoodActive()) {
-                router.push('/nutrition/food');
+              if (isCycleTrackingActive) {
+                if (!isActive('/cycle')) router.push('/cycle');
+              } else {
+                if (!isFoodActive()) router.push('/nutrition/food');
               }
             }}
           >
             <View
               className={`h-10 w-16 items-center justify-center rounded-lg ${
-                isFoodActive() ? 'bg-bg-navActive' : ''
+                (isCycleTrackingActive && isActive('/cycle')) || (!isCycleTrackingActive && isFoodActive())
+                  ? 'bg-bg-navActive'
+                  : ''
               }`}
             >
-              <UtensilsCrossed
-                size={theme.iconSize.md}
-                color={isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium}
-              />
+              {isCycleTrackingActive ? (
+                <Activity
+                  size={theme.iconSize.md}
+                  color={isActive('/cycle') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={
+                    isActive('/cycle') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                  }
+                />
+              ) : (
+                <UtensilsCrossed
+                  size={theme.iconSize.md}
+                  color={isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium}
+                />
+              )}
             </View>
             <Text
               className={`text-xs font-medium ${
-                isFoodActive() ? 'text-text-accent' : 'text-text-tertiary'
+                (isCycleTrackingActive && isActive('/cycle')) ||
+                (!isCycleTrackingActive && isFoodActive())
+                  ? 'text-text-accent'
+                  : 'text-text-tertiary'
               }`}
             >
-              {t('home.navigation.food')}
+              {isCycleTrackingActive ? t('home.navigation.cycle', 'Cycle') : t('home.navigation.food')}
             </Text>
           </Pressable>
 

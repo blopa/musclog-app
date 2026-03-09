@@ -13,6 +13,7 @@ import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
 import Schedule from './models/Schedule';
+import MenstrualCycle from './models/MenstrualCycle';
 import Setting from './models/Setting';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
@@ -32,6 +33,7 @@ export const database = new Database({
     Exercise,
     UserMetric,
     User,
+    MenstrualCycle,
     Setting,
     WorkoutTemplate,
     WorkoutTemplateExercise,
