@@ -1,10 +1,21 @@
 import { usePathname, useRouter } from 'expo-router';
-import { Camera, Dumbbell, Home, MessageSquare, User, UtensilsCrossed } from 'lucide-react-native';
+import {
+  BarChart3,
+  Calendar,
+  Camera,
+  Dumbbell,
+  Home,
+  MessageSquare,
+  Settings,
+  User,
+  UtensilsCrossed,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useSettings } from '../hooks/useSettings';
+import type { NavItemKey } from '../constants/settings';
+import { useNavigationItems } from '../hooks/useNavigationItems';
 import { useTheme } from '../hooks/useTheme';
 import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
 
@@ -18,10 +29,11 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { rawSlots, isAiFeaturesEnabled, isCycleActive } = useNavigationItems();
+  const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const unreadChatMessages = useUnreadChatMessages();
 
-  const isActive = (path: string) => {
+  const isPathActive = (path: string) => {
     if (path === '/') {
       return pathname === '/';
     }
@@ -36,6 +48,228 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
     );
   };
 
+  const renderNavSlot = (slotKey: NavItemKey) => {
+    switch (slotKey) {
+      case 'workouts': {
+        const active = isPathActive('/workout');
+        return (
+          <Pressable
+            key="workouts"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => {
+              if (!active) {
+                router.push('/workout/workouts');
+              }
+            }}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <Dumbbell
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('home.navigation.workouts')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'food': {
+        const active = isFoodActive();
+        return (
+          <Pressable
+            key="food"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => {
+              if (!active) {
+                router.push('/nutrition/food');
+              }
+            }}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <UtensilsCrossed
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('home.navigation.food')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'profile': {
+        const active = isPathActive('/profile') || isPathActive('/progress');
+        return (
+          <Pressable
+            key="profile"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => router.push('/profile')}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <User
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('home.navigation.profile')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'coach': {
+        if (!isAiFeaturesEnabled) {
+          return null;
+        }
+        return (
+          <Pressable
+            key="coach"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={onCoachPress}
+          >
+            <View className="h-10 w-16 items-center justify-center rounded-lg">
+              <View className="relative">
+                <MessageSquare
+                  size={theme.iconSize.md}
+                  color={theme.colors.text.tertiary}
+                  strokeWidth={theme.borderWidth.medium}
+                />
+                {unreadChatMessages > 0 ? (
+                  <View
+                    className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
+                    style={{ minWidth: 14, minHeight: 14 }}
+                  >
+                    <Text className="text-[10px] font-bold leading-none text-white">
+                      {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+            <Text className="text-xs font-medium text-text-tertiary">
+              {t('home.navigation.coach')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'cycle': {
+        if (!isCycleActive) {
+          return null;
+        }
+        const active = isPathActive('/cycle');
+        return (
+          <Pressable
+            key="cycle"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => {
+              if (!active) {
+                router.push('/cycle');
+              }
+            }}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <Calendar
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('userMenu.cycle')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'settings': {
+        const active = isPathActive('/settings');
+        return (
+          <Pressable
+            key="settings"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => {
+              if (!active) {
+                router.push('/settings');
+              }
+            }}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <Settings
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('userMenu.settings')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      case 'progress': {
+        const active = isPathActive('/progress');
+        return (
+          <Pressable
+            key="progress"
+            className="flex-1 items-center justify-center gap-1"
+            onPress={() => {
+              if (!active) {
+                router.push('/progress');
+              }
+            }}
+          >
+            <View
+              className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+            >
+              <BarChart3
+                size={theme.iconSize.md}
+                color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+              />
+            </View>
+            <Text
+              className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+            >
+              {t('userMenu.progress')}
+            </Text>
+          </Pressable>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <View
       className="absolute bottom-0 left-0 right-0 border-t border-border-dark"
@@ -43,76 +277,48 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
     >
       <SafeAreaView edges={['bottom']}>
         <View className="relative flex-row items-stretch px-6 py-4">
-          {/* Home */}
+          {/* Home - always fixed */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
-              if (!isActive('/')) {
+              if (!isPathActive('/')) {
                 router.push('/');
               }
             }}
           >
             <View
               className={`h-10 w-16 items-center justify-center rounded-lg ${
-                isActive('/') ? 'bg-bg-navActive' : ''
+                isPathActive('/') ? 'bg-bg-navActive' : ''
               }`}
             >
               <Home
                 size={theme.iconSize.md}
-                color={isActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={isActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium}
+                color={isPathActive('/') ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                strokeWidth={
+                  isPathActive('/') ? theme.strokeWidth.medium : theme.borderWidth.medium
+                }
               />
             </View>
             <Text
               className={`text-xs font-medium ${
-                isActive('/') ? 'text-text-accent' : 'text-text-tertiary'
+                isPathActive('/') ? 'text-text-accent' : 'text-text-tertiary'
               }`}
             >
               {t('home.navigation.home')}
             </Text>
           </Pressable>
 
-          {/* Workouts */}
-          <Pressable
-            className="flex-1 items-center justify-center gap-1"
-            onPress={() => {
-              if (!isActive('/workout/workouts')) {
-                router.push('/workout/workouts');
-              }
-            }}
-          >
-            <View
-              className={`h-10 w-16 items-center justify-center rounded-lg ${
-                isActive('/workout') ? 'bg-bg-navActive' : ''
-              }`}
-            >
-              <Dumbbell
-                size={theme.iconSize.md}
-                color={
-                  isActive('/workout') ? theme.colors.accent.primary : theme.colors.text.tertiary
-                }
-                strokeWidth={
-                  isActive('/workout') ? theme.strokeWidth.medium : theme.borderWidth.medium
-                }
-              />
-            </View>
-            <Text
-              className={`text-xs font-medium ${
-                isActive('/workout') ? 'text-text-accent' : 'text-text-tertiary'
-              }`}
-            >
-              {t('home.navigation.workouts')}
-            </Text>
-          </Pressable>
+          {/* Slot 1 - customizable */}
+          {renderNavSlot(navSlot1)}
 
-          {/* Camera */}
+          {/* Camera - always fixed */}
           <Pressable
             className="z-10 flex-1 items-center justify-center gap-1"
             onPress={onCameraPress}
           >
             <View
               className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
-                isActive('/nutrition/ai-camera')
+                isPathActive('/nutrition/ai-camera')
                   ? 'bg-accent-primary'
                   : 'bg-accent-primary opacity-80'
               }`}
@@ -120,12 +326,12 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
               <Camera
                 size={theme.iconSize.md}
                 color={
-                  isActive('/nutrition/ai-camera')
+                  isPathActive('/nutrition/ai-camera')
                     ? theme.colors.text.primary
                     : theme.colors.text.tertiary
                 }
                 strokeWidth={
-                  isActive('/nutrition/ai-camera')
+                  isPathActive('/nutrition/ai-camera')
                     ? theme.strokeWidth.medium
                     : theme.borderWidth.medium
                 }
@@ -133,96 +339,11 @@ export function NavigationMenu({ onCoachPress, onCameraPress }: NavigationMenuPr
             </View>
           </Pressable>
 
-          {/* Food */}
-          <Pressable
-            className="flex-1 items-center justify-center gap-1"
-            onPress={() => {
-              if (!isFoodActive()) {
-                router.push('/nutrition/food');
-              }
-            }}
-          >
-            <View
-              className={`h-10 w-16 items-center justify-center rounded-lg ${
-                isFoodActive() ? 'bg-bg-navActive' : ''
-              }`}
-            >
-              <UtensilsCrossed
-                size={theme.iconSize.md}
-                color={isFoodActive() ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                strokeWidth={isFoodActive() ? theme.strokeWidth.medium : theme.borderWidth.medium}
-              />
-            </View>
-            <Text
-              className={`text-xs font-medium ${
-                isFoodActive() ? 'text-text-accent' : 'text-text-tertiary'
-              }`}
-            >
-              {t('home.navigation.food')}
-            </Text>
-          </Pressable>
+          {/* Slot 2 - customizable */}
+          {renderNavSlot(navSlot2)}
 
-          {/* Coach or Profile */}
-          {isAiFeaturesEnabled ? (
-            <Pressable className="flex-1 items-center justify-center gap-1" onPress={onCoachPress}>
-              <View className="h-10 w-16 items-center justify-center rounded-lg">
-                <View className="relative">
-                  <MessageSquare
-                    size={theme.iconSize.md}
-                    color={theme.colors.text.tertiary}
-                    strokeWidth={theme.borderWidth.medium}
-                  />
-                  {unreadChatMessages > 0 ? (
-                    <View
-                      className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-red-500"
-                      style={{ minWidth: 14, minHeight: 14 }}
-                    >
-                      <Text className="text-[10px] font-bold leading-none text-white">
-                        {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-              <Text className="text-xs font-medium text-text-tertiary">
-                {t('home.navigation.coach')}
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => router.push('/profile')}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${
-                  isActive('/profile') || isActive('/progress') ? 'bg-bg-navActive' : ''
-                }`}
-              >
-                <User
-                  size={theme.iconSize.md}
-                  color={
-                    isActive('/profile') || isActive('/progress')
-                      ? theme.colors.accent.primary
-                      : theme.colors.text.tertiary
-                  }
-                  strokeWidth={
-                    isActive('/profile') || isActive('/progress')
-                      ? theme.strokeWidth.medium
-                      : theme.borderWidth.medium
-                  }
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${
-                  isActive('/profile') || isActive('/progress')
-                    ? 'text-text-accent'
-                    : 'text-text-tertiary'
-                }`}
-              >
-                {t('home.navigation.profile')}
-              </Text>
-            </Pressable>
-          )}
+          {/* Slot 3 - customizable */}
+          {renderNavSlot(navSlot3)}
         </View>
       </SafeAreaView>
     </View>

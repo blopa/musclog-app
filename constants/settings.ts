@@ -101,6 +101,23 @@ export const LANGUAGE_SETTING_TYPE = 'language';
  */
 export const USE_OCR_BEFORE_AI_SETTING_TYPE = 'use_ocr_before_ai';
 
+/**
+ * Setting types for customizable navigation bar slots (positions 2, 4, 5).
+ * value: NavItemKey string.
+ */
+export const NAV_SLOT_1_SETTING_TYPE = 'nav_slot_1';
+export const NAV_SLOT_2_SETTING_TYPE = 'nav_slot_2';
+export const NAV_SLOT_3_SETTING_TYPE = 'nav_slot_3';
+
+export type NavItemKey =
+  | 'workouts'
+  | 'food'
+  | 'profile'
+  | 'coach'
+  | 'cycle'
+  | 'settings'
+  | 'progress';
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 

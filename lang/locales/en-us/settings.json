@@ -105,6 +105,26 @@
       "disconnectGoogleMessage": "Your Google account will be disconnected. AI features that rely on your Google account will stop working until you reconnect.",
       "disconnectGoogleConfirm": "Disconnect"
     },
+    "visualSettings": {
+      "title": "Interface",
+      "subtitle": "Customize app interface",
+      "sectionTitle": "Navigation Bar",
+      "sectionSubtitle": "Choose which shortcuts appear in the bottom bar. Home and Camera are always fixed.",
+      "slot1Label": "Slot 1 (left of camera)",
+      "slot2Label": "Slot 2 (right of camera)",
+      "slot3Label": "Slot 3 (rightmost)",
+      "selectItem": "Choose a shortcut for this slot",
+      "currentlyInSlot": "Currently in slot {{slot}} — will swap",
+      "navItems": {
+        "workouts": "Workouts",
+        "food": "Food",
+        "profile": "Profile",
+        "coach": "Coach",
+        "cycle": "Cycle",
+        "settings": "Settings",
+        "progress": "Progress"
+      }
+    },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy"

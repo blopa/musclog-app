@@ -11,6 +11,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
+import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
 import { ToggleInput } from '../components/theme/ToggleInput';
 import { SettingsService } from '../database/services/SettingsService';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
@@ -34,6 +35,7 @@ export default function SettingsScreen() {
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
+  const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
 
   const handleConnectHealthDataChange = async (value: boolean) => {
     await SettingsService.setConnectHealthData(value);
@@ -126,6 +128,26 @@ export default function SettingsScreen() {
           title={t('settings.basicSettings.title')}
           subtitle={t('settings.basicSettings.subtitle')}
           onPress={() => setBasicSettingsVisible(true)}
+          rightIcon={
+            <MaterialIcons
+              name="chevron-right"
+              size={theme.iconSize.xl}
+              color={theme.colors.text.secondary}
+            />
+          }
+        />
+
+        <SettingsCard
+          icon={
+            <MaterialIcons
+              name="grid-view"
+              size={theme.iconSize['2xl']}
+              color={theme.colors.accent.primary}
+            />
+          }
+          title={t('settings.visualSettings.title')}
+          subtitle={t('settings.visualSettings.subtitle')}
+          onPress={() => setVisualSettingsVisible(true)}
           rightIcon={
             <MaterialIcons
               name="chevron-right"
@@ -232,6 +254,10 @@ export default function SettingsScreen() {
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}
         onClose={() => setAdvancedSettingsVisible(false)}
+      />
+      <VisualSettingsModal
+        visible={isVisualSettingsVisible}
+        onClose={() => setVisualSettingsVisible(false)}
       />
     </MasterLayout>
   );

@@ -59,9 +59,7 @@ export default function CycleSetup() {
     {
       value: 'none',
       title: t('onboarding.cycleSetup.birthControl.none'),
-      description: t(
-        'onboarding.cycleSetup.birthControl.noneDescription'
-      ),
+      description: t('onboarding.cycleSetup.birthControl.noneDescription'),
       icon: CheckCircle2,
       iconColor: theme.colors.status.success,
       iconBgColor: theme.colors.status.success20,
@@ -70,9 +68,7 @@ export default function CycleSetup() {
     {
       value: 'pill',
       title: t('onboarding.cycleSetup.birthControl.pill'),
-      description: t(
-        'onboarding.cycleSetup.birthControl.pillDescription'
-      ),
+      description: t('onboarding.cycleSetup.birthControl.pillDescription'),
       icon: Pill,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
@@ -81,9 +77,7 @@ export default function CycleSetup() {
     {
       value: 'iud',
       title: t('onboarding.cycleSetup.birthControl.iud'),
-      description: t(
-        'onboarding.cycleSetup.birthControl.iudDescription'
-      ),
+      description: t('onboarding.cycleSetup.birthControl.iudDescription'),
       icon: ShieldOff,
       iconColor: theme.colors.status.info,
       iconBgColor: theme.colors.status.info10,
@@ -92,9 +86,7 @@ export default function CycleSetup() {
     {
       value: 'implant',
       title: t('onboarding.cycleSetup.birthControl.implant'),
-      description: t(
-        'onboarding.cycleSetup.birthControl.implantDescription'
-      ),
+      description: t('onboarding.cycleSetup.birthControl.implantDescription'),
       icon: Syringe,
       iconColor: theme.colors.status.warning,
       iconBgColor: theme.colors.status.warning10,
@@ -103,9 +95,7 @@ export default function CycleSetup() {
     {
       value: 'other',
       title: t('onboarding.cycleSetup.birthControl.other'),
-      description: t(
-        'onboarding.cycleSetup.birthControl.otherDescription'
-      ),
+      description: t('onboarding.cycleSetup.birthControl.otherDescription'),
       icon: HelpCircle,
       iconColor: theme.colors.status.purple,
       iconBgColor: theme.colors.status.purple10,
@@ -117,9 +107,7 @@ export default function CycleSetup() {
     {
       value: 'performance',
       title: t('onboarding.cycleSetup.goal.performance'),
-      description: t(
-        'onboarding.cycleSetup.goal.performanceDescription'
-      ),
+      description: t('onboarding.cycleSetup.goal.performanceDescription'),
       icon: Target,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
@@ -128,9 +116,7 @@ export default function CycleSetup() {
     {
       value: 'symptoms',
       title: t('onboarding.cycleSetup.goal.symptoms'),
-      description: t(
-        'onboarding.cycleSetup.goal.symptomsDescription'
-      ),
+      description: t('onboarding.cycleSetup.goal.symptomsDescription'),
       icon: Activity,
       iconColor: theme.colors.rose.brand,
       iconBgColor: theme.colors.rose.brand10,
@@ -139,9 +125,7 @@ export default function CycleSetup() {
     {
       value: 'energy',
       title: t('onboarding.cycleSetup.goal.energy'),
-      description: t(
-        'onboarding.cycleSetup.goal.energyDescription'
-      ),
+      description: t('onboarding.cycleSetup.goal.energyDescription'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
       iconBgColor: theme.colors.status.warning10,

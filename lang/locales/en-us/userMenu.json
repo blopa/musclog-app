@@ -5,6 +5,9 @@
     "settings": "Settings",
     "progress": "Progress",
     "cycle": "Cycle",
+    "workouts": "Workouts",
+    "food": "Food",
+    "coach": "Coach",
     "debugPage": "Debug Page"
   }
 }

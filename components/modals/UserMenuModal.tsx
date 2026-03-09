@@ -1,10 +1,21 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { BarChart3, Calendar, Settings, User, X } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import {
+  BarChart3,
+  Calendar,
+  Dumbbell,
+  MessageSquare,
+  Settings,
+  User,
+  UtensilsCrossed,
+  X,
+} from 'lucide-react-native';
 import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useNavigationItems } from '../../hooks/useNavigationItems';
 import { useTheme } from '../../hooks/useTheme';
 import { AvatarColor } from '../../types/AvatarColor';
 import { AvatarIcon } from '../../types/AvatarIcon';
@@ -19,6 +30,7 @@ type UserMenuModalProps = {
     avatarIcon?: AvatarIcon;
     avatarColor?: AvatarColor;
   };
+  onCoachPress?: () => void;
   onProfilePress?: () => void;
   onSettingsPress?: () => void;
   onProgressPress?: () => void;
@@ -33,7 +45,6 @@ type MenuItemProps = {
 };
 
 function MenuItem({ icon, label, onPress }: MenuItemProps) {
-  const theme = useTheme();
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
@@ -51,6 +62,7 @@ export function UserMenuModal({
   visible,
   onClose,
   user,
+  onCoachPress,
   onProfilePress,
   onSettingsPress,
   onProgressPress,
@@ -59,6 +71,11 @@ export function UserMenuModal({
 }: UserMenuModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { rawSlots, isAiFeaturesEnabled, isCycleActive } = useNavigationItems();
+
+  const isInNav = (item: string) =>
+    rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
 
   // Web-specific styles for proper viewport positioning
   const webBackdropStyle =
@@ -159,38 +176,92 @@ export function UserMenuModal({
 
             {/* Menu Items */}
             <View className="gap-3 p-6">
-              <MenuItem
-                icon={<User size={theme.iconSize.md} color={theme.colors.accent.primary} />}
-                label={t('userMenu.profile')}
-                onPress={() => {
-                  onProfilePress?.();
-                  onClose();
-                }}
-              />
-              <MenuItem
-                icon={<BarChart3 size={theme.iconSize.md} color={theme.colors.accent.secondary} />}
-                label={t('userMenu.progress')}
-                onPress={() => {
-                  onProgressPress?.();
-                  onClose();
-                }}
-              />
-              <MenuItem
-                icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
-                label={t('userMenu.cycle')}
-                onPress={() => {
-                  onCyclePress?.();
-                  onClose();
-                }}
-              />
-              <MenuItem
-                icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                label={t('userMenu.settings')}
-                onPress={() => {
-                  onSettingsPress?.();
-                  onClose();
-                }}
-              />
+              {!isInNav('profile') ? (
+                <MenuItem
+                  icon={<User size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+                  label={t('userMenu.profile')}
+                  onPress={() => {
+                    onProfilePress ? onProfilePress() : router.push('/profile');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('progress') ? (
+                <MenuItem
+                  icon={
+                    <BarChart3 size={theme.iconSize.md} color={theme.colors.accent.secondary} />
+                  }
+                  label={t('userMenu.progress')}
+                  onPress={() => {
+                    onProgressPress ? onProgressPress() : router.push('/progress');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('cycle') && isCycleActive ? (
+                <MenuItem
+                  icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
+                  label={t('userMenu.cycle')}
+                  onPress={() => {
+                    onCyclePress ? onCyclePress() : router.push('/cycle');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('workouts') ? (
+                <MenuItem
+                  icon={<Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+                  label={t('userMenu.workouts')}
+                  onPress={() => {
+                    router.push('/workout/workouts');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('food') ? (
+                <MenuItem
+                  icon={
+                    <UtensilsCrossed
+                      size={theme.iconSize.md}
+                      color={theme.colors.accent.secondary}
+                    />
+                  }
+                  label={t('userMenu.food')}
+                  onPress={() => {
+                    router.push('/nutrition/food');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('coach') && isAiFeaturesEnabled && onCoachPress ? (
+                <MenuItem
+                  icon={
+                    <MessageSquare size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  }
+                  label={t('userMenu.coach')}
+                  onPress={() => {
+                    onCoachPress();
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('settings') ? (
+                <MenuItem
+                  icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
+                  label={t('userMenu.settings')}
+                  onPress={() => {
+                    onSettingsPress ? onSettingsPress() : router.push('/settings');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
               {onDebugMenuPress ? (
                 <Pressable
                   className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"

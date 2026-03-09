@@ -218,8 +218,8 @@ export function getNutrimentsWithFallback(
     product?.nutriments && typeof product.nutriments === 'object' ? product.nutriments : {};
 
   return {
-    ...nutriments,      // Priority: actual measured values
-    ...estimated,       // Fallback: estimated values only if real ones missing
+    ...nutriments, // Priority: actual measured values
+    ...estimated, // Fallback: estimated values only if real ones missing
     isEstimated: !!(product?.nutriments_estimated && !product?.nutriments),
   } as NutrimentsWithEstimated;
 }
@@ -328,7 +328,7 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
   const protein = getNutrimentValue(nutriments, 'proteins');
   const carbs = getNutrimentValue(nutriments, 'carbohydrates');
   const fat = getNutrimentValue(nutriments, 'fat');
-  
+
   // Improved fiber extraction with fallback calculation and negative value protection
   const directFiber = getNutrimentValue(nutriments, 'fiber');
   let fiber = 0;

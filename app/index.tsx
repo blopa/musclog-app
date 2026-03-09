@@ -21,6 +21,7 @@ import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/Dai
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
+import { CoachModal } from '../components/modals/CoachModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../components/modals/GoalsManagementModal';
@@ -78,6 +79,7 @@ export default function HomeScreen() {
     date: today,
   });
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
+  const [isCoachModalFromMenuVisible, setIsCoachModalFromMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -451,13 +453,19 @@ export default function HomeScreen() {
             avatarIcon: dbUser?.avatarIcon,
             avatarColor: dbUser?.avatarColor,
           }}
-          onProfilePress={() => router.push('/profile')}
-          onSettingsPress={() => router.push('/settings')}
-          // TODO: update this route navigation
-          onProgressPress={() => router.push('/progress')}
+          onCoachPress={() => setIsCoachModalFromMenuVisible(true)}
+          onCyclePress={() => router.push('/cycle')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
           })}
+        />
+      ) : null}
+
+      {/* Coach Modal (opened from User Menu when coach is not in nav) */}
+      {isCoachModalFromMenuVisible ? (
+        <CoachModal
+          visible={isCoachModalFromMenuVisible}
+          onClose={() => setIsCoachModalFromMenuVisible(false)}
         />
       ) : null}
 

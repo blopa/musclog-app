@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
 
-import type { ThemeOption, Units, UseSettingsResult } from '../constants/settings';
+import type { NavItemKey, ThemeOption, Units, UseSettingsResult } from '../constants/settings';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
@@ -10,6 +10,9 @@ import {
   ENABLE_OPENAI_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  NAV_SLOT_1_SETTING_TYPE,
+  NAV_SLOT_2_SETTING_TYPE,
+  NAV_SLOT_3_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
@@ -79,6 +82,9 @@ export function useSettings(): UseSettingsResult & {
   notifications: boolean;
   useOcrBeforeAi: boolean;
   isAiFeaturesEnabled: boolean;
+  navSlot1: NavItemKey;
+  navSlot2: NavItemKey;
+  navSlot3: NavItemKey;
 } {
   const [units, setUnits] = useState<Units>('metric');
   const [theme, setTheme] = useState<ThemeOption>('system');
@@ -96,6 +102,9 @@ export function useSettings(): UseSettingsResult & {
   const [workoutInsights, setWorkoutInsights] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
+  const [navSlot1, setNavSlot1] = useState<NavItemKey>('workouts');
+  const [navSlot2, setNavSlot2] = useState<NavItemKey>('food');
+  const [navSlot3, setNavSlot3] = useState<NavItemKey>('profile');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -168,6 +177,18 @@ export function useSettings(): UseSettingsResult & {
     const useOcrBeforeAiQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', USE_OCR_BEFORE_AI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const navSlot1Query = database
+      .get<Setting>('settings')
+      .query(Q.where('type', NAV_SLOT_1_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const navSlot2Query = database
+      .get<Setting>('settings')
+      .query(Q.where('type', NAV_SLOT_2_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const navSlot3Query = database
+      .get<Setting>('settings')
+      .query(Q.where('type', NAV_SLOT_3_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
 
     const unitsSubscription = unitsQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
@@ -329,6 +350,33 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
+    const navSlot1Subscription = navSlot1Query.observeWithColumns(['value']).subscribe({
+      next: (settings) => {
+        setNavSlot1((parseStringFromSettings(settings) as NavItemKey) || 'workouts');
+      },
+      error: () => {
+        setNavSlot1('workouts');
+      },
+    });
+
+    const navSlot2Subscription = navSlot2Query.observeWithColumns(['value']).subscribe({
+      next: (settings) => {
+        setNavSlot2((parseStringFromSettings(settings) as NavItemKey) || 'food');
+      },
+      error: () => {
+        setNavSlot2('food');
+      },
+    });
+
+    const navSlot3Subscription = navSlot3Query.observeWithColumns(['value']).subscribe({
+      next: (settings) => {
+        setNavSlot3((parseStringFromSettings(settings) as NavItemKey) || 'profile');
+      },
+      error: () => {
+        setNavSlot3('profile');
+      },
+    });
+
     // Set loading to false once all subscriptions have had a chance to load
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -351,6 +399,9 @@ export function useSettings(): UseSettingsResult & {
       workoutInsightsSubscription.unsubscribe();
       notificationsSubscription.unsubscribe();
       useOcrBeforeAiSubscription.unsubscribe();
+      navSlot1Subscription.unsubscribe();
+      navSlot2Subscription.unsubscribe();
+      navSlot3Subscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
@@ -387,6 +438,9 @@ export function useSettings(): UseSettingsResult & {
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
+      navSlot1,
+      navSlot2,
+      navSlot3,
       weightUnit: getWeightUnit(units),
       heightUnit: getHeightUnit(units),
     }),
@@ -409,6 +463,9 @@ export function useSettings(): UseSettingsResult & {
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
+      navSlot1,
+      navSlot2,
+      navSlot3,
     ]
   );
 }

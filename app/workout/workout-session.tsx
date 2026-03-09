@@ -880,16 +880,11 @@ export default function WorkoutSessionScreen() {
                     {currentPhase === 'ovulation'
                       ? t('workoutSession.ovulationInsight')
                       : currentPhase === 'menstrual'
-                        ? t(
-                            'workoutSession.menstrualInsight'
-                          )
-                        : t(
-                            'workoutSession.phaseInsight',
-                            {
-                              phase: currentPhase,
-                              multiplier: intensityMultiplier.toFixed(2),
-                            }
-                          )}
+                        ? t('workoutSession.menstrualInsight')
+                        : t('workoutSession.phaseInsight', {
+                            phase: currentPhase,
+                            multiplier: intensityMultiplier.toFixed(2),
+                          })}
                   </Text>
                 </View>
               </View>

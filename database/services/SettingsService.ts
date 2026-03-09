@@ -9,6 +9,10 @@ import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  NAV_SLOT_1_SETTING_TYPE,
+  NAV_SLOT_2_SETTING_TYPE,
+  NAV_SLOT_3_SETTING_TYPE,
+  type NavItemKey,
   NOTIFICATIONS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
@@ -359,6 +363,105 @@ export class SettingsService {
           setting.value = value.toString();
           setting.createdAt = now;
           setting.updatedAt = now;
+        });
+      }
+    });
+  }
+
+  /**
+   * Get the nav item key for a customizable nav slot (1=left, 2=right of camera, 3=rightmost).
+   * Defaults: slot 1 = workouts, slot 2 = food, slot 3 = profile.
+   */
+  static async getNavSlot(slot: 1 | 2 | 3): Promise<NavItemKey> {
+    const defaults: Record<1 | 2 | 3, NavItemKey> = {
+      1: 'workouts',
+      2: 'food',
+      3: 'profile',
+    };
+    const type =
+      slot === 1
+        ? NAV_SLOT_1_SETTING_TYPE
+        : slot === 2
+          ? NAV_SLOT_2_SETTING_TYPE
+          : NAV_SLOT_3_SETTING_TYPE;
+    const value = await SettingsService.getStringSetting(type, defaults[slot]);
+    return value as NavItemKey;
+  }
+
+  /**
+   * Upsert the nav item key for a customizable nav slot.
+   */
+  static async setNavSlot(slot: 1 | 2 | 3, item: NavItemKey) {
+    const type =
+      slot === 1
+        ? NAV_SLOT_1_SETTING_TYPE
+        : slot === 2
+          ? NAV_SLOT_2_SETTING_TYPE
+          : NAV_SLOT_3_SETTING_TYPE;
+    await SettingsService.setStringSetting(type, item);
+  }
+
+  /**
+   * Atomically swap two nav slots in a single database write to avoid intermediate
+   * states that would cause the nav bar to briefly show duplicate items.
+   */
+  static async swapNavSlots(
+    slotA: 1 | 2 | 3,
+    itemA: NavItemKey,
+    slotB: 1 | 2 | 3,
+    itemB: NavItemKey
+  ) {
+    const typeA =
+      slotA === 1
+        ? NAV_SLOT_1_SETTING_TYPE
+        : slotA === 2
+          ? NAV_SLOT_2_SETTING_TYPE
+          : NAV_SLOT_3_SETTING_TYPE;
+    const typeB =
+      slotB === 1
+        ? NAV_SLOT_1_SETTING_TYPE
+        : slotB === 2
+          ? NAV_SLOT_2_SETTING_TYPE
+          : NAV_SLOT_3_SETTING_TYPE;
+
+    const now = Date.now();
+    const [existingA, existingB] = await Promise.all([
+      database
+        .get<Setting>('settings')
+        .query(Q.where('type', typeA), Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+      database
+        .get<Setting>('settings')
+        .query(Q.where('type', typeB), Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+    ]);
+
+    await database.write(async () => {
+      if (existingA.length > 0) {
+        await existingA[0].update((s) => {
+          s.value = itemA;
+          s.updatedAt = now;
+        });
+      } else {
+        await database.get<Setting>('settings').create((s) => {
+          s.type = typeA as SettingType;
+          s.value = itemA;
+          s.createdAt = now;
+          s.updatedAt = now;
+        });
+      }
+
+      if (existingB.length > 0) {
+        await existingB[0].update((s) => {
+          s.value = itemB;
+          s.updatedAt = now;
+        });
+      } else {
+        await database.get<Setting>('settings').create((s) => {
+          s.type = typeB as SettingType;
+          s.value = itemB;
+          s.createdAt = now;
+          s.updatedAt = now;
         });
       }
     });

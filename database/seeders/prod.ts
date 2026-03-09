@@ -133,6 +133,12 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setAnonymousBugReport(true);
     console.log('Set anonymous bug report to true by default');
 
+    // Set default navigation bar slots
+    await SettingsService.setNavSlot(1, 'workouts');
+    await SettingsService.setNavSlot(2, 'food');
+    await SettingsService.setNavSlot(3, 'profile');
+    console.log('Set default navigation bar slots: workouts, food, profile');
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');
