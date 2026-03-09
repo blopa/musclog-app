@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import {
   Copy,
@@ -11,12 +10,12 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
-import { DateNavigator } from '../../components/DateNavigator';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
+import { DateNavigator } from '../../components/DateNavigator';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MealSection } from '../../components/MealSection';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
@@ -57,7 +56,6 @@ export default function FoodScreen() {
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodMenuVisible, setIsFoodMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedFoodItem, setSelectedFoodItem] = useState<{
@@ -203,26 +201,6 @@ export default function FoodScreen() {
   // Check if all meals are empty AND no food has ever been tracked
   const hasNoFood = !isScreenLoading && totalCount === 0;
 
-  // Date navigation functions
-  const goToPreviousDay = () => {
-    const previousDay = new Date(selectedDate);
-    previousDay.setDate(previousDay.getDate() - 1);
-    setSelectedDate(previousDay);
-  };
-
-  const goToNextDay = () => {
-    const nextDay = new Date(selectedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    setSelectedDate(nextDay);
-  };
-
-  const goToToday = () => {
-    setSelectedDate(new Date());
-  };
-
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-  };
 
   const handleFoodMenuPress = (entry: {
     log: any;
@@ -308,55 +286,11 @@ export default function FoodScreen() {
     setIsFoodSearchModalVisible(true);
   };
 
-  // Format date for display
-  const getDisplayDate = () => {
-    const now = new Date();
-    const isToday = selectedDate.toDateString() === now.toDateString();
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    const isYesterday = selectedDate.toDateString() === yesterday.toDateString();
-
-    if (isToday) {
-      return t('food.header.today');
-    } else if (isYesterday) {
-      return t('food.header.yesterday');
-    } else {
-      return format(selectedDate, 'MMM d, yyyy', { locale });
-    }
-  };
-
   return (
     <MasterLayout>
       <View className="flex-1 bg-bg-primary">
-        {/* TODO: use DateNavigator */}
         <View className="border-b border-border-dark bg-bg-primary">
-          <View className="flex-row items-center justify-between px-4 py-4">
-            <Pressable
-              onPress={goToPreviousDay}
-              className="rounded-lg p-3 active:bg-bg-secondary"
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-            </Pressable>
-            <Pressable
-              onPress={() => setIsDatePickerVisible(true)}
-              className="flex-row items-center gap-2"
-            >
-              <Text className="text-xl font-semibold text-text-primary">{getDisplayDate()}</Text>
-              <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-            </Pressable>
-            <Pressable
-              onPress={goToNextDay}
-              className="rounded-lg p-3 active:bg-bg-secondary"
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.7 : 1,
-              })}
-            >
-              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
-            </Pressable>
-          </View>
+          <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
         </View>
 
         {/* Main Content */}
@@ -784,14 +718,6 @@ export default function FoodScreen() {
           variant="destructive"
         />
       ) : null}
-
-      {/* Date Picker Modal */}
-      <DatePickerModal
-        visible={isDatePickerVisible}
-        onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={selectedDate}
-        onDateSelect={handleDateSelect}
-      />
 
       {/* Goals Management Modal */}
       <GoalsManagementModal
