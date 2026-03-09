@@ -464,6 +464,15 @@ export default function FoodScreen() {
                   totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
                   onAddFood={() => handleAddFoodToMeal('breakfast')}
+                  menuButton={
+                    mealsByType.breakfast.length > 0 ? (
+                      <MenuButton
+                        onPress={() => console.log('clicked here')}
+                        size="sm"
+                        color={theme.colors.text.primary}
+                      />
+                    ) : undefined
+                  }
                 >
                   {mealsByType.breakfast.map((entry) => (
                     <FoodItemCard
@@ -490,6 +499,15 @@ export default function FoodScreen() {
                   totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
                   onAddFood={() => handleAddFoodToMeal('lunch')}
+                  menuButton={
+                    mealsByType.lunch.length > 0 ? (
+                      <MenuButton
+                        onPress={() => console.log('clicked here')}
+                        size="sm"
+                        color={theme.colors.text.primary}
+                      />
+                    ) : undefined
+                  }
                 >
                   {mealsByType.lunch.map((entry) => (
                     <FoodItemCard
@@ -516,6 +534,15 @@ export default function FoodScreen() {
                   totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
                   onAddFood={() => handleAddFoodToMeal('dinner')}
+                  menuButton={
+                    mealsByType.dinner.length > 0 ? (
+                      <MenuButton
+                        onPress={() => console.log('clicked here')}
+                        size="sm"
+                        color={theme.colors.text.primary}
+                      />
+                    ) : undefined
+                  }
                 >
                   {mealsByType.dinner.map((entry) => (
                     <FoodItemCard
@@ -542,6 +569,15 @@ export default function FoodScreen() {
                   totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
                   onAddFood={() => handleAddFoodToMeal('snack')}
+                  menuButton={
+                    mealsByType.snack.length > 0 ? (
+                      <MenuButton
+                        onPress={() => console.log('clicked here')}
+                        size="sm"
+                        color={theme.colors.text.primary}
+                      />
+                    ) : undefined
+                  }
                 >
                   {mealsByType.snack.map((entry) => (
                     <FoodItemCard
@@ -568,6 +604,15 @@ export default function FoodScreen() {
                   totalCarbs={dailyNutrients?.byMealType?.other?.carbs || 0}
                   totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
                   onAddFood={() => handleAddFoodToMeal('other')}
+                  menuButton={
+                    mealsByType.other.length > 0 ? (
+                      <MenuButton
+                        onPress={() => console.log('clicked here')}
+                        size="sm"
+                        color={theme.colors.text.primary}
+                      />
+                    ) : undefined
+                  }
                 >
                   {mealsByType.other.map((entry) => (
                     <FoodItemCard

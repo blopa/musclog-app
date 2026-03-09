@@ -14,6 +14,7 @@ type MealSectionProps = {
   totalFat?: number;
   children: ReactNode;
   onAddFood?: () => void;
+  menuButton?: ReactNode;
 };
 
 type AddFoodButtonProps = {
@@ -45,6 +46,7 @@ export function MealSection({
   totalFat = 0,
   children,
   onAddFood,
+  menuButton,
 }: MealSectionProps) {
   const { t } = useTranslation();
 
@@ -53,29 +55,32 @@ export function MealSection({
       <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
         <Text className="text-2xl font-bold text-text-primary">{title}</Text>
         <View
-          className="items-end"
+          className="items-end flex-row gap-2"
           style={{
             ...(totalCalories > 0 && { marginTop: -theme.spacing.padding.base }),
           }}
         >
-          <Text className="text-lg text-text-secondary">
-            {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
-          </Text>
-          {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
-            <Text className="text-sm">
-              <Text style={{ color: theme.colors.macros.protein.text }}>
-                P: {Math.round(totalProtein)}g
-              </Text>{' '}
-              <Text className="text-text-secondary">•</Text>{' '}
-              <Text style={{ color: theme.colors.macros.carbs.text }}>
-                C: {Math.round(totalCarbs)}g
-              </Text>{' '}
-              <Text className="text-text-secondary">•</Text>{' '}
-              <Text style={{ color: theme.colors.macros.fat.text }}>
-                F: {Math.round(totalFat)}g
-              </Text>
+          <View className="items-end">
+            <Text className="text-lg text-text-secondary">
+              {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
             </Text>
-          ) : null}
+            {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
+              <Text className="text-sm">
+                <Text style={{ color: theme.colors.macros.protein.text }}>
+                  P: {Math.round(totalProtein)}g
+                </Text>{' '}
+                <Text className="text-text-secondary">•</Text>{' '}
+                <Text style={{ color: theme.colors.macros.carbs.text }}>
+                  C: {Math.round(totalCarbs)}g
+                </Text>{' '}
+                <Text className="text-text-secondary">•</Text>{' '}
+                <Text style={{ color: theme.colors.macros.fat.text }}>
+                  F: {Math.round(totalFat)}g
+                </Text>
+              </Text>
+            ) : null}
+          </View>
+          {menuButton}
         </View>
       </View>
 
