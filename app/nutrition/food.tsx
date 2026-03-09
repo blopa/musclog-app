@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import {
+  ArrowRight,
   Copy,
   Edit,
   ListPlus,
@@ -37,7 +38,6 @@ import NutritionLog, { type MealType } from '../../database/models/NutritionLog'
 import { NutritionService } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
-import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { theme } from '../../theme';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
@@ -70,8 +70,8 @@ export default function FoodScreen() {
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
-  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
-  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+  const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
+  const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -285,6 +285,56 @@ export default function FoodScreen() {
     setIsFoodSearchModalVisible(true);
   };
 
+  const handleMealMenuPress = (mealType: MealType) => {
+    setSelectedMealForMenu(mealType);
+    setIsMealMenuVisible(true);
+  };
+
+  const handleDeleteAllMeal = () => {
+    // TODO: implement deleting all items from meal type section, using a ConfirmationModal
+    const mealFoods = mealsByType[selectedMealForMenu!];
+    console.log('Delete all foods from', selectedMealForMenu, ':', mealFoods);
+  };
+
+  const handleMoveMealToAnotherDay = () => {
+    // TODO: implement showing a modal with the option to move this meal to another day and/or another meal type
+    const mealFoods = mealsByType[selectedMealForMenu!];
+    console.log('Move foods from', selectedMealForMenu, 'to another day:', mealFoods);
+  };
+
+  const handleCopyMealToAnotherDay = () => {
+    // TODO: implement showing a modal with the option to copy this meal to another day and/or another meal type
+    const mealFoods = mealsByType[selectedMealForMenu!];
+    console.log('Copy foods from', selectedMealForMenu, 'to another day:', mealFoods);
+  };
+
+  const mealMenuItems = [
+    {
+      icon: Trash2,
+      iconColor: theme.colors.status.error,
+      iconBgColor: theme.colors.status.error20,
+      title: t('food.actions.deleteAll'),
+      description: t('food.actions.deleteAllDesc'),
+      onPress: handleDeleteAllMeal,
+    },
+    {
+      icon: ArrowRight,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.moveToAnotherDay'),
+      description: t('food.actions.moveToAnotherDayDesc'),
+      onPress: handleMoveMealToAnotherDay,
+    },
+    {
+      icon: Copy,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.copyToAnotherDay'),
+      description: t('food.actions.copyToAnotherDayDesc'),
+      onPress: handleCopyMealToAnotherDay,
+    },
+  ];
+
   return (
     <MasterLayout>
       <View className="flex-1 bg-bg-primary">
@@ -467,7 +517,7 @@ export default function FoodScreen() {
                   menuButton={
                     mealsByType.breakfast.length > 0 ? (
                       <MenuButton
-                        onPress={() => console.log('clicked here')}
+                        onPress={() => handleMealMenuPress('breakfast')}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -502,7 +552,7 @@ export default function FoodScreen() {
                   menuButton={
                     mealsByType.lunch.length > 0 ? (
                       <MenuButton
-                        onPress={() => console.log('clicked here')}
+                        onPress={() => handleMealMenuPress('lunch')}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -537,7 +587,7 @@ export default function FoodScreen() {
                   menuButton={
                     mealsByType.dinner.length > 0 ? (
                       <MenuButton
-                        onPress={() => console.log('clicked here')}
+                        onPress={() => handleMealMenuPress('dinner')}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -572,7 +622,7 @@ export default function FoodScreen() {
                   menuButton={
                     mealsByType.snack.length > 0 ? (
                       <MenuButton
-                        onPress={() => console.log('clicked here')}
+                        onPress={() => handleMealMenuPress('snack')}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -607,7 +657,7 @@ export default function FoodScreen() {
                   menuButton={
                     mealsByType.other.length > 0 ? (
                       <MenuButton
-                        onPress={() => console.log('clicked here')}
+                        onPress={() => handleMealMenuPress('other')}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -781,6 +831,15 @@ export default function FoodScreen() {
         title={selectedFoodItem?.displayName ?? ''}
         subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
+      />
+
+      {/* Meal Menu Modal */}
+      <BottomPopUpMenu
+        visible={isMealMenuVisible}
+        onClose={() => setIsMealMenuVisible(false)}
+        title={selectedMealForMenu ? t(`food.meals.${selectedMealForMenu}`) : ''}
+        subtitle={t('food.actions.mealMenuSubtitle')}
+        items={mealMenuItems}
       />
 
       {/* Food Details Modal (edit/duplicate mode) */}
