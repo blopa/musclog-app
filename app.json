@@ -116,7 +116,8 @@
         "android.permission.health.READ_EXERCISE",
         "android.permission.health.WRITE_EXERCISE",
         "android.permission.health.READ_LEAN_BODY_MASS",
-        "android.permission.health.WRITE_LEAN_BODY_MASS"
+        "android.permission.health.WRITE_LEAN_BODY_MASS",
+        "android.permission.health.READ_HEALTH_DATA_HISTORY"
       ]
     },
     "extra": {

@@ -322,7 +322,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             if (
               key === 'template_id' &&
               (tableName === 'schedules' ||
-                tableName === 'workout_template_sets' ||
                 tableName === 'workout_logs')
             ) {
               const mapped = mapId('workout_templates', value as string);
@@ -372,6 +371,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
                 (rec as any).nutritionGoalId = mapped;
               } else {
                 (rec as any).nutritionGoalId = value;
+              }
+            } else if (key === 'user_metric_id') {
+              const mapped = mapId('user_metrics', value as string);
+              if (mapped != null) {
+                (rec as any).userMetricId = mapped;
+              } else {
+                (rec as any).userMetricId = value;
               }
             } else if (key === 'portion_id') {
               const mapped = mapId('food_portions', value as string);
