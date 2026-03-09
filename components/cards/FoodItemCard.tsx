@@ -14,7 +14,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
@@ -31,7 +33,17 @@ type FoodItemCardProps = {
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 };
 
-const MacroItem = ({ icon: Icon, value, label, unit }: { icon: any; value: number; label?: string, unit?: string }) => {
+const MacroItem = ({
+  icon: Icon,
+  value,
+  label,
+  unit,
+}: {
+  icon: any;
+  value: number;
+  label?: string;
+  unit?: string;
+}) => {
   const theme = useTheme();
 
   return (
@@ -39,7 +51,8 @@ const MacroItem = ({ icon: Icon, value, label, unit }: { icon: any; value: numbe
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text className="text-xs text-text-secondary">
         {/*TODO: use i18n here, probably will need a couple variations */}
-        {value}{unit || ''} {label || ''}
+        {value}
+        {unit || ''} {label || ''}
       </Text>
     </View>
   );
@@ -59,6 +72,7 @@ export function FoodItemCard({
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
   const [imageError, setImageError] = useState(false);
 
   // Helper function to get the appropriate icon based on meal type
@@ -84,7 +98,8 @@ export function FoodItemCard({
   const p = Math.round(protein ?? 0);
   const c = Math.round(carbs ?? 0);
   const f = Math.round(fat ?? 0);
-  const g = Math.round(portion ?? 0);
+  const g = Math.round(gramsToDisplay(portion ?? 0, units));
+  const massUnit = getMassUnitLabel(units);
 
   const handleImageError = () => {
     setImageError(true);
@@ -125,14 +140,13 @@ export function FoodItemCard({
             <Text className="mb-2 truncate text-sm text-text-secondary">{description}</Text>
           ) : null}
           <View className="flex-row items-center gap-3">
-            {/*TODO: instead of hardcodded G, check if user prefer metric or imperial*/}
-            <MacroItem icon={LucideScale} value={g} unit="g" />
+            <MacroItem icon={LucideScale} value={g} unit={massUnit} />
             <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
           </View>
           <View className="flex-row items-center gap-3">
-            <MacroItem icon={Zap} value={p} label={t('goalHistoryCard.proteinPrefix')} unit="g" />
-            <MacroItem icon={Wheat} value={c} label={t('goalHistoryCard.carbsPrefix')} unit="g" />
-            <MacroItem icon={Droplet} value={f} label={t('goalHistoryCard.fatPrefix')} unit="g" />
+            <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
+            <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
+            <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
           </View>
         </View>
         <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
