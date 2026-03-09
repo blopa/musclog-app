@@ -160,6 +160,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
         const deniedTypes = result.denied.map((p) => p.recordType).join(', ');
         showSnackbar('error', t('healthConnect.permissionsDenied', { types: deniedTypes }), {
           action: t('healthConnect.openSettings'),
+          onAction: () => openSettings(),
           duration: 0, // Don't auto-dismiss
         });
       }
@@ -172,7 +173,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
       showSnackbar('error', hcError.getUserMessage());
       return false;
     }
-  }, [isAvailable, showSnackbar, t]);
+  }, [isAvailable, openSettings, showSnackbar, t]);
 
   /**
    * Open Health Connect data management
