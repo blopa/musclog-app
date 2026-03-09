@@ -99,29 +99,29 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | React Native 0.81 + Expo Router 6 |
-| Language | TypeScript 5.9 |
-| Database | WatermelonDB 0.28 (SQLite-backed, reactive) |
-| Styling | NativeWind 4.2 (Tailwind CSS for React Native) |
-| Icons | Lucide React Native |
-| Charts | Victory Native |
-| AI | Google Generative AI + OpenAI SDK |
-| Camera | expo-camera, Quagga2, ZXing, ML Kit OCR |
-| Health | expo-health-connect / react-native-health-connect |
-| Localization | i18next + react-i18next |
-| Animations | React Native Reanimated 4 |
-| Error Tracking | Sentry |
-| Testing | Jest + React Testing Library |
-| Build | EAS (Expo Application Services) |
+| Layer          | Technology                                        |
+| -------------- | ------------------------------------------------- |
+| Framework      | React Native 0.81 + Expo Router 6                 |
+| Language       | TypeScript 5.9                                    |
+| Database       | WatermelonDB 0.28 (SQLite-backed, reactive)       |
+| Styling        | NativeWind 4.2 (Tailwind CSS for React Native)    |
+| Icons          | Lucide React Native                               |
+| Charts         | Victory Native                                    |
+| AI             | Google Generative AI + OpenAI SDK                 |
+| Camera         | expo-camera, Quagga2, ZXing, ML Kit OCR           |
+| Health         | expo-health-connect / react-native-health-connect |
+| Localization   | i18next + react-i18next                           |
+| Animations     | React Native Reanimated 4                         |
+| Error Tracking | Sentry                                            |
+| Testing        | Jest + React Testing Library                      |
+| Build          | EAS (Expo Application Services)                   |
 
 ---
 
 ## Repository Structure
 
 ```
-musclog-new/
+musclog/
 ├── app/                        # Expo Router screens
 │   ├── _layout.tsx             # Root layout
 │   ├── index.tsx               # Dashboard / home
@@ -170,7 +170,7 @@ musclog-new/
 ```bash
 # 1. Clone the repository
 git clone <repo-url>
-cd musclog-new
+cd musclog
 
 # 2. Install dependencies
 npm install
