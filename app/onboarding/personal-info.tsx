@@ -115,9 +115,13 @@ export default function PersonalInfo() {
         });
       }
 
-      // Mark onboarding as completed and navigate to home
-      await setOnboardingCompleted();
-      router.push('/');
+      if (data.trackCycle) {
+        router.push('/onboarding/cycle-length');
+      } else {
+        // Mark onboarding as completed and navigate to home
+        await setOnboardingCompleted();
+        router.push('/');
+      }
     } catch (error) {
       console.error('Error saving personal info:', error);
       showSnackbar('error', t('onboarding.personalInfo.errorSaving'));

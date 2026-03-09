@@ -22,6 +22,7 @@ import enUsCommon from './locales/en-us/common.json';
 import enUsConnectGoogleAccount from './locales/en-us/connectGoogleAccount.json';
 import enUsCreateWorkout from './locales/en-us/createWorkout.json';
 import enUsCurrentGoalsCard from './locales/en-us/currentGoalsCard.json';
+import enUsCycle from './locales/en-us/cycle.json';
 import enUsDailySummaryCard from './locales/en-us/dailySummaryCard.json';
 import enUsDatePicker from './locales/en-us/datePicker.json';
 import enUsEatingPhaseBadge from './locales/en-us/eatingPhaseBadge.json';
@@ -36,6 +37,7 @@ import enUsErrors from './locales/en-us/errors.json';
 import enUsExercises from './locales/en-us/exercises.json';
 import enUsExerciseTransition from './locales/en-us/exerciseTransition.json';
 import enUsExpiresIn from './locales/en-us/expires_in.json';
+import enUsFocus from './locales/en-us/focus.json';
 import enUsFood from './locales/en-us/food.json';
 import enUsFoodFoodPortions from './locales/en-us/food_food_portions.json';
 import enUsFoodSearch from './locales/en-us/foodSearch.json';
@@ -90,6 +92,8 @@ const resources = {
   [EN_US]: {
     translation: {
       ...enUsCommon,
+      ...enUsCycle,
+      ...enUsFocus,
       ...enUsAccessToken,
       ...enUsAddMeal,
       ...enUsAi,

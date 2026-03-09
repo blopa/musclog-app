@@ -1,0 +1,19 @@
+{
+  "cycle": {
+    "title": "Cycle",
+    "nextPeriod": "Next Period Prediction",
+    "dailyLog": "Daily Log",
+    "flowIntensity": "Flow Intensity",
+    "symptomsTitle": "Symptoms",
+    "noLogsToday": "No symptoms logged for today.",
+    "logSymptoms": "Log Symptoms",
+    "logDaily": "Daily Cycle Log",
+    "symptoms": {
+      "cramps": "Cramps",
+      "headache": "Headache",
+      "bloating": "Bloating",
+      "moodSwings": "Mood Swings",
+      "fatigue": "Fatigue"
+    }
+  }
+}

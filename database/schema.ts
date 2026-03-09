@@ -301,6 +301,7 @@ export const schema = appSchema({
         { name: 'use_hormonal_birth_control', type: 'boolean' },
         { name: 'birth_control_type', type: 'string', isOptional: true }, // 'pill', 'iud', etc.
         { name: 'last_period_start_date', type: 'number' }, // The "Anchor Date"
+        { name: 'sync_goal', type: 'string', isOptional: true }, // 'performance', 'symptoms', 'energy'
         { name: 'is_active', type: 'boolean' }, // Allow users to turn tracking off
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

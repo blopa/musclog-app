@@ -30,6 +30,7 @@ export type PersonalInfo = {
   gender: Gender;
   avatarIcon?: AvatarIcon;
   avatarColor?: AvatarColor;
+  trackCycle?: boolean;
 };
 
 const AVATAR_ICONS = [
@@ -63,6 +64,7 @@ export function EditPersonalInfoBody({
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(
     initialData?.avatarColor ?? 'emerald'
   );
+  const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   // Helper function to convert DOB string to Date object
@@ -108,9 +110,10 @@ export function EditPersonalInfoBody({
         gender,
         avatarIcon,
         avatarColor,
+        trackCycle,
       });
     }
-  }, [fullName, email, dob, gender, avatarIcon, avatarColor, onFormChange]);
+  }, [fullName, email, dob, gender, avatarIcon, avatarColor, trackCycle, onFormChange]);
 
   const genderOptions = [
     { label: t('editPersonalInfo.other'), value: 'other' },
@@ -194,6 +197,33 @@ export function EditPersonalInfoBody({
             onValueChange={(val) => setGender(val as Gender)}
           />
         </View>
+
+        {gender === 'female' || gender === 'other' ? (
+          <View className="mt-2 rounded-2xl border-2 border-white/5 bg-bg-card p-4">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 pr-4">
+                <Text className="text-lg font-bold text-text-primary">
+                  {t('onboarding.personalInfo.trackCycle')}
+                </Text>
+                <Text className="text-sm text-text-secondary">
+                  {t('onboarding.personalInfo.trackCycleDescription')}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => setTrackCycle(!trackCycle)}
+                className={`h-8 w-14 rounded-full p-1 ${
+                  trackCycle ? 'bg-accent-primary' : 'bg-bg-navActive'
+                }`}
+              >
+                <View
+                  className={`h-6 w-6 rounded-full bg-white transition-all ${
+                    trackCycle ? 'ml-6' : 'ml-0'
+                  }`}
+                />
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
       </View>
 
       {!hideSaveButton ? (
@@ -213,6 +243,7 @@ export function EditPersonalInfoBody({
                 gender,
                 avatarIcon,
                 avatarColor,
+                trackCycle,
               })
             }
           />

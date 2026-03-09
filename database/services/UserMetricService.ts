@@ -90,7 +90,7 @@ export class UserMetricService {
     });
 
     const metric = await database.write(async () => {
-      return await database.get<UserMetric>('user_metrics').create((record) => {
+      const newMetric = await database.get<UserMetric>('user_metrics').create((record) => {
         record.type = plain.type as UserMetricType;
         record.externalId = plain.externalId;
         record.valueRaw = encrypted.value;
@@ -100,12 +100,14 @@ export class UserMetricService {
         record.createdAt = Date.now();
         record.updatedAt = Date.now();
       });
-    });
 
-    // Add note if provided
-    if (plain.note && plain.note.trim()) {
-      await metric.setNote(plain.note.trim());
-    }
+      // Add note if provided - within the same transaction
+      if (plain.note && plain.note.trim()) {
+        await newMetric.setNote(plain.note.trim());
+      }
+
+      return newMetric;
+    });
 
     // Write to Health Connect (Android only, user-entered records only — HC-sourced records
     // already have externalId set and must not be written back to avoid an echo loop).
@@ -143,24 +145,24 @@ export class UserMetricService {
       type?: UserMetricType | string;
     }
   ): Promise<UserMetric> {
-    return await database.write(async () => {
-      const metric = await database.get<UserMetric>('user_metrics').find(id);
+    const metric = await database.get<UserMetric>('user_metrics').find(id);
 
-      if (metric.deletedAt) {
-        throw new Error('Cannot update deleted metric');
-      }
+    if (metric.deletedAt) {
+      throw new Error('Cannot update deleted metric');
+    }
 
-      const decrypted = await metric.getDecrypted();
-      const valueToWrite = updates.value ?? decrypted.value;
-      const encrypted =
-        updates.value !== undefined || updates.unit !== undefined
-          ? await encryptUserMetricFields({
-              value: valueToWrite,
-              unit: updates.unit ?? decrypted.unit,
-              date: updates.date ?? metric.date,
-            })
-          : null;
+    const decrypted = await metric.getDecrypted();
+    const valueToWrite = updates.value ?? decrypted.value;
+    const encrypted =
+      updates.value !== undefined || updates.unit !== undefined
+        ? await encryptUserMetricFields({
+            value: valueToWrite,
+            unit: updates.unit ?? decrypted.unit,
+            date: updates.date ?? metric.date,
+          })
+        : null;
 
+    await database.write(async () => {
       await metric.update((record) => {
         if (encrypted) {
           record.valueRaw = encrypted.value;
@@ -175,13 +177,13 @@ export class UserMetricService {
         record.updatedAt = Date.now();
       });
 
-      // Update note if provided
+      // Update note if provided - within the same transaction
       if (updates.note !== undefined) {
         await metric.setNote(updates.note);
       }
-
-      return metric;
     });
+
+    return metric;
   }
 
   /**

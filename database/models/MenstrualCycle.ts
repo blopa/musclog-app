@@ -2,6 +2,7 @@ import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
 export type BirthControlType = 'pill' | 'iud' | 'implant' | 'patch' | 'ring' | 'shot' | 'other';
+export type SyncGoal = 'performance' | 'symptoms' | 'energy';
 
 export interface MenstrualCycleUpdate {
   avgCycleLength?: number;
@@ -9,6 +10,7 @@ export interface MenstrualCycleUpdate {
   useHormonalBirthControl?: boolean;
   birthControlType?: BirthControlType | null;
   lastPeriodStartDate?: number;
+  syncGoal?: SyncGoal | null;
   isActive?: boolean;
 }
 
@@ -20,6 +22,7 @@ export default class MenstrualCycle extends Model {
   @field('use_hormonal_birth_control') useHormonalBirthControl!: boolean;
   @field('birth_control_type') birthControlType?: BirthControlType;
   @field('last_period_start_date') lastPeriodStartDate!: number;
+  @field('sync_goal') syncGoal?: SyncGoal;
   @field('is_active') isActive!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
@@ -54,6 +57,10 @@ export default class MenstrualCycle extends Model {
 
       if (data.lastPeriodStartDate !== undefined) {
         cycle.lastPeriodStartDate = data.lastPeriodStartDate;
+      }
+
+      if (data.syncGoal !== undefined) {
+        cycle.syncGoal = data.syncGoal ?? undefined;
       }
 
       if (data.isActive !== undefined) {

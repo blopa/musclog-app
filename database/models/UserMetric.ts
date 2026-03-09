@@ -33,6 +33,9 @@ export type UserMetricType =
   | 'ffmi'
   | 'nutrition'
   | 'exercise'
+  | 'period_flow'
+  | 'period_symptoms'
+  | 'basal_body_temp'
   | 'other';
 
 export default class UserMetric extends Model {
@@ -79,32 +82,33 @@ export default class UserMetric extends Model {
     return notes[0]?.note;
   }
 
-  /** Add or update a note for this metric */
+  /** Add or update a note for this metric. Requires a write transaction. */
   async setNote(noteText: string): Promise<void> {
     const database = this.database;
     const now = Date.now();
 
-    await database.write(async () => {
-      const notesCollection = database.get<UserMetricsNote>('user_metrics_notes');
+    const notesCollection = database.get<UserMetricsNote>('user_metrics_notes');
 
-      // First, mark any existing notes as deleted
-      const existingNotes = await notesCollection
-        .query(Q.where('user_metric_id', this.id), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
+    // First, mark any existing notes as deleted
+    const existingNotes = await notesCollection
+      .query(Q.where('user_metric_id', this.id), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
-      for (const existingNote of existingNotes) {
-        await existingNote.markAsDeleted();
-      }
+    for (const existingNote of existingNotes) {
+      await existingNote.update((record) => {
+        record.deletedAt = now;
+        record.updatedAt = now;
+      });
+    }
 
-      // Create new note if text is provided
-      if (noteText.trim()) {
-        await notesCollection.create((note) => {
-          note.userMetricId = this.id;
-          note.note = noteText.trim();
-          note.createdAt = now;
-          note.updatedAt = now;
-        });
-      }
-    });
+    // Create new note if text is provided
+    if (noteText.trim()) {
+      await notesCollection.create((note) => {
+        note.userMetricId = this.id;
+        note.note = noteText.trim();
+        note.createdAt = now;
+        note.updatedAt = now;
+      });
+    }
   }
 }

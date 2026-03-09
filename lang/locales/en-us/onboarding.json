@@ -31,7 +31,45 @@
     "personalInfo": {
       "title": "Set Personal Information",
       "errorSaving": "Error Saving",
-      "finish": "Finish"
+      "finish": "Finish",
+      "trackCycle": "Track Menstrual Cycle?",
+      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
+    },
+    "cycleSetup": {
+      "anchor": {
+        "title": "Last Period",
+        "description": "When did your last period start? This helps us calibrate your current phase."
+      },
+      "birthControl": {
+        "title": "Hormonal Birth Control",
+        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
+        "none": "None",
+        "noneDescription": "No hormonal contraception.",
+        "pill": "Pill",
+        "pillDescription": "Daily oral contraceptive pill.",
+        "iud": "IUD",
+        "iudDescription": "Intrauterine device (hormonal or copper).",
+        "implant": "Implant",
+        "implantDescription": "Subcutaneous hormonal implant.",
+        "other": "Other",
+        "otherDescription": "Another form of contraception."
+      },
+      "length": {
+        "title": "Cycle Length",
+        "description": "How long is your typical cycle and period duration?",
+        "cycleLength": "Avg. Cycle Length (Days)",
+        "periodDuration": "Avg. Period Duration (Days)"
+      },
+      "goal": {
+        "title": "Sync Goal",
+        "description": "What is your primary focus for hormonal syncing?",
+        "performance": "Optimize Performance",
+        "performanceDescription": "Peak strength and PR optimization.",
+        "symptoms": "Manage Symptoms",
+        "symptomsDescription": "Focus on comfort and recovery during shifts.",
+        "energy": "Predict Energy Lows",
+        "energyDescription": "Anticipate lows and adjust intensity accordingly."
+      }
     },
     "connectGoogle": {
       "title": "Connect Your Google Account",

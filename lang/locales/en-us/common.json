@@ -45,6 +45,7 @@
     },
     "eatingPhase": "Eating Phase",
     "description": "Description",
-    "loadMultiplier": "Load Multiplier"
+    "loadMultiplier": "Load Multiplier",
+    "days": "Days"
   }
 }

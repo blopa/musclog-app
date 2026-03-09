@@ -1,7 +1,7 @@
 import { Q, Query } from '@nozbe/watermelondb';
 
 import { database } from '../database-instance';
-import MenstrualCycle, { type BirthControlType } from '../models/MenstrualCycle';
+import MenstrualCycle, { type BirthControlType, type SyncGoal } from '../models/MenstrualCycle';
 
 /**
  * Repository for MenstrualCycle queries
@@ -27,6 +27,7 @@ export class MenstrualCycleRepository {
     useHormonalBirthControl?: boolean;
     birthControlType?: string;
     lastPeriodStartDate?: number;
+    syncGoal?: SyncGoal;
   }): Promise<MenstrualCycle> {
     const now = Date.now();
 
@@ -37,6 +38,7 @@ export class MenstrualCycleRepository {
         cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
         cycle.birthControlType = data.birthControlType as BirthControlType | undefined;
         cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? now;
+        cycle.syncGoal = data.syncGoal;
         cycle.isActive = true;
         cycle.createdAt = now;
         cycle.updatedAt = now;

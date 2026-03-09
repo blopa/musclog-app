@@ -9,6 +9,7 @@ import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
+import MenstrualCycle from './models/MenstrualCycle';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
@@ -16,6 +17,7 @@ import Schedule from './models/Schedule';
 import Setting from './models/Setting';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
+import UserMetricsNote from './models/UserMetricsNote';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogExercise from './models/WorkoutLogExercise';
 import WorkoutLogSet from './models/WorkoutLogSet';
@@ -31,7 +33,9 @@ export const database = new Database({
   modelClasses: [
     Exercise,
     UserMetric,
+    UserMetricsNote,
     User,
+    MenstrualCycle,
     Setting,
     WorkoutTemplate,
     WorkoutTemplateExercise,

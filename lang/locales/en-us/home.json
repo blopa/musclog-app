@@ -9,14 +9,17 @@
     },
     "sections": {
       "recentWorkouts": "Recent Workouts",
-      "recentFoods": "Recent Foods"
+      "recentFoods": "Recent Foods",
+      "dailySummary": "Daily Summary"
     },
     "navigation": {
       "home": "Home",
       "profile": "Profile",
       "workouts": "Workouts",
       "food": "Food",
-      "coach": "Chat"
+      "coach": "Chat",
+      "focus": "Focus",
+      "cycle": "Cycle"
     }
   }
 }

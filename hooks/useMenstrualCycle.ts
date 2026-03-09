@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { BirthControlType, MenstrualCycleUpdate } from '../database/models';
 import { MenstrualCycleRepository } from '../database/repositories/MenstrualCycleRepository';
+import {
+  EnergyLevel,
+  MenstrualPhase,
+  MenstrualService,
+} from '../database/services/MenstrualService';
 
 export interface UseMenstrualCycleResult {
   cycle: any | null;
@@ -11,6 +16,10 @@ export interface UseMenstrualCycleResult {
   isCurrentlyInFertileWindow: boolean;
   nextPeriodDate: Date | null;
   fertileWindow: { start: Date; end: Date } | null;
+  currentPhase: MenstrualPhase | null;
+  energyLevel: EnergyLevel | null;
+  intensityMultiplier: number;
+  cycleDay: number;
   updateCycle: (data: MenstrualCycleUpdate) => Promise<void>;
   createNewCycle: (data: {
     avgCycleLength?: number;
@@ -75,12 +84,24 @@ export function useMenstrualCycle(): UseMenstrualCycleResult {
     const nextPeriodDate = cycle?.getNextPeriodDate() ?? null;
     const fertileWindow = cycle?.getFertileWindow() ?? null;
 
+    const currentPhase = cycle ? MenstrualService.calculateCurrentPhase(cycle) : null;
+    const energyLevel = currentPhase ? MenstrualService.getEnergyLevel(currentPhase) : null;
+    const intensityMultiplier =
+      cycle && currentPhase
+        ? MenstrualService.getIntensityMultiplier(currentPhase, cycle.syncGoal)
+        : 1.0;
+    const cycleDay = cycle ? MenstrualService.getCycleDay(cycle) : 0;
+
     return {
       isActive,
       isCurrentlyInPeriod,
       isCurrentlyInFertileWindow,
       nextPeriodDate,
       fertileWindow,
+      currentPhase,
+      energyLevel,
+      intensityMultiplier,
+      cycleDay,
     };
   }, [cycle]);
 
@@ -93,6 +114,6 @@ export function useMenstrualCycle(): UseMenstrualCycleResult {
       createNewCycle,
       deactivateTracking,
     }),
-    [cycle, isLoading, derivedValues]
+    [cycle, isLoading, derivedValues, updateCycle, deactivateTracking]
   );
 }

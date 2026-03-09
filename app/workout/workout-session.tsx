@@ -50,6 +50,7 @@ import { database } from '../../database';
 import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
@@ -112,6 +113,11 @@ export default function WorkoutSessionScreen() {
     showFeedback?: string;
   }>();
   const { units } = useSettings();
+  const {
+    intensityMultiplier,
+    currentPhase,
+    isActive: isCycleTrackingActive,
+  } = useMenstrualCycle();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const workoutLogId = params.workoutLogId;
@@ -859,8 +865,39 @@ export default function WorkoutSessionScreen() {
             startTime={workoutLog.startedAt}
           />
 
+          {/* Physiological Insight Card */}
+          {isCycleTrackingActive ? (
+            <View className="mx-6 mt-32 rounded-2xl border-2 border-accent-primary/20 bg-accent-primary/10 p-4">
+              <View className="flex-row items-center gap-3">
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
+                  <Flame size={20} color={theme.colors.text.black} />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
+                    {t('workoutSession.hormonalInsight')}
+                  </Text>
+                  <Text className="font-medium text-text-primary">
+                    {currentPhase === 'ovulation'
+                      ? t('workoutSession.ovulationInsight')
+                      : currentPhase === 'menstrual'
+                        ? t(
+                            'workoutSession.menstrualInsight'
+                          )
+                        : t(
+                            'workoutSession.phaseInsight',
+                            {
+                              phase: currentPhase,
+                              multiplier: intensityMultiplier.toFixed(2),
+                            }
+                          )}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ) : null}
+
           {/* Exercise Info */}
-          <View className="mt-48 px-6">
+          <View className={isCycleTrackingActive ? 'mt-4 px-6' : 'mt-48 px-6'}>
             <Text className="mb-3 text-5xl font-bold text-text-primary">
               {currentSetData.exercise.name ?? ''}
             </Text>
