@@ -89,6 +89,7 @@
     "expo-sharing": "14.0.8",
     "expo-sqlite": "16.0.10",
     "expo-status-bar": "3.0.9",
+    "expo-updates": "~29.0.16",
     "expo-web-browser": "15.0.10",
     "glob": "13.0.6",
     "i18next": "25.8.15",

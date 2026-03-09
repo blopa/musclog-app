@@ -7,6 +7,7 @@ import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
+import * as Updates from 'expo-updates';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
@@ -169,4 +170,8 @@ export async function copyBundledExerciseImageToDocument(
       `Failed to copy exercise image: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
+}
+
+export async function reloadApp() {
+  await Updates.reloadAsync();
 }

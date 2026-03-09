@@ -7,8 +7,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ENCRYPTION_KEY } from '../constants/database';
 import {
+  CURRENT_ONBOARDING_VERSION,
   GOOGLE_ACCESS_TOKEN,
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
+  ONBOARDING_COMPLETED,
+  ONBOARDING_VERSION,
   TEMP_GOOGLE_AUTH_CODE,
   TEMP_GOOGLE_USER_NAME,
   TEMP_NUTRITION_PLAN,
@@ -18,6 +21,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
 } from '../constants/settings';
 import { decrypt, encrypt } from '../utils/encryption';
+import { reloadApp } from '../utils/file';
 import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
@@ -419,5 +423,15 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     if (pairs.length > 0) {
       await AsyncStorage.multiSet(pairs);
     }
+  } else {
+    // If no async storage data was imported, set onboarding as completed
+    await AsyncStorage.multiSet([
+      [ONBOARDING_COMPLETED, 'true'],
+      // TODO: we might not want to force it to be the current version
+      [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+    ]);
   }
+
+  // Reload the app after importing is complete
+  await reloadApp();
 }

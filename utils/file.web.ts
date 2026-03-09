@@ -147,3 +147,7 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
     throw error;
   }
 }
+
+export async function reloadApp() {
+  window.location.reload();
+}
