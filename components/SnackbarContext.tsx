@@ -14,6 +14,7 @@ type SnackbarContextType = {
     options?: {
       subtitle?: string;
       action?: string;
+      onAction?: () => void;
       duration?: number;
     }
   ) => void;
@@ -35,6 +36,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       options?: {
         subtitle?: string;
         action?: string;
+        onAction?: () => void;
         duration?: number;
       }
     ) => {
@@ -47,6 +49,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         message,
         subtitle: options?.subtitle,
         action: options?.action ?? (type === 'success' ? t('snackbar.view') : t('snackbar.retry')),
+        onAction: options?.onAction,
       };
 
       setSnackbars((prev) => [...prev, newSnackbar]);

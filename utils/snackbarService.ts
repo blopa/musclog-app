@@ -1,11 +1,10 @@
-// TODO: implement a way to pass along a callback function to the snackbars
-// so that the CTA button does something other than just close the snackbar
 type ShowSnackbarFunction = (
   type: 'success' | 'error',
   message: string,
   options?: {
     subtitle?: string;
     action?: string;
+    onAction?: () => void;
     duration?: number;
   }
 ) => void;
@@ -38,6 +37,7 @@ export function showSnackbar(
   options?: {
     subtitle?: string;
     action?: string;
+    onAction?: () => void;
     duration?: number;
   }
 ) {

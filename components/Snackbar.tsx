@@ -10,6 +10,7 @@ export type SnackbarType = {
   message: string;
   subtitle?: string;
   action: string;
+  onAction?: () => void;
 };
 
 type SnackbarProps = {
@@ -115,7 +116,13 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
 
         {/* Action Button */}
         <Pressable
-          onPress={() => onDismiss(snackbar.id)}
+          onPress={() => {
+            if (snackbar.onAction) {
+              snackbar.onAction();
+            }
+
+            onDismiss(snackbar.id);
+          }}
           className="flex-shrink-0 rounded-lg px-3 py-1"
           style={{
             backgroundColor: 'transparent',
