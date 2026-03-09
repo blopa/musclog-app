@@ -469,7 +469,8 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      // description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      portion={entry.gramWeight}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -494,7 +495,8 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      // description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      portion={entry.gramWeight}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -519,7 +521,8 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      // description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      portion={entry.gramWeight}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -544,7 +547,8 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      // description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      portion={entry.gramWeight}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
@@ -569,7 +573,8 @@ export default function FoodScreen() {
                     <FoodItemCard
                       key={entry.log.id}
                       name={entry.displayName}
-                      description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      // description={getSimpleServingDisplay(entry.gramWeight, units)}
+                      portion={entry.gramWeight}
                       calories={Math.ceil(entry.nutrients.calories)}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
