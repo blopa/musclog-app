@@ -154,36 +154,6 @@ export default function FoodScreen() {
     };
   }, [dailyNutrients, nutritionGoal]);
 
-  const macrosData = useMemo(() => {
-    const totalProtein = nutritionGoal?.protein || 150;
-    const totalCarbs = nutritionGoal?.carbs || 250;
-    const totalFat = nutritionGoal?.fats || 80;
-
-    return {
-      protein: {
-        percentage: Math.round(((dailyNutrients?.protein || 0) / totalProtein) * 100),
-        amount: `${Math.round(dailyNutrients?.protein || 0)}g`,
-        goal: totalProtein,
-        color: theme.colors.macros.protein.text,
-        progressColor: theme.colors.macros.protein.bg,
-      },
-      carbs: {
-        percentage: Math.round(((dailyNutrients?.carbs || 0) / totalCarbs) * 100),
-        amount: `${Math.round(dailyNutrients?.carbs || 0)}g`,
-        goal: totalCarbs,
-        color: theme.colors.macros.carbs.text,
-        progressColor: theme.colors.macros.carbs.bg,
-      },
-      fat: {
-        percentage: Math.round(((dailyNutrients?.fat || 0) / totalFat) * 100),
-        amount: `${Math.round(dailyNutrients?.fat || 0)}g`,
-        goal: totalFat,
-        color: theme.colors.macros.fat.text,
-        progressColor: theme.colors.macros.fat.bg,
-      },
-    };
-  }, [dailyNutrients, nutritionGoal]);
-
   // Group logs by meal type
   const mealsByType = useMemo(() => {
     const meals: Record<string, (typeof resolvedLogs)[number][]> = {
@@ -360,6 +330,12 @@ export default function FoodScreen() {
   };
 
   const mealMenuItems = [
+    // TODO: add one more option here, it's a weird one so let me explain
+    // sometimes I cook a big lunch and eat half of it and then end up leaving the other half to diner
+    // so I'd like to have an option to "split" a meal into another day/meal
+    // would be nice to be able to choose the percentage of the split
+    // so if I choose to move 40% of it, we need to update the current nutrition log (remove 40 of each of the foods)
+    // and then add 40% of each of the foods into the new date/meal type
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
