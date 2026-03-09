@@ -31,6 +31,7 @@ type FoodItemCardProps = {
   fat?: number;
   portion?: number;
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
+  variant?: 'default' | 'compact';
 };
 
 const MacroItem = ({
@@ -72,6 +73,7 @@ export function FoodItemCard({
   fat,
   mealType,
   portion,
+  variant = 'default',
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();

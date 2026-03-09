@@ -65,10 +65,11 @@ export default function HomeScreen() {
   } = useDailyNutritionSummary({ date: today });
 
   // Get recent foods for display (limit to today's logs)
-  const { recentFoods, isLoading: isLoadingRecentFoods } = useNutritionLogs({
-    mode: 'recent',
+  const { recentNutritionLogs, isLoading: isLoadingRecentFoods } = useNutritionLogs({
+    mode: 'recent-logs',
     date: today,
   });
+
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
   const [isCoachModalFromMenuVisible, setIsCoachModalFromMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
@@ -321,29 +322,30 @@ export default function HomeScreen() {
                 </View>
               ))}
             </View>
-          ) : recentFoods.length === 0 ? (
+          ) : recentNutritionLogs.length === 0 ? (
             <WorkoutFoodEmptyState type="food" onButtonPress={() => setIsAddFoodVisible(true)} />
           ) : (
             <View className="gap-3">
-              {recentFoods.slice(0, 2).map((food) => (
+              {recentNutritionLogs.slice(0, 2).map((entry) => (
                 <FoodItemCard
-                  key={food.id}
-                  name={food.name ?? ''}
-                  calories={Math.round(food.calories ?? 0)}
-                  protein={Math.round(food.protein ?? 0)}
-                  carbs={Math.round(food.carbs ?? 0)}
-                  fat={Math.round(food.fat ?? 0)}
-                  portion={100} // Food model macros are stored per 100g serving
-                  image={food.imageUrl ? { uri: food.imageUrl } : undefined}
+                  key={entry.log.id}
+                  name={entry.displayName}
+                  calories={Math.round(entry.nutrients.calories)}
+                  protein={Math.round(entry.nutrients.protein)}
+                  carbs={Math.round(entry.nutrients.carbs)}
+                  fat={Math.round(entry.nutrients.fat)}
+                  portion={entry.gramWeight}
+                  image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                  mealType={entry.log.type}
                   onMorePress={() => {
                     // TODO: Implement food details modal or navigation
-                    console.log('Food details pressed:', food.name);
+                    console.log('Food details pressed:', entry.displayName);
                   }}
                 />
               ))}
 
               {/* Add Food Button - only show if there's at least one item */}
-              {recentFoods.length > 0 ? (
+              {recentNutritionLogs.length > 0 ? (
                 <DashedButton
                   label={t('food.meals.addFood')}
                   onPress={() => setIsAddFoodVisible(true)}

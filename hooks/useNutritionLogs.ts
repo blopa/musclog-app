@@ -9,7 +9,7 @@ import { NutritionService } from '../database/services';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
-  mode?: 'daily' | 'range' | 'recent' | 'meal-type'; // Default: 'daily'
+  mode?: 'daily' | 'range' | 'recent' | 'recent-logs' | 'meal-type'; // Default: 'daily'
   date?: Date; // For daily and meal-type modes
   startDate?: Date; // For range mode
   endDate?: Date; // For range mode
@@ -36,6 +36,18 @@ export type UseNutritionLogsResultBasic = {
 
 export type UseNutritionLogsResultRecent = {
   recentFoods: Food[];
+  isLoading: boolean;
+  refresh: () => Promise<void>;
+};
+
+export type UseNutritionLogsResultRecentLogs = {
+  recentNutritionLogs: {
+    log: NutritionLog;
+    food: Food | null;
+    nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+    gramWeight: number;
+    displayName: string;
+  }[];
   isLoading: boolean;
   refresh: () => Promise<void>;
 };
@@ -90,7 +102,8 @@ export type UseNutritionLogsResult =
   | UseNutritionLogsResultBasic
   | UseNutritionLogsResultDaily
   | UseNutritionLogsResultRange
-  | UseNutritionLogsResultRecent;
+  | UseNutritionLogsResultRecent
+  | UseNutritionLogsResultRecentLogs;
 
 export function useNutritionLogs(
   params: UseNutritionLogsParams & { mode?: 'daily'; date: Date }
@@ -103,6 +116,10 @@ export function useNutritionLogs(
 export function useNutritionLogs(
   params: UseNutritionLogsParams & { mode: 'recent' }
 ): UseNutritionLogsResultRecent;
+
+export function useNutritionLogs(
+  params: UseNutritionLogsParams & { mode: 'recent-logs' }
+): UseNutritionLogsResultRecentLogs;
 
 export function useNutritionLogs(
   params: UseNutritionLogsParams & {
@@ -159,6 +176,17 @@ export function useNutritionLogs({
 
   // State for recent mode
   const [recentFoods, setRecentFoods] = useState<Food[]>([]);
+
+  // State for recent-logs mode
+  const [recentNutritionLogs, setRecentNutritionLogs] = useState<
+    {
+      log: NutritionLog;
+      food: Food | null;
+      nutrients: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
+      gramWeight: number;
+      displayName: string;
+    }[]
+  >([]);
 
   // State for daily mode
   const [dailyNutrients, setDailyNutrients] = useState(defaultDailyNutrients);
@@ -228,6 +256,12 @@ export function useNutritionLogs({
         setRecentFoods(recent);
         logsList = [];
         setHasMore(false);
+      } else if (mode === 'recent-logs') {
+        // Recent-logs mode: return recent nutrition logs with gramWeight
+        const recent = await NutritionService.getRecentNutritionLogs(initialLimit, date);
+        setRecentNutritionLogs(recent);
+        logsList = [];
+        setHasMore(false);
       } else {
         // Default: get all logs with client-side pagination
         const allLogs = await NutritionService.getNutritionLogsForDateRange(
@@ -248,7 +282,7 @@ export function useNutritionLogs({
       setLogs(logsList);
 
       // Get total count for basic (non-special) modes
-      if (!['daily', 'range', 'meal-type', 'recent'].includes(mode)) {
+      if (!['daily', 'range', 'meal-type', 'recent', 'recent-logs'].includes(mode)) {
         const allLogs = await NutritionService.getNutritionLogsForDateRange(
           new Date(0),
           new Date()
@@ -274,7 +308,8 @@ export function useNutritionLogs({
       mode === 'daily' ||
       mode === 'range' ||
       mode === 'meal-type' ||
-      mode === 'recent'
+      mode === 'recent' ||
+      mode === 'recent-logs'
     ) {
       // Don't load more for modes that don't support pagination
       return;
@@ -434,6 +469,16 @@ export function useNutritionLogs({
     [recentFoods, isLoading, refresh]
   );
 
+  // Memoized result for recent-logs mode
+  const recentLogsResult = useMemo(
+    () => ({
+      recentNutritionLogs,
+      isLoading,
+      refresh,
+    }),
+    [recentNutritionLogs, isLoading, refresh]
+  );
+
   // Memoized result for daily mode
   const dailyResult = useMemo(
     () => ({
@@ -464,6 +509,8 @@ export function useNutritionLogs({
     return rangeResult as UseNutritionLogsResult;
   } else if (mode === 'recent') {
     return recentResult as UseNutritionLogsResult;
+  } else if (mode === 'recent-logs') {
+    return recentLogsResult as UseNutritionLogsResult;
   } else {
     return basicResult as UseNutritionLogsResult;
   }
