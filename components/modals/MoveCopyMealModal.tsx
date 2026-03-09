@@ -2,13 +2,14 @@ import { format } from 'date-fns';
 import { Calendar } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
+import { Slider } from '../theme/Slider';
 import { DatePickerModal } from './DatePickerModal';
 
 type MoveCopyMealModalProps = {
@@ -42,7 +43,6 @@ export function MoveCopyMealModal({
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
-  const [splitInput, setSplitInput] = useState('50');
 
   const title =
     mode === 'move'
@@ -67,17 +67,8 @@ export function MoveCopyMealModal({
     onClose();
   };
 
-  const handleSplitInputChange = (value: string) => {
-    setSplitInput(value);
-    const num = parseInt(value, 10);
-    if (!isNaN(num) && num >= 1 && num <= 99) {
-      setSplitPercentage(num);
-    }
-  };
-
   const handlePresetPress = (preset: number) => {
     setSplitPercentage(preset);
-    setSplitInput(String(preset));
   };
 
   const isConfirmDisabled =
@@ -141,12 +132,20 @@ export function MoveCopyMealModal({
           {/* Split Percentage (only for split mode) */}
           {mode === 'split' ? (
             <View className="gap-2">
-              <Text
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {t('food.actions.splitPercentage')}
-              </Text>
+              <View className="flex-row items-center justify-between">
+                <Text
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('food.actions.splitPercentage')}
+                </Text>
+                <Text
+                  className="font-bold"
+                  style={{ color: theme.colors.accent.primary, fontSize: theme.typography.fontSize.sm }}
+                >
+                  {splitPercentage}%
+                </Text>
+              </View>
               {/* Preset buttons */}
               <View className="flex-row gap-2">
                 {SPLIT_PRESETS.map((preset) => (
@@ -180,35 +179,14 @@ export function MoveCopyMealModal({
                   </Pressable>
                 ))}
               </View>
-              {/* Custom input */}
-              <View
-                className="flex-row items-center rounded-xl border px-3"
-                style={{
-                  borderColor: theme.colors.background.white10,
-                  backgroundColor: theme.colors.background.white5,
-                }}
-              >
-                <TextInput
-                  className="flex-1 py-3 font-medium"
-                  style={{
-                    color: theme.colors.text.primary,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}
-                  keyboardType="number-pad"
-                  value={splitInput}
-                  onChangeText={handleSplitInputChange}
-                  maxLength={2}
-                  placeholderTextColor={theme.colors.text.secondary}
-                />
-                <Text
-                  style={{
-                    color: theme.colors.text.secondary,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}
-                >
-                  %
-                </Text>
-              </View>
+              {/* Slider */}
+              <Slider
+                value={splitPercentage}
+                min={1}
+                max={99}
+                step={1}
+                onChange={setSplitPercentage}
+              />
             </View>
           ) : null}
 
