@@ -75,10 +75,7 @@ export default function LandingScreen() {
       await importDatabase(decryptionPhrase || undefined);
       setImportModalVisible(false);
       setDecryptionPhrase('');
-      showSnackbar(
-        'success',
-        t('settings.advancedSettings.importSuccessMessage')
-      );
+      showSnackbar('success', t('settings.advancedSettings.importSuccessMessage'));
     } catch (err) {
       console.error('Import failed:', err);
       showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
@@ -321,9 +318,7 @@ export default function LandingScreen() {
           }
         }}
         title={t('settings.advancedSettings.confirmImport')}
-        subtitle={t(
-          'settings.advancedSettings.importConfirmationSubtitle'
-        )}
+        subtitle={t('settings.advancedSettings.importConfirmationSubtitle')}
         footer={
           <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
             <Button

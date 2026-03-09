@@ -1,4 +1,4 @@
-import { Dna,Flame, Minus, TrendingDown, TrendingUp } from 'lucide-react-native';
+import { Dna, Flame, Minus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { theme } from '../theme';
@@ -10,7 +10,12 @@ type PhysiologicalInsightsCardProps = {
   trend: 'up' | 'down' | 'stable';
 };
 
-export function PhysiologicalInsightsCard({ type, label, value, trend }: PhysiologicalInsightsCardProps) {
+export function PhysiologicalInsightsCard({
+  type,
+  label,
+  value,
+  trend,
+}: PhysiologicalInsightsCardProps) {
   const getTrendIcon = () => {
     switch (trend) {
       case 'up':

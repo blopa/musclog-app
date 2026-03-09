@@ -23,9 +23,7 @@ export default function CycleScreen() {
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
   const cycleProgress =
-    cycleDay && cycle?.avgCycleLength
-      ? Math.round((cycleDay / cycle.avgCycleLength) * 100)
-      : 0;
+    cycleDay && cycle?.avgCycleLength ? Math.round((cycleDay / cycle.avgCycleLength) * 100) : 0;
 
   useEffect(() => {
     const fetchDailyMetrics = async () => {
@@ -69,9 +67,7 @@ export default function CycleScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
           {/* Title */}
-          <Text className="mb-6 text-4xl font-black text-text-primary">
-            {t('cycle.title')}
-          </Text>
+          <Text className="mb-6 text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
 
           {/* Day counter + phase label */}
           <View className="mb-8 flex-row items-center justify-between">
@@ -146,15 +142,13 @@ export default function CycleScreen() {
                 </View>
               </View>
               <View className="h-2 w-full overflow-hidden rounded-full bg-bg-navActive">
-                <View
-                  className="h-full bg-accent-primary"
-                  style={{ width: `${cycleProgress}%` }}
-                />
+                <View className="h-full bg-accent-primary" style={{ width: `${cycleProgress}%` }} />
               </View>
             </View>
 
             {/* Daily log items */}
-            {dailyMetrics.length > 0 ? <View className="gap-4">
+            {dailyMetrics.length > 0 ? (
+              <View className="gap-4">
                 {dailyMetrics.map((metric) => (
                   <View
                     key={metric.id}
@@ -167,9 +161,7 @@ export default function CycleScreen() {
                           : t('cycle.symptomsTitle')}
                       </Text>
                       <Text className="text-lg font-black text-text-primary">
-                        {metric.type === 'period_flow'
-                          ? `${metric.value}/5`
-                          : metric.note || '--'}
+                        {metric.type === 'period_flow' ? `${metric.value}/5` : metric.note || '--'}
                       </Text>
                     </View>
                     <View className="h-10 w-10 items-center justify-center rounded-full bg-bg-navActive">
@@ -177,7 +169,8 @@ export default function CycleScreen() {
                     </View>
                   </View>
                 ))}
-              </View> : null}
+              </View>
+            ) : null}
           </View>
 
           {/* Physiological Insights */}
@@ -205,7 +198,11 @@ export default function CycleScreen() {
         <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
       </ScrollView>
 
-      <CycleLogModal visible={isLogModalVisible} onClose={() => setIsLogModalVisible(false)} initialDate={selectedDate} />
+      <CycleLogModal
+        visible={isLogModalVisible}
+        onClose={() => setIsLogModalVisible(false)}
+        initialDate={selectedDate}
+      />
     </MasterLayout>
   );
 }

@@ -45,21 +45,21 @@ const RESTORE_ORDER: string[] = [
   'meals',
   'workout_templates',
   'settings',
-  
+
   // Template-dependent tables
   'schedules',
   'workout_template_exercises',
   'workout_template_sets',
-  
+
   // Food/Meal junction tables
   'food_food_portions',
   'meal_foods',
-  
+
   // Goal and tracking tables
   'nutrition_goals',
   'nutrition_checkins',
   'menstrual_cycles',
-  
+
   // Log tables (depend on templates and master data)
   'workout_logs',
   'workout_log_exercises',
@@ -67,7 +67,7 @@ const RESTORE_ORDER: string[] = [
   'nutrition_logs',
   'user_metrics',
   'user_metrics_notes',
-  
+
   // Chat messages (independent)
   'chat_messages',
 ];
@@ -332,8 +332,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
             if (
               key === 'template_id' &&
-              (tableName === 'schedules' ||
-                tableName === 'workout_logs')
+              (tableName === 'schedules' || tableName === 'workout_logs')
             ) {
               const mapped = mapId('workout_templates', value as string);
               if (mapped != null) {

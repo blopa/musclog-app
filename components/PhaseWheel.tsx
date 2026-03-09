@@ -19,26 +19,36 @@ type PhaseWheelProps = {
 function calculatePhaseProportions(avgCycleLength: number, avgPeriodDuration: number) {
   const menstrualLength = avgPeriodDuration;
   const ovulationLength = 3; // Standard ovulation window
-  
+
   // Remaining days after menstrual and ovulation phases
   const remainingDays = avgCycleLength - menstrualLength - ovulationLength;
-  
+
   // Split remaining days between follicular and luteal phases
   // Follicular is typically shorter than luteal
   const follicularLength = Math.floor(remainingDays * 0.4);
   const lutealLength = remainingDays - follicularLength;
-  
+
   return [
     { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
-    { key: 'follicular' as const, color: theme.colors.status.emeraldLight, length: follicularLength },
+    {
+      key: 'follicular' as const,
+      color: theme.colors.status.emeraldLight,
+      length: follicularLength,
+    },
     { key: 'ovulation' as const, color: theme.colors.status.amber, length: ovulationLength },
     { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
   ];
 }
 
-export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays, avgPeriodDuration = 5 }: PhaseWheelProps) {
+export function PhaseWheel({
+  currentPhase,
+  energyLevel,
+  cycleDay,
+  totalDays,
+  avgPeriodDuration = 5,
+}: PhaseWheelProps) {
   const { t } = useTranslation();
-  
+
   // Calculate phases dynamically based on user's cycle
   const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration);
 

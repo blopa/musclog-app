@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Target the 'exercise' folder in the same directory as this script
-const directoryPath = path.join(__dirname, 'assets/exercises/');
+const directoryPath = path.join(__dirname, '../assets/exercises/');
 
 fs.readdir(directoryPath, (err, files) => {
   if (err) {
@@ -19,13 +19,13 @@ fs.readdir(directoryPath, (err, files) => {
 
   files.forEach((file) => {
     // Only target .png files and skip files that already have the prefix
-    if (file.endsWith('.png') && !file.startsWith('exercise-')) {
+    if (file.endsWith('.png') && !file.startsWith('exercise')) {
       const oldPath = path.join(directoryPath, file);
-      const newPath = path.join(directoryPath, `exercise-${file}`);
+      const newPath = path.join(directoryPath, `exercise${file}`);
 
       try {
         fs.renameSync(oldPath, newPath);
-        console.log(`✅ Renamed: ${file}  ->  exercise-${file}`);
+        console.log(`✅ Renamed: ${file}  ->  exercise${file}`);
         renamedCount++;
       } catch (renameErr) {
         console.error(`❌ Failed to rename ${file}:`, renameErr);

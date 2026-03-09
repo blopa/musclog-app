@@ -201,7 +201,6 @@ export default function FoodScreen() {
   // Check if all meals are empty AND no food has ever been tracked
   const hasNoFood = !isScreenLoading && totalCount === 0;
 
-
   const handleFoodMenuPress = (entry: {
     log: any;
     food: any;
