@@ -1,22 +1,29 @@
-import { useRouter } from 'expo-router';
-import { Activity, Calendar, Plus, UtensilsCrossed } from 'lucide-react-native';
+import { Activity, Calendar, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { MasterLayout } from '../components/MasterLayout';
 import { CycleLogModal } from '../components/modals/CycleLogModal';
-import { Button } from '../components/theme/Button';
+import { PhaseWheel } from '../components/PhaseWheel';
+import { PhysiologicalInsightsCard } from '../components/PhysiologicalInsightsCard';
 import { UserMetricService } from '../database/services';
+import { MenstrualService } from '../database/services/MenstrualService';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { theme } from '../theme';
 
 export default function CycleScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { nextPeriodDate } = useMenstrualCycle();
+  const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<any[]>([]);
+
+  const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
+
+  const cycleProgress =
+    cycleDay && cycle?.avgCycleLength
+      ? Math.round((cycleDay / cycle.avgCycleLength) * 100)
+      : 0;
 
   useEffect(() => {
     const fetchDailyMetrics = async () => {
@@ -59,45 +66,49 @@ export default function CycleScreen() {
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
+          {/* Title */}
+          <Text className="mb-6 text-4xl font-black text-text-primary">
+            {t('cycle.title')}
+          </Text>
+
+          {/* Day counter + phase label */}
           <View className="mb-8 flex-row items-center justify-between">
-            <Text className="text-4xl font-black text-text-primary">
-              {t('cycle.title')}
-            </Text>
-          </View>
-
-          {/* Prediction Card */}
-          <View className="mb-8 rounded-3xl border-2 border-white/5 bg-bg-overlay p-6">
-            <View className="mb-6 flex-row items-center gap-4">
-              <View className="bg-accent-primary20 h-12 w-12 items-center justify-center rounded-2xl">
-                <Calendar size={24} color={theme.colors.accent.primary} />
-              </View>
-              <View>
-                <Text className="text-sm font-bold uppercase tracking-wider text-text-tertiary">
-                  {t('cycle.nextPeriod')}
-                </Text>
-                <Text className="text-xl font-black text-text-primary">
-                  {nextPeriodDate
-                    ? nextPeriodDate.toLocaleDateString(undefined, {
-                        month: 'long',
-                        day: 'numeric',
-                      })
-                    : '--'}
-                </Text>
-              </View>
+            <View className="rounded-2xl bg-bg-overlay px-4 py-3">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                {t('focus.day')}
+              </Text>
+              <Text className="text-2xl font-black text-accent-primary">
+                {cycleDay
+                  ? `${cycleDay.toString().padStart(2, '0')}/${cycle?.avgCycleLength}`
+                  : '--'}
+              </Text>
             </View>
-
-            <View className="h-2 w-full overflow-hidden rounded-full bg-bg-navActive">
-              <View
-                className="h-full bg-accent-primary"
-                style={{ width: '40%' }} // Placeholder progress
-              />
+            <View className="items-end">
+              <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
+                {t('focus.currentPhase')}
+              </Text>
+              <Text className="text-2xl font-black capitalize text-text-primary">
+                {currentPhase || '--'}
+              </Text>
             </View>
           </View>
 
+          {/* Phase Wheel */}
+          <View className="mb-10 items-center justify-center">
+            <PhaseWheel
+              currentPhase={currentPhase}
+              energyLevel={energyLevel}
+              cycleDay={cycleDay || 1}
+              totalDays={cycle?.avgCycleLength || 28}
+              avgPeriodDuration={cycle?.avgPeriodDuration}
+            />
+          </View>
+
+          {/* Cycle Insights & Log */}
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-2xl font-bold text-text-primary">
-                {t('cycle.dailyLog')}
+                {t('cycle.insightsAndLog')}
               </Text>
               <Pressable
                 onPress={() => setIsLogModalVisible(true)}
@@ -107,8 +118,36 @@ export default function CycleScreen() {
               </Pressable>
             </View>
 
-            {dailyMetrics.length > 0 ? (
-              <View className="gap-4">
+            {/* Next Period Prediction */}
+            <View className="mb-4 rounded-2xl border-2 border-white/5 bg-bg-overlay p-5">
+              <View className="mb-4 flex-row items-center gap-4">
+                <View className="h-10 w-10 items-center justify-center rounded-xl bg-bg-navActive">
+                  <Calendar size={20} color={theme.colors.accent.primary} />
+                </View>
+                <View>
+                  <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                    {t('cycle.nextPeriod')}
+                  </Text>
+                  <Text className="text-lg font-black text-text-primary">
+                    {nextPeriodDate
+                      ? nextPeriodDate.toLocaleDateString(undefined, {
+                          month: 'long',
+                          day: 'numeric',
+                        })
+                      : '--'}
+                  </Text>
+                </View>
+              </View>
+              <View className="h-2 w-full overflow-hidden rounded-full bg-bg-navActive">
+                <View
+                  className="h-full bg-accent-primary"
+                  style={{ width: `${cycleProgress}%` }}
+                />
+              </View>
+            </View>
+
+            {/* Daily log items */}
+            {dailyMetrics.length > 0 ? <View className="gap-4">
                 {dailyMetrics.map((metric) => (
                   <View
                     key={metric.id}
@@ -121,7 +160,9 @@ export default function CycleScreen() {
                           : t('cycle.symptomsTitle')}
                       </Text>
                       <Text className="text-lg font-black text-text-primary">
-                        {metric.type === 'period_flow' ? `${metric.value}/5` : metric.note || '--'}
+                        {metric.type === 'period_flow'
+                          ? `${metric.value}/5`
+                          : metric.note || '--'}
                       </Text>
                     </View>
                     <View className="h-10 w-10 items-center justify-center rounded-full bg-bg-navActive">
@@ -129,24 +170,32 @@ export default function CycleScreen() {
                     </View>
                   </View>
                 ))}
-              </View>
-            ) : (
-              <View className="items-center justify-center rounded-2xl border-2 border-white/5 bg-bg-card p-6">
-                <Text className="text-center text-text-tertiary">
-                  {t('cycle.noLogsToday')}
-                </Text>
-                <View className="mt-4">
-                  <Button
-                    label={t('cycle.logSymptoms')}
-                    onPress={() => setIsLogModalVisible(true)}
-                    variant="outline"
-                    size="sm"
-                  />
-                </View>
-              </View>
-            )}
+              </View> : null}
+          </View>
+
+          {/* Physiological Insights */}
+          <View className="mb-8 flex-row gap-4">
+            <PhysiologicalInsightsCard
+              type="estrogen"
+              label={t('focus.estrogen')}
+              value={insights?.estrogen || '--'}
+              trend={
+                insights?.estrogen === 'rising'
+                  ? 'up'
+                  : insights?.estrogen === 'dropping'
+                    ? 'down'
+                    : 'stable'
+              }
+            />
+            <PhysiologicalInsightsCard
+              type="metabolism"
+              label={t('focus.metabolism')}
+              value={insights?.metabolism || '--'}
+              trend={insights?.metabolism === 'increasing' ? 'up' : 'stable'}
+            />
           </View>
         </View>
+        <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
       </ScrollView>
 
       <CycleLogModal visible={isLogModalVisible} onClose={() => setIsLogModalVisible(false)} />

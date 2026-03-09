@@ -1,7 +1,8 @@
 {
   "cycle": {
-    "title": "Cycle",
+    "title": "Today's Cycle Focus",
     "nextPeriod": "Next Period Prediction",
+    "insightsAndLog": "Cycle Insights & Log",
     "dailyLog": "Daily Log",
     "flowIntensity": "Flow Intensity",
     "symptomsTitle": "Symptoms",
