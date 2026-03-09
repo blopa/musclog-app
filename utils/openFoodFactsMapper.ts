@@ -218,8 +218,8 @@ export function getNutrimentsWithFallback(
     product?.nutriments && typeof product.nutriments === 'object' ? product.nutriments : {};
 
   return {
-    ...estimated,
-    ...nutriments,
+    ...nutriments,      // Priority: actual measured values
+    ...estimated,       // Fallback: estimated values only if real ones missing
     isEstimated: !!(product?.nutriments_estimated && !product?.nutriments),
   } as NutrimentsWithEstimated;
 }
