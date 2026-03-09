@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { BarChart3, Settings, User, X } from 'lucide-react-native';
+import { BarChart3, Calendar, Settings, User, X } from 'lucide-react-native';
 import { createElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Modal, Platform, Pressable, Text, View } from 'react-native';
@@ -22,6 +22,7 @@ type UserMenuModalProps = {
   onProfilePress?: () => void;
   onSettingsPress?: () => void;
   onProgressPress?: () => void;
+  onCyclePress?: () => void;
   onDebugMenuPress?: () => void;
 };
 
@@ -53,6 +54,7 @@ export function UserMenuModal({
   onProfilePress,
   onSettingsPress,
   onProgressPress,
+  onCyclePress,
   onDebugMenuPress,
 }: UserMenuModalProps) {
   const theme = useTheme();
@@ -170,6 +172,14 @@ export function UserMenuModal({
                 label={t('userMenu.progress')}
                 onPress={() => {
                   onProgressPress?.();
+                  onClose();
+                }}
+              />
+              <MenuItem
+                icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
+                label={t('userMenu.cycle')}
+                onPress={() => {
+                  onCyclePress?.();
                   onClose();
                 }}
               />
