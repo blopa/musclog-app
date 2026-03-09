@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { Calendar } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
@@ -14,12 +14,18 @@ import { DatePickerModal } from './DatePickerModal';
 type MoveCopyMealModalProps = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (targetDate: Date, targetMealType: MealType) => Promise<void>;
-  mode: 'move' | 'copy';
+  onConfirm: (
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage?: number
+  ) => Promise<void>;
+  mode: 'move' | 'copy' | 'split';
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
 };
+
+const SPLIT_PRESETS = [25, 33, 50, 75];
 
 export function MoveCopyMealModal({
   visible,
@@ -35,9 +41,15 @@ export function MoveCopyMealModal({
   const [targetDate, setTargetDate] = useState(sourceDate);
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [splitPercentage, setSplitPercentage] = useState(50);
+  const [splitInput, setSplitInput] = useState('50');
 
   const title =
-    mode === 'move' ? t('food.actions.moveModalTitle') : t('food.actions.copyModalTitle');
+    mode === 'move'
+      ? t('food.actions.moveModalTitle')
+      : mode === 'copy'
+        ? t('food.actions.copyModalTitle')
+        : t('food.actions.splitModalTitle');
 
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
@@ -51,9 +63,25 @@ export function MoveCopyMealModal({
     if (isLoading) {
       return;
     }
-    await onConfirm(targetDate, targetMealType);
+    await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
     onClose();
   };
+
+  const handleSplitInputChange = (value: string) => {
+    setSplitInput(value);
+    const num = parseInt(value, 10);
+    if (!isNaN(num) && num >= 1 && num <= 99) {
+      setSplitPercentage(num);
+    }
+  };
+
+  const handlePresetPress = (preset: number) => {
+    setSplitPercentage(preset);
+    setSplitInput(String(preset));
+  };
+
+  const isConfirmDisabled =
+    isLoading || (mode === 'split' && (splitPercentage < 1 || splitPercentage > 99));
 
   return (
     <>
@@ -77,7 +105,7 @@ export function MoveCopyMealModal({
               size="sm"
               width="flex-1"
               onPress={handleConfirm}
-              disabled={isLoading}
+              disabled={isConfirmDisabled}
               loading={isLoading}
             />
           </View>
@@ -109,6 +137,80 @@ export function MoveCopyMealModal({
               </Text>
             </Pressable>
           </View>
+
+          {/* Split Percentage (only for split mode) */}
+          {mode === 'split' ? (
+            <View className="gap-2">
+              <Text
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                {t('food.actions.splitPercentage')}
+              </Text>
+              {/* Preset buttons */}
+              <View className="flex-row gap-2">
+                {SPLIT_PRESETS.map((preset) => (
+                  <Pressable
+                    key={preset}
+                    className="flex-1 items-center justify-center rounded-xl border py-2"
+                    style={{
+                      borderColor:
+                        splitPercentage === preset
+                          ? theme.colors.accent.primary
+                          : theme.colors.background.white10,
+                      backgroundColor:
+                        splitPercentage === preset
+                          ? theme.colors.accent.primary10
+                          : theme.colors.background.white5,
+                    }}
+                    onPress={() => handlePresetPress(preset)}
+                  >
+                    <Text
+                      className="font-semibold"
+                      style={{
+                        color:
+                          splitPercentage === preset
+                            ? theme.colors.accent.primary
+                            : theme.colors.text.secondary,
+                        fontSize: theme.typography.fontSize.sm,
+                      }}
+                    >
+                      {preset}%
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+              {/* Custom input */}
+              <View
+                className="flex-row items-center rounded-xl border px-3"
+                style={{
+                  borderColor: theme.colors.background.white10,
+                  backgroundColor: theme.colors.background.white5,
+                }}
+              >
+                <TextInput
+                  className="flex-1 py-3 font-medium"
+                  style={{
+                    color: theme.colors.text.primary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                  keyboardType="number-pad"
+                  value={splitInput}
+                  onChangeText={handleSplitInputChange}
+                  maxLength={2}
+                  placeholderTextColor={theme.colors.text.secondary}
+                />
+                <Text
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  %
+                </Text>
+              </View>
+            </View>
+          ) : null}
 
           {/* Target Meal Type */}
           <View className="gap-2">

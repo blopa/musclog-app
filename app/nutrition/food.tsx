@@ -5,6 +5,7 @@ import {
   Edit,
   ListPlus,
   ScanLine,
+  Scissors,
   Sparkles,
   Trash2,
   UtensilsCrossed,
@@ -75,7 +76,7 @@ export default function FoodScreen() {
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [isDeleteAllMealVisible, setIsDeleteAllMealVisible] = useState(false);
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
-  const [mealActionMode, setMealActionMode] = useState<'move' | 'copy'>('move');
+  const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
@@ -300,7 +301,17 @@ export default function FoodScreen() {
     setIsMealActionModalVisible(true);
   };
 
-  const handleConfirmMealAction = async (targetDate: Date, targetMealType: MealType) => {
+  const handleSplitMeal = () => {
+    setIsMealMenuVisible(false);
+    setMealActionMode('split');
+    setIsMealActionModalVisible(true);
+  };
+
+  const handleConfirmMealAction = async (
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage?: number
+  ) => {
     if (!selectedMealForMenu) {
       return;
     }
@@ -311,17 +322,30 @@ export default function FoodScreen() {
       if (mealActionMode === 'move') {
         await NutritionService.moveNutritionLogsToDate(logs, targetDate, targetMealType);
         showSnackbar('success', t('food.actions.moveSuccess'));
-      } else {
+      } else if (mealActionMode === 'copy') {
         await NutritionService.copyNutritionLogsToDate(logs, targetDate, targetMealType);
         showSnackbar('success', t('food.actions.copySuccess'));
+      } else if (mealActionMode === 'split' && splitPercentage) {
+        await NutritionService.splitNutritionLogsToDate(
+          logs,
+          targetDate,
+          targetMealType,
+          splitPercentage
+        );
+        showSnackbar('success', t('food.actions.splitSuccess'));
       }
       await refresh();
     } catch (error) {
       console.error('Error performing meal action:', error);
-      showSnackbar(
-        'error',
-        mealActionMode === 'move' ? t('food.actions.moveError') : t('food.actions.copyError')
-      );
+      const errorKey =
+        // TODO: move this to a helper function to avoid nested ternary
+        mealActionMode === 'move'
+          ? 'food.actions.moveError'
+          : mealActionMode === 'copy'
+            ? 'food.actions.copyError'
+            : 'food.actions.splitError';
+
+      showSnackbar('error', t(errorKey));
     } finally {
       setIsMealActionLoading(false);
       setIsMealActionModalVisible(false);
@@ -330,12 +354,14 @@ export default function FoodScreen() {
   };
 
   const mealMenuItems = [
-    // TODO: add one more option here, it's a weird one so let me explain
-    // sometimes I cook a big lunch and eat half of it and then end up leaving the other half to diner
-    // so I'd like to have an option to "split" a meal into another day/meal
-    // would be nice to be able to choose the percentage of the split
-    // so if I choose to move 40% of it, we need to update the current nutrition log (remove 40 of each of the foods)
-    // and then add 40% of each of the foods into the new date/meal type
+    {
+      icon: Scissors,
+      iconColor: theme.colors.status.warning,
+      iconBgColor: theme.colors.status.warning10,
+      title: t('food.actions.splitMeal'),
+      description: t('food.actions.splitMealDesc'),
+      onPress: handleSplitMeal,
+    },
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,

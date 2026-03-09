@@ -422,6 +422,58 @@ export class NutritionService {
   }
 
   /**
+   * Split nutrition logs: move `splitPercentage`% to a new date/meal type while
+   * reducing the original logs to the remaining percentage. Both operations are
+   * performed in a single atomic batch write.
+   */
+  static async splitNutritionLogsToDate(
+    logs: NutritionLog[],
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage: number
+  ): Promise<void> {
+    const splitRatio = splitPercentage / 100;
+    const remainRatio = 1 - splitRatio;
+    const dateTimestamp = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    ).getTime();
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        // Create new logs at splitRatio of the original amount
+        ...logs.map((log) =>
+          database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
+            record.foodId = log.foodId;
+            record.date = dateTimestamp;
+            record.type = targetMealType;
+            record.amount = log.amount * splitRatio;
+            record.portionId = log.portionId;
+            record.loggedFoodNameRaw = log.loggedFoodNameRaw;
+            record.loggedCaloriesRaw = log.loggedCaloriesRaw;
+            record.loggedProteinRaw = log.loggedProteinRaw;
+            record.loggedCarbsRaw = log.loggedCarbsRaw;
+            record.loggedFatRaw = log.loggedFatRaw;
+            record.loggedFiberRaw = log.loggedFiberRaw;
+            record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.createdAt = now;
+            record.updatedAt = now;
+          })
+        ),
+        // Reduce original logs to remainRatio of the original amount
+        ...logs.map((log) =>
+          log.prepareUpdate((record) => {
+            record.amount = log.amount * remainRatio;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
    * Get recent foods (for quick logging)
    */
   static async getRecentFoods(limit: number = 10, date?: Date): Promise<Food[]> {
