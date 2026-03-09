@@ -1,17 +1,21 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ArrowRight, Dumbbell } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { ArrowRight, Download, Dumbbell } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Dimensions, Linking, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '../../components/MasterLayout';
+import { CenteredModal } from '../../components/modals/CenteredModal';
+import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
+import { TextInput } from '../../components/theme/TextInput';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
 import { theme } from '../../theme';
+import { importDatabase } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -24,6 +28,12 @@ export default function LandingScreen() {
   const [initStep, setInitStep] = useState<string | null>(null);
   const [initProgressCurrent, setInitProgressCurrent] = useState<number | null>(null);
   const [initProgressTotal, setInitProgressTotal] = useState<number | null>(null);
+
+  // Import functionality state
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [decryptionPhrase, setDecryptionPhrase] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -58,6 +68,24 @@ export default function LandingScreen() {
 
     initializeApp();
   }, []);
+
+  const handleImportConfirm = useCallback(async () => {
+    setLoading(true);
+    try {
+      await importDatabase(decryptionPhrase || undefined);
+      setImportModalVisible(false);
+      setDecryptionPhrase('');
+      showSnackbar(
+        'success',
+        t('settings.advancedSettings.importSuccessMessage', 'Data imported successfully')
+      );
+    } catch (err) {
+      console.error('Import failed:', err);
+      showSnackbar('error', t('settings.advancedSettings.importFailedMessage', 'Import failed'));
+    } finally {
+      setLoading(false);
+    }
+  }, [decryptionPhrase, t, showSnackbar]);
 
   return (
     <MasterLayout showNavigationMenu={false}>
@@ -97,6 +125,17 @@ export default function LandingScreen() {
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
+        {/* Import Button - Top Right */}
+        <TouchableOpacity
+          className="absolute right-4 top-4 z-10 rounded-lg p-2"
+          style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          onPress={() => setImportModalVisible(true)}
+          accessibilityLabel={t('onboarding.landing.importData', 'Import data')}
+          accessibilityRole="button"
+        >
+          <Download size={20} color={theme.colors.text.white} />
+        </TouchableOpacity>
+
         <View className="w-full max-w-md flex-1 justify-between self-center px-6">
           {/* Top Spacer */}
           <View style={{ height: theme.size['12'] }} />
@@ -267,6 +306,62 @@ export default function LandingScreen() {
           </View>
         </View>
       </SafeAreaView>
+
+      {/* Import confirmation modal */}
+      <CenteredModal
+        visible={importModalVisible}
+        onClose={() => {
+          if (!loading) {
+            setImportModalVisible(false);
+            setDecryptionPhrase('');
+          }
+        }}
+        title={t('settings.advancedSettings.confirmImport', 'Confirm Import')}
+        subtitle={t(
+          'settings.advancedSettings.importConfirmationSubtitle',
+          'Import your fitness data from a backup file. This will replace all existing data.'
+        )}
+        footer={
+          <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+            <Button
+              label={t('common.cancel', 'Cancel')}
+              variant="outline"
+              size="sm"
+              width="flex-1"
+              onPress={() => {
+                setImportModalVisible(false);
+                setDecryptionPhrase('');
+              }}
+              disabled={loading}
+            />
+            <Button
+              label={t('common.confirm', 'Confirm')}
+              variant="accent"
+              size="sm"
+              width="flex-1"
+              onPress={handleImportConfirm}
+              disabled={loading}
+              loading={loading}
+            />
+          </View>
+        }
+      >
+        <View className="gap-4">
+          <TextInput
+            label={t(
+              'settings.advancedSettings.enterDecryptionPhrase',
+              'Enter Decryption Phrase (Optional)'
+            )}
+            value={decryptionPhrase}
+            onChangeText={setDecryptionPhrase}
+            placeholder={t(
+              'settings.advancedSettings.decryptionPhrasePlaceholder',
+              'Leave empty if no encryption was used'
+            )}
+            secureTextEntry
+          />
+        </View>
+      </CenteredModal>
     </MasterLayout>
   );
 }

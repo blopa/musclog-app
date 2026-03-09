@@ -47,13 +47,18 @@ const RESTORE_ORDER: string[] = [
   'workout_templates',
   'meals',
   'schedules',
+  'workout_template_exercises',
   'workout_template_sets',
   'food_food_portions',
   'meal_foods',
   'workout_logs',
+  'workout_log_exercises',
   'workout_log_sets',
   'nutrition_logs',
   'user_metrics',
+  'user_metrics_notes',
+  'menstrual_cycles',
+  'chat_messages',
 ];
 
 const SETTINGS_EXCLUDED_TYPES = [GOOGLE_GEMINI_API_KEY_SETTING_TYPE, OPENAI_API_KEY_SETTING_TYPE];
