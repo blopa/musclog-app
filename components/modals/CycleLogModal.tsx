@@ -13,14 +13,15 @@ import { DatePickerModal } from './DatePickerModal';
 type CycleLogModalProps = {
   visible: boolean;
   onClose: () => void;
+  initialDate?: Date;
 };
 
-export function CycleLogModal({ visible, onClose }: CycleLogModalProps) {
+export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalProps) {
   const { t } = useTranslation();
   const [flow, setFlow] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(initialDate || new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [existingFlowId, setExistingFlowId] = useState<string | null>(null);
   const [existingSymptomId, setExistingSymptomId] = useState<string | null>(null);
@@ -33,12 +34,12 @@ export function CycleLogModal({ visible, onClose }: CycleLogModalProps) {
     { label: t('cycle.symptoms.fatigue'), value: 'fatigue' },
   ];
 
-  // Reset to today whenever the modal opens
+  // Reset to initial date or today whenever the modal opens
   useEffect(() => {
     if (visible) {
-      setSelectedDate(new Date());
+      setSelectedDate(initialDate || new Date());
     }
-  }, [visible]);
+  }, [visible, initialDate]);
 
   // Load existing metrics for the selected date
   useEffect(() => {

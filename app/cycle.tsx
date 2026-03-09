@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { DateNavigator } from '../components/DateNavigator';
 import { MasterLayout } from '../components/MasterLayout';
 import { CycleLogModal } from '../components/modals/CycleLogModal';
 import { PhaseWheel } from '../components/PhaseWheel';
@@ -17,6 +18,7 @@ export default function CycleScreen() {
   const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
@@ -27,9 +29,9 @@ export default function CycleScreen() {
 
   useEffect(() => {
     const fetchDailyMetrics = async () => {
-      const startOfDay = new Date();
+      const startOfDay = new Date(selectedDate);
       startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date();
+      const endOfDay = new Date(selectedDate);
       endOfDay.setHours(23, 59, 59, 999);
 
       const flowMetrics = await UserMetricService.getMetricsHistory('period_flow', {
@@ -60,7 +62,7 @@ export default function CycleScreen() {
     };
 
     fetchDailyMetrics();
-  }, [isLogModalVisible]);
+  }, [isLogModalVisible, selectedDate]);
 
   return (
     <MasterLayout>
@@ -102,6 +104,11 @@ export default function CycleScreen() {
               totalDays={cycle?.avgCycleLength || 28}
               avgPeriodDuration={cycle?.avgPeriodDuration}
             />
+          </View>
+
+          {/* Date Navigator */}
+          <View className="mb-6">
+            <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
           </View>
 
           {/* Cycle Insights & Log */}
@@ -198,7 +205,7 @@ export default function CycleScreen() {
         <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
       </ScrollView>
 
-      <CycleLogModal visible={isLogModalVisible} onClose={() => setIsLogModalVisible(false)} />
+      <CycleLogModal visible={isLogModalVisible} onClose={() => setIsLogModalVisible(false)} initialDate={selectedDate} />
     </MasterLayout>
   );
 }
