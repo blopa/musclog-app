@@ -34,10 +34,18 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     { label: t('cycle.symptoms.fatigue'), value: 'fatigue' },
   ];
 
+  const resetForm = () => {
+    setFlow(null);
+    setSymptoms([]);
+    setExistingFlowId(null);
+    setExistingSymptomId(null);
+  };
+
   // Reset to initial date or today whenever the modal opens
   useEffect(() => {
     if (visible) {
       setSelectedDate(initialDate || new Date());
+      resetForm(); // Reset form fields when modal opens
     }
   }, [visible, initialDate]);
 
@@ -52,6 +60,8 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(selectedDate);
       endOfDay.setHours(23, 59, 59, 999);
+
+      resetForm(); // Reset form fields before loading new data
 
       const [flowMetrics, symptomMetrics] = await Promise.all([
         UserMetricService.getMetricsHistory('period_flow', {
