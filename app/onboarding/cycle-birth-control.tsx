@@ -1,9 +1,10 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { GenericCard } from '../../components/cards/GenericCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { type BirthControlType } from '../../database/models/MenstrualCycle';
@@ -50,16 +51,13 @@ export default function CycleBirthControl() {
 
         <View className="gap-4">
           {options.map((option) => (
-            <Pressable
+            <GenericCard
               key={option.value}
+              isPressable
               onPress={() => setSelectedType(option.value)}
-              className={`rounded-2xl border-2 p-5 ${
-                selectedType === option.value
-                  ? 'border-accent-primary bg-accent-primary10'
-                  : 'border-white/10 bg-bg-card'
-              }`}
+              variant={selectedType === option.value ? 'highlighted' : 'card'}
             >
-              <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center justify-between p-5">
                 <Text
                   className={`text-xl font-bold ${
                     selectedType === option.value ? 'text-accent-primary' : 'text-text-primary'
@@ -77,7 +75,7 @@ export default function CycleBirthControl() {
                   )}
                 </View>
               </View>
-            </Pressable>
+            </GenericCard>
           ))}
         </View>
       </ScrollView>

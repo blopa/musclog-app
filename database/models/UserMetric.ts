@@ -82,8 +82,7 @@ export default class UserMetric extends Model {
     return notes[0]?.note;
   }
 
-  /** Add or update a note for this metric */
-  @writer
+  /** Add or update a note for this metric. Requires a write transaction. */
   async setNote(noteText: string): Promise<void> {
     const database = this.database;
     const now = Date.now();
@@ -96,7 +95,6 @@ export default class UserMetric extends Model {
       .fetch();
 
     for (const existingNote of existingNotes) {
-      // Use callWriter or just update directly if already in writer
       await existingNote.update((record) => {
         record.deletedAt = now;
         record.updatedAt = now;

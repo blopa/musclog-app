@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { GenericCard } from '../../components/cards/GenericCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { Button } from '../../components/theme/Button';
@@ -44,21 +45,20 @@ export default function CycleAnchor() {
           {t('onboarding.cycleSetup.anchor.description')}
         </Text>
 
-        <Pressable
-          className="flex-row items-center rounded-2xl border-2 border-white/10 bg-bg-card p-6 active:opacity-80"
-          onPress={() => setIsDatePickerVisible(true)}
-        >
-          <View
-            className="mr-4 h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.accent.primary20 }}
-          >
-            <CalendarIcon size={24} color={theme.colors.accent.primary} />
+        <GenericCard isPressable onPress={() => setIsDatePickerVisible(true)} variant="card">
+          <View className="flex-row items-center p-6">
+            <View
+              className="mr-4 h-12 w-12 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.accent.primary20 }}
+            >
+              <CalendarIcon size={24} color={theme.colors.accent.primary} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm text-text-secondary">{t('editPersonalInfo.dateOfBirth')}</Text>
+              <Text className="text-xl font-bold text-text-primary">{formatDate(selectedDate)}</Text>
+            </View>
           </View>
-          <View className="flex-1">
-            <Text className="text-sm text-text-secondary">{t('editPersonalInfo.dateOfBirth')}</Text>
-            <Text className="text-xl font-bold text-text-primary">{formatDate(selectedDate)}</Text>
-          </View>
-        </Pressable>
+        </GenericCard>
 
         <DatePickerModal
           visible={isDatePickerVisible}

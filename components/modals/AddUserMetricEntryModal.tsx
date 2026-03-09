@@ -244,12 +244,10 @@ export default function AddUserMetricEntryModal({
 
         // Add notes to all metrics if provided
         if (noteText) {
-          await Promise.all([
-            weightMetric.setNote(noteText),
-            bodyFatMetric.setNote(noteText),
-            heightMetric.setNote(noteText),
-            moodMetric.setNote(noteText),
-          ]);
+          await weightMetric.setNote(noteText);
+          await bodyFatMetric.setNote(noteText);
+          await heightMetric.setNote(noteText);
+          await moodMetric.setNote(noteText);
         }
       });
 

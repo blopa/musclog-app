@@ -2,9 +2,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Target, Zap, Activity } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
+import { GenericCard } from '../../components/cards/GenericCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { SyncGoal } from '../../database/models/MenstrualCycle';
@@ -83,16 +84,13 @@ export default function CycleGoal() {
 
         <View className="gap-4">
           {goals.map((goal) => (
-            <Pressable
+            <GenericCard
               key={goal.value}
+              isPressable
               onPress={() => setSelectedGoal(goal.value)}
-              className={`rounded-2xl border-2 p-5 ${
-                selectedGoal === goal.value
-                  ? 'border-accent-primary bg-accent-primary10'
-                  : 'border-white/10 bg-bg-card'
-              }`}
+              variant={selectedGoal === goal.value ? 'highlighted' : 'card'}
             >
-              <View className="flex-row items-center gap-4">
+              <View className="flex-row items-center gap-4 p-5">
                 <View
                   className={`h-12 w-12 items-center justify-center rounded-full ${
                     selectedGoal === goal.value ? 'bg-accent-primary' : 'bg-bg-navActive'
@@ -100,7 +98,11 @@ export default function CycleGoal() {
                 >
                   <goal.icon
                     size={24}
-                    color={selectedGoal === goal.value ? theme.colors.text.black : theme.colors.text.tertiary}
+                    color={
+                      selectedGoal === goal.value
+                        ? theme.colors.text.black
+                        : theme.colors.text.tertiary
+                    }
                   />
                 </View>
                 <View className="flex-1">
@@ -114,7 +116,7 @@ export default function CycleGoal() {
                   <Text className="text-sm text-text-secondary">{goal.description}</Text>
                 </View>
               </View>
-            </Pressable>
+            </GenericCard>
           ))}
         </View>
       </ScrollView>

@@ -43,14 +43,14 @@ export function CycleLogModal({ visible, onClose }: CycleLogModalProps) {
       }
 
       if (symptoms.length > 0) {
-        const metric = await UserMetricService.createMetric({
+        await UserMetricService.createMetric({
           type: 'period_symptoms',
           value: symptoms.length,
           unit: 'count',
+          note: symptoms.join(', '),
           date: now,
           timezone,
         });
-        await UserMetricService.updateMetricNote(metric.id, symptoms.join(', '));
       }
 
       onClose();

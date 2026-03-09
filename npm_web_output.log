@@ -7,94 +7,19 @@ Starting Metro Bundler
 Waiting on http://localhost:8081
 Logs for your project will appear below.
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% ( 25/129)
-λ node_modules/expo-router/node/render.js ▓▓░░░░░░░░░░░░░░ 13.8% (123/334)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% ( 97/207)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 32.5% (328/721)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (205/362)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 33.0% ( 530/1249)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (215/390)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 33.0% ( 716/3043)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (351/674)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 33.0% ( 813/3185)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (378/741)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 33.0% (1542/3510)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (378/741)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.3% (2836/3510)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (467/971)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (3047/3959)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% ( 652/3022)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (3078/3991)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% ( 732/3087)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (3512/4582)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% ( 918/3419)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (3946/4922)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.8% (2084/3615)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (3946/4922)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.4% (2998/3946)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.4% (4054/4945)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.4% (3093/4003)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 82.9% (4735/5201)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.4% (3434/4565)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.2% (4935/5370)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 64.5% (3963/4944)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.2% (4947/5375)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 64.5% (4007/4990)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.5% (5352/5627)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 81.4% (4750/5265)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.5% (5352/5627)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.5% (5098/5483)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.1% (5648/5894)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89.5% (5415/5872)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 93.5% (5823/6052)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.4% (6030/6331)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.4% (6082/6170)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 77554ms node_modules/expo-router/node/render.js (6308 modules)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.7% (6549/6559)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6308/6308)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 45792ms node_modules/expo-router/node/render.js (1 module)
-λ Bundled 13837ms node_modules/expo-router/node/render.js (1 module)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓░░░░░░░░░░░░ 25.0% (291/661)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.3% (458/818)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓░░░░░░░░░░ 38.8% (1357/2296)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 40.0% (1480/2413)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.1% (2296/4949)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (2727/5203)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.8% (4531/5423)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89.3% (5262/5567)
+λ Bundled 17790ms node_modules/expo-router/node/render.js (6309 modules)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6574/6574)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6309/6309)
 [🍉] [Loki] Initializing IndexedDB
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6574/6574)
 🌐 i18next is maintained with support from Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
@@ -103,69 +28,13 @@ Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░
 [🍉] [Loki] Database loaded
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-[🍉] [Loki] Empty database, setting up
-[🍉] [Loki] Database is now reset
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-λ  LOG  [🍉] [Loki] Setting up schema
-[🍉] [Loki] Database collections set up
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-[🍉] [Loki] Empty database, setting up
-[🍉] [Loki] Database is now reset
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-λ  LOG  [🍉] [Loki] Setting up schema
-[🍉] [Loki] Database collections set up
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 250ms node_modules/expo-router/node/render.js (1 module)
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-[🍉] [Loki] Empty database, setting up
-[🍉] [Loki] Database is now reset
-[🍉] [Loki] Initializing IndexedDB
-[🍉] [Loki] Database loaded
-λ  LOG  [🍉] [Loki] Setting up schema
-[🍉] [Loki] Database collections set up
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6573/6573)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 103353ms node_modules/expo-router/entry.js (6573 modules)
-Web Bundled 72153ms node_modules/expo-router/entry.js (1 module)
-Web Bundled 41107ms node_modules/expo-router/entry.js (1 module)
-Error: Premature close
-    at onclose (node:internal/streams/end-of-stream:171:30)
-    at processTicksAndRejections (node:internal/process/task_queues:85:11)
-Error: Premature close
-    at onclose (node:internal/streams/end-of-stream:171:30)
-    at processTicksAndRejections (node:internal/process/task_queues:85:11)
-Error: Premature close
-    at onclose (node:internal/streams/end-of-stream:171:30)
-    at processTicksAndRejections (node:internal/process/task_queues:85:11)
-Web Bundled 5067ms node_modules/expo-router/entry.js (1 module)
-Web node_modules/expo-router/entry.js ▓▓▓░░░░░░░░░░░░░ 18.8% ( 73/185)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 34.6% (346/719)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 34.6% ( 536/2962)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓░░░░░░░░░░░ 34.6% ( 988/3118)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 46.3% (2169/3186)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 64.5% (3114/3931)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.3% (3948/4847)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6574/6574)
 λ Bundled 253ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 34680ms node_modules/expo-router/entry.js (6574 modules)
+Error: Premature close
+    at onclose (node:internal/streams/end-of-stream:171:30)
+    at processTicksAndRejections (node:internal/process/task_queues:85:11)
 [🍉] [Loki] Initializing IndexedDB
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.4% (3993/4864)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
 [🍉] [Loki] Database is now reset
@@ -173,23 +42,15 @@ Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░
 [🍉] [Loki] Database loaded
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.4% (3993/4864)
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 3827ms node_modules/expo-router/entry.js (1 module)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 71.5% (4318/5106)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 84.5% (5083/5529)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.2% (5615/6018)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.2% (6302/6465)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 42732ms node_modules/expo-router/entry.js (6575 modules)
-Web Bundled 15981ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 3231ms node_modules/expo-router/entry.js (1 module)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓░░░░░░░░░ 47.4% (1482/2376)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.1% (6536/6565)
+Web Bundled 6580ms node_modules/expo-router/entry.js (6565 modules)
  LOG  [web] Logs will appear in the browser console
-λ Bundled 384ms node_modules/expo-router/node/render.js (1 module)
-[🍉] [Loki] Initializing IndexedDB
+λ Bundled 292ms node_modules/expo-router/node/render.js (1 module)
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Initializing IndexedDB
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
 [🍉] [Loki] Database is now reset
@@ -198,11 +59,11 @@ Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 4371ms node_modules/expo-router/entry.js (1 module)
-Web Bundled 385ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 3099ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 1147ms node_modules/expo-router/entry.js (1 module)
  LOG  [web] Logs will appear in the browser console
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 422ms node_modules/expo-router/node/render.js (1 module)
+λ Bundled 393ms node_modules/expo-router/node/render.js (1 module)
 [🍉] [Loki] Initializing IndexedDB
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
@@ -212,10 +73,50 @@ Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 2613ms node_modules/expo-router/entry.js (1 module)
-Web Bundled 1170ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 2598ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 1135ms node_modules/expo-router/entry.js (1 module)
  LOG  [web] Logs will appear in the browser console
-λ Bundled 264ms node_modules/expo-router/node/render.js (1 module)
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 398ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2748ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 1259ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+λ Bundled 334ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2887ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 2191ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 534ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 2500ms node_modules/expo-router/entry.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web Bundled 317ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+λ Bundled 302ms node_modules/expo-router/node/render.js (1 module)
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 [🍉] [Loki] Initializing IndexedDB
 [🍉] [Loki] Database loaded
@@ -226,6 +127,6 @@ Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 3769ms node_modules/expo-router/entry.js (1 module)
-Web Bundled 401ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 3805ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 1182ms node_modules/expo-router/entry.js (1 module)
  LOG  [web] Logs will appear in the browser console
