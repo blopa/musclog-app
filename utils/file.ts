@@ -1,19 +1,12 @@
 import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import {
-  cacheDirectory,
-  documentDirectory,
-  downloadAsync,
-  readAsStringAsync,
-  writeAsStringAsync,
-} from 'expo-file-system/legacy';
+import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
-import { Image } from 'react-native';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
@@ -142,11 +135,10 @@ export async function readFileAsStringAsync(fileUri: string, options: ReadingOpt
 
 /**
  * Copies a bundled exercise image (from require()) to the app's document directory.
- * Handles both file:// (production), http:// (Metro dev), and bundled asset URIs.
- * Uses expo-asset to properly resolve production assets.
+ * Uses expo-asset to properly resolve and download bundled assets in all environments.
  *
  * @param assetSource - The result of require() for the image (or getBundledExerciseImageSourceByIndex).
- * @param destFilename - Filename to use in document/exercises/ (e.g. exercise-{id}.webp).
+ * @param destFilename - Filename to use in document/exercises/ (e.g. exercise-{id}.png).
  * @returns The permanent file:// URI to store in the database, or throws on failure.
  */
 export async function copyBundledExerciseImageToDocument(
@@ -158,48 +150,23 @@ export async function copyBundledExerciseImageToDocument(
     exercisesDir.create();
   }
 
-  const resolved = Image.resolveAssetSource(assetSource);
-  const sourceUri = resolved?.uri ?? '';
-
-  if (!sourceUri) {
-    throw new Error('Could not resolve bundled asset URI');
-  }
-
   const destFile = new File(exercisesDir, destFilename);
 
-  // Handle production bundled assets (e.g., "assets_exercises_1")
-  if (!sourceUri.includes('://') && !sourceUri.startsWith('/')) {
-    try {
-      // Use expo-asset to download and resolve the bundled asset
-      const asset = await Asset.fromModule(assetSource).downloadAsync();
-      if (asset.localUri) {
-        const srcFile = new File(asset.localUri);
-        srcFile.copy(destFile);
-        return destFile.uri;
-      }
-    } catch (error) {
-      console.warn('Failed to resolve bundled asset with expo-asset:', error);
-      // Fall through to other methods
+  try {
+    // Use expo-asset to download and resolve the bundled asset
+    // This works in both development and production builds
+    const asset = await Asset.fromModule(assetSource).downloadAsync();
+    if (asset.localUri) {
+      const srcFile = new File(asset.localUri);
+      srcFile.copy(destFile);
+      return destFile.uri;
+    } else {
+      throw new Error('Asset download failed - no localUri available');
     }
+  } catch (error) {
+    console.error('Failed to copy exercise image:', error);
+    throw new Error(
+      `Failed to copy exercise image: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
-
-  // Handle file:// URIs (production builds with proper file paths)
-  if (sourceUri.startsWith('file://')) {
-    const srcFile = new File(sourceUri);
-    srcFile.copy(destFile);
-    return destFile.uri;
-  }
-
-  // Handle http:// and https:// URIs (Metro development)
-  if (sourceUri.startsWith('http://') || sourceUri.startsWith('https://')) {
-    if (!documentDirectory) {
-      throw new Error('Document directory is not available');
-    }
-
-    const destUri = `${documentDirectory}exercises/${destFilename}`;
-    await downloadAsync(sourceUri, destUri);
-    return destUri;
-  }
-
-  throw new Error(`Unsupported asset URI scheme: ${sourceUri.slice(0, 20)}...`);
 }

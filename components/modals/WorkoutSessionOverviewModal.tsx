@@ -23,7 +23,7 @@ import { MenuButton } from '../theme/MenuButton';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
-const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.webp');
+const FALLBACK_EXERCISE_IMAGE = require('../../assets/exercises/fallback.png');
 
 type ExerciseStatus = 'completed' | 'in-progress' | 'pending' | 'skipped';
 

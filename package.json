@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "scripts": {
     "playwright": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
@@ -12,6 +12,7 @@
     "clear-cache": "rm -rf node_modules/.cache /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",
     "bump-app-version": "node scripts/bump.js",
     "check-translations": "node scripts/check-translations.js",
+    "convert-exercise-images": "node scripts/convert-exercise-images-to-png.js",
     "start": "expo start",
     "start-clear": "expo start --clear",
     "reset-project": "node ./scripts/reset-project.js",
@@ -143,6 +144,7 @@
     "npm-check-updates": "19.6.3",
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3"
   },

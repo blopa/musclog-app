@@ -823,7 +823,7 @@ export default function WorkoutSessionScreen() {
 
   const exerciseImage = currentSetData.exercise.imageUrl?.trim()
     ? { uri: currentSetData.exercise.imageUrl }
-    : require('../../assets/exercises/fallback.webp');
+    : require('../../assets/exercises/fallback.png');
   const exerciseCategory = getExerciseCategory();
   const previousSet = currentSetData.previousSet;
 
