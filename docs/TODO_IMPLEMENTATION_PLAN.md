@@ -9,12 +9,7 @@ Effort: **S** = small (≈0.5–1 day), **M** = medium (≈1–3 days), **L** = 
 ---
 
 ## 1. Exercise & workout UI
-
-| TODO                                                             | Location                | Plan                                                                                                                                                                                                                                          | Effort | Status |
-| ---------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| Load exercise images from `imageUrl` instead of default          | `workout-session.tsx`   | Use `<Image source={{ uri: currentSetData.exercise.imageUrl }} />` when present; keep fallback to `require('../../assets/icon.png')`. Add error/loading handling for remote URLs.                                                             | S      | —      |
-| Remove hardcoded images and use actual exercise images           | `ExercisesModal.tsx`    | Prefer `exercise.imageUrl`; remove or replace Google placeholder URLs with a single default placeholder asset or CDN.                                                                                                                         | S      | —      |
-| Add exercise-specific image fallbacks or default placeholder     | `ExercisesModal.tsx`    | Define one default placeholder (local asset or URL); use when `imageUrl` is null/undefined.                                                                                                                                                   | S      | —      |
+# DONE
 
 ---
 
@@ -96,7 +91,6 @@ Effort: **S** = small (≈0.5–1 day), **M** = medium (≈1–3 days), **L** = 
 | TODO                                         | Location                                                 | Plan                                                                                                                                                                                                              | Effort |
 | -------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
 | Uncomment workout settings once route exists | `workout-session.tsx`, `rest-over.tsx`, `rest-timer.tsx` | Add a `/workout-settings` (or equivalent) screen: rest duration, default units, sound/haptics, etc. Then uncomment `onWorkoutSettings={() => router.push('/workout-settings')}` in all three files.               | M      |
-| Update progress route navigation             | `app/index.tsx`                                          | The `onProgressPress` currently goes to `/progress`. Confirm the route exists and matches your app structure; if the target screen moved or was renamed, update the path (e.g. `/progress/overview` or `/stats`). | S      |
 
 ---
 
