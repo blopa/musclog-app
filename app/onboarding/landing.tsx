@@ -128,8 +128,12 @@ export default function LandingScreen() {
         {/* Import Button - Top Right */}
         <TouchableOpacity
           className="absolute right-4 top-4 z-10 rounded-lg p-2"
-          style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          style={{
+            backgroundColor: theme.colors.background.black30,
+            opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
+          }}
           onPress={() => setImportModalVisible(true)}
+          disabled={isInitializing}
           accessibilityLabel={t('onboarding.landing.importData', 'Import data')}
           accessibilityRole="button"
         >
