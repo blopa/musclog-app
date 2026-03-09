@@ -1,9 +1,6 @@
 import { format } from 'date-fns';
 import { useRouter } from 'expo-router';
 import {
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
   Copy,
   Edit,
   ListPlus,
@@ -17,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '../../components/BottomPopUpMenu';
+import { DateNavigator } from '../../components/DateNavigator';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
 import { MasterLayout } from '../../components/MasterLayout';
@@ -25,7 +23,6 @@ import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateCustomFoodModal from '../../components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
-import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
@@ -331,7 +328,7 @@ export default function FoodScreen() {
   return (
     <MasterLayout>
       <View className="flex-1 bg-bg-primary">
-        {/* Header with Date Navigation */}
+        {/* TODO: use DateNavigator */}
         <View className="border-b border-border-dark bg-bg-primary">
           <View className="flex-row items-center justify-between px-4 py-4">
             <Pressable

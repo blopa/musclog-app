@@ -8,6 +8,7 @@
     "selectMonthYear": "Select Month Year",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    "year": "Year"
+    "year": "Year",
+    "yesterday": "Yesterday"
   }
 }
