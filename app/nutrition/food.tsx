@@ -43,6 +43,19 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
+const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
+  switch (mode) {
+    case 'move':
+      return 'food.actions.moveError';
+    case 'copy':
+      return 'food.actions.copyError';
+    case 'split':
+      return 'food.actions.splitError';
+    default:
+      return 'food.actions.moveError';
+  }
+};
+
 export default function FoodScreen() {
   const { t } = useTranslation();
   const { units, isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
@@ -337,13 +350,7 @@ export default function FoodScreen() {
       await refresh();
     } catch (error) {
       console.error('Error performing meal action:', error);
-      const errorKey =
-        // TODO: move this to a helper function to avoid nested ternary
-        mealActionMode === 'move'
-          ? 'food.actions.moveError'
-          : mealActionMode === 'copy'
-            ? 'food.actions.copyError'
-            : 'food.actions.splitError';
+      const errorKey = getMealActionErrorKey(mealActionMode);
 
       showSnackbar('error', t(errorKey));
     } finally {

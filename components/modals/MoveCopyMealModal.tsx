@@ -141,7 +141,10 @@ export function MoveCopyMealModal({
                 </Text>
                 <Text
                   className="font-bold"
-                  style={{ color: theme.colors.accent.primary, fontSize: theme.typography.fontSize.sm }}
+                  style={{
+                    color: theme.colors.accent.primary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
                 >
                   {splitPercentage}%
                 </Text>
