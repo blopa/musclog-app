@@ -73,6 +73,8 @@ export function FoodItemCard({
   fat,
   mealType,
   portion,
+  // TODO: if variant is "compact", cap the lines for the title to 1 line online
+  // and show only the portion and calories
   variant = 'default',
 }: FoodItemCardProps) {
   const theme = useTheme();
@@ -154,7 +156,9 @@ export function FoodItemCard({
             <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
           </View>
         </View>
-        <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
+        {onMorePress ? (
+          <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
+        ) : null}
       </View>
     </GenericCard>
   );

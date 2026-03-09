@@ -329,6 +329,7 @@ export default function HomeScreen() {
               {recentNutritionLogs.slice(0, 2).map((entry) => (
                 <FoodItemCard
                   key={entry.log.id}
+                  variant="compact"
                   name={entry.displayName}
                   calories={Math.round(entry.nutrients.calories)}
                   protein={Math.round(entry.nutrients.protein)}
@@ -337,10 +338,6 @@ export default function HomeScreen() {
                   portion={entry.gramWeight}
                   image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                   mealType={entry.log.type}
-                  onMorePress={() => {
-                    // TODO: Implement food details modal or navigation
-                    console.log('Food details pressed:', entry.displayName);
-                  }}
                 />
               ))}
 
