@@ -26,6 +26,7 @@ import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import { FoodMealDetailsModal } from '../../components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
+import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { useSnackbar } from '../../components/SnackbarContext';
@@ -72,6 +73,10 @@ export default function FoodScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
+  const [isDeleteAllMealVisible, setIsDeleteAllMealVisible] = useState(false);
+  const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
+  const [mealActionMode, setMealActionMode] = useState<'move' | 'copy'>('move');
+  const [isMealActionLoading, setIsMealActionLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -291,21 +296,67 @@ export default function FoodScreen() {
   };
 
   const handleDeleteAllMeal = () => {
-    // TODO: implement deleting all items from meal type section, using a ConfirmationModal
-    const mealFoods = mealsByType[selectedMealForMenu!];
-    console.log('Delete all foods from', selectedMealForMenu, ':', mealFoods);
+    setIsMealMenuVisible(false);
+    setIsDeleteAllMealVisible(true);
+  };
+
+  const handleConfirmDeleteAllMeal = async () => {
+    if (!selectedMealForMenu) {
+      return;
+    }
+    try {
+      const mealFoods = mealsByType[selectedMealForMenu];
+      await NutritionService.deleteNutritionLogsBatch(mealFoods.map((e) => e.log));
+      showSnackbar('success', t('food.actions.deleteAllSuccess'));
+      await refresh();
+    } catch (error) {
+      console.error('Error deleting all meal items:', error);
+      showSnackbar('error', t('food.actions.deleteAllError'));
+    } finally {
+      setIsDeleteAllMealVisible(false);
+      setSelectedMealForMenu(null);
+    }
   };
 
   const handleMoveMealToAnotherDay = () => {
-    // TODO: implement showing a modal with the option to move this meal to another day and/or another meal type
-    const mealFoods = mealsByType[selectedMealForMenu!];
-    console.log('Move foods from', selectedMealForMenu, 'to another day:', mealFoods);
+    setIsMealMenuVisible(false);
+    setMealActionMode('move');
+    setIsMealActionModalVisible(true);
   };
 
   const handleCopyMealToAnotherDay = () => {
-    // TODO: implement showing a modal with the option to copy this meal to another day and/or another meal type
-    const mealFoods = mealsByType[selectedMealForMenu!];
-    console.log('Copy foods from', selectedMealForMenu, 'to another day:', mealFoods);
+    setIsMealMenuVisible(false);
+    setMealActionMode('copy');
+    setIsMealActionModalVisible(true);
+  };
+
+  const handleConfirmMealAction = async (targetDate: Date, targetMealType: MealType) => {
+    if (!selectedMealForMenu) {
+      return;
+    }
+    setIsMealActionLoading(true);
+    try {
+      const mealFoods = mealsByType[selectedMealForMenu];
+      const logs = mealFoods.map((e) => e.log);
+      if (mealActionMode === 'move') {
+        await NutritionService.moveNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.moveSuccess'));
+      } else {
+        await NutritionService.copyNutritionLogsToDate(logs, targetDate, targetMealType);
+        showSnackbar('success', t('food.actions.copySuccess'));
+      }
+      await refresh();
+    } catch (error) {
+      console.error('Error performing meal action:', error);
+      showSnackbar(
+        'error',
+        mealActionMode === 'move' ? t('food.actions.moveError') : t('food.actions.copyError')
+      );
+    } finally {
+      setIsMealActionLoading(false);
+      setIsMealActionModalVisible(false);
+      setSelectedMealForMenu(null);
+    }
   };
 
   const mealMenuItems = [
@@ -841,6 +892,43 @@ export default function FoodScreen() {
         subtitle={t('food.actions.mealMenuSubtitle')}
         items={mealMenuItems}
       />
+
+      {/* Delete All Meal Confirmation Modal */}
+      {isDeleteAllMealVisible && selectedMealForMenu ? (
+        <ConfirmationModal
+          visible={isDeleteAllMealVisible}
+          onClose={() => {
+            setIsDeleteAllMealVisible(false);
+            setSelectedMealForMenu(null);
+          }}
+          onConfirm={handleConfirmDeleteAllMeal}
+          title={t('food.actions.deleteAllConfirmTitle')}
+          message={t('food.actions.deleteAllConfirmMessage', {
+            mealName: t(
+              `food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`
+            ),
+          })}
+          confirmLabel={t('common.delete')}
+          cancelLabel={t('common.cancel')}
+          variant="destructive"
+        />
+      ) : null}
+
+      {/* Move / Copy Meal Modal */}
+      {isMealActionModalVisible && selectedMealForMenu ? (
+        <MoveCopyMealModal
+          visible={isMealActionModalVisible}
+          onClose={() => {
+            setIsMealActionModalVisible(false);
+            setSelectedMealForMenu(null);
+          }}
+          onConfirm={handleConfirmMealAction}
+          mode={mealActionMode}
+          sourceMealType={selectedMealForMenu}
+          sourceDate={selectedDate}
+          isLoading={isMealActionLoading}
+        />
+      ) : null}
 
       {/* Food Details Modal (edit/duplicate mode) */}
       {isFoodDetailsModalVisible && selectedFoodItem ? (

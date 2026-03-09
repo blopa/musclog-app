@@ -337,6 +337,91 @@ export class NutritionService {
   }
 
   /**
+   * Delete multiple nutrition logs at once (e.g. all items in a meal section)
+   */
+  static async deleteNutritionLogsBatch(logs: NutritionLog[]): Promise<void> {
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...logs.map((log) =>
+          log.prepareUpdate((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
+   * Copy nutrition logs to a new date and/or meal type.
+   * Copies the encrypted snapshot fields as-is so no re-encryption is needed.
+   */
+  static async copyNutritionLogsToDate(
+    logs: NutritionLog[],
+    targetDate: Date,
+    targetMealType: MealType
+  ): Promise<void> {
+    const dateTimestamp = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    ).getTime();
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) =>
+          database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
+            record.foodId = log.foodId;
+            record.date = dateTimestamp;
+            record.type = targetMealType;
+            record.amount = log.amount;
+            record.portionId = log.portionId;
+            record.loggedFoodNameRaw = log.loggedFoodNameRaw;
+            record.loggedCaloriesRaw = log.loggedCaloriesRaw;
+            record.loggedProteinRaw = log.loggedProteinRaw;
+            record.loggedCarbsRaw = log.loggedCarbsRaw;
+            record.loggedFatRaw = log.loggedFatRaw;
+            record.loggedFiberRaw = log.loggedFiberRaw;
+            record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.createdAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
+   * Move nutrition logs to a new date and/or meal type.
+   */
+  static async moveNutritionLogsToDate(
+    logs: NutritionLog[],
+    targetDate: Date,
+    targetMealType: MealType
+  ): Promise<void> {
+    const dateTimestamp = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    ).getTime();
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) =>
+          log.prepareUpdate((record) => {
+            record.date = dateTimestamp;
+            record.type = targetMealType;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
    * Get recent foods (for quick logging)
    */
   static async getRecentFoods(limit: number = 10, date?: Date): Promise<Food[]> {

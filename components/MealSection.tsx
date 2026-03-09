@@ -55,14 +55,15 @@ export function MealSection({
       <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
         <Text className="text-2xl font-bold text-text-primary">{title}</Text>
         <View
-          className="items-end flex-row gap-2"
+          className="flex-row items-end gap-2"
           style={{
             ...(totalCalories > 0 && { marginTop: -theme.spacing.padding.base }),
           }}
         >
           <View className="items-end">
             <Text className="text-lg text-text-secondary">
-              {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
+              {totalCalories.toLocaleString('en-US', { useGrouping: false })}{' '}
+              {t('food.common.kcal')}
             </Text>
             {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
               <Text className="text-sm">

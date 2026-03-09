@@ -140,8 +140,8 @@ export function FoodItemCard({
           )}
         </View>
         <View className="min-w-0 flex-1">
-          <Text 
-            className="mb-1 text-lg font-semibold text-text-primary" 
+          <Text
+            className="mb-1 text-lg font-semibold text-text-primary"
             numberOfLines={variant === 'compact' ? 1 : 2}
           >
             {name}
@@ -153,11 +153,13 @@ export function FoodItemCard({
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
             <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
           </View>
-          {variant === 'default' ? <View className="flex-row items-center gap-3">
+          {variant === 'default' ? (
+            <View className="flex-row items-center gap-3">
               <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
               <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
               <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
-            </View> : null}
+            </View>
+          ) : null}
         </View>
         {onMorePress ? (
           <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
