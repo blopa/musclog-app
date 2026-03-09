@@ -45,14 +45,17 @@ const MacroItem = ({
   unit?: string;
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text className="text-xs text-text-secondary">
-        {/*TODO: use i18n here, probably will need a couple variations */}
-        {value}
-        {unit || ''} {label || ''}
+        {t('food.macroValueFormat', {
+          value,
+          unit: unit || '',
+          label: label || '',
+        })}
       </Text>
     </View>
   );
