@@ -22,7 +22,7 @@ const PHASES = [
   { key: 'luteal', color: '#8b5cf6', length: 11 }, // TODO: use proportions, since number of cycle days can vary
 ] as const satisfies readonly { key: MenstrualPhase; color: string; length: number }[];
 
-// TODO: number of days is set in the onboarding
+// TODO: number of days is set in the onboarding and saved on avgCycleLength
 const CYCLE_DAYS = PHASES.reduce((acc, p) => acc + p.length, 0); // 28
 
 export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays }: PhaseWheelProps) {
@@ -30,7 +30,9 @@ export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays }: P
 
   const size = 260;
   const strokeWidth = 16;
-  const radius = (size - strokeWidth) / 2;
+  const markerRadius = strokeWidth / 2 + 4; // 12 — day indicator circle radius
+  // Constrain ring radius so the marker never clips the SVG boundary
+  const radius = size / 2 - strokeWidth / 2 - markerRadius - 2; // 116
   const center = size / 2;
   const circumference = 2 * Math.PI * radius;
 
@@ -90,7 +92,7 @@ export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays }: P
             <Circle
               cx={center + radius}
               cy={center}
-              r={strokeWidth / 2 + 4}
+              r={markerRadius}
               fill={theme.colors.text.white}
               stroke={theme.colors.background.primary}
               strokeWidth={2}

@@ -34,7 +34,7 @@ export default function FocusScreen() {
         <View className="px-6 py-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-4xl font-black text-text-primary">
-              {t('home.navigation.focus', 'Focus')}
+              {t('home.navigation.focus')}
             </Text>
             <Pressable
               onPress={() => router.push('/')}
@@ -50,7 +50,7 @@ export default function FocusScreen() {
           <View className="mb-8 flex-row items-center justify-between">
             <View>
               <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
-                {t('focus.currentPhase', 'Current Phase')}
+                {t('focus.currentPhase')}
               </Text>
               <Text className="text-4xl font-black capitalize text-text-primary">
                 {currentPhase || '--'}
@@ -58,7 +58,7 @@ export default function FocusScreen() {
             </View>
             <View className="items-end rounded-2xl bg-bg-overlay p-4">
               <Text className="text-xs font-bold uppercase tracking-tighter text-text-tertiary">
-                {t('focus.day', 'Day')}
+                {t('focus.day')}
               </Text>
               <Text className="text-2xl font-black text-accent-primary">
                 {cycleDay
@@ -81,7 +81,7 @@ export default function FocusScreen() {
           {/* Nutrition Summary Integration */}
           <View className="mb-8">
             <Text className="mb-4 text-2xl font-bold text-text-primary">
-              {t('home.sections.dailySummary', 'Daily Summary')}
+              {t('home.sections.dailySummary')}
             </Text>
             {nutritionGoal ? (
               <DailySummaryCard
@@ -99,12 +99,12 @@ export default function FocusScreen() {
 
           <View className="mb-8">
             <Text className="mb-4 text-2xl font-bold text-text-primary">
-              {t('focus.physiologicalInsights', 'Physiological Insights')}
+              {t('focus.physiologicalInsights')}
             </Text>
             <View className="flex-row gap-4">
               <PhysiologicalInsightsCard
                 type="estrogen"
-                label={t('focus.estrogen', 'Estrogen')}
+                label={t('focus.estrogen')}
                 value={insights?.estrogen || '--'}
                 trend={
                   insights?.estrogen === 'rising'
@@ -116,13 +116,14 @@ export default function FocusScreen() {
               />
               <PhysiologicalInsightsCard
                 type="metabolism"
-                label={t('focus.metabolism', 'Metabolism')}
+                label={t('focus.metabolism')}
                 value={insights?.metabolism || '--'}
                 trend={insights?.metabolism === 'increasing' ? 'up' : 'stable'}
               />
             </View>
           </View>
         </View>
+        <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
       </ScrollView>
     </MasterLayout>
   );
