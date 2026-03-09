@@ -77,11 +77,11 @@ export default function LandingScreen() {
       setDecryptionPhrase('');
       showSnackbar(
         'success',
-        t('settings.advancedSettings.importSuccessMessage', 'Data imported successfully')
+        t('settings.advancedSettings.importSuccessMessage')
       );
     } catch (err) {
       console.error('Import failed:', err);
-      showSnackbar('error', t('settings.advancedSettings.importFailedMessage', 'Import failed'));
+      showSnackbar('error', t('settings.advancedSettings.importFailedMessage'));
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,7 @@ export default function LandingScreen() {
           }}
           onPress={() => setImportModalVisible(true)}
           disabled={isInitializing}
-          accessibilityLabel={t('onboarding.landing.importData', 'Import data')}
+          accessibilityLabel={t('onboarding.landing.importData')}
           accessibilityRole="button"
         >
           <Download size={20} color={theme.colors.text.white} />
@@ -320,15 +320,14 @@ export default function LandingScreen() {
             setDecryptionPhrase('');
           }
         }}
-        title={t('settings.advancedSettings.confirmImport', 'Confirm Import')}
+        title={t('settings.advancedSettings.confirmImport')}
         subtitle={t(
-          'settings.advancedSettings.importConfirmationSubtitle',
-          'Import your fitness data from a backup file. This will replace all existing data.'
+          'settings.advancedSettings.importConfirmationSubtitle'
         )}
         footer={
           <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
             <Button
-              label={t('common.cancel', 'Cancel')}
+              label={t('common.cancel')}
               variant="outline"
               size="sm"
               width="flex-1"
@@ -339,7 +338,7 @@ export default function LandingScreen() {
               disabled={loading}
             />
             <Button
-              label={t('common.confirm', 'Confirm')}
+              label={t('common.confirm')}
               variant="accent"
               size="sm"
               width="flex-1"

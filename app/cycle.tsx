@@ -137,7 +137,7 @@ export default function CycleScreen() {
                 </Text>
                 <View className="mt-4">
                   <Button
-                    label={t('cycle.logSymptoms', 'Log Symptoms')}
+                    label={t('cycle.logSymptoms')}
                     onPress={() => setIsLogModalVisible(true)}
                     variant="outline"
                     size="sm"

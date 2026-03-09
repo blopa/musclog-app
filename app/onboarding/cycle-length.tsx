@@ -206,7 +206,7 @@ export default function CycleSetup() {
             onChangeText={(v) => setCycleLength(parseInt(v) || 0)}
             onIncrement={() => setCycleLength((v) => Math.min(45, v + 1))}
             onDecrement={() => setCycleLength((v) => Math.max(15, v - 1))}
-            unit={t('common.days', 'Days')}
+            unit={t('common.days')}
           />
           <NumericInput
             label={t('onboarding.cycleSetup.length.periodDuration')}
@@ -214,7 +214,7 @@ export default function CycleSetup() {
             onChangeText={(v) => setPeriodDuration(parseInt(v) || 0)}
             onIncrement={() => setPeriodDuration((v) => Math.min(10, v + 1))}
             onDecrement={() => setPeriodDuration((v) => Math.max(1, v - 1))}
-            unit={t('common.days', 'Days')}
+            unit={t('common.days')}
           />
         </View>
 

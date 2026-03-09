@@ -32,7 +32,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
   return (
     <View className="flex-1 items-center justify-center bg-bg-primary p-6">
       <Text className="mb-2 text-center text-xl font-semibold text-text-primary">
-        {t('errors.somethingWentWrong', 'Something went wrong')}
+        {t('errors.somethingWentWrong')}
       </Text>
       <Text className="mb-4 text-center text-sm text-text-secondary">{errorMessage}</Text>
 

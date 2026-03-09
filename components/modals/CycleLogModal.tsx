@@ -112,7 +112,7 @@ export function CycleLogModal({ visible, onClose }: CycleLogModalProps) {
 
         <View className="mb-2">
           <Text className="mb-4 text-lg font-bold text-text-primary">
-            {t('cycle.symptomsTitle', 'Symptoms')}
+            {t('cycle.symptomsTitle')}
           </Text>
           <View className="flex-row flex-wrap gap-3">
             {symptomOptions.map((option) => (
