@@ -17,6 +17,7 @@ import MenstrualCycle from './models/MenstrualCycle';
 import Setting from './models/Setting';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
+import UserMetricsNote from './models/UserMetricsNote';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogExercise from './models/WorkoutLogExercise';
 import WorkoutLogSet from './models/WorkoutLogSet';
@@ -32,6 +33,7 @@ export const database = new Database({
   modelClasses: [
     Exercise,
     UserMetric,
+    UserMetricsNote,
     User,
     MenstrualCycle,
     Setting,

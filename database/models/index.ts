@@ -13,6 +13,7 @@ export { default as Schedule } from './Schedule';
 export { default as Setting } from './Setting';
 export { default as User } from './User';
 export { default as UserMetric } from './UserMetric';
+export { default as UserMetricsNote } from './UserMetricsNote';
 export { default as WorkoutLog } from './WorkoutLog';
 export { default as WorkoutLogExercise } from './WorkoutLogExercise';
 export { default as WorkoutLogSet } from './WorkoutLogSet';

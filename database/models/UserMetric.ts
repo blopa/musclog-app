@@ -54,7 +54,6 @@ export default class UserMetric extends Model {
   // Relation to notes
   @children('user_metrics_notes') notes!: any[];
 
-  @writer
   async markAsDeleted(): Promise<void> {
     await this.update((record) => {
       record.deletedAt = Date.now();
@@ -84,10 +83,9 @@ export default class UserMetric extends Model {
 
   /** Add or update a note for this metric. Requires a write transaction. */
   async setNote(noteText: string): Promise<void> {
-    const database = this.database;
     const now = Date.now();
 
-    const notesCollection = database.get<UserMetricsNote>('user_metrics_notes');
+    const notesCollection = this.database.get<UserMetricsNote>('user_metrics_notes');
 
     // First, mark any existing notes as deleted
     const existingNotes = await notesCollection

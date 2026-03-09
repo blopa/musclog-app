@@ -8,6 +8,7 @@ import { MasterLayout } from '../components/MasterLayout';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { PhysiologicalInsightsCard } from '../components/PhysiologicalInsightsCard';
+import { PhaseWheel } from '../components/PhaseWheel';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { MenstrualService } from '../database/services/MenstrualService';
@@ -65,23 +66,14 @@ export default function FocusScreen() {
             </View>
           </View>
 
-          {/* Phase Wheel Placeholder */}
+          {/* Phase Wheel Implementation */}
           <View className="mb-12 items-center justify-center">
-            <View className="relative h-64 w-64 items-center justify-center rounded-full border-[16px] border-bg-navActive">
-              {/* Visual implementation of wheel would go here */}
-              <View className="absolute h-full w-full rounded-full border-[16px] border-accent-primary opacity-20" />
-              <View className="items-center">
-                <View className="mb-2 h-12 w-12 items-center justify-center rounded-full bg-accent-primary">
-                  <Zap size={24} color={theme.colors.text.black} />
-                </View>
-                <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                  {t('focus.energyLevel', 'Energy Level')}
-                </Text>
-                <Text className="text-3xl font-black text-text-primary capitalize">
-                  {energyLevel || '--'}
-                </Text>
-              </View>
-            </View>
+             <PhaseWheel
+               currentPhase={currentPhase}
+               energyLevel={energyLevel}
+               cycleDay={cycleDay || 1}
+               totalDays={cycle?.avgCycleLength || 28}
+             />
           </View>
 
           {/* Nutrition Summary Integration */}
