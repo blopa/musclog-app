@@ -73,8 +73,6 @@ export function FoodItemCard({
   fat,
   mealType,
   portion,
-  // TODO: if variant is "compact", cap the lines for the title to 1 line online
-  // and show only the portion and calories
   variant = 'default',
 }: FoodItemCardProps) {
   const theme = useTheme();
@@ -123,7 +121,9 @@ export function FoodItemCard({
     <GenericCard variant="default">
       <View className="flex-row items-center gap-4 p-4">
         <View
-          className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl"
+          className={`flex-shrink-0 overflow-hidden rounded-xl ${
+            variant === 'compact' ? 'h-12 w-12' : 'h-16 w-16'
+          }`}
           style={{ backgroundColor: theme.colors.background.gray700 }}
         >
           {!image || imageError ? (
@@ -140,21 +140,24 @@ export function FoodItemCard({
           )}
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="mb-1 text-lg font-semibold text-text-primary" numberOfLines={2}>
+          <Text 
+            className="mb-1 text-lg font-semibold text-text-primary" 
+            numberOfLines={variant === 'compact' ? 1 : 2}
+          >
             {name}
           </Text>
-          {description ? (
+          {description && variant === 'default' ? (
             <Text className="mb-2 truncate text-sm text-text-secondary">{description}</Text>
           ) : null}
           <View className="flex-row items-center gap-3">
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
             <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
           </View>
-          <View className="flex-row items-center gap-3">
-            <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
-            <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
-            <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
-          </View>
+          {variant === 'default' ? <View className="flex-row items-center gap-3">
+              <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
+              <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
+              <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
+            </View> : null}
         </View>
         {onMorePress ? (
           <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
