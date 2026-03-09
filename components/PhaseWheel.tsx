@@ -12,21 +12,35 @@ type PhaseWheelProps = {
   energyLevel: EnergyLevel | null;
   cycleDay: number;
   totalDays: number;
+  avgPeriodDuration?: number;
 };
 
-const PHASES = [
-  // TODO: use colors from theme.ts
-  { key: 'menstrual', color: '#ff4d4d', length: 5 }, // TODO: use proportions, since number of cycle days can vary
-  { key: 'follicular', color: '#29e08e', length: 9 }, // TODO: use proportions, since number of cycle days can vary
-  { key: 'ovulation', color: '#ffb300', length: 3 }, // TODO: use proportions, since number of cycle days can vary
-  { key: 'luteal', color: '#8b5cf6', length: 11 }, // TODO: use proportions, since number of cycle days can vary
-] as const satisfies readonly { key: MenstrualPhase; color: string; length: number }[];
+// Helper function to calculate phase proportions dynamically
+function calculatePhaseProportions(avgCycleLength: number, avgPeriodDuration: number) {
+  const menstrualLength = avgPeriodDuration;
+  const ovulationLength = 3; // Standard ovulation window
+  
+  // Remaining days after menstrual and ovulation phases
+  const remainingDays = avgCycleLength - menstrualLength - ovulationLength;
+  
+  // Split remaining days between follicular and luteal phases
+  // Follicular is typically shorter than luteal
+  const follicularLength = Math.floor(remainingDays * 0.4);
+  const lutealLength = remainingDays - follicularLength;
+  
+  return [
+    { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
+    { key: 'follicular' as const, color: theme.colors.status.emeraldLight, length: follicularLength },
+    { key: 'ovulation' as const, color: theme.colors.status.amber, length: ovulationLength },
+    { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
+  ];
+}
 
-// TODO: number of days is set in the onboarding and saved on avgCycleLength
-const CYCLE_DAYS = PHASES.reduce((acc, p) => acc + p.length, 0); // 28
-
-export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays }: PhaseWheelProps) {
+export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays, avgPeriodDuration = 5 }: PhaseWheelProps) {
   const { t } = useTranslation();
+  
+  // Calculate phases dynamically based on user's cycle
+  const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration);
 
   const size = 260;
   const strokeWidth = 16;
@@ -60,8 +74,8 @@ export function PhaseWheel({ currentPhase, energyLevel, cycleDay, totalDays }: P
           {/* Phase arcs */}
           {PHASES.map((phase, index) => {
             const startDay = PHASES.slice(0, index).reduce((acc, p) => acc + p.length, 0);
-            const rawStartDeg = (startDay / CYCLE_DAYS) * 360;
-            const rawSweepDeg = (phase.length / CYCLE_DAYS) * 360;
+            const rawStartDeg = (startDay / totalDays) * 360;
+            const rawSweepDeg = (phase.length / totalDays) * 360;
 
             // Inset each segment by half the gap on each side
             const startDeg = rawStartDeg + gapDeg / 2;

@@ -29,6 +29,7 @@ export default function CycleScreen() {
         startDate: startOfDay.getTime(),
         endDate: endOfDay.getTime(),
       });
+
       const symptomMetrics = await UserMetricService.getMetricsHistory('period_symptoms', {
         startDate: startOfDay.getTime(),
         endDate: endOfDay.getTime(),
@@ -60,17 +61,8 @@ export default function CycleScreen() {
         <View className="px-6 py-8">
           <View className="mb-8 flex-row items-center justify-between">
             <Text className="text-4xl font-black text-text-primary">
-              {t('cycle.title', 'Cycle')}
+              {t('cycle.title')}
             </Text>
-            <Pressable
-              onPress={() => router.push('/nutrition/food')}
-              className="flex-row items-center gap-2 rounded-full bg-bg-overlay px-4 py-2"
-            >
-              <UtensilsCrossed size={16} color={theme.colors.accent.primary} />
-              <Text className="text-sm font-bold text-accent-primary">
-                {t('home.navigation.food')}
-              </Text>
-            </Pressable>
           </View>
 
           {/* Prediction Card */}
@@ -81,7 +73,7 @@ export default function CycleScreen() {
               </View>
               <View>
                 <Text className="text-sm font-bold uppercase tracking-wider text-text-tertiary">
-                  {t('cycle.nextPeriod', 'Next Period Prediction')}
+                  {t('cycle.nextPeriod')}
                 </Text>
                 <Text className="text-xl font-black text-text-primary">
                   {nextPeriodDate
@@ -105,7 +97,7 @@ export default function CycleScreen() {
           <View className="mb-8">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-2xl font-bold text-text-primary">
-                {t('cycle.dailyLog', 'Daily Log')}
+                {t('cycle.dailyLog')}
               </Text>
               <Pressable
                 onPress={() => setIsLogModalVisible(true)}
@@ -125,8 +117,8 @@ export default function CycleScreen() {
                     <View className="flex-1">
                       <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
                         {metric.type === 'period_flow'
-                          ? t('cycle.flowIntensity', 'Flow Intensity')
-                          : t('cycle.symptomsTitle', 'Symptoms')}
+                          ? t('cycle.flowIntensity')
+                          : t('cycle.symptomsTitle')}
                       </Text>
                       <Text className="text-lg font-black text-text-primary">
                         {metric.type === 'period_flow' ? `${metric.value}/5` : metric.note || '--'}
@@ -141,7 +133,7 @@ export default function CycleScreen() {
             ) : (
               <View className="items-center justify-center rounded-2xl border-2 border-white/5 bg-bg-card p-6">
                 <Text className="text-center text-text-tertiary">
-                  {t('cycle.noLogsToday', 'No symptoms logged for today.')}
+                  {t('cycle.noLogsToday')}
                 </Text>
                 <View className="mt-4">
                   <Button

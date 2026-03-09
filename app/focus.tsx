@@ -36,15 +36,6 @@ export default function FocusScreen() {
             <Text className="text-4xl font-black text-text-primary">
               {t('home.navigation.focus')}
             </Text>
-            <Pressable
-              onPress={() => router.push('/')}
-              className="flex-row items-center gap-2 rounded-full bg-bg-overlay px-4 py-2"
-            >
-              <LayoutDashboard size={16} color={theme.colors.accent.primary} />
-              <Text className="text-sm font-bold text-accent-primary">
-                {t('home.navigation.home')}
-              </Text>
-            </Pressable>
           </View>
 
           <View className="mb-8 flex-row items-center justify-between">
@@ -75,6 +66,7 @@ export default function FocusScreen() {
               energyLevel={energyLevel}
               cycleDay={cycleDay || 1}
               totalDays={cycle?.avgCycleLength || 28}
+              avgPeriodDuration={cycle?.avgPeriodDuration}
             />
           </View>
 
