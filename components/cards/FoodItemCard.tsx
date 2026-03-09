@@ -1,4 +1,4 @@
-import { Apple, Coffee, EggFried, Soup, UtensilsCrossed } from 'lucide-react-native';
+import { Apple, Coffee, Droplet, EggFried, Soup, UtensilsCrossed, Wheat, Zap } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
@@ -17,6 +17,19 @@ type FoodItemCardProps = {
   carbs?: number;
   fat?: number;
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
+};
+
+const MacroItem = ({ icon: Icon, value, label }: { icon: any; value: number; label: string }) => {
+  const theme = useTheme();
+
+  return (
+    <View className="flex-row items-center gap-1">
+      <Icon size={12} color={theme.colors.text.secondary} />
+      <Text className="text-xs text-text-secondary">
+        {value}g {label}
+      </Text>
+    </View>
+  );
 };
 
 export function FoodItemCard({
@@ -57,7 +70,6 @@ export function FoodItemCard({
   const p = Math.round(protein ?? 0);
   const c = Math.round(carbs ?? 0);
   const f = Math.round(fat ?? 0);
-  const combinedDescription = `${description} • ${t('food.manageFoodLibrary.macrosFormat', { protein: p, carbs: c, fat: f })}`;
 
   const handleImageError = () => {
     setImageError(true);
@@ -92,7 +104,12 @@ export function FoodItemCard({
         </View>
         <View className="min-w-0 flex-1">
           <Text className="mb-1 text-lg font-semibold text-text-primary">{name}</Text>
-          <Text className="truncate text-sm text-text-secondary">{combinedDescription}</Text>
+          <Text className="mb-2 truncate text-sm text-text-secondary">{description}</Text>
+          <View className="flex-row items-center gap-3">
+            <MacroItem icon={Zap} value={p} label={t('goalHistoryCard.proteinPrefix')} />
+            <MacroItem icon={Wheat} value={c} label={t('goalHistoryCard.carbsPrefix')} />
+            <MacroItem icon={Droplet} value={f} label={t('goalHistoryCard.fatPrefix')} />
+          </View>
         </View>
         <View className="flex-shrink-0 items-end">
           <Text className="text-2xl font-bold text-accent-secondary">
