@@ -1,30 +1,16 @@
-import { useRouter } from 'expo-router';
-import { LayoutDashboard } from 'lucide-react-native';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
-import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
-import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { MasterLayout } from '../components/MasterLayout';
 import { PhaseWheel } from '../components/PhaseWheel';
 import { PhysiologicalInsightsCard } from '../components/PhysiologicalInsightsCard';
 import { MenstrualService } from '../database/services/MenstrualService';
-import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { theme } from '../theme';
 
 export default function FocusScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
   const { currentPhase, energyLevel, cycleDay, cycle } = useMenstrualCycle();
-
-  const today = useMemo(() => new Date(), []);
-  const {
-    calories: dailyCalories,
-    macros: dailyMacros,
-    nutritionGoal,
-  } = useDailyNutritionSummary({ date: today });
 
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
@@ -69,26 +55,6 @@ export default function FocusScreen() {
               avgPeriodDuration={cycle?.avgPeriodDuration}
             />
           </View>
-
-          {/* Nutrition Summary Integration */}
-          <View className="mb-8">
-            <Text className="mb-4 text-2xl font-bold text-text-primary">
-              {t('home.sections.dailySummary')}
-            </Text>
-            {nutritionGoal ? (
-              <DailySummaryCard
-                calories={dailyCalories}
-                macros={{
-                  protein: dailyMacros.protein,
-                  carbs: dailyMacros.carbs,
-                  fats: dailyMacros.fat,
-                }}
-              />
-            ) : (
-              <DailySummaryEmptyState onSetGoals={() => router.push('/')} />
-            )}
-          </View>
-
           <View className="mb-8">
             <Text className="mb-4 text-2xl font-bold text-text-primary">
               {t('focus.physiologicalInsights')}
