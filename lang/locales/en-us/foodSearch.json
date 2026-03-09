@@ -1,5 +1,6 @@
 {
   "foodSearch": {
+    "commonFoods": "Common Foods",
     "customFoodLabel": "Custom Food",
     "foodDescriptionFormat": "{{brand}} • {{calories}} kcal",
     "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
