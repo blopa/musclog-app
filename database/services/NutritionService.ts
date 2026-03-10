@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
+import { requestWidgetUpdate } from 'react-native-android-widget';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
@@ -55,30 +56,34 @@ export class NutritionService {
 
     // Write to Health Connect (Android only, user-entered records only — HC-sourced records
     // already have externalId set and must not be written back to avoid an echo loop).
-    if (Platform.OS === 'android' && !externalId) {
-      const [nutrients, snapshot] = await Promise.all([
-        log.getNutrients(),
-        log.getDecryptedSnapshot(),
-      ]);
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
 
-      const hcId = await writeNutritionLogToHealthConnect({
-        logId: log.id,
-        date: dateTimestamp,
-        mealType,
-        foodName: snapshot.loggedFoodName ?? '',
-        calories: nutrients.calories,
-        protein: nutrients.protein,
-        carbs: nutrients.carbs,
-        fat: nutrients.fat,
-        fiber: nutrients.fiber,
-      }).catch(() => undefined);
+      if (!externalId) {
+        const [nutrients, snapshot] = await Promise.all([
+          log.getNutrients(),
+          log.getDecryptedSnapshot(),
+        ]);
 
-      if (hcId) {
-        await database.write(async () => {
-          await log.update((record) => {
-            record.externalId = hcId;
+        const hcId = await writeNutritionLogToHealthConnect({
+          logId: log.id,
+          date: dateTimestamp,
+          mealType,
+          foodName: snapshot.loggedFoodName ?? '',
+          calories: nutrients.calories,
+          protein: nutrients.protein,
+          carbs: nutrients.carbs,
+          fat: nutrients.fat,
+          fiber: nutrients.fiber,
+        }).catch(() => undefined);
+
+        if (hcId) {
+          await database.write(async () => {
+            await log.update((record) => {
+              record.externalId = hcId;
+            });
           });
-        });
+        }
       }
     }
 
@@ -303,7 +308,7 @@ export class NutritionService {
       portionId?: string;
     }
   ): Promise<NutritionLog> {
-    return await database.write(async () => {
+    const updatedLog = await database.write(async () => {
       const log = await database.get<NutritionLog>('nutrition_logs').find(id);
 
       if (log.deletedAt) {
@@ -325,6 +330,12 @@ export class NutritionService {
 
       return log;
     });
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
+
+    return updatedLog;
   }
 
   /**
@@ -334,6 +345,10 @@ export class NutritionService {
     const log = await database.get<NutritionLog>('nutrition_logs').find(id);
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
   }
 
   /**
@@ -351,6 +366,10 @@ export class NutritionService {
         )
       );
     });
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
   }
 
   /**
@@ -391,6 +410,10 @@ export class NutritionService {
         )
       );
     });
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
   }
 
   /**
@@ -419,6 +442,10 @@ export class NutritionService {
         )
       );
     });
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
   }
 
   /**
@@ -471,6 +498,10 @@ export class NutritionService {
         )
       );
     });
+
+    if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+    }
   }
 
   /**
@@ -815,6 +846,8 @@ export class NutritionService {
 
     // Write to Health Connect (Android only)
     if (Platform.OS === 'android') {
+      requestWidgetUpdate({ widgetName: 'Nutrition' });
+
       const [nutrients, snapshot] = await Promise.all([
         log.getNutrients(),
         log.getDecryptedSnapshot(),
