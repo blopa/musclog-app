@@ -1,8 +1,8 @@
 import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
 
-import { SmartCameraWidget } from './SmartCameraWidget';
+import { NutritionGoalService, NutritionService } from '../database/services';
 import { NutritionWidget } from './NutritionWidget';
-import { NutritionService, NutritionGoalService } from '../database/services';
+import { SmartCameraWidget } from './SmartCameraWidget';
 
 export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
   const { widgetInfo, widgetAction } = props;

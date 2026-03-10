@@ -69,6 +69,13 @@
       </intent-filter>
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_smartcamera"/>
     </receiver>
+    <receiver android:name=".widget.Nutrition" android:exported="false" android:label="Nutrition Progress">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="com.werules.logger.WIDGET_CLICK"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_nutrition"/>
+    </receiver>
     <activity-alias android:name="ViewPermissionUsageActivity" android:exported="true" android:targetActivity=".MainActivity" android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
       <intent-filter>
         <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>

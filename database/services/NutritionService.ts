@@ -1,8 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
-import { requestWidgetUpdate } from 'react-native-android-widget';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
+import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
 import Food from '../models/Food';
@@ -57,7 +57,7 @@ export class NutritionService {
     // Write to Health Connect (Android only, user-entered records only — HC-sourced records
     // already have externalId set and must not be written back to avoid an echo loop).
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
 
       if (!externalId) {
         const [nutrients, snapshot] = await Promise.all([
@@ -332,7 +332,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
 
     return updatedLog;
@@ -347,7 +347,7 @@ export class NutritionService {
     await log.markAsDeleted();
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
   }
 
@@ -368,7 +368,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
   }
 
@@ -412,7 +412,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
   }
 
@@ -444,7 +444,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
   }
 
@@ -500,7 +500,7 @@ export class NutritionService {
     });
 
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
     }
   }
 
@@ -846,7 +846,7 @@ export class NutritionService {
 
     // Write to Health Connect (Android only)
     if (Platform.OS === 'android') {
-      requestWidgetUpdate({ widgetName: 'Nutrition' });
+      await requestNutritionWidgetUpdate();
 
       const [nutrients, snapshot] = await Promise.all([
         log.getNutrients(),

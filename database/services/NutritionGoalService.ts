@@ -1,8 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 import { Platform } from 'react-native';
-import { requestWidgetUpdate } from 'react-native-android-widget';
 
+import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
 
@@ -95,7 +95,7 @@ export class NutritionGoalService {
       });
 
       if (Platform.OS === 'android') {
-        requestWidgetUpdate({ widgetName: 'Nutrition' });
+        await requestNutritionWidgetUpdate();
       }
 
       return newGoal;
@@ -190,7 +190,7 @@ export class NutritionGoalService {
       });
 
       if (Platform.OS === 'android') {
-        requestWidgetUpdate({ widgetName: 'Nutrition' });
+        await requestNutritionWidgetUpdate();
       }
 
       return goal;
@@ -280,7 +280,7 @@ export class NutritionGoalService {
       await goal.markAsDeleted();
 
       if (Platform.OS === 'android') {
-        requestWidgetUpdate({ widgetName: 'Nutrition' });
+        await requestNutritionWidgetUpdate();
       }
     });
   }

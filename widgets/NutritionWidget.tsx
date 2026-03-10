@@ -1,8 +1,4 @@
-import {
-  type ColorProp,
-  FlexWidget,
-  TextWidget,
-} from 'react-native-android-widget';
+import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-widget';
 
 import { theme } from '../theme';
 
@@ -38,6 +34,16 @@ export function NutritionWidget({
 
   const isSmall = height < 100;
 
+  // Calculate pixel widths for progress bars (accounting for padding: 16px on each side = 32px total)
+  const availableWidth = width - 32;
+  const calorieBarWidth = Math.round((availableWidth * caloriePercentage) / 100);
+  // For macro bars, each flex container gets approximately 1/3 of available width minus margins
+  // Each macro bar container has marginRight/marginLeft of 8px, so total horizontal margins ~24px
+  const macroBarContainerWidth = Math.round((availableWidth - 24) / 3);
+  const proteinBarWidth = Math.round((macroBarContainerWidth * proteinPercentage) / 100);
+  const carbsBarWidth = Math.round((macroBarContainerWidth * carbsPercentage) / 100);
+  const fatBarWidth = Math.round((macroBarContainerWidth * fatPercentage) / 100);
+
   return (
     <FlexWidget
       style={{
@@ -63,8 +69,8 @@ export function NutritionWidget({
           marginBottom: 8,
         }}
       >
-        {!isSmall && (
-           <FlexWidget style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+        {!isSmall ? (
+          <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
             <TextWidget
               text={calories.toLocaleString()}
               style={{
@@ -82,8 +88,8 @@ export function NutritionWidget({
               }}
             />
           </FlexWidget>
-        )}
-        {isSmall && (
+        ) : null}
+        {isSmall ? (
           <TextWidget
             text="MUSCLOG"
             style={{
@@ -92,10 +98,10 @@ export function NutritionWidget({
               color: theme.colors.text.primary as ColorProp,
             }}
           />
-        )}
+        ) : null}
 
-        {isSmall && (
-          <FlexWidget style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+        {isSmall ? (
+          <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
             <TextWidget
               text={calories.toLocaleString()}
               style={{
@@ -113,9 +119,9 @@ export function NutritionWidget({
               }}
             />
           </FlexWidget>
-        )}
+        ) : null}
 
-        {!isSmall && (
+        {!isSmall ? (
           <TextWidget
             text={`${caloriePercentage}%`}
             style={{
@@ -124,7 +130,7 @@ export function NutritionWidget({
               color: theme.colors.accent.primary as ColorProp,
             }}
           />
-        )}
+        ) : null}
       </FlexWidget>
 
       {/* Main Progress Bar */}
@@ -140,7 +146,7 @@ export function NutritionWidget({
         <FlexWidget
           style={{
             height: 'match_parent',
-            width: `${caloriePercentage}%`,
+            width: calorieBarWidth,
             backgroundColor: theme.colors.accent.primary as ColorProp,
             borderRadius: 6,
           }}
@@ -180,34 +186,112 @@ export function NutritionWidget({
         >
           {/* Protein */}
           <FlexWidget style={{ flex: 1, marginRight: 8 }}>
-            <FlexWidget style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-              <TextWidget text="PROT" style={{ fontSize: 10, fontWeight: 'bold', color: theme.colors.text.secondary as ColorProp }} />
-              <TextWidget text={`${Math.round(protein)}g`} style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }} />
+            <FlexWidget
+              style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
+            >
+              <TextWidget
+                text="PROT"
+                style={{
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  color: theme.colors.text.secondary as ColorProp,
+                }}
+              />
+              <TextWidget
+                text={`${Math.round(protein)}g`}
+                style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }}
+              />
             </FlexWidget>
-            <FlexWidget style={{ height: 4, width: 'match_parent', backgroundColor: theme.colors.background.white10 as ColorProp, borderRadius: 2 }}>
-              <FlexWidget style={{ height: 'match_parent', width: `${proteinPercentage}%`, backgroundColor: theme.colors.macros.protein.bg as ColorProp, borderRadius: 2 }} />
+            <FlexWidget
+              style={{
+                height: 4,
+                width: 'match_parent',
+                backgroundColor: theme.colors.background.white10 as ColorProp,
+                borderRadius: 2,
+              }}
+            >
+              <FlexWidget
+                style={{
+                  height: 'match_parent',
+                  width: proteinBarWidth,
+                  backgroundColor: theme.colors.macros.protein.bg as ColorProp,
+                  borderRadius: 2,
+                }}
+              />
             </FlexWidget>
           </FlexWidget>
 
           {/* Carbs */}
           <FlexWidget style={{ flex: 1, marginHorizontal: 4 }}>
-            <FlexWidget style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-              <TextWidget text="CARB" style={{ fontSize: 10, fontWeight: 'bold', color: theme.colors.text.secondary as ColorProp }} />
-              <TextWidget text={`${Math.round(carbs)}g`} style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }} />
+            <FlexWidget
+              style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
+            >
+              <TextWidget
+                text="CARB"
+                style={{
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  color: theme.colors.text.secondary as ColorProp,
+                }}
+              />
+              <TextWidget
+                text={`${Math.round(carbs)}g`}
+                style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }}
+              />
             </FlexWidget>
-            <FlexWidget style={{ height: 4, width: 'match_parent', backgroundColor: theme.colors.background.white10 as ColorProp, borderRadius: 2 }}>
-              <FlexWidget style={{ height: 'match_parent', width: `${carbsPercentage}%`, backgroundColor: theme.colors.macros.carbs.bg as ColorProp, borderRadius: 2 }} />
+            <FlexWidget
+              style={{
+                height: 4,
+                width: 'match_parent',
+                backgroundColor: theme.colors.background.white10 as ColorProp,
+                borderRadius: 2,
+              }}
+            >
+              <FlexWidget
+                style={{
+                  height: 'match_parent',
+                  width: carbsBarWidth,
+                  backgroundColor: theme.colors.macros.carbs.bg as ColorProp,
+                  borderRadius: 2,
+                }}
+              />
             </FlexWidget>
           </FlexWidget>
 
           {/* Fat */}
           <FlexWidget style={{ flex: 1, marginLeft: 8 }}>
-            <FlexWidget style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-              <TextWidget text="FAT" style={{ fontSize: 10, fontWeight: 'bold', color: theme.colors.text.secondary as ColorProp }} />
-              <TextWidget text={`${Math.round(fat)}g`} style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }} />
+            <FlexWidget
+              style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
+            >
+              <TextWidget
+                text="FAT"
+                style={{
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  color: theme.colors.text.secondary as ColorProp,
+                }}
+              />
+              <TextWidget
+                text={`${Math.round(fat)}g`}
+                style={{ fontSize: 10, color: theme.colors.text.primary as ColorProp }}
+              />
             </FlexWidget>
-            <FlexWidget style={{ height: 4, width: 'match_parent', backgroundColor: theme.colors.background.white10 as ColorProp, borderRadius: 2 }}>
-              <FlexWidget style={{ height: 'match_parent', width: `${fatPercentage}%`, backgroundColor: theme.colors.macros.fat.bg as ColorProp, borderRadius: 2 }} />
+            <FlexWidget
+              style={{
+                height: 4,
+                width: 'match_parent',
+                backgroundColor: theme.colors.background.white10 as ColorProp,
+                borderRadius: 2,
+              }}
+            >
+              <FlexWidget
+                style={{
+                  height: 'match_parent',
+                  width: fatBarWidth,
+                  backgroundColor: theme.colors.macros.fat.bg as ColorProp,
+                  borderRadius: 2,
+                }}
+              />
             </FlexWidget>
           </FlexWidget>
         </FlexWidget>
