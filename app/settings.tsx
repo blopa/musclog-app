@@ -161,7 +161,7 @@ export default function SettingsScreen() {
         <SettingsCard
           icon={
             <MaterialIcons
-              name="tune"
+              name="sd-storage"
               size={theme.iconSize['2xl']}
               color={theme.colors.accent.primary}
             />

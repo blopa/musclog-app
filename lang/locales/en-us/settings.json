@@ -24,7 +24,7 @@
       "syncing": "Syncing..."
     },
     "advancedSettings": {
-      "title": "Advanced Settings",
+      "title": "Local Data Settings",
       "subtitle": "Data export, integrations, cache",
       "dataPortability": "DATA PORTABILITY",
       "exportFitnessData": "Export Fitness Data",
