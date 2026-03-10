@@ -11,19 +11,18 @@
   },
 
   "include": [
+    "theme.ts",
+    "nativewind-env.d.ts",
     "app",
     "components",
-    "lang",
-    "scripts",
-    "theme.ts",
-    "App.tsx",
-    "nativewind-env.d.ts",
+    "constants",
     "database",
     "hooks",
+    "lang",
+    "services",
+    "types",
     "utils",
-    "constants",
-    "widgets",
-    "types"
+    "widgets"
   ],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "tailwind.config.js"]
 }

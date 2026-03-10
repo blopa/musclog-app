@@ -18,11 +18,7 @@ export function SmartCameraWidget() {
         uri: 'com.werules.logger://?action=open-camera',
       }}
     >
-      <ImageWidget
-        image={require('../assets/logo.png')}
-        imageWidth={256}
-        imageHeight={256}
-      />
+      <ImageWidget image={require('../assets/logo.png')} imageWidth={256} imageHeight={256} />
     </FlexWidget>
   );
 }
