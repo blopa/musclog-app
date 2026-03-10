@@ -161,7 +161,7 @@ export const schema = appSchema({
         { name: 'micros_json', type: 'string', isOptional: true },
 
         { name: 'is_favorite', type: 'boolean' }, // Quick access
-        { name: 'source', type: 'string', isOptional: true }, // 'user', 'api', 'scanned'
+        { name: 'source', type: 'string', isOptional: true }, // 'user', 'api', 'scanned' <- TODO: rename this to input_type
         { name: 'image_url', type: 'string', isOptional: true }, // URL to product image
 
         { name: 'created_at', type: 'number' },
