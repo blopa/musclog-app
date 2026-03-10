@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlexWidget, IconWidget } from 'react-native-android-widget';
+import { FlexWidget, ImageWidget } from 'react-native-android-widget';
 
 export function SmartCameraWidget() {
   return (
@@ -18,7 +18,7 @@ export function SmartCameraWidget() {
         uri: 'com.werules.logger://?action=open-camera',
       }}
     >
-      <IconWidget icon="camera" size={48} font="material" />
+      <ImageWidget image={require('../assets/icon-square.png')} imageWidth={384} imageHeight={384} />
     </FlexWidget>
   );
 }

@@ -97,7 +97,6 @@ export default function HomeScreen() {
 
   // Check for widget actions via URL params (works on cold start)
   useEffect(() => {
-    console.log('THE PARAM IS 1', params.action);
     if (params.action === 'open-camera') {
       setCameraMode('ai-meal-photo');
       setIsCameraVisible(true);
@@ -108,7 +107,6 @@ export default function HomeScreen() {
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
-    console.log('THE PARAM IS 2', params.action);
     const handleUrl = ({ url }: { url: string }) => {
       const { queryParams } = ExpoLinking.parse(url);
       if (queryParams?.action === 'open-camera') {
