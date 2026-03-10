@@ -1,4 +1,4 @@
-import { Activity, Calendar, Plus } from 'lucide-react-native';
+import { Activity, Calendar, Plus, Settings } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -6,6 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { DateNavigator } from '../components/DateNavigator';
 import { MasterLayout } from '../components/MasterLayout';
 import { CycleLogModal } from '../components/modals/CycleLogModal';
+import { CycleSettingsModal } from '../components/modals/CycleSettingsModal';
 import { PhaseWheel } from '../components/PhaseWheel';
 import { PhysiologicalInsightsCard } from '../components/PhysiologicalInsightsCard';
 import { UserMetricService } from '../database/services';
@@ -17,6 +18,7 @@ export default function CycleScreen() {
   const { t } = useTranslation();
   const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -67,7 +69,18 @@ export default function CycleScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-8">
           {/* Title */}
-          <Text className="mb-6 text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
+          <View className="mb-6 flex-row items-center justify-between">
+            <Text className="text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
+            {cycle ? (
+              <Pressable
+                onPress={() => setIsSettingsModalVisible(true)}
+                className="h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                hitSlop={8}
+              >
+                <Settings size={20} color={theme.colors.text.secondary} />
+              </Pressable>
+            ) : null}
+          </View>
 
           {/* Day counter + phase label */}
           <View className="mb-8 flex-row items-center justify-between">
@@ -203,6 +216,14 @@ export default function CycleScreen() {
         onClose={() => setIsLogModalVisible(false)}
         initialDate={selectedDate}
       />
+
+      {cycle ? (
+        <CycleSettingsModal
+          visible={isSettingsModalVisible}
+          onClose={() => setIsSettingsModalVisible(false)}
+          cycle={cycle}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

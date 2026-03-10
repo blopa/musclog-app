@@ -9,6 +9,11 @@
     "noLogsToday": "No symptoms logged for today.",
     "logSymptoms": "Log Symptoms",
     "logDaily": "Daily Cycle Log",
+    "settings": {
+      "title": "Cycle Settings",
+      "subtitle": "Edit your cycle configuration",
+      "save": "Save Changes"
+    },
     "symptoms": {
       "cramps": "Cramps",
       "headache": "Headache",
