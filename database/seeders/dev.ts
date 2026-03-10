@@ -1755,7 +1755,6 @@ async function seedMeals(): Promise<{ created: number }> {
 }
 
 export async function seedDevData(): Promise<boolean> {
-  return false;
   const exercisesSeeded = await seedExercisesIfEmpty();
   const foodsSeeded = await seedFoods();
   const mealsSeeded = await seedMeals();

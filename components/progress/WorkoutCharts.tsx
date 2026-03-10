@@ -1,0 +1,59 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
+
+import { BarChart } from '../charts/BarChart';
+import { LineChart } from '../charts/LineChart';
+import { ProgressChartSection } from './ProgressChartSection';
+import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
+
+interface WorkoutChartsProps {
+  workoutVolumeHistory: WorkoutVolumePoint[];
+  muscleGroupSets: MuscleGroupSets[];
+}
+
+export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
+  const { t } = useTranslation();
+
+  return (
+    <View>
+      {workoutVolumeHistory.length >= 2 && (
+        <ProgressChartSection
+          title={t('progress.workoutVolume')}
+          subtitle={t('progress.workoutVolumeSubtitle')}
+        >
+          <LineChart
+            data={workoutVolumeHistory.map((p) => ({ x: p.date, y: p.volume }))}
+            height={200}
+            lineColor="#8b5cf6"
+            areaColor="rgba(139, 92, 246, 0.1)"
+            xDomain={[
+              workoutVolumeHistory[0].date,
+              workoutVolumeHistory[workoutVolumeHistory.length - 1].date,
+            ]}
+            yDomain={[
+              Math.min(...workoutVolumeHistory.map((p) => p.volume)) * 0.5,
+              Math.max(...workoutVolumeHistory.map((p) => p.volume)) * 1.2,
+            ]}
+            tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
+          />
+        </ProgressChartSection>
+      )}
+
+      {muscleGroupSets.length > 0 && (
+        <ProgressChartSection
+          title={t('progress.setsPerMuscleGroup')}
+          subtitle={t('progress.setsPerMuscleGroupSubtitle')}
+        >
+          <BarChart
+            data={muscleGroupSets.map((m, i) => ({ x: i, y: m.sets }))}
+            height={200}
+            barColor="#ec4899"
+            xAxisLabels={muscleGroupSets.map((m) => m.muscleGroup)}
+            tooltipFormatter={(p) => `${muscleGroupSets[p.x].muscleGroup}: ${p.y} sets`}
+          />
+        </ProgressChartSection>
+      )}
+    </View>
+  );
+}

@@ -4,6 +4,44 @@
     "currentTdee": "Current TDEE",
     "basedOnRecentActivity": "BASED ON RECENT ACTIVITY & NUTRITION",
     "basedOnActivityLevel": "BASED ON ACTIVITY LEVEL & STATS",
-    "kcalPerDay": "kcal/day"
+    "kcalPerDay": "kcal/day",
+    "title": "Progress",
+    "weeklyAverages": "Weekly Averages",
+    "weight": "Weight",
+    "weightTrendSubtitle": "Body weight over time",
+    "bodyFat": "Body Fat",
+    "bodyFatSubtitle": "Fat percentage over time",
+    "ffmi": "FFMI",
+    "ffmiSubtitle": "Fat-Free Mass Index",
+    "nutrition": "Nutrition",
+    "nutritionView": {
+      "calories": "Calories",
+      "macros": "Macros",
+      "combined": "Combined"
+    },
+    "workoutVolume": "Workout Volume",
+    "workoutVolumeSubtitle": "Total volume per workout",
+    "setsPerMuscleGroup": "Sets per Muscle Group",
+    "setsPerMuscleGroupSubtitle": "Total sets for the period",
+    "tdee": "TDEE",
+    "weeklyWeightChange": "Weekly Weight Change",
+    "fatMassChange": "Fat Mass Change",
+    "leanMassChange": "Lean Mass Change",
+    "bodyFatGoalWeights": "Goal weights at different BF%",
+    "manageMetrics": "Manage Metrics",
+    "manageNutrition": "Manage Nutrition",
+    "listMeasurements": "List Measurements",
+    "syncHealthConnect": "Sync Health Connect",
+    "getAiInsights": "Get Progression Insights",
+    "measurement": {
+      "chest": "Chest",
+      "waist": "Waist",
+      "hips": "Hips",
+      "arms": "Arms",
+      "thighs": "Thighs",
+      "calves": "Calves",
+      "neck": "Neck",
+      "shoulders": "Shoulders"
+    }
   }
 }

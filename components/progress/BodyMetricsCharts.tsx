@@ -1,0 +1,86 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
+
+import { LineChart } from '../charts/LineChart';
+import { ProgressChartSection } from './ProgressChartSection';
+import { MetricPoint } from '../../database/services/ProgressService';
+
+interface BodyMetricsChartsProps {
+  weightHistory: MetricPoint[];
+  fatHistory: MetricPoint[];
+  ffmiHistory: MetricPoint[];
+  units: string;
+}
+
+export function BodyMetricsCharts({
+  weightHistory,
+  fatHistory,
+  ffmiHistory,
+  units,
+}: BodyMetricsChartsProps) {
+  const { t } = useTranslation();
+
+  const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
+
+  return (
+    <View>
+      {weightHistory.length >= 2 && (
+        <ProgressChartSection
+          title={t('progress.weight')}
+          subtitle={t('progress.weightTrendSubtitle')}
+        >
+          <LineChart
+            data={weightHistory.map((p) => ({ x: p.date, y: p.value }))}
+            height={200}
+            lineColor="#3b82f6"
+            areaColor="rgba(59, 130, 246, 0.1)"
+            xDomain={[weightHistory[0].date, weightHistory[weightHistory.length - 1].date]}
+            yDomain={[
+              Math.min(...weightHistory.map((p) => p.value)) * 0.95,
+              Math.max(...weightHistory.map((p) => p.value)) * 1.05,
+            ]}
+            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
+          />
+        </ProgressChartSection>
+      )}
+
+      {fatHistory.length >= 2 && (
+        <ProgressChartSection
+          title={t('progress.bodyFat')}
+          subtitle={t('progress.bodyFatSubtitle')}
+        >
+          <LineChart
+            data={fatHistory.map((p) => ({ x: p.date, y: p.value }))}
+            height={200}
+            lineColor="#ef4444"
+            areaColor="rgba(239, 68, 68, 0.1)"
+            xDomain={[fatHistory[0].date, fatHistory[fatHistory.length - 1].date]}
+            yDomain={[
+              Math.min(...fatHistory.map((p) => p.value)) * 0.9,
+              Math.max(...fatHistory.map((p) => p.value)) * 1.1,
+            ]}
+            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
+          />
+        </ProgressChartSection>
+      )}
+
+      {ffmiHistory.length >= 2 && (
+        <ProgressChartSection title={t('progress.ffmi')} subtitle={t('progress.ffmiSubtitle')}>
+          <LineChart
+            data={ffmiHistory.map((p) => ({ x: p.date, y: p.value }))}
+            height={200}
+            lineColor="#10b981"
+            areaColor="rgba(16, 185, 129, 0.1)"
+            xDomain={[ffmiHistory[0].date, ffmiHistory[ffmiHistory.length - 1].date]}
+            yDomain={[
+              Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
+              Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
+            ]}
+            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+          />
+        </ProgressChartSection>
+      )}
+    </View>
+  );
+}

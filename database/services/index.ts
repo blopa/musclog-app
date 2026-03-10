@@ -26,3 +26,4 @@ export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
 export { type EnrichedWorkoutLogSet, WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';
+export { ProgressService } from './ProgressService';
