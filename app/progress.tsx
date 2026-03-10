@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import { ScrollView, View, ActivityIndicator, Text } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { MoreVertical, Sparkles, Ruler, Scale, Utensils, RefreshCw } from 'lucide-react-native';
+import { Sparkles, Ruler, Scale, Utensils, RefreshCw } from 'lucide-react-native';
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -19,6 +19,7 @@ import { useTheme } from '../hooks/useTheme';
 import { MenuButton } from '../components/theme/MenuButton';
 import { useAiEnabled } from '../hooks/useAiEnabled';
 import { healthDataSyncService } from '../services/healthDataSync';
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 
 export default function ProgressScreen() {
   const { t } = useTranslation();
@@ -53,45 +54,54 @@ export default function ProgressScreen() {
     }
   };
 
-  const menuItems = [
+  const menuItems: BottomPopUpMenuItem[] = [
     ...(aiEnabled ? [{
-      label: t('progress.getAiInsights'),
+      title: t('progress.getAiInsights'),
+      description: 'Get AI-powered insights on your progress',
       icon: Sparkles,
       onPress: () => {
         router.push('/chat?context=progression');
-        setShowMenu(false);
       },
-      color: theme.colors.accent.primary,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.background.iconDarker,
     }] : []),
     {
-      label: t('progress.manageMetrics'),
+      title: t('progress.manageMetrics'),
+      description: 'Add or edit your weight and body fat data',
       icon: Scale,
       onPress: () => {
         router.push('/settings');
-        setShowMenu(false);
       },
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
     },
     {
-      label: t('progress.manageNutrition'),
+      title: t('progress.manageNutrition'),
+      description: 'Review and edit your food logs',
       icon: Utensils,
       onPress: () => {
         router.push('/nutrition/manage');
-        setShowMenu(false);
       },
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
     },
     {
-      label: t('progress.listMeasurements'),
+      title: t('progress.listMeasurements'),
+      description: 'View all your body measurements',
       icon: Ruler,
       onPress: () => {
         router.push('/profile');
-        setShowMenu(false);
       },
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
     },
     {
-      label: t('progress.syncHealthConnect'),
+      title: t('progress.syncHealthConnect'),
+      description: 'Import data from Google Health Connect',
       icon: RefreshCw,
       onPress: handleSync,
-      loading: isSyncing,
+      iconColor: theme.colors.accent.secondary,
+      iconBgColor: theme.colors.background.iconDarker,
     },
   ];
 
@@ -101,12 +111,17 @@ export default function ProgressScreen() {
         options={{
           title: t('progress.title'),
           headerRight: () => (
-            <MenuButton onPress={() => setShowMenu(!showMenu)} />
+            <MenuButton onPress={() => setShowMenu(true)} />
           ),
           headerShown: true,
+          headerStyle: {
+            backgroundColor: theme.colors.background.primary,
+          },
+          headerTintColor: theme.colors.text.primary,
+          headerShadowVisible: false,
         }}
       />
-      <View className="flex-1" style={{ paddingTop: 8 }}>
+      <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
         <ProgressDateFilter
           activePreset={preset}
           onPresetChange={changePreset}
@@ -133,6 +148,7 @@ export default function ProgressScreen() {
               <NutritionCharts
                 nutritionHistory={data?.nutritionHistory || []}
                 weightHistory={data?.weightHistory || []}
+                units={units}
               />
 
               <WorkoutCharts
@@ -161,31 +177,12 @@ export default function ProgressScreen() {
           </ScrollView>
         )}
 
-        {showMenu && (
-          <TouchableOpacity
-            className="absolute bottom-0 left-0 right-0 top-0 z-40 bg-black/20"
-            onPress={() => setShowMenu(false)}
-          >
-            <View
-              className="absolute right-4 z-50 w-64 rounded-2xl bg-background-card p-2 shadow-xl"
-              style={{ top: insets.top + 50 }}
-            >
-              {menuItems.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={item.onPress}
-                  className="flex-row items-center gap-3 rounded-xl p-3 active:bg-background-tertiary"
-                >
-                  <item.icon size={20} color={item.color || theme.colors.text.secondary} />
-                  <Text className="flex-1 text-sm font-medium text-text-primary">
-                    {item.label}
-                  </Text>
-                  {item.loading && <ActivityIndicator size="small" color={theme.colors.accent.primary} />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </TouchableOpacity>
-        )}
+        <BottomPopUpMenu
+          visible={showMenu}
+          onClose={() => setShowMenu(false)}
+          title={t('progress.quickActions')}
+          items={menuItems}
+        />
       </View>
     </MasterLayout>
   );
