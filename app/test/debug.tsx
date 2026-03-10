@@ -418,6 +418,30 @@ export default function DebugTestScreen() {
     }
   };
 
+  const testRestTimerNotification = async () => {
+    try {
+      setNotificationStatus('Scheduling in 5s...');
+      await NotificationService.testRestTimerNotification(5);
+      setNotificationStatus('Rest timer notification scheduled in 5s ✓');
+      console.log('Rest timer notification scheduled');
+    } catch (error) {
+      console.error('Error testing rest timer notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const testWorkoutDurationWarning = async () => {
+    try {
+      setNotificationStatus('Scheduling in 5s...');
+      await NotificationService.testWorkoutDurationWarning(5);
+      setNotificationStatus('Workout duration warning scheduled in 5s ✓');
+      console.log('Workout duration warning scheduled');
+    } catch (error) {
+      console.error('Error testing workout duration warning:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   const dismissActiveWorkoutNotification = async () => {
     try {
       setNotificationStatus('Dismissing...');
@@ -507,6 +531,18 @@ export default function DebugTestScreen() {
               <Button
                 onPress={testFertileWindowNotification}
                 label="Test Fertile Window"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testRestTimerNotification}
+                label="Test Rest Timer Alert (5s)"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testWorkoutDurationWarning}
+                label="Test Long Workout Warning (5s)"
                 size="sm"
                 variant="secondary"
               />

@@ -513,4 +513,66 @@ export class NotificationService {
       () => {}
     );
   }
+
+  static async testRestTimerNotification(delaySeconds = 5) {
+    if (Platform.OS === 'web') {
+      console.log('[Test Rest Timer Notification]');
+      return null;
+    }
+
+    await this.configure();
+    const hasPermission = await this.requestPermissions();
+    if (!hasPermission) {
+      console.warn('[NotificationService] Permissions not granted for test notification');
+      return null;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+
+    return await Notifications.scheduleNotificationAsync({
+      identifier: 'rest-timer-notification',
+      content: {
+        title: i18n.t('notifications.types.restTimerAlert.title'),
+        body: i18n.t('notifications.types.restTimerAlert.body'),
+        data: { type: 'rest-timer-alert' },
+        ...Platform.select({ android: { channelId: 'default' } }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: delaySeconds,
+      },
+    });
+  }
+
+  static async testWorkoutDurationWarning(delaySeconds = 5) {
+    if (Platform.OS === 'web') {
+      console.log('[Test Workout Duration Warning]');
+      return null;
+    }
+
+    await this.configure();
+    const hasPermission = await this.requestPermissions();
+    if (!hasPermission) {
+      console.warn('[NotificationService] Permissions not granted for test notification');
+      return null;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync('workout-duration-warning').catch(
+      () => {}
+    );
+
+    return await Notifications.scheduleNotificationAsync({
+      identifier: 'workout-duration-warning',
+      content: {
+        title: i18n.t('notifications.types.workoutDurationWarning.title'),
+        body: i18n.t('notifications.types.workoutDurationWarning.body'),
+        data: { type: 'workout-duration-warning' },
+        ...Platform.select({ android: { channelId: 'default' } }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: delaySeconds,
+      },
+    });
+  }
 }

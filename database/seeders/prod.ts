@@ -139,6 +139,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setNotificationsActiveWorkout(false);
     await SettingsService.setNotificationsNutritionOverview(false);
     await SettingsService.setNotificationsMenstrualCycle(false);
+    await SettingsService.setNotificationsRestTimer(false);
+    await SettingsService.setNotificationsWorkoutDuration(false);
     console.log('Set default notification settings to false');
 
     // Set default navigation bar slots
