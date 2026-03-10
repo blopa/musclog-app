@@ -60,7 +60,7 @@ export function NutritionWidget({
         uri: 'com.werules.logger://?action=open-nutrition',
       }}
     >
-      {/* Header Info */}
+      {/* Header Info - MUSCLOG label on left, calories on right */}
       <FlexWidget
         style={{
           flexDirection: 'row',
@@ -69,68 +69,31 @@ export function NutritionWidget({
           marginBottom: 8,
         }}
       >
-        {!isSmall ? (
-          <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <TextWidget
-              text={calories.toLocaleString()}
-              style={{
-                fontSize: 24,
-                fontWeight: 'bold',
-                color: theme.colors.text.primary as ColorProp,
-              }}
-            />
-            <TextWidget
-              text={` / ${targetCalories.toLocaleString()} kcal`}
-              style={{
-                fontSize: 14,
-                color: theme.colors.text.secondary as ColorProp,
-                marginLeft: 4,
-              }}
-            />
-          </FlexWidget>
-        ) : null}
-        {isSmall ? (
+        <TextWidget
+          text="MUSCLOG"
+          style={{
+            fontSize: 14,
+            color: theme.colors.text.primary as ColorProp,
+          }}
+        />
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <TextWidget
-            text="MUSCLOG"
+            text={calories.toLocaleString()}
             style={{
-              fontSize: 14,
+              fontSize: isSmall ? 18 : 24,
               fontWeight: 'bold',
               color: theme.colors.text.primary as ColorProp,
             }}
           />
-        ) : null}
-
-        {isSmall ? (
-          <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-            <TextWidget
-              text={calories.toLocaleString()}
-              style={{
-                fontSize: 18,
-                fontWeight: 'bold',
-                color: theme.colors.text.primary as ColorProp,
-              }}
-            />
-            <TextWidget
-              text={` / ${targetCalories.toLocaleString()} kcal`}
-              style={{
-                fontSize: 12,
-                color: theme.colors.text.secondary as ColorProp,
-                marginLeft: 2,
-              }}
-            />
-          </FlexWidget>
-        ) : null}
-
-        {!isSmall ? (
           <TextWidget
-            text={`${caloriePercentage}%`}
+            text={` / ${targetCalories.toLocaleString()} kcal`}
             style={{
-              fontSize: 14,
-              fontWeight: 'bold',
-              color: theme.colors.accent.primary as ColorProp,
+              fontSize: isSmall ? 12 : 14,
+              color: theme.colors.text.secondary as ColorProp,
+              marginLeft: isSmall ? 2 : 4,
             }}
           />
-        ) : null}
+        </FlexWidget>
       </FlexWidget>
 
       {/* Main Progress Bar */}
@@ -147,7 +110,11 @@ export function NutritionWidget({
           style={{
             height: 'match_parent',
             width: calorieBarWidth,
-            backgroundColor: theme.colors.accent.primary as ColorProp,
+            backgroundGradient: {
+              from: theme.colors.status.violet500 as ColorProp, // Blue-purple start (#8b5cf6)
+              to: theme.colors.accent.tertiary as ColorProp, // Teal-green end (#14b8a6)
+              orientation: 'LEFT_RIGHT',
+            },
             borderRadius: 6,
           }}
         />
@@ -173,7 +140,7 @@ export function NutritionWidget({
             style={{
               fontSize: 12,
               fontWeight: 'bold',
-              color: theme.colors.accent.primary as ColorProp,
+              color: theme.colors.status.emeraldLight as ColorProp, // Vibrant green matching progress bar
             }}
           />
         </FlexWidget>
