@@ -52,7 +52,7 @@ export default function HomeScreen() {
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
-  const params = useLocalSearchParams<{ code?: string }>();
+  const params = useLocalSearchParams<{ code?: string; action?: string }>();
 
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
@@ -93,6 +93,16 @@ export default function HomeScreen() {
     initialLimit: 2,
     groupByMonth: false,
   });
+
+  // Check for widget actions
+  useEffect(() => {
+    if (params.action === 'open-camera') {
+      setCameraMode('ai-meal-photo');
+      setIsCameraVisible(true);
+      // Clear the parameter so it doesn't reopen if the component re-renders
+      router.setParams({ action: undefined });
+    }
+  }, [params.action, router]);
 
   // Check onboarding status on mount
   useEffect(() => {

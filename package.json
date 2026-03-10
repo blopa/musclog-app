@@ -102,6 +102,7 @@
     "react-dom": "19.1.0",
     "react-i18next": "16.5.6",
     "react-native": "0.81.5",
+    "react-native-android-widget": "^0.20.1",
     "react-native-barcodes-detector": "^0.1.1",
     "react-native-device-info": "15.0.2",
     "react-native-draggable-flatlist": "4.0.3",
@@ -149,7 +150,7 @@
     "tailwindcss": "3.4.19",
     "typescript": "5.9.3"
   },
-  "main": "expo-router/entry",
+  "main": "index.js",
   "private": false,
   "license": "CC-BY-NC-ND-4.0",
   "expo": {

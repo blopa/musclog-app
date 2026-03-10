@@ -68,6 +68,22 @@
         {
           "assets": ["./assets/exercises"]
         }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "SmartCamera",
+              "label": "Smart Camera",
+              "minWidth": "60dp",
+              "minHeight": "60dp",
+              "targetCellWidth": 1,
+              "targetCellHeight": 1,
+              "description": "Open Smart Camera"
+            }
+          ]
+        }
       ]
     ],
     "orientation": "portrait",
