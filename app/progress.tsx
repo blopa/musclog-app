@@ -3,6 +3,7 @@ import { ScrollView, View, ActivityIndicator, TouchableOpacity, Text } from 'rea
 import { Stack, useRouter } from 'expo-router';
 import { MoreVertical, Sparkles, Ruler, Scale, Utensils, RefreshCw } from 'lucide-react-native';
 import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '../components/MasterLayout';
 import { useProgressData } from '../hooks/useProgressData';
@@ -23,8 +24,9 @@ export default function ProgressScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { units } = useSettings();
-  const { aiEnabled } = useAiEnabled();
+  const { isEnabled: aiEnabled } = useAiEnabled();
   const {
     data,
     isLoading,
@@ -65,7 +67,7 @@ export default function ProgressScreen() {
       label: t('progress.manageMetrics'),
       icon: Scale,
       onPress: () => {
-        router.push('/settings'); // Or specific metrics screen if it exists
+        router.push('/settings');
         setShowMenu(false);
       },
     },
@@ -101,9 +103,10 @@ export default function ProgressScreen() {
           headerRight: () => (
             <MenuButton onPress={() => setShowMenu(!showMenu)} />
           ),
+          headerShown: true,
         }}
       />
-      <View className="flex-1">
+      <View className="flex-1" style={{ paddingTop: 8 }}>
         <ProgressDateFilter
           activePreset={preset}
           onPresetChange={changePreset}
@@ -116,7 +119,7 @@ export default function ProgressScreen() {
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           </View>
         ) : (
-          <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 32 }}>
+          <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
             <View className="px-4">
               {data?.insights && <ProgressInsightsSection insights={data.insights} />}
 
@@ -164,8 +167,8 @@ export default function ProgressScreen() {
             onPress={() => setShowMenu(false)}
           >
             <View
-              className="absolute right-4 top-12 z-50 w-64 rounded-2xl bg-background-card p-2 shadow-xl"
-              style={{ top: 60 }}
+              className="absolute right-4 z-50 w-64 rounded-2xl bg-background-card p-2 shadow-xl"
+              style={{ top: insets.top + 50 }}
             >
               {menuItems.map((item, index) => (
                 <TouchableOpacity

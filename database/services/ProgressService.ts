@@ -12,7 +12,10 @@ import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
 import { UserService } from './UserService';
 import { NutritionGoalService } from './NutritionGoalService';
-import { ffmiFromWeightHeightAndBodyFat, calculateTDEE } from '../../utils/nutritionCalculator';
+import {
+  ffmiFromWeightHeightAndBodyFat,
+  calculateTDEE,
+} from '../../utils/nutritionCalculator';
 
 export interface MetricPoint {
   date: number;
@@ -115,9 +118,7 @@ export class ProgressService {
       .fetch();
 
     const workoutVolumeHistory = await this.calculateWorkoutVolumeHistory(workoutLogs);
-    const muscleGroupSets = useWeeklyAverages
-      ? []
-      : await this.calculateMuscleGroupSets(workoutLogs);
+    const muscleGroupSets = useWeeklyAverages ? [] : await this.calculateMuscleGroupSets(workoutLogs);
 
     // 4. Fetch Measurements
     const measurementTypes: UserMetricType[] = [
@@ -325,12 +326,10 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing);
     }
 
-    return Array.from(weeksMap.entries())
-      .map(([index, values]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
-        value: values.reduce((a, b) => a + b, 0) / values.length,
-      }))
-      .sort((a, b) => a.date - b.date);
+    return Array.from(weeksMap.entries()).map(([index, values]) => ({
+      date: firstDate + index * 7 * MS_PER_DAY,
+      value: values.reduce((a, b) => a + b, 0) / values.length,
+    })).sort((a, b) => a.date - b.date);
   }
 
   private static aggregateNutritionWeekly(daily: DailyNutrition[]): DailyNutrition[] {
@@ -345,31 +344,29 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing);
     }
 
-    return Array.from(weeksMap.entries())
-      .map(([index, days]) => {
-        const sum = days.reduce(
-          (acc, curr) => {
-            acc.calories += curr.calories;
-            acc.protein += curr.protein;
-            acc.carbs += curr.carbs;
-            acc.fat += curr.fat;
-            acc.fiber += curr.fiber;
-            return acc;
-          },
-          { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
-        );
+    return Array.from(weeksMap.entries()).map(([index, days]) => {
+      const sum = days.reduce(
+        (acc, curr) => {
+          acc.calories += curr.calories;
+          acc.protein += curr.protein;
+          acc.carbs += curr.carbs;
+          acc.fat += curr.fat;
+          acc.fiber += curr.fiber;
+          return acc;
+        },
+        { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+      );
 
-        const count = days.length;
-        return {
-          date: firstDate + index * 7 * MS_PER_DAY,
-          calories: sum.calories / count,
-          protein: sum.protein / count,
-          carbs: sum.carbs / count,
-          fat: sum.fat / count,
-          fiber: sum.fiber / count,
-        };
-      })
-      .sort((a, b) => a.date - b.date);
+      const count = days.length;
+      return {
+        date: firstDate + index * 7 * MS_PER_DAY,
+        calories: sum.calories / count,
+        protein: sum.protein / count,
+        carbs: sum.carbs / count,
+        fat: sum.fat / count,
+        fiber: sum.fiber / count,
+      };
+    }).sort((a, b) => a.date - b.date);
   }
 
   private static aggregateVolumeWeekly(points: WorkoutVolumePoint[]): WorkoutVolumePoint[] {
@@ -383,12 +380,10 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing + p.volume);
     }
 
-    return Array.from(weeksMap.entries())
-      .map(([index, volume]) => ({
-        date: firstDate + index * 7 * MS_PER_DAY,
-        volume,
-      }))
-      .sort((a, b) => a.date - b.date);
+    return Array.from(weeksMap.entries()).map(([index, volume]) => ({
+      date: firstDate + index * 7 * MS_PER_DAY,
+      volume,
+    })).sort((a, b) => a.date - b.date);
   }
 
   private static async calculateInsights(
@@ -400,7 +395,7 @@ export class ProgressService {
     endDate: number,
     isImperial: boolean
   ): Promise<ProgressInsights> {
-    const user = await UserService.getUser();
+    const user = await UserService.getCurrentUser();
     const currentGoal = await NutritionGoalService.getCurrent();
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
@@ -449,12 +444,7 @@ export class ProgressService {
 
     let leanBodyMassChange = 0;
     let fatMassChange = 0;
-    if (
-      initialWeight > 0 &&
-      finalWeight > 0 &&
-      initialFat !== undefined &&
-      finalFat !== undefined
-    ) {
+    if (initialWeight > 0 && finalWeight > 0 && initialFat !== undefined && finalFat !== undefined) {
       const initialLBM = initialWeight * (1 - initialFat / 100);
       const finalLBM = finalWeight * (1 - finalFat / 100);
       const initialFatMass = initialWeight * (initialFat / 100);
@@ -474,9 +464,9 @@ export class ProgressService {
       const currentLBM = finalWeight * (1 - finalFat / 100);
       targetWeights = {
         bf5: currentLBM / (1 - 0.05),
-        bf10: currentLBM / (1 - 0.1),
+        bf10: currentLBM / (1 - 0.10),
         bf15: currentLBM / (1 - 0.15),
-        bf20: currentLBM / (1 - 0.2),
+        bf20: currentLBM / (1 - 0.20),
       };
 
       if (isImperial) {
