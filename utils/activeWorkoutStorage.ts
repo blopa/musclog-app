@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { NotificationService } from '../services/NotificationService';
+
 const ACTIVE_WORKOUT_KEY = 'active_workout_log_id';
 
 /**
@@ -28,11 +30,12 @@ export async function setActiveWorkoutLogId(workoutLogId: string): Promise<void>
 }
 
 /**
- * Clear the active workout log ID from AsyncStorage
+ * Clear the active workout log ID from AsyncStorage and dismiss the active workout notification.
  */
 export async function clearActiveWorkoutLogId(): Promise<void> {
   try {
     await AsyncStorage.removeItem(ACTIVE_WORKOUT_KEY);
+    await NotificationService.dismissActiveWorkoutNotification();
   } catch (error) {
     console.error('Error clearing active workout from storage:', error);
     throw error;

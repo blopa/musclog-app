@@ -17,7 +17,13 @@ import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
 import { UnreadChatProvider } from '../components/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
+import { getActiveWorkoutLogId } from '../utils/activeWorkoutStorage';
 import { configureDailyTasks } from '../utils/configureDailyTasks';
+import {
+  addNotificationResponseReceivedListener,
+  getLastNotificationResponseAsync,
+  handleNotificationResponse,
+} from '../utils/notifications';
 import { captureException } from '../utils/sentry';
 
 const queryClient = new QueryClient({
@@ -81,12 +87,39 @@ function RootLayout() {
 
     // Initialize Notifications
     NotificationService.configure()
-      .then(() => {
+      .then(async () => {
         NotificationService.scheduleWorkoutReminders();
         NotificationService.scheduleNutritionOverview();
         NotificationService.scheduleMenstrualCycleNotifications();
+
+        // Dismiss any orphaned workout notification from a previous killed session
+        const activeWorkoutLogId = await getActiveWorkoutLogId();
+        if (!activeWorkoutLogId) {
+          NotificationService.dismissActiveWorkoutNotification();
+        }
       })
       .catch((err) => console.warn('[NotificationService] Init error:', err));
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    // Handle cold-start: app opened by tapping a notification
+    getLastNotificationResponseAsync()
+      .then((response) => {
+        if (response) {
+          handleNotificationResponse(response);
+        }
+      })
+      .catch((err) => console.warn('[NotificationService] Cold-start response error:', err));
+
+    const subscription = addNotificationResponseReceivedListener(
+      handleNotificationResponse
+    );
+
+    return () => subscription.remove();
   }, []);
 
   useEffect(() => {

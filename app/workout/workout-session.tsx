@@ -61,7 +61,13 @@ import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
 
-function BlankWorkoutStats({ startTime }: { startTime: number }) {
+function BlankWorkoutStats({
+  startTime,
+  workoutLogId,
+}: {
+  startTime: number;
+  workoutLogId?: string;
+}) {
   const { t } = useTranslation();
   const time = useSessionTotalTime({ startTime });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
@@ -70,9 +76,11 @@ function BlankWorkoutStats({ startTime }: { startTime: number }) {
   useEffect(() => {
     NotificationService.updateActiveWorkoutNotification(
       t('freeTraining.blankWorkout'),
-      durationStr
+      durationStr,
+      undefined,
+      workoutLogId
     );
-  }, [durationStr, t]);
+  }, [durationStr, t, workoutLogId]);
 
   return (
     <View
@@ -153,10 +161,11 @@ export default function WorkoutSessionScreen() {
       NotificationService.updateActiveWorkoutNotification(
         workoutLog.workoutName || t('freeTraining.title'),
         durationStr,
-        currentSetData?.exercise?.name
+        currentSetData?.exercise?.name,
+        workoutLogId
       );
     }
-  }, [workoutLog, isLoading, error, durationStr, currentSetData?.exercise?.name, t]);
+  }, [workoutLog, isLoading, error, durationStr, currentSetData?.exercise?.name, workoutLogId, t]);
 
   // Dismiss notification when workout is finished or component unmounts
   useEffect(() => {
@@ -596,7 +605,7 @@ export default function WorkoutSessionScreen() {
             </View>
 
             {/* Stats row */}
-            <BlankWorkoutStats startTime={workoutLog.startedAt} />
+            <BlankWorkoutStats startTime={workoutLog.startedAt} workoutLogId={workoutLogId} />
           </ScrollView>
         </View>
 

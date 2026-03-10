@@ -113,7 +113,8 @@ export class NotificationService {
   static async updateActiveWorkoutNotification(
     workoutName: string,
     totalTime: string,
-    currentExercise?: string
+    currentExercise?: string,
+    workoutLogId?: string
   ) {
     if (Platform.OS === 'web') {
       return;
@@ -138,6 +139,7 @@ export class NotificationService {
       content: {
         title,
         body,
+        data: { type: 'active-workout', workoutLogId },
         sticky: true, // Prevents swipe dismissal on Android - must be at top level of content
         ...Platform.select({
           android: {

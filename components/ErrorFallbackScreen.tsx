@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { NotificationService } from '../services/NotificationService';
 import { captureMessage } from '../utils/sentry';
 
 type ErrorFallbackScreenProps = {
@@ -15,6 +16,10 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
   const { t } = useTranslation();
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(__DEV__); // Show details by default in development
+
+  useEffect(() => {
+    NotificationService.dismissActiveWorkoutNotification();
+  }, []);
 
   const handleReload = useCallback(() => {
     captureMessage('User requested reload after error');
