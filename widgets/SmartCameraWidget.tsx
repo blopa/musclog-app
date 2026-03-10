@@ -9,6 +9,7 @@ export function SmartCameraWidget() {
         width: 'match_parent',
         justifyContent: 'center',
         alignItems: 'center',
+        // TODO: use the color from theme
         backgroundColor: '#0a1f1a',
         borderRadius: 16,
       }}
