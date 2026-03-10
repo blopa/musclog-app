@@ -8,6 +8,7 @@ import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.t
 import { ImageManipulator } from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
+import { DevSettings } from 'react-native';
 import { BarcodeFormat, detectBarcodes as RNDetectBarcodes } from 'react-native-barcodes-detector';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
@@ -173,5 +174,16 @@ export async function copyBundledExerciseImageToDocument(
 }
 
 export async function reloadApp() {
-  await Updates.reloadAsync();
+  if (__DEV__) {
+    // In development mode, use DevSettings.reload() to reload the app
+    DevSettings.reload();
+    return;
+  }
+
+  // In production, check if Updates is enabled before reloading
+  if (Updates.isEnabled) {
+    await Updates.reloadAsync();
+  } else {
+    console.warn('Updates is not enabled. App reload skipped.');
+  }
 }
