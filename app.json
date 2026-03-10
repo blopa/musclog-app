@@ -82,6 +82,15 @@
               "targetCellWidth": 1,
               "targetCellHeight": 1,
               "description": "Open Smart Camera"
+            },
+            {
+              "name": "Nutrition",
+              "label": "Nutrition Progress",
+              "minWidth": "180dp",
+              "minHeight": "60dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "description": "Shows daily nutrition progress"
             }
           ]
         }
