@@ -3,6 +3,85 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
+const lightColors = {
+  // --- 💡 CORE READABILITY FIX ---
+  // If your app is built correctly, these two variables handle the bulk of your UI.
+  surfaceBlack: '#FFFFFF', // Mandatory: Was Black, now your pure white app background.
+  white: '#0F172A', // Mandatory: Was White, now Dark Slate for primary text readability.
+
+  // --- Grays & Surface Layering (Inverted Neutral Scale) ---
+  // I have transformed this chaotic gray list into a layered light neutral scale using Slate tones.
+  gray900: '#F1F5F9', // Lightest neutral gray for secondary app backgrounds.
+  gray850: '#E2E8F0', // Standard card surface background.
+  gray800: '#CBD5E1', // Subtle border and divider color.
+  gray700: '#94A3B8', // Muted text or disabled states.
+  gray600: '#64748B', // Secondary text color.
+  gray500: '#475569', // Icons or tertiary text.
+  gray400: '#334155', // Occasional text or dark accents.
+  gray300: '#1E293B', // Almost dark slate text.
+  gray200: '#0F172A', // Re-mapping for deepest darks.
+  zinc400: '#71717A',
+  zinc500: '#A1A1AA',
+  warmGray: '#FAF7F5', // Very light warm off-white, excellent for "warning" cards.
+
+  // --- Primary Fitness Accents (Softenened Greens & Teals) ---
+  // The dark green cluster is now a layered mint/sage palette. Your high contrast concern is handled by making these energetic but not neon.
+  jade: '#34D399', // Clean mint green (primary action/success color).
+  green500: '#6EE7B7', // Slightly softer mint.
+  green600: '#10B981', // Saturated mint/emerald, perfect for a progress ring or success button.
+  green800: '#059669', // Deepest mint.
+  teal400: '#38BDF8', // Fresh Sky blue for hydration or rest tracking.
+  teal500: '#0EA5E9', // Main blue-teal.
+  teal600: '#0284C7', // Deeper cyan/blue.
+  emerald200: '#86EFAC',
+
+  // These former "dark background" names are now very soft background tint washes for cards.
+  emerald900: '#D1FAE5', // Soft light mint wash background.
+  swampGreen: '#F0FDF4', // Soft neutral green wash background.
+  darkMint: '#ECFDF5', // Very soft light mint wash background.
+  darkForest: '#FEF3C7', // Soft light amber wash background (for streaks).
+  deepGreen: '#FEFCE8', // Soft light yellow wash background (for warnings).
+  darkViridian: '#D1FAE5',
+  gunmetalGreen: '#E0F2FE',
+  darkSeaGreen: '#E0F2FE',
+  charcoalGreen: '#E2E8F0', // Re-mapped as card surface background.
+
+  // --- High Focus Accents (Sunrise/Citrus Tones) ---
+  // I've softened these to reduce the "crazy focus" issue. They are energetic but clear.
+  neonMint: '#A7F3D0', // Soft, calm Mint tint background (good for hydration goals).
+  tan: '#FED7AA', // Soft, warm Taupe for secondary accents.
+  sage: '#C6F6D5', // Soft green accent (good for recovery goals).
+  orange500: '#F97316', // Warm Orange (energetic accent).
+  amber400: '#FBBF24', // Bright amber/gold.
+  amber500: '#F59E0B', // Deep Amber (great for high focus but not red).
+  yellow500: '#FDE047',
+
+  // --- Purples, Blues, Indigos (Rest & Recovery Tones) ---
+  // Layered soft-contrast purples for sleep and rest tracking.
+  indigo200: '#EEF2FF', // Very soft indigo background tint wash.
+  indigo400: '#A5B4FC', // Soft lavender.
+  indigo500: '#818CF8', // Medium purple-blue.
+  indigo600: '#6366F1', // Deeper indigo (good focus color).
+  blue500: '#3B82F6',
+  blue600: '#2563EB',
+  violet300: '#DDD6FE', // Softest violet.
+  violet500: '#A78BFA',
+  violet800: '#8B5CF6',
+  purple500: '#C084FC', // Saturated, clear purple.
+  darkPurpleBg: '#F3E8FF', // Soft light purple background wash.
+
+  // --- Red/Danger Accents (Layered Reds & Roses) ---
+  // Softened to have clear meaning without being chaotic or harsh on light.
+  darkRedBg: '#FEE2E2', // Very soft light red wash (good for an error background).
+  red400: '#FCA5A5', // Soft coral red.
+  red500: '#F87171', // Rose red.
+  red900: '#B91C1C', // Rich, deeper red for destructive actions (buttons).
+  rose500: '#FB7185', // Soft pink red.
+  rose600: '#F43F5E', // Medium rose red.
+  rose900: '#E11D48', // Bright rose red.
+  pink500: '#EC4899',
+};
+
 const baseColors = {
   surfaceBlack: '#131314',
   gray900: '#1f1f1f',

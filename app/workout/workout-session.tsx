@@ -927,6 +927,8 @@ export default function WorkoutSessionScreen() {
                     {t('workoutSession.hormonalInsight')}
                   </Text>
                   <Text className="font-medium text-text-primary">
+                    {/*TODO: move this to a helper function to avoid using nested ternary*/}
+                    {/*TODO: also add these sentences to the workoutSession.json translation file*/}
                     {currentPhase === 'ovulation'
                       ? t('workoutSession.ovulationInsight')
                       : currentPhase === 'menstrual'
