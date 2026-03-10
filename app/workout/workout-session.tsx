@@ -59,12 +59,12 @@ import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { formatDuration } from '../../utils/workout';
 
 function BlankWorkoutStats({ startTime }: { startTime: number }) {
   const { t } = useTranslation();
   const time = useSessionTotalTime({ startTime });
-  const formatTime = (value: number) => String(value).padStart(2, '0');
-  const durationStr = `${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`;
+  const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
 
   // Update notification with total time
   useEffect(() => {
@@ -145,8 +145,7 @@ export default function WorkoutSessionScreen() {
   } = useActiveWorkout(workoutLogId);
 
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
-  const formatTime = (value: number) => String(value).padStart(2, '0');
-  const durationStr = `${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`;
+  const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
 
   // Update notification with total time and current exercise
   useEffect(() => {

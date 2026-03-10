@@ -19,6 +19,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import { formatDuration } from '../../utils/workout';
 
 type NextExercisePayload = {
   name: string;
@@ -184,7 +185,7 @@ export default function NewExerciseTransitionScreen() {
   });
   const totalTimeFormatted =
     workoutLog?.startedAt != null
-      ? `${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`
+      ? formatDuration(sessionTime.hours, sessionTime.minutes, sessionTime.seconds)
       : '00:00:00';
 
   if (isLoading) {
