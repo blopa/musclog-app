@@ -1,5 +1,6 @@
-import React from 'react';
-import { FlexWidget, ImageWidget } from 'react-native-android-widget';
+import { type ColorProp, FlexWidget, ImageWidget } from 'react-native-android-widget';
+
+import { theme } from '../theme';
 
 export function SmartCameraWidget() {
   return (
@@ -9,16 +10,19 @@ export function SmartCameraWidget() {
         width: 'match_parent',
         justifyContent: 'center',
         alignItems: 'center',
-        // TODO: use the color from theme
-        backgroundColor: '#0a1f1a',
-        borderRadius: 16,
+        backgroundColor: theme.colors.background.primary as ColorProp,
+        borderRadius: theme.borderRadius.xl,
       }}
       clickAction="OPEN_URI"
       clickActionData={{
         uri: 'com.werules.logger://?action=open-camera',
       }}
     >
-      <ImageWidget image={require('../assets/icon-square.png')} imageWidth={384} imageHeight={384} />
+      <ImageWidget
+        image={require('../assets/logo.png')}
+        imageWidth={256}
+        imageHeight={256}
+      />
     </FlexWidget>
   );
 }
