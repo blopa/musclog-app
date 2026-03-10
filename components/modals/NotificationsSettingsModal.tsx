@@ -37,10 +37,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
   } = useDebouncedSettings(1500);
 
   // Helper function to ensure permissions are granted before enabling a notification setting
-  const ensurePermissionsAndEnable = async (
-    value: boolean,
-    handler: (value: boolean) => void
-  ) => {
+  const ensurePermissionsAndEnable = async (value: boolean, handler: (value: boolean) => void) => {
     handler(value);
     if (value) {
       await NotificationService.requestPermissions();
@@ -94,7 +91,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsWorkoutReminders,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsWorkoutRemindersChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsWorkoutRemindersChange),
     },
     {
       key: 'activeWorkout',
@@ -109,7 +107,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsActiveWorkout,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsActiveWorkoutChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsActiveWorkoutChange),
     },
     {
       key: 'restTimer',
@@ -124,7 +123,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsRestTimer,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsRestTimerChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsRestTimerChange),
     },
     {
       key: 'workoutDuration',
@@ -139,7 +139,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsWorkoutDuration,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsWorkoutDurationChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsWorkoutDurationChange),
     },
     {
       key: 'nutritionOverview',
@@ -154,7 +155,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsNutritionOverview,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsNutritionOverviewChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsNutritionOverviewChange),
     },
     {
       key: 'menstrualCycle',
@@ -169,7 +171,8 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
         </View>
       ),
       value: notificationsMenstrualCycle,
-      onValueChange: (value: boolean) => ensurePermissionsAndEnable(value, handleNotificationsMenstrualCycleChange),
+      onValueChange: (value: boolean) =>
+        ensurePermissionsAndEnable(value, handleNotificationsMenstrualCycleChange),
     },
   ];
 
