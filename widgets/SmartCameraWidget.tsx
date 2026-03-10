@@ -12,12 +12,12 @@ export function SmartCameraWidget() {
         backgroundColor: '#0a1f1a',
         borderRadius: 16,
       }}
-      clickAction="OPEN_APP"
+      clickAction="OPEN_URI"
       clickActionData={{
-        url: 'com.werules.logger://?action=open-camera',
+        uri: 'com.werules.logger://?action=open-camera',
       }}
     >
-      <IconWidget icon="ic_launcher" size={48} />
+      <IconWidget icon="ic_launcher" size={48} font="material"  />
     </FlexWidget>
   );
 }

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
@@ -94,8 +95,9 @@ export default function HomeScreen() {
     groupByMonth: false,
   });
 
-  // Check for widget actions
+  // Check for widget actions via URL params (works on cold start)
   useEffect(() => {
+    console.log('THE PARAM IS 1', params.action);
     if (params.action === 'open-camera') {
       setCameraMode('ai-meal-photo');
       setIsCameraVisible(true);
@@ -103,6 +105,21 @@ export default function HomeScreen() {
       router.setParams({ action: undefined });
     }
   }, [params.action, router]);
+
+  // Handle widget deep link when app is already running (warm start)
+  useEffect(() => {
+    console.log('THE PARAM IS 2', params.action);
+    const handleUrl = ({ url }: { url: string }) => {
+      const { queryParams } = ExpoLinking.parse(url);
+      if (queryParams?.action === 'open-camera') {
+        setCameraMode('ai-meal-photo');
+        setIsCameraVisible(true);
+      }
+    };
+
+    const subscription = ExpoLinking.addEventListener('url', handleUrl);
+    return () => subscription.remove();
+  }, []);
 
   // Check onboarding status on mount
   useEffect(() => {
