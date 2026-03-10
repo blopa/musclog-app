@@ -64,8 +64,8 @@ export function NutritionWidget({
       <FlexWidget
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-between',
           alignItems: 'center',
+          width: 'match_parent',
           marginBottom: 8,
         }}
       >
@@ -76,6 +76,7 @@ export function NutritionWidget({
             color: theme.colors.text.primary as ColorProp,
           }}
         />
+        <FlexWidget style={{ flex: 1 }} />
         <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <TextWidget
             text={calories.toLocaleString()}
@@ -125,7 +126,7 @@ export function NutritionWidget({
         <FlexWidget
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            width: 'match_parent',
           }}
         >
           <TextWidget
@@ -135,6 +136,7 @@ export function NutritionWidget({
               color: theme.colors.text.secondary as ColorProp,
             }}
           />
+          <FlexWidget style={{ flex: 1 }} />
           <TextWidget
             text={`${caloriePercentage}%`}
             style={{
