@@ -125,6 +125,20 @@
         "progress": "Progress"
       }
     },
+    "notificationsSettings": {
+      "title": "Notifications",
+      "subtitle": "Workout, nutrition, and cycle alerts",
+      "mainToggle": "Enable Notifications",
+      "mainToggleSubtitle": "Turn on/off all app notifications",
+      "workoutReminders": "Workout Reminders",
+      "workoutRemindersSubtitle": "Get notified on scheduled workout days",
+      "activeWorkout": "Active Workout",
+      "activeWorkoutSubtitle": "Show timer and exercise in a persistent notification",
+      "nutritionOverview": "Daily Nutrition Overview",
+      "nutritionOverviewSubtitle": "Summary of your daily intake and goals",
+      "menstrualCycle": "Menstrual Cycle Alerts",
+      "menstrualCycleSubtitle": "Period predictions and fertile window alerts"
+    },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy"

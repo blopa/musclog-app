@@ -89,6 +89,30 @@ export const WORKOUT_INSIGHTS_SETTING_TYPE = 'workout_insights';
 export const NOTIFICATIONS_SETTING_TYPE = 'notifications';
 
 /**
+ * Setting type for workout reminders (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE = 'notifications_workout_reminders';
+
+/**
+ * Setting type for active workout persistent notification (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE = 'notifications_active_workout';
+
+/**
+ * Setting type for daily nutrition overview notification (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE = 'notifications_nutrition_overview';
+
+/**
+ * Setting type for menstrual cycle notifications (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE = 'notifications_menstrual_cycle';
+
+/**
  * Setting type for language preference (stored in WatermelonDB settings table).
  * value: string (language code like 'en-US').
  */
@@ -126,4 +150,8 @@ export type UseSettingsResult = {
   isLoading: boolean;
   weightUnit: 'kg' | 'lbs';
   heightUnit: 'cm' | 'in';
+  notificationsWorkoutReminders: boolean;
+  notificationsActiveWorkout: boolean;
+  notificationsNutritionOverview: boolean;
+  notificationsMenstrualCycle: boolean;
 };

@@ -37,6 +37,10 @@ export function useDebouncedSettings(debounceMs = 1500) {
       'dailyNutritionInsights',
       'workoutInsights',
       'notifications',
+      'notificationsWorkoutReminders',
+      'notificationsActiveWorkout',
+      'notificationsNutritionOverview',
+      'notificationsMenstrualCycle',
       'useOcrBeforeAi',
       'units',
     ];
@@ -159,6 +163,26 @@ export function useDebouncedSettings(debounceMs = 1500) {
     SettingsService.setNotifications
   );
 
+  const handleNotificationsWorkoutRemindersChange = createSettingHandler(
+    'notificationsWorkoutReminders',
+    SettingsService.setNotificationsWorkoutReminders
+  );
+
+  const handleNotificationsActiveWorkoutChange = createSettingHandler(
+    'notificationsActiveWorkout',
+    SettingsService.setNotificationsActiveWorkout
+  );
+
+  const handleNotificationsNutritionOverviewChange = createSettingHandler(
+    'notificationsNutritionOverview',
+    SettingsService.setNotificationsNutritionOverview
+  );
+
+  const handleNotificationsMenstrualCycleChange = createSettingHandler(
+    'notificationsMenstrualCycle',
+    SettingsService.setNotificationsMenstrualCycle
+  );
+
   const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>(
     'units',
     SettingsService.setUnits
@@ -211,6 +235,18 @@ export function useDebouncedSettings(debounceMs = 1500) {
           case 'notifications':
             await SettingsService.setNotifications(value as boolean);
             break;
+          case 'notificationsWorkoutReminders':
+            await SettingsService.setNotificationsWorkoutReminders(value as boolean);
+            break;
+          case 'notificationsActiveWorkout':
+            await SettingsService.setNotificationsActiveWorkout(value as boolean);
+            break;
+          case 'notificationsNutritionOverview':
+            await SettingsService.setNotificationsNutritionOverview(value as boolean);
+            break;
+          case 'notificationsMenstrualCycle':
+            await SettingsService.setNotificationsMenstrualCycle(value as boolean);
+            break;
           case 'units':
             await SettingsService.setUnits(value as 'metric' | 'imperial');
             break;
@@ -255,6 +291,18 @@ export function useDebouncedSettings(debounceMs = 1500) {
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
     workoutInsights: (localSettings.workoutInsights as boolean) ?? actualSettings.workoutInsights,
     notifications: (localSettings.notifications as boolean) ?? actualSettings.notifications,
+    notificationsWorkoutReminders:
+      (localSettings.notificationsWorkoutReminders as boolean) ??
+      actualSettings.notificationsWorkoutReminders,
+    notificationsActiveWorkout:
+      (localSettings.notificationsActiveWorkout as boolean) ??
+      actualSettings.notificationsActiveWorkout,
+    notificationsNutritionOverview:
+      (localSettings.notificationsNutritionOverview as boolean) ??
+      actualSettings.notificationsNutritionOverview,
+    notificationsMenstrualCycle:
+      (localSettings.notificationsMenstrualCycle as boolean) ??
+      actualSettings.notificationsMenstrualCycle,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
 
@@ -275,6 +323,10 @@ export function useDebouncedSettings(debounceMs = 1500) {
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleNotificationsChange,
+    handleNotificationsWorkoutRemindersChange,
+    handleNotificationsActiveWorkoutChange,
+    handleNotificationsNutritionOverviewChange,
+    handleNotificationsMenstrualCycleChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
 

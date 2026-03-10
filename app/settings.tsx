@@ -11,8 +11,8 @@ import { MasterLayout } from '../components/MasterLayout';
 import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '../components/modals/AISettingsModal';
 import { BasicSettingsModal } from '../components/modals/BasicSettingsModal';
+import { NotificationsSettingsModal } from '../components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
-import { ToggleInput } from '../components/theme/ToggleInput';
 import { SettingsService } from '../database/services/SettingsService';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { useSettings } from '../hooks/useSettings';
@@ -36,6 +36,7 @@ export default function SettingsScreen() {
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
+  const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
 
   const handleConnectHealthDataChange = async (value: boolean) => {
     await SettingsService.setConnectHealthData(value);
@@ -197,31 +198,24 @@ export default function SettingsScreen() {
           }
         />
 
-        {/* Divider */}
-        <View
-          style={{
-            height: theme.borderWidth.thin,
-            backgroundColor: theme.colors.border.light,
-            marginVertical: theme.spacing.padding.md,
-          }}
-        />
-
-        <ToggleInput
-          items={[
-            {
-              key: 'notifications',
-              label: t('settings.notifications'),
-              icon: (
-                <MaterialIcons
-                  name="notifications"
-                  size={theme.iconSize.xl}
-                  color={theme.colors.text.secondary}
-                />
-              ),
-              value: notifications,
-              onValueChange: handleNotificationsChange,
-            },
-          ]}
+        <SettingsCard
+          icon={
+            <MaterialIcons
+              name="notifications"
+              size={theme.iconSize['2xl']}
+              color={theme.colors.accent.primary}
+            />
+          }
+          title={t('settings.notificationsSettings.title')}
+          subtitle={t('settings.notificationsSettings.subtitle')}
+          onPress={() => setNotificationsSettingsVisible(true)}
+          rightIcon={
+            <MaterialIcons
+              name="chevron-right"
+              size={theme.iconSize.xl}
+              color={theme.colors.text.secondary}
+            />
+          }
         />
 
         <LegalLinksCard />
@@ -258,6 +252,10 @@ export default function SettingsScreen() {
       <VisualSettingsModal
         visible={isVisualSettingsVisible}
         onClose={() => setVisualSettingsVisible(false)}
+      />
+      <NotificationsSettingsModal
+        visible={isNotificationsSettingsVisible}
+        onClose={() => setNotificationsSettingsVisible(false)}
       />
     </MasterLayout>
   );

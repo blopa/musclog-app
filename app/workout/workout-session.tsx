@@ -47,6 +47,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutActionButton } from '../../components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { database } from '../../database';
+import { NotificationService } from '../../services/NotificationService';
 import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
@@ -64,6 +65,14 @@ function BlankWorkoutStats({ startTime }: { startTime: number }) {
   const time = useSessionTotalTime({ startTime });
   const formatTime = (value: number) => String(value).padStart(2, '0');
   const durationStr = `${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`;
+
+  // Update notification with total time
+  useEffect(() => {
+    NotificationService.updateActiveWorkoutNotification(
+      t('freeTraining.blankWorkout'),
+      durationStr
+    );
+  }, [durationStr, t]);
 
   return (
     <View
@@ -134,6 +143,28 @@ export default function WorkoutSessionScreen() {
     setCurrentExercise,
     refresh,
   } = useActiveWorkout(workoutLogId);
+
+  const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
+  const formatTime = (value: number) => String(value).padStart(2, '0');
+  const durationStr = `${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`;
+
+  // Update notification with total time and current exercise
+  useEffect(() => {
+    if (workoutLog && !isLoading && !error) {
+      NotificationService.updateActiveWorkoutNotification(
+        workoutLog.workoutName || t('freeTraining.title'),
+        durationStr,
+        currentSetData?.exercise?.name
+      );
+    }
+  }, [workoutLog, isLoading, error, durationStr, currentSetData?.exercise?.name, t]);
+
+  // Dismiss notification when workout is finished or component unmounts
+  useEffect(() => {
+    return () => {
+      NotificationService.dismissActiveWorkoutNotification();
+    };
+  }, []);
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 
   // When navigated from rest-timer/rest-over after "Finish workout", show feedback modal
