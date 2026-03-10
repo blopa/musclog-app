@@ -61,6 +61,25 @@ import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
 
+// Helper function to get hormonal insight text based on current phase
+const getHormonalInsightText = (
+  currentPhase: string | null,
+  intensityMultiplier: number,
+  t: (key: string, params?: Record<string, any>) => string
+) => {
+  switch (currentPhase) {
+    case 'ovulation':
+      return t('workoutSession.ovulationInsight');
+    case 'menstrual':
+      return t('workoutSession.menstrualInsight');
+    default:
+      return t('workoutSession.phaseInsight', {
+        phase: currentPhase || 'unknown',
+        multiplier: intensityMultiplier.toFixed(2),
+      });
+  }
+};
+
 function BlankWorkoutStats({
   startTime,
   workoutLogId,
@@ -927,16 +946,7 @@ export default function WorkoutSessionScreen() {
                     {t('workoutSession.hormonalInsight')}
                   </Text>
                   <Text className="font-medium text-text-primary">
-                    {/*TODO: move this to a helper function to avoid using nested ternary*/}
-                    {/*TODO: also add these sentences to the workoutSession.json translation file*/}
-                    {currentPhase === 'ovulation'
-                      ? t('workoutSession.ovulationInsight')
-                      : currentPhase === 'menstrual'
-                        ? t('workoutSession.menstrualInsight')
-                        : t('workoutSession.phaseInsight', {
-                            phase: currentPhase,
-                            multiplier: intensityMultiplier.toFixed(2),
-                          })}
+                    {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
                   </Text>
                 </View>
               </View>

@@ -24,6 +24,10 @@
     "notFoundTitle": "Workout not found",
     "notFoundDescription": "Unable to load workout session. Please try again.",
     "goBack": "Go Back",
-    "bodyweight": "Bodyweight"
+    "bodyweight": "Bodyweight",
+    "hormonalInsight": "Hormonal Insight",
+    "ovulationInsight": "During ovulation, you may experience increased strength and performance.",
+    "menstrualInsight": "During menstruation, you may need to reduce intensity and focus on recovery.",
+    "phaseInsight": "Current phase: {{phase}}. Intensity multiplier: {{multiplier}}x"
   }
 }
