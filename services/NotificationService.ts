@@ -421,4 +421,96 @@ export class NotificationService {
       });
     }
   }
+
+  // Rest Timer Alert
+  static async scheduleRestTimerNotification(restSeconds: number) {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const isEnabled = await SettingsService.getNotificationsRestTimer();
+    const isNotificationsEnabled = await SettingsService.getNotifications();
+    if (!isEnabled || !isNotificationsEnabled) {
+      return;
+    }
+
+    // Cancel any pre-existing rest timer notification before scheduling a new one
+    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: 'rest-timer-notification',
+      content: {
+        title: i18n.t('notifications.types.restTimerAlert.title'),
+        body: i18n.t('notifications.types.restTimerAlert.body'),
+        data: { type: 'rest-timer-alert' },
+        ...Platform.select({
+          android: { channelId: 'default' },
+        }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: restSeconds,
+      },
+    });
+  }
+
+  static async cancelRestTimerNotification() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+  }
+
+  // Workout Duration Warning
+  static async scheduleWorkoutDurationWarning(startedAt: number) {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const isEnabled = await SettingsService.getNotificationsWorkoutDuration();
+    const isNotificationsEnabled = await SettingsService.getNotifications();
+    if (!isEnabled || !isNotificationsEnabled) {
+      return;
+    }
+
+    // Cancel any pre-existing duration warning before scheduling
+    await Notifications.cancelScheduledNotificationAsync('workout-duration-warning').catch(
+      () => {}
+    );
+
+    const FIVE_HOURS_MS = 5 * 60 * 60 * 1000;
+    const secondsUntilFire = Math.floor((startedAt + FIVE_HOURS_MS - Date.now()) / 1000);
+
+    // If 5 hours have already passed, do not schedule
+    if (secondsUntilFire <= 0) {
+      return;
+    }
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: 'workout-duration-warning',
+      content: {
+        title: i18n.t('notifications.types.workoutDurationWarning.title'),
+        body: i18n.t('notifications.types.workoutDurationWarning.body'),
+        data: { type: 'workout-duration-warning' },
+        ...Platform.select({
+          android: { channelId: 'default' },
+        }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: secondsUntilFire,
+      },
+    });
+  }
+
+  static async cancelWorkoutDurationWarning() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync('workout-duration-warning').catch(
+      () => {}
+    );
+  }
 }

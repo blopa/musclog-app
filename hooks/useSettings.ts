@@ -16,7 +16,9 @@ import {
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
+  NOTIFICATIONS_REST_TIMER_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
+  NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
@@ -88,6 +90,8 @@ export function useSettings(): UseSettingsResult & {
   notificationsActiveWorkout: boolean;
   notificationsNutritionOverview: boolean;
   notificationsMenstrualCycle: boolean;
+  notificationsRestTimer: boolean;
+  notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
   isAiFeaturesEnabled: boolean;
   navSlot1: NavItemKey;
@@ -113,6 +117,8 @@ export function useSettings(): UseSettingsResult & {
   const [notificationsActiveWorkout, setNotificationsActiveWorkout] = useState(false);
   const [notificationsNutritionOverview, setNotificationsNutritionOverview] = useState(false);
   const [notificationsMenstrualCycle, setNotificationsMenstrualCycle] = useState(false);
+  const [notificationsRestTimer, setNotificationsRestTimer] = useState(false);
+  const [notificationsWorkoutDuration, setNotificationsWorkoutDuration] = useState(false);
   const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
   const [navSlot1, setNavSlot1] = useState<NavItemKey>('workouts');
   const [navSlot2, setNavSlot2] = useState<NavItemKey>('food');
@@ -211,6 +217,20 @@ export function useSettings(): UseSettingsResult & {
       .get<Setting>('settings')
       .query(
         Q.where('type', NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const notificationsRestTimerQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_REST_TIMER_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const notificationsWorkoutDurationQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE),
         Q.where('deleted_at', Q.eq(null))
       );
 
@@ -425,6 +445,28 @@ export function useSettings(): UseSettingsResult & {
         },
       });
 
+    const notificationsRestTimerSubscription = notificationsRestTimerQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsRestTimer(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsRestTimer(false);
+        },
+      });
+
+    const notificationsWorkoutDurationSubscription = notificationsWorkoutDurationQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsWorkoutDuration(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsWorkoutDuration(false);
+        },
+      });
+
     const useOcrBeforeAiSubscription = useOcrBeforeAiQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setUseOcrBeforeAi(parseBooleanFromSettings(settings));
@@ -486,6 +528,8 @@ export function useSettings(): UseSettingsResult & {
       notificationsActiveWorkoutSubscription.unsubscribe();
       notificationsNutritionOverviewSubscription.unsubscribe();
       notificationsMenstrualCycleSubscription.unsubscribe();
+      notificationsRestTimerSubscription.unsubscribe();
+      notificationsWorkoutDurationSubscription.unsubscribe();
       useOcrBeforeAiSubscription.unsubscribe();
       navSlot1Subscription.unsubscribe();
       navSlot2Subscription.unsubscribe();
@@ -527,6 +571,8 @@ export function useSettings(): UseSettingsResult & {
       notificationsActiveWorkout,
       notificationsNutritionOverview,
       notificationsMenstrualCycle,
+      notificationsRestTimer,
+      notificationsWorkoutDuration,
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
@@ -556,6 +602,8 @@ export function useSettings(): UseSettingsResult & {
       notificationsActiveWorkout,
       notificationsNutritionOverview,
       notificationsMenstrualCycle,
+      notificationsRestTimer,
+      notificationsWorkoutDuration,
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,

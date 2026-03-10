@@ -113,6 +113,18 @@ export const NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE = 'notifications_nutr
 export const NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE = 'notifications_menstrual_cycle';
 
 /**
+ * Setting type for rest timer alert notification (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_REST_TIMER_SETTING_TYPE = 'notifications_rest_timer';
+
+/**
+ * Setting type for workout duration warning notification (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE = 'notifications_workout_duration';
+
+/**
  * Setting type for language preference (stored in WatermelonDB settings table).
  * value: string (language code like 'en-US').
  */
@@ -154,4 +166,6 @@ export type UseSettingsResult = {
   notificationsActiveWorkout: boolean;
   notificationsNutritionOverview: boolean;
   notificationsMenstrualCycle: boolean;
+  notificationsRestTimer: boolean;
+  notificationsWorkoutDuration: boolean;
 };

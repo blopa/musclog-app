@@ -171,8 +171,19 @@ export default function WorkoutSessionScreen() {
   useEffect(() => {
     return () => {
       NotificationService.dismissActiveWorkoutNotification();
+      NotificationService.cancelWorkoutDurationWarning();
     };
   }, []);
+
+  // Schedule 5-hour workout duration warning when workout begins
+  useEffect(() => {
+    if (!workoutLog) {
+      return;
+    }
+
+    NotificationService.scheduleWorkoutDurationWarning(workoutLog.startedAt);
+  }, [workoutLog?.startedAt]);
+
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 
   // When navigated from rest-timer/rest-over after "Finish workout", show feedback modal

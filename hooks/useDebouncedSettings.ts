@@ -41,6 +41,8 @@ export function useDebouncedSettings(debounceMs = 1500) {
       'notificationsActiveWorkout',
       'notificationsNutritionOverview',
       'notificationsMenstrualCycle',
+      'notificationsRestTimer',
+      'notificationsWorkoutDuration',
       'useOcrBeforeAi',
       'units',
     ];
@@ -183,6 +185,16 @@ export function useDebouncedSettings(debounceMs = 1500) {
     SettingsService.setNotificationsMenstrualCycle
   );
 
+  const handleNotificationsRestTimerChange = createSettingHandler(
+    'notificationsRestTimer',
+    SettingsService.setNotificationsRestTimer
+  );
+
+  const handleNotificationsWorkoutDurationChange = createSettingHandler(
+    'notificationsWorkoutDuration',
+    SettingsService.setNotificationsWorkoutDuration
+  );
+
   const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>(
     'units',
     SettingsService.setUnits
@@ -247,6 +259,12 @@ export function useDebouncedSettings(debounceMs = 1500) {
           case 'notificationsMenstrualCycle':
             await SettingsService.setNotificationsMenstrualCycle(value as boolean);
             break;
+          case 'notificationsRestTimer':
+            await SettingsService.setNotificationsRestTimer(value as boolean);
+            break;
+          case 'notificationsWorkoutDuration':
+            await SettingsService.setNotificationsWorkoutDuration(value as boolean);
+            break;
           case 'units':
             await SettingsService.setUnits(value as 'metric' | 'imperial');
             break;
@@ -303,6 +321,11 @@ export function useDebouncedSettings(debounceMs = 1500) {
     notificationsMenstrualCycle:
       (localSettings.notificationsMenstrualCycle as boolean) ??
       actualSettings.notificationsMenstrualCycle,
+    notificationsRestTimer:
+      (localSettings.notificationsRestTimer as boolean) ?? actualSettings.notificationsRestTimer,
+    notificationsWorkoutDuration:
+      (localSettings.notificationsWorkoutDuration as boolean) ??
+      actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
 
@@ -327,6 +350,8 @@ export function useDebouncedSettings(debounceMs = 1500) {
     handleNotificationsActiveWorkoutChange,
     handleNotificationsNutritionOverviewChange,
     handleNotificationsMenstrualCycleChange,
+    handleNotificationsRestTimerChange,
+    handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
 

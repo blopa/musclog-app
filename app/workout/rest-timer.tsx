@@ -17,6 +17,7 @@ import { WorkoutTimeTracker } from '../../components/WorkoutTimeTracker';
 import { WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
+import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { kgToDisplay } from '../../utils/unitConversion';
@@ -120,6 +121,19 @@ export default function RestTimerScreen() {
     setRestTime(value);
     setInitialRestTime(value);
   }, [completedSet]);
+
+  // Schedule rest timer notification when rest begins, cancel on unmount (covers skip, auto-navigate, end workout)
+  useEffect(() => {
+    if (isLoading || !completedSet || initialRestTime <= 0) {
+      return;
+    }
+
+    NotificationService.scheduleRestTimerNotification(initialRestTime);
+
+    return () => {
+      NotificationService.cancelRestTimerNotification();
+    };
+  }, [isLoading, completedSet, initialRestTime]);
 
   // Navigate after rest: skip exercise-transition when next set is in same superset group
   const navigateToNextScreen = useCallback(() => {

@@ -1,4 +1,4 @@
-import { Activity, Apple, Bell, Calendar, Dumbbell } from 'lucide-react-native';
+import { Activity, Apple, Bell, Calendar, Clock, Dumbbell, Timer } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -24,11 +24,15 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
     notificationsActiveWorkout,
     notificationsNutritionOverview,
     notificationsMenstrualCycle,
+    notificationsRestTimer,
+    notificationsWorkoutDuration,
     handleNotificationsChange,
     handleNotificationsWorkoutRemindersChange,
     handleNotificationsActiveWorkoutChange,
     handleNotificationsNutritionOverviewChange,
     handleNotificationsMenstrualCycleChange,
+    handleNotificationsRestTimerChange,
+    handleNotificationsWorkoutDurationChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(1500);
 
@@ -95,6 +99,36 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
       ),
       value: notificationsActiveWorkout,
       onValueChange: handleNotificationsActiveWorkoutChange,
+    },
+    {
+      key: 'restTimer',
+      label: t('settings.notificationsSettings.restTimer'),
+      subtitle: t('settings.notificationsSettings.restTimerSubtitle'),
+      icon: (
+        <View
+          className="h-10 w-10 items-center justify-center rounded-lg"
+          style={{ backgroundColor: theme.colors.status.warning10 }}
+        >
+          <Timer size={theme.iconSize.xl} color={theme.colors.status.warning} />
+        </View>
+      ),
+      value: notificationsRestTimer,
+      onValueChange: handleNotificationsRestTimerChange,
+    },
+    {
+      key: 'workoutDuration',
+      label: t('settings.notificationsSettings.workoutDuration'),
+      subtitle: t('settings.notificationsSettings.workoutDurationSubtitle'),
+      icon: (
+        <View
+          className="h-10 w-10 items-center justify-center rounded-lg"
+          style={{ backgroundColor: theme.colors.status.info20 }}
+        >
+          <Clock size={theme.iconSize.xl} color={theme.colors.status.info} />
+        </View>
+      ),
+      value: notificationsWorkoutDuration,
+      onValueChange: handleNotificationsWorkoutDurationChange,
     },
     {
       key: 'nutritionOverview',

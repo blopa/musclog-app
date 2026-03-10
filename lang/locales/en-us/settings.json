@@ -137,7 +137,11 @@
       "nutritionOverview": "Daily Nutrition Overview",
       "nutritionOverviewSubtitle": "Summary of your daily intake and goals",
       "menstrualCycle": "Menstrual Cycle Alerts",
-      "menstrualCycleSubtitle": "Period predictions and fertile window alerts"
+      "menstrualCycleSubtitle": "Period predictions and fertile window alerts",
+      "restTimer": "Rest Timer Alerts",
+      "restTimerSubtitle": "Get notified when your rest period is over",
+      "workoutDuration": "Long Workout Warning",
+      "workoutDurationSubtitle": "Alert if your session runs over 5 hours"
     },
     "notifications": "Notifications",
     "termsOfService": "Terms of Service",

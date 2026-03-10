@@ -55,6 +55,14 @@
       "fertileWindow": {
         "title": "Fertile Window",
         "body": "Your fertile window is starting! Useful for tracking your energy levels."
+      },
+      "restTimerAlert": {
+        "title": "Rest Over - Back to Work!",
+        "body": "Your rest period is up. Time to crush the next set!"
+      },
+      "workoutDurationWarning": {
+        "title": "Still Working Out?",
+        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
       }
     }
   }

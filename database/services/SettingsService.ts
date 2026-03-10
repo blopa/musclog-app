@@ -16,7 +16,9 @@ import {
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
+  NOTIFICATIONS_REST_TIMER_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
+  NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
@@ -265,6 +267,20 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the rest timer alert notification setting
+   */
+  static async setNotificationsRestTimer(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_REST_TIMER_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the workout duration warning notification setting
+   */
+  static async setNotificationsWorkoutDuration(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the use OCR before AI setting
    */
   static async setUseOcrBeforeAi(value: boolean) {
@@ -338,6 +354,14 @@ export class SettingsService {
 
   static async getNotificationsMenstrualCycle(): Promise<boolean> {
     return SettingsService.getBooleanSetting(NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsRestTimer(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_REST_TIMER_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsWorkoutDuration(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, false);
   }
 
   // --- Private helpers ---
