@@ -16,6 +16,7 @@ import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
 import { UnreadChatProvider } from '../components/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
+import { NotificationService } from '../services/NotificationService';
 import { configureDailyTasks } from '../utils/configureDailyTasks';
 import { captureException } from '../utils/sentry';
 
@@ -77,6 +78,15 @@ function RootLayout() {
       .catch((err) => console.warn('[boot sync] Health Connect sync error:', err));
 
     configureDailyTasks().catch((err) => console.warn('[configureDailyTasks] Startup error:', err));
+
+    // Initialize Notifications
+    NotificationService.configure()
+      .then(() => {
+        NotificationService.scheduleWorkoutReminders();
+        NotificationService.scheduleNutritionOverview();
+        NotificationService.scheduleMenstrualCycleNotifications();
+      })
+      .catch((err) => console.warn('[NotificationService] Init error:', err));
   }, []);
 
   useEffect(() => {

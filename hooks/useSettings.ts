@@ -13,7 +13,11 @@ import {
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
+  NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
+  NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
+  NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
+  NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -80,6 +84,10 @@ export function useSettings(): UseSettingsResult & {
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
   notifications: boolean;
+  notificationsWorkoutReminders: boolean;
+  notificationsActiveWorkout: boolean;
+  notificationsNutritionOverview: boolean;
+  notificationsMenstrualCycle: boolean;
   useOcrBeforeAi: boolean;
   isAiFeaturesEnabled: boolean;
   navSlot1: NavItemKey;
@@ -101,6 +109,10 @@ export function useSettings(): UseSettingsResult & {
   const [dailyNutritionInsights, setDailyNutritionInsights] = useState(true);
   const [workoutInsights, setWorkoutInsights] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [notificationsWorkoutReminders, setNotificationsWorkoutReminders] = useState(false);
+  const [notificationsActiveWorkout, setNotificationsActiveWorkout] = useState(false);
+  const [notificationsNutritionOverview, setNotificationsNutritionOverview] = useState(false);
+  const [notificationsMenstrualCycle, setNotificationsMenstrualCycle] = useState(false);
   const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
   const [navSlot1, setNavSlot1] = useState<NavItemKey>('workouts');
   const [navSlot2, setNavSlot2] = useState<NavItemKey>('food');
@@ -173,6 +185,34 @@ export function useSettings(): UseSettingsResult & {
     const notificationsQuery = database
       .get<Setting>('settings')
       .query(Q.where('type', NOTIFICATIONS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+
+    const notificationsWorkoutRemindersQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const notificationsActiveWorkoutQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const notificationsNutritionOverviewQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+    const notificationsMenstrualCycleQuery = database
+      .get<Setting>('settings')
+      .query(
+        Q.where('type', NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE),
+        Q.where('deleted_at', Q.eq(null))
+      );
 
     const useOcrBeforeAiQuery = database
       .get<Setting>('settings')
@@ -341,6 +381,50 @@ export function useSettings(): UseSettingsResult & {
       },
     });
 
+    const notificationsWorkoutRemindersSubscription = notificationsWorkoutRemindersQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsWorkoutReminders(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsWorkoutReminders(false);
+        },
+      });
+
+    const notificationsActiveWorkoutSubscription = notificationsActiveWorkoutQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsActiveWorkout(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsActiveWorkout(false);
+        },
+      });
+
+    const notificationsNutritionOverviewSubscription = notificationsNutritionOverviewQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsNutritionOverview(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsNutritionOverview(false);
+        },
+      });
+
+    const notificationsMenstrualCycleSubscription = notificationsMenstrualCycleQuery
+      .observeWithColumns(['value'])
+      .subscribe({
+        next: (settings) => {
+          setNotificationsMenstrualCycle(parseBooleanFromSettings(settings));
+        },
+        error: () => {
+          setNotificationsMenstrualCycle(false);
+        },
+      });
+
     const useOcrBeforeAiSubscription = useOcrBeforeAiQuery.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         setUseOcrBeforeAi(parseBooleanFromSettings(settings));
@@ -398,6 +482,10 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsightsSubscription.unsubscribe();
       workoutInsightsSubscription.unsubscribe();
       notificationsSubscription.unsubscribe();
+      notificationsWorkoutRemindersSubscription.unsubscribe();
+      notificationsActiveWorkoutSubscription.unsubscribe();
+      notificationsNutritionOverviewSubscription.unsubscribe();
+      notificationsMenstrualCycleSubscription.unsubscribe();
       useOcrBeforeAiSubscription.unsubscribe();
       navSlot1Subscription.unsubscribe();
       navSlot2Subscription.unsubscribe();
@@ -435,6 +523,10 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsights,
       workoutInsights,
       notifications,
+      notificationsWorkoutReminders,
+      notificationsActiveWorkout,
+      notificationsNutritionOverview,
+      notificationsMenstrualCycle,
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,
@@ -460,6 +552,10 @@ export function useSettings(): UseSettingsResult & {
       dailyNutritionInsights,
       workoutInsights,
       notifications,
+      notificationsWorkoutReminders,
+      notificationsActiveWorkout,
+      notificationsNutritionOverview,
+      notificationsMenstrualCycle,
       useOcrBeforeAi,
       isLoading,
       isAiFeaturesEnabled,

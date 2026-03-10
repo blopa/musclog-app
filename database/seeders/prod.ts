@@ -133,6 +133,14 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setAnonymousBugReport(true);
     console.log('Set anonymous bug report to true by default');
 
+    // Set default notification settings to false
+    await SettingsService.setNotifications(false);
+    await SettingsService.setNotificationsWorkoutReminders(false);
+    await SettingsService.setNotificationsActiveWorkout(false);
+    await SettingsService.setNotificationsNutritionOverview(false);
+    await SettingsService.setNotificationsMenstrualCycle(false);
+    console.log('Set default notification settings to false');
+
     // Set default navigation bar slots
     await SettingsService.setNavSlot(1, 'workouts');
     await SettingsService.setNavSlot(2, 'food');

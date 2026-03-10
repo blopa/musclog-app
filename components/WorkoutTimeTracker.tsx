@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useSessionTotalTime } from '../hooks/useSessionTotalTime';
 import { useTheme } from '../hooks/useTheme';
+import { formatDuration } from '../utils/workout';
 import { MenuButton } from './theme/MenuButton';
 
 type WorkoutTimeTrackerProps = {
@@ -23,8 +24,6 @@ export function WorkoutTimeTracker({
   const { t } = useTranslation();
   const time = useSessionTotalTime({ startTime, initialTime });
 
-  const formatTime = (value: number) => String(value).padStart(2, '0');
-
   return (
     <View className="flex-row items-center justify-between p-4">
       <Pressable className="h-12 w-12 items-center justify-center" onPress={onClose}>
@@ -32,7 +31,7 @@ export function WorkoutTimeTracker({
       </Pressable>
       <View className="items-center">
         <Text className="text-5xl font-bold tracking-tight text-text-primary">
-          {formatTime(time.hours)}:{formatTime(time.minutes)}:{formatTime(time.seconds)}
+          {formatDuration(time.hours, time.minutes, time.seconds)}
         </Text>
         <Text className="mt-1 text-sm font-semibold tracking-wider text-accent-primary">
           {t('workoutSession.totalTime')}

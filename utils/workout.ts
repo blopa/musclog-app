@@ -277,3 +277,11 @@ export function validateWorkoutTitle(title: string): { valid: boolean; error?: s
   }
   return { valid: true };
 }
+
+/**
+ * Format time to HH:MM:SS format
+ */
+export function formatDuration(hours: number, minutes: number, seconds: number): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}

@@ -13,7 +13,11 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
+  NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
+  NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
+  NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
   NOTIFICATIONS_SETTING_TYPE,
+  NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
@@ -233,6 +237,34 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the workout reminders notification setting
+   */
+  static async setNotificationsWorkoutReminders(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the active workout notification setting
+   */
+  static async setNotificationsActiveWorkout(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the nutrition overview notification setting
+   */
+  static async setNotificationsNutritionOverview(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the menstrual cycle notification setting
+   */
+  static async setNotificationsMenstrualCycle(value: boolean) {
+    await SettingsService.setBooleanSetting(NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the use OCR before AI setting
    */
   static async setUseOcrBeforeAi(value: boolean) {
@@ -286,6 +318,26 @@ export class SettingsService {
 
   static async getEnableOpenAi(): Promise<boolean> {
     return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, false);
+  }
+
+  static async getNotifications(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsWorkoutReminders(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsActiveWorkout(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsNutritionOverview(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE, false);
+  }
+
+  static async getNotificationsMenstrualCycle(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE, false);
   }
 
   // --- Private helpers ---

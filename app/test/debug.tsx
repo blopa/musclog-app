@@ -16,10 +16,13 @@ import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
 import { GoogleAuthService, MigrationService, UserService } from '../../database/services';
 import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
+import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
+import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
+import { formatDuration } from '../../utils/workout';
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -284,6 +287,150 @@ export default function DebugTestScreen() {
     console.log('Unread count cleared');
   };
 
+  // Notification Testing Functions
+  const [notificationStatus, setNotificationStatus] = useState<string>('');
+  const [testWorkoutStartTime, setTestWorkoutStartTime] = useState<number | null>(null);
+  const testWorkoutTime = useSessionTotalTime({ startTime: testWorkoutStartTime ?? undefined });
+  const durationStr = formatDuration(
+    testWorkoutTime.hours,
+    testWorkoutTime.minutes,
+    testWorkoutTime.seconds
+  );
+
+  // Update notification dynamically when test workout is active
+  useEffect(() => {
+    if (testWorkoutStartTime) {
+      const interval = setInterval(async () => {
+        try {
+          // Calculate current duration
+          const now = Date.now();
+          const elapsedMs = now - testWorkoutStartTime;
+          const totalSeconds = Math.floor(elapsedMs / 1000);
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+          const currentDurationStr = formatDuration(hours, minutes, seconds);
+
+          await NotificationService.testActiveWorkoutNotification(
+            'Push Day',
+            currentDurationStr,
+            'Bench Press'
+          );
+        } catch (error) {
+          console.error('Error updating test workout notification:', error);
+        }
+      }, 1000); // Update every second
+
+      return () => clearInterval(interval);
+    }
+  }, [testWorkoutStartTime]);
+
+  const requestNotificationPermissions = async () => {
+    try {
+      const granted = await NotificationService.requestPermissions();
+      setNotificationStatus(granted ? 'Permissions granted ✓' : 'Permissions denied ✗');
+      console.log('Notification permissions:', granted ? 'granted' : 'denied');
+    } catch (error) {
+      console.error('Error requesting notification permissions:', error);
+      setNotificationStatus('Error requesting permissions');
+    }
+  };
+
+  const testActiveWorkoutNotification = async () => {
+    try {
+      setNotificationStatus('Starting workout notification...');
+      const startTime = Date.now();
+      setTestWorkoutStartTime(startTime);
+      await NotificationService.testActiveWorkoutNotification(
+        'Push Day',
+        '00:00:00',
+        'Bench Press'
+      );
+      setNotificationStatus(`Active workout notification started ✓ (${durationStr})`);
+      console.log('Active workout notification sent');
+    } catch (error) {
+      console.error('Error testing active workout notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const testWorkoutReminderNotification = async () => {
+    try {
+      setNotificationStatus('Sending...');
+      await NotificationService.testNotification(
+        'Workout Reminder',
+        'Ready to crush your Push Day workout today??',
+        { type: 'workout-reminder', templateId: 'test-template-id' }
+      );
+      setNotificationStatus('Workout reminder notification sent ✓');
+      console.log('Workout reminder notification sent');
+    } catch (error) {
+      console.error('Error testing workout reminder notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const testNutritionOverviewNotification = async () => {
+    try {
+      setNotificationStatus('Sending...');
+      await NotificationService.testNotification(
+        'Daily Nutrition Overview',
+        'Check how your nutrition aligned with your goals today!',
+        { type: 'nutrition-overview' }
+      );
+      setNotificationStatus('Nutrition overview notification sent ✓');
+      console.log('Nutrition overview notification sent');
+    } catch (error) {
+      console.error('Error testing nutrition overview notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const testPeriodPredictionNotification = async () => {
+    try {
+      setNotificationStatus('Sending...');
+      await NotificationService.testNotification(
+        'Period Prediction',
+        'Your period is predicted to start in 2 days. Get ready!',
+        { type: 'menstrual-cycle', subtype: 'period-start' }
+      );
+      setNotificationStatus('Period prediction notification sent ✓');
+      console.log('Period prediction notification sent');
+    } catch (error) {
+      console.error('Error testing period prediction notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const testFertileWindowNotification = async () => {
+    try {
+      setNotificationStatus('Sending...');
+      await NotificationService.testNotification(
+        'Fertile Window',
+        'Your fertile window is starting! Useful for tracking your energy levels.',
+        { type: 'menstrual-cycle', subtype: 'fertile-window' }
+      );
+      setNotificationStatus('Fertile window notification sent ✓');
+      console.log('Fertile window notification sent');
+    } catch (error) {
+      console.error('Error testing fertile window notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const dismissActiveWorkoutNotification = async () => {
+    try {
+      setNotificationStatus('Dismissing...');
+      setTestWorkoutStartTime(null); // Stop the timer
+      await NotificationService.dismissActiveWorkoutNotification();
+      setNotificationStatus('Active workout notification dismissed ✓');
+      console.log('Active workout notification dismissed');
+    } catch (error) {
+      console.error('Error dismissing active workout notification:', error);
+      setNotificationStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   // Group screens by category
   const screensByCategory = APP_SCREENS.reduce(
     (acc, screen) => {
@@ -303,6 +450,67 @@ export default function DebugTestScreen() {
           <View>
             <Text className="mb-2 text-2xl font-bold text-text-primary">Database Test</Text>
             <Text className="text-text-secondary">Verify WatermelonDB Read/Write</Text>
+          </View>
+
+          {/* Notifications Testing */}
+          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Notifications Testing</Text>
+            <Text className="mb-2 text-sm text-text-secondary">
+              Test all notification types during development. These test methods bypass settings
+              checks and work offline.
+            </Text>
+
+            <Button
+              onPress={requestNotificationPermissions}
+              label="Request Notification Permissions"
+              size="sm"
+              variant="accent"
+            />
+
+            {notificationStatus ? (
+              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <Text className="text-sm text-text-primary">{notificationStatus}</Text>
+              </View>
+            ) : null}
+
+            <View className="gap-2">
+              <Button
+                onPress={testActiveWorkoutNotification}
+                label="Test Active Workout Notification"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={dismissActiveWorkoutNotification}
+                label="Dismiss Active Workout Notification"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testWorkoutReminderNotification}
+                label="Test Workout Reminder"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testNutritionOverviewNotification}
+                label="Test Nutrition Overview"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testPeriodPredictionNotification}
+                label="Test Period Prediction"
+                size="sm"
+                variant="secondary"
+              />
+              <Button
+                onPress={testFertileWindowNotification}
+                label="Test Fertile Window"
+                size="sm"
+                variant="secondary"
+              />
+            </View>
           </View>
 
           {/* Sentry: verify error reporting */}

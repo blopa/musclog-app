@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const API_KEY = 'THE-KEY';
+const API_KEY = 'THEKEY';
 const INPUT_FILE = '../data/usda/FoundationFoods.json';
 const OUTPUT_FILE = './robust_comparison_results.csv';
 
