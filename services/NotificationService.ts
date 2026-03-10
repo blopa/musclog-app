@@ -15,7 +15,7 @@ export class NotificationService {
   private static isConfigured = false;
 
   static async configure() {
-    if (this.isConfigured) return;
+    if (this.isConfigured || Platform.OS === 'web') return;
 
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -46,6 +46,7 @@ export class NotificationService {
   }
 
   static async requestPermissions() {
+    if (Platform.OS === 'web') return false;
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -62,6 +63,7 @@ export class NotificationService {
     data: Record<string, any> = {},
     channelId: string = 'default'
   ) {
+    if (Platform.OS === 'web') return null;
     const isNotificationsEnabled = await SettingsService.getNotifications();
     if (!isNotificationsEnabled) return null;
 
@@ -81,10 +83,12 @@ export class NotificationService {
   }
 
   static async cancelAllNotifications() {
+    if (Platform.OS === 'web') return;
     await Notifications.cancelAllScheduledNotificationsAsync();
   }
 
   static async cancelNotification(notificationId: string) {
+    if (Platform.OS === 'web') return;
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   }
 
@@ -94,6 +98,7 @@ export class NotificationService {
     totalTime: string,
     currentExercise?: string
   ) {
+    if (Platform.OS === 'web') return;
     const isEnabled = await SettingsService.getNotificationsActiveWorkout();
     const isNotificationsEnabled = await SettingsService.getNotifications();
     if (!isEnabled || !isNotificationsEnabled) return;
@@ -125,11 +130,13 @@ export class NotificationService {
   }
 
   static async dismissActiveWorkoutNotification() {
+    if (Platform.OS === 'web') return;
     await Notifications.dismissNotificationAsync('active-workout-notification');
   }
 
   // Workout Reminders
   static async scheduleWorkoutReminders() {
+    if (Platform.OS === 'web') return;
     const isEnabled = await SettingsService.getNotificationsWorkoutReminders();
     const isNotificationsEnabled = await SettingsService.getNotifications();
 
@@ -185,6 +192,7 @@ export class NotificationService {
 
   // Nutrition Overview
   static async scheduleNutritionOverview() {
+    if (Platform.OS === 'web') return;
     const isEnabled = await SettingsService.getNotificationsNutritionOverview();
     const isNotificationsEnabled = await SettingsService.getNotifications();
 
@@ -219,6 +227,7 @@ export class NotificationService {
 
   // Menstrual Cycle Notifications
   static async scheduleMenstrualCycleNotifications() {
+    if (Platform.OS === 'web') return;
     const isEnabled = await SettingsService.getNotificationsMenstrualCycle();
     const isNotificationsEnabled = await SettingsService.getNotifications();
 
