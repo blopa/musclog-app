@@ -6,6 +6,7 @@ import { database } from '../database';
 import NutritionGoal from '../database/models/NutritionGoal';
 import MenstrualCycle from '../database/models/MenstrualCycle';
 import NutritionLog from '../database/models/NutritionLog';
+import i18n from '../lang/lang';
 import Schedule from '../database/models/Schedule';
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
 import { SettingsService } from '../database/services/SettingsService';
@@ -28,14 +29,14 @@ export class NotificationService {
 
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
+        name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {
-        name: 'Active Workout',
+        name: i18n.t('notifications.channels.activeWorkout'),
         importance: Notifications.AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
         lockscreenVisibility: (Notifications as any).AndroidVisibility?.PUBLIC,
       });
@@ -97,7 +98,10 @@ export class NotificationService {
     const isNotificationsEnabled = await SettingsService.getNotifications();
     if (!isEnabled || !isNotificationsEnabled) return;
 
-    const body = `${totalTime}${currentExercise ? ` - ${currentExercise}` : ''}`;
+    const title = i18n.t('notifications.types.activeWorkout.title', { workoutName });
+    const body = currentExercise
+      ? i18n.t('notifications.types.activeWorkout.body', { totalTime, currentExercise })
+      : i18n.t('notifications.types.activeWorkout.bodyNoExercise', { totalTime });
 
     // On Android, we use a fixed ID for the active workout notification to update it
     const NOTIFICATION_ID = 'active-workout-notification';
@@ -105,7 +109,7 @@ export class NotificationService {
     await Notifications.scheduleNotificationAsync({
       identifier: NOTIFICATION_ID,
       content: {
-        title: `Workout: ${workoutName}`,
+        title,
         body,
         sticky: true,
         ...Platform.select({
@@ -163,8 +167,10 @@ export class NotificationService {
 
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Workout Reminder',
-          body: `Ready to crush your ${template.name} workout today??`,
+          title: i18n.t('notifications.types.workoutReminderMorning.title'),
+          body: i18n.t('notifications.types.workoutReminderMorning.body', {
+            workoutName: template.name,
+          }),
           data: { type: 'workout-reminder', templateId: template.id },
         },
         trigger: {
@@ -195,8 +201,8 @@ export class NotificationService {
     // Schedule for 9 PM every day
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Daily Nutrition Overview',
-        body: 'Check how your nutrition aligned with your goals today!',
+        title: i18n.t('notifications.types.nutritionOverview.title'),
+        body: i18n.t('notifications.types.nutritionOverview.body'),
         data: { type: 'nutrition-overview' },
       },
       trigger: {
@@ -243,8 +249,8 @@ export class NotificationService {
     if (notificationDate.getTime() > Date.now()) {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Period Prediction',
-          body: 'Your period is predicted to start in 2 days. Get ready!',
+          title: i18n.t('notifications.types.periodPrediction.title'),
+          body: i18n.t('notifications.types.periodPrediction.body'),
           data: { type: 'menstrual-cycle', subtype: 'period-start' },
         },
         trigger: {
@@ -262,8 +268,8 @@ export class NotificationService {
     if (fertileStartNotification.getTime() > Date.now()) {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Fertile Window',
-          body: 'Your fertile window is starting! Useful for tracking your energy levels.',
+          title: i18n.t('notifications.types.fertileWindow.title'),
+          body: i18n.t('notifications.types.fertileWindow.body'),
           data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
         },
         trigger: {

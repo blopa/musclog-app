@@ -9,6 +9,10 @@
       "yesterday": "YESTERDAY",
       "earlier": "EARLIER"
     },
+    "channels": {
+      "default": "Default",
+      "activeWorkout": "Active Workout"
+    },
     "startNow": "Start Now",
     "types": {
       "aiInsight": {
@@ -30,6 +34,27 @@
       "weeklyReport": {
         "title": "Weekly Report Ready",
         "description": "Your progress report for last week is available. Check your stats."
+      },
+      "activeWorkout": {
+        "title": "Workout: {{workoutName}}",
+        "body": "{{totalTime}} - {{currentExercise}}",
+        "bodyNoExercise": "{{totalTime}}"
+      },
+      "workoutReminderMorning": {
+        "title": "Workout Reminder",
+        "body": "Ready to crush your {{workoutName}} workout today??"
+      },
+      "nutritionOverview": {
+        "title": "Daily Nutrition Overview",
+        "body": "Check how your nutrition aligned with your goals today!"
+      },
+      "periodPrediction": {
+        "title": "Period Prediction",
+        "body": "Your period is predicted to start in 2 days. Get ready!"
+      },
+      "fertileWindow": {
+        "title": "Fertile Window",
+        "body": "Your fertile window is starting! Useful for tracking your energy levels."
       }
     }
   }
