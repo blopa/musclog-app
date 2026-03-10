@@ -116,7 +116,7 @@ export default function PersonalInfo() {
       }
 
       if (data.trackCycle) {
-        router.push('/onboarding/cycle-length');
+        router.push('/onboarding/cycle-setup');
       } else {
         // Mark onboarding as completed and navigate to home
         await setOnboardingCompleted();

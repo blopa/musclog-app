@@ -22,7 +22,7 @@ import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { Button } from '../../components/theme/Button';
 import { NumericInput } from '../../components/theme/NumericInput';
 import { PickerButton } from '../../components/theme/PickerButton';
-import { type BirthControlType } from '../../database/models/MenstrualCycle';
+import { type BirthControlType } from '../../database/models';
 import { SyncGoal } from '../../database/models/MenstrualCycle';
 import { MenstrualCycleRepository } from '../../database/repositories/MenstrualCycleRepository';
 import { theme } from '../../theme';
