@@ -3,6 +3,7 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
+// TODO: adjust the colors to make sure all screens look good and have good contrast
 const lightColors = {
   // --- 💡 CORE READABILITY FIX ---
   // If your app is built correctly, these two variables handle the bulk of your UI.

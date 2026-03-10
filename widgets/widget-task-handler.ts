@@ -10,6 +10,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
       if (widgetAction === 'WIDGET_ADDED' || widgetAction === 'WIDGET_UPDATE') {
         props.renderWidget(SmartCameraWidget());
       }
+
       break;
 
     default:

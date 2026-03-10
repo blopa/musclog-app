@@ -17,7 +17,7 @@ export function SmartCameraWidget() {
         uri: 'com.werules.logger://?action=open-camera',
       }}
     >
-      <IconWidget icon="ic_launcher" size={48} font="material" />
+      <IconWidget icon="camera" size={48} font="material" />
     </FlexWidget>
   );
 }
