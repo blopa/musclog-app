@@ -143,10 +143,14 @@ export default function ExercisesModal({ visible, onClose }: ExercisesModalProps
     }
   };
 
-  // Load exercises from database
+  // Load exercises from database only when modal becomes visible
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
     loadExercises();
-  }, []);
+  }, [visible]);
 
   // Group exercises by muscle group
   const exercisesByGroup = useMemo(() => {

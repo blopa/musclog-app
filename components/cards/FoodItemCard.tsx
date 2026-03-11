@@ -10,7 +10,7 @@ import {
   Wheat,
   Zap,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
@@ -62,7 +62,7 @@ const MacroItem = ({
   );
 };
 
-export function FoodItemCard({
+export const FoodItemCard = memo(function FoodItemCard({
   name,
   description,
   calories,
@@ -167,4 +167,4 @@ export function FoodItemCard({
       </View>
     </GenericCard>
   );
-}
+});

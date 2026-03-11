@@ -202,7 +202,12 @@ export function useSettings(): UseSettingsResult & {
     const subscription = query.observeWithColumns(['value']).subscribe({
       next: (settings) => {
         const map = buildSettingsMap(settings);
-        setState(deriveStateFromMap(map));
+        setState((prev) => {
+          const next = deriveStateFromMap(map);
+          const keys = Object.keys(next) as (keyof SettingsState)[];
+          const hasChanged = keys.some((k) => prev[k] !== next[k]);
+          return hasChanged ? next : prev;
+        });
       },
       error: () => {
         setState((prev) => ({ ...prev, isLoading: false }));

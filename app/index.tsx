@@ -96,7 +96,8 @@ export default function HomeScreen() {
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
     initialLimit: 2,
     groupByMonth: false,
-    visible: true, // Always visible on home screen
+    visible: true,
+    skipPRDetection: true,
   });
 
   // Memoize modal close handlers to prevent unnecessary re-renders

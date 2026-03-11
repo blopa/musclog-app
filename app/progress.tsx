@@ -1,8 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
@@ -48,6 +48,35 @@ export default function ProgressScreen() {
   // TODO: use isSyncing
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
+  // Fix #5: Render charts progressively so the screen becomes interactive fast.
+  // Phase 0 → nothing (reset when isLoading changes)
+  // Phase 1 → primary above-fold charts (BodyMetrics) rendered immediately on load
+  // Phase 2 → secondary charts after all pending interactions complete
+  // Phase 3 → remaining charts 400ms later
+  const [chartPhase, setChartPhase] = useState(0);
+  const phaseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    phaseTimersRef.current.forEach(clearTimeout);
+    phaseTimersRef.current = [];
+
+    if (isLoading) {
+      setChartPhase(0);
+      return;
+    }
+
+    setChartPhase(1);
+    const task = InteractionManager.runAfterInteractions(() => {
+      setChartPhase(2);
+      const t1 = setTimeout(() => setChartPhase(3), 400);
+      phaseTimersRef.current.push(t1);
+    });
+    return () => {
+      task.cancel();
+      phaseTimersRef.current.forEach(clearTimeout);
+    };
+  }, [isLoading]);
 
   const handleSync = async () => {
     setIsSyncing(true);
@@ -151,25 +180,34 @@ export default function ProgressScreen() {
             <View className="px-4">
               {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
 
-              <BodyMetricsCharts
-                weightHistory={data?.weightHistory || []}
-                fatHistory={data?.fatHistory || []}
-                ffmiHistory={data?.ffmiHistory || []}
-                units={units}
-              />
+              {/* Phase 1: primary chart — renders immediately on load */}
+              {chartPhase >= 1 ? (
+                <BodyMetricsCharts
+                  weightHistory={data?.weightHistory || []}
+                  fatHistory={data?.fatHistory || []}
+                  ffmiHistory={data?.ffmiHistory || []}
+                  units={units}
+                />
+              ) : null}
 
-              <NutritionCharts
-                nutritionHistory={data?.nutritionHistory || []}
-                weightHistory={data?.weightHistory || []}
-                units={units}
-              />
+              {/* Phase 2: secondary charts — rendered after interactions complete */}
+              {chartPhase >= 2 ? (
+                <>
+                  <NutritionCharts
+                    nutritionHistory={data?.nutritionHistory || []}
+                    weightHistory={data?.weightHistory || []}
+                    units={units}
+                  />
 
-              <WorkoutCharts
-                workoutVolumeHistory={data?.workoutVolumeHistory || []}
-                muscleGroupSets={data?.muscleGroupSets || []}
-              />
+                  <WorkoutCharts
+                    workoutVolumeHistory={data?.workoutVolumeHistory || []}
+                    muscleGroupSets={data?.muscleGroupSets || []}
+                  />
+                </>
+              ) : null}
 
-              {data ? (
+              {/* Phase 3: remaining charts — rendered 400ms after interactions */}
+              {chartPhase >= 3 && data ? (
                 <>
                   {hasAnyAggregationData((d) => d.correlationHistory) ? (
                     <VolumeCaloriesChart
@@ -219,25 +257,25 @@ export default function ProgressScreen() {
                       units={units}
                     />
                   ) : null}
+
+                  {data.measurementsHistory
+                    ? Object.entries(data.measurementsHistory).map(([type, history]) => (
+                        <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
+                          <LineChart
+                            data={history.map((p) => ({ x: p.date, y: p.value }))}
+                            height={150}
+                            xDomain={[history[0].date, history[history.length - 1].date]}
+                            yDomain={[
+                              Math.min(...history.map((p) => p.value)) * 0.95,
+                              Math.max(...history.map((p) => p.value)) * 1.05,
+                            ]}
+                            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+                          />
+                        </ProgressChartSection>
+                      ))
+                    : null}
                 </>
               ) : null}
-
-              {data?.measurementsHistory
-                ? Object.entries(data.measurementsHistory).map(([type, history]) => (
-                    <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
-                      <LineChart
-                        data={history.map((p) => ({ x: p.date, y: p.value }))}
-                        height={150}
-                        xDomain={[history[0].date, history[history.length - 1].date]}
-                        yDomain={[
-                          Math.min(...history.map((p) => p.value)) * 0.95,
-                          Math.max(...history.map((p) => p.value)) * 1.05,
-                        ]}
-                        tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-                      />
-                    </ProgressChartSection>
-                  ))
-                : null}
             </View>
             <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
           </ScrollView>
