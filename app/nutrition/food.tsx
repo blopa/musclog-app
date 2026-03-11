@@ -227,7 +227,11 @@ export default function FoodScreen() {
     }
     setIsFoodMoveLoading(true);
     try {
-      await NutritionService.moveNutritionLogsToDate([selectedFoodItem.log], targetDate, targetMealType);
+      await NutritionService.moveNutritionLogsToDate(
+        [selectedFoodItem.log],
+        targetDate,
+        targetMealType
+      );
       showSnackbar('success', t('food.actions.moveSuccess'));
       await refresh();
     } catch (error) {

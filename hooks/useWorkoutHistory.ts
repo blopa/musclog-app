@@ -40,6 +40,7 @@ export interface UseWorkoutHistoryParams {
   groupByMonth?: boolean; // Whether to group workouts by month
   enableReactivity?: boolean; // Whether to observe database changes (default: true)
   visible?: boolean; // For modal visibility control
+  skipPRDetection?: boolean; // Skip expensive PR detection for performance (default: false)
 }
 
 // Return type when groupByMonth = false
@@ -97,7 +98,8 @@ function formatDuration(minutes: number): string {
 // Process workout for simple display (home screen)
 async function processWorkoutSimple(
   workout: WorkoutLog,
-  t: TFunction
+  t: TFunction,
+  skipPRDetection: boolean = false
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration
   const durationMinutes =
@@ -105,9 +107,12 @@ async function processWorkoutSimple(
       ? Math.round((workout.completedAt - workout.startedAt) / 60000)
       : 0;
 
-  // Get PR count
-  const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
-  const prCount = prs.length > 0 ? prs.length : null;
+  // Get PR count - skip if flag is set for performance
+  let prCount: number | null = null;
+  if (!skipPRDetection) {
+    const prs = await WorkoutAnalytics.detectPersonalRecords(workout);
+    prCount = prs.length > 0 ? prs.length : null;
+  }
 
   // Format date
   const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
@@ -141,6 +146,7 @@ export function useWorkoutHistory({
   groupByMonth = false,
   enableReactivity = true,
   visible = true,
+  skipPRDetection = false,
 }: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -213,7 +219,7 @@ export function useWorkoutHistory({
       } else {
         // Simple processing for home screen
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t))
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
         );
         setWorkouts(processedWorkouts);
       }
@@ -239,7 +245,7 @@ export function useWorkoutHistory({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, workoutFilters, groupByMonth, t, units]);
+  }, [visible, initialLimit, workoutFilters, groupByMonth, skipPRDetection, t, units]);
 
   // Load more workouts (pagination)
   const loadMore = useCallback(async () => {
@@ -282,7 +288,7 @@ export function useWorkoutHistory({
       } else {
         // Simple processing
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t))
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
         );
         // Append to existing workouts
         setWorkouts((prev) => [...prev, ...processedWorkouts]);
@@ -313,6 +319,7 @@ export function useWorkoutHistory({
     batchSize,
     workoutFilters,
     groupByMonth,
+    skipPRDetection,
     t,
     units,
   ]);

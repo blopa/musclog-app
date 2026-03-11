@@ -1,5 +1,5 @@
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -356,8 +356,7 @@ function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
   );
 }
 
-export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
-  const theme = useTheme();
+function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
@@ -441,3 +440,5 @@ export default function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHi
     </FullScreenModal>
   );
 }
+
+export default memo(PastWorkoutsHistoryModal);
