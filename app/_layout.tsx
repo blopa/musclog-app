@@ -75,20 +75,13 @@ function AppContent() {
 }
 
 function RootLayout() {
-  // Boot-time Health Connect sync (Android only, best-effort, 7-day lookback)
+  // Boot-time tasks (Android only, all run in parallel)
   useEffect(() => {
     if (Platform.OS !== 'android') {
       return;
     }
 
-    healthDataSyncService
-      .syncFromHealthConnect({ lookbackDays: 7 })
-      .catch((err) => console.warn('[boot sync] Health Connect sync error:', err));
-
-    configureDailyTasks().catch((err) => console.warn('[configureDailyTasks] Startup error:', err));
-
-    // Initialize Notifications
-    NotificationService.configure()
+    const notificationInit = NotificationService.configure()
       .then(async () => {
         NotificationService.scheduleWorkoutReminders();
         NotificationService.scheduleNutritionOverview();
@@ -101,6 +94,16 @@ function RootLayout() {
         }
       })
       .catch((err) => console.warn('[NotificationService] Init error:', err));
+
+    Promise.all([
+      healthDataSyncService
+        .syncFromHealthConnect({ lookbackDays: 7 })
+        .catch((err) => console.warn('[boot sync] Health Connect sync error:', err)),
+      configureDailyTasks().catch((err) =>
+        console.warn('[configureDailyTasks] Startup error:', err)
+      ),
+      notificationInit,
+    ]);
   }, []);
 
   useEffect(() => {

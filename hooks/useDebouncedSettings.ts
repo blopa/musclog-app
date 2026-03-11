@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ThemeOption } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
@@ -7,26 +7,39 @@ import { useSettings } from './useSettings';
 type SettingValue = string | boolean | number;
 
 /**
- * Generic hook that provides instant settings updates with debounced database persistence
- * This allows the UI to update immediately while saving to the database after a delay
+ * Hook that provides instant optimistic UI updates for settings toggles while
+ * writing to the database immediately (no debounce).
+ *
+ * Why no debounce:
+ * - All tracked settings here are booleans/enums — single-value changes, not
+ *   fast streams (sliders, keypresses).
+ * - WatermelonDB is a local database; writes complete in < 50ms.
+ * - Debouncing created a window where local state diverged from the DB.
+ *   When any other setting's delayed write resolved, useSettings re-read ALL
+ *   settings from DB, and the sync loop would sometimes overwrite still-pending
+ *   optimistic values with stale DB values.
+ *
+ * The optimistic `localSettings` state still exists to give an instant visual
+ * response before the DB subscription fires and confirms the new value.
  */
-export function useDebouncedSettings(debounceMs = 1500) {
-  // Get actual settings from database
+export function useDebouncedSettings(_debounceMs = 1500) {
   const actualSettings = useSettings();
 
-  // Local state for instant UI updates
+  // Optimistic local state: mirrors DB but updates instantly on user interaction.
   const [localSettings, setLocalSettings] = useState<Record<string, SettingValue>>({});
 
-  // Refs to track timeouts and pending values
-  const timeoutRefs = useRef<Record<string, NodeJS.Timeout>>({});
-  const pendingValuesRef = useRef<Record<string, SettingValue>>({});
+  // Track which keys have been set locally but whose DB confirmation hasn't
+  // arrived yet. This prevents the sync effect from overwriting an optimistic
+  // value with a stale DB value in the brief moment between a write and the
+  // subscription firing.
+  const pendingKeysRef = useRef<Set<string>>(new Set());
 
-  // Initialize local settings with actual settings
-  const initializeLocalSettings = useCallback(() => {
-    const newLocalSettings: Record<string, SettingValue> = {};
-
-    // Only include settings that are commonly changed in UI
-    const settingsToTrack: (keyof typeof actualSettings)[] = [
+  // Initialize local state from DB values on first load.
+  const initialized = useRef(false);
+  if (!initialized.current && !actualSettings.isLoading) {
+    initialized.current = true;
+    const initial: Record<string, SettingValue> = {};
+    const keys: (keyof typeof actualSettings)[] = [
       'theme',
       'connectHealthData',
       'readHealthData',
@@ -46,87 +59,68 @@ export function useDebouncedSettings(debounceMs = 1500) {
       'useOcrBeforeAi',
       'units',
     ];
-
-    settingsToTrack.forEach((key) => {
-      if (actualSettings[key] !== undefined) {
-        newLocalSettings[key] = actualSettings[key];
+    for (const k of keys) {
+      if (actualSettings[k] !== undefined) {
+        initial[k] = actualSettings[k] as SettingValue;
       }
-    });
-
-    setLocalSettings(newLocalSettings);
-  }, [actualSettings]);
-
-  // Initialize on mount
-  if (Object.keys(localSettings).length === 0) {
-    initializeLocalSettings();
+    }
+    setLocalSettings(initial);
   }
 
-  // Sync local settings with actual settings when they change from database
-  const syncWithDatabase = useCallback(
-    (settingKey: string) => {
-      if (pendingValuesRef.current[settingKey] === undefined) {
-        setLocalSettings((prev) => ({
-          ...prev,
-          [settingKey]: actualSettings[settingKey as keyof typeof actualSettings],
-        }));
-      }
-    },
-    [actualSettings]
-  );
-
-  // Keep local settings in sync with database settings
-  // Only update if there's no pending change to avoid overriding user's immediate selection
-  Object.keys(actualSettings).forEach((key) => {
-    if (
-      key in localSettings &&
-      localSettings[key] !== actualSettings[key as keyof typeof actualSettings] &&
-      pendingValuesRef.current[key] === undefined
-    ) {
-      syncWithDatabase(key);
+  // Sync local state with DB values whenever actualSettings changes —
+  // but only for keys that don't have a locally-pending optimistic value.
+  // Running this in a useEffect (not during render) avoids the React
+  // anti-pattern of calling setState during the render phase.
+  useEffect(() => {
+    if (actualSettings.isLoading) {
+      return;
     }
-  });
-
-  // Generic function to handle setting changes with instant UI update and debounced database save
-  const createSettingHandler = useCallback(
-    <T extends SettingValue>(settingKey: string, saveFunction: (value: T) => Promise<void>) => {
-      return (newValue: T) => {
-        // Update UI immediately
-        setLocalSettings((prev) => ({
-          ...prev,
-          [settingKey]: newValue,
-        }));
-
-        // Store the pending value
-        pendingValuesRef.current[settingKey] = newValue;
-
-        // Clear any existing timeout for this setting
-        if (timeoutRefs.current[settingKey]) {
-          clearTimeout(timeoutRefs.current[settingKey]);
+    setLocalSettings((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const key of Object.keys(prev)) {
+        if (pendingKeysRef.current.has(key)) {
+          // User just set this locally; skip until their write lands in the DB.
+          continue;
         }
+        const dbVal = actualSettings[key as keyof typeof actualSettings] as SettingValue;
+        if (dbVal !== undefined && prev[key] !== dbVal) {
+          next[key] = dbVal;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [actualSettings]);
 
-        // Set new timeout to save to database
-        timeoutRefs.current[settingKey] = setTimeout(async () => {
-          try {
-            await saveFunction(newValue);
-            delete pendingValuesRef.current[settingKey];
-            delete timeoutRefs.current[settingKey];
-          } catch (error) {
-            console.error(`[useDebouncedSettings] Error saving ${settingKey} to database:`, error);
-            // Revert to actual value on error
-            setLocalSettings((prev) => ({
-              ...prev,
-              [settingKey]: actualSettings[settingKey as keyof typeof actualSettings],
-            }));
-            delete pendingValuesRef.current[settingKey];
-            delete timeoutRefs.current[settingKey];
-          }
-        }, debounceMs);
-      };
-    },
-    [actualSettings, debounceMs]
+  /**
+   * Generic handler factory.
+   * 1. Updates local state immediately (optimistic).
+   * 2. Marks the key as pending so the sync effect doesn't overwrite it.
+   * 3. Writes to DB immediately.
+   * 4. Clears the pending mark once the write resolves (whether success or
+   *    failure). On failure the DB subscription will re-fire with the old
+   *    value, and the sync effect will correct the optimistic state.
+   */
+  const createSettingHandler = useCallback(
+    <T extends SettingValue>(settingKey: string, saveFunction: (value: T) => Promise<void>) =>
+      (newValue: T) => {
+        // Optimistic update
+        setLocalSettings((prev) => ({ ...prev, [settingKey]: newValue }));
+        pendingKeysRef.current.add(settingKey);
+
+        saveFunction(newValue)
+          .catch((error) => {
+            console.error(`[useDebouncedSettings] Error saving ${settingKey}:`, error);
+          })
+          .finally(() => {
+            pendingKeysRef.current.delete(settingKey);
+          });
+      },
+    []
   );
 
-  // Specific setting handlers
+  // --- Specific handlers ---
   const handleThemeChange = createSettingHandler<ThemeOption>('theme', SettingsService.setTheme);
   const handleConnectHealthDataChange = createSettingHandler(
     'connectHealthData',
@@ -164,137 +158,45 @@ export function useDebouncedSettings(debounceMs = 1500) {
     'notifications',
     SettingsService.setNotifications
   );
-
   const handleNotificationsWorkoutRemindersChange = createSettingHandler(
     'notificationsWorkoutReminders',
     SettingsService.setNotificationsWorkoutReminders
   );
-
   const handleNotificationsActiveWorkoutChange = createSettingHandler(
     'notificationsActiveWorkout',
     SettingsService.setNotificationsActiveWorkout
   );
-
   const handleNotificationsNutritionOverviewChange = createSettingHandler(
     'notificationsNutritionOverview',
     SettingsService.setNotificationsNutritionOverview
   );
-
   const handleNotificationsMenstrualCycleChange = createSettingHandler(
     'notificationsMenstrualCycle',
     SettingsService.setNotificationsMenstrualCycle
   );
-
   const handleNotificationsRestTimerChange = createSettingHandler(
     'notificationsRestTimer',
     SettingsService.setNotificationsRestTimer
   );
-
   const handleNotificationsWorkoutDurationChange = createSettingHandler(
     'notificationsWorkoutDuration',
     SettingsService.setNotificationsWorkoutDuration
   );
-
   const handleUnitsChange = createSettingHandler<'metric' | 'imperial'>(
     'units',
     SettingsService.setUnits
   );
-
   const handleUseOcrBeforeAiChange = createSettingHandler(
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
 
-  // Function to immediately save all pending changes to database
-  const flushAllPendingChanges = useCallback(async () => {
-    const pendingEntries = Object.entries(pendingValuesRef.current);
-
-    for (const [settingKey, value] of pendingEntries) {
-      if (timeoutRefs.current[settingKey]) {
-        clearTimeout(timeoutRefs.current[settingKey]);
-        delete timeoutRefs.current[settingKey];
-      }
-
-      try {
-        switch (settingKey) {
-          case 'theme':
-            await SettingsService.setTheme(value as ThemeOption);
-            break;
-          case 'connectHealthData':
-            await SettingsService.setConnectHealthData(value as boolean);
-            break;
-          case 'readHealthData':
-            await SettingsService.setReadHealthData(value as boolean);
-            break;
-          case 'writeHealthData':
-            await SettingsService.setWriteHealthData(value as boolean);
-            break;
-          case 'anonymousBugReport':
-            await SettingsService.setAnonymousBugReport(value as boolean);
-            break;
-          case 'enableGoogleGemini':
-            await SettingsService.setEnableGoogleGemini(value as boolean);
-            break;
-          case 'enableOpenAi':
-            await SettingsService.setEnableOpenAi(value as boolean);
-            break;
-          case 'dailyNutritionInsights':
-            await SettingsService.setDailyNutritionInsights(value as boolean);
-            break;
-          case 'workoutInsights':
-            await SettingsService.setWorkoutInsights(value as boolean);
-            break;
-          case 'notifications':
-            await SettingsService.setNotifications(value as boolean);
-            break;
-          case 'notificationsWorkoutReminders':
-            await SettingsService.setNotificationsWorkoutReminders(value as boolean);
-            break;
-          case 'notificationsActiveWorkout':
-            await SettingsService.setNotificationsActiveWorkout(value as boolean);
-            break;
-          case 'notificationsNutritionOverview':
-            await SettingsService.setNotificationsNutritionOverview(value as boolean);
-            break;
-          case 'notificationsMenstrualCycle':
-            await SettingsService.setNotificationsMenstrualCycle(value as boolean);
-            break;
-          case 'notificationsRestTimer':
-            await SettingsService.setNotificationsRestTimer(value as boolean);
-            break;
-          case 'notificationsWorkoutDuration':
-            await SettingsService.setNotificationsWorkoutDuration(value as boolean);
-            break;
-          case 'units':
-            await SettingsService.setUnits(value as 'metric' | 'imperial');
-            break;
-          case 'useOcrBeforeAi':
-            await SettingsService.setUseOcrBeforeAi(value as boolean);
-            break;
-        }
-        delete pendingValuesRef.current[settingKey];
-      } catch (error) {
-        console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
-        // Revert to actual value on error
-        setLocalSettings((prev) => ({
-          ...prev,
-          [settingKey]: actualSettings[settingKey as keyof typeof actualSettings],
-        }));
-        delete pendingValuesRef.current[settingKey];
-      }
-    }
-  }, [actualSettings]);
-
-  // Cleanup all timeouts on unmount
-  const cleanup = useCallback(() => {
-    Object.values(timeoutRefs.current).forEach((timeout) => {
-      clearTimeout(timeout);
-    });
-    timeoutRefs.current = {};
-  }, []);
+  // No-op: writes are immediate so there's nothing to flush.
+  const flushAllPendingChanges = useCallback(async () => {}, []);
+  const cleanup = useCallback(() => {}, []);
 
   return {
-    // Local (instant) values
+    // Optimistic (local) values — always what the user last set
     theme: (localSettings.theme as ThemeOption) || actualSettings.theme,
     connectHealthData:
       (localSettings.connectHealthData as boolean) ?? actualSettings.connectHealthData,
@@ -329,13 +231,13 @@ export function useDebouncedSettings(debounceMs = 1500) {
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
 
-    // Actual (database) values
+    // Actual (DB) values for components that need to know the confirmed state
     actualTheme: actualSettings.theme,
     actualConnectHealthData: actualSettings.connectHealthData,
     actualReadHealthData: actualSettings.readHealthData,
     actualWriteHealthData: actualSettings.writeHealthData,
 
-    // Change handlers
+    // Handlers
     handleThemeChange,
     handleConnectHealthDataChange,
     handleReadHealthDataChange,
@@ -355,11 +257,9 @@ export function useDebouncedSettings(debounceMs = 1500) {
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
 
-    // Utility functions
+    // Utilities (kept for API compatibility)
     flushAllPendingChanges,
     cleanup,
-
-    // Status
-    hasPendingChanges: Object.keys(pendingValuesRef.current).length > 0,
+    hasPendingChanges: pendingKeysRef.current.size > 0,
   };
 }

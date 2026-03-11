@@ -33,42 +33,134 @@ import { database } from '../database';
 import Setting from '../database/models/Setting';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
-function parseUnitsFromSettings(settings: Setting[]): Units {
-  if (settings.length === 0) {
-    return 'metric';
+// Build a type→value map from an array of Setting records.
+// When the same type appears multiple times, keeps the most recently updated one.
+function buildSettingsMap(settings: Setting[]): Map<string, string> {
+  const best = new Map<string, { value: string; updatedAt: number }>();
+  for (const s of settings) {
+    const existing = best.get(s.type);
+    if (!existing || s.updatedAt > existing.updatedAt) {
+      best.set(s.type, { value: s.value, updatedAt: s.updatedAt });
+    }
   }
-  const value = settings[0].value;
-  return value === '1' ? 'imperial' : 'metric';
+  const result = new Map<string, string>();
+  for (const [type, { value }] of best) {
+    result.set(type, value);
+  }
+
+  return result;
 }
 
-function parseThemeFromSettings(settings: Setting[]): ThemeOption {
-  if (settings.length === 0) {
-    return 'system';
-  }
-  const value = settings[0].value;
-  return value === 'light' || value === 'dark' ? value : 'system';
+function getString(map: Map<string, string>, type: string, defaultVal = ''): string {
+  return map.get(type) ?? defaultVal;
 }
 
-function parseBooleanFromSettings(settings: Setting[]): boolean {
-  if (settings.length === 0) {
-    return false;
+function getBoolean(map: Map<string, string>, type: string, defaultVal = false): boolean {
+  const v = map.get(type);
+  if (v === undefined) {
+    return defaultVal;
   }
-  // If multiple settings exist, use the most recent one
-  const mostRecent = settings.reduce((latest, current) =>
-    current.updatedAt > latest.updatedAt ? current : latest
-  );
-  return mostRecent.value === 'true';
+
+  return v === 'true';
 }
 
-function parseStringFromSettings(settings: Setting[]): string {
-  if (settings.length === 0) {
-    return '';
-  }
-  // If multiple settings exist, use the most recent one
-  const mostRecent = settings.reduce((latest, current) =>
-    current.updatedAt > latest.updatedAt ? current : latest
-  );
-  return mostRecent.value;
+type SettingsState = {
+  units: Units;
+  theme: ThemeOption;
+  connectHealthData: boolean;
+  readHealthData: boolean;
+  writeHealthData: boolean;
+  anonymousBugReport: boolean;
+  googleGeminiApiKey: string;
+  googleGeminiModel: string;
+  openAiApiKey: string;
+  openAiModel: string;
+  enableGoogleGemini: boolean;
+  enableOpenAi: boolean;
+  dailyNutritionInsights: boolean;
+  workoutInsights: boolean;
+  notifications: boolean;
+  notificationsWorkoutReminders: boolean;
+  notificationsActiveWorkout: boolean;
+  notificationsNutritionOverview: boolean;
+  notificationsMenstrualCycle: boolean;
+  notificationsRestTimer: boolean;
+  notificationsWorkoutDuration: boolean;
+  useOcrBeforeAi: boolean;
+  navSlot1: NavItemKey;
+  navSlot2: NavItemKey;
+  navSlot3: NavItemKey;
+  isLoading: boolean;
+};
+
+const DEFAULT_STATE: SettingsState = {
+  units: 'metric',
+  theme: 'system',
+  connectHealthData: false,
+  readHealthData: false,
+  writeHealthData: false,
+  anonymousBugReport: true,
+  googleGeminiApiKey: '',
+  googleGeminiModel: 'gemini-2.0-flash',
+  openAiApiKey: '',
+  openAiModel: 'gpt-4o',
+  enableGoogleGemini: true,
+  enableOpenAi: true,
+  dailyNutritionInsights: true,
+  workoutInsights: false,
+  notifications: true,
+  notificationsWorkoutReminders: false,
+  notificationsActiveWorkout: false,
+  notificationsNutritionOverview: false,
+  notificationsMenstrualCycle: false,
+  notificationsRestTimer: false,
+  notificationsWorkoutDuration: false,
+  useOcrBeforeAi: false,
+  navSlot1: 'workouts',
+  navSlot2: 'food',
+  navSlot3: 'profile',
+  isLoading: true,
+};
+
+function deriveStateFromMap(map: Map<string, string>): SettingsState {
+  const rawTheme = getString(map, THEME_SETTING_TYPE);
+  const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
+
+  const rawUnits = getString(map, UNITS_SETTING_TYPE);
+  const units: Units = rawUnits === '1' ? 'imperial' : 'metric';
+
+  const rawNavSlot1 = getString(map, NAV_SLOT_1_SETTING_TYPE);
+  const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
+  const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
+
+  return {
+    units,
+    theme,
+    connectHealthData: getBoolean(map, CONNECT_HEALTH_DATA_SETTING_TYPE),
+    readHealthData: getBoolean(map, READ_HEALTH_DATA_SETTING_TYPE),
+    writeHealthData: getBoolean(map, WRITE_HEALTH_DATA_SETTING_TYPE),
+    anonymousBugReport: getBoolean(map, ANONYMOUS_BUG_REPORT_SETTING_TYPE, true),
+    googleGeminiApiKey: getString(map, GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
+    googleGeminiModel: getString(map, GOOGLE_GEMINI_MODEL_SETTING_TYPE, 'gemini-2.0-flash'),
+    openAiApiKey: getString(map, OPENAI_API_KEY_SETTING_TYPE),
+    openAiModel: getString(map, OPENAI_MODEL_SETTING_TYPE, 'gpt-4o'),
+    enableGoogleGemini: getBoolean(map, ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true),
+    enableOpenAi: getBoolean(map, ENABLE_OPENAI_SETTING_TYPE, true),
+    dailyNutritionInsights: getBoolean(map, DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true),
+    workoutInsights: getBoolean(map, WORKOUT_INSIGHTS_SETTING_TYPE),
+    notifications: getBoolean(map, NOTIFICATIONS_SETTING_TYPE, true),
+    notificationsWorkoutReminders: getBoolean(map, NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE),
+    notificationsActiveWorkout: getBoolean(map, NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE),
+    notificationsNutritionOverview: getBoolean(map, NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE),
+    notificationsMenstrualCycle: getBoolean(map, NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE),
+    notificationsRestTimer: getBoolean(map, NOTIFICATIONS_REST_TIMER_SETTING_TYPE),
+    notificationsWorkoutDuration: getBoolean(map, NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE),
+    useOcrBeforeAi: getBoolean(map, USE_OCR_BEFORE_AI_SETTING_TYPE),
+    navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
+    navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
+    navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
+    isLoading: false,
+  };
 }
 
 export function useSettings(): UseSettingsResult & {
@@ -98,444 +190,26 @@ export function useSettings(): UseSettingsResult & {
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
 } {
-  const [units, setUnits] = useState<Units>('metric');
-  const [theme, setTheme] = useState<ThemeOption>('system');
-  const [connectHealthData, setConnectHealthData] = useState(false);
-  const [readHealthData, setReadHealthData] = useState(false);
-  const [writeHealthData, setWriteHealthData] = useState(false);
-  const [anonymousBugReport, setAnonymousBugReport] = useState(true);
-  const [googleGeminiApiKey, setGoogleGeminiApiKey] = useState('');
-  const [googleGeminiModel, setGoogleGeminiModel] = useState('gemini-2.0-flash');
-  const [openAiApiKey, setOpenAiApiKey] = useState('');
-  const [openAiModel, setOpenAiModel] = useState('gpt-4o');
-  const [enableGoogleGemini, setEnableGoogleGemini] = useState(true);
-  const [enableOpenAi, setEnableOpenAi] = useState(true);
-  const [dailyNutritionInsights, setDailyNutritionInsights] = useState(true);
-  const [workoutInsights, setWorkoutInsights] = useState(false);
-  const [notifications, setNotifications] = useState(true);
-  const [notificationsWorkoutReminders, setNotificationsWorkoutReminders] = useState(false);
-  const [notificationsActiveWorkout, setNotificationsActiveWorkout] = useState(false);
-  const [notificationsNutritionOverview, setNotificationsNutritionOverview] = useState(false);
-  const [notificationsMenstrualCycle, setNotificationsMenstrualCycle] = useState(false);
-  const [notificationsRestTimer, setNotificationsRestTimer] = useState(false);
-  const [notificationsWorkoutDuration, setNotificationsWorkoutDuration] = useState(false);
-  const [useOcrBeforeAi, setUseOcrBeforeAi] = useState(false);
-  const [navSlot1, setNavSlot1] = useState<NavItemKey>('workouts');
-  const [navSlot2, setNavSlot2] = useState<NavItemKey>('food');
-  const [navSlot3, setNavSlot3] = useState<NavItemKey>('profile');
-  const [isLoading, setIsLoading] = useState(true);
+  const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
 
   useEffect(() => {
-    const unitsQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
+    // Single query for ALL settings — one subscription, one re-render per change.
+    const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
 
-    const themeQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', THEME_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const connectHealthDataQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', CONNECT_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const readHealthDataQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', READ_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const writeHealthDataQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', WRITE_HEALTH_DATA_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const anonymousBugReportQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', ANONYMOUS_BUG_REPORT_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const googleGeminiApiKeyQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const googleGeminiModelQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', GOOGLE_GEMINI_MODEL_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const openAiApiKeyQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', OPENAI_API_KEY_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const openAiModelQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', OPENAI_MODEL_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const enableGoogleGeminiQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', ENABLE_GOOGLE_GEMINI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const enableOpenAiQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', ENABLE_OPENAI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const dailyNutritionInsightsQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', DAILY_NUTRITION_INSIGHTS_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const workoutInsightsQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', WORKOUT_INSIGHTS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const notificationsQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', NOTIFICATIONS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const notificationsWorkoutRemindersQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const notificationsActiveWorkoutQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const notificationsNutritionOverviewQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const notificationsMenstrualCycleQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const notificationsRestTimerQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_REST_TIMER_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const notificationsWorkoutDurationQuery = database
-      .get<Setting>('settings')
-      .query(
-        Q.where('type', NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE),
-        Q.where('deleted_at', Q.eq(null))
-      );
-
-    const useOcrBeforeAiQuery = database
-      .get<Setting>('settings')
-      .query(Q.where('type', USE_OCR_BEFORE_AI_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const navSlot1Query = database
-      .get<Setting>('settings')
-      .query(Q.where('type', NAV_SLOT_1_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const navSlot2Query = database
-      .get<Setting>('settings')
-      .query(Q.where('type', NAV_SLOT_2_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const navSlot3Query = database
-      .get<Setting>('settings')
-      .query(Q.where('type', NAV_SLOT_3_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)));
-
-    const unitsSubscription = unitsQuery.observeWithColumns(['value']).subscribe({
+    // observeWithColumns(['value']) fires on both record inserts/deletes AND
+    // when the `value` column changes on any existing record. Plain observe()
+    // would miss updates to existing settings records.
+    const subscription = query.observeWithColumns(['value']).subscribe({
       next: (settings) => {
-        setUnits(parseUnitsFromSettings(settings));
+        const map = buildSettingsMap(settings);
+        setState(deriveStateFromMap(map));
       },
       error: () => {
-        setUnits('metric');
+        setState((prev) => ({ ...prev, isLoading: false }));
       },
     });
 
-    const themeSubscription = themeQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setTheme(parseThemeFromSettings(settings));
-      },
-      error: () => {
-        setTheme('system');
-      },
-    });
-
-    const connectHealthDataSubscription = connectHealthDataQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setConnectHealthData(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setConnectHealthData(false);
-        },
-      });
-
-    const readHealthDataSubscription = readHealthDataQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setReadHealthData(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setReadHealthData(false);
-      },
-    });
-
-    const writeHealthDataSubscription = writeHealthDataQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setWriteHealthData(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setWriteHealthData(false);
-        },
-      });
-
-    const anonymousBugReportSubscription = anonymousBugReportQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setAnonymousBugReport(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setAnonymousBugReport(true);
-        },
-      });
-
-    const googleGeminiApiKeySubscription = googleGeminiApiKeyQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setGoogleGeminiApiKey(parseStringFromSettings(settings));
-        },
-        error: () => {
-          setGoogleGeminiApiKey('');
-        },
-      });
-
-    const googleGeminiModelSubscription = googleGeminiModelQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setGoogleGeminiModel(parseStringFromSettings(settings));
-        },
-        error: () => {
-          setGoogleGeminiModel('gemini-2.0-flash');
-        },
-      });
-
-    const openAiApiKeySubscription = openAiApiKeyQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setOpenAiApiKey(parseStringFromSettings(settings));
-      },
-      error: () => {
-        setOpenAiApiKey('');
-      },
-    });
-
-    const openAiModelSubscription = openAiModelQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setOpenAiModel(parseStringFromSettings(settings));
-      },
-      error: () => {
-        setOpenAiModel('gpt-4o');
-      },
-    });
-
-    const enableGoogleGeminiSubscription = enableGoogleGeminiQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setEnableGoogleGemini(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setEnableGoogleGemini(true);
-        },
-      });
-
-    const enableOpenAiSubscription = enableOpenAiQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setEnableOpenAi(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setEnableOpenAi(true);
-      },
-    });
-
-    const dailyNutritionInsightsSubscription = dailyNutritionInsightsQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setDailyNutritionInsights(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setDailyNutritionInsights(true);
-        },
-      });
-
-    const workoutInsightsSubscription = workoutInsightsQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setWorkoutInsights(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setWorkoutInsights(false);
-        },
-      });
-
-    const notificationsSubscription = notificationsQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setNotifications(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setNotifications(true);
-      },
-    });
-
-    const notificationsWorkoutRemindersSubscription = notificationsWorkoutRemindersQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsWorkoutReminders(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsWorkoutReminders(false);
-        },
-      });
-
-    const notificationsActiveWorkoutSubscription = notificationsActiveWorkoutQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsActiveWorkout(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsActiveWorkout(false);
-        },
-      });
-
-    const notificationsNutritionOverviewSubscription = notificationsNutritionOverviewQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsNutritionOverview(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsNutritionOverview(false);
-        },
-      });
-
-    const notificationsMenstrualCycleSubscription = notificationsMenstrualCycleQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsMenstrualCycle(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsMenstrualCycle(false);
-        },
-      });
-
-    const notificationsRestTimerSubscription = notificationsRestTimerQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsRestTimer(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsRestTimer(false);
-        },
-      });
-
-    const notificationsWorkoutDurationSubscription = notificationsWorkoutDurationQuery
-      .observeWithColumns(['value'])
-      .subscribe({
-        next: (settings) => {
-          setNotificationsWorkoutDuration(parseBooleanFromSettings(settings));
-        },
-        error: () => {
-          setNotificationsWorkoutDuration(false);
-        },
-      });
-
-    const useOcrBeforeAiSubscription = useOcrBeforeAiQuery.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setUseOcrBeforeAi(parseBooleanFromSettings(settings));
-      },
-      error: () => {
-        setUseOcrBeforeAi(false);
-      },
-    });
-
-    const navSlot1Subscription = navSlot1Query.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setNavSlot1((parseStringFromSettings(settings) as NavItemKey) || 'workouts');
-      },
-      error: () => {
-        setNavSlot1('workouts');
-      },
-    });
-
-    const navSlot2Subscription = navSlot2Query.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setNavSlot2((parseStringFromSettings(settings) as NavItemKey) || 'food');
-      },
-      error: () => {
-        setNavSlot2('food');
-      },
-    });
-
-    const navSlot3Subscription = navSlot3Query.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        setNavSlot3((parseStringFromSettings(settings) as NavItemKey) || 'profile');
-      },
-      error: () => {
-        setNavSlot3('profile');
-      },
-    });
-
-    // Set loading to false once all subscriptions have had a chance to load
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
-
-    return () => {
-      unitsSubscription.unsubscribe();
-      themeSubscription.unsubscribe();
-      connectHealthDataSubscription.unsubscribe();
-      readHealthDataSubscription.unsubscribe();
-      writeHealthDataSubscription.unsubscribe();
-      anonymousBugReportSubscription.unsubscribe();
-      googleGeminiApiKeySubscription.unsubscribe();
-      googleGeminiModelSubscription.unsubscribe();
-      openAiApiKeySubscription.unsubscribe();
-      openAiModelSubscription.unsubscribe();
-      enableGoogleGeminiSubscription.unsubscribe();
-      enableOpenAiSubscription.unsubscribe();
-      dailyNutritionInsightsSubscription.unsubscribe();
-      workoutInsightsSubscription.unsubscribe();
-      notificationsSubscription.unsubscribe();
-      notificationsWorkoutRemindersSubscription.unsubscribe();
-      notificationsActiveWorkoutSubscription.unsubscribe();
-      notificationsNutritionOverviewSubscription.unsubscribe();
-      notificationsMenstrualCycleSubscription.unsubscribe();
-      notificationsRestTimerSubscription.unsubscribe();
-      notificationsWorkoutDurationSubscription.unsubscribe();
-      useOcrBeforeAiSubscription.unsubscribe();
-      navSlot1Subscription.unsubscribe();
-      navSlot2Subscription.unsubscribe();
-      navSlot3Subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const isAiFeaturesEnabled = useMemo(() => {
@@ -544,72 +218,18 @@ export function useSettings(): UseSettingsResult & {
     }
 
     return (
-      (enableGoogleGemini && googleGeminiApiKey.trim() !== '') ||
-      (enableOpenAi && openAiApiKey.trim() !== '')
+      (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
+      (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
-  }, [enableGoogleGemini, googleGeminiApiKey, enableOpenAi, openAiApiKey]);
+  }, [state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
 
-  // Memoize the return value to prevent unnecessary re-renders
   return useMemo(
     () => ({
-      units,
-      theme,
-      connectHealthData,
-      readHealthData,
-      writeHealthData,
-      anonymousBugReport,
-      googleGeminiApiKey,
-      googleGeminiModel,
-      openAiApiKey,
-      openAiModel,
-      enableGoogleGemini,
-      enableOpenAi,
-      dailyNutritionInsights,
-      workoutInsights,
-      notifications,
-      notificationsWorkoutReminders,
-      notificationsActiveWorkout,
-      notificationsNutritionOverview,
-      notificationsMenstrualCycle,
-      notificationsRestTimer,
-      notificationsWorkoutDuration,
-      useOcrBeforeAi,
-      isLoading,
+      ...state,
       isAiFeaturesEnabled,
-      navSlot1,
-      navSlot2,
-      navSlot3,
-      weightUnit: getWeightUnit(units),
-      heightUnit: getHeightUnit(units),
+      weightUnit: getWeightUnit(state.units),
+      heightUnit: getHeightUnit(state.units),
     }),
-    [
-      units,
-      theme,
-      connectHealthData,
-      readHealthData,
-      writeHealthData,
-      anonymousBugReport,
-      googleGeminiApiKey,
-      googleGeminiModel,
-      openAiApiKey,
-      openAiModel,
-      enableGoogleGemini,
-      enableOpenAi,
-      dailyNutritionInsights,
-      workoutInsights,
-      notifications,
-      notificationsWorkoutReminders,
-      notificationsActiveWorkout,
-      notificationsNutritionOverview,
-      notificationsMenstrualCycle,
-      notificationsRestTimer,
-      notificationsWorkoutDuration,
-      useOcrBeforeAi,
-      isLoading,
-      isAiFeaturesEnabled,
-      navSlot1,
-      navSlot2,
-      navSlot3,
-    ]
+    [state, isAiFeaturesEnabled]
   );
 }

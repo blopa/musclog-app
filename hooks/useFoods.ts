@@ -80,27 +80,21 @@ export function useFoods({
         setHasMore(false); // No pagination for favorites currently
         setCurrentOffset(foodsList.length);
       } else {
-        // List mode
+        // List mode — fetch once and reuse for both slicing and total count
         if (getAll) {
-          // Fetch all foods (no pagination)
           foodsList = await FoodService.getAllFoods();
           setHasMore(false);
+          setTotalCount(foodsList.length);
         } else {
-          // Fetch initial batch - since FoodService doesn't have pagination, get all and slice
           const allFoods = await FoodService.getAllFoods();
           foodsList = allFoods.slice(0, initialLimit);
           setHasMore(allFoods.length > initialLimit);
           setCurrentOffset(initialLimit);
+          setTotalCount(allFoods.length);
         }
       }
 
       setFoods(foodsList);
-
-      // Get total count for list mode
-      if (mode === 'list') {
-        const allFoods = await FoodService.getAllFoods();
-        setTotalCount(allFoods.length);
-      }
     } catch (err) {
       console.error('Error loading foods:', err);
       setFoods([]);

@@ -735,6 +735,49 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     []
   );
 
+  // Memoize GiftedChat render callbacks so message bubbles don't re-render
+  // on every keystroke / state update. The module-level render functions are
+  // stable; only the wrapper closures need to be stabilized here.
+  const gcRenderBubble = useCallback(
+    (props: Parameters<typeof renderBubble>[0]) =>
+      renderBubble(props, theme, handleViewWorkoutDetails),
+    [theme, handleViewWorkoutDetails]
+  );
+  const gcRenderAvatar = useCallback(
+    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
+    [theme]
+  );
+
+  const gcRenderCustomView = useCallback(
+    (props: Parameters<typeof renderCustomView>[0]) =>
+      renderCustomView(props, handleViewWorkoutDetails),
+    [handleViewWorkoutDetails]
+  );
+
+  const gcRenderInputToolbar = useCallback(
+    (props: Parameters<typeof renderInputToolbar>[0]) =>
+      renderInputToolbar(props, theme, pendingIntention, handleClearIntention, t),
+    [theme, pendingIntention, handleClearIntention, t]
+  );
+
+  const gcRenderComposer = useCallback(
+    (props: Parameters<typeof renderComposer>[0]) =>
+      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText),
+    [t, theme, failedMessageText, clearFailedMessageText]
+  );
+
+  const gcRenderSend = useCallback(
+    (props: Parameters<typeof renderSend>[0]) => renderSend(props, theme, failedMessageText),
+    [theme, failedMessageText]
+  );
+
+  const gcRenderDay = useCallback(
+    (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme),
+    [t, theme]
+  );
+
+  const gcScrollToBottomComponent = useCallback(() => null, []);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -801,19 +844,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             onSend={onSend}
             user={{ _id: 1 }}
             isTyping={isSending}
-            renderBubble={(props) => renderBubble(props, theme, handleViewWorkoutDetails)}
-            renderAvatar={(props) => renderAvatar(props, theme)}
-            renderCustomView={(props) => renderCustomView(props, handleViewWorkoutDetails)}
-            renderInputToolbar={(props) =>
-              renderInputToolbar(props, theme, pendingIntention, handleClearIntention, t)
-            }
-            renderComposer={(props) =>
-              renderComposer(props, t, theme, failedMessageText, clearFailedMessageText)
-            }
-            renderSend={(props) => renderSend(props, theme, failedMessageText)}
+            renderBubble={gcRenderBubble}
+            renderAvatar={gcRenderAvatar}
+            renderCustomView={gcRenderCustomView}
+            renderInputToolbar={gcRenderInputToolbar}
+            renderComposer={gcRenderComposer}
+            renderSend={gcRenderSend}
             renderAccessory={renderAccessory}
-            renderDay={(props) => renderDay(props, t, theme)}
-            scrollToBottomComponent={() => null}
+            renderDay={gcRenderDay}
+            scrollToBottomComponent={gcScrollToBottomComponent}
             minInputToolbarHeight={0}
             listProps={{
               contentContainerStyle: {
