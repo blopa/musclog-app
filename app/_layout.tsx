@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
+import { SmartCameraProvider } from '../components/SmartCameraContext';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
 import { UnreadChatProvider } from '../components/UnreadChatContext';
@@ -160,7 +161,9 @@ function RootLayout() {
             <ThemeProvider>
               <UnreadChatProvider>
                 <SnackbarProvider>
-                  <AppContent />
+                  <SmartCameraProvider>
+                    <AppContent />
+                  </SmartCameraProvider>
                 </SnackbarProvider>
               </UnreadChatProvider>
             </ThemeProvider>

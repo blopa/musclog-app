@@ -46,7 +46,7 @@ import { LogMealModal } from './LogMealModal';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 
-type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
+export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
 type CameraModalProps = {
   visible: boolean;

@@ -74,7 +74,7 @@ export function NutritionWidget({
         <FlexWidget style={{ flex: 1 }} />
         <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <TextWidget
-            text={calories.toLocaleString()}
+            text={Math.round(calories).toLocaleString()}
             style={{
               fontSize: theme.typography.fontSize['2xl'],
               fontWeight: 'bold',
@@ -82,6 +82,7 @@ export function NutritionWidget({
             }}
           />
           <TextWidget
+            // TODO: use i18n
             text={` / ${targetCalories.toLocaleString()} kcal`}
             style={{
               fontSize: theme.typography.fontSize.xs,
