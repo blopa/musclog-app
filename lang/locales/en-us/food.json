@@ -161,7 +161,8 @@
         "breakfast": "Start your day",
         "lunch": "Midday meal",
         "dinner": "Evening meal",
-        "snack": "Light bite"
+        "snack": "Light bite",
+        "other": "Other"
       }
     },
     "addFoodModal": {

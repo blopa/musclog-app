@@ -123,7 +123,7 @@ export function AddFoodModal({
               <View style={{ flex: 2, minWidth: '60%', maxWidth: '66.666%', alignSelf: 'stretch' }}>
                 <MealTypeButton
                   icon={MoreHorizontal}
-                  label={t('food.meals.trackOther')}
+                  label={t('food.meals.other')}
                   iconBgColor={theme.colors.status.gray10}
                   iconColor={theme.colors.text.secondary}
                   span={2}

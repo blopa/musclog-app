@@ -68,8 +68,8 @@ const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType
   },
   {
     id: 'other',
-    label: t('food.meals.trackOther'),
-    description: t('food.meals.trackOther'),
+    label: t('food.meals.other'),
+    description: t('food.meals.descriptions.other'),
     icon: MoreHorizontal,
     iconBgColor: theme.colors.status.gray10,
     iconColor: theme.colors.text.secondary,

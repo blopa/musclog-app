@@ -87,6 +87,8 @@ export default function FoodScreen() {
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
   const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
+  const [isFoodMoveModalVisible, setIsFoodMoveModalVisible] = useState(false);
+  const [isFoodMoveLoading, setIsFoodMoveLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -216,7 +218,26 @@ export default function FoodScreen() {
 
   const handleMoveFood = () => {
     setIsFoodMenuVisible(false);
-    // TODO: implement this feature like we have for moving the meal
+    setIsFoodMoveModalVisible(true);
+  };
+
+  const handleConfirmFoodMove = async (targetDate: Date, targetMealType: MealType) => {
+    if (!selectedFoodItem) {
+      return;
+    }
+    setIsFoodMoveLoading(true);
+    try {
+      await NutritionService.moveNutritionLogsToDate([selectedFoodItem.log], targetDate, targetMealType);
+      showSnackbar('success', t('food.actions.moveSuccess'));
+      await refresh();
+    } catch (error) {
+      console.error('Error moving food:', error);
+      showSnackbar('error', t('food.actions.moveError'));
+    } finally {
+      setIsFoodMoveLoading(false);
+      setIsFoodMoveModalVisible(false);
+      setSelectedFoodItem(null);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -905,6 +926,20 @@ export default function FoodScreen() {
         sourceMealType={selectedMealForMenu || 'breakfast'}
         sourceDate={selectedDate}
         isLoading={isMealActionLoading}
+      />
+
+      {/* Move Food Modal */}
+      <MoveCopyMealModal
+        visible={isFoodMoveModalVisible ? !!selectedFoodItem : false}
+        onClose={() => {
+          setIsFoodMoveModalVisible(false);
+          setSelectedFoodItem(null);
+        }}
+        onConfirm={handleConfirmFoodMove}
+        mode="move"
+        sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
+        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        isLoading={isFoodMoveLoading}
       />
 
       {/* Food Details Modal (edit/duplicate mode) */}

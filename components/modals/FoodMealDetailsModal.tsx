@@ -787,7 +787,7 @@ export function FoodMealDetailsModal({
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },
     { id: 'snack', label: t('food.meals.snacks') },
-    { id: 'other', label: t('food.meals.trackOther') },
+    { id: 'other', label: t('food.meals.other') },
   ];
 
   const handleAddFood = useCallback(async () => {
