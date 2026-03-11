@@ -2,8 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { GenericCard } from '../cards/GenericCard';
 import { ProgressInsights } from '../../database/services/ProgressService';
+import { GenericCard } from '../cards/GenericCard';
 
 interface ProgressInsightsSectionProps {
   insights: ProgressInsights;
@@ -14,9 +14,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
   const renderStat = (label: string, value: string, colorClass: string) => (
     <View className="flex-1 items-center justify-center p-2">
-      <Text className="text-[10px] uppercase tracking-wider text-text-tertiary">
-        {label}
-      </Text>
+      <Text className="text-[10px] uppercase tracking-wider text-text-tertiary">{label}</Text>
       <Text className={`text-lg font-bold ${colorClass}`}>{value}</Text>
     </View>
   );
@@ -25,11 +23,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="flex-row flex-wrap p-2">
-          {renderStat(
-            t('progress.tdee'),
-            `${Math.round(insights.tdee)}`,
-            'text-accent-primary'
-          )}
+          {renderStat(t('progress.tdee'), `${Math.round(insights.tdee)}`, 'text-accent-primary')}
           {renderStat(
             t('progress.weeklyWeightChange'),
             `${insights.weightChangeWeekly > 0 ? '+' : ''}${insights.weightChangeWeekly.toFixed(2)}`,

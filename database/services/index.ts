@@ -20,10 +20,10 @@ export {
 } from './MigrationService';
 export { NutritionCheckinService } from './NutritionCheckinService';
 export { NutritionGoalService } from './NutritionGoalService';
+export { ProgressService } from './ProgressService';
 export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
 export { type EnrichedWorkoutLogSet, WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';
-export { ProgressService } from './ProgressService';

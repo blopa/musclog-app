@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import { ProgressData, ProgressService } from '../database/services/ProgressService';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';

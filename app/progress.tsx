@@ -1,25 +1,25 @@
-import { useTranslation } from 'react-i18next';
-import { ScrollView, View, ActivityIndicator, Text } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { Sparkles, Ruler, Scale, Utensils, RefreshCw } from 'lucide-react-native';
+import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
+import { LineChart } from '../components/charts/LineChart';
 import { MasterLayout } from '../components/MasterLayout';
-import { useProgressData } from '../hooks/useProgressData';
-import { useSettings } from '../hooks/useSettings';
-import { ProgressDateFilter } from '../components/progress/ProgressDateFilter';
 import { BodyMetricsCharts } from '../components/progress/BodyMetricsCharts';
 import { NutritionCharts } from '../components/progress/NutritionCharts';
-import { WorkoutCharts } from '../components/progress/WorkoutCharts';
-import { ProgressInsightsSection } from '../components/progress/ProgressInsightsSection';
-import { LineChart } from '../components/charts/LineChart';
 import { ProgressChartSection } from '../components/progress/ProgressChartSection';
-import { useTheme } from '../hooks/useTheme';
+import { ProgressDateFilter } from '../components/progress/ProgressDateFilter';
+import { ProgressInsightsSection } from '../components/progress/ProgressInsightsSection';
+import { WorkoutCharts } from '../components/progress/WorkoutCharts';
 import { MenuButton } from '../components/theme/MenuButton';
 import { useAiEnabled } from '../hooks/useAiEnabled';
+import { useProgressData } from '../hooks/useProgressData';
+import { useSettings } from '../hooks/useSettings';
+import { useTheme } from '../hooks/useTheme';
 import { healthDataSyncService } from '../services/healthDataSync';
-import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 
 export default function ProgressScreen() {
   const { t } = useTranslation();
@@ -55,16 +55,20 @@ export default function ProgressScreen() {
   };
 
   const menuItems: BottomPopUpMenuItem[] = [
-    ...(aiEnabled ? [{
-      title: t('progress.getAiInsights'),
-      description: 'Get AI-powered insights on your progress',
-      icon: Sparkles,
-      onPress: () => {
-        router.push('/chat?context=progression');
-      },
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.background.iconDarker,
-    }] : []),
+    ...(aiEnabled
+      ? [
+          {
+            title: t('progress.getAiInsights'),
+            description: 'Get AI-powered insights on your progress',
+            icon: Sparkles,
+            onPress: () => {
+              router.push('/chat?context=progression');
+            },
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.background.iconDarker,
+          },
+        ]
+      : []),
     {
       title: t('progress.manageMetrics'),
       description: 'Add or edit your weight and body fat data',
@@ -110,9 +114,7 @@ export default function ProgressScreen() {
       <Stack.Screen
         options={{
           title: t('progress.title'),
-          headerRight: () => (
-            <MenuButton onPress={() => setShowMenu(true)} />
-          ),
+          headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
           headerShown: true,
           headerStyle: {
             backgroundColor: theme.colors.background.primary,
@@ -134,9 +136,12 @@ export default function ProgressScreen() {
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           </View>
         ) : (
-          <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+          >
             <View className="px-4">
-              {data?.insights && <ProgressInsightsSection insights={data.insights} />}
+              {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
 
               <BodyMetricsCharts
                 weightHistory={data?.weightHistory || []}
@@ -156,23 +161,22 @@ export default function ProgressScreen() {
                 muscleGroupSets={data?.muscleGroupSets || []}
               />
 
-              {data?.measurementsHistory && Object.entries(data.measurementsHistory).map(([type, history]) => (
-                <ProgressChartSection
-                  key={type}
-                  title={t(`progress.measurement.${type}`)}
-                >
-                  <LineChart
-                    data={history.map(p => ({ x: p.date, y: p.value }))}
-                    height={150}
-                    xDomain={[history[0].date, history[history.length - 1].date]}
-                    yDomain={[
-                      Math.min(...history.map(p => p.value)) * 0.95,
-                      Math.max(...history.map(p => p.value)) * 1.05
-                    ]}
-                    tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-                  />
-                </ProgressChartSection>
-              ))}
+              {data?.measurementsHistory
+                ? Object.entries(data.measurementsHistory).map(([type, history]) => (
+                    <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
+                      <LineChart
+                        data={history.map((p) => ({ x: p.date, y: p.value }))}
+                        height={150}
+                        xDomain={[history[0].date, history[history.length - 1].date]}
+                        yDomain={[
+                          Math.min(...history.map((p) => p.value)) * 0.95,
+                          Math.max(...history.map((p) => p.value)) * 1.05,
+                        ]}
+                        tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+                      />
+                    </ProgressChartSection>
+                  ))
+                : null}
             </View>
           </ScrollView>
         )}

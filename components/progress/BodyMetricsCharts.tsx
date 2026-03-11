@@ -2,9 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { MetricPoint } from '../../database/services/ProgressService';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
-import { MetricPoint } from '../../database/services/ProgressService';
 
 interface BodyMetricsChartsProps {
   weightHistory: MetricPoint[];
@@ -25,7 +25,7 @@ export function BodyMetricsCharts({
 
   return (
     <View>
-      {weightHistory.length >= 2 && (
+      {weightHistory.length >= 2 ? (
         <ProgressChartSection
           title={t('progress.weight')}
           subtitle={t('progress.weightTrendSubtitle')}
@@ -43,9 +43,9 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
           />
         </ProgressChartSection>
-      )}
+      ) : null}
 
-      {fatHistory.length >= 2 && (
+      {fatHistory.length >= 2 ? (
         <ProgressChartSection
           title={t('progress.bodyFat')}
           subtitle={t('progress.bodyFatSubtitle')}
@@ -63,9 +63,9 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
           />
         </ProgressChartSection>
-      )}
+      ) : null}
 
-      {ffmiHistory.length >= 2 && (
+      {ffmiHistory.length >= 2 ? (
         <ProgressChartSection title={t('progress.ffmi')} subtitle={t('progress.ffmiSubtitle')}>
           <LineChart
             data={ffmiHistory.map((p) => ({ x: p.date, y: p.value }))}
@@ -80,7 +80,7 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
           />
         </ProgressChartSection>
-      )}
+      ) : null}
     </View>
   );
 }

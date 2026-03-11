@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Text, View } from 'react-native';
+
 import { GenericCard } from '../cards/GenericCard';
 
 interface ProgressChartSectionProps {
@@ -21,9 +22,7 @@ export function ProgressChartSection({
         <View className="mb-4 flex-row items-center justify-between">
           <View className="flex-1">
             <Text className="text-lg font-bold text-text-primary">{title}</Text>
-            {subtitle ? (
-              <Text className="text-xs text-text-tertiary">{subtitle}</Text>
-            ) : null}
+            {subtitle ? <Text className="text-xs text-text-tertiary">{subtitle}</Text> : null}
           </View>
           {rightElement}
         </View>

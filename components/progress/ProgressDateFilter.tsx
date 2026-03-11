@@ -1,10 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 
+import { DateRangePreset } from '../../hooks/useProgressData';
 import { FilterTabs } from '../FilterTabs';
 import { ToggleInput } from '../theme/ToggleInput';
-import { DateRangePreset } from '../../hooks/useProgressData';
 
 interface ProgressDateFilterProps {
   activePreset: DateRangePreset;

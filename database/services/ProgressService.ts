@@ -1,21 +1,18 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { calculateTDEE, ffmiFromWeightHeightAndBodyFat } from '../../utils/nutritionCalculator';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import NutritionLog from '../models/NutritionLog';
+import UserMetric, { UserMetricType } from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogExercise from '../models/WorkoutLogExercise';
 import WorkoutLogSet from '../models/WorkoutLogSet';
-import UserMetric, { UserMetricType } from '../models/UserMetric';
-import { UserMetricService } from './UserMetricService';
+import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
+import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
-import { NutritionGoalService } from './NutritionGoalService';
-import {
-  ffmiFromWeightHeightAndBodyFat,
-  calculateTDEE,
-} from '../../utils/nutritionCalculator';
 
 export interface MetricPoint {
   date: number;
@@ -118,7 +115,9 @@ export class ProgressService {
       .fetch();
 
     const workoutVolumeHistory = await this.calculateWorkoutVolumeHistory(workoutLogs);
-    const muscleGroupSets = useWeeklyAverages ? [] : await this.calculateMuscleGroupSets(workoutLogs);
+    const muscleGroupSets = useWeeklyAverages
+      ? []
+      : await this.calculateMuscleGroupSets(workoutLogs);
 
     // 4. Fetch Measurements
     const measurementTypes: UserMetricType[] = [
@@ -228,13 +227,17 @@ export class ProgressService {
     heightCm: number,
     isImperial: boolean
   ): MetricPoint[] {
-    if (heightCm <= 0) return [];
+    if (heightCm <= 0) {
+      return [];
+    }
 
     const heightM = heightCm / 100;
     const history: MetricPoint[] = [];
 
     for (const wp of weightPoints) {
-      if (fatPoints.length === 0) break;
+      if (fatPoints.length === 0) {
+        break;
+      }
       const closestFat = fatPoints.reduce((prev, curr) =>
         Math.abs(curr.date - wp.date) < Math.abs(prev.date - wp.date) ? curr : prev
       );
@@ -264,7 +267,9 @@ export class ProgressService {
   }
 
   private static async calculateMuscleGroupSets(logs: WorkoutLog[]): Promise<MuscleGroupSets[]> {
-    if (logs.length === 0) return [];
+    if (logs.length === 0) {
+      return [];
+    }
     const muscleGroupSets = new Map<string, number>();
 
     const logIds = logs.map((l) => l.id);
@@ -273,7 +278,9 @@ export class ProgressService {
       .query(Q.where('workout_log_id', Q.oneOf(logIds)), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (allLogExercises.length === 0) return [];
+    if (allLogExercises.length === 0) {
+      return [];
+    }
 
     const exerciseIds = [...new Set(allLogExercises.map((le) => le.exerciseId))];
     const allExercises = await database
@@ -312,7 +319,9 @@ export class ProgressService {
   }
 
   private static aggregateMetricWeekly(points: MetricPoint[]): MetricPoint[] {
-    if (points.length === 0) return [];
+    if (points.length === 0) {
+      return [];
+    }
     const weeksMap = new Map<number, number[]>();
 
     // Use Sunday-to-Saturday weeks or just 7-day windows?
@@ -326,14 +335,18 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing);
     }
 
-    return Array.from(weeksMap.entries()).map(([index, values]) => ({
-      date: firstDate + index * 7 * MS_PER_DAY,
-      value: values.reduce((a, b) => a + b, 0) / values.length,
-    })).sort((a, b) => a.date - b.date);
+    return Array.from(weeksMap.entries())
+      .map(([index, values]) => ({
+        date: firstDate + index * 7 * MS_PER_DAY,
+        value: values.reduce((a, b) => a + b, 0) / values.length,
+      }))
+      .sort((a, b) => a.date - b.date);
   }
 
   private static aggregateNutritionWeekly(daily: DailyNutrition[]): DailyNutrition[] {
-    if (daily.length === 0) return [];
+    if (daily.length === 0) {
+      return [];
+    }
     const weeksMap = new Map<number, DailyNutrition[]>();
     const firstDate = daily[0].date;
 
@@ -344,33 +357,37 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing);
     }
 
-    return Array.from(weeksMap.entries()).map(([index, days]) => {
-      const sum = days.reduce(
-        (acc, curr) => {
-          acc.calories += curr.calories;
-          acc.protein += curr.protein;
-          acc.carbs += curr.carbs;
-          acc.fat += curr.fat;
-          acc.fiber += curr.fiber;
-          return acc;
-        },
-        { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
-      );
+    return Array.from(weeksMap.entries())
+      .map(([index, days]) => {
+        const sum = days.reduce(
+          (acc, curr) => {
+            acc.calories += curr.calories;
+            acc.protein += curr.protein;
+            acc.carbs += curr.carbs;
+            acc.fat += curr.fat;
+            acc.fiber += curr.fiber;
+            return acc;
+          },
+          { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+        );
 
-      const count = days.length;
-      return {
-        date: firstDate + index * 7 * MS_PER_DAY,
-        calories: sum.calories / count,
-        protein: sum.protein / count,
-        carbs: sum.carbs / count,
-        fat: sum.fat / count,
-        fiber: sum.fiber / count,
-      };
-    }).sort((a, b) => a.date - b.date);
+        const count = days.length;
+        return {
+          date: firstDate + index * 7 * MS_PER_DAY,
+          calories: sum.calories / count,
+          protein: sum.protein / count,
+          carbs: sum.carbs / count,
+          fat: sum.fat / count,
+          fiber: sum.fiber / count,
+        };
+      })
+      .sort((a, b) => a.date - b.date);
   }
 
   private static aggregateVolumeWeekly(points: WorkoutVolumePoint[]): WorkoutVolumePoint[] {
-    if (points.length === 0) return [];
+    if (points.length === 0) {
+      return [];
+    }
     const weeksMap = new Map<number, number>();
     const firstDate = points[0].date;
 
@@ -380,10 +397,12 @@ export class ProgressService {
       weeksMap.set(weekIndex, existing + p.volume);
     }
 
-    return Array.from(weeksMap.entries()).map(([index, volume]) => ({
-      date: firstDate + index * 7 * MS_PER_DAY,
-      volume,
-    })).sort((a, b) => a.date - b.date);
+    return Array.from(weeksMap.entries())
+      .map(([index, volume]) => ({
+        date: firstDate + index * 7 * MS_PER_DAY,
+        volume,
+      }))
+      .sort((a, b) => a.date - b.date);
   }
 
   private static async calculateInsights(
@@ -444,7 +463,12 @@ export class ProgressService {
 
     let leanBodyMassChange = 0;
     let fatMassChange = 0;
-    if (initialWeight > 0 && finalWeight > 0 && initialFat !== undefined && finalFat !== undefined) {
+    if (
+      initialWeight > 0 &&
+      finalWeight > 0 &&
+      initialFat !== undefined &&
+      finalFat !== undefined
+    ) {
       const initialLBM = initialWeight * (1 - initialFat / 100);
       const finalLBM = finalWeight * (1 - finalFat / 100);
       const initialFatMass = initialWeight * (initialFat / 100);
@@ -464,9 +488,9 @@ export class ProgressService {
       const currentLBM = finalWeight * (1 - finalFat / 100);
       targetWeights = {
         bf5: currentLBM / (1 - 0.05),
-        bf10: currentLBM / (1 - 0.10),
+        bf10: currentLBM / (1 - 0.1),
         bf15: currentLBM / (1 - 0.15),
-        bf20: currentLBM / (1 - 0.20),
+        bf20: currentLBM / (1 - 0.2),
       };
 
       if (isImperial) {

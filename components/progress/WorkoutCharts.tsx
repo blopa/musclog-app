@@ -2,10 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
+import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
 import { BarChart } from '../charts/BarChart';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
-import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
 
 interface WorkoutChartsProps {
   workoutVolumeHistory: WorkoutVolumePoint[];
@@ -17,7 +17,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
 
   return (
     <View>
-      {workoutVolumeHistory.length >= 2 && (
+      {workoutVolumeHistory.length >= 2 ? (
         <ProgressChartSection
           title={t('progress.workoutVolume')}
           subtitle={t('progress.workoutVolumeSubtitle')}
@@ -38,9 +38,9 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
             tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
           />
         </ProgressChartSection>
-      )}
+      ) : null}
 
-      {muscleGroupSets.length > 0 && (
+      {muscleGroupSets.length > 0 ? (
         <ProgressChartSection
           title={t('progress.setsPerMuscleGroup')}
           subtitle={t('progress.setsPerMuscleGroupSubtitle')}
@@ -53,7 +53,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
             tooltipFormatter={(p) => `${muscleGroupSets[p.x].muscleGroup}: ${p.y} sets`}
           />
         </ProgressChartSection>
-      )}
+      ) : null}
     </View>
   );
 }

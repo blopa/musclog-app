@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { BarChart } from '../charts/BarChart';
-import { StackedBarChart } from '../charts/StackedBarChart';
-import { BarLineChart } from '../charts/BarLineChart';
-import { StackedBarLineChart } from '../charts/StackedBarLineChart';
-import { ProgressChartSection } from './ProgressChartSection';
 import { DailyNutrition, MetricPoint } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
+import { BarChart } from '../charts/BarChart';
+import { BarLineChart } from '../charts/BarLineChart';
+import { StackedBarChart } from '../charts/StackedBarChart';
+import { StackedBarLineChart } from '../charts/StackedBarLineChart';
+import { ProgressChartSection } from './ProgressChartSection';
 
 interface NutritionChartsProps {
   nutritionHistory: DailyNutrition[];
@@ -18,16 +18,14 @@ interface NutritionChartsProps {
 
 type NutritionView = 'calories' | 'macros' | 'combined' | 'macrosCombined';
 
-export function NutritionCharts({
-  nutritionHistory,
-  weightHistory,
-  units,
-}: NutritionChartsProps) {
+export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [view, setView] = useState<NutritionView>('calories');
 
-  if (nutritionHistory.length === 0) return null;
+  if (nutritionHistory.length === 0) {
+    return null;
+  }
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -42,9 +40,7 @@ export function NutritionCharts({
           }`}
         >
           <Text
-            className={`text-[10px] font-bold ${
-              view === v ? 'text-white' : 'text-text-tertiary'
-            }`}
+            className={`text-[10px] font-bold ${view === v ? 'text-white' : 'text-text-tertiary'}`}
           >
             {t(`progress.nutritionView.${v}`)}
           </Text>
@@ -56,9 +52,10 @@ export function NutritionCharts({
   // Match nutrition and weight points by date
   const getCombinedData = () => {
     return nutritionHistory.map((n) => {
-      const closestWeight = weightHistory.reduce((prev, curr) =>
-        Math.abs(curr.date - n.date) < Math.abs(prev.date - n.date) ? curr : prev
-      , weightHistory[0]);
+      const closestWeight = weightHistory.reduce(
+        (prev, curr) => (Math.abs(curr.date - n.date) < Math.abs(prev.date - n.date) ? curr : prev),
+        weightHistory[0]
+      );
 
       return {
         x: n.date,
@@ -107,15 +104,15 @@ export function NutritionCharts({
             height={200}
             barSeriesLabel="Calories"
             lineSeriesLabel={`Weight (${weightLabel})`}
-            stepsDomain={[0, Math.max(...combinedData.map(d => d.calories)) * 1.2]}
+            stepsDomain={[0, Math.max(...combinedData.map((d) => d.calories)) * 1.2]}
             heartRateDomain={[
-              Math.min(...combinedData.map(d => d.weight)) * 0.95,
-              Math.max(...combinedData.map(d => d.weight)) * 1.05
+              Math.min(...combinedData.map((d) => d.weight)) * 0.95,
+              Math.max(...combinedData.map((d) => d.weight)) * 1.05,
             ]}
             leftAxisLabels={['0', '1k', '2k', '3k', '4k']}
             rightAxisLabels={[
-              Math.min(...combinedData.map(d => d.weight)).toFixed(0),
-              Math.max(...combinedData.map(d => d.weight)).toFixed(0)
+              Math.min(...combinedData.map((d) => d.weight)).toFixed(0),
+              Math.max(...combinedData.map((d) => d.weight)).toFixed(0),
             ]}
             stepsFormatter={(v) => `${Math.round(v)} kcal`}
             heartRateFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
@@ -134,8 +131,8 @@ export function NutritionCharts({
             lineSeriesLabel={`Weight (${weightLabel})`}
             stackColors={['#ef4444', '#3b82f6', '#eab308', '#10b981']}
             lineDomain={[
-              Math.min(...combinedData.map(d => d.weight)) * 0.95,
-              Math.max(...combinedData.map(d => d.weight)) * 1.05
+              Math.min(...combinedData.map((d) => d.weight)) * 0.95,
+              Math.max(...combinedData.map((d) => d.weight)) * 1.05,
             ]}
             lineFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
           />
@@ -144,10 +141,7 @@ export function NutritionCharts({
   };
 
   return (
-    <ProgressChartSection
-      title={t('progress.nutrition')}
-      rightElement={renderViewSelector()}
-    >
+    <ProgressChartSection title={t('progress.nutrition')} rightElement={renderViewSelector()}>
       {renderChart()}
     </ProgressChartSection>
   );
