@@ -101,24 +101,8 @@ export default function HomeScreen() {
     groupByMonth: false,
   });
 
-  // Check for widget actions via URL params (works on cold start)
-  useEffect(() => {
-    if (!navigationState?.key) {
-      return;
-    }
-
-    if (params.action === 'open-camera') {
-      setCameraMode('ai-meal-photo');
-      setIsCameraVisible(true);
-      // Clear the parameter so it doesn't reopen if the component re-renders
-      router.setParams({ action: undefined });
-    } else if (params.action === 'open-nutrition') {
-      router.push('/nutrition/food');
-      router.setParams({ action: undefined });
-    }
-  }, [params.action, router, navigationState?.key]);
-
-  // Handle widget action stored by +native-intent.tsx on cold start
+  // Handle widget action stored by +native-intent.tsx on cold start (camera only —
+  // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
   useEffect(() => {
     if (!navigationState?.key) {
       return;
@@ -134,26 +118,24 @@ export default function HomeScreen() {
     if (action === 'open-camera') {
       setCameraMode('ai-meal-photo');
       setIsCameraVisible(true);
-    } else if (action === 'open-nutrition') {
-      router.push('/nutrition/food');
     }
-  }, [navigationState?.key, router]);
+  }, [navigationState?.key]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
     const handleUrl = ({ url }: { url: string }) => {
-      const { queryParams, path } = ExpoLinking.parse(url);
+      const { queryParams } = ExpoLinking.parse(url);
       if (queryParams?.action === 'open-camera') {
         setCameraMode('ai-meal-photo');
         setIsCameraVisible(true);
-      } else if (path === 'nutrition/food' || queryParams?.action === 'open-nutrition') {
+      } else if (queryParams?.action === 'open-nutrition') {
         router.push('/nutrition/food');
       }
     };
 
     const subscription = ExpoLinking.addEventListener('url', handleUrl);
     return () => subscription.remove();
-  }, []);
+  }, [router]);
 
   // Check onboarding status on mount — wait until navigator is ready to avoid
   // "Attempted to navigate before mounting the Root Layout component" on cold start
