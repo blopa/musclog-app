@@ -20,6 +20,7 @@ export {
 } from './MigrationService';
 export { NutritionCheckinService } from './NutritionCheckinService';
 export { NutritionGoalService } from './NutritionGoalService';
+export { ProgressService } from './ProgressService';
 export { SettingsService } from './SettingsService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
