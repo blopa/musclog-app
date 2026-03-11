@@ -18,8 +18,46 @@ interface NutritionChartsProps {
 
 type NutritionView = 'calories' | 'macros' | 'combined' | 'macrosCombined';
 
-// TODO: add yaxis labels with the formatted dates DD/MM
-// TODO: make the title, and the viewer switcher "badges" to use different rows in the UI
+const MAX_X_LABELS = 8;
+
+const formatDate = (timestamp: number): string => {
+  const d = new Date(timestamp);
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+const getXAxisLabels = (dates: number[]): string[] => {
+  if (dates.length === 0) {
+    return [];
+  }
+
+  if (dates.length <= MAX_X_LABELS) {
+    return dates.map(formatDate);
+  }
+
+  const indices = Array.from({ length: MAX_X_LABELS }, (_, i) =>
+    Math.round((i / (MAX_X_LABELS - 1)) * (dates.length - 1))
+  );
+
+  return indices.map((i) => formatDate(dates[i]));
+};
+
+const computeLeftAxisLabels = (maxVal: number): string[] => {
+  if (maxVal <= 0) {
+    return ['0'];
+  }
+  const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
+  const niceStep = Math.ceil(maxVal / 4 / magnitude) * magnitude;
+  const labels: string[] = [];
+  for (let i = 0; i <= 5; i++) {
+    const v = i * niceStep;
+    if (v > maxVal * 1.2) {
+      break;
+    }
+    labels.push(v >= 1000 ? `${Math.round(v / 100) / 10}k` : String(Math.round(v)));
+  }
+  return labels;
+};
+
 export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -81,6 +119,22 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
     });
   }, [nutritionHistory, weightHistory]);
 
+  const xAxisLabels = useMemo(
+    () => getXAxisLabels(nutritionHistory.map((d) => d.date)),
+    [nutritionHistory]
+  );
+
+  const macroColors = useMemo(
+    () =>
+      [
+        theme.colors.macros.protein.bg,
+        theme.colors.macros.carbs.bg,
+        theme.colors.macros.fat.bg,
+        theme.colors.macros.fiber.bg,
+      ] as [string, string, string, string],
+    [theme]
+  );
+
   if (nutritionHistory.length === 0) {
     return null;
   }
@@ -88,7 +142,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   const renderViewSelector = () => (
-    <View className="flex-row items-center gap-1">
+    <View className="flex-row flex-wrap items-center gap-1">
       {(['calories', 'macros', 'combined', 'macrosCombined'] as NutritionView[]).map((v) => (
         <TouchableOpacity
           key={v}
@@ -110,16 +164,18 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
 
   const renderChart = () => {
     switch (view) {
-      case 'calories':
+      case 'calories': {
         return (
           <BarChart
             data={nutritionHistory.map((d) => ({ x: d.date, y: d.calories }))}
             height={200}
             barColor={theme.colors.accent.primary}
-            tooltipFormatter={(p) => `${Math.round(p.y)} kcal`}
+            tooltipFormatter={(p) => `${Math.round(p.y)} ${t('progress.kcal')}`}
+            xAxisLabels={xAxisLabels}
           />
         );
-      case 'macros':
+      }
+      case 'macros': {
         return (
           <StackedBarChart
             data={nutritionHistory.map((d) => ({
@@ -127,11 +183,15 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               segments: [d.protein * 4, d.carbs * 4, d.fat * 9, d.fiber * 2],
             }))}
             height={200}
-            // TODO: use colors from useTheme
-            stackColors={['#ef4444', '#3b82f6', '#eab308', '#10b981']}
+            stackColors={macroColors}
+            xAxisLabels={xAxisLabels}
           />
         );
-      case 'combined':
+      }
+      case 'combined': {
+        const maxCal = Math.max(...combinedData.map((d) => d.calories));
+        const calDomain: [number, number] = [0, maxCal * 1.2];
+
         return (
           <BarLineChart
             data={combinedData.map((d, i) => ({
@@ -140,26 +200,25 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               heartRate: d.weight,
             }))}
             height={200}
-            // TODO: use i18n here
-            barSeriesLabel="Calories"
-            lineSeriesLabel={`Weight (${weightLabel})`}
-            stepsDomain={[0, Math.max(...combinedData.map((d) => d.calories)) * 1.2]}
+            barSeriesLabel={t('progress.nutritionView.calories')}
+            lineSeriesLabel={`${t('progress.weight')} (${weightLabel})`}
+            stepsDomain={calDomain}
             heartRateDomain={[
               Math.min(...combinedData.map((d) => d.weight)) * 0.95,
               Math.max(...combinedData.map((d) => d.weight)) * 1.05,
             ]}
-            // TODO: calculate these dunamically, depending on the highest peak, but still starting from 0
-            leftAxisLabels={['0', '1k', '2k', '3k', '4k']}
+            leftAxisLabels={computeLeftAxisLabels(maxCal)}
             rightAxisLabels={[
               Math.min(...combinedData.map((d) => d.weight)).toFixed(0),
               Math.max(...combinedData.map((d) => d.weight)).toFixed(0),
             ]}
-            // TODO: use i18n here
-            stepsFormatter={(v) => `${Math.round(v)} kcal`}
+            stepsFormatter={(v) => `${Math.round(v)} ${t('progress.kcal')}`}
             heartRateFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
+            xAxisLabels={xAxisLabels}
           />
         );
-      case 'macrosCombined':
+      }
+      case 'macrosCombined': {
         return (
           <StackedBarLineChart
             data={combinedData.map((d, i) => ({
@@ -168,24 +227,24 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               lineValue: d.weight,
             }))}
             height={200}
-            // TODO: use i18n here
-            barSeriesLabel="Macros (kcal)"
-            // TODO: use i18n here
-            lineSeriesLabel={`Weight (${weightLabel})`}
-            // TODO: use colors from useTheme
-            stackColors={['#ef4444', '#3b82f6', '#eab308', '#10b981']}
+            barSeriesLabel={`${t('progress.nutritionView.macros')} (${t('progress.kcal')})`}
+            lineSeriesLabel={`${t('progress.weight')} (${weightLabel})`}
+            stackColors={macroColors}
             lineDomain={[
               Math.min(...combinedData.map((d) => d.weight)) * 0.95,
               Math.max(...combinedData.map((d) => d.weight)) * 1.05,
             ]}
             lineFormatter={(v) => `${v.toFixed(1)} ${weightLabel}`}
+            xAxisLabels={xAxisLabels}
           />
         );
+      }
     }
   };
 
   return (
-    <ProgressChartSection title={t('progress.nutrition')} rightElement={renderViewSelector()}>
+    <ProgressChartSection title={t('progress.nutrition')}>
+      <View className="mb-3">{renderViewSelector()}</View>
       {renderChart()}
     </ProgressChartSection>
   );
