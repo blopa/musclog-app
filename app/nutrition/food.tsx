@@ -214,6 +214,11 @@ export default function FoodScreen() {
     setIsDeleteConfirmationVisible(true);
   };
 
+  const handleMoveFood = () => {
+    setIsFoodMenuVisible(false);
+    // TODO: implement this feature like we have for moving the meal
+  };
+
   const handleConfirmDelete = async () => {
     if (!selectedFoodItem) {
       return;
@@ -254,6 +259,14 @@ export default function FoodScreen() {
       title: t('food.actions.duplicate'),
       description: t('food.actions.duplicateDesc'),
       onPress: handleDuplicateFood,
+    },
+    {
+      icon: ArrowRight,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.move'),
+      description: t('food.actions.moveDesc'),
+      onPress: handleMoveFood,
     },
     {
       icon: Trash2,

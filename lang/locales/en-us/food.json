@@ -117,6 +117,8 @@
       "deleteSuccess": "Food removed successfully",
       "duplicate": "Duplicate",
       "duplicateDesc": "Create a copy to add to another meal",
+      "move": "Move",
+      "moveDesc": "Move this food to another meal or day",
       "edit": "Edit",
       "editDesc": "Modify serving size and nutrition",
       "goToToday": "Go To Today"
