@@ -2,10 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
-import { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
+import i18n, { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
 import { getEncryptionKey } from '../../utils/encryption';
 import { database } from '../database-instance';
 import {
+  ChatService,
   ExerciseService,
   FoodPortionService,
   type MigrationProgressInfo,
@@ -96,7 +97,26 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Seeded ${createdExercises.length} common exercises`);
     }
 
-    // 3. Migrate data from the old database if it exists (e.g. app upgrade)
+    // 3. Seed initial chat message with welcome message using i18n
+    const existingMessages = await ChatService.getAllMessages(1, 0);
+
+    if (existingMessages.length === 0) {
+      const sessionId = ChatService.generateSessionId();
+      const welcomeMessage = i18n.t('coach.welcomeMessage');
+
+      await ChatService.saveMessage({
+        sessionId,
+        sender: 'coach',
+        message: welcomeMessage,
+        messageType: 'text'
+      });
+
+      console.log('Seeded initial welcome message from Loggy');
+    } else {
+      console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
+    }
+
+    // 4. Migrate data from the old database if it exists (e.g. app upgrade)
     const migrationService = new MigrationService();
     if (await migrationService.checkOldDatabaseExists()) {
       const result = await migrationService.migrateAll({
