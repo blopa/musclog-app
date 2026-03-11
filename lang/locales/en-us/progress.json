@@ -21,6 +21,21 @@
       "combined": "Weight/Calories",
       "macrosCombined": "Macros/Weight"
     },
+    "correlationView": {
+      "volumeCalories": "Volume/Calories",
+      "proteinBodyComp": "Protein/BodyComp",
+      "menstrualPerformance": "Cycle/Performance",
+      "recoveryTraining": "Recovery/Load",
+      "macroMuscle": "Macros/Muscle"
+    },
+    "correlations": "Correlations & Insights",
+    "weeklyVolume": "Weekly Volume",
+    "dailyCalories": "Daily Calories",
+    "workoutScore": "Workout Score",
+    "energyLevel": "Energy Level",
+    "empiricalTdee": "Empirical TDEE",
+    "statisticalTdee": "Statistical TDEE",
+    "noDataAvailable": "No data available",
     "workoutVolume": "Workout Volume",
     "workoutVolumeSubtitle": "Total volume per workout",
     "setsPerMuscleGroup": "Sets per Muscle Group",

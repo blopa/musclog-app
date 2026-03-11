@@ -22,8 +22,39 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
   return (
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+        <View className="p-2">
+          <Text className="mb-2 text-sm font-bold text-text-primary">
+            {t('progress.metabolicSummary')}
+          </Text>
+          <View className="flex-row flex-wrap">
+            <View className="flex-1 items-center justify-center p-2 border-r border-border-light">
+              <Text className="text-[10px] uppercase tracking-wider text-text-tertiary text-center">
+                {t('progress.empiricalTdee')}
+              </Text>
+              <Text className="text-lg font-bold text-accent-primary">
+                {Math.round(insights.empiricalTdee)}
+              </Text>
+              <Text className="text-[8px] text-text-tertiary text-center uppercase">
+                {t('progress.basedOnRecentActivity')}
+              </Text>
+            </View>
+            <View className="flex-1 items-center justify-center p-2">
+              <Text className="text-[10px] uppercase tracking-wider text-text-tertiary text-center">
+                {t('progress.statisticalTdee')}
+              </Text>
+              <Text className="text-lg font-bold text-accent-secondary">
+                {Math.round(insights.statisticalTdee)}
+              </Text>
+              <Text className="text-[8px] text-text-tertiary text-center uppercase">
+                {t('progress.basedOnActivityLevel')}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </GenericCard>
+
+      <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="flex-row flex-wrap p-2">
-          {renderStat(t('progress.tdee'), `${Math.round(insights.tdee)}`, 'text-accent-primary')}
           {renderStat(
             t('progress.weeklyWeightChange'),
             `${insights.weightChangeWeekly > 0 ? '+' : ''}${insights.weightChangeWeekly.toFixed(2)}`,

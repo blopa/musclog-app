@@ -1,8 +1,15 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { calculateTDEE, ffmiFromWeightHeightAndBodyFat } from '../../utils/nutritionCalculator';
+import {
+  calculateBMR,
+  calculateBMRKatchMcArdle,
+  calculateTDEE,
+  ffmiFromWeightHeightAndBodyFat,
+  isValidBodyFat,
+} from '../../utils/nutritionCalculator';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
+import MenstrualCycle from '../models/MenstrualCycle';
 import NutritionLog from '../models/NutritionLog';
 import UserMetric, { UserMetricType } from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
@@ -40,6 +47,8 @@ export interface MuscleGroupSets {
 
 export interface ProgressInsights {
   tdee: number;
+  empiricalTdee: number;
+  statisticalTdee: number;
   tdeeUsedEmpirical: boolean;
   avgWeight: number;
   weightChangeWeekly: number;
@@ -57,6 +66,44 @@ export interface ProgressInsights {
   };
 }
 
+export interface CorrelationPoint {
+  date: number;
+  weeklyVolume: number;
+  dailyCalories: number;
+}
+
+export interface BodyCompProteinPoint {
+  date: number;
+  protein: number;
+  weightChange: number;
+  fatChange: number;
+}
+
+export interface MenstrualPhasePoint {
+  date: number;
+  phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
+  workoutScore: number;
+  energyLevel: number;
+  weight: number;
+}
+
+export interface RecoveryTrainingPoint {
+  date: number;
+  volume: number;
+  exhaustion: number;
+  caloriesBurned: number;
+}
+
+export interface MacroMusclePoint {
+  date: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  muscleGroupVolume: Record<string, number>;
+}
+
+export type TimeAggregation = 'daily' | 'weekly' | 'monthly';
+
 export interface ProgressData {
   weightHistory: MetricPoint[];
   fatHistory: MetricPoint[];
@@ -66,6 +113,11 @@ export interface ProgressData {
   muscleGroupSets: MuscleGroupSets[];
   measurementsHistory: Record<string, MetricPoint[]>;
   insights: ProgressInsights;
+  correlationHistory: CorrelationPoint[];
+  bodyCompProteinHistory: BodyCompProteinPoint[];
+  menstrualPhaseHistory: MenstrualPhasePoint[];
+  recoveryTrainingHistory: RecoveryTrainingPoint[];
+  macroMuscleHistory: MacroMusclePoint[];
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -77,7 +129,8 @@ export class ProgressService {
   static async getProgressData(
     startDate: number,
     endDate: number,
-    useWeeklyAverages: boolean = false
+    useWeeklyAverages: boolean = false,
+    aggregation: TimeAggregation = 'daily'
   ): Promise<ProgressData> {
     const units = await SettingsService.getUnits();
     const isImperial = units === 'imperial';
@@ -167,6 +220,37 @@ export class ProgressService {
       isImperial
     );
 
+    // 8. Calculate New Correlation Data
+    const correlationHistory = this.calculateCorrelationHistory(
+      workoutVolumeHistory,
+      nutritionDaily,
+      aggregation
+    );
+    const bodyCompProteinHistory = this.calculateBodyCompProteinHistory(
+      weightPoints,
+      fatPoints,
+      nutritionDaily,
+      aggregation
+    );
+
+    const menstrualPhaseHistory = await this.calculateMenstrualPhaseHistory(
+      weightPoints,
+      workoutLogs,
+      startDate,
+      endDate,
+      aggregation
+    );
+
+    const recoveryTrainingHistory = this.calculateRecoveryTrainingHistory(workoutLogs, aggregation);
+
+    const macroMuscleHistory = await this.calculateMacroMuscleHistory(
+      nutritionDaily,
+      workoutLogs,
+      startDate,
+      endDate,
+      aggregation
+    );
+
     return {
       weightHistory: finalWeightPoints,
       fatHistory: finalFatPoints,
@@ -176,6 +260,11 @@ export class ProgressService {
       muscleGroupSets,
       measurementsHistory,
       insights,
+      correlationHistory,
+      bodyCompProteinHistory,
+      menstrualPhaseHistory,
+      recoveryTrainingHistory,
+      macroMuscleHistory,
     };
   }
 
@@ -433,19 +522,33 @@ export class ProgressService {
       finalWeight = finalWeight * 0.453592;
     }
 
-    const tdee = calculateTDEE({
+    const gender = user?.gender || 'male';
+    const weightKg =
+      finalWeight || (isImperial ? (initialWeight || 70) * 0.453592 : initialWeight || 70) || 70;
+    const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
+    const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
+
+    const bmr = isValidBodyFat(finalFat)
+      ? calculateBMRKatchMcArdle(weightKg, finalFat)
+      : calculateBMR(gender, weightKg, heightCm || 170, age);
+
+    const empiricalTdee = calculateTDEE({
       totalCalories,
       totalDays: lookbackDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
       finalFatPercentage: finalFat,
-      bmr: 2000,
-      activityLevel: user?.activityLevel || 3,
       liftingExperience: user?.liftingExperience || 'intermediate',
     });
 
+    const statisticalTdee = calculateTDEE({
+      bmr,
+      activityLevel: user?.activityLevel || 3,
+    });
+
     const usedEmpirical = totalCalories > 0 && weightPoints.length >= 2;
+    const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
     const weeklyAverages = this.aggregateMetricWeekly(weightPoints);
     let weightChangeWeekly = 0;
@@ -508,6 +611,8 @@ export class ProgressService {
 
     return {
       tdee,
+      empiricalTdee,
+      statisticalTdee,
       tdeeUsedEmpirical: usedEmpirical,
       avgWeight: finalWeight / (isImperial ? 0.453592 : 1),
       weightChangeWeekly,
@@ -519,5 +624,293 @@ export class ProgressService {
       eatingPhase,
       targetWeights,
     };
+  }
+
+  private static getStartOfAggregation(date: number, aggregation: TimeAggregation): number {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    if (aggregation === 'weekly') {
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+      d.setDate(diff);
+    } else if (aggregation === 'monthly') {
+      d.setDate(1);
+    }
+    return d.getTime();
+  }
+
+  private static calculateCorrelationHistory(
+    workoutVolumeHistory: WorkoutVolumePoint[],
+    nutritionDaily: DailyNutrition[],
+    aggregation: TimeAggregation
+  ): CorrelationPoint[] {
+    const groupedData = new Map<number, { volume: number; calories: number; count: number }>();
+
+    for (const n of nutritionDaily) {
+      const start = this.getStartOfAggregation(n.date, aggregation);
+      const existing = groupedData.get(start) || { volume: 0, calories: 0, count: 0 };
+      existing.calories += n.calories;
+      existing.count += 1;
+      groupedData.set(start, existing);
+    }
+
+    for (const v of workoutVolumeHistory) {
+      const start = this.getStartOfAggregation(v.date, aggregation);
+      const existing = groupedData.get(start);
+      if (existing) {
+        existing.volume += v.volume;
+      }
+    }
+
+    return Array.from(groupedData.entries())
+      .map(([date, data]) => ({
+        date,
+        weeklyVolume: aggregation === 'daily' ? data.volume : data.volume, // Sum for week/month
+        dailyCalories: data.calories / data.count, // Average for week/month
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateBodyCompProteinHistory(
+    weightPoints: MetricPoint[],
+    fatPoints: MetricPoint[],
+    nutritionDaily: DailyNutrition[],
+    aggregation: TimeAggregation
+  ): BodyCompProteinPoint[] {
+    const groupedData = new Map<number, { protein: number; count: number }>();
+
+    for (const n of nutritionDaily) {
+      const start = this.getStartOfAggregation(n.date, aggregation);
+      const existing = groupedData.get(start) || { protein: 0, count: 0 };
+      existing.protein += n.protein;
+      existing.count += 1;
+      groupedData.set(start, existing);
+    }
+
+    const history: BodyCompProteinPoint[] = [];
+    const sortedStarts = Array.from(groupedData.keys()).sort();
+
+    for (let i = 1; i < sortedStarts.length; i++) {
+      const start = sortedStarts[i];
+      const prevStart = sortedStarts[i - 1];
+      const data = groupedData.get(start)!;
+
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - start) < MS_PER_DAY);
+      const prevWeight = weightPoints.find((wp) => Math.abs(wp.date - prevStart) < MS_PER_DAY);
+
+      const fat = fatPoints.find((fp) => Math.abs(fp.date - start) < MS_PER_DAY);
+      const prevFat = fatPoints.find((fp) => Math.abs(fp.date - prevStart) < MS_PER_DAY);
+
+      if (weight && prevWeight) {
+        history.push({
+          date: start,
+          protein: data.protein / data.count,
+          weightChange: weight.value - prevWeight.value,
+          fatChange: fat && prevFat ? fat.value - prevFat.value : 0,
+        });
+      }
+    }
+
+    return history;
+  }
+
+  private static async calculateMenstrualPhaseHistory(
+    weightPoints: MetricPoint[],
+    workoutLogs: WorkoutLog[],
+    startDate: number,
+    endDate: number,
+    aggregation: TimeAggregation
+  ): Promise<MenstrualPhasePoint[]> {
+    const cycle = await database
+      .get<MenstrualCycle>('menstrual_cycles')
+      .query(Q.where('is_active', Q.eq(true)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (cycle.length === 0) {
+      return [];
+    }
+
+    const c = cycle[0];
+    const history: MenstrualPhasePoint[] = [];
+
+    // Get energy levels from user metrics
+    const energyMetrics = await UserMetricService.getMetricsHistory('mood', { startDate, endDate });
+    const energyPoints = await this.decryptMetricPoints(energyMetrics, false);
+
+    const step =
+      aggregation === 'daily'
+        ? MS_PER_DAY
+        : aggregation === 'weekly'
+          ? MS_PER_DAY * 7
+          : MS_PER_DAY * 30;
+
+    for (let d = startDate; d <= endDate; d += step) {
+      const dayTs = this.getStartOfAggregation(d, aggregation);
+
+      // Determine phase
+      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_DAY);
+      const cycleDay = ((daysSinceStart % c.avgCycleLength) + c.avgCycleLength) % c.avgCycleLength;
+
+      let phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
+      if (cycleDay < c.avgPeriodDuration) {
+        phase = 'menstrual';
+      } else if (cycleDay < c.avgCycleLength / 2 - 2) {
+        phase = 'follicular';
+      } else if (cycleDay < c.avgCycleLength / 2 + 2) {
+        phase = 'ovulatory';
+      } else {
+        phase = 'luteal';
+      }
+
+      const workoutsInPeriod = workoutLogs.filter((wl) => {
+        const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+        return start === dayTs;
+      });
+
+      const avgWorkoutScore =
+        workoutsInPeriod.length > 0
+          ? workoutsInPeriod.reduce((acc, wl) => acc + (wl.workoutScore || 0), 0) /
+            workoutsInPeriod.length
+          : 0;
+
+      const weight = weightPoints.find((wp) => Math.abs(wp.date - dayTs) < MS_PER_DAY);
+      const energiesInPeriod = energyPoints.filter((ep) => {
+        const start = this.getStartOfAggregation(ep.date, aggregation);
+        return start === dayTs;
+      });
+      const avgEnergy =
+        energiesInPeriod.length > 0
+          ? energiesInPeriod.reduce((acc, ep) => acc + ep.value, 0) / energiesInPeriod.length
+          : 0;
+
+      history.push({
+        date: dayTs,
+        phase,
+        workoutScore: avgWorkoutScore,
+        energyLevel: avgEnergy,
+        weight: weight?.value || 0,
+      });
+    }
+
+    return history;
+  }
+
+  private static calculateRecoveryTrainingHistory(
+    workoutLogs: WorkoutLog[],
+    aggregation: TimeAggregation
+  ): RecoveryTrainingPoint[] {
+    const groupedData = new Map<
+      number,
+      { volume: number; exhaustion: number; calories: number; count: number }
+    >();
+
+    for (const wl of workoutLogs) {
+      const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+      const existing = groupedData.get(start) || { volume: 0, exhaustion: 0, calories: 0, count: 0 };
+      existing.volume += wl.totalVolume || 0;
+      existing.exhaustion += wl.exhaustionLevel || 0;
+      existing.calories += wl.caloriesBurned || 0;
+      existing.count += 1;
+      groupedData.set(start, existing);
+    }
+
+    return Array.from(groupedData.entries())
+      .map(([date, data]) => ({
+        date,
+        volume: data.volume,
+        exhaustion: data.exhaustion / data.count,
+        caloriesBurned: data.calories,
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static async calculateMacroMuscleHistory(
+    nutritionDaily: DailyNutrition[],
+    workoutLogs: WorkoutLog[],
+    startDate: number,
+    endDate: number,
+    aggregation: TimeAggregation
+  ): Promise<MacroMusclePoint[]> {
+    const history: MacroMusclePoint[] = [];
+
+    // Get all exercises in these logs to group by muscle group
+    const logIds = workoutLogs.map((l) => l.id);
+    const allLogExercises =
+      logIds.length > 0
+        ? await database
+            .get<WorkoutLogExercise>('workout_log_exercises')
+            .query(Q.where('workout_log_id', Q.oneOf(logIds)), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+
+    const exerciseIds = [...new Set(allLogExercises.map((le) => le.exerciseId))];
+    const allExercises =
+      exerciseIds.length > 0
+        ? await database
+            .get<Exercise>('exercises')
+            .query(Q.where('id', Q.oneOf(exerciseIds)))
+            .fetch()
+        : [];
+    const exerciseMap = new Map(allExercises.map((e) => [e.id, e]));
+
+    // Fetch all sets for all log exercises at once
+    const logExIds = allLogExercises.map((le) => le.id);
+    const allSets =
+      logExIds.length > 0
+        ? await database
+            .get<WorkoutLogSet>('workout_log_sets')
+            .query(Q.where('log_exercise_id', Q.oneOf(logExIds)), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+
+    const setsByLogExId = new Map<string, WorkoutLogSet[]>();
+    for (const s of allSets) {
+      const existing = setsByLogExId.get(s.logExerciseId) || [];
+      existing.push(s);
+      setsByLogExId.set(s.logExerciseId, existing);
+    }
+
+    const groupedNutrition = new Map<
+      number,
+      { protein: number; carbs: number; fat: number; count: number }
+    >();
+    for (const n of nutritionDaily) {
+      const start = this.getStartOfAggregation(n.date, aggregation);
+      const existing = groupedNutrition.get(start) || { protein: 0, carbs: 0, fat: 0, count: 0 };
+      existing.protein += n.protein;
+      existing.carbs += n.carbs;
+      existing.fat += n.fat;
+      existing.count += 1;
+      groupedNutrition.set(start, existing);
+    }
+
+    const groupedMuscleVol = new Map<number, Record<string, number>>();
+
+    for (const log of workoutLogs) {
+      const start = this.getStartOfAggregation(log.startedAt || 0, aggregation);
+      const muscleGroupVolume = groupedMuscleVol.get(start) || {};
+      const logExs = allLogExercises.filter((le) => le.workoutLogId === log.id);
+      for (const le of logExs) {
+        const exercise = exerciseMap.get(le.exerciseId);
+        const muscleGroup = exercise?.muscleGroup || 'Other';
+
+        const sets = setsByLogExId.get(le.id) || [];
+        const volume = sets.reduce((acc, s) => acc + s.reps * s.weight, 0);
+        muscleGroupVolume[muscleGroup] = (muscleGroupVolume[muscleGroup] || 0) + volume;
+      }
+      groupedMuscleVol.set(start, muscleGroupVolume);
+    }
+
+    for (const [date, nut] of groupedNutrition.entries()) {
+      history.push({
+        date,
+        protein: nut.protein / nut.count,
+        carbs: nut.carbs / nut.count,
+        fat: nut.fat / nut.count,
+        muscleGroupVolume: groupedMuscleVol.get(date) || {},
+      });
+    }
+
+    return history.sort((a, b) => a.date - b.date);
   }
 }
