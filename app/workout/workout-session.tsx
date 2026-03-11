@@ -201,7 +201,7 @@ export default function WorkoutSessionScreen() {
     }
 
     NotificationService.scheduleWorkoutDurationWarning(workoutLog.startedAt);
-  }, [workoutLog?.startedAt]);
+  }, [workoutLog, workoutLog?.startedAt]);
 
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 

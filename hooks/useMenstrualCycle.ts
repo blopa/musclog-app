@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { BirthControlType, MenstrualCycleUpdate } from '../database/models';
 import { MenstrualCycleRepository } from '../database/repositories/MenstrualCycleRepository';
@@ -68,12 +68,15 @@ export function useMenstrualCycle(): UseMenstrualCycleResult {
     return () => subscription.unsubscribe();
   }, []);
 
-  const updateCycle = async (data: MenstrualCycleUpdate): Promise<void> => {
-    if (!cycle) {
-      return;
-    }
-    await cycle.updateCycle(data);
-  };
+  const updateCycle = useCallback(
+    async (data: MenstrualCycleUpdate): Promise<void> => {
+      if (!cycle) {
+        return;
+      }
+      await cycle.updateCycle(data);
+    },
+    [cycle]
+  );
 
   const createNewCycle = async (data: {
     avgCycleLength?: number;
@@ -86,11 +89,11 @@ export function useMenstrualCycle(): UseMenstrualCycleResult {
     await MenstrualCycleRepository.createNewCycle(data);
   };
 
-  const deactivateTracking = async (): Promise<void> => {
+  const deactivateTracking = useCallback(async (): Promise<void> => {
     if (cycle) {
       await cycle.updateCycle({ isActive: false });
     }
-  };
+  }, [cycle]);
 
   // Memoize derived values
   const derivedValues = useMemo(() => {

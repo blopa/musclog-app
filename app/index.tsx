@@ -115,7 +115,7 @@ export default function HomeScreen() {
     if (action === 'open-camera') {
       openCamera({ mode: 'ai-meal-photo' });
     }
-  }, [navigationState?.key]);
+  }, [navigationState?.key, openCamera]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function HomeScreen() {
 
     const subscription = ExpoLinking.addEventListener('url', handleUrl);
     return () => subscription.remove();
-  }, [router]);
+  }, [openCamera, router]);
 
   // Check onboarding status on mount — wait until navigator is ready to avoid
   // "Attempted to navigate before mounting the Root Layout component" on cold start
