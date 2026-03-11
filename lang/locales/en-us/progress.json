@@ -17,7 +17,8 @@
     "nutritionView": {
       "calories": "Calories",
       "macros": "Macros",
-      "combined": "Combined"
+      "combined": "Weight/Calories",
+      "macrosCombined": "Macros/Weight"
     },
     "workoutVolume": "Workout Volume",
     "workoutVolumeSubtitle": "Total volume per workout",
@@ -33,6 +34,7 @@
     "listMeasurements": "List Measurements",
     "syncHealthConnect": "Sync Health Connect",
     "getAiInsights": "Get Progression Insights",
+    "quickActions": "Quick Actions",
     "measurement": {
       "chest": "Chest",
       "waist": "Waist",
