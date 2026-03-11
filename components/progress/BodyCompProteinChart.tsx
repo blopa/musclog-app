@@ -16,10 +16,10 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
   const { t } = useTranslation();
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
-  const data = allData[aggregation];
+  const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
         <View className="mb-4 flex-row items-center gap-2">

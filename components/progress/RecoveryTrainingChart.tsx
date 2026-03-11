@@ -15,9 +15,9 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
-  const data = allData[aggregation];
+  const data = (allData && allData[aggregation]) || [];
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
         <View className="mb-4 flex-row items-center gap-2">

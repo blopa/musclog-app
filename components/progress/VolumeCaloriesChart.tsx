@@ -33,10 +33,10 @@ const getXAxisLabels = (dates: number[]): string[] => {
 export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
-  const data = allData[aggregation];
+  const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
         <View className="mb-4 flex-row items-center gap-2">

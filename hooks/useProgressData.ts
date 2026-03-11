@@ -100,9 +100,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
 
   // Helper function to check if any aggregation has data for charts with aggregation options
   const hasAnyAggregationData = useCallback(
-    (
-      getData: (data: ProgressData) => unknown[]
-    ): boolean => {
+    (getData: (data: ProgressData) => unknown[]): boolean => {
       if (!allAggregationData.daily || !allAggregationData.weekly || !allAggregationData.monthly) {
         return false;
       }
