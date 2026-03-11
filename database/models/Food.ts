@@ -129,7 +129,7 @@ export default class Food extends Model {
   micros?: MicrosData;
 
   @field('is_favorite') isFavorite!: boolean;
-  @field('source') source?: string; // 'user', 'api', 'scanned'
+  @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood'
   @field('image_url') imageUrl?: string; // URL to product image
 
   @field('created_at') createdAt!: number;

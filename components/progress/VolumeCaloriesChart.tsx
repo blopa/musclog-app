@@ -1,16 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { CorrelationPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useTheme } from '../../hooks/useTheme';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface VolumeCaloriesChartProps {
-  data: CorrelationPoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, CorrelationPoint[]>;
   units: string;
 }
 
@@ -33,19 +30,32 @@ const getXAxisLabels = (dates: number[]): string[] => {
   return indices.map((i) => formatDate(dates[i]));
 };
 
-export function VolumeCaloriesChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: VolumeCaloriesChartProps) {
+export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
+        <View className="mb-4 flex-row items-center gap-2">
+          {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+            <TouchableOpacity
+              key={agg}
+              onPress={() => setAggregation(agg)}
+              className={`rounded-full px-3 py-1.5 ${
+                aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+              }`}
+            >
+              <Text
+                className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+              >
+                {t(`common.time.${agg}`)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View className="items-center justify-center py-10">
           <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
@@ -63,7 +73,7 @@ export function VolumeCaloriesChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

@@ -78,7 +78,7 @@ export class FoodService {
         );
 
         food.isFavorite = nutritionData.isFavorite ?? false;
-        food.source = 'api';
+        food.source = 'openfood';
         food.createdAt = now;
         food.updatedAt = now;
       });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,9 +8,7 @@ import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MacroMuscleChartProps {
-  data: MacroMusclePoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, MacroMusclePoint[]>;
   units: string;
 }
 
@@ -33,19 +31,33 @@ const getXAxisLabels = (dates: number[]): string[] => {
   return indices.map((i) => formatDate(dates[i]));
 };
 
-export function MacroMuscleChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: MacroMuscleChartProps) {
+export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.macroMuscle')}>
+        <View className="mb-4 flex-row items-center gap-2">
+          {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+            <TouchableOpacity
+              key={agg}
+              onPress={() => setAggregation(agg)}
+              className={`rounded-full px-3 py-1.5 ${
+                aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+              }`}
+            >
+              <Text
+                className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+              >
+                {t(`common.time.${agg}`)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View className="items-center justify-center py-10">
           <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
@@ -70,7 +82,7 @@ export function MacroMuscleChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

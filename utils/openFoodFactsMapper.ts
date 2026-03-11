@@ -455,7 +455,7 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
         salt,
       },
     },
-    source: 'api' as const,
+    source: 'openfood' as const,
     _raw: product,
   };
 }

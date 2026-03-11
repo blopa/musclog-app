@@ -11,7 +11,7 @@ export interface UseFoodsParams {
   mode?: 'list' | 'search' | 'favorites'; // Default: 'list'
   searchTerm?: string; // For search mode
   brand?: string; // Filter by brand
-  source?: 'user' | 'api' | 'scanned'; // Filter by source
+  source?: 'user' | 'usda' | 'ai' | 'openfood'; // Filter by source
   initialLimit?: number; // Default: 20
   batchSize?: number; // Default: 20
   getAll?: boolean; // If true, fetch all foods (no pagination)

@@ -566,7 +566,7 @@ export function FoodSearchModal({
     switch (activeFilter) {
       case 'myFoods':
         return resultsBySource.local;
-      case 'api':
+      case 'openfood':
         return resultsBySource.api;
       case 'all':
       default:
@@ -582,7 +582,12 @@ export function FoodSearchModal({
         label: `${t('foodSearch.filters.favorites')} (${formatCount(favoriteFoodsCount)})`,
       },
       ...(apiCount > 0
-        ? [{ id: 'api' as const, label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})` }]
+        ? [
+            {
+              id: 'openfood' as const,
+              label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})`,
+            },
+          ]
         : []),
       {
         id: 'meals',
@@ -607,7 +612,7 @@ export function FoodSearchModal({
 
   // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
-    if (activeFilter === 'api' && apiCount === 0) {
+    if (activeFilter === 'openfood' && apiCount === 0) {
       setActiveFilter('all');
     }
   }, [activeFilter, apiCount]);
@@ -858,7 +863,7 @@ export function FoodSearchModal({
                             ) : null}
 
                             {/* API Results Section - only show if filter includes api or 'all' */}
-                            {(activeFilter === 'all' || activeFilter === 'api') &&
+                            {(activeFilter === 'all' || activeFilter === 'openfood') &&
                             resultsBySource.api.length > 0 ? (
                               <View className="mb-4">
                                 <View className="mb-3 flex-row items-center gap-2">
@@ -1149,7 +1154,7 @@ export function FoodSearchModal({
             }}
             barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
             productFromSearch={
-              selectedFood.source === 'api' ? (selectedFood._raw as any) : undefined
+              selectedFood.source === 'openfood' ? (selectedFood._raw as any) : undefined
             }
             food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
             initialMealType={mealType}

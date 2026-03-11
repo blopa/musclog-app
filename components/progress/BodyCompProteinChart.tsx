@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Line, Scatter } from 'victory-native';
@@ -8,25 +8,37 @@ import { useTheme } from '../../hooks/useTheme';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface BodyCompProteinChartProps {
-  data: BodyCompProteinPoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, BodyCompProteinPoint[]>;
   units: string;
 }
 
-export function BodyCompProteinChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: BodyCompProteinChartProps) {
+export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
+        <View className="mb-4 flex-row items-center gap-2">
+          {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+            <TouchableOpacity
+              key={agg}
+              onPress={() => setAggregation(agg)}
+              className={`rounded-full px-3 py-1.5 ${
+                aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+              }`}
+            >
+              <Text
+                className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+              >
+                {t(`common.time.${agg}`)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View className="items-center justify-center py-10">
           <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
@@ -66,7 +78,7 @@ export function BodyCompProteinChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

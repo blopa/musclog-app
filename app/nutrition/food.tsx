@@ -29,7 +29,7 @@ import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
-import SmartCameraModal from '../../components/modals/SmartCameraModal';
+import { useSmartCamera } from '../../components/SmartCameraContext';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
@@ -58,14 +58,10 @@ const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
 
 export default function FoodScreen() {
   const { t } = useTranslation();
-  const { units, isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
+  const { units, isAiFeaturesEnabled } = useSettings();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-  const [isCameraVisible, setIsCameraVisible] = useState(false);
-  const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
-  const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
-    'ai-meal-photo'
-  );
+  const { openCamera } = useSmartCamera();
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
@@ -523,9 +519,7 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        setCameraMode('barcode-scan');
-                        setHideCameraModePicker(false);
-                        setIsCameraVisible(true);
+                        openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
                       }}
                     />
                     {isAiFeaturesEnabled ? (
@@ -536,9 +530,7 @@ export default function FoodScreen() {
                         size="md"
                         width="flex-1"
                         onPress={() => {
-                          setCameraMode('ai-meal-photo');
-                          setHideCameraModePicker(false);
-                          setIsCameraVisible(true);
+                          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
                         }}
                       />
                     ) : null}
@@ -761,18 +753,12 @@ export default function FoodScreen() {
             setIsFoodSearchModalVisible(true);
           }}
           onAiCameraPress={() => {
-            // Open CameraModal with AI mode selected
             setIsAddFoodModalVisible(false);
-            setCameraMode('ai-meal-photo');
-            setHideCameraModePicker(false);
-            setIsCameraVisible(true);
+            openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
           }}
           onScanBarcodePress={() => {
-            // Open CameraModal with barcode mode selected
             setIsAddFoodModalVisible(false);
-            setCameraMode('barcode-scan');
-            setHideCameraModePicker(false);
-            setIsCameraVisible(true);
+            openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
           }}
           onSearchFoodPress={() => {
             setIsAddFoodModalVisible(false);
@@ -816,18 +802,6 @@ export default function FoodScreen() {
         />
       ) : null}
 
-      {/* Camera Modal */}
-      {isCameraVisible ? (
-        <SmartCameraModal
-          visible={isCameraVisible}
-          onClose={() => setIsCameraVisible(false)}
-          mode={cameraMode}
-          hideCameraModePicker={hideCameraModePicker}
-          isAiEnabled={isAiFeaturesEnabled}
-          useOcrBeforeAi={useOcrBeforeAi}
-        />
-      ) : null}
-
       {/* Create Custom Food Modal */}
       {isCreateCustomFoodVisible ? (
         <CreateCustomFoodModal
@@ -852,11 +826,8 @@ export default function FoodScreen() {
             setIsCreateCustomFoodVisible(true);
           }}
           onBarcodeScanPress={() => {
-            // Open camera modal with barcode mode
             setIsFoodSearchModalVisible(false);
-            setCameraMode('barcode-scan');
-            setHideCameraModePicker(true);
-            setIsCameraVisible(true);
+            openCamera({ mode: 'barcode-scan', hideCameraModePicker: true });
           }}
           isAiEnabled={isAiFeaturesEnabled}
         />

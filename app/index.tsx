@@ -11,9 +11,9 @@ import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySumm
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
+import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
-import { CoachModal } from '../components/modals/CoachModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../components/modals/GoalsManagementModal';
@@ -22,9 +22,9 @@ import { NotificationsModal } from '../components/modals/NotificationsModal';
 import { NutritionGoalsModal } from '../components/modals/NutritionGoalsModal';
 import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal';
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
-import SmartCameraModal from '../components/modals/SmartCameraModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { useSmartCamera } from '../components/SmartCameraContext';
 import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
@@ -57,7 +57,9 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
+  const { isAiFeaturesEnabled } = useSettings();
+  const { openCamera } = useSmartCamera();
+  const { openCoach } = useCoach();
   const params = useLocalSearchParams<{ code?: string; action?: string }>();
   const navigationState = useRootNavigationState();
 
@@ -78,7 +80,6 @@ export default function HomeScreen() {
   });
 
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
-  const [isCoachModalFromMenuVisible, setIsCoachModalFromMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -86,14 +87,10 @@ export default function HomeScreen() {
   const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
   const [isFoodSearchVisible, setIsFoodSearchVisible] = useState(false);
-  const [isCameraVisible, setIsCameraVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
-  const [cameraMode, setCameraMode] = useState<'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan'>(
-    'ai-meal-photo'
-  );
 
   // Use reactive hook for recent workouts
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
@@ -116,8 +113,7 @@ export default function HomeScreen() {
     global.__PENDING_WIDGET_ACTION = undefined;
 
     if (action === 'open-camera') {
-      setCameraMode('ai-meal-photo');
-      setIsCameraVisible(true);
+      openCamera({ mode: 'ai-meal-photo' });
     }
   }, [navigationState?.key]);
 
@@ -126,8 +122,7 @@ export default function HomeScreen() {
     const handleUrl = ({ url }: { url: string }) => {
       const { queryParams } = ExpoLinking.parse(url);
       if (queryParams?.action === 'open-camera') {
-        setCameraMode('ai-meal-photo');
-        setIsCameraVisible(true);
+        openCamera({ mode: 'ai-meal-photo' });
       } else if (queryParams?.action === 'open-nutrition') {
         router.push('/nutrition/food');
       }
@@ -488,19 +483,11 @@ export default function HomeScreen() {
             avatarIcon: dbUser?.avatarIcon,
             avatarColor: dbUser?.avatarColor,
           }}
-          onCoachPress={() => setIsCoachModalFromMenuVisible(true)}
+          onCoachPress={openCoach}
           onCyclePress={() => router.push('/cycle')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
           })}
-        />
-      ) : null}
-
-      {/* Coach Modal (opened from User Menu when coach is not in nav) */}
-      {isCoachModalFromMenuVisible ? (
-        <CoachModal
-          visible={isCoachModalFromMenuVisible}
-          onClose={() => setIsCoachModalFromMenuVisible(false)}
         />
       ) : null}
 
@@ -545,13 +532,11 @@ export default function HomeScreen() {
           }}
           onAiCameraPress={() => {
             setIsAddFoodVisible(false);
-            setCameraMode('ai-meal-photo');
-            setIsCameraVisible(true);
+            openCamera({ mode: 'ai-meal-photo' });
           }}
           onScanBarcodePress={() => {
             setIsAddFoodVisible(false);
-            setCameraMode('barcode-scan');
-            setIsCameraVisible(true);
+            openCamera({ mode: 'barcode-scan' });
           }}
           onSearchFoodPress={() => {
             setIsAddFoodVisible(false);
@@ -601,21 +586,9 @@ export default function HomeScreen() {
           }}
           onBarcodeScanPress={() => {
             setIsFoodSearchVisible(false);
-            setCameraMode('barcode-scan');
-            setIsCameraVisible(true);
+            openCamera({ mode: 'barcode-scan' });
           }}
           isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
-
-      {/* Camera Modal */}
-      {isCameraVisible ? (
-        <SmartCameraModal
-          visible={isCameraVisible}
-          onClose={() => setIsCameraVisible(false)}
-          mode={cameraMode}
-          isAiEnabled={isAiFeaturesEnabled}
-          useOcrBeforeAi={useOcrBeforeAi}
         />
       ) : null}
 
