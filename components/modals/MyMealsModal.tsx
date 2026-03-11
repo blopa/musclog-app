@@ -112,6 +112,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     getAll: false,
     sortBy: 'name',
     sortOrder: 'asc',
+    visible, // avoid loading while modal is hidden
   }) as UseMealsResultBasic;
 
   // State to store transformed meal data with nutrients

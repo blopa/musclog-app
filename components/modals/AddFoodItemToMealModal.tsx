@@ -219,6 +219,7 @@ export function AddFoodItemToMealModal({
     mode: searchQuery.trim() ? 'search' : 'list',
     searchTerm: searchQuery.trim(),
     getAll: true,
+    visible, // avoid loading while modal is hidden
   }) as { foods: Food[]; isLoading: boolean };
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
