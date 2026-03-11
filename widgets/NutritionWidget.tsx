@@ -51,7 +51,7 @@ export function NutritionWidget({
         width: 'match_parent',
         backgroundColor: theme.colors.background.primary as ColorProp,
         borderRadius: theme.borderRadius.xl,
-        padding: 16,
+        padding: theme.spacing.padding.base,
         flexDirection: 'column',
         justifyContent: 'center',
       }}
@@ -66,13 +66,13 @@ export function NutritionWidget({
           flexDirection: 'row',
           alignItems: 'center',
           width: 'match_parent',
-          marginBottom: 8,
+          marginBottom: theme.spacing.margin.sm,
         }}
       >
         <TextWidget
           text="MUSCLOG"
           style={{
-            fontSize: 14,
+            fontSize: theme.typography.fontSize.sm,
             color: theme.colors.text.primary as ColorProp,
           }}
         />
@@ -81,7 +81,7 @@ export function NutritionWidget({
           <TextWidget
             text={calories.toLocaleString()}
             style={{
-              fontSize: isSmall ? 18 : 24,
+              fontSize: isSmall ? theme.typography.fontSize.lg : theme.typography.fontSize['2xl'],
               fontWeight: 'bold',
               color: theme.colors.text.primary as ColorProp,
             }}
@@ -89,9 +89,9 @@ export function NutritionWidget({
           <TextWidget
             text={` / ${targetCalories.toLocaleString()} kcal`}
             style={{
-              fontSize: isSmall ? 12 : 14,
+              fontSize: isSmall ? theme.typography.fontSize.xs : theme.typography.fontSize.sm,
               color: theme.colors.text.secondary as ColorProp,
-              marginLeft: isSmall ? 2 : 4,
+              marginLeft: isSmall ? theme.spacing.margin['2'] : theme.spacing.margin.xs,
             }}
           />
         </FlexWidget>
@@ -100,11 +100,11 @@ export function NutritionWidget({
       {/* Main Progress Bar */}
       <FlexWidget
         style={{
-          height: 12,
+          height: theme.size.md,
           width: 'match_parent',
           backgroundColor: theme.colors.background.white10 as ColorProp,
           borderRadius: 6,
-          marginBottom: isSmall ? 8 : 16,
+          marginBottom: isSmall ? theme.spacing.margin.sm : theme.spacing.margin.base,
         }}
       >
         <FlexWidget
@@ -132,7 +132,7 @@ export function NutritionWidget({
           <TextWidget
             text="Daily Calorie Goal"
             style={{
-              fontSize: 12,
+              fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.secondary as ColorProp,
             }}
           />
@@ -140,7 +140,7 @@ export function NutritionWidget({
           <TextWidget
             text={`${caloriePercentage}%`}
             style={{
-              fontSize: 12,
+              fontSize: theme.typography.fontSize.xs,
               fontWeight: 'bold',
               color: theme.colors.status.emeraldLight as ColorProp, // Vibrant green matching progress bar
             }}
@@ -161,7 +161,7 @@ export function NutritionWidget({
               <TextWidget
                 text="PROT"
                 style={{
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: 'bold',
                   color: theme.colors.text.secondary as ColorProp,
                 }}
@@ -176,7 +176,7 @@ export function NutritionWidget({
                 height: 4,
                 width: 'match_parent',
                 backgroundColor: theme.colors.background.white10 as ColorProp,
-                borderRadius: 2,
+                borderRadius: theme.borderRadius['2'],
               }}
             >
               <FlexWidget
@@ -184,7 +184,7 @@ export function NutritionWidget({
                   height: 'match_parent',
                   width: proteinBarWidth,
                   backgroundColor: theme.colors.macros.protein.bg as ColorProp,
-                  borderRadius: 2,
+                  borderRadius: theme.borderRadius['2'],
                 }}
               />
             </FlexWidget>
@@ -198,7 +198,7 @@ export function NutritionWidget({
               <TextWidget
                 text="CARB"
                 style={{
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: 'bold',
                   color: theme.colors.text.secondary as ColorProp,
                 }}
@@ -210,7 +210,7 @@ export function NutritionWidget({
             </FlexWidget>
             <FlexWidget
               style={{
-                height: 4,
+                height: theme.size.xs,
                 width: 'match_parent',
                 backgroundColor: theme.colors.background.white10 as ColorProp,
                 borderRadius: 2,
@@ -221,7 +221,7 @@ export function NutritionWidget({
                   height: 'match_parent',
                   width: carbsBarWidth,
                   backgroundColor: theme.colors.macros.carbs.bg as ColorProp,
-                  borderRadius: 2,
+                  borderRadius: theme.borderRadius['2'],
                 }}
               />
             </FlexWidget>
@@ -235,7 +235,7 @@ export function NutritionWidget({
               <TextWidget
                 text="FAT"
                 style={{
-                  fontSize: 10,
+                  fontSize: theme.typography.fontSize.xxs,
                   fontWeight: 'bold',
                   color: theme.colors.text.secondary as ColorProp,
                 }}
@@ -247,10 +247,10 @@ export function NutritionWidget({
             </FlexWidget>
             <FlexWidget
               style={{
-                height: 4,
+                height: theme.size.xs,
                 width: 'match_parent',
                 backgroundColor: theme.colors.background.white10 as ColorProp,
-                borderRadius: 2,
+                borderRadius: theme.borderRadius['2'],
               }}
             >
               <FlexWidget
@@ -258,7 +258,7 @@ export function NutritionWidget({
                   height: 'match_parent',
                   width: fatBarWidth,
                   backgroundColor: theme.colors.macros.fat.bg as ColorProp,
-                  borderRadius: 2,
+                  borderRadius: theme.borderRadius['2'],
                 }}
               />
             </FlexWidget>
