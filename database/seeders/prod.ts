@@ -108,7 +108,7 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
         sessionId,
         sender: 'coach',
         message: welcomeMessage,
-        messageType: 'text'
+        messageType: 'text',
       });
 
       console.log('Seeded initial welcome message from Loggy');

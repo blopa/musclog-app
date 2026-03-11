@@ -33,7 +33,7 @@ export type UnifiedFoodResult = {
   carbs?: number;
   fat?: number;
   fiber?: number;
-  source: 'local' | 'api';
+  source: 'local' | 'openfood';
   _raw?: any; // Original data from API or database
 };
 
