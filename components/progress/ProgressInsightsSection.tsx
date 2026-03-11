@@ -43,15 +43,15 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       </GenericCard>
 
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
-        <View className="p-4">
+        <View className="p-2">
           <Text className="mb-2 text-sm font-bold text-text-primary">
             {t('progress.bodyFatGoalWeights')}
           </Text>
-          <View className="flex-row justify-between">
+          <View className="flex-row flex-wrap">
             {[5, 10, 15, 20].map((bf) => (
-              <View key={bf} className="items-center">
+              <View key={bf} className="flex-1 items-center justify-center p-2">
                 <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
-                <Text className="text-sm font-bold text-text-primary">
+                <Text className="text-lg font-bold text-text-primary">
                   {(insights.targetWeights as any)[`bf${bf}`].toFixed(1)}
                 </Text>
               </View>
