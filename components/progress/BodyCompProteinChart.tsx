@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Line, Scatter } from 'victory-native';
@@ -8,20 +8,15 @@ import { useTheme } from '../../hooks/useTheme';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface BodyCompProteinChartProps {
-  data: BodyCompProteinPoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, BodyCompProteinPoint[]>;
   units: string;
 }
 
-export function BodyCompProteinChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: BodyCompProteinChartProps) {
+export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = allData[aggregation];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   if (data.length === 0) {
@@ -31,7 +26,7 @@ export function BodyCompProteinChart({
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
-              onPress={() => onAggregationChange(agg)}
+              onPress={() => setAggregation(agg)}
               className={`rounded-full px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
@@ -83,7 +78,7 @@ export function BodyCompProteinChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

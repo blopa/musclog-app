@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Scatter } from 'victory-native';
@@ -8,18 +8,14 @@ import { useTheme } from '../../hooks/useTheme';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface RecoveryTrainingChartProps {
-  data: RecoveryTrainingPoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, RecoveryTrainingPoint[]>;
 }
 
-export function RecoveryTrainingChart({
-  data,
-  aggregation,
-  onAggregationChange,
-}: RecoveryTrainingChartProps) {
+export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = allData[aggregation];
 
   if (data.length === 0) {
     return (
@@ -28,7 +24,7 @@ export function RecoveryTrainingChart({
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
-              onPress={() => onAggregationChange(agg)}
+              onPress={() => setAggregation(agg)}
               className={`rounded-full px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
@@ -65,7 +61,7 @@ export function RecoveryTrainingChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -7,9 +7,7 @@ import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface VolumeCaloriesChartProps {
-  data: CorrelationPoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, CorrelationPoint[]>;
   units: string;
 }
 
@@ -32,13 +30,10 @@ const getXAxisLabels = (dates: number[]): string[] => {
   return indices.map((i) => formatDate(dates[i]));
 };
 
-export function VolumeCaloriesChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: VolumeCaloriesChartProps) {
+export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = allData[aggregation];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   if (data.length === 0) {
@@ -48,7 +43,7 @@ export function VolumeCaloriesChart({
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
-              onPress={() => onAggregationChange(agg)}
+              onPress={() => setAggregation(agg)}
               className={`rounded-full px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
@@ -78,7 +73,7 @@ export function VolumeCaloriesChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}

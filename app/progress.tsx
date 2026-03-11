@@ -35,13 +35,12 @@ export default function ProgressScreen() {
   const { isEnabled: aiEnabled } = useAiEnabled();
   const {
     data,
+    allAggregationData,
     isLoading,
     preset,
     changePreset,
     useWeeklyAverages,
     setUseWeeklyAverages,
-    aggregation,
-    setAggregation,
     refresh,
     hasAnyAggregationData,
   } = useProgressData();
@@ -174,39 +173,49 @@ export default function ProgressScreen() {
                 <>
                   {hasAnyAggregationData((d) => d.correlationHistory) ? (
                     <VolumeCaloriesChart
-                      data={data.correlationHistory}
-                      aggregation={aggregation}
-                      onAggregationChange={setAggregation}
+                      allData={{
+                        daily: allAggregationData.daily?.correlationHistory ?? [],
+                        weekly: allAggregationData.weekly?.correlationHistory ?? [],
+                        monthly: allAggregationData.monthly?.correlationHistory ?? [],
+                      }}
                       units={units}
                     />
                   ) : null}
                   {hasAnyAggregationData((d) => d.bodyCompProteinHistory) ? (
                     <BodyCompProteinChart
-                      data={data.bodyCompProteinHistory}
-                      aggregation={aggregation}
-                      onAggregationChange={setAggregation}
+                      allData={{
+                        daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
+                        weekly: allAggregationData.weekly?.bodyCompProteinHistory ?? [],
+                        monthly: allAggregationData.monthly?.bodyCompProteinHistory ?? [],
+                      }}
                       units={units}
                     />
                   ) : null}
                   {hasAnyAggregationData((d) => d.menstrualPhaseHistory) ? (
                     <MenstrualPerformanceChart
-                      data={data.menstrualPhaseHistory}
-                      aggregation={aggregation}
-                      onAggregationChange={setAggregation}
+                      allData={{
+                        daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
+                        weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
+                        monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
+                      }}
                     />
                   ) : null}
                   {hasAnyAggregationData((d) => d.recoveryTrainingHistory) ? (
                     <RecoveryTrainingChart
-                      data={data.recoveryTrainingHistory}
-                      aggregation={aggregation}
-                      onAggregationChange={setAggregation}
+                      allData={{
+                        daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
+                        weekly: allAggregationData.weekly?.recoveryTrainingHistory ?? [],
+                        monthly: allAggregationData.monthly?.recoveryTrainingHistory ?? [],
+                      }}
                     />
                   ) : null}
                   {hasAnyAggregationData((d) => d.macroMuscleHistory) ? (
                     <MacroMuscleChart
-                      data={data.macroMuscleHistory}
-                      aggregation={aggregation}
-                      onAggregationChange={setAggregation}
+                      allData={{
+                        daily: allAggregationData.daily?.macroMuscleHistory ?? [],
+                        weekly: allAggregationData.weekly?.macroMuscleHistory ?? [],
+                        monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
+                      }}
                       units={units}
                     />
                   ) : null}

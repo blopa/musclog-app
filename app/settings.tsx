@@ -29,7 +29,6 @@ export default function SettingsScreen() {
     googleGeminiModel,
     openAiApiKey,
     openAiModel,
-    notifications,
   } = useSettings();
   const { promptAsync } = useGoogleAuth();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
@@ -66,10 +65,6 @@ export default function SettingsScreen() {
     await SettingsService.setOpenAiModel(value);
   };
 
-  const handleNotificationsChange = async (value: boolean) => {
-    await SettingsService.setNotifications(value);
-  };
-
   return (
     <MasterLayout showNavigationMenu={false}>
       <View className="border-b border-border-light bg-bg-primary">
@@ -77,11 +72,7 @@ export default function SettingsScreen() {
           <Pressable
             className="-ml-2 rounded-full p-2"
             onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.push('/');
-              }
+              router.push('/');
             }}
           >
             <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />

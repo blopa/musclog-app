@@ -1,10 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import {
-  ProgressData,
-  ProgressService,
-  TimeAggregation,
-} from '../database/services/ProgressService';
+import { ProgressData, ProgressService } from '../database/services/ProgressService';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';
 
@@ -16,7 +12,6 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
   const [preset, setPreset] = useState<DateRangePreset>(initialPreset);
   const [customRange, setCustomRange] = useState<{ startDate: Date; endDate: Date } | null>(null);
   const [useWeeklyAverages, setUseWeeklyAverages] = useState(false);
-  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const [data, setData] = useState<ProgressData | null>(null);
   const [allAggregationData, setAllAggregationData] = useState<{
     daily: ProgressData | null;
@@ -76,23 +71,16 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
         ProgressService.getProgressData(start, end, useWeeklyAverages, 'monthly'),
       ]);
 
-      setAllAggregationData({
-        daily: dailyData,
-        weekly: weeklyData,
-        monthly: monthlyData,
-      });
-
-      // Set the current aggregation's data
-      const currentData =
-        aggregation === 'daily' ? dailyData : aggregation === 'weekly' ? weeklyData : monthlyData;
-      setData(currentData);
+      const fetched = { daily: dailyData, weekly: weeklyData, monthly: monthlyData };
+      setAllAggregationData(fetched);
+      setData(dailyData);
     } catch (err) {
       console.error('Error fetching progress data:', err);
       setError(err instanceof Error ? err : new Error('Unknown error'));
     } finally {
       setIsLoading(false);
     }
-  }, [preset, customRange, useWeeklyAverages, aggregation]);
+  }, [preset, customRange, useWeeklyAverages]);
 
   useEffect(() => {
     fetchData();
@@ -129,6 +117,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
 
   return {
     data,
+    allAggregationData,
     isLoading,
     error,
     preset,
@@ -137,8 +126,6 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     setCustomDates,
     useWeeklyAverages,
     setUseWeeklyAverages,
-    aggregation,
-    setAggregation,
     refresh: fetchData,
     hasAnyAggregationData,
   };

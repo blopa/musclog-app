@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,9 +8,7 @@ import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MacroMuscleChartProps {
-  data: MacroMusclePoint[];
-  aggregation: TimeAggregation;
-  onAggregationChange: (agg: TimeAggregation) => void;
+  allData: Record<TimeAggregation, MacroMusclePoint[]>;
   units: string;
 }
 
@@ -33,14 +31,11 @@ const getXAxisLabels = (dates: number[]): string[] => {
   return indices.map((i) => formatDate(dates[i]));
 };
 
-export function MacroMuscleChart({
-  data,
-  aggregation,
-  onAggregationChange,
-  units,
-}: MacroMuscleChartProps) {
+export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = allData[aggregation];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   if (data.length === 0) {
@@ -50,7 +45,7 @@ export function MacroMuscleChart({
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
-              onPress={() => onAggregationChange(agg)}
+              onPress={() => setAggregation(agg)}
               className={`rounded-full px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
@@ -87,7 +82,7 @@ export function MacroMuscleChart({
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
-            onPress={() => onAggregationChange(agg)}
+            onPress={() => setAggregation(agg)}
             className={`rounded-full px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
