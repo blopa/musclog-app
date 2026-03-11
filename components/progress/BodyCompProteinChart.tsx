@@ -14,7 +14,12 @@ interface BodyCompProteinChartProps {
   units: string;
 }
 
-export function BodyCompProteinChart({ data, aggregation, onAggregationChange, units }: BodyCompProteinChartProps) {
+export function BodyCompProteinChart({
+  data,
+  aggregation,
+  onAggregationChange,
+  units,
+}: BodyCompProteinChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -22,9 +27,9 @@ export function BodyCompProteinChart({ data, aggregation, onAggregationChange, u
   if (data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
-         <View className="py-10 items-center justify-center">
-            <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
-          </View>
+        <View className="items-center justify-center py-10">
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+        </View>
       </ProgressChartSection>
     );
   }
@@ -66,7 +71,9 @@ export function BodyCompProteinChart({ data, aggregation, onAggregationChange, u
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
-            <Text className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}>
+            <Text
+              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            >
               {t(`common.time.${agg}`)}
             </Text>
           </TouchableOpacity>
@@ -86,16 +93,18 @@ export function BodyCompProteinChart({ data, aggregation, onAggregationChange, u
             <>
               <Scatter points={points.y} radius={4} color={theme.colors.accent.primary} />
               <Line
-                points={[
-                  {
-                    x: ((trendLineData[0].x - xMin * 0.9) / (xMax * 1.1 - xMin * 0.9)) * 300,
-                    y: ((yMax + 0.5 - trendLineData[0].y) / (yMax - yMin + 1)) * 250,
-                  },
-                  {
-                    x: ((trendLineData[1].x - xMin * 0.9) / (xMax * 1.1 - xMin * 0.9)) * 300,
-                    y: ((yMax + 0.5 - trendLineData[1].y) / (yMax - yMin + 1)) * 250,
-                  },
-                ] as any}
+                points={
+                  [
+                    {
+                      x: ((trendLineData[0].x - xMin * 0.9) / (xMax * 1.1 - xMin * 0.9)) * 300,
+                      y: ((yMax + 0.5 - trendLineData[0].y) / (yMax - yMin + 1)) * 250,
+                    },
+                    {
+                      x: ((trendLineData[1].x - xMin * 0.9) / (xMax * 1.1 - xMin * 0.9)) * 300,
+                      y: ((yMax + 0.5 - trendLineData[1].y) / (yMax - yMin + 1)) * 250,
+                    },
+                  ] as any
+                }
                 color={theme.colors.text.tertiary}
                 strokeWidth={1}
               />

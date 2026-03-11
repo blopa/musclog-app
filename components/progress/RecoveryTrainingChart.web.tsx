@@ -24,7 +24,7 @@ export function RecoveryTrainingChart({
   if (data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
-        <View className="py-10 items-center justify-center">
+        <View className="items-center justify-center py-10">
           <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>
       </ProgressChartSection>

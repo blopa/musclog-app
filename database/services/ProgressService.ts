@@ -806,7 +806,12 @@ export class ProgressService {
 
     for (const wl of workoutLogs) {
       const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
-      const existing = groupedData.get(start) || { volume: 0, exhaustion: 0, calories: 0, count: 0 };
+      const existing = groupedData.get(start) || {
+        volume: 0,
+        exhaustion: 0,
+        calories: 0,
+        count: 0,
+      };
       existing.volume += wl.totalVolume || 0;
       existing.exhaustion += wl.exhaustionLevel || 0;
       existing.calories += wl.caloriesBurned || 0;

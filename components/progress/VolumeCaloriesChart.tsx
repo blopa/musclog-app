@@ -21,15 +21,24 @@ const formatDate = (timestamp: number): string => {
 };
 
 const getXAxisLabels = (dates: number[]): string[] => {
-  if (dates.length === 0) return [];
-  if (dates.length <= MAX_X_LABELS) return dates.map(formatDate);
+  if (dates.length === 0) {
+    return [];
+  }
+  if (dates.length <= MAX_X_LABELS) {
+    return dates.map(formatDate);
+  }
   const indices = Array.from({ length: MAX_X_LABELS }, (_, i) =>
     Math.round((i / (MAX_X_LABELS - 1)) * (dates.length - 1))
   );
   return indices.map((i) => formatDate(dates[i]));
 };
 
-export function VolumeCaloriesChart({ data, aggregation, onAggregationChange, units }: VolumeCaloriesChartProps) {
+export function VolumeCaloriesChart({
+  data,
+  aggregation,
+  onAggregationChange,
+  units,
+}: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -37,9 +46,9 @@ export function VolumeCaloriesChart({ data, aggregation, onAggregationChange, un
   if (data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
-         <View className="py-10 items-center justify-center">
-            <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
-          </View>
+        <View className="items-center justify-center py-10">
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+        </View>
       </ProgressChartSection>
     );
   }
@@ -59,7 +68,9 @@ export function VolumeCaloriesChart({ data, aggregation, onAggregationChange, un
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
-            <Text className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}>
+            <Text
+              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            >
               {t(`common.time.${agg}`)}
             </Text>
           </TouchableOpacity>

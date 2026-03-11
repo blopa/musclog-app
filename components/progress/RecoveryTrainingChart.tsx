@@ -13,16 +13,20 @@ interface RecoveryTrainingChartProps {
   onAggregationChange: (agg: TimeAggregation) => void;
 }
 
-export function RecoveryTrainingChart({ data, aggregation, onAggregationChange }: RecoveryTrainingChartProps) {
+export function RecoveryTrainingChart({
+  data,
+  aggregation,
+  onAggregationChange,
+}: RecoveryTrainingChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
 
   if (data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
-         <View className="py-10 items-center justify-center">
-            <Text className="text-text-tertiary text-sm">{t('progress.noDataAvailable')}</Text>
-          </View>
+        <View className="items-center justify-center py-10">
+          <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+        </View>
       </ProgressChartSection>
     );
   }
@@ -49,7 +53,9 @@ export function RecoveryTrainingChart({ data, aggregation, onAggregationChange }
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
-            <Text className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}>
+            <Text
+              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            >
               {t(`common.time.${agg}`)}
             </Text>
           </TouchableOpacity>
