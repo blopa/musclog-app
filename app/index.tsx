@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ExpoLinking from 'expo-linking';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,6 +54,7 @@ export default function HomeScreen() {
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
   const params = useLocalSearchParams<{ code?: string; action?: string }>();
+  const navigationState = useRootNavigationState();
 
   // Memoize today's date to prevent infinite re-renders
   const today = useMemo(() => new Date(), []);
@@ -97,6 +98,10 @@ export default function HomeScreen() {
 
   // Check for widget actions via URL params (works on cold start)
   useEffect(() => {
+    if (!navigationState?.key) {
+      return;
+    }
+
     if (params.action === 'open-camera') {
       setCameraMode('ai-meal-photo');
       setIsCameraVisible(true);
@@ -106,7 +111,7 @@ export default function HomeScreen() {
       router.push('/nutrition/food');
       router.setParams({ action: undefined });
     }
-  }, [params.action, router]);
+  }, [params.action, router, navigationState?.key]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
@@ -124,8 +129,13 @@ export default function HomeScreen() {
     return () => subscription.remove();
   }, []);
 
-  // Check onboarding status on mount
+  // Check onboarding status on mount — wait until navigator is ready to avoid
+  // "Attempted to navigate before mounting the Root Layout component" on cold start
   useEffect(() => {
+    if (!navigationState?.key) {
+      return;
+    }
+
     const checkOnboarding = async () => {
       try {
         const codeParam = params.code;
@@ -173,7 +183,7 @@ export default function HomeScreen() {
     };
 
     checkOnboarding();
-  }, [params.code, router]);
+  }, [params.code, router, navigationState?.key]);
 
   // Show loading spinner while checking onboarding
   if (isCheckingOnboarding) {
