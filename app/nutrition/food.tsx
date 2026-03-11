@@ -742,112 +742,100 @@ export default function FoodScreen() {
       </View>
 
       {/* Add Food Modal */}
-      {isAddFoodModalVisible ? (
-        <AddFoodModal
-          isAiEnabled={isAiFeaturesEnabled}
-          visible={isAddFoodModalVisible}
-          onClose={() => setIsAddFoodModalVisible(false)}
-          onMealTypeSelect={(mealType) => {
-            setSelectedMealType(mealType);
-            setIsAddFoodModalVisible(false);
-            setIsFoodSearchModalVisible(true);
-          }}
-          onAiCameraPress={() => {
-            setIsAddFoodModalVisible(false);
-            openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
-          }}
-          onScanBarcodePress={() => {
-            setIsAddFoodModalVisible(false);
-            openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
-          }}
-          onSearchFoodPress={() => {
-            setIsAddFoodModalVisible(false);
-            setIsFoodSearchModalVisible(true);
-          }}
-          onCreateCustomFoodPress={() => {
-            // Open CreateCustomFoodModal
-            setIsAddFoodModalVisible(false);
-            setIsCreateCustomFoodVisible(true);
-          }}
-          onTrackCustomMealPress={() => {
-            setIsMyMealsModalVisible(true);
-            setIsAddFoodModalVisible(false);
-          }}
-          onQuickTrackMealPress={() => {
-            setIsQuickTrackMealModalVisible(true);
-            setIsAddFoodModalVisible(false);
-          }}
-        />
-      ) : null}
+      <AddFoodModal
+        isAiEnabled={isAiFeaturesEnabled}
+        visible={isAddFoodModalVisible}
+        onClose={() => setIsAddFoodModalVisible(false)}
+        onMealTypeSelect={(mealType) => {
+          setSelectedMealType(mealType);
+          setIsAddFoodModalVisible(false);
+          setIsFoodSearchModalVisible(true);
+        }}
+        onAiCameraPress={() => {
+          setIsAddFoodModalVisible(false);
+          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
+        }}
+        onScanBarcodePress={() => {
+          setIsAddFoodModalVisible(false);
+          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
+        }}
+        onSearchFoodPress={() => {
+          setIsAddFoodModalVisible(false);
+          setIsFoodSearchModalVisible(true);
+        }}
+        onCreateCustomFoodPress={() => {
+          // Open CreateCustomFoodModal
+          setIsAddFoodModalVisible(false);
+          setIsCreateCustomFoodVisible(true);
+        }}
+        onTrackCustomMealPress={() => {
+          setIsMyMealsModalVisible(true);
+          setIsAddFoodModalVisible(false);
+        }}
+        onQuickTrackMealPress={() => {
+          setIsQuickTrackMealModalVisible(true);
+          setIsAddFoodModalVisible(false);
+        }}
+      />
 
       {/* Quick Track Meal (CreateMealModal in quickTrack mode) */}
-      {isQuickTrackMealModalVisible ? (
-        <CreateMealModal
-          visible={isQuickTrackMealModalVisible}
-          onClose={() => setIsQuickTrackMealModalVisible(false)}
-          mode="quickTrack"
-          logDate={selectedDate}
-          onTracked={() => {
-            refresh();
-            setIsQuickTrackMealModalVisible(false);
-          }}
-        />
-      ) : null}
+      <CreateMealModal
+        visible={isQuickTrackMealModalVisible}
+        onClose={() => setIsQuickTrackMealModalVisible(false)}
+        mode="quickTrack"
+        logDate={selectedDate}
+        onTracked={() => {
+          refresh();
+          setIsQuickTrackMealModalVisible(false);
+        }}
+      />
 
       {/* My Meals Modal */}
-      {isMyMealsModalVisible ? (
-        <MyMealsModal
-          visible={isMyMealsModalVisible}
-          onClose={() => setIsMyMealsModalVisible(false)}
-        />
-      ) : null}
+      <MyMealsModal
+        visible={isMyMealsModalVisible}
+        onClose={() => setIsMyMealsModalVisible(false)}
+      />
 
       {/* Create Custom Food Modal */}
-      {isCreateCustomFoodVisible ? (
-        <CreateCustomFoodModal
-          visible={isCreateCustomFoodVisible}
-          trackFoodAfterSave={true}
-          onClose={() => setIsCreateCustomFoodVisible(false)}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+      <CreateCustomFoodModal
+        visible={isCreateCustomFoodVisible}
+        trackFoodAfterSave={true}
+        onClose={() => setIsCreateCustomFoodVisible(false)}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
 
       {/* Food Search Modal */}
-      {isFoodSearchModalVisible ? (
-        <FoodSearchModal
-          visible={isFoodSearchModalVisible}
-          onClose={() => setIsFoodSearchModalVisible(false)}
-          mealType={selectedMealType}
-          logDate={selectedDate}
-          onFoodTracked={refresh}
-          onCreatePress={() => {
-            // Open CreateCustomFoodModal
-            setIsFoodSearchModalVisible(false);
-            setIsCreateCustomFoodVisible(true);
-          }}
-          onBarcodeScanPress={() => {
-            setIsFoodSearchModalVisible(false);
-            openCamera({ mode: 'barcode-scan', hideCameraModePicker: true });
-          }}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+      <FoodSearchModal
+        visible={isFoodSearchModalVisible}
+        onClose={() => setIsFoodSearchModalVisible(false)}
+        mealType={selectedMealType}
+        logDate={selectedDate}
+        onFoodTracked={refresh}
+        onCreatePress={() => {
+          // Open CreateCustomFoodModal
+          setIsFoodSearchModalVisible(false);
+          setIsCreateCustomFoodVisible(true);
+        }}
+        onBarcodeScanPress={() => {
+          setIsFoodSearchModalVisible(false);
+          openCamera({ mode: 'barcode-scan', hideCameraModePicker: true });
+        }}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
 
       {/* Delete Confirmation Modal */}
-      {isDeleteConfirmationVisible && selectedFoodItem ? (
-        <ConfirmationModal
-          visible={isDeleteConfirmationVisible}
-          onClose={handleCancelDelete}
-          onConfirm={handleConfirmDelete}
-          title={t('food.actions.deleteConfirmTitle')}
-          message={t('food.actions.deleteConfirmMessage', {
-            foodName: selectedFoodItem.displayName,
-          })}
-          confirmLabel={t('common.delete')}
-          cancelLabel={t('common.cancel')}
-          variant="destructive"
-        />
-      ) : null}
+      <ConfirmationModal
+        visible={isDeleteConfirmationVisible ? !!selectedFoodItem : false}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title={t('food.actions.deleteConfirmTitle')}
+        message={t('food.actions.deleteConfirmMessage', {
+          foodName: selectedFoodItem?.displayName || '',
+        })}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="destructive"
+      />
 
       {/* Goals Management Modal */}
       <GoalsManagementModal
@@ -874,70 +862,70 @@ export default function FoodScreen() {
       />
 
       {/* Delete All Meal Confirmation Modal */}
-      {isDeleteAllMealVisible && selectedMealForMenu ? (
-        <ConfirmationModal
-          visible={isDeleteAllMealVisible}
-          onClose={() => {
-            setIsDeleteAllMealVisible(false);
-            setSelectedMealForMenu(null);
-          }}
-          onConfirm={handleConfirmDeleteAllMeal}
-          title={t('food.actions.deleteAllConfirmTitle')}
-          message={t('food.actions.deleteAllConfirmMessage', {
-            mealName: t(
-              `food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`
-            ),
-          })}
-          confirmLabel={t('common.delete')}
-          cancelLabel={t('common.cancel')}
-          variant="destructive"
-        />
-      ) : null}
+      <ConfirmationModal
+        visible={isDeleteAllMealVisible ? !!selectedMealForMenu : false}
+        onClose={() => {
+          setIsDeleteAllMealVisible(false);
+          setSelectedMealForMenu(null);
+        }}
+        onConfirm={handleConfirmDeleteAllMeal}
+        title={t('food.actions.deleteAllConfirmTitle')}
+        message={t('food.actions.deleteAllConfirmMessage', {
+          mealName: selectedMealForMenu
+            ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
+            : '',
+        })}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        variant="destructive"
+      />
 
       {/* Move / Copy Meal Modal */}
-      {isMealActionModalVisible && selectedMealForMenu ? (
-        <MoveCopyMealModal
-          visible={isMealActionModalVisible}
-          onClose={() => {
-            setIsMealActionModalVisible(false);
-            setSelectedMealForMenu(null);
-          }}
-          onConfirm={handleConfirmMealAction}
-          mode={mealActionMode}
-          sourceMealType={selectedMealForMenu}
-          sourceDate={selectedDate}
-          isLoading={isMealActionLoading}
-        />
-      ) : null}
+      <MoveCopyMealModal
+        visible={isMealActionModalVisible ? !!selectedMealForMenu : false}
+        onClose={() => {
+          setIsMealActionModalVisible(false);
+          setSelectedMealForMenu(null);
+        }}
+        onConfirm={handleConfirmMealAction}
+        mode={mealActionMode}
+        sourceMealType={selectedMealForMenu || 'breakfast'}
+        sourceDate={selectedDate}
+        isLoading={isMealActionLoading}
+      />
 
       {/* Food Details Modal (edit/duplicate mode) */}
-      {isFoodDetailsModalVisible && selectedFoodItem ? (
-        <FoodMealDetailsModal
-          visible={isFoodDetailsModalVisible}
-          onClose={() => {
-            setIsFoodDetailsModalVisible(false);
-            setIsDuplicateMode(false);
-            setSelectedFoodItem(null);
-          }}
-          food={selectedFoodItem.food}
-          foodLog={isDuplicateMode ? undefined : selectedFoodItem.log}
-          initialMealType={isDuplicateMode ? selectedFoodItem.log.type : undefined}
-          initialDate={isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined}
-          initialServingSize={isDuplicateMode ? selectedFoodItem.gramWeight : undefined}
-          onAddFood={async (_data) => {
-            try {
-              await refresh();
-            } catch (_error) {
-              // Show error snackbar to user
-              showSnackbar('error', t('food.errors.refreshFailed'));
+      <FoodMealDetailsModal
+        visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
+        onClose={() => {
+          setIsFoodDetailsModalVisible(false);
+          setIsDuplicateMode(false);
+          setSelectedFoodItem(null);
+        }}
+        food={selectedFoodItem?.food || null}
+        foodLog={selectedFoodItem && !isDuplicateMode ? selectedFoodItem.log : undefined}
+        initialMealType={
+          selectedFoodItem && isDuplicateMode ? selectedFoodItem.log.type : undefined
+        }
+        initialDate={
+          selectedFoodItem && isDuplicateMode ? new Date(selectedFoodItem.log.date) : undefined
+        }
+        initialServingSize={
+          selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined
+        }
+        onAddFood={async (_data) => {
+          try {
+            await refresh();
+          } catch (_error) {
+            // Show error snackbar to user
+            showSnackbar('error', t('food.errors.refreshFailed'));
 
-              // Reload the current screen using expo-router
-              router.replace('/nutrition/food');
-            }
-          }}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+            // Reload the current screen using expo-router
+            router.replace('/nutrition/food');
+          }
+        }}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
     </MasterLayout>
   );
 }

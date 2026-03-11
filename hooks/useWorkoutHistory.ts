@@ -172,6 +172,12 @@ export function useWorkoutHistory({
   const loadInitialWorkouts = useCallback(async () => {
     if (!visible) {
       setIsLoading(false);
+      // Clear data when not visible to free memory
+      if (groupByMonth) {
+        setSections([]);
+      } else {
+        setWorkouts([]);
+      }
       return;
     }
 

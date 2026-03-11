@@ -214,6 +214,12 @@ export function useNutritionLogs({
   const loadInitialLogs = useCallback(async () => {
     if (!visible) {
       setIsLoading(false);
+      // Clear data when not visible to free memory
+      setLogs([]);
+      setRecentFoods([]);
+      setRecentNutritionLogs([]);
+      setDailyNutrients(defaultDailyNutrients);
+      setRangeNutrients(undefined);
       return;
     }
 

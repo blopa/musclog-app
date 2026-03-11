@@ -493,225 +493,213 @@ export default function WorkoutsScreen() {
       </View>
 
       {/* Workout Details Menu */}
-      {isMenuVisible ? (
-        <WorkoutDetailsMenu
-          visible={isMenuVisible}
-          onClose={() => setIsMenuVisible(false)}
-          workoutName={selectedWorkoutName}
-          onEdit={() => {
-            if (selectedWorkoutId) {
-              setEditingTemplateId(selectedWorkoutId);
-              setIsCreateWorkoutModalVisible(true);
-              setIsMenuVisible(false);
-            } else {
-              console.error('Cannot edit workout: No workout ID selected');
-              setIsMenuVisible(false);
+      <WorkoutDetailsMenu
+        visible={isMenuVisible}
+        onClose={() => setIsMenuVisible(false)}
+        workoutName={selectedWorkoutName}
+        onEdit={() => {
+          if (selectedWorkoutId) {
+            setEditingTemplateId(selectedWorkoutId);
+            setIsCreateWorkoutModalVisible(true);
+            setIsMenuVisible(false);
+          } else {
+            console.error('Cannot edit workout: No workout ID selected');
+            setIsMenuVisible(false);
+          }
+        }}
+        onDuplicate={async () => {
+          if (!selectedWorkoutId) {
+            console.error('Cannot duplicate workout: No workout ID selected');
+            setIsMenuVisible(false);
+            return;
+          }
+
+          try {
+            const newTemplate = await WorkoutTemplateService.duplicateTemplate(selectedWorkoutId);
+            setEditingTemplateId(newTemplate.id);
+            setIsCreateWorkoutModalVisible(true);
+            setIsMenuVisible(false);
+            showSnackbar('success', t('workouts.duplicateSuccess'));
+          } catch (err) {
+            console.error('Error duplicating workout:', err);
+            showSnackbar('error', t('workouts.duplicateError'));
+            // Keep menu open on error so user can try again
+          }
+        }}
+        onShare={async () => {
+          setIsMenuVisible(false);
+          try {
+            const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
+            await Share.share({ message });
+          } catch (err) {
+            console.error('Error sharing workout:', err);
+            showSnackbar('error', t('common.error'));
+          }
+        }}
+        onDelete={async () => {
+          if (selectedWorkoutId) {
+            try {
+              const template = await database
+                .get<WorkoutTemplate>('workout_templates')
+                .find(selectedWorkoutId);
+              await template.markAsDeleted();
+            } catch (err) {
+              console.error('Error deleting workout:', err);
             }
-          }}
-          onDuplicate={async () => {
-            if (!selectedWorkoutId) {
-              console.error('Cannot duplicate workout: No workout ID selected');
-              setIsMenuVisible(false);
+          }
+          setIsMenuVisible(false);
+        }}
+        onPreview={() => {
+          if (selectedWorkoutId) {
+            handlePreviewWorkout(selectedWorkoutId);
+          }
+        }}
+      />
+      <CreateWorkoutOptionsModal
+        visible={isCreateOptionsVisible}
+        onClose={() => setIsCreateOptionsVisible(false)}
+        isAiEnabled={isAiFeaturesEnabled}
+        onStartFreeTraining={async () => {
+          try {
+            const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
+            setIsCreateOptionsVisible(false);
+            router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+          } catch (err) {
+            console.error('Error starting free workout:', err);
+            showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
+          }
+        }}
+        onGenerateWithAi={() => {
+          setIsCreateOptionsVisible(false);
+          setEditingTemplateId(undefined);
+          setIsCreateWorkoutModalVisible(true);
+        }}
+        onCreateEmptyTemplate={() => {
+          setIsCreateOptionsVisible(false);
+          setEditingTemplateId(undefined);
+          setIsCreateWorkoutModalVisible(true);
+        }}
+        onBrowseTemplates={() => {
+          setIsCreateOptionsVisible(false);
+          // Open the Browse Templates modal
+          setIsBrowseTemplatesVisible(true);
+        }}
+      />
+      <CreateWorkoutModal
+        visible={isCreateWorkoutModalVisible}
+        onClose={() => {
+          setIsCreateWorkoutModalVisible(false);
+          setEditingTemplateId(undefined);
+        }}
+        templateId={editingTemplateId}
+      />
+      <BrowseTemplatesModal
+        visible={isBrowseTemplatesVisible}
+        onClose={() => setIsBrowseTemplatesVisible(false)}
+        onTemplateSelect={(template) => {
+          const rawTemplate = getRawTemplateById(template.id);
+          if (rawTemplate) {
+            setSelectedRawTemplate({ templateId: template.id, title: template.title });
+            setIsCreateFromTemplateConfirmationVisible(true);
+          } else {
+            console.error('Could not find raw template data for:', template.id);
+            setIsBrowseTemplatesVisible(false);
+          }
+        }}
+      />
+      <ConfirmationModal
+        visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
+        onClose={() => {
+          setIsCreateFromTemplateConfirmationVisible(false);
+          setSelectedRawTemplate(null);
+        }}
+        onConfirm={async () => {
+          if (!selectedRawTemplate) {
+            return;
+          }
+
+          setIsCreatingWorkoutsFromTemplate(true);
+
+          // Small delay to ensure React processes the state update and shows loading state
+          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+
+          try {
+            const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
+            if (!rawTemplate) {
+              console.error('Could not find raw template data');
+              setIsCreatingWorkoutsFromTemplate(false);
               return;
             }
 
-            try {
-              const newTemplate = await WorkoutTemplateService.duplicateTemplate(selectedWorkoutId);
-              setEditingTemplateId(newTemplate.id);
-              setIsCreateWorkoutModalVisible(true);
-              setIsMenuVisible(false);
-              showSnackbar('success', t('workouts.duplicateSuccess'));
-            } catch (err) {
-              console.error('Error duplicating workout:', err);
-              showSnackbar('error', t('workouts.duplicateError'));
-              // Keep menu open on error so user can try again
-            }
-          }}
-          onShare={async () => {
-            setIsMenuVisible(false);
-            try {
-              const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
-              await Share.share({ message });
-            } catch (err) {
-              console.error('Error sharing workout:', err);
-              showSnackbar('error', t('common.error'));
-            }
-          }}
-          onDelete={async () => {
-            if (selectedWorkoutId) {
-              try {
-                const template = await database
-                  .get<WorkoutTemplate>('workout_templates')
-                  .find(selectedWorkoutId);
-                await template.markAsDeleted();
-              } catch (err) {
-                console.error('Error deleting workout:', err);
-              }
-            }
-            setIsMenuVisible(false);
-          }}
-          onPreview={() => {
-            if (selectedWorkoutId) {
-              handlePreviewWorkout(selectedWorkoutId);
-            }
-          }}
-        />
-      ) : null}
-      {isCreateOptionsVisible ? (
-        <CreateWorkoutOptionsModal
-          visible={isCreateOptionsVisible}
-          onClose={() => setIsCreateOptionsVisible(false)}
-          isAiEnabled={isAiFeaturesEnabled}
-          onStartFreeTraining={async () => {
-            try {
-              const workoutLog = await WorkoutService.startFreeWorkout(
-                t('freeTraining.workoutName')
-              );
-              setIsCreateOptionsVisible(false);
-              router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
-            } catch (err) {
-              console.error('Error starting free workout:', err);
-              showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
-            }
-          }}
-          onGenerateWithAi={() => {
-            setIsCreateOptionsVisible(false);
-            setEditingTemplateId(undefined);
-            setIsCreateWorkoutModalVisible(true);
-          }}
-          onCreateEmptyTemplate={() => {
-            setIsCreateOptionsVisible(false);
-            setEditingTemplateId(undefined);
-            setIsCreateWorkoutModalVisible(true);
-          }}
-          onBrowseTemplates={() => {
-            setIsCreateOptionsVisible(false);
-            // Open the Browse Templates modal
-            setIsBrowseTemplatesVisible(true);
-          }}
-        />
-      ) : null}
-      {isCreateWorkoutModalVisible ? (
-        <CreateWorkoutModal
-          visible={isCreateWorkoutModalVisible}
-          onClose={() => {
-            setIsCreateWorkoutModalVisible(false);
-            setEditingTemplateId(undefined);
-          }}
-          templateId={editingTemplateId}
-        />
-      ) : null}
-      {isBrowseTemplatesVisible ? (
-        <BrowseTemplatesModal
-          visible={isBrowseTemplatesVisible}
-          onClose={() => setIsBrowseTemplatesVisible(false)}
-          onTemplateSelect={(template) => {
-            const rawTemplate = getRawTemplateById(template.id);
-            if (rawTemplate) {
-              setSelectedRawTemplate({ templateId: template.id, title: template.title });
-              setIsCreateFromTemplateConfirmationVisible(true);
-            } else {
-              console.error('Could not find raw template data for:', template.id);
-              setIsBrowseTemplatesVisible(false);
-            }
-          }}
-        />
-      ) : null}
-      {isCreateFromTemplateConfirmationVisible && selectedRawTemplate ? (
-        <ConfirmationModal
-          visible={isCreateFromTemplateConfirmationVisible}
-          onClose={() => {
-            setIsCreateFromTemplateConfirmationVisible(false);
-            setSelectedRawTemplate(null);
-          }}
-          onConfirm={async () => {
-            setIsCreatingWorkoutsFromTemplate(true);
-
-            // Small delay to ensure React processes the state update and shows loading state
-            await new Promise<void>((resolve) => setTimeout(resolve, 1));
-
-            try {
-              const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
-              if (!rawTemplate) {
-                console.error('Could not find raw template data');
-                setIsCreatingWorkoutsFromTemplate(false);
-                return;
-              }
-
-              await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-              showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
-              setIsBrowseTemplatesVisible(false);
-            } catch (error) {
-              console.error('Error creating workouts from template:', error);
-              showSnackbar('error', t('common.error'));
-            } finally {
-              setIsCreatingWorkoutsFromTemplate(false);
-            }
-          }}
-          title={t('workouts.createFromTemplate.title')}
-          message={t('workouts.createFromTemplate.message')}
-          confirmLabel={t('workouts.createFromTemplate.confirm')}
-          cancelLabel={t('workouts.createFromTemplate.cancel')}
-          isLoading={isCreatingWorkoutsFromTemplate}
-        />
-      ) : null}
+            await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+            showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
+            setIsBrowseTemplatesVisible(false);
+          } catch (error) {
+            console.error('Error creating workouts from template:', error);
+            showSnackbar('error', t('common.error'));
+          } finally {
+            setIsCreatingWorkoutsFromTemplate(false);
+          }
+        }}
+        title={t('workouts.createFromTemplate.title')}
+        message={t('workouts.createFromTemplate.message')}
+        confirmLabel={t('workouts.createFromTemplate.confirm')}
+        cancelLabel={t('workouts.createFromTemplate.cancel')}
+        isLoading={isCreatingWorkoutsFromTemplate}
+      />
       {/* Workout Session Overview Modal */}
-      {isWorkoutOverviewVisible ? (
-        <WorkoutSessionOverviewModal
-          visible={isWorkoutOverviewVisible}
-          onClose={() => setIsWorkoutOverviewVisible(false)}
-          workoutLogId={selectedWorkoutLogId}
-          onStartWorkout={() => {
-            setIsWorkoutOverviewVisible(false);
-            router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
-          }}
-          onResumeSession={() => {
-            setIsWorkoutOverviewVisible(false);
-            router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
-          }}
-          onSelectExercise={(exerciseId) => {
-            setIsWorkoutOverviewVisible(false);
-            // Navigate to workout session with selected exercise
-            router.push(
-              `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
-            );
-          }}
-          onCancelWorkout={async () => {
-            setIsWorkoutOverviewVisible(false);
-            // Cancel the workout and navigate back
-            if (selectedWorkoutLogId) {
-              try {
-                // Clear active workout and delete the workout log
-                await clearActiveWorkoutLogId();
-                const log = await database.get('workout_logs').find(selectedWorkoutLogId);
-                await log.markAsDeleted();
-              } catch (err) {
-                console.error('Error canceling workout:', err);
-              }
+      <WorkoutSessionOverviewModal
+        visible={isWorkoutOverviewVisible}
+        onClose={() => setIsWorkoutOverviewVisible(false)}
+        workoutLogId={selectedWorkoutLogId}
+        onStartWorkout={() => {
+          setIsWorkoutOverviewVisible(false);
+          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+        onResumeSession={() => {
+          setIsWorkoutOverviewVisible(false);
+          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+        onSelectExercise={(exerciseId) => {
+          setIsWorkoutOverviewVisible(false);
+          // Navigate to workout session with selected exercise
+          router.push(
+            `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
+          );
+        }}
+        onCancelWorkout={async () => {
+          setIsWorkoutOverviewVisible(false);
+          // Cancel the workout and navigate back
+          if (selectedWorkoutLogId) {
+            try {
+              // Clear active workout and delete the workout log
+              await clearActiveWorkoutLogId();
+              const log = await database.get('workout_logs').find(selectedWorkoutLogId);
+              await log.markAsDeleted();
+            } catch (err) {
+              console.error('Error canceling workout:', err);
             }
-          }}
-          onFinishWorkout={() => {
-            setIsWorkoutOverviewVisible(false);
-            // Navigate to workout summary
-            router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
-          }}
-        />
-      ) : null}
+          }
+        }}
+        onFinishWorkout={() => {
+          setIsWorkoutOverviewVisible(false);
+          // Navigate to workout summary
+          router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
+        }}
+      />
 
       {/* Workout Preview Modal */}
-      {isPreviewModalVisible && previewTemplate && !isLoadingPreview ? (
-        <WorkoutSessionHistoryModal
-          visible={isPreviewModalVisible}
-          onClose={() => {
-            setPreviewTemplateId(null);
-          }}
-          isPreview={true}
-          workoutTemplate={previewTemplate}
-          templateSets={previewTemplateSets}
-          exercises={previewExercises}
-          onStartWorkout={handleStartWorkoutFromPreview}
-        />
-      ) : null}
+      <WorkoutSessionHistoryModal
+        visible={isPreviewModalVisible && !!previewTemplate ? !isLoadingPreview : false}
+        onClose={() => {
+          setPreviewTemplateId(null);
+        }}
+        isPreview={true}
+        workoutTemplate={previewTemplate || undefined}
+        templateSets={previewTemplateSets}
+        exercises={previewExercises}
+        onStartWorkout={handleStartWorkoutFromPreview}
+      />
     </MasterLayout>
   );
 }

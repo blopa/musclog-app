@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useEffect, useMemo, useState } from 'react';
+import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -92,11 +92,108 @@ export default function HomeScreen() {
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
 
-  // Use reactive hook for recent workouts
+  // Use reactive hook for recent workouts - only load when visible
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
     initialLimit: 2,
     groupByMonth: false,
+    visible: true, // Always visible on home screen
   });
+
+  // Memoize modal close handlers to prevent unnecessary re-renders
+  const handleCloseUserMenu = useCallback(() => setIsUserMenuVisible(false), []);
+  const handleCloseNotifications = useCallback(() => setIsNotificationsVisible(false), []);
+  const handleCloseWorkoutHistory = useCallback(() => setIsWorkoutHistoryVisible(false), []);
+  const handleCloseAddFood = useCallback(() => setIsAddFoodVisible(false), []);
+  const handleCloseNutritionGoals = useCallback(() => setIsNutritionGoalsVisible(false), []);
+  const handleCloseFoodSearch = useCallback(() => setIsFoodSearchVisible(false), []);
+  const handleCloseMyMeals = useCallback(() => setIsMyMealsVisible(false), []);
+  const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
+  const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
+  const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
+
+  // Memoize modal action handlers
+  const handleMealTypeSelect = useCallback((mealType: MealType) => {
+    setSelectedMealType(mealType);
+    setIsAddFoodVisible(false);
+    setIsFoodSearchVisible(true);
+  }, []);
+
+  const handleAiCameraPress = useCallback(() => {
+    setIsAddFoodVisible(false);
+    openCamera({ mode: 'ai-meal-photo' });
+  }, [openCamera]);
+
+  const handleScanBarcodePress = useCallback(() => {
+    setIsAddFoodVisible(false);
+    openCamera({ mode: 'barcode-scan' });
+  }, [openCamera]);
+
+  const handleSearchFoodPress = useCallback(() => {
+    setIsAddFoodVisible(false);
+    setSelectedMealType('snack');
+    setIsFoodSearchVisible(true);
+  }, []);
+
+  const handleCreateCustomFoodPress = useCallback(() => {
+    setIsAddFoodVisible(false);
+    setIsCreateCustomFoodVisible(true);
+  }, []);
+
+  const handleTrackCustomMealPress = useCallback(() => {
+    setIsMyMealsVisible(true);
+    setIsAddFoodVisible(false);
+  }, []);
+
+  const handleSaveNutritionGoals = useCallback(
+    async (goals: any) => {
+      try {
+        await NutritionGoalService.saveGoals(goals);
+        setIsNutritionGoalsVisible(false);
+      } catch (error) {
+        console.error('Failed to save nutrition goals:', error);
+        showSnackbar('error', t('errors.somethingWentWrong'));
+      }
+    },
+    [t]
+  );
+
+  const handleSaveCustomFood = useCallback(
+    async (data: any) => {
+      try {
+        await FoodService.createCustomFood(
+          data.name,
+          {
+            calories: data.calories,
+            protein: data.protein,
+            carbs: data.carbs,
+            fat: data.fat,
+            fiber: data.fiber,
+            sugar: data.sugar,
+            saturatedFat: data.saturatedFat,
+            sodium: data.sodium,
+          },
+          data.servingAmount,
+          data.servingUnit,
+          data.brand
+        );
+        setIsCreateCustomFoodVisible(false);
+      } catch (error) {
+        console.error('Failed to create custom food:', error);
+        showSnackbar('error', t('food.foodDetails.errorMessage'));
+      }
+    },
+    [t]
+  );
+
+  const handleFoodSearchCreatePress = useCallback(() => {
+    setIsFoodSearchVisible(false);
+    setIsCreateCustomFoodVisible(true);
+  }, []);
+
+  const handleFoodSearchBarcodePress = useCallback(() => {
+    setIsFoodSearchVisible(false);
+    openCamera({ mode: 'barcode-scan' });
+  }, [openCamera]);
 
   // Handle widget action stored by +native-intent.tsx on cold start (camera only —
   // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
@@ -474,167 +571,90 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* User Menu Modal */}
-      {isUserMenuVisible ? (
-        <UserMenuModal
-          visible={isUserMenuVisible}
-          onClose={() => setIsUserMenuVisible(false)}
-          user={{
-            name: dbUser?.fullName || 'Guest',
-            avatarIcon: dbUser?.avatarIcon,
-            avatarColor: dbUser?.avatarColor,
-          }}
-          onCoachPress={openCoach}
-          onCyclePress={() => router.push('/cycle')}
-          {...(__DEV__ && {
-            onDebugMenuPress: () => router.push('/test/debug'),
-          })}
-        />
-      ) : null}
+      <UserMenuModal
+        visible={isUserMenuVisible}
+        onClose={handleCloseUserMenu}
+        user={{
+          name: dbUser?.fullName || 'Guest',
+          avatarIcon: dbUser?.avatarIcon,
+          avatarColor: dbUser?.avatarColor,
+        }}
+        onCoachPress={openCoach}
+        onCyclePress={() => router.push('/cycle')}
+        {...(__DEV__ && {
+          onDebugMenuPress: () => router.push('/test/debug'),
+        })}
+      />
 
       {/* Notifications Modal */}
-      {isNotificationsVisible ? (
-        <NotificationsModal
-          visible={isNotificationsVisible}
-          onClose={() => setIsNotificationsVisible(false)}
-          onClearAll={() => {
-            // TODO: Implement clear all notifications once we have notifications in the app
-            console.log('Clear all notifications');
-          }}
-        />
-      ) : null}
+      <NotificationsModal
+        visible={isNotificationsVisible}
+        onClose={handleCloseNotifications}
+        onClearAll={() => {
+          // TODO: Implement clear all notifications once we have notifications in the app
+          console.log('Clear all notifications');
+        }}
+      />
 
       {/* Workout History Modal */}
-      {isWorkoutHistoryVisible ? (
-        <PastWorkoutsHistoryModal
-          visible={isWorkoutHistoryVisible}
-          onClose={() => setIsWorkoutHistoryVisible(false)}
-        />
-      ) : null}
+      <PastWorkoutsHistoryModal
+        visible={isWorkoutHistoryVisible}
+        onClose={handleCloseWorkoutHistory}
+      />
 
       {/* Workout Detail Modal */}
-      {!!selectedWorkoutId ? (
-        <PastWorkoutDetailModal
-          visible={!!selectedWorkoutId}
-          onClose={() => setSelectedWorkoutId(undefined)}
-          workoutId={selectedWorkoutId}
-        />
-      ) : null}
+      <PastWorkoutDetailModal
+        visible={!!selectedWorkoutId}
+        onClose={handleCloseWorkoutDetail}
+        workoutId={selectedWorkoutId || ''}
+      />
 
       {/* Add Food Modal */}
-      {isAddFoodVisible ? (
-        <AddFoodModal
-          visible={isAddFoodVisible}
-          onClose={() => setIsAddFoodVisible(false)}
-          onMealTypeSelect={(mealType) => {
-            setSelectedMealType(mealType);
-            setIsAddFoodVisible(false);
-            setIsFoodSearchVisible(true);
-          }}
-          onAiCameraPress={() => {
-            setIsAddFoodVisible(false);
-            openCamera({ mode: 'ai-meal-photo' });
-          }}
-          onScanBarcodePress={() => {
-            setIsAddFoodVisible(false);
-            openCamera({ mode: 'barcode-scan' });
-          }}
-          onSearchFoodPress={() => {
-            setIsAddFoodVisible(false);
-            setSelectedMealType('snack');
-            setIsFoodSearchVisible(true);
-          }}
-          onCreateCustomFoodPress={() => {
-            setIsAddFoodVisible(false);
-            setIsCreateCustomFoodVisible(true);
-          }}
-          onTrackCustomMealPress={() => {
-            setIsMyMealsVisible(true);
-            setIsAddFoodVisible(false);
-          }}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+      <AddFoodModal
+        visible={isAddFoodVisible}
+        onClose={handleCloseAddFood}
+        onMealTypeSelect={handleMealTypeSelect}
+        onAiCameraPress={handleAiCameraPress}
+        onScanBarcodePress={handleScanBarcodePress}
+        onSearchFoodPress={handleSearchFoodPress}
+        onCreateCustomFoodPress={handleCreateCustomFoodPress}
+        onTrackCustomMealPress={handleTrackCustomMealPress}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
 
       {/* Nutrition Goals Modal */}
-      {isNutritionGoalsVisible ? (
-        <NutritionGoalsModal
-          visible={isNutritionGoalsVisible}
-          onClose={() => setIsNutritionGoalsVisible(false)}
-          onSave={async (goals) => {
-            try {
-              await NutritionGoalService.saveGoals(goals);
-              // Optionally trigger a refresh of the current goal
-              // The useDailyNutritionSummary hook should automatically pick up the change
-              setIsNutritionGoalsVisible(false);
-            } catch (error) {
-              console.error('Failed to save nutrition goals:', error);
-              showSnackbar('error', t('errors.somethingWentWrong'));
-            }
-          }}
-        />
-      ) : null}
+      <NutritionGoalsModal
+        visible={isNutritionGoalsVisible}
+        onClose={handleCloseNutritionGoals}
+        onSave={handleSaveNutritionGoals}
+      />
 
       {/* Food Search Modal */}
-      {isFoodSearchVisible ? (
-        <FoodSearchModal
-          visible={isFoodSearchVisible}
-          onClose={() => setIsFoodSearchVisible(false)}
-          mealType={selectedMealType}
-          onCreatePress={() => {
-            setIsFoodSearchVisible(false);
-            setIsCreateCustomFoodVisible(true);
-          }}
-          onBarcodeScanPress={() => {
-            setIsFoodSearchVisible(false);
-            openCamera({ mode: 'barcode-scan' });
-          }}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+      <FoodSearchModal
+        visible={isFoodSearchVisible}
+        onClose={handleCloseFoodSearch}
+        mealType={selectedMealType}
+        onCreatePress={handleFoodSearchCreatePress}
+        onBarcodeScanPress={handleFoodSearchBarcodePress}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
 
       {/* My Meals Modal */}
-      {isMyMealsVisible ? (
-        <MyMealsModal visible={isMyMealsVisible} onClose={() => setIsMyMealsVisible(false)} />
-      ) : null}
+      <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />
 
       {/* Goals Management Modal */}
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
-        onClose={() => setIsGoalsManagementModalVisible(false)}
+        onClose={handleCloseGoalsManagement}
       />
 
       {/* Create Custom Food Modal */}
-      {isCreateCustomFoodVisible ? (
-        <CreateCustomFoodModal
-          visible={isCreateCustomFoodVisible}
-          onClose={() => setIsCreateCustomFoodVisible(false)}
-          onSave={async (data) => {
-            try {
-              await FoodService.createCustomFood(
-                data.name,
-                {
-                  calories: data.calories,
-                  protein: data.protein,
-                  carbs: data.carbs,
-                  fat: data.fat,
-                  fiber: data.fiber,
-                  sugar: data.sugar,
-                  saturatedFat: data.saturatedFat,
-                  sodium: data.sodium,
-                },
-                data.servingAmount,
-                data.servingUnit,
-                data.brand
-              );
-              setIsCreateCustomFoodVisible(false);
-            } catch (error) {
-              console.error('Failed to create custom food:', error);
-              showSnackbar('error', t('food.foodDetails.errorMessage'));
-            }
-          }}
-          isAiEnabled={isAiFeaturesEnabled}
-        />
-      ) : null}
+      <CreateCustomFoodModal
+        visible={isCreateCustomFoodVisible}
+        onClose={handleCloseCreateCustomFood}
+        onSave={handleSaveCustomFood}
+        isAiEnabled={isAiFeaturesEnabled}
+      />
     </MasterLayout>
   );
 }
