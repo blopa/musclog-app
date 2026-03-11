@@ -41,6 +41,7 @@
       "decryptionPhrasePlaceholder": "Enter phrase if backup was encrypted",
       "exportFailedMessage": "An error occurred while exporting. Please try again.",
       "importFailedMessage": "An error occurred while importing. Please check the file and try again.",
+      "importSuccessMessage": "Data imported successfully",
       "privacyDiagnostics": "PRIVACY & DIAGNOSTICS",
       "anonymousBugReport": "Anonymous Bug Report",
       "anonymousBugReportSubtitle": "Help improve Musclog by sending crash logs",

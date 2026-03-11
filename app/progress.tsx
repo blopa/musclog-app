@@ -8,11 +8,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 import { LineChart } from '../components/charts/LineChart';
 import { MasterLayout } from '../components/MasterLayout';
+import { BodyCompProteinChart } from '../components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '../components/progress/BodyMetricsCharts';
+import { MacroMuscleChart } from '../components/progress/MacroMuscleChart';
+import { MenstrualPerformanceChart } from '../components/progress/MenstrualPerformanceChart';
 import { NutritionCharts } from '../components/progress/NutritionCharts';
 import { ProgressChartSection } from '../components/progress/ProgressChartSection';
 import { ProgressDateFilter } from '../components/progress/ProgressDateFilter';
 import { ProgressInsightsSection } from '../components/progress/ProgressInsightsSection';
+import { RecoveryTrainingChart } from '../components/progress/RecoveryTrainingChart';
+import { VolumeCaloriesChart } from '../components/progress/VolumeCaloriesChart';
 import { WorkoutCharts } from '../components/progress/WorkoutCharts';
 import { MenuButton } from '../components/theme/MenuButton';
 import { useAiEnabled } from '../hooks/useAiEnabled';
@@ -35,6 +40,8 @@ export default function ProgressScreen() {
     changePreset,
     useWeeklyAverages,
     setUseWeeklyAverages,
+    aggregation,
+    setAggregation,
     refresh,
   } = useProgressData();
 
@@ -160,6 +167,39 @@ export default function ProgressScreen() {
                 workoutVolumeHistory={data?.workoutVolumeHistory || []}
                 muscleGroupSets={data?.muscleGroupSets || []}
               />
+
+              {data ? (
+                <>
+                  <VolumeCaloriesChart
+                    data={data.correlationHistory}
+                    aggregation={aggregation}
+                    onAggregationChange={setAggregation}
+                    units={units}
+                  />
+                  <BodyCompProteinChart
+                    data={data.bodyCompProteinHistory}
+                    aggregation={aggregation}
+                    onAggregationChange={setAggregation}
+                    units={units}
+                  />
+                  <MenstrualPerformanceChart
+                    data={data.menstrualPhaseHistory}
+                    aggregation={aggregation}
+                    onAggregationChange={setAggregation}
+                  />
+                  <RecoveryTrainingChart
+                    data={data.recoveryTrainingHistory}
+                    aggregation={aggregation}
+                    onAggregationChange={setAggregation}
+                  />
+                  <MacroMuscleChart
+                    data={data.macroMuscleHistory}
+                    aggregation={aggregation}
+                    onAggregationChange={setAggregation}
+                    units={units}
+                  />
+                </>
+              ) : null}
 
               {data?.measurementsHistory
                 ? Object.entries(data.measurementsHistory).map(([type, history]) => (

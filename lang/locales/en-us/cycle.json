@@ -20,6 +20,12 @@
       "bloating": "Bloating",
       "moodSwings": "Mood Swings",
       "fatigue": "Fatigue"
+    },
+    "phase": {
+      "menstrual": "Menstrual",
+      "follicular": "Follicular",
+      "ovulatory": "Ovulatory",
+      "luteal": "Luteal"
     }
   }
 }

@@ -43,7 +43,7 @@ type FoodItem = UnifiedFoodResult & {
 type FoodSearchModalProps = {
   visible: boolean;
   onClose: () => void;
-  mealType: MealType; // e.g., "Breakfast", "Lunch", etc.
+  mealType?: MealType; // e.g., "Breakfast", "Lunch", etc. If not provided, inferred from current hour
   /** Date to use when logging food (e.g. the date currently selected on the food screen). */
   logDate?: Date;
   onCreatePress?: () => void;
@@ -362,22 +362,40 @@ export function FoodSearchModal({
       setIsLoadingSuggested(true);
 
       try {
-        const hour = new Date().getHours();
-        let mealKey: MealType = 'other';
+        // Use the mealType prop if provided, otherwise infer from current hour
+        let mealKey: MealType;
         let titleKey = 'foodSearch.commonFoods';
 
-        if (hour < 10) {
-          mealKey = 'breakfast';
-          titleKey = 'foodSearch.commonBreakfastFoods';
-        } else if (hour < 14) {
-          mealKey = 'lunch';
-          titleKey = 'foodSearch.commonLunchFoods';
-        } else if (hour < 17) {
-          mealKey = 'snack';
-          titleKey = 'foodSearch.commonSnackFoods';
-        } else if (hour < 21) {
-          mealKey = 'dinner';
-          titleKey = 'foodSearch.commonDinnerFoods';
+        if (mealType) {
+          // Use provided mealType
+          mealKey = mealType;
+          if (mealType === 'breakfast') {
+            titleKey = 'foodSearch.commonBreakfastFoods';
+          } else if (mealType === 'lunch') {
+            titleKey = 'foodSearch.commonLunchFoods';
+          } else if (mealType === 'snack') {
+            titleKey = 'foodSearch.commonSnackFoods';
+          } else if (mealType === 'dinner') {
+            titleKey = 'foodSearch.commonDinnerFoods';
+          }
+        } else {
+          // Fallback: infer from current hour
+          const hour = new Date().getHours();
+          if (hour < 10) {
+            mealKey = 'breakfast';
+            titleKey = 'foodSearch.commonBreakfastFoods';
+          } else if (hour < 14) {
+            mealKey = 'lunch';
+            titleKey = 'foodSearch.commonLunchFoods';
+          } else if (hour < 17) {
+            mealKey = 'snack';
+            titleKey = 'foodSearch.commonSnackFoods';
+          } else if (hour < 21) {
+            mealKey = 'dinner';
+            titleKey = 'foodSearch.commonDinnerFoods';
+          } else {
+            mealKey = 'other';
+          }
         }
 
         // Try to get most eaten for this meal type
@@ -444,6 +462,7 @@ export function FoodSearchModal({
   }, [
     visible,
     searchQuery,
+    mealType,
     t,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
@@ -606,18 +625,28 @@ export function FoodSearchModal({
     setIsFoodDetailsVisible(true);
   };
 
-  const mealLabel = t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`);
+  const mealLabel = mealType
+    ? t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`)
+    : t('food.meals.other');
 
   const handleConfirmSameAsYesterday = useCallback(async () => {
-    if (!yesterdayMealData || yesterdayMealData.logs.length === 0) {
+    if (!yesterdayMealData || yesterdayMealData.logs.length === 0 || !mealType) {
       return;
     }
 
+    // TypeScript: assign to const to narrow the type after the guard check
+    const currentMealType: MealType = mealType;
     const targetDate = logDate ?? new Date();
     setIsAddingSameAsYesterday(true);
     try {
       for (const log of yesterdayMealData.logs) {
-        await NutritionService.logFood(log.foodId, targetDate, mealType, log.amount, log.portionId);
+        await NutritionService.logFood(
+          log.foodId,
+          targetDate,
+          currentMealType,
+          log.amount,
+          log.portionId
+        );
       }
       onFoodSelect?.({} as FoodItem);
       onFoodTracked?.();
@@ -649,7 +678,9 @@ export function FoodSearchModal({
         visible={visible}
         onClose={onClose}
         title={t('food.meals.addFoodTo', {
-          meal: t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`),
+          meal: mealType
+            ? t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`)
+            : t('food.meals.other'),
         })}
         headerRight={headerRight}
         scrollable={false}
