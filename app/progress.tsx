@@ -178,6 +178,7 @@ export default function ProgressScreen() {
                   ))
                 : null}
             </View>
+            <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
           </ScrollView>
         )}
 

@@ -19,21 +19,37 @@ interface NutritionChartsProps {
 type NutritionView = 'calories' | 'macros' | 'combined' | 'macrosCombined';
 
 // TODO: add yaxis labels with the formatted dates DD/MM
+// TODO: make the title, and the viewer switcher "badges" to use different rows in the UI
 export function NutritionCharts({ nutritionHistory, weightHistory, units }: NutritionChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [view, setView] = useState<NutritionView>('calories');
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const transitionTimeoutRef = useRef<number | null>(null);
+  const frameRef = useRef<number | null>(null);
 
-  // Cleanup timeout on unmount
+  // Reset transitioning state after the view has changed and rendered
   useEffect(() => {
+    if (!isTransitioning) {
+      return;
+    }
+
+    // Wait for the next frame to ensure the chart has rendered
+    frameRef.current = requestAnimationFrame(() => {
+      // Wait one more frame to ensure layout is complete
+      frameRef.current = requestAnimationFrame(() => {
+        setIsTransitioning(false);
+        frameRef.current = null;
+      });
+    });
+
+    // Cleanup on unmount or when view changes before transition completes
     return () => {
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current);
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
       }
     };
-  }, []);
+  }, [view, isTransitioning]); // When view changes and we're transitioning, wait for render
 
   const handleViewChange = (newView: NutritionView) => {
     // Prevent rapid clicks during transition
@@ -43,17 +59,6 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
 
     setIsTransitioning(true);
     setView(newView);
-
-    // Clear any existing timeout
-    if (transitionTimeoutRef.current) {
-      clearTimeout(transitionTimeoutRef.current);
-    }
-
-    // Allow next change after a short delay to let the chart render
-    transitionTimeoutRef.current = setTimeout(() => {
-      setIsTransitioning(false);
-      transitionTimeoutRef.current = null;
-    }, 150) as unknown as number;
   };
 
   // Match nutrition and weight points by date - memoized to prevent unnecessary recalculations
