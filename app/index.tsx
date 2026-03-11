@@ -11,9 +11,9 @@ import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySumm
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
+import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
-import { CoachModal } from '../components/modals/CoachModal';
 import CreateCustomFoodModal from '../components/modals/CreateCustomFoodModal';
 import { FoodSearchModal } from '../components/modals/FoodSearchModal';
 import GoalsManagementModal from '../components/modals/GoalsManagementModal';
@@ -59,6 +59,7 @@ export default function HomeScreen() {
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { isAiFeaturesEnabled } = useSettings();
   const { openCamera } = useSmartCamera();
+  const { openCoach } = useCoach();
   const params = useLocalSearchParams<{ code?: string; action?: string }>();
   const navigationState = useRootNavigationState();
 
@@ -79,7 +80,6 @@ export default function HomeScreen() {
   });
 
   const [isUserMenuVisible, setIsUserMenuVisible] = useState(false);
-  const [isCoachModalFromMenuVisible, setIsCoachModalFromMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -483,19 +483,11 @@ export default function HomeScreen() {
             avatarIcon: dbUser?.avatarIcon,
             avatarColor: dbUser?.avatarColor,
           }}
-          onCoachPress={() => setIsCoachModalFromMenuVisible(true)}
+          onCoachPress={openCoach}
           onCyclePress={() => router.push('/cycle')}
           {...(__DEV__ && {
             onDebugMenuPress: () => router.push('/test/debug'),
           })}
-        />
-      ) : null}
-
-      {/* Coach Modal (opened from User Menu when coach is not in nav) */}
-      {isCoachModalFromMenuVisible ? (
-        <CoachModal
-          visible={isCoachModalFromMenuVisible}
-          onClose={() => setIsCoachModalFromMenuVisible(false)}
         />
       ) : null}
 

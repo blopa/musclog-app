@@ -11,6 +11,7 @@ import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { CoachProvider } from '../components/CoachContext';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { SmartCameraProvider } from '../components/SmartCameraContext';
 import { SnackbarProvider } from '../components/SnackbarContext';
@@ -162,7 +163,9 @@ function RootLayout() {
               <UnreadChatProvider>
                 <SnackbarProvider>
                   <SmartCameraProvider>
-                    <AppContent />
+                    <CoachProvider>
+                      <AppContent />
+                    </CoachProvider>
                   </SmartCameraProvider>
                 </SnackbarProvider>
               </UnreadChatProvider>
