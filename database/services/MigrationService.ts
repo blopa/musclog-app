@@ -853,7 +853,8 @@ export class MigrationService {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.foodId = newFoodId;
-            newLog.date = this.convertTimestamp(oldLog.date);
+            const rawDate = new Date(this.convertTimestamp(oldLog.date));
+            newLog.date = new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate()).getTime();
             newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema

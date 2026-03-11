@@ -199,7 +199,9 @@ export class ProgressService {
 
     for (const log of logs) {
       const nutrients = await log.getNutrients();
-      const date = log.date;
+      // Normalize to midnight to handle migrated logs with non-midnight timestamps
+      const d = new Date(log.date);
+      const date = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
       const existing = dailyMap.get(date) || {
         date,
         calories: 0,
