@@ -28,7 +28,6 @@ export async function requestNutritionWidgetUpdate(): Promise<void> {
         fat: nutrients.fat,
         targetFat: goal?.fats ?? 0,
         width: props.width,
-        height: props.height,
       });
     },
   });

@@ -34,7 +34,6 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
             fat: nutrients.fat,
             targetFat: goal?.fats ?? 0,
             width: widgetInfo.width,
-            height: widgetInfo.height,
           })
         );
       }
