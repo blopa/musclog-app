@@ -44,6 +44,11 @@ import { handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 import { showSnackbar } from '../utils/snackbarService';
 
+// Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
+declare global {
+  var __PENDING_WIDGET_ACTION: string | undefined;
+}
+
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
 
@@ -112,6 +117,27 @@ export default function HomeScreen() {
       router.setParams({ action: undefined });
     }
   }, [params.action, router, navigationState?.key]);
+
+  // Handle widget action stored by +native-intent.tsx on cold start
+  useEffect(() => {
+    if (!navigationState?.key) {
+      return;
+    }
+
+    const action = global.__PENDING_WIDGET_ACTION;
+    if (!action) {
+      return;
+    }
+
+    global.__PENDING_WIDGET_ACTION = undefined;
+
+    if (action === 'open-camera') {
+      setCameraMode('ai-meal-photo');
+      setIsCameraVisible(true);
+    } else if (action === 'open-nutrition') {
+      router.push('/nutrition/food');
+    }
+  }, [navigationState?.key, router]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {

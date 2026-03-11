@@ -854,7 +854,11 @@ export class MigrationService {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.foodId = newFoodId;
             const rawDate = new Date(this.convertTimestamp(oldLog.date));
-            newLog.date = new Date(rawDate.getFullYear(), rawDate.getMonth(), rawDate.getDate()).getTime();
+            newLog.date = new Date(
+              rawDate.getFullYear(),
+              rawDate.getMonth(),
+              rawDate.getDate()
+            ).getTime();
             newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema
