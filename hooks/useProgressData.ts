@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ProgressData,
@@ -18,6 +18,11 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
   const [useWeeklyAverages, setUseWeeklyAverages] = useState(false);
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const [data, setData] = useState<ProgressData | null>(null);
+  const [allAggregationData, setAllAggregationData] = useState<{
+    daily: ProgressData | null;
+    weekly: ProgressData | null;
+    monthly: ProgressData | null;
+  }>({ daily: null, weekly: null, monthly: null });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -64,13 +69,23 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
         start = startDate.getTime();
       }
 
-      const progressData = await ProgressService.getProgressData(
-        start,
-        end,
-        useWeeklyAverages,
-        aggregation
-      );
-      setData(progressData);
+      // Fetch data for all aggregations in parallel to check if any have data
+      const [dailyData, weeklyData, monthlyData] = await Promise.all([
+        ProgressService.getProgressData(start, end, useWeeklyAverages, 'daily'),
+        ProgressService.getProgressData(start, end, useWeeklyAverages, 'weekly'),
+        ProgressService.getProgressData(start, end, useWeeklyAverages, 'monthly'),
+      ]);
+
+      setAllAggregationData({
+        daily: dailyData,
+        weekly: weeklyData,
+        monthly: monthlyData,
+      });
+
+      // Set the current aggregation's data
+      const currentData =
+        aggregation === 'daily' ? dailyData : aggregation === 'weekly' ? weeklyData : monthlyData;
+      setData(currentData);
     } catch (err) {
       console.error('Error fetching progress data:', err);
       setError(err instanceof Error ? err : new Error('Unknown error'));
@@ -95,6 +110,23 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     setPreset('custom');
   };
 
+  // Helper function to check if any aggregation has data for charts with aggregation options
+  const hasAnyAggregationData = useCallback(
+    (
+      getData: (data: ProgressData) => unknown[]
+    ): boolean => {
+      if (!allAggregationData.daily || !allAggregationData.weekly || !allAggregationData.monthly) {
+        return false;
+      }
+      return (
+        getData(allAggregationData.daily).length > 0 ||
+        getData(allAggregationData.weekly).length > 0 ||
+        getData(allAggregationData.monthly).length > 0
+      );
+    },
+    [allAggregationData]
+  );
+
   return {
     data,
     isLoading,
@@ -108,5 +140,6 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     aggregation,
     setAggregation,
     refresh: fetchData,
+    hasAnyAggregationData,
   };
 }

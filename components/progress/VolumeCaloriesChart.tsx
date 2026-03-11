@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { CorrelationPoint, TimeAggregation } from '../../database/services/ProgressService';
-import { useTheme } from '../../hooks/useTheme';
 import { BarLineChart } from '../charts/BarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -40,12 +39,28 @@ export function VolumeCaloriesChart({
   units,
 }: VolumeCaloriesChartProps) {
   const { t } = useTranslation();
-  const theme = useTheme();
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   if (data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
+        <View className="mb-4 flex-row items-center gap-2">
+          {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+            <TouchableOpacity
+              key={agg}
+              onPress={() => onAggregationChange(agg)}
+              className={`rounded-full px-3 py-1.5 ${
+                aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+              }`}
+            >
+              <Text
+                className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+              >
+                {t(`common.time.${agg}`)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View className="items-center justify-center py-10">
           <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
         </View>

@@ -43,8 +43,10 @@ export default function ProgressScreen() {
     aggregation,
     setAggregation,
     refresh,
+    hasAnyAggregationData,
   } = useProgressData();
 
+  // TODO: use isSyncing
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -170,34 +172,44 @@ export default function ProgressScreen() {
 
               {data ? (
                 <>
-                  <VolumeCaloriesChart
-                    data={data.correlationHistory}
-                    aggregation={aggregation}
-                    onAggregationChange={setAggregation}
-                    units={units}
-                  />
-                  <BodyCompProteinChart
-                    data={data.bodyCompProteinHistory}
-                    aggregation={aggregation}
-                    onAggregationChange={setAggregation}
-                    units={units}
-                  />
-                  <MenstrualPerformanceChart
-                    data={data.menstrualPhaseHistory}
-                    aggregation={aggregation}
-                    onAggregationChange={setAggregation}
-                  />
-                  <RecoveryTrainingChart
-                    data={data.recoveryTrainingHistory}
-                    aggregation={aggregation}
-                    onAggregationChange={setAggregation}
-                  />
-                  <MacroMuscleChart
-                    data={data.macroMuscleHistory}
-                    aggregation={aggregation}
-                    onAggregationChange={setAggregation}
-                    units={units}
-                  />
+                  {hasAnyAggregationData((d) => d.correlationHistory) ? (
+                    <VolumeCaloriesChart
+                      data={data.correlationHistory}
+                      aggregation={aggregation}
+                      onAggregationChange={setAggregation}
+                      units={units}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d) => d.bodyCompProteinHistory) ? (
+                    <BodyCompProteinChart
+                      data={data.bodyCompProteinHistory}
+                      aggregation={aggregation}
+                      onAggregationChange={setAggregation}
+                      units={units}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d) => d.menstrualPhaseHistory) ? (
+                    <MenstrualPerformanceChart
+                      data={data.menstrualPhaseHistory}
+                      aggregation={aggregation}
+                      onAggregationChange={setAggregation}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d) => d.recoveryTrainingHistory) ? (
+                    <RecoveryTrainingChart
+                      data={data.recoveryTrainingHistory}
+                      aggregation={aggregation}
+                      onAggregationChange={setAggregation}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d) => d.macroMuscleHistory) ? (
+                    <MacroMuscleChart
+                      data={data.macroMuscleHistory}
+                      aggregation={aggregation}
+                      onAggregationChange={setAggregation}
+                      units={units}
+                    />
+                  ) : null}
                 </>
               ) : null}
 
