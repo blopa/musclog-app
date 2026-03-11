@@ -60,6 +60,9 @@
       "calves": "Calves",
       "neck": "Neck",
       "shoulders": "Shoulders"
-    }
+    },
+    "muscleGroupVolumeOverlay": "Muscle Group Volume Overlay",
+    "proteinIntake": "Protein Intake",
+    "proteinVsWeightChange": "Protein vs Weight Change ({{unit}})"
   }
 }

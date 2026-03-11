@@ -124,7 +124,8 @@
         "workout_template_sets": "workout template sets",
         "workout_log_sets": "workout log sets",
         "validating": "data"
-      }
+      },
+      "importData": "Import Data"
     },
     "setGoals": {
       "title": "Smart Goal",

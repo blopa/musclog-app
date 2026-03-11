@@ -46,6 +46,13 @@
     "eatingPhase": "Eating Phase",
     "description": "Description",
     "loadMultiplier": "Load Multiplier",
-    "days": "Days"
+    "days": "Days",
+    "deleteSuccess": "Deleted successfully",
+    "notFound": "Not found",
+    "time": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
   }
 }

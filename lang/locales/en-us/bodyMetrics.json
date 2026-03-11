@@ -80,7 +80,9 @@
         "4": "Great"
       },
       "saveEntry": "Save Entry",
-      "errorSaving": "Error Saving"
+      "errorSaving": "Error Saving",
+      "note": "Note",
+      "notePlaceholder": "Add a note..."
     }
   }
 }
