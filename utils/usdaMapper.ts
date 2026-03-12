@@ -4,15 +4,15 @@ import { components } from '../types/usda-types';
 
 type USDAFood = components['schemas']['SearchResultFood'];
 
-export function mapUSDANutritient(
-  nutrients: components['schemas']['AbridgedFoodNutrient'][] | undefined,
-  nutrientNumber: string
-): number | undefined {
+export function mapUSDANutritient(nutrients: any[] | undefined, nutrientNumber: string): number | undefined {
   if (!nutrients) {
     return undefined;
   }
-  const nutrient = nutrients.find((n) => String(n.number) === nutrientNumber);
-  return nutrient ? nutrient.amount : undefined;
+  const nutrient = nutrients.find((n: any) => {
+    const num = n.number || n.nutrient?.number;
+    return String(num) === nutrientNumber;
+  });
+  return nutrient ? nutrient.amount ?? nutrient.value : undefined;
 }
 
 export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {

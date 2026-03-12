@@ -72,6 +72,7 @@ type FoodDetailsModalProps = {
   initialDate?: Date;
   /** Initial serving size in grams for duplicate mode */
   initialServingSize?: number;
+  source?: 'openfood' | 'usda' | 'local' | 'ai';
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
   /** Called when barcode lookup has finished (product found or not). Used to hide camera loading overlay. */
@@ -94,6 +95,7 @@ export function FoodMealDetailsModal({
   initialMealType,
   initialDate,
   initialServingSize,
+  source: initialSource,
   onAddFood,
   onLogMeal,
   foodLog,
@@ -243,7 +245,18 @@ export function FoodMealDetailsModal({
     barcode && !food && !meal && !productFromSearch && !localFood && hasCheckedLocalFood
       ? barcode
       : null;
-  const { data: productDetails } = useFoodProductDetails(barcodeForHook);
+
+  const usdaIdForHook =
+    !barcode &&
+    !food &&
+    !meal &&
+    productFromSearch?.fdcId &&
+    !localFood &&
+    (productFromSearch?.source === 'usda' || initialSource === 'usda')
+      ? productFromSearch.fdcId
+      : null;
+
+  const { data: productDetails } = useFoodProductDetails(barcodeForHook, usdaIdForHook);
 
   // Helper function to generate portion name based on serving size and units
   const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
@@ -531,24 +544,23 @@ export function FoodMealDetailsModal({
       };
     }
 
+    if (productFromSearch && productFromSearch.source === 'usda' && !productDetails) {
+      const mappedProduct = mapUSDAFoodToUnified(productFromSearch);
+      const nutrients = productFromSearch.foodNutrients;
+
+      return {
+        calories: mappedProduct.calories || 0,
+        protein: mappedProduct.protein || 0,
+        carbs: mappedProduct.carbs || 0,
+        fat: mappedProduct.fat || 0,
+        fiber: mappedProduct.fiber || 0,
+        sugar: mapUSDANutritient(nutrients, '269') || 0,
+        saturatedFat: mapUSDANutritient(nutrients, '606') || 0,
+        sodium: mapUSDANutritient(nutrients, '307') || 0,
+      };
+    }
+
     if (productFromSearch) {
-      // Check if it's from USDA or Open Food Facts
-      if (productFromSearch.fdcId) {
-        const mappedProduct = mapUSDAFoodToUnified(productFromSearch);
-        const nutrients = productFromSearch.foodNutrients;
-
-        return {
-          calories: mappedProduct.calories || 0,
-          protein: mappedProduct.protein || 0,
-          carbs: mappedProduct.carbs || 0,
-          fat: mappedProduct.fat || 0,
-          fiber: mappedProduct.fiber || 0,
-          sugar: mapUSDANutritient(nutrients, '269') || 0,
-          saturatedFat: mapUSDANutritient(nutrients, '606') || 0,
-          sodium: mapUSDANutritient(nutrients, '307') || 0,
-        };
-      }
-
       const nutriments = getNutrimentsWithFallback(productFromSearch);
       // Use the comprehensive mapping function for Open Food Facts products
       if (nutriments) {
@@ -578,6 +590,22 @@ export function FoodMealDetailsModal({
 
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
+
+      if ((productDetails as any).source === 'usda') {
+        const nutrients = product.foodNutrients;
+        return {
+          calories: mapUSDANutritient(nutrients, '1008') || mapUSDANutritient(nutrients, '208') || 0,
+          protein: mapUSDANutritient(nutrients, '1003') || mapUSDANutritient(nutrients, '203') || 0,
+          carbs: mapUSDANutritient(nutrients, '1005') || mapUSDANutritient(nutrients, '205') || 0,
+          fat: mapUSDANutritient(nutrients, '1004') || mapUSDANutritient(nutrients, '204') || 0,
+          fiber: mapUSDANutritient(nutrients, '1079') || mapUSDANutritient(nutrients, '291') || 0,
+          sugar: mapUSDANutritient(nutrients, '2000') || mapUSDANutritient(nutrients, '269') || 0,
+          saturatedFat:
+            mapUSDANutritient(nutrients, '1258') || mapUSDANutritient(nutrients, '606') || 0,
+          sodium: mapUSDANutritient(nutrients, '1093') || mapUSDANutritient(nutrients, '307') || 0,
+        };
+      }
+
       const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
       if (!nutrients) {
         return {
@@ -678,6 +706,9 @@ export function FoodMealDetailsModal({
 
     // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
     if (isSuccessFoodDetailProductState(productDetails)) {
+      if ((productDetails as any).source === 'usda') {
+        return productDetails.product.description;
+      }
       return getProductName(productDetails.product);
     }
 
@@ -716,7 +747,7 @@ export function FoodMealDetailsModal({
     }
 
     if (productFromSearch) {
-      if (productFromSearch.fdcId) {
+      if (productFromSearch.source === 'usda') {
         const brand = productFromSearch.brandOwner || productFromSearch.brandName;
         const category = productFromSearch.foodCategory;
         if (brand && category) {
@@ -739,8 +770,17 @@ export function FoodMealDetailsModal({
     }
 
     if (isSuccessFoodDetailProductState(productDetails)) {
-      const brand = productDetails.product.brands;
-      const categories = productDetails.product.categories;
+      const product = productDetails.product;
+      if ((productDetails as any).source === 'usda') {
+        const brand = product.brandOwner || product.brandName;
+        const category = product.foodCategory;
+        if (brand && category) {
+          return `${brand} • ${category}`;
+        }
+        return brand || category || '';
+      }
+      const brand = product.brands;
+      const categories = product.categories;
 
       if (brand && categories) {
         return `${brand} • ${categories}`;

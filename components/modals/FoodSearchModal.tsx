@@ -1216,9 +1216,10 @@ export function FoodSearchModal({
               setSelectedFood(null);
             }}
             barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
+            source={selectedFood.source}
             productFromSearch={
               selectedFood.source === 'openfood' || selectedFood.source === 'usda'
-                ? (selectedFood._raw as any)
+                ? { ...selectedFood._raw, source: selectedFood.source }
                 : undefined
             }
             food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
