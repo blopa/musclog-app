@@ -4,7 +4,7 @@ import convert from 'convert';
 import { ProductV3 } from '../../types/openFoodFacts';
 import { getProductName } from '../../utils/openFoodFactsMapper';
 import { database } from '../index';
-import Food from '../models/Food';
+import Food, { type MicrosData } from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 
@@ -23,6 +23,7 @@ export class FoodService {
       sugar?: number;
       saturatedFat?: number;
       sodium?: number;
+      micros?: MicrosData;
       isFavorite?: boolean;
     },
     customPortion?: FoodPortion | null
@@ -71,6 +72,7 @@ export class FoodService {
           sugar: nutritionData.sugar,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
+          ...nutritionData.micros,
         };
 
         food.micros = Object.fromEntries(
@@ -110,6 +112,7 @@ export class FoodService {
       sugar?: number;
       saturatedFat?: number;
       sodium?: number;
+      micros?: MicrosData;
       isFavorite?: boolean;
     },
     customPortion?: FoodPortion | null
@@ -157,6 +160,7 @@ export class FoodService {
           sugar: nutritionData.sugar,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
+          ...nutritionData.micros,
         };
 
         food.micros = Object.fromEntries(

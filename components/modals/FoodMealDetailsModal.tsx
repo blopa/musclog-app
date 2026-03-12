@@ -145,7 +145,16 @@ export function FoodMealDetailsModal({
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
-  const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
+  const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(
+    () => !!meal || !!food || !!foodLog || !!productFromSearch
+  );
+
+  // Ensure modal opens immediately if we have enough data from search
+  useEffect(() => {
+    if (!isFoodDetailsModalVisible && (!!productFromSearch || !!meal || !!food || !!foodLog)) {
+      setIsFoodDetailsModalVisible(true);
+    }
+  }, [productFromSearch, isFoodDetailsModalVisible, meal, food, foodLog]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingFood, setIsAddingFood] = useState(false);
   const [mealNutrients, setMealNutrients] = useState<{
@@ -379,8 +388,10 @@ export function FoodMealDetailsModal({
     }
 
     const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
+    const isUSDASearchResult = productFromSearch?.source === 'usda';
+
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
-    if (getProductName(productFromSearch) && nutriments) {
+    if (getProductName(productFromSearch) && (nutriments || isUSDASearchResult)) {
       setIsFoodDetailsModalVisible(true);
       const loadDefaultSize = async () => {
         const defaultG = await getDefaultServingSize();
@@ -393,9 +404,9 @@ export function FoodMealDetailsModal({
     }
 
     if (productDetails) {
-      if (productDetails?.status !== 'success') {
+      if (productDetails?.status !== 'success' && !productFromSearch && !food && !meal) {
         setIsFoodNotFoundModalVisible(true);
-      } else {
+      } else if (productDetails?.status === 'success') {
         setIsFoodDetailsModalVisible(true);
       }
       onBarcodeLookupComplete?.();
@@ -560,12 +571,20 @@ export function FoodMealDetailsModal({
       if ((productDetails as any).source === 'usda') {
         const nutrients = (product as any).foodNutrients as any[];
         return {
-          calories: mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208') ?? 0,
+          calories:
+            mapUSDANutritient(nutrients, '1008') ??
+            mapUSDANutritient(nutrients, '208') ??
+            mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
+            0,
           protein: mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0,
           carbs: mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0,
           fat: mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0,
           fiber: mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0,
-          sugar: mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
+          sugar:
+            mapUSDANutritient(nutrients, '2000') ??
+            mapUSDANutritient(nutrients, '269') ??
+            mapUSDANutritient(nutrients, 'sugars') ??
+            0,
           saturatedFat:
             mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
           sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
@@ -625,10 +644,38 @@ export function FoodMealDetailsModal({
         carbs: mappedProduct.carbs ?? 0,
         fat: mappedProduct.fat ?? 0,
         fiber: mappedProduct.fiber ?? 0,
-        sugar: mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
+        sugar:
+          mapUSDANutritient(nutrients, '2000') ??
+          mapUSDANutritient(nutrients, '269') ??
+          mapUSDANutritient(nutrients, 'sugars') ??
+          0,
         saturatedFat:
           mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
         sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
+      };
+    }
+
+    if (productFromSearch && productFromSearch.source === 'openfood') {
+      const mappedProduct = mapOpenFoodFactsProduct(productFromSearch);
+      const nut = mappedProduct.nutriments;
+      let sugar = 0,
+        saturatedFat = 0,
+        sodium = 0;
+      if (isMappedNutriments(nut)) {
+        sugar = nut.macronutrients?.sugars ?? 0;
+        saturatedFat = nut.macronutrients?.saturatedFat ?? 0;
+        sodium = nut.minerals?.sodium ?? nut.other?.salt ?? 0;
+      }
+
+      return {
+        calories: mappedProduct.calories || 0,
+        protein: mappedProduct.protein || 0,
+        carbs: mappedProduct.carbs || 0,
+        fat: mappedProduct.fat || 0,
+        fiber: mappedProduct.fiber || 0,
+        sugar,
+        saturatedFat,
+        sodium,
       };
     }
 
@@ -755,8 +802,6 @@ export function FoodMealDetailsModal({
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
       if ((productDetails as any).source === 'usda') {
-        const brand = (product as any).brandOwner || (product as any).brandName;
-        const category = (product as any).foodCategory;
         if (brand && category) {
           return `${brand} • ${category}`;
         }
@@ -980,10 +1025,10 @@ export function FoodMealDetailsModal({
         return;
       }
 
-      // Handle API food: use preloaded search product or barcode-fetched product
+      // Handle API food: prefer barcode-fetched details over search results to get micros
       let productToSave: any =
-        productFromSearch ??
-        (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null);
+        (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null) ??
+        productFromSearch;
       if (!productToSave) {
         throw new Error('Product details not loaded');
       }
@@ -1021,6 +1066,15 @@ export function FoodMealDetailsModal({
             sugar: nutritionalData.sugar,
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
+            micros: (productDetails as any)?.product?.foodNutrients
+              ? (productDetails.product as any).foodNutrients.reduce((acc: any, n: any) => {
+                  const num = n.nutrientNumber || n.number || n.nutrient?.number;
+                  if (num) {
+                    acc[num] = n.value ?? n.amount;
+                  }
+                  return acc;
+                }, {})
+              : undefined,
             isFavorite: isFavorite,
           },
           matchedPortion
@@ -1064,6 +1118,9 @@ export function FoodMealDetailsModal({
           sugar: nutritionalData.sugar,
           saturatedFat: nutritionalData.saturatedFat,
           sodium: nutritionalData.sodium,
+          micros: (productDetails as any)?.product?.nutriments
+            ? (productDetails.product as any).nutriments
+            : undefined,
           isFavorite: isFavorite,
         },
         matchedPortion
@@ -1381,7 +1438,7 @@ export function FoodMealDetailsModal({
                 <View className="mt-2 flex-row items-center justify-center gap-2">
                   <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                   <Text className="text-xs text-text-secondary">
-                    {t('foodSearch.loadingMore')}
+                    {t('food.foodDetails.loadingMoreDetails', 'Loading more details...')}
                   </Text>
                 </View>
               ) : null}
@@ -1394,9 +1451,9 @@ export function FoodMealDetailsModal({
               <Text className="text-xs text-text-secondary">
                 {t('food.foodDetails.loadingDetails', 'Loading details...')}
               </Text>
-                </View>
-              </View>
-            ) : null}
+            </View>
+          </View>
+        ) : null}
           </View>
 
           {/* Form Sections */}
