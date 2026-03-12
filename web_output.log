@@ -1,0 +1,224 @@
+
+> musclog@2.2.4 web
+> expo start --web
+
+Starting project at /app
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 28.0% (12/80)
+λ node_modules/expo-router/node/render.js ▓░░░░░░░░░░░░░░░  9.1% ( 81/268)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 28.0% ( 83/163)
+λ node_modules/expo-router/node/render.js ▓▓▓░░░░░░░░░░░░░ 24.5% (230/604)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (182/260)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 27.5% (463/971)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (182/260)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 27.5% ( 596/2729)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (268/416)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 27.5% ( 792/3044)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (276/425)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 27.5% (1176/3543)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (276/425)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 37.4% (2169/3548)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (315/636)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.8% (2783/3977)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (413/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.8% (3086/4100)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (413/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 59.6% (3710/4841)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% ( 532/2680)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 64.2% (3974/4960)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% ( 790/2884)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.0% (4168/5018)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% ( 790/2884)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 84.7% (4819/5237)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.0% (1288/3172)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.2% (4966/5430)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 54.6% (2408/3258)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.2% (4966/5430)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.9% (2862/4061)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.2% (5142/5553)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.9% (3048/4098)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.3% (5415/5707)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.3% (3708/4464)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.8% (5464/5745)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.3% (4052/5015)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.4% (5666/5939)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 80.5% (4752/5296)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.5% (5730/5991)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.4% (5208/5616)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.0% (5973/6186)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.4% (5499/5948)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.4% (6110/6223)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.9% (6185/6451)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.5% (6282/6375)
+λ Bundled 83967ms node_modules/expo-router/node/render.js (6419 modules)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6753/6759)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6759/6759)
+🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6759/6759)
+Web Bundled 100770ms index.web.js (6759 modules)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 38.0% (292/687)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 38.0% ( 445/2539)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 38.0% ( 670/2807)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 38.0% ( 980/3135)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 43.0% (2060/3140)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 61.5% (2827/3948)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 62.0% (3415/4413)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.2% (4148/5138)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.8% (4941/5488)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 88.2% (5433/5897)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.7% (5994/6295)
+Web Bundled 42115ms index.web.js (6761 modules)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6761/6761)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 461ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 5874ms index.web.js (1 module)
+Web Bundled 607ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 380ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+"shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2687ms index.web.js (1 module)
+Web Bundled 1301ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 253ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2736ms index.web.js (1 module)
+Web Bundled 1242ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 349ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+"shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2603ms index.web.js (1 module)
+Web Bundled 1200ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 415ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 4838ms index.web.js (1 module)
+Web Bundled 1444ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 384ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+"shadow*" style props are deprecated. Use "boxShadow".
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 3819ms index.web.js (1 module)
+Web Bundled 1110ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console

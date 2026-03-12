@@ -510,6 +510,23 @@ export class ProgressService {
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
     const lookbackDays = Math.max(1, Math.ceil((endDate - startDate) / MS_PER_DAY));
+
+    // For empirical TDEE, we must use the actual duration between the first and last weight measurements
+    // to avoid underestimation when the tracking period is shorter than the view window (e.g., 90d preset).
+    const hasWeightData = weightPoints.length >= 2;
+    const empiricalStart = hasWeightData ? weightPoints[0].date : startDate;
+    const empiricalEnd = hasWeightData ? weightPoints[weightPoints.length - 1].date : endDate;
+    const empiricalDays = Math.max(1, Math.ceil((empiricalEnd - empiricalStart) / MS_PER_DAY));
+
+    // Only include calories within the period covered by the weight measurements
+    // Use midnight normalization for comparison with nutrition daily logs
+    const empiricalStartMidnight = new Date(empiricalStart).setHours(0, 0, 0, 0);
+    const empiricalEndMidnight = new Date(empiricalEnd).setHours(0, 0, 0, 0);
+
+    const empiricalCalories = nutritionDaily
+      .filter((n) => n.date >= empiricalStartMidnight && n.date <= empiricalEndMidnight)
+      .reduce((acc, curr) => acc + curr.calories, 0);
+
     const totalCalories = nutritionDaily.reduce((acc, curr) => acc + curr.calories, 0);
 
     let initialWeight = weightPoints[0]?.value || 0;
@@ -533,8 +550,8 @@ export class ProgressService {
       : calculateBMR(gender, weightKg, heightCm || 170, age);
 
     const empiricalTdee = calculateTDEE({
-      totalCalories,
-      totalDays: lookbackDays,
+      totalCalories: empiricalCalories,
+      totalDays: empiricalDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
