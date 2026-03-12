@@ -87,6 +87,8 @@ type CreateMealModalProps = {
   logDate?: Date;
   /** For quickTrack mode: called after ingredients are logged (and optionally meal saved). */
   onTracked?: () => void;
+  /** Optional initial foods to prefill the modal (create mode). */
+  initialFoods?: { food: Food; amount: number }[];
 };
 
 const MacroCard = ({
@@ -298,6 +300,7 @@ export function CreateMealModal({
   mode = 'create',
   logDate,
   onTracked,
+  initialFoods,
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -322,6 +325,28 @@ export function CreateMealModal({
   useEffect(() => {
     setMealName(meal?.name ?? '');
   }, [meal]);
+
+  useEffect(() => {
+    // When opening the modal in create mode with initialFoods, prefill ingredients.
+    if (visible && initialFoods && initialFoods.length > 0 && !meal) {
+      const newIngredients: Ingredient[] = initialFoods.map(
+        (item: { food: Food; amount: number }) => {
+          const multiplier = item.amount / 100;
+          return {
+            foodId: item.food.id,
+            // TODO: use i18n
+            name: item.food.name ?? 'Unknown',
+            amount: item.amount,
+            calories: item.food.calories * multiplier,
+            protein: item.food.protein * multiplier,
+            carbs: item.food.carbs * multiplier,
+            fat: item.food.fat * multiplier,
+          };
+        }
+      );
+      setIngredients(newIngredients);
+    }
+  }, [visible, initialFoods, meal, setIngredients]);
 
   useEffect(() => {
     if (visible && isQuickTrack && logDate) {

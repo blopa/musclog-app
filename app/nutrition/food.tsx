@@ -37,7 +37,7 @@ import { MenuButton } from '../../components/theme/MenuButton';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
-import { NutritionService } from '../../database/services';
+import { MealService, NutritionService } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
@@ -83,6 +83,10 @@ export default function FoodScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
+  const [isCreateMealModalVisible, setIsCreateMealModalVisible] = useState(false);
+  const [createMealInitialFoods, setCreateMealInitialFoods] = useState<
+    { food: Food; amount: number }[]
+  >([]);
   const [isDeleteAllMealVisible, setIsDeleteAllMealVisible] = useState(false);
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
   const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
@@ -350,8 +354,29 @@ export default function FoodScreen() {
 
   const handleCreateMealFromFood = () => {
     setIsMealMenuVisible(false);
-    // TODO: implement this feature
-    console.log('Create meal from food:', selectedMealForMenu);
+    if (!selectedMealForMenu) {
+      return;
+    }
+
+    const mealFoods = mealsByType[selectedMealForMenu] || [];
+    const items = mealFoods
+      .map((entry) => {
+        if (!entry.food) {
+          return null;
+        }
+
+        return { food: entry.food, amount: Math.round(entry.gramWeight) };
+      })
+      .filter(Boolean) as { food: Food; amount: number }[];
+
+    if (items.length === 0) {
+      showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
+      setSelectedMealForMenu(null);
+      return;
+    }
+
+    setCreateMealInitialFoods(items);
+    setIsCreateMealModalVisible(true);
   };
 
   const handleSplitMeal = () => {
@@ -840,6 +865,22 @@ export default function FoodScreen() {
           refresh();
           setIsQuickTrackMealModalVisible(false);
         }}
+      />
+      {/* Create Meal Modal (prefilled from current meal foods) */}
+      <CreateMealModal
+        visible={isCreateMealModalVisible}
+        onClose={() => {
+          setIsCreateMealModalVisible(false);
+          setCreateMealInitialFoods([]);
+          setSelectedMealForMenu(null);
+        }}
+        onSave={() => {
+          refresh();
+          setIsCreateMealModalVisible(false);
+          setCreateMealInitialFoods([]);
+          setSelectedMealForMenu(null);
+        }}
+        initialFoods={createMealInitialFoods}
       />
 
       {/* My Meals Modal */}

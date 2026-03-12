@@ -121,7 +121,9 @@
       "moveDesc": "Move this food to another meal or day",
       "edit": "Edit",
       "editDesc": "Modify serving size and nutrition",
-      "goToToday": "Go To Today"
+      "goToToday": "Go To Today",
+      "createMeal": "TODO add this translation",
+      "createMealDesc": "TODO add this translation"
     },
     "meals": {
       "manageMealData": {
@@ -237,6 +239,8 @@
       "sugars": "Sugars",
       "saturatedFat": "Saturated Fat",
       "salt": "Salt",
+      "loadingDetails": "TODO add this translation",
+      "loadingMoreDetails": "TODO add this translation",
       "successMessage": "Food tracked successfully!",
       "errorMessage": "Failed to track food. Please try again.",
       "updateFood": "Update Food"
@@ -259,6 +263,7 @@
     "createMeal": {
       "title": "Create New Meal",
       "description": "Create a custom meal by combining foods",
+      "noFoods": "TODO add this translation",
       "saveMeal": "Save Meal",
       "totalNutrition": "Total Nutrition",
       "estimated": "Estimated",
