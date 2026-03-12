@@ -18,6 +18,7 @@ import { FoodPortionService, NutritionService } from '../../database/services';
 import { useFavoriteFoods } from '../../hooks/useFavoriteFoods';
 import { useFoods } from '../../hooks/useFoods';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
@@ -240,6 +241,7 @@ export function FoodSearchModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { foodSearchSource } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
@@ -285,6 +287,14 @@ export function FoodSearchModal({
     initialLimit: 5,
   });
 
+  // Calculate API limits based on food search source setting
+  const { apiLimit: openFoodLimit, usdaLimit } = useMemo(() => {
+    if (foodSearchSource === 'both') {
+      return { apiLimit: 10, usdaLimit: 10 }; // 10 from each source
+    }
+    return { apiLimit: 20, usdaLimit: 20 }; // 20 from single source
+  }, [foodSearchSource]);
+
   // Use unified search for both local and API results
   const {
     resultsBySource,
@@ -311,7 +321,8 @@ export function FoodSearchModal({
     includeLocal: true,
     includeAPI: true,
     localLimit: 10,
-    apiLimit: 20,
+    apiLimit: openFoodLimit,
+    usdaLimit,
     debounceMs: 300,
   });
 
