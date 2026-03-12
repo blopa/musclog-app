@@ -802,10 +802,12 @@ export function FoodMealDetailsModal({
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
       if ((productDetails as any).source === 'usda') {
-        if (brand && category) {
-          return `${brand} • ${category}`;
+        const usdaBrand = (product as any).brandOwner || (product as any).brandName;
+        const usdaCategory = (product as any).foodCategory;
+        if (usdaBrand && usdaCategory) {
+          return `${usdaBrand} • ${usdaCategory}`;
         }
-        return brand || category || '';
+        return usdaBrand || usdaCategory || '';
       }
       const brand = product.brands;
       const categories = product.categories;
@@ -1066,9 +1068,10 @@ export function FoodMealDetailsModal({
             sugar: nutritionalData.sugar,
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
-            micros: (productDetails as any)?.product?.foodNutrients
-              ? (productDetails.product as any).foodNutrients.reduce((acc: any, n: any) => {
-                  const num = n.nutrientNumber || n.number || n.nutrient?.number;
+            micros:
+              productDetails && (productDetails as any)?.product?.foodNutrients
+                ? (productDetails.product as any).foodNutrients.reduce((acc: any, n: any) => {
+                    const num = n.nutrientNumber || n.number || n.nutrient?.number;
                   if (num) {
                     acc[num] = n.value ?? n.amount;
                   }
@@ -1118,9 +1121,10 @@ export function FoodMealDetailsModal({
           sugar: nutritionalData.sugar,
           saturatedFat: nutritionalData.saturatedFat,
           sodium: nutritionalData.sodium,
-          micros: (productDetails as any)?.product?.nutriments
-            ? (productDetails.product as any).nutriments
-            : undefined,
+          micros:
+            productDetails && (productDetails as any)?.product?.nutriments
+              ? (productDetails.product as any).nutriments
+              : undefined,
           isFavorite: isFavorite,
         },
         matchedPortion
