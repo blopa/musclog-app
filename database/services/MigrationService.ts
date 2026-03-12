@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 import convert from 'convert';
+import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
 import i18n from '../../lang/lang';
@@ -361,7 +361,8 @@ export class MigrationService {
           field: 'height',
           type: 'height' as const,
           unit: 'cm',
-          convert: (value: number) => (value < 3 ? (convert(value, 'm').to('cm') as number) : value), // height might be in cm or m
+          convert: (value: number) =>
+            value < 3 ? (convert(value, 'm').to('cm') as number) : value, // height might be in cm or m
         },
         {
           field: 'fatPercentage',

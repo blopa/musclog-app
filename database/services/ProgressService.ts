@@ -146,7 +146,10 @@ export class ProgressService {
     let heightCm = 0;
     if (heightMetric) {
       const decHeight = await heightMetric.getDecrypted();
-      heightCm = decHeight.unit === 'in' ? (convert(decHeight.value, 'in').to('cm') as number) : decHeight.value;
+      heightCm =
+        decHeight.unit === 'in'
+          ? (convert(decHeight.value, 'in').to('cm') as number)
+          : decHeight.value;
     }
 
     const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial);
@@ -542,7 +545,11 @@ export class ProgressService {
 
     const gender = user?.gender || 'male';
     const weightKg =
-      finalWeight || (isImperial ? convert(initialWeight || 70, 'lb').to('kg') as number : initialWeight || 70) || 70;
+      finalWeight ||
+      (isImperial
+        ? (convert(initialWeight || 70, 'lb').to('kg') as number)
+        : initialWeight || 70) ||
+      70;
     const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
     const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
 
