@@ -486,4 +486,52 @@ export class ExerciseService {
 
     return created;
   }
+
+  /**
+   * Repairs exercises that were seeded without an imageUrl (e.g. due to a previous
+   * FileAlreadyExistsException during seeding). Finds all non-deleted exercises with
+   * a missing imageUrl, matches them against the JSON data by name, copies the bundled
+   * image, and updates the record. Safe to call on every app start — it's a no-op when
+   * all images are already present.
+   */
+  static async repairMissingExerciseImages(): Promise<void> {
+    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const allExercises = await database.get<Exercise>('exercises').query().fetch();
+    const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt);
+
+    if (broken.length === 0) {
+      return;
+    }
+
+    const updates: { exercise: Exercise; fileUri: string }[] = [];
+    for (const exercise of broken) {
+      const jsonIndex = exercisesJson.findIndex(
+        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
+      );
+
+      if (jsonIndex < 0) {
+        continue;
+      }
+
+      try {
+        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
+        const filename = getExerciseImageFilenameByIndex(jsonIndex);
+        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
+        updates.push({ exercise, fileUri });
+      } catch (err) {
+        console.warn('Failed to repair exercise image for', exercise.name, err);
+      }
+    }
+
+    if (updates.length > 0) {
+      await database.write(async () => {
+        for (const { exercise, fileUri } of updates) {
+          await exercise.update((e) => {
+            e.imageUrl = fileUri;
+          });
+        }
+      });
+      console.log(`Repaired ${updates.length} exercise image(s)`);
+    }
+  }
 }

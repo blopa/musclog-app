@@ -154,6 +154,12 @@ export async function copyBundledExerciseImageToDocument(
 
   const destFile = new File(exercisesDir, destFilename);
 
+  // If the file was already copied (e.g. a previous interrupted seeding run, or
+  // multiple exercises sharing the same fallback image), reuse it.
+  if (destFile.exists) {
+    return destFile.uri;
+  }
+
   try {
     // Use expo-asset to download and resolve the bundled asset
     // This works in both development and production builds
