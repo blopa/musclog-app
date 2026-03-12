@@ -15,7 +15,14 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
@@ -63,8 +70,8 @@ type FoodDetailsModalProps = {
   foodLog?: any;
   onClose: () => void;
   barcode?: string | null;
-  /** Preloaded product from OFF search (avoids barcode fetch on mobile) */
-  productFromSearch?: SearchResultProduct | null;
+  /** Preloaded product from search (avoids barcode fetch on mobile) */
+  productFromSearch?: any;
   food?: Food | null;
   meal?: Meal | null;
   initialMealType?: MealType;
@@ -256,7 +263,10 @@ export function FoodMealDetailsModal({
       ? productFromSearch.fdcId
       : null;
 
-  const { data: productDetails } = useFoodProductDetails(barcodeForHook, usdaIdForHook);
+  const { data: productDetails, isLoading: isLoadingDetails } = useFoodProductDetails(
+    barcodeForHook,
+    usdaIdForHook
+  );
 
   // Helper function to generate portion name based on serving size and units
   const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
@@ -544,58 +554,11 @@ export function FoodMealDetailsModal({
       };
     }
 
-    if (productFromSearch && productFromSearch.source === 'usda' && !productDetails) {
-      const mappedProduct = mapUSDAFoodToUnified(productFromSearch);
-      const nutrients = productFromSearch.foodNutrients;
-
-      return {
-        calories: mappedProduct.calories ?? 0,
-        protein: mappedProduct.protein ?? 0,
-        carbs: mappedProduct.carbs ?? 0,
-        fat: mappedProduct.fat ?? 0,
-        fiber: mappedProduct.fiber ?? 0,
-        sugar:
-          mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
-        saturatedFat:
-          mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
-        sodium:
-          mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
-      };
-    }
-
-    if (productFromSearch) {
-      const nutriments = getNutrimentsWithFallback(productFromSearch);
-      // Use the comprehensive mapping function for Open Food Facts products
-      if (nutriments) {
-        const mappedProduct = mapOpenFoodFactsProduct(productFromSearch);
-        const nut = mappedProduct.nutriments;
-        let sugar = 0,
-          saturatedFat = 0,
-          sodium = 0;
-        if (isMappedNutriments(nut)) {
-          sugar = nut.macronutrients?.sugars ?? 0;
-          saturatedFat = nut.macronutrients?.saturatedFat ?? 0;
-          sodium = nut.minerals?.sodium ?? nut.other?.salt ?? 0;
-        }
-
-        return {
-          calories: mappedProduct.calories || 0,
-          protein: mappedProduct.protein || 0,
-          carbs: mappedProduct.carbs || 0,
-          fat: mappedProduct.fat || 0,
-          fiber: mappedProduct.fiber || 0,
-          sugar,
-          saturatedFat,
-          sodium,
-        };
-      }
-    }
-
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
 
       if ((productDetails as any).source === 'usda') {
-        const nutrients = product.foodNutrients;
+        const nutrients = (product as any).foodNutrients as any[];
         return {
           calories: mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208') ?? 0,
           protein: mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0,
@@ -649,6 +612,23 @@ export function FoodMealDetailsModal({
         sugar: getNum('sugar'),
         saturatedFat: getNum('saturatedFat'),
         sodium: Number.isFinite(sodium) ? sodium : 0,
+      };
+    }
+
+    if (productFromSearch && productFromSearch.source === 'usda') {
+      const mappedProduct = mapUSDAFoodToUnified(productFromSearch as any);
+      const nutrients = (productFromSearch as any).foodNutrients as any[];
+
+      return {
+        calories: mappedProduct.calories ?? 0,
+        protein: mappedProduct.protein ?? 0,
+        carbs: mappedProduct.carbs ?? 0,
+        fat: mappedProduct.fat ?? 0,
+        fiber: mappedProduct.fiber ?? 0,
+        sugar: mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
+        saturatedFat:
+          mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
+        sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
       };
     }
 
@@ -710,14 +690,14 @@ export function FoodMealDetailsModal({
     // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
     if (isSuccessFoodDetailProductState(productDetails)) {
       if ((productDetails as any).source === 'usda') {
-        return productDetails.product.description;
+        return (productDetails.product as any).description;
       }
       return getProductName(productDetails.product);
     }
 
     if (productFromSearch) {
-      if (productFromSearch.description && productFromSearch.fdcId) {
-        return productFromSearch.description;
+      if ((productFromSearch as any).description && (productFromSearch as any).fdcId) {
+        return (productFromSearch as any).description;
       }
       return getProductName(productFromSearch);
     }
@@ -775,8 +755,8 @@ export function FoodMealDetailsModal({
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
       if ((productDetails as any).source === 'usda') {
-        const brand = product.brandOwner || product.brandName;
-        const category = product.foodCategory;
+        const brand = (product as any).brandOwner || (product as any).brandName;
+        const category = (product as any).foodCategory;
         if (brand && category) {
           return `${brand} • ${category}`;
         }
@@ -1001,7 +981,7 @@ export function FoodMealDetailsModal({
       }
 
       // Handle API food: use preloaded search product or barcode-fetched product
-      let productToSave =
+      let productToSave: any =
         productFromSearch ??
         (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null);
       if (!productToSave) {
@@ -1316,7 +1296,11 @@ export function FoodMealDetailsModal({
               size="sm"
               width="full"
               onPress={handleAddFood}
-              disabled={isAddingFood || (mode === 'meal' && mealAmountGrams < 1)}
+              disabled={
+                isAddingFood ||
+                (mode === 'meal' && mealAmountGrams < 1) ||
+                (isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog')
+              }
               loading={isAddingFood}
             />
           </View>
@@ -1393,6 +1377,23 @@ export function FoodMealDetailsModal({
                       </Text>
                     </View>
                   ) : null}
+              {isLoadingDetails ? (
+                <View className="mt-2 flex-row items-center justify-center gap-2">
+                  <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+                  <Text className="text-xs text-text-secondary">
+                    {t('foodSearch.loadingMore')}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+        ) : isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog' ? (
+          <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+            <View className="flex-row items-center justify-center gap-2">
+              <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+              <Text className="text-xs text-text-secondary">
+                {t('food.foodDetails.loadingDetails', 'Loading details...')}
+              </Text>
                 </View>
               </View>
             ) : null}

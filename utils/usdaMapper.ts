@@ -5,7 +5,7 @@ import { components } from '../types/usda-types';
 type USDAFood = components['schemas']['SearchResultFood'];
 
 export function mapUSDANutritient(nutrients: any[] | undefined, nutrientNumber: string): number | undefined {
-  if (!nutrients) {
+  if (!nutrients || !Array.isArray(nutrients)) {
     return undefined;
   }
   const nutrient = nutrients.find((n: any) => {
