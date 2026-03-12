@@ -1,13 +1,20 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
 
-import type { NavItemKey, ThemeOption, Units, UseSettingsResult } from '../constants/settings';
+import type {
+  FoodSearchSource,
+  NavItemKey,
+  ThemeOption,
+  Units,
+  UseSettingsResult,
+} from '../constants/settings';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
+  FOOD_SEARCH_SOURCE_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -90,6 +97,7 @@ type SettingsState = {
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
+  foodSearchSource: FoodSearchSource;
   isLoading: boolean;
 };
 
@@ -119,6 +127,7 @@ const DEFAULT_STATE: SettingsState = {
   navSlot1: 'workouts',
   navSlot2: 'food',
   navSlot3: 'profile',
+  foodSearchSource: 'both',
   isLoading: true,
 };
 
@@ -132,6 +141,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot1 = getString(map, NAV_SLOT_1_SETTING_TYPE);
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
+  const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
 
   return {
     units,
@@ -159,6 +169,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
+    foodSearchSource: (rawFoodSearchSource as FoodSearchSource) || 'both',
     isLoading: false,
   };
 }

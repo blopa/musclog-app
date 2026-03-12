@@ -145,6 +145,12 @@ export const NAV_SLOT_1_SETTING_TYPE = 'nav_slot_1';
 export const NAV_SLOT_2_SETTING_TYPE = 'nav_slot_2';
 export const NAV_SLOT_3_SETTING_TYPE = 'nav_slot_3';
 
+/**
+ * Setting type for food search source preference.
+ * value: 'both' | 'openfood' | 'usda'.
+ */
+export const FOOD_SEARCH_SOURCE_SETTING_TYPE = 'food_search_source';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -156,6 +162,7 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
+export type FoodSearchSource = 'both' | 'openfood' | 'usda';
 
 export type UseSettingsResult = {
   units: Units;
@@ -168,4 +175,5 @@ export type UseSettingsResult = {
   notificationsMenstrualCycle: boolean;
   notificationsRestTimer: boolean;
   notificationsWorkoutDuration: boolean;
+  foodSearchSource: FoodSearchSource;
 };

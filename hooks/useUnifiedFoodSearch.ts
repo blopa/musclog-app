@@ -13,6 +13,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../utils/openFoodFactsMapper';
+import { mapUSDAFoodToUnified } from '../utils/usdaMapper';
 import { gramsToDisplay } from '../utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
 import { useFoods } from './useFoods';
@@ -33,7 +34,7 @@ export type UnifiedFoodResult = {
   carbs?: number;
   fat?: number;
   fiber?: number;
-  source: 'local' | 'openfood';
+  source: 'local' | 'openfood' | 'usda';
   _raw?: any; // Original data from API or database
 };
 
@@ -58,7 +59,7 @@ export function useUnifiedFoodSearch({
   debounceMs = 300,
 }: UseUnifiedFoodSearchProps) {
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units, foodSearchSource } = useSettings();
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -68,21 +69,36 @@ export function useUnifiedFoodSearch({
   const [isLoadingMoreAPI, setIsLoadingMoreAPI] = useState(false);
   const [accumulatedApiResults, setAccumulatedApiResults] = useState<SearchResultProduct[]>([]);
 
+  // USDA API states
+  const [usdaOffset, setUsdaOffset] = useState(0);
+  const [isLoadingMoreUSDA, setIsLoadingMoreUSDA] = useState(false);
+  const [accumulatedUsdaResults, setAccumulatedUsdaResults] = useState<any[]>([]);
+  const [usdaCompleted, setUsdaCompleted] = useState(false);
+
+  const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
+  const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
+
   // Debounce search term
   useEffect(() => {
     if (!searchTerm || searchTerm.trim().length < 2) {
       setDebouncedSearchTerm('');
       setApiCompleted(false);
+      setUsdaCompleted(false);
       setApiOffset(0);
+      setUsdaOffset(0);
       setAccumulatedApiResults([]);
+      setAccumulatedUsdaResults([]);
       return;
     }
 
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm.trim());
       setApiCompleted(false);
+      setUsdaCompleted(false);
       setApiOffset(0);
+      setUsdaOffset(0);
       setAccumulatedApiResults([]);
+      setAccumulatedUsdaResults([]);
     }, debounceMs);
 
     return () => clearTimeout(timer);
@@ -161,8 +177,45 @@ export function useUnifiedFoodSearch({
       }
     },
     enabled:
-      enabled && includeAPI && Boolean(debouncedSearchTerm && debouncedSearchTerm.length >= 2),
+      enabled &&
+      includeAPI &&
+      includeOpenFood &&
+      Boolean(debouncedSearchTerm && debouncedSearchTerm.length >= 2),
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  // USDA search
+  const {
+    data: usdaPageResults = [],
+    isLoading: isLoadingUSDA,
+    error: usdaError,
+    isSuccess: isUsdaSuccess,
+  } = useQuery({
+    queryKey: ['food-search-usda', debouncedSearchTerm, usdaOffset],
+    queryFn: async () => {
+      if (!includeAPI || !includeUSDA || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
+        return [];
+      }
+
+      const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || 'UNz8iH6WoBaHG4mEdAklid1MZq7zSbPKJVfNUbZR';
+      const pageNumber = Math.floor(usdaOffset / apiLimit) + 1;
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${apiLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch from USDA');
+      }
+
+      const result = await response.json();
+      return result.foods || [];
+    },
+    enabled:
+      enabled &&
+      includeAPI &&
+      includeUSDA &&
+      Boolean(debouncedSearchTerm && debouncedSearchTerm.length >= 2),
+    staleTime: 1000 * 60 * 5,
   });
 
   // Accumulate API results when new page is loaded
@@ -183,6 +236,22 @@ export function useUnifiedFoodSearch({
       setApiCompleted(true);
     }
   }, [isApiSuccess, apiPageResults, apiOffset, isLoadingAPI]);
+
+  // Accumulate USDA results
+  useEffect(() => {
+    if (isUsdaSuccess && usdaPageResults.length > 0) {
+      if (usdaOffset === 0) {
+        setAccumulatedUsdaResults(usdaPageResults);
+      } else {
+        setAccumulatedUsdaResults((prev) => [...prev, ...usdaPageResults]);
+      }
+      setIsLoadingMoreUSDA(false);
+    }
+
+    if (isUsdaSuccess && !isLoadingUSDA) {
+      setUsdaCompleted(true);
+    }
+  }, [isUsdaSuccess, usdaPageResults, usdaOffset, isLoadingUSDA]);
 
   // Convert local foods to unified format
   const localResults = useMemo(() => {
@@ -219,7 +288,7 @@ export function useUnifiedFoodSearch({
 
   // Convert API results to unified format
   const apiResultsFormatted = useMemo(() => {
-    if (!includeAPI) {
+    if (!includeAPI || !includeOpenFood) {
       return [];
     }
 
@@ -233,7 +302,14 @@ export function useUnifiedFoodSearch({
         return mapOpenFoodFactsProduct(product);
       })
       .filter((product) => product) as UnifiedFoodResult[];
-  }, [accumulatedApiResults, includeAPI]);
+  }, [accumulatedApiResults, includeAPI, includeOpenFood]);
+
+  const usdaResultsFormatted = useMemo(() => {
+    if (!includeAPI || !includeUSDA) {
+      return [];
+    }
+    return accumulatedUsdaResults.map(mapUSDAFoodToUnified);
+  }, [accumulatedUsdaResults, includeAPI, includeUSDA]);
 
   // Combine and deduplicate results - updates when API completes
   const combinedResults = useMemo(() => {
@@ -241,7 +317,7 @@ export function useUnifiedFoodSearch({
       return [];
     }
 
-    const allResults = [...localResults, ...apiResultsFormatted];
+    const allResults = [...localResults, ...apiResultsFormatted, ...usdaResultsFormatted];
 
     // Deduplication logic:
     // 1. If same barcode exists, keep local version (user's data)
@@ -279,8 +355,9 @@ export function useUnifiedFoodSearch({
       all: combinedResults,
       local: localResults,
       api: apiResultsFormatted,
+      usda: usdaResultsFormatted,
     }),
-    [combinedResults, localResults, apiResultsFormatted]
+    [combinedResults, localResults, apiResultsFormatted, usdaResultsFormatted]
   );
 
   // Load more functions
@@ -300,14 +377,23 @@ export function useUnifiedFoodSearch({
     setApiOffset((prev) => prev + apiLimit);
   }, [isLoadingMoreAPI, apiLimit]);
 
+  const loadMoreUSDA = useCallback(async () => {
+    if (isLoadingMoreUSDA) {
+      return;
+    }
+    setIsLoadingMoreUSDA(true);
+    setUsdaOffset((prev) => prev + apiLimit);
+  }, [isLoadingMoreUSDA, apiLimit]);
+
   // Check if there might be more results
   const hasMoreLocal = hasMoreFoods;
   const hasMoreAPI = apiPageResults.length === apiLimit; // If we got a full page, there might be more
+  const hasMoreUSDA = usdaPageResults.length === apiLimit;
 
   // Optimized loading states
   const isLoading = isLoadingLocal; // Only show loading for local search
-  const isApiLoading = isLoadingAPI;
-  const hasApiResults = apiResultsFormatted.length > 0;
+  const isApiLoading = isLoadingAPI || isLoadingUSDA;
+  const hasApiResults = apiResultsFormatted.length > 0 || usdaResultsFormatted.length > 0;
 
   // Cleanup abort controller on unmount
   useEffect(() => {
@@ -333,13 +419,16 @@ export function useUnifiedFoodSearch({
     // Additional states for UI optimization
     hasLocalResults: localResults.length > 0,
     hasApiResults,
-    isInitialLoad: isLoadingLocal && !apiCompleted,
+    isInitialLoad: isLoadingLocal && (includeOpenFood ? !apiCompleted : true) && (includeUSDA ? !usdaCompleted : true),
     // Pagination states
     hasMoreLocal,
     hasMoreAPI,
+    hasMoreUSDA,
     isLoadingMoreLocal: isLoadingMoreFoods,
     isLoadingMoreAPI,
+    isLoadingMoreUSDA,
     loadMoreLocal,
     loadMoreAPI,
+    loadMoreUSDA,
   };
 }

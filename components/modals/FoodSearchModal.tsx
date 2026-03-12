@@ -298,10 +298,13 @@ export function FoodSearchModal({
     isInitialLoad,
     hasMoreLocal,
     hasMoreAPI,
+    hasMoreUSDA,
     isLoadingMoreLocal,
     isLoadingMoreAPI,
+    isLoadingMoreUSDA,
     loadMoreLocal,
     loadMoreAPI,
+    loadMoreUSDA,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -568,6 +571,8 @@ export function FoodSearchModal({
         return resultsBySource.local;
       case 'openfood':
         return resultsBySource.api;
+      case 'usda':
+        return resultsBySource.usda;
       case 'all':
       default:
         return resultsBySource.all;
@@ -581,11 +586,19 @@ export function FoodSearchModal({
         id: 'myFoods',
         label: `${t('foodSearch.filters.favorites')} (${formatCount(favoriteFoodsCount)})`,
       },
-      ...(apiCount > 0
+      ...(resultsBySource.api.length > 0
         ? [
             {
               id: 'openfood' as const,
-              label: `${t('foodSearch.filters.openFoodFacts')} (${apiCount})`,
+              label: `${t('foodSearch.filters.openFoodFacts')} (${resultsBySource.api.length})`,
+            },
+          ]
+        : []),
+      ...(resultsBySource.usda.length > 0
+        ? [
+            {
+              id: 'usda' as const,
+              label: `${t('foodSearch.filters.usda')} (${resultsBySource.usda.length})`,
             },
           ]
         : []),
@@ -610,12 +623,15 @@ export function FoodSearchModal({
     filteredMealCardsData.length,
   ]);
 
-  // If Open Food Facts tab is hidden (0 items) but was selected, switch to 'all'
+  // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
-    if (activeFilter === 'openfood' && apiCount === 0) {
+    if (activeFilter === 'openfood' && resultsBySource.api.length === 0) {
       setActiveFilter('all');
     }
-  }, [activeFilter, apiCount]);
+    if (activeFilter === 'usda' && resultsBySource.usda.length === 0) {
+      setActiveFilter('all');
+    }
+  }, [activeFilter, resultsBySource.api.length, resultsBySource.usda.length]);
 
   const handleFoodClick = (food: UnifiedFoodResult) => {
     // Convert to FoodItem format
@@ -908,6 +924,53 @@ export function FoodSearchModal({
                                 ) : null}
                               </View>
                             ) : null}
+
+                            {/* USDA Results Section - only show if filter includes usda or 'all' */}
+                            {(activeFilter === 'all' || activeFilter === 'usda') &&
+                            resultsBySource.usda.length > 0 ? (
+                              <View className="mb-4">
+                                <View className="mb-3 flex-row items-center gap-2">
+                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                  <View className="flex-row items-center gap-2">
+                                    <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                      {t('foodSearch.usda', {
+                                        count: resultsBySource.usda.length,
+                                      })}
+                                    </Text>
+                                  </View>
+                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                </View>
+                                <View className="gap-1.5">
+                                  {resultsBySource.usda.map((food: UnifiedFoodResult) => (
+                                    <FoodSearchItemCard
+                                      key={`usda-${food.id}`}
+                                      food={food}
+                                      onAddPress={() => handleFoodClick(food)}
+                                    />
+                                  ))}
+                                </View>
+
+                                {/* Load More USDA Button */}
+                                {hasMoreUSDA ? (
+                                  <View className="py-3">
+                                    <Button
+                                      label={
+                                        isLoadingMoreUSDA
+                                          ? t('foodSearch.loadingMore')
+                                          : t('foodSearch.loadMoreUSDA')
+                                      }
+                                      onPress={loadMoreUSDA}
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isLoadingMoreUSDA}
+                                      loading={isLoadingMoreUSDA}
+                                      width="full"
+                                      iconPosition="left"
+                                    />
+                                  </View>
+                                ) : null}
+                              </View>
+                            ) : null}
                           </>
                         ) : null}
 
@@ -1154,7 +1217,9 @@ export function FoodSearchModal({
             }}
             barcode={selectedFood.source === 'local' ? undefined : selectedFood.id}
             productFromSearch={
-              selectedFood.source === 'openfood' ? (selectedFood._raw as any) : undefined
+              selectedFood.source === 'openfood' || selectedFood.source === 'usda'
+                ? (selectedFood._raw as any)
+                : undefined
             }
             food={selectedFood.source === 'local' ? (selectedFood._raw as any) : undefined}
             initialMealType={mealType}

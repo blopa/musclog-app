@@ -43,6 +43,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
@@ -531,6 +532,23 @@ export function FoodMealDetailsModal({
     }
 
     if (productFromSearch) {
+      // Check if it's from USDA or Open Food Facts
+      if (productFromSearch.fdcId) {
+        const mappedProduct = mapUSDAFoodToUnified(productFromSearch);
+        const nutrients = productFromSearch.foodNutrients;
+
+        return {
+          calories: mappedProduct.calories || 0,
+          protein: mappedProduct.protein || 0,
+          carbs: mappedProduct.carbs || 0,
+          fat: mappedProduct.fat || 0,
+          fiber: mappedProduct.fiber || 0,
+          sugar: mapUSDANutritient(nutrients, '269') || 0,
+          saturatedFat: mapUSDANutritient(nutrients, '606') || 0,
+          sodium: mapUSDANutritient(nutrients, '307') || 0,
+        };
+      }
+
       const nutriments = getNutrimentsWithFallback(productFromSearch);
       // Use the comprehensive mapping function for Open Food Facts products
       if (nutriments) {
@@ -664,6 +682,9 @@ export function FoodMealDetailsModal({
     }
 
     if (productFromSearch) {
+      if (productFromSearch.description && productFromSearch.fdcId) {
+        return productFromSearch.description;
+      }
       return getProductName(productFromSearch);
     }
 
@@ -695,6 +716,14 @@ export function FoodMealDetailsModal({
     }
 
     if (productFromSearch) {
+      if (productFromSearch.fdcId) {
+        const brand = productFromSearch.brandOwner || productFromSearch.brandName;
+        const category = productFromSearch.foodCategory;
+        if (brand && category) {
+          return `${brand} • ${category}`;
+        }
+        return brand || category || '';
+      }
       const brand = productFromSearch.brands;
       const categories = productFromSearch.categories;
       if (brand && categories) {
@@ -935,17 +964,70 @@ export function FoodMealDetailsModal({
       if (!productToSave) {
         throw new Error('Product details not loaded');
       }
+
       // Apply user edits (e.g. from AI-sourced data) to name and barcode
       if (editedOverrides) {
-        const codeFromProduct = (productToSave as { code?: string }).code;
-        productToSave = {
-          ...productToSave,
-          product_name:
-            (editedOverrides.name?.trim() || getProductName(productToSave)).trim() ||
-            getProductName(productToSave),
-          code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
-        } as typeof productToSave;
+        if (productToSave.fdcId) {
+          productToSave = {
+            ...productToSave,
+            description: editedOverrides.name?.trim() || productToSave.description,
+            gtinUpc: editedOverrides.barcode?.trim() || productToSave.gtinUpc,
+          };
+        } else {
+          const codeFromProduct = (productToSave as { code?: string }).code;
+          productToSave = {
+            ...productToSave,
+            product_name:
+              (editedOverrides.name?.trim() || getProductName(productToSave)).trim() ||
+              getProductName(productToSave),
+            code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
+          } as typeof productToSave;
+        }
       }
+
+      // USDA handle
+      if (productToSave.fdcId) {
+        const newFood = await FoodService.createFromUSDAProduct(
+          productToSave,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            sugar: nutritionalData.sugar,
+            saturatedFat: nutritionalData.saturatedFat,
+            sodium: nutritionalData.sodium,
+            isFavorite: isFavorite,
+          },
+          matchedPortion
+        );
+
+        // Create nutrition log
+        const logFoodPromise = NutritionService.logFood(
+          newFood.id,
+          selectedDate,
+          selectedMeal as MealType,
+          servingSize
+        );
+
+        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
+
+        onAddFood?.({
+          servingSize,
+          meal: selectedMeal,
+          date: selectedDate,
+        });
+
+        onClose();
+        onFoodTracked?.();
+
+        showSnackbar('success', t('food.foodDetails.successMessage'), {
+          action: t('snackbar.ok'),
+        });
+        return;
+      }
+
 
       // Save product to local database (search result has same shape as V3 for our usage)
       const newFood = await FoodService.createFromV3Product(

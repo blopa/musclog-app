@@ -65,10 +65,12 @@ export function BasicSettingsModal({
     readHealthData: debouncedReadHealthData,
     writeHealthData: debouncedWriteHealthData,
     handleThemeChange,
+    foodSearchSource,
     handleUnitsChange,
     handleConnectHealthDataChange,
     handleReadHealthDataChange,
     handleWriteHealthDataChange,
+    handleFoodSearchSourceChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(1500);
 
@@ -110,6 +112,21 @@ export function BasicSettingsModal({
           color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
         />
       ),
+    },
+  ];
+
+  const foodSearchOptions = [
+    {
+      label: t('settings.basicSettings.foodSearchBoth'),
+      value: 'both',
+    },
+    {
+      label: t('settings.basicSettings.foodSearchOpenFoodFacts'),
+      value: 'openfood',
+    },
+    {
+      label: t('settings.basicSettings.foodSearchUSDA'),
+      value: 'usda',
     },
   ];
 
@@ -206,6 +223,24 @@ export function BasicSettingsModal({
               options={unitsOptions}
               value={units || 'metric'}
               onValueChange={(val) => handleUnitsChange(val as 'metric' | 'imperial')}
+            />
+          </View>
+        </View>
+
+        {/* Food Search Section */}
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.basicSettings.foodSearchSource')}
+          </Text>
+          <View className="gap-2">
+            <SegmentedControl
+              options={foodSearchOptions}
+              value={foodSearchSource || 'both'}
+              onValueChange={(val) => handleFoodSearchSourceChange(val as any)}
             />
           </View>
         </View>
