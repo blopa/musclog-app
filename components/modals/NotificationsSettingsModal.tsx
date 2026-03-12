@@ -34,7 +34,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
     handleNotificationsRestTimerChange,
     handleNotificationsWorkoutDurationChange,
     flushAllPendingChanges,
-  } = useDebouncedSettings(1500);
+  } = useDebouncedSettings(500);
 
   // Helper function to ensure permissions are granted before enabling a notification setting
   const ensurePermissionsAndEnable = async (value: boolean, handler: (value: boolean) => void) => {

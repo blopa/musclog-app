@@ -24,8 +24,11 @@
       "syncing": "Syncing...",
       "foodSearchSource": "Food Search Source",
       "foodSearchBoth": "Both",
+      "foodSearchBothDescription": "Search both Open Food Facts and USDA",
       "foodSearchOpenFoodFacts": "Open Food Facts",
-      "foodSearchUSDA": "USDA"
+      "foodSearchOpenFoodFactsDescription": "Open source food database",
+      "foodSearchUSDA": "USDA",
+      "foodSearchUSDADescription": "US Department of Agriculture database"
     },
     "advancedSettings": {
       "title": "Local Data Settings",

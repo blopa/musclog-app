@@ -1,21 +1,26 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   ChevronRight,
+  Globe,
   Heart,
+  Leaf,
   Moon,
   RefreshCw,
   Ruler,
   Scale,
+  Search,
   Settings,
   Sun,
 } from 'lucide-react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { type FoodSearchSource } from '../../constants/settings';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
+import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
@@ -59,7 +64,9 @@ export function BasicSettingsModal({
     handleWriteHealthDataChange,
     handleFoodSearchSourceChange,
     flushAllPendingChanges,
-  } = useDebouncedSettings(1500);
+  } = useDebouncedSettings(500);
+
+  const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -104,28 +111,51 @@ export function BasicSettingsModal({
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
 
-  const foodSearchOptions = [
+  const foodSearchMenuItems: BottomPopUpMenuItem[] = [
     ...(hasUsdaApiKey
       ? [
           {
-            label: t('settings.basicSettings.foodSearchBoth'),
-            value: 'both',
+            icon: Search,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('settings.basicSettings.foodSearchBoth'),
+            description: t('settings.basicSettings.foodSearchBothDescription'),
+            onPress: () => handleFoodSearchSourceChange('both' as any),
           },
         ]
       : []),
     {
-      label: t('settings.basicSettings.foodSearchOpenFoodFacts'),
-      value: 'openfood',
+      icon: Globe,
+      iconColor: theme.colors.status.info,
+      iconBgColor: theme.colors.status.info10,
+      title: t('settings.basicSettings.foodSearchOpenFoodFacts'),
+      description: t('settings.basicSettings.foodSearchOpenFoodFactsDescription'),
+      onPress: () => handleFoodSearchSourceChange('openfood' as any),
     },
     ...(hasUsdaApiKey
       ? [
           {
-            label: t('settings.basicSettings.foodSearchUSDA'),
-            value: 'usda',
+            icon: Leaf,
+            iconColor: theme.colors.status.success,
+            iconBgColor: theme.colors.status.emerald10,
+            title: t('settings.basicSettings.foodSearchUSDA'),
+            description: t('settings.basicSettings.foodSearchUSDADescription'),
+            onPress: () => handleFoodSearchSourceChange('usda' as any),
           },
         ]
       : []),
   ];
+
+  const effectiveFoodSearchSource: FoodSearchSource =
+    !hasUsdaApiKey && (foodSearchSource === 'usda' || foodSearchSource === 'both')
+      ? 'openfood'
+      : ((foodSearchSource ?? (hasUsdaApiKey ? 'both' : 'openfood')) as FoodSearchSource);
+
+  const foodSearchLabel = {
+    both: t('settings.basicSettings.foodSearchBoth'),
+    openfood: t('settings.basicSettings.foodSearchOpenFoodFacts'),
+    usda: t('settings.basicSettings.foodSearchUSDA'),
+  }[effectiveFoodSearchSource];
 
   const unitsOptions = [
     {
@@ -225,7 +255,7 @@ export function BasicSettingsModal({
         </View>
 
         {/* Food Search Section */}
-        {foodSearchOptions.length > 1 ? (
+        {foodSearchMenuItems.length > 1 ? (
           <View
             style={{
               marginHorizontal: theme.spacing.padding.base,
@@ -234,17 +264,15 @@ export function BasicSettingsModal({
             <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
               {t('settings.basicSettings.foodSearchSource')}
             </Text>
-            <View className="gap-2">
-              <SegmentedControl
-                options={foodSearchOptions}
-                value={
-                  !hasUsdaApiKey && (foodSearchSource === 'usda' || foodSearchSource === 'both')
-                    ? 'openfood'
-                    : foodSearchSource || (hasUsdaApiKey ? 'both' : 'openfood')
-                }
-                onValueChange={(val) => handleFoodSearchSourceChange(val as any)}
-              />
-            </View>
+            <SettingsCard
+              title={t('settings.basicSettings.foodSearchSource')}
+              subtitle={foodSearchLabel}
+              onPress={() => setFoodSearchMenuVisible(true)}
+              icon={<Search size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+              }
+            />
           </View>
         ) : null}
 
@@ -352,6 +380,12 @@ export function BasicSettingsModal({
           </Text>
         </View>
       </View>
+      <BottomPopUpMenu
+        visible={foodSearchMenuVisible}
+        onClose={() => setFoodSearchMenuVisible(false)}
+        title={t('settings.basicSettings.foodSearchSource')}
+        items={foodSearchMenuItems}
+      />
     </FullScreenModal>
   );
 }

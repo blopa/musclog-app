@@ -70,7 +70,7 @@ export function AdvancedSettingsModal({
     anonymousBugReport: debouncedAnonymousBugReport,
     handleAnonymousBugReportChange,
     flushAllPendingChanges,
-  } = useDebouncedSettings(1500);
+  } = useDebouncedSettings(500);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
