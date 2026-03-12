@@ -7,6 +7,7 @@ import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
+import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
@@ -194,10 +195,10 @@ export async function reloadApp() {
     } else if (Updates.isEnabled) {
       await new Promise((resolve) => setTimeout(resolve, 100));
       await Updates.reloadAsync();
-    } else {
-      // TODO: navigate to /
     }
+
+    router.replace('/');
   } catch (error) {
-    // TODO: navigate to /
+    router.replace('/');
   }
 }
