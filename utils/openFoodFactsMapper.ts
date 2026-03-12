@@ -490,6 +490,7 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
   // 1. Try the standard name fields (OFF: product_name, product_name_LANG)
   let name: string | undefined =
     (p.product_name as string) ||
+    (p.description as string) ||
     (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined) ||
     (p.product_name_en as string) ||
     (p.product_name_nl as string) ||

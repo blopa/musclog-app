@@ -549,14 +549,17 @@ export function FoodMealDetailsModal({
       const nutrients = productFromSearch.foodNutrients;
 
       return {
-        calories: mappedProduct.calories || 0,
-        protein: mappedProduct.protein || 0,
-        carbs: mappedProduct.carbs || 0,
-        fat: mappedProduct.fat || 0,
-        fiber: mappedProduct.fiber || 0,
-        sugar: mapUSDANutritient(nutrients, '269') || 0,
-        saturatedFat: mapUSDANutritient(nutrients, '606') || 0,
-        sodium: mapUSDANutritient(nutrients, '307') || 0,
+        calories: mappedProduct.calories ?? 0,
+        protein: mappedProduct.protein ?? 0,
+        carbs: mappedProduct.carbs ?? 0,
+        fat: mappedProduct.fat ?? 0,
+        fiber: mappedProduct.fiber ?? 0,
+        sugar:
+          mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
+        saturatedFat:
+          mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
+        sodium:
+          mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
       };
     }
 
@@ -594,15 +597,15 @@ export function FoodMealDetailsModal({
       if ((productDetails as any).source === 'usda') {
         const nutrients = product.foodNutrients;
         return {
-          calories: mapUSDANutritient(nutrients, '1008') || mapUSDANutritient(nutrients, '208') || 0,
-          protein: mapUSDANutritient(nutrients, '1003') || mapUSDANutritient(nutrients, '203') || 0,
-          carbs: mapUSDANutritient(nutrients, '1005') || mapUSDANutritient(nutrients, '205') || 0,
-          fat: mapUSDANutritient(nutrients, '1004') || mapUSDANutritient(nutrients, '204') || 0,
-          fiber: mapUSDANutritient(nutrients, '1079') || mapUSDANutritient(nutrients, '291') || 0,
-          sugar: mapUSDANutritient(nutrients, '2000') || mapUSDANutritient(nutrients, '269') || 0,
+          calories: mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208') ?? 0,
+          protein: mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0,
+          carbs: mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0,
+          fat: mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0,
+          fiber: mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0,
+          sugar: mapUSDANutritient(nutrients, '2000') ?? mapUSDANutritient(nutrients, '269') ?? 0,
           saturatedFat:
-            mapUSDANutritient(nutrients, '1258') || mapUSDANutritient(nutrients, '606') || 0,
-          sodium: mapUSDANutritient(nutrients, '1093') || mapUSDANutritient(nutrients, '307') || 0,
+            mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
+          sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
         };
       }
 

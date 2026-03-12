@@ -9,20 +9,20 @@ export function mapUSDANutritient(nutrients: any[] | undefined, nutrientNumber: 
     return undefined;
   }
   const nutrient = nutrients.find((n: any) => {
-    const num = n.number || n.nutrient?.number;
+    const num = n.nutrientNumber || n.number || n.nutrient?.number;
     return String(num) === nutrientNumber;
   });
-  return nutrient ? nutrient.amount ?? nutrient.value : undefined;
+  return nutrient ? nutrient.value ?? nutrient.amount : undefined;
 }
 
 export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
   const nutrients = food.foodNutrients;
 
-  const calories = mapUSDANutritient(nutrients, '208'); // Energy (KCAL)
-  const protein = mapUSDANutritient(nutrients, '203');
-  const carbs = mapUSDANutritient(nutrients, '205');
-  const fat = mapUSDANutritient(nutrients, '204');
-  const fiber = mapUSDANutritient(nutrients, '291');
+  const calories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
+  const protein = mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203');
+  const carbs = mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205');
+  const fat = mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204');
+  const fiber = mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291');
 
   // Brand can be brandOwner or brandName
   const brand = food.brandOwner || (food as any).brandName;
