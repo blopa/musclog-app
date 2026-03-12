@@ -1,5 +1,6 @@
 import { Camera } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Alert, Text, TouchableOpacity } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
@@ -27,6 +28,7 @@ export function MealEstimationModal({
   mealImage,
   aiEstimationData,
 }: MealEstimationModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [identifiedItems, setIdentifiedItems] = useState<IdentifiedItem[]>(
     aiEstimationData?.identifiedItems || []
@@ -93,10 +95,10 @@ export function MealEstimationModal({
 
   const handleDeleteItem = (itemId: string) => {
     // TODO: use ConfirmationModal instead and i18n for translations
-    Alert.alert('Delete Item', 'Are you sure you want to delete this item?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('meals.deleteItem.title'), t('meals.deleteItem.message'), [
+      { text: t('meals.deleteItem.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('meals.deleteItem.delete'),
         style: 'destructive',
         onPress: () => {
           setIdentifiedItems((prev) => prev.filter((item) => item.id !== itemId));

@@ -1,6 +1,7 @@
 import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
 
 import { NutritionGoalService, NutritionService } from '../database/services';
+import i18n from '../lang/lang';
 import { NutritionWidget } from './NutritionWidget';
 import { SmartCameraWidget } from './SmartCameraWidget';
 

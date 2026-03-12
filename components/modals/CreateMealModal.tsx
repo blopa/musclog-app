@@ -334,8 +334,7 @@ export function CreateMealModal({
           const multiplier = item.amount / 100;
           return {
             foodId: item.food.id,
-            // TODO: use i18n
-            name: item.food.name ?? 'Unknown',
+            name: item.food.name ?? t('meals.unknownFood'),
             amount: item.amount,
             calories: item.food.calories * multiplier,
             protein: item.food.protein * multiplier,
@@ -346,7 +345,7 @@ export function CreateMealModal({
       );
       setIngredients(newIngredients);
     }
-  }, [visible, initialFoods, meal, setIngredients]);
+  }, [visible, initialFoods, meal, setIngredients, t]);
 
   useEffect(() => {
     if (visible && isQuickTrack && logDate) {
@@ -532,7 +531,7 @@ export function CreateMealModal({
       const multiplier = item.amount / 100;
       return {
         foodId: item.food.id,
-        name: item.food.name ?? 'Unknown',
+        name: item.food.name ?? t('meals.unknownFood'),
         amount: item.amount,
         calories: item.food.calories * multiplier,
         protein: item.food.protein * multiplier,
