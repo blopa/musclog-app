@@ -28,13 +28,13 @@ export function calculateEmpiricalTDEEWindow(
 ): EmpiricalTDEEWindow {
   const weightByDay = new Map<number, number>();
   for (const p of weightPoints) {
-    const day = new Date(p.date).setHours(0, 0, 0, 0);
+    const day = new Date(p.date).setUTCHours(0, 0, 0, 0);
     weightByDay.set(day, p.value);
   }
 
   const fatByDay = new Map<number, number>();
   for (const p of fatPoints) {
-    const day = new Date(p.date).setHours(0, 0, 0, 0);
+    const day = new Date(p.date).setUTCHours(0, 0, 0, 0);
     fatByDay.set(day, p.value);
   }
 
