@@ -13,9 +13,9 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../utils/openFoodFactsMapper';
-import { mapUSDAFoodToUnified } from '../utils/usdaMapper';
 import { gramsToDisplay } from '../utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
+import { mapUSDAFoodToUnified } from '../utils/usdaMapper';
 import { useFoods } from './useFoods';
 import { useSettings } from './useSettings';
 
@@ -197,7 +197,8 @@ export function useUnifiedFoodSearch({
         return [];
       }
 
-      const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || 'UNz8iH6WoBaHG4mEdAklid1MZq7zSbPKJVfNUbZR';
+      const apiKey =
+        process.env.EXPO_PUBLIC_USDA_API_KEY || 'UNz8iH6WoBaHG4mEdAklid1MZq7zSbPKJVfNUbZR';
       const pageNumber = Math.floor(usdaOffset / apiLimit) + 1;
       const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${apiLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
 
@@ -419,7 +420,10 @@ export function useUnifiedFoodSearch({
     // Additional states for UI optimization
     hasLocalResults: localResults.length > 0,
     hasApiResults,
-    isInitialLoad: isLoadingLocal && (includeOpenFood ? !apiCompleted : true) && (includeUSDA ? !usdaCompleted : true),
+    isInitialLoad:
+      isLoadingLocal &&
+      (includeOpenFood ? !apiCompleted : true) &&
+      (includeUSDA ? !usdaCompleted : true),
     // Pagination states
     hasMoreLocal,
     hasMoreAPI,

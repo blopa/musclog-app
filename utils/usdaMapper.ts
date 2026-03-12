@@ -4,7 +4,10 @@ import { components } from '../types/usda-types';
 
 type USDAFood = components['schemas']['SearchResultFood'];
 
-export function mapUSDANutritient(nutrients: any[] | undefined, nutrientNumber: string): number | undefined {
+export function mapUSDANutritient(
+  nutrients: any[] | undefined,
+  nutrientNumber: string
+): number | undefined {
   if (!nutrients || !Array.isArray(nutrients)) {
     return undefined;
   }
@@ -12,7 +15,7 @@ export function mapUSDANutritient(nutrients: any[] | undefined, nutrientNumber: 
     const num = n.nutrientNumber || n.number || n.nutrient?.number;
     return String(num) === nutrientNumber;
   });
-  return nutrient ? nutrient.value ?? nutrient.amount : undefined;
+  return nutrient ? (nutrient.value ?? nutrient.amount) : undefined;
 }
 
 export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
@@ -31,14 +34,15 @@ export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
   const servingSizeUnit = (food as any).servingSizeUnit || 'g';
   const servingSize = servingSizeValue ? `${servingSizeValue}${servingSizeUnit}` : '100g';
 
-  const description = calories !== undefined
-    ? i18n.t('food.descriptionFormat', {
-        brand: brand || food.dataType || i18n.t('food.generic'),
-        calories: Math.round(calories),
-        amount: servingSize,
-        unit: '',
-      })
-    : `${brand || food.dataType || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`;
+  const description =
+    calories !== undefined
+      ? i18n.t('food.descriptionFormat', {
+          brand: brand || food.dataType || i18n.t('food.generic'),
+          calories: Math.round(calories),
+          amount: servingSize,
+          unit: '',
+        })
+      : `${brand || food.dataType || i18n.t('food.generic')} • ${i18n.t('food.notAvailable')}`;
 
   return {
     id: String(food.fdcId),
