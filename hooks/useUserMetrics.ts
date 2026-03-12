@@ -63,7 +63,7 @@ function calculateBMIFromMetric(weightKg: number, heightCm: number): number {
     return 0;
   }
 
-  const heightM = heightCm / 100;
+  const heightM = convert(heightCm, 'cm').to('m') as number;
   return weightKg / (heightM * heightM);
 }
 

@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import convert from 'convert';
 import { useTheme } from 'hooks/useTheme';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -291,7 +292,7 @@ export default function NutritionGoalsResults() {
             const rawHeight = heightDec.value;
             const heightUnit = heightDec.unit;
             const heightCm = heightUnit === 'in' ? inchesToCm(rawHeight) : rawHeight;
-            heightM = heightCm / 100;
+            heightM = convert(heightCm, 'cm').to('m') as number;
           }
 
           if (bodyFatDec && bodyFatDec.value >= 1 && bodyFatDec.value <= 99) {

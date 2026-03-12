@@ -7,6 +7,8 @@
  * Based on: Reis et al. (2017), Scott (2011), Robergs (2007)
  */
 
+import convert from 'convert';
+
 import type { EquipmentType, Gender, MechanicType, MuscleGroup } from '../database/models';
 
 // ---------------------------------------------------------------------------
@@ -105,7 +107,7 @@ export function calculateExerciseKcal(input: MWEMInput): number {
   const { mechanicType, muscleGroup, equipmentType, loadMultiplier } = exercise;
 
   const dFactor = resolveDisplacementFactor(muscleGroup, mechanicType);
-  const distance = (heightCm / 100) * dFactor;
+  const distance = (convert(heightCm, 'cm').to('m') as number) * dFactor;
   const bodyMass = resolveBodyweightContribution(
     equipmentType,
     mechanicType,

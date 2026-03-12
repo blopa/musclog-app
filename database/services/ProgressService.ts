@@ -324,7 +324,7 @@ export class ProgressService {
       return [];
     }
 
-    const heightM = heightCm / 100;
+    const heightM = convert(heightCm, 'cm').to('m') as number;
     const history: MetricPoint[] = [];
 
     for (const wp of weightPoints) {

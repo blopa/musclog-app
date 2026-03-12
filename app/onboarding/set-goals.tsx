@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import convert from 'convert';
 import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -400,7 +401,7 @@ export default function SetGoals() {
     };
 
     const plan = calculateNutritionPlan(input);
-    const heightM = heightCm / 100;
+    const heightM = convert(heightCm, 'cm').to('m') as number;
 
     const targetBMI = heightM > 0 ? bmiFromWeightAndHeightM(plan.projectedWeightKg, heightM) : 0;
     const eatingPhase: EatingPhase =
