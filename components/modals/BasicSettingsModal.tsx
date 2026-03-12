@@ -112,6 +112,8 @@ export function BasicSettingsModal({
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
 
+  // TODO: if doesn't have hasUsdaApiKey, show a snackbar error message
+
   const foodSearchMenuItems: BottomPopUpMenuItem[] = [
     ...(hasUsdaApiKey
       ? [
@@ -255,7 +257,6 @@ export function BasicSettingsModal({
           </View>
         </View>
 
-        {/* TODO: for some reason this UI is not showing up on mobile - I did add the key to EAS so idk what's going on, seems like some sort of UI issue for mobile, because on web I can see it */}
         {foodSearchMenuItems.length > 1 ? (
           <View
             style={{
