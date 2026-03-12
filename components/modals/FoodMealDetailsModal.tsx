@@ -50,8 +50,8 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
-import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
+import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
@@ -1070,14 +1070,15 @@ export function FoodMealDetailsModal({
             sodium: nutritionalData.sodium,
             micros:
               productDetails && (productDetails as any)?.product?.foodNutrients
-                ? (productDetails.product as any).foodNutrients.reduce((acc: any, n: any) => {
-                    const num = n.nutrientNumber || n.number || n.nutrient?.number;
-                    if (num) {
-                      acc[num] = n.value ?? n.amount;
-                    }
-                    return acc;
-                  }, {})
-                : undefined,
+                ? ((productDetails as any).product as any).foodNutrients.reduce(
+                    (acc: any, n: any) => {
+                      const num = n.nutrientNumber || n.number || n.nutrient?.number;
+                  if (num) {
+                    acc[num] = n.value ?? n.amount;
+                  }
+                  return acc;
+                }, {})
+              : undefined,
             isFavorite: isFavorite,
           },
           matchedPortion
@@ -1108,6 +1109,7 @@ export function FoodMealDetailsModal({
         return;
       }
 
+
       // Save product to local database (search result has same shape as V3 for our usage)
       const newFood = await FoodService.createFromV3Product(
         productToSave,
@@ -1122,7 +1124,7 @@ export function FoodMealDetailsModal({
           sodium: nutritionalData.sodium,
           micros:
             productDetails && (productDetails as any)?.product?.nutriments
-              ? (productDetails.product as any).nutriments
+              ? ((productDetails as any).product as any).nutriments
               : undefined,
           isFavorite: isFavorite,
         },
@@ -1437,26 +1439,26 @@ export function FoodMealDetailsModal({
                       </Text>
                     </View>
                   ) : null}
-                  {isLoadingDetails ? (
-                    <View className="mt-2 flex-row items-center justify-center gap-2">
-                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                      <Text className="text-xs text-text-secondary">
-                        {t('food.foodDetails.loadingMoreDetails', 'Loading more details...')}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-            ) : isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog' ? (
-              <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-                <View className="flex-row items-center justify-center gap-2">
+              {isLoadingDetails ? (
+                <View className="mt-2 flex-row items-center justify-center gap-2">
                   <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                   <Text className="text-xs text-text-secondary">
-                    {t('food.foodDetails.loadingDetails', 'Loading details...')}
+                    {t('food.foodDetails.loadingMoreDetails', 'Loading more details...')}
                   </Text>
                 </View>
-              </View>
-            ) : null}
+              ) : null}
+            </View>
+          </View>
+        ) : isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog' ? (
+          <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+            <View className="flex-row items-center justify-center gap-2">
+              <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+              <Text className="text-xs text-text-secondary">
+                {t('food.foodDetails.loadingDetails', 'Loading details...')}
+              </Text>
+            </View>
+          </View>
+        ) : null}
           </View>
 
           {/* Form Sections */}
