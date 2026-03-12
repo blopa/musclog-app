@@ -676,7 +676,7 @@ export class WorkoutTemplateService {
       const decrypted = await weightMetric.getDecrypted();
       userWeightKg = decrypted.value;
       if (decrypted.unit === 'lbs') {
-        userWeightKg = decrypted.value / 2.20462;
+        userWeightKg = convert(decrypted.value, 'lb').to('kg') as number;
       }
     }
 
@@ -736,7 +736,7 @@ export class WorkoutTemplateService {
       const decrypted = await weightMetric.getDecrypted();
       userWeightKg = decrypted.value;
       if (decrypted.unit === 'lbs') {
-        userWeightKg = decrypted.value / 2.20462;
+        userWeightKg = convert(decrypted.value, 'lb').to('kg') as number;
       }
     }
 

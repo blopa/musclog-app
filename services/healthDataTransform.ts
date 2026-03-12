@@ -1,3 +1,5 @@
+import convert from 'convert';
+
 import type { Units } from '../constants/settings';
 import i18n from '../lang/lang';
 import { cmToDisplay, kgToDisplay } from '../utils/unitConversion';
@@ -61,20 +63,10 @@ export const METRIC_VALIDATION_RANGES: Record<
 
 /**
  * Unit conversion factors
+ * Note: Weight and length conversions now use the 'convert' package.
+ * Only energy conversions remain here as they may not be supported by convert.
  */
 const CONVERSION_FACTORS = {
-  // Length
-  CM_TO_INCHES: 0.393701,
-  INCHES_TO_CM: 2.54,
-  METERS_TO_CM: 100,
-  CM_TO_METERS: 0.01,
-
-  // Weight
-  KG_TO_LBS: 2.20462,
-  LBS_TO_KG: 0.453592,
-  G_TO_KG: 0.001,
-  KG_TO_G: 1000,
-
   // Energy
   KJ_TO_KCAL: 0.239006,
   KCAL_TO_KJ: 4.184,
@@ -88,28 +80,28 @@ export class HeightConverter {
    * Convert meters to centimeters
    */
   static metersToCm(meters: number): number {
-    return meters * CONVERSION_FACTORS.METERS_TO_CM;
+    return convert(meters, 'm').to('cm') as number;
   }
 
   /**
    * Convert centimeters to meters
    */
   static cmToMeters(cm: number): number {
-    return cm * CONVERSION_FACTORS.CM_TO_METERS;
+    return convert(cm, 'cm').to('m') as number;
   }
 
   /**
    * Convert centimeters to inches
    */
   static cmToInches(cm: number): number {
-    return cm * CONVERSION_FACTORS.CM_TO_INCHES;
+    return convert(cm, 'cm').to('in') as number;
   }
 
   /**
    * Convert inches to centimeters
    */
   static inchesToCm(inches: number): number {
-    return inches * CONVERSION_FACTORS.INCHES_TO_CM;
+    return convert(inches, 'in').to('cm') as number;
   }
 
   /**
@@ -137,28 +129,28 @@ export class WeightConverter {
    * Convert kilograms to pounds
    */
   static kgToLbs(kg: number): number {
-    return kg * CONVERSION_FACTORS.KG_TO_LBS;
+    return convert(kg, 'kg').to('lb') as number;
   }
 
   /**
    * Convert pounds to kilograms
    */
   static lbsToKg(lbs: number): number {
-    return lbs * CONVERSION_FACTORS.LBS_TO_KG;
+    return convert(lbs, 'lb').to('kg') as number;
   }
 
   /**
    * Convert grams to kilograms
    */
   static gToKg(grams: number): number {
-    return grams * CONVERSION_FACTORS.G_TO_KG;
+    return convert(grams, 'g').to('kg') as number;
   }
 
   /**
    * Convert kilograms to grams
    */
   static kgToG(kg: number): number {
-    return kg * CONVERSION_FACTORS.KG_TO_G;
+    return convert(kg, 'kg').to('g') as number;
   }
 
   /**

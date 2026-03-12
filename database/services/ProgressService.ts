@@ -601,8 +601,8 @@ export class ProgressService {
       fatMassChange = finalFatMass - initialFatMass;
 
       if (isImperial) {
-        leanBodyMassChange /= 0.453592;
-        fatMassChange /= 0.453592;
+        leanBodyMassChange = convert(leanBodyMassChange, 'kg').to('lb') as number;
+        fatMassChange = convert(fatMassChange, 'kg').to('lb') as number;
       }
     }
 
@@ -617,10 +617,10 @@ export class ProgressService {
       };
 
       if (isImperial) {
-        targetWeights.bf5 /= 0.453592;
-        targetWeights.bf10 /= 0.453592;
-        targetWeights.bf15 /= 0.453592;
-        targetWeights.bf20 /= 0.453592;
+        targetWeights.bf5 = convert(targetWeights.bf5, 'kg').to('lb') as number;
+        targetWeights.bf10 = convert(targetWeights.bf10, 'kg').to('lb') as number;
+        targetWeights.bf15 = convert(targetWeights.bf15, 'kg').to('lb') as number;
+        targetWeights.bf20 = convert(targetWeights.bf20, 'kg').to('lb') as number;
       }
     }
 
@@ -632,7 +632,7 @@ export class ProgressService {
       empiricalTdee,
       statisticalTdee,
       tdeeUsedEmpirical: usedEmpirical,
-      avgWeight: finalWeight / (isImperial ? 0.453592 : 1),
+      avgWeight: isImperial ? (convert(finalWeight, 'kg').to('lb') as number) : finalWeight,
       weightChangeWeekly,
       avgFatPercent: finalFat || 0,
       fatPercentChangeWeekly,
