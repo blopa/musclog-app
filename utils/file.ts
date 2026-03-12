@@ -181,12 +181,12 @@ export async function copyBundledExerciseImageToDocument(
 
 export async function reloadApp() {
   if (__DEV__) {
-    // In development mode, use DevSettings.reload() to reload the app
+    // In development mode, use DevSettings.reload() to reload the app (does not work in prod)
     DevSettings.reload();
     return;
   }
 
-  // In production, check if Updates is enabled before reloading
+  // TODO: this is not working in production, find a correct way to reload
   if (Updates.isEnabled) {
     await Updates.reloadAsync();
   } else {
