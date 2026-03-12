@@ -1,3 +1,4 @@
+import { reloadAppAsync } from 'expo';
 import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
@@ -186,10 +187,17 @@ export async function reloadApp() {
     return;
   }
 
-  // TODO: this is not working in production, find a correct way to reload
-  if (Updates.isEnabled) {
-    await Updates.reloadAsync();
-  } else {
-    console.warn('Updates is not enabled. App reload skipped.');
+  // Production mode: try multiple reload strategies
+  try {
+    if (reloadAppAsync) {
+      await reloadAppAsync();
+    } else if (Updates.isEnabled) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await Updates.reloadAsync();
+    } else {
+      // TODO: navigate to /
+    }
+  } catch (error) {
+    // TODO: navigate to /
   }
 }
