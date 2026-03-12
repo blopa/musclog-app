@@ -68,4 +68,4 @@ data/dev/*
 /data/dev/*
 
 # jules debug file
-#web_output.log
+web_output.log

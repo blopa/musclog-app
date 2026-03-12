@@ -7,6 +7,7 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
 } from '../../utils/nutritionCalculator';
+import { calculateEmpiricalTDEEWindow } from '../../utils/progress';
 import { database } from '../index';
 import Exercise from '../models/Exercise';
 import MenstrualCycle from '../models/MenstrualCycle';
@@ -144,6 +145,7 @@ export class ProgressService {
     let heightCm = 0;
     if (heightMetric) {
       const decHeight = await heightMetric.getDecrypted();
+      // TODO: use the 'convert' package instead
       heightCm = decHeight.unit === 'in' ? decHeight.value * 2.54 : decHeight.value;
     }
 
@@ -336,6 +338,7 @@ export class ProgressService {
       if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_DAY) {
         let weightKg = wp.value;
         if (isImperial) {
+          // TODO: use the 'convert' package instead
           weightKg = wp.value * 0.453592;
         }
         const ffmi = ffmiFromWeightHeightAndBodyFat(weightKg, heightM, closestFat.value);
@@ -509,20 +512,38 @@ export class ProgressService {
     const currentGoal = await NutritionGoalService.getCurrent();
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
-    const lookbackDays = Math.max(1, Math.ceil((endDate - startDate) / MS_PER_DAY));
-    const totalCalories = nutritionDaily.reduce((acc, curr) => acc + curr.calories, 0);
+    // For empirical TDEE, we find the tracking window and anchor values.
+    const {
+      empiricalStart,
+      empiricalEnd,
+      initialWeight: initW,
+      finalWeight: finW,
+      initialFat,
+      finalFat,
+      empiricalDays,
+    } = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, startDate, endDate);
 
-    let initialWeight = weightPoints[0]?.value || 0;
-    let finalWeight = weightPoints[weightPoints.length - 1]?.value || 0;
-    const initialFat = fatPoints[0]?.value;
-    const finalFat = fatPoints[fatPoints.length - 1]?.value;
+    let initialWeight = initW;
+    let finalWeight = finW;
+
+    // Only include calories within the period covered by the measurements.
+    // We use [start, end) interval for calories because the final weight measurement
+    // is typically taken at the start of the final day.
+    const empiricalStartMidnight = new Date(empiricalStart).setHours(0, 0, 0, 0);
+    const empiricalEndMidnight = new Date(empiricalEnd).setHours(0, 0, 0, 0);
+
+    const empiricalCalories = nutritionDaily
+      .filter((n) => n.date >= empiricalStartMidnight && n.date < empiricalEndMidnight)
+      .reduce((acc, curr) => acc + curr.calories, 0);
 
     if (isImperial) {
+      // TODO: use the 'convert' package instead
       initialWeight = initialWeight * 0.453592;
       finalWeight = finalWeight * 0.453592;
     }
 
     const gender = user?.gender || 'male';
+    // TODO: use the 'convert' package instead
     const weightKg =
       finalWeight || (isImperial ? (initialWeight || 70) * 0.453592 : initialWeight || 70) || 70;
     const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
@@ -533,8 +554,8 @@ export class ProgressService {
       : calculateBMR(gender, weightKg, heightCm || 170, age);
 
     const empiricalTdee = calculateTDEE({
-      totalCalories,
-      totalDays: lookbackDays,
+      totalCalories: empiricalCalories,
+      totalDays: empiricalDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
@@ -547,7 +568,7 @@ export class ProgressService {
       activityLevel: user?.activityLevel || 3,
     });
 
-    const usedEmpirical = totalCalories > 0 && weightPoints.length >= 2;
+    const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;
     const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
     const weeklyAverages = this.aggregateMetricWeekly(weightPoints);

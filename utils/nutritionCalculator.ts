@@ -639,10 +639,12 @@ export function calculateWeightProjection(
 // ---------------------------------------------------------------------------
 
 export function lbsToKg(lbs: number): number {
+  // TODO: use the 'convert' package instead
   return lbs * 0.453592;
 }
 
 export function inchesToCm(inches: number): number {
+  // TODO: use the 'convert' package instead
   return inches * 2.54;
 }
 
@@ -657,16 +659,20 @@ export function normalizeWeightGoal(raw: string | undefined): WeightGoal {
   if (!raw) {
     return 'maintain';
   }
+
   const lower = raw.toLowerCase();
   if (lower === 'lose') {
     return 'lose';
   }
+
   if (lower === 'gain') {
     return 'gain';
   }
+
   if (lower === 'maintain') {
     return 'maintain';
   }
+
   return 'maintain';
 }
 
