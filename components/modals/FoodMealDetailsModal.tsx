@@ -1070,8 +1070,9 @@ export function FoodMealDetailsModal({
             sodium: nutritionalData.sodium,
             micros:
               productDetails && (productDetails as any)?.product?.foodNutrients
-                ? (productDetails.product as any).foodNutrients.reduce((acc: any, n: any) => {
-                    const num = n.nutrientNumber || n.number || n.nutrient?.number;
+                ? ((productDetails as any).product as any).foodNutrients.reduce(
+                    (acc: any, n: any) => {
+                      const num = n.nutrientNumber || n.number || n.nutrient?.number;
                   if (num) {
                     acc[num] = n.value ?? n.amount;
                   }
@@ -1123,7 +1124,7 @@ export function FoodMealDetailsModal({
           sodium: nutritionalData.sodium,
           micros:
             productDetails && (productDetails as any)?.product?.nutriments
-              ? (productDetails.product as any).nutriments
+              ? ((productDetails as any).product as any).nutriments
               : undefined,
           isFavorite: isFavorite,
         },
