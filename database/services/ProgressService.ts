@@ -511,28 +511,62 @@ export class ProgressService {
 
     const lookbackDays = Math.max(1, Math.ceil((endDate - startDate) / MS_PER_DAY));
 
-    // For empirical TDEE, we must use the actual duration between the first and last weight measurements
-    // to avoid underestimation when the tracking period is shorter than the view window (e.g., 90d preset).
-    const hasWeightData = weightPoints.length >= 2;
-    const empiricalStart = hasWeightData ? weightPoints[0].date : startDate;
-    const empiricalEnd = hasWeightData ? weightPoints[weightPoints.length - 1].date : endDate;
-    const empiricalDays = Math.max(1, Math.ceil((empiricalEnd - empiricalStart) / MS_PER_DAY));
+    // For empirical TDEE, we find the tracking window.
+    // Ideally, we want the first and last days that have BOTH weight and body fat measurements
+    // for the most accurate composition-aware TDEE.
+    const weightByDay = new Map<number, number>();
+    for (const p of weightPoints) {
+      const day = new Date(p.date).setHours(0, 0, 0, 0);
+      weightByDay.set(day, p.value);
+    }
 
-    // Only include calories within the period covered by the weight measurements
-    // Use midnight normalization for comparison with nutrition daily logs
+    const fatByDay = new Map<number, number>();
+    for (const p of fatPoints) {
+      const day = new Date(p.date).setHours(0, 0, 0, 0);
+      fatByDay.set(day, p.value);
+    }
+
+    const commonDays = Array.from(weightByDay.keys())
+      .filter((day) => fatByDay.has(day))
+      .sort((a, b) => a - b);
+
+    let empiricalStart: number;
+    let empiricalEnd: number;
+    let initialWeight: number;
+    let finalWeight: number;
+    let initialFat: number | undefined;
+    let finalFat: number | undefined;
+
+    if (commonDays.length >= 2) {
+      empiricalStart = commonDays[0];
+      empiricalEnd = commonDays[commonDays.length - 1];
+      initialWeight = weightByDay.get(empiricalStart)!;
+      finalWeight = weightByDay.get(empiricalEnd)!;
+      initialFat = fatByDay.get(empiricalStart);
+      finalFat = fatByDay.get(empiricalEnd);
+    } else {
+      // Fallback: use the weight measurement window and take whatever BF is closest (handled by calculateTDEE)
+      const hasWeightData = weightPoints.length >= 2;
+      empiricalStart = hasWeightData ? weightPoints[0].date : startDate;
+      empiricalEnd = hasWeightData ? weightPoints[weightPoints.length - 1].date : endDate;
+      initialWeight = weightPoints[0]?.value || 0;
+      finalWeight = weightPoints[weightPoints.length - 1]?.value || 0;
+      initialFat = fatPoints[0]?.value;
+      finalFat = fatPoints[fatPoints.length - 1]?.value;
+    }
+
+    // Actual duration in days between measurements
+    const empiricalDays = Math.max(0, Math.ceil((empiricalEnd - empiricalStart) / MS_PER_DAY));
+
+    // Only include calories within the period covered by the measurements.
+    // We use [start, end) interval for calories because the final weight measurement
+    // is typically taken at the start of the final day.
     const empiricalStartMidnight = new Date(empiricalStart).setHours(0, 0, 0, 0);
     const empiricalEndMidnight = new Date(empiricalEnd).setHours(0, 0, 0, 0);
 
     const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStartMidnight && n.date <= empiricalEndMidnight)
+      .filter((n) => n.date >= empiricalStartMidnight && n.date < empiricalEndMidnight)
       .reduce((acc, curr) => acc + curr.calories, 0);
-
-    const totalCalories = nutritionDaily.reduce((acc, curr) => acc + curr.calories, 0);
-
-    let initialWeight = weightPoints[0]?.value || 0;
-    let finalWeight = weightPoints[weightPoints.length - 1]?.value || 0;
-    const initialFat = fatPoints[0]?.value;
-    const finalFat = fatPoints[fatPoints.length - 1]?.value;
 
     if (isImperial) {
       initialWeight = initialWeight * 0.453592;
@@ -564,7 +598,7 @@ export class ProgressService {
       activityLevel: user?.activityLevel || 3,
     });
 
-    const usedEmpirical = totalCalories > 0 && weightPoints.length >= 2;
+    const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;
     const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
     const weeklyAverages = this.aggregateMetricWeekly(weightPoints);
