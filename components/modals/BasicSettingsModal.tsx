@@ -255,7 +255,7 @@ export function BasicSettingsModal({
           </View>
         </View>
 
-        {/* Food Search Section */}
+        {/* TODO: for some reason this UI is not showing up on mobile - I did add the key to EAS so idk what's going on, seems like some sort of UI issue for mobile, because on web I can see it */}
         {foodSearchMenuItems.length > 1 ? (
           <View
             style={{
