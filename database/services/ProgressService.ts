@@ -537,7 +537,20 @@ export class ProgressService {
     let initialFat: number | undefined;
     let finalFat: number | undefined;
 
-    if (commonDays.length >= 2) {
+    if (commonDays.length > 14) {
+      // Use weekly averages for start and end to smooth fluctuations
+      const startPoints = commonDays.slice(0, 7);
+      const endPoints = commonDays.slice(-7);
+
+      empiricalStart = startPoints.reduce((a, b) => a + b, 0) / 7;
+      empiricalEnd = endPoints.reduce((a, b) => a + b, 0) / 7;
+
+      initialWeight = startPoints.reduce((sum, day) => sum + weightByDay.get(day)!, 0) / 7;
+      finalWeight = endPoints.reduce((sum, day) => sum + weightByDay.get(day)!, 0) / 7;
+
+      initialFat = startPoints.reduce((sum, day) => sum + fatByDay.get(day)!, 0) / 7;
+      finalFat = endPoints.reduce((sum, day) => sum + fatByDay.get(day)!, 0) / 7;
+    } else if (commonDays.length >= 2) {
       empiricalStart = commonDays[0];
       empiricalEnd = commonDays[commonDays.length - 1];
       initialWeight = weightByDay.get(empiricalStart)!;
