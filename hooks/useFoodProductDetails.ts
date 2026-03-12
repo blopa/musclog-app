@@ -3,6 +3,7 @@ import { fetch } from 'expo/fetch';
 
 import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
 import { getProductName } from '../utils/openFoodFactsMapper';
+import { useSettings } from './useSettings';
 
 /**
  * WORKAROUND: We do not use @openfoodfacts/openfoodfacts-nodejs for product-by-barcode
@@ -29,7 +30,7 @@ export type ProductDetailsQueryData =
   | { status: 'error'; error: { message: string } }
   | null;
 
-async function fetchProductByBarcode(barcode: string): Promise<ProductV3Result> {
+async function fetchOFFProductByBarcode(barcode: string): Promise<ProductV3Result> {
   const url = `${OFF_API_BASE}${PRODUCT_V3_PATH}/${encodeURIComponent(barcode)}`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -55,6 +56,43 @@ async function fetchProductByBarcode(barcode: string): Promise<ProductV3Result> 
     }
 
     return { error: { message: (e as Error)?.message ?? 'Network error' } };
+  }
+}
+
+async function fetchUSDAProductByBarcode(barcode: string): Promise<any> {
+  const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
+  const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      return null;
+    }
+    const data = await res.json();
+    if (data.foods && data.foods.length > 0) {
+      // Get full details for the first match
+      return fetchUSDAProductById(data.foods[0].fdcId);
+    }
+    return null;
+  } catch (e) {
+    console.error('Error fetching from USDA by barcode:', e);
+    return null;
+  }
+}
+
+export async function fetchUSDAProductById(fdcId: string | number): Promise<any> {
+  const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
+  const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${apiKey}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      return null;
+    }
+    return await res.json();
+  } catch (e) {
+    console.error('Error fetching USDA product by ID:', e);
+    return null;
   }
 }
 
@@ -94,22 +132,66 @@ export function useFoodSearch(searchTerm: string) {
   });
 }
 
-export function useFoodProductDetails(barcode: string | null) {
+export function useFoodProductDetails(
+  barcode: string | null,
+  usdaId: string | number | null = null
+) {
+  const { foodSearchSource } = useSettings();
+
   return useQuery({
-    queryKey: ['product-details', barcode],
+    queryKey: ['product-details', barcode, usdaId, foodSearchSource],
     queryFn: async (): Promise<ProductDetailsQueryData> => {
+      if (usdaId) {
+        const usdaData = await fetchUSDAProductById(usdaId);
+        if (usdaData) {
+          return {
+            status: 'success',
+            product: usdaData,
+            source: 'usda',
+          } as any;
+        }
+        return { status: 'failure' } as any;
+      }
+
       if (!barcode) {
         return null;
       }
 
-      const result = await fetchProductByBarcode(barcode);
-      if (result.error) {
-        return { status: 'error', error: result.error };
+      const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
+      const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
+
+      if (includeOpenFood) {
+        const result = await fetchOFFProductByBarcode(barcode);
+        if (result.data && result.data.status === 'success') {
+          return result.data;
+        }
+
+        // If only OFF is enabled, return the result (might be error or not found)
+        if (!includeUSDA) {
+          if (result.error) {
+            return { status: 'error', error: result.error };
+          }
+          return result.data || null;
+        }
       }
 
-      return result.data;
+      if (includeUSDA) {
+        const usdaData = await fetchUSDAProductByBarcode(barcode);
+        if (usdaData) {
+          // Wrap USDA data to match the expected structure as much as possible,
+          // though FoodMealDetailsModal will need to handle it.
+          // We mark it so the component knows it's USDA.
+          return {
+            status: 'success',
+            product: usdaData,
+            source: 'usda',
+          } as any;
+        }
+      }
+
+      return { status: 'failure', code: barcode } as any;
     },
-    enabled: Boolean(barcode),
+    enabled: Boolean(barcode || usdaId),
     staleTime: 1000 * 60 * 10,
   });
 }

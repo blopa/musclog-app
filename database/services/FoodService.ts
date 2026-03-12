@@ -4,7 +4,7 @@ import convert from 'convert';
 import { ProductV3 } from '../../types/openFoodFacts';
 import { getProductName } from '../../utils/openFoodFactsMapper';
 import { database } from '../index';
-import Food from '../models/Food';
+import Food, { type MicrosData } from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 
@@ -23,6 +23,7 @@ export class FoodService {
       sugar?: number;
       saturatedFat?: number;
       sodium?: number;
+      micros?: MicrosData;
       isFavorite?: boolean;
     },
     customPortion?: FoodPortion | null
@@ -71,6 +72,7 @@ export class FoodService {
           sugar: nutritionData.sugar,
           saturatedFat: nutritionData.saturatedFat,
           sodium: nutritionData.sodium,
+          ...nutritionData.micros,
         };
 
         food.micros = Object.fromEntries(
@@ -79,6 +81,94 @@ export class FoodService {
 
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'openfood';
+        food.createdAt = now;
+        food.updatedAt = now;
+      });
+
+      // Link food to the default portion
+      await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+        ffp.foodId = food.id;
+        ffp.foodPortionId = defaultPortion.id;
+        ffp.isDefault = true;
+        ffp.createdAt = now;
+        ffp.updatedAt = now;
+      });
+
+      return food;
+    });
+  }
+
+  /**
+   * Create a new food from USDA product details
+   */
+  static async createFromUSDAProduct(
+    product: any,
+    nutritionData: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber?: number;
+      sugar?: number;
+      saturatedFat?: number;
+      sodium?: number;
+      micros?: MicrosData;
+      isFavorite?: boolean;
+    },
+    customPortion?: FoodPortion | null
+  ): Promise<Food> {
+    return await database.write(async () => {
+      const now = Date.now();
+
+      // Use custom portion if provided, otherwise find or create "100g" portion
+      let defaultPortion: FoodPortion;
+
+      if (customPortion) {
+        defaultPortion = customPortion;
+      } else {
+        // Find or create a "100g" portion (global, reusable)
+        const existingPortion = await database
+          .get<FoodPortion>('food_portions')
+          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+          .fetch();
+
+        defaultPortion =
+          existingPortion.length > 0
+            ? existingPortion[0]
+            : await database.get<FoodPortion>('food_portions').create((portion) => {
+                portion.name = '100g';
+                portion.gramWeight = 100;
+                portion.createdAt = now;
+                portion.updatedAt = now;
+              });
+      }
+
+      const food = await database.get<Food>('foods').create((food) => {
+        food.isAiGenerated = false;
+        food.name = product.description;
+        food.brand = product.brandOwner || product.brandName;
+        food.barcode = product.gtinUpc || String(product.fdcId);
+
+        food.calories = nutritionData.calories;
+        food.protein = nutritionData.protein;
+        food.carbs = nutritionData.carbs;
+        food.fat = nutritionData.fat;
+        food.fiber = nutritionData.fiber || 0;
+
+        // Store micros
+        const micros = {
+          sugar: nutritionData.sugar,
+          saturatedFat: nutritionData.saturatedFat,
+          sodium: nutritionData.sodium,
+          ...nutritionData.micros,
+        };
+
+        food.micros = Object.fromEntries(
+          Object.entries(micros).filter(([_, value]) => value !== undefined)
+        );
+
+        food.isFavorite = nutritionData.isFavorite ?? false;
+        food.source = 'usda';
         food.createdAt = now;
         food.updatedAt = now;
       });

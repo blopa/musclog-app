@@ -62,6 +62,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
       'units',
+      'foodSearchSource',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -202,6 +203,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
+  const handleFoodSearchSourceChange = createSettingHandler(
+    'foodSearchSource',
+    SettingsService.setFoodSearchSource
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -269,6 +274,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'useOcrBeforeAi':
             await SettingsService.setUseOcrBeforeAi(value as boolean);
             break;
+          case 'foodSearchSource':
+            await SettingsService.setFoodSearchSource(value as any);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -320,6 +328,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
+    foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -346,6 +355,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
+    handleFoodSearchSourceChange,
 
     // Utilities
     flushAllPendingChanges,

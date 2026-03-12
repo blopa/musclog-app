@@ -21,33 +21,13 @@ import { theme } from '../theme';
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const {
-    connectHealthData,
-    readHealthData,
-    writeHealthData,
-    googleGeminiApiKey,
-    googleGeminiModel,
-    openAiApiKey,
-    openAiModel,
-  } = useSettings();
+  const { googleGeminiApiKey, googleGeminiModel, openAiApiKey, openAiModel } = useSettings();
   const { promptAsync } = useGoogleAuth();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
-
-  const handleConnectHealthDataChange = async (value: boolean) => {
-    await SettingsService.setConnectHealthData(value);
-  };
-
-  const handleReadHealthDataChange = async (value: boolean) => {
-    await SettingsService.setReadHealthData(value);
-  };
-
-  const handleWriteHealthDataChange = async (value: boolean) => {
-    await SettingsService.setWriteHealthData(value);
-  };
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
     await SettingsService.setGoogleGeminiApiKey(value);
@@ -229,12 +209,6 @@ export default function SettingsScreen() {
       <BasicSettingsModal
         visible={isBasicSettingsVisible}
         onClose={() => setBasicSettingsVisible(false)}
-        connectHealthData={connectHealthData}
-        onConnectHealthDataChange={handleConnectHealthDataChange}
-        readHealthData={readHealthData}
-        onReadHealthDataChange={handleReadHealthDataChange}
-        writeHealthData={writeHealthData}
-        onWriteHealthDataChange={handleWriteHealthDataChange}
       />
       <AdvancedSettingsModal
         visible={isAdvancedSettingsVisible}

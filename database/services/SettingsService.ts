@@ -6,6 +6,8 @@ import {
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
+  FOOD_SEARCH_SOURCE_SETTING_TYPE,
+  type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
@@ -362,6 +364,24 @@ export class SettingsService {
 
   static async getNotificationsWorkoutDuration(): Promise<boolean> {
     return SettingsService.getBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the food search source setting ('both' | 'openfood' | 'usda')
+   */
+  static async setFoodSearchSource(source: FoodSearchSource) {
+    await SettingsService.setStringSetting(FOOD_SEARCH_SOURCE_SETTING_TYPE, source);
+  }
+
+  /**
+   * Get the food search source setting.
+   * Defaults to 'both' if not set.
+   */
+  static async getFoodSearchSource(): Promise<FoodSearchSource> {
+    return (await SettingsService.getStringSetting(
+      FOOD_SEARCH_SOURCE_SETTING_TYPE,
+      'both'
+    )) as FoodSearchSource;
   }
 
   // --- Private helpers ---

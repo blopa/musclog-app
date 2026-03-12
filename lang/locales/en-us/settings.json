@@ -21,7 +21,11 @@
       "healthDataSubtitle": "Sync your workouts and body metrics",
       "healthDataPrivacy": "Your health data is only stored locally.",
       "syncNow": "Sync Now",
-      "syncing": "Syncing..."
+      "syncing": "Syncing...",
+      "foodSearchSource": "Food Search Source",
+      "foodSearchBoth": "Both",
+      "foodSearchOpenFoodFacts": "Open Food Facts",
+      "foodSearchUSDA": "USDA"
     },
     "advancedSettings": {
       "title": "Local Data Settings",
