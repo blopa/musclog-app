@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import convert from 'convert';
 
 import {
   calculateBMR,
@@ -145,8 +146,7 @@ export class ProgressService {
     let heightCm = 0;
     if (heightMetric) {
       const decHeight = await heightMetric.getDecrypted();
-      // TODO: use the 'convert' package instead
-      heightCm = decHeight.unit === 'in' ? decHeight.value * 2.54 : decHeight.value;
+      heightCm = decHeight.unit === 'in' ? (convert(decHeight.value, 'in').to('cm') as number) : decHeight.value;
     }
 
     const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial);
@@ -338,8 +338,7 @@ export class ProgressService {
       if (closestFat && Math.abs(closestFat.date - wp.date) < 7 * MS_PER_DAY) {
         let weightKg = wp.value;
         if (isImperial) {
-          // TODO: use the 'convert' package instead
-          weightKg = wp.value * 0.453592;
+          weightKg = convert(wp.value, 'lb').to('kg') as number;
         }
         const ffmi = ffmiFromWeightHeightAndBodyFat(weightKg, heightM, closestFat.value);
         history.push({ date: wp.date, value: ffmi });
@@ -537,15 +536,13 @@ export class ProgressService {
       .reduce((acc, curr) => acc + curr.calories, 0);
 
     if (isImperial) {
-      // TODO: use the 'convert' package instead
-      initialWeight = initialWeight * 0.453592;
-      finalWeight = finalWeight * 0.453592;
+      initialWeight = convert(initialWeight, 'lb').to('kg') as number;
+      finalWeight = convert(finalWeight, 'lb').to('kg') as number;
     }
 
     const gender = user?.gender || 'male';
-    // TODO: use the 'convert' package instead
     const weightKg =
-      finalWeight || (isImperial ? (initialWeight || 70) * 0.453592 : initialWeight || 70) || 70;
+      finalWeight || (isImperial ? convert(initialWeight || 70, 'lb').to('kg') as number : initialWeight || 70) || 70;
     const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
     const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
 

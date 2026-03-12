@@ -1,3 +1,5 @@
+import convert from 'convert';
+
 import { NutritionGoals } from '../components/NutritionGoalsBody';
 import type {
   EatingPhase,
@@ -639,13 +641,11 @@ export function calculateWeightProjection(
 // ---------------------------------------------------------------------------
 
 export function lbsToKg(lbs: number): number {
-  // TODO: use the 'convert' package instead
-  return lbs * 0.453592;
+  return convert(lbs, 'lb').to('kg') as number;
 }
 
 export function inchesToCm(inches: number): number {
-  // TODO: use the 'convert' package instead
-  return inches * 2.54;
+  return convert(inches, 'in').to('cm') as number;
 }
 
 // ---------------------------------------------------------------------------
