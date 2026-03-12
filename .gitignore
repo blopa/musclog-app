@@ -66,3 +66,6 @@ coverage/
 # ignore all files on data/dev
 data/dev/*
 /data/dev/*
+
+# jules debug file
+#web_output.log
