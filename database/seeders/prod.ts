@@ -169,6 +169,10 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setNavSlot(3, 'profile');
     console.log('Set default navigation bar slots: workouts, food, profile');
 
+    // Set default food search source to both (Open Food Facts + USDA)
+    await SettingsService.setFoodSearchSource('both');
+    console.log('Set default food search source to both');
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');
