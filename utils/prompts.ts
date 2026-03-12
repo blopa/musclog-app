@@ -413,8 +413,8 @@ export const getRecentWorkoutsInsightsPrompt = async (
   let workoutsJson = '[]';
   try {
     const units = await SettingsService.getUnits();
-    const startTs = new Date(startDate).setHours(0, 0, 0, 0);
-    const endTs = new Date(endDate).setHours(23, 59, 59, 999);
+    const startTs = new Date(startDate).setUTCHours(0, 0, 0, 0);
+    const endTs = new Date(endDate).setUTCHours(23, 59, 59, 999);
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {

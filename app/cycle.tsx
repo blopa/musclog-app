@@ -30,9 +30,9 @@ export default function CycleScreen() {
   useEffect(() => {
     const fetchDailyMetrics = async () => {
       const startOfDay = new Date(selectedDate);
-      startOfDay.setHours(0, 0, 0, 0);
+      startOfDay.setUTCHours(0, 0, 0, 0);
       const endOfDay = new Date(selectedDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      endOfDay.setUTCHours(23, 59, 59, 999);
 
       const flowMetrics = await UserMetricService.getMetricsHistory('period_flow', {
         startDate: startOfDay.getTime(),

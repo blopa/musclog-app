@@ -33,11 +33,11 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
         end = customRange.endDate.getTime();
       } else {
         const now = new Date();
-        now.setHours(23, 59, 59, 999);
+        now.setUTCHours(23, 59, 59, 999);
         end = now.getTime();
 
         const startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
+        startDate.setUTCHours(0, 0, 0, 0);
 
         switch (preset) {
           case '7d':

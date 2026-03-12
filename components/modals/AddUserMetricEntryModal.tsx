@@ -171,7 +171,7 @@ export default function AddUserMetricEntryModal({
       // Set the date to midnight for date tracking, but preserve the time component
       const combinedDate = new Date(selectedDate);
       combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
-      const dateTimestamp = new Date(combinedDate.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+      const dateTimestamp = new Date(combinedDate.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
 
       const weightKg = displayToKg(weight, units);
       const heightCm = displayToCm(height, units);

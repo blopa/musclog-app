@@ -189,7 +189,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       } else {
         const startDate = nutritionGoals.goalStartDate;
         const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
+        todayStart.setUTCHours(0, 0, 0, 0);
         if (startDate != null && startDate < todayStart.getTime()) {
           await NutritionGoalService.addGoalAtDate(input, startDate);
         } else {

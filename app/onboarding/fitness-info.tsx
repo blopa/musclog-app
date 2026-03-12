@@ -185,7 +185,7 @@ export default function FitnessInfo() {
           });
         }
 
-        const currentDate = new Date().setHours(0, 0, 0, 0); // Set to midnight of today for date tracking
+        const currentDate = new Date().setUTCHours(0, 0, 0, 0); // Set to midnight of today for date tracking
         const now = Date.now();
         const endOfDay = currentDate + 24 * 60 * 60 * 1000 - 1;
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;

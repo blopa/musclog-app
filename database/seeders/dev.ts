@@ -1241,13 +1241,13 @@ async function seedUserMetrics(): Promise<{ created: number }> {
         const date = new Date();
         date.setDate(date.getDate() - days);
         date.setHours(8, 30, 0, 0); // 8:30 AM for consistency
-        return new Date(date.setHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
       };
 
       // Helper to create a date in a specific month
       const dateInMonth = (year: number, month: number, day: number): number => {
         const date = new Date(year, month, day, 8, 30, 0, 0);
-        return new Date(date.setHours(0, 0, 0, 0)).getTime();
+        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime();
       };
 
       const today = new Date();
@@ -1565,7 +1565,7 @@ async function seedFoods(): Promise<{ created: number }> {
       const daysAgo = (days: number): number => {
         const date = new Date();
         date.setDate(date.getDate() - days);
-        date.setHours(0, 0, 0, 0); // midnight for the day
+        date.setUTCHours(0, 0, 0, 0); // midnight for the day
         return date.getTime();
       };
 

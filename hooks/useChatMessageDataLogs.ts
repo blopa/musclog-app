@@ -186,7 +186,7 @@ export function useChatMessageDataLogs({
       const records = await ChatService.getAllMessages(batchSize, 0);
       const itemsWithDates = records.map((r) => ({
         item: toDisplayItem(r),
-        dateTimestamp: new Date(r.createdAt).setHours(0, 0, 0, 0),
+        dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
       }));
       setDayGroups(groupByDate(itemsWithDates, t));
       setHasMore(records.length === batchSize);
@@ -216,7 +216,7 @@ export function useChatMessageDataLogs({
 
       const itemsWithDates = records.map((r) => ({
         item: toDisplayItem(r),
-        dateTimestamp: new Date(r.createdAt).setHours(0, 0, 0, 0),
+        dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
       }));
 
       setDayGroups((prev) => mergeIntoDayGroups(prev, itemsWithDates, t));

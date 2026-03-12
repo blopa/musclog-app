@@ -722,11 +722,11 @@ export class NutritionService {
 
     let streak = 0;
     let expectedDate = new Date();
-    expectedDate.setHours(0, 0, 0, 0);
+    expectedDate.setUTCHours(0, 0, 0, 0);
 
     for (const dateTimestamp of uniqueDates) {
       const currentDate = new Date(dateTimestamp ?? Date.now());
-      currentDate.setHours(0, 0, 0, 0);
+      currentDate.setUTCHours(0, 0, 0, 0);
 
       const daysDiff = Math.floor(
         (expectedDate.getTime() - currentDate.getTime()) / (24 * 60 * 60 * 1000)

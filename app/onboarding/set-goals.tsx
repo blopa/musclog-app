@@ -337,7 +337,7 @@ export default function SetGoals() {
       let rawWeight = weightDec?.value ?? 0;
       let rawHeight = heightDec?.value ?? 0;
 
-      const todayStart = new Date().setHours(0, 0, 0, 0);
+      const todayStart = new Date().setUTCHours(0, 0, 0, 0);
       const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
       if (rawWeight <= 0) {
         const todayWeights = await UserMetricService.getMetricsHistory(
