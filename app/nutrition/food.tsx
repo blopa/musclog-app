@@ -348,6 +348,12 @@ export default function FoodScreen() {
     setIsMealActionModalVisible(true);
   };
 
+  const handleCreateMealFromFood = () => {
+    setIsMealMenuVisible(false);
+    // TODO: implement this feature
+    console.log('Create meal from food:', selectedMealForMenu);
+  };
+
   const handleSplitMeal = () => {
     setIsMealMenuVisible(false);
     setMealActionMode('split');
@@ -395,6 +401,14 @@ export default function FoodScreen() {
   };
 
   const mealMenuItems = [
+    {
+      icon: UtensilsCrossed,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.createMeal'),
+      description: t('food.actions.createMealDesc'),
+      onPress: handleCreateMealFromFood,
+    },
     {
       icon: Scissors,
       iconColor: theme.colors.status.warning,
