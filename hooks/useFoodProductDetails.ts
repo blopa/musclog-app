@@ -60,8 +60,6 @@ async function fetchOFFProductByBarcode(barcode: string): Promise<ProductV3Resul
 }
 
 async function fetchUSDAProductByBarcode(barcode: string): Promise<any> {
-  // TODO: if no API key, do not allow user to enable USDA in their settings
-  // to when we get to here we should always have the API key
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
 
@@ -83,8 +81,6 @@ async function fetchUSDAProductByBarcode(barcode: string): Promise<any> {
 }
 
 export async function fetchUSDAProductById(fdcId: string | number): Promise<any> {
-  // TODO: if no API key, do not allow user to enable USDA in their settings
-  // to when we get to here we should always have the API key
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${apiKey}`;
 

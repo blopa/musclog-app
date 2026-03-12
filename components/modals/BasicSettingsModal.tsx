@@ -32,13 +32,6 @@ type BasicSettingsModalProps = {
   // Language settings
   language?: string;
   onLanguagePress?: () => void;
-  // Health data settings
-  connectHealthData?: boolean;
-  onConnectHealthDataChange?: (value: boolean) => void;
-  readHealthData?: boolean;
-  onReadHealthDataChange?: (value: boolean) => void;
-  writeHealthData?: boolean;
-  onWriteHealthDataChange?: (value: boolean) => void;
 };
 
 export function BasicSettingsModal({
@@ -46,12 +39,6 @@ export function BasicSettingsModal({
   onClose,
   language = 'English (US)',
   onLanguagePress,
-  connectHealthData = false,
-  onConnectHealthDataChange,
-  readHealthData = true,
-  onReadHealthDataChange,
-  writeHealthData = false,
-  onWriteHealthDataChange,
 }: BasicSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -115,19 +102,29 @@ export function BasicSettingsModal({
     },
   ];
 
+  const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
+
   const foodSearchOptions = [
-    {
-      label: t('settings.basicSettings.foodSearchBoth'),
-      value: 'both',
-    },
+    ...(hasUsdaApiKey
+      ? [
+          {
+            label: t('settings.basicSettings.foodSearchBoth'),
+            value: 'both',
+          },
+        ]
+      : []),
     {
       label: t('settings.basicSettings.foodSearchOpenFoodFacts'),
       value: 'openfood',
     },
-    {
-      label: t('settings.basicSettings.foodSearchUSDA'),
-      value: 'usda',
-    },
+    ...(hasUsdaApiKey
+      ? [
+          {
+            label: t('settings.basicSettings.foodSearchUSDA'),
+            value: 'usda',
+          },
+        ]
+      : []),
   ];
 
   const unitsOptions = [
@@ -228,22 +225,28 @@ export function BasicSettingsModal({
         </View>
 
         {/* Food Search Section */}
-        <View
-          style={{
-            marginHorizontal: theme.spacing.padding.base,
-          }}
-        >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-            {t('settings.basicSettings.foodSearchSource')}
-          </Text>
-          <View className="gap-2">
-            <SegmentedControl
-              options={foodSearchOptions}
-              value={foodSearchSource || 'both'}
-              onValueChange={(val) => handleFoodSearchSourceChange(val as any)}
-            />
+        {foodSearchOptions.length > 1 ? (
+          <View
+            style={{
+              marginHorizontal: theme.spacing.padding.base,
+            }}
+          >
+            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+              {t('settings.basicSettings.foodSearchSource')}
+            </Text>
+            <View className="gap-2">
+              <SegmentedControl
+                options={foodSearchOptions}
+                value={
+                  !hasUsdaApiKey && (foodSearchSource === 'usda' || foodSearchSource === 'both')
+                    ? 'openfood'
+                    : foodSearchSource || (hasUsdaApiKey ? 'both' : 'openfood')
+                }
+                onValueChange={(val) => handleFoodSearchSourceChange(val as any)}
+              />
+            </View>
           </View>
-        </View>
+        ) : null}
 
         {/* Localization Section */}
         <View
