@@ -23,6 +23,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
+import { PickerButton } from '../theme/PickerButton';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ToggleInput } from '../theme/ToggleInput';
 import { FullScreenModal } from './FullScreenModal';
@@ -264,15 +265,13 @@ export function BasicSettingsModal({
             <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
               {t('settings.basicSettings.foodSearchSource')}
             </Text>
-            <SettingsCard
-              title={t('settings.basicSettings.foodSearchSource')}
-              subtitle={foodSearchLabel}
-              onPress={() => setFoodSearchMenuVisible(true)}
-              icon={<Search size={theme.iconSize.xl} color={theme.colors.text.primary} />}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-              }
-            />
+            <View className="gap-2">
+              <PickerButton
+                label={foodSearchLabel}
+                icon={<Search size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
+                onPress={() => setFoodSearchMenuVisible(true)}
+              />
+            </View>
           </View>
         ) : null}
 
