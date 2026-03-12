@@ -197,8 +197,10 @@ export function useUnifiedFoodSearch({
         return [];
       }
 
+      // TODO: if no API key, do not allow user to enable USDA in their settings
+      // to when we get to here we should always have the API key
       const apiKey =
-        process.env.EXPO_PUBLIC_USDA_API_KEY || 'UNz8iH6WoBaHG4mEdAklid1MZq7zSbPKJVfNUbZR';
+        process.env.EXPO_PUBLIC_USDA_API_KEY || '';
       const pageNumber = Math.floor(usdaOffset / apiLimit) + 1;
       const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${apiLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
 
