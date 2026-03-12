@@ -46,6 +46,7 @@ export interface UseUnifiedFoodSearchProps {
   includeAPI?: boolean;
   localLimit?: number;
   apiLimit?: number;
+  usdaLimit?: number;
   debounceMs?: number;
 }
 
@@ -56,6 +57,7 @@ export function useUnifiedFoodSearch({
   includeAPI = true,
   localLimit = 10,
   apiLimit = 20,
+  usdaLimit = 20,
   debounceMs = 300,
 }: UseUnifiedFoodSearchProps) {
   const { t } = useTranslation();
@@ -198,8 +200,8 @@ export function useUnifiedFoodSearch({
       }
 
       const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
-      const pageNumber = Math.floor(usdaOffset / apiLimit) + 1;
-      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${apiLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
+      const pageNumber = Math.floor(usdaOffset / usdaLimit) + 1;
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${usdaLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
 
       const response = await fetch(url);
 
@@ -382,13 +384,13 @@ export function useUnifiedFoodSearch({
       return;
     }
     setIsLoadingMoreUSDA(true);
-    setUsdaOffset((prev) => prev + apiLimit);
-  }, [isLoadingMoreUSDA, apiLimit]);
+    setUsdaOffset((prev) => prev + usdaLimit);
+  }, [isLoadingMoreUSDA, usdaLimit]);
 
   // Check if there might be more results
   const hasMoreLocal = hasMoreFoods;
   const hasMoreAPI = apiPageResults.length === apiLimit; // If we got a full page, there might be more
-  const hasMoreUSDA = usdaPageResults.length === apiLimit;
+  const hasMoreUSDA = usdaPageResults.length === usdaLimit;
 
   // Optimized loading states
   const isLoading = isLoadingLocal; // Only show loading for local search
