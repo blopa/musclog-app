@@ -138,12 +138,12 @@ export function StackedBarChart({
           )}
         </CartesianChart>
 
-        {yAxisLabels?.map(({ label, yDomainValue }) => {
+        {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yMax - yMin;
           const topOffset = (1 - (yDomainValue - yMin) / yRange) * height;
           return (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               pointerEvents="none"
               style={{
                 position: 'absolute',
