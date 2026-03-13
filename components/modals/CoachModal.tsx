@@ -121,6 +121,22 @@ const getConversationContextBubbleGradient = (
   }
 };
 
+const getConversationContextIcon = (
+  conversationContext: string,
+  theme: Theme
+): { Icon: typeof Zap | typeof Dumbbell | typeof UtensilsCrossed; color: string } => {
+  switch (conversationContext) {
+    case 'general':
+      return { Icon: Zap, color: theme.colors.background.gray700 };
+    case 'exercise':
+      return { Icon: Dumbbell, color: theme.colors.status.info };
+    case 'nutrition':
+      return { Icon: UtensilsCrossed, color: theme.colors.accent.primary };
+    default:
+      return { Icon: Zap, color: theme.colors.background.gray700 };
+  }
+};
+
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
 const renderMessageText = (props: any, theme: Theme) => {
@@ -958,6 +974,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcScrollToBottomComponent = useCallback(() => null, []);
 
+  const contextIcon = useMemo(() => {
+    const { Icon, color } = getConversationContextIcon(conversationContext, theme);
+    return <Icon size={theme.iconSize.lg} color={color} />;
+  }, [conversationContext, theme]);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -1021,6 +1042,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               </Text>
             </View>
           </View>
+          {contextIcon}
         </View>
 
         <View className="border-b px-4 py-3" style={{ borderColor: theme.colors.border.light }}>
