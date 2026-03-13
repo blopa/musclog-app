@@ -14,6 +14,7 @@ import {
   UserMetricService,
   WorkoutTemplateService,
 } from '../../../database/services';
+import { getCurrentChatSessionId } from '../../../utils/chatSessionStorage';
 import { displayToCm, displayToKg } from '../../../utils/unitConversion';
 import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
 import type { DataLogModalVariant } from '../DataLogModal';
@@ -727,5 +728,187 @@ export async function saveRecord(
     default:
       // Implement saving for this entity type or remove from supported types
       throw new Error(`Saving not implemented for entity type: ${entityType}`);
+  }
+}
+
+/**
+ * Get create field configuration for a given entity type.
+ * Similar to getEditFields but may include extra fields only relevant on creation (e.g. sender for chatMessage).
+ */
+export function getCreateFields(entityType: DataLogModalVariant): EditFieldConfig[] {
+  if (entityType === 'chatMessage') {
+    return [
+      ...getEditFields('chatMessage'),
+      {
+        type: 'select',
+        key: 'sender',
+        label: 'coach.chatMessages.sender',
+        required: true,
+        options: [
+          { value: 'user', label: 'coach.chatMessages.senderUser' },
+          { value: 'coach', label: 'coach.chatMessages.senderCoach' },
+        ],
+      },
+    ];
+  }
+
+  return getEditFields(entityType);
+}
+
+/**
+ * Get default (empty) initial values for creating a new record.
+ */
+export function getCreateInitialValues(entityType: DataLogModalVariant): EditFormValues {
+  switch (entityType) {
+    case 'chatMessage':
+      return { message: '', sender: 'user' };
+
+    case 'userMetric':
+      return { type: 'weight', value: 0, date: Date.now() };
+
+    case 'nutritionGoal':
+      return {
+        totalCalories: 0,
+        protein: 0,
+        carbs: 0,
+        fats: 0,
+        fiber: 0,
+        eatingPhase: 'maintain',
+        targetWeight: 0,
+        targetBodyFat: 0,
+        targetBMI: 0,
+        targetFFMI: 0,
+      };
+
+    case 'nutritionCheckin':
+      return {
+        checkinDate: Date.now(),
+        targetWeight: 0,
+        targetBodyFat: 0,
+        targetBmi: 0,
+        targetFfmi: 0,
+      };
+
+    case 'meal':
+      return { name: '', description: '' };
+
+    case 'exercise':
+      return {
+        name: '',
+        description: '',
+        muscleGroup: 'other',
+        equipmentType: 'other',
+        mechanicType: 'compound',
+        loadMultiplier: 1.0,
+      };
+
+    case 'food':
+      return {
+        name: '',
+        brand: '',
+        barcode: '',
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      };
+
+    case 'foodPortion':
+      return { name: '', gramWeight: 100, icon: '' };
+
+    case 'workoutTemplate':
+      return { name: '', description: '', icon: '', isArchived: false };
+
+    default:
+      return {};
+  }
+}
+
+/**
+ * Create a new record in the database via service layer.
+ */
+export async function createRecord(
+  entityType: DataLogModalVariant,
+  values: EditFormValues,
+  context?: SaveRecordContext
+): Promise<void> {
+  switch (entityType) {
+    case 'chatMessage': {
+      const sessionId = (await getCurrentChatSessionId()) ?? ChatService.generateSessionId();
+      await ChatService.saveMessage({
+        sessionId,
+        sender: values.sender as 'user' | 'coach',
+        message: String(values.message ?? ''),
+      });
+      break;
+    }
+
+    case 'userMetric': {
+      const type = values.type as string;
+      let value = values.value as number;
+      let unit: string | undefined;
+      if (context?.units && type === 'weight' && value != null) {
+        value = displayToKg(value, context.units);
+        unit = 'kg';
+      } else if (context?.units && type === 'height' && value != null) {
+        value = displayToCm(value, context.units);
+        unit = 'cm';
+      }
+
+      await UserMetricService.createMetric({
+        type,
+        value,
+        unit,
+        date: (values.date as number) ?? Date.now(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      });
+      break;
+    }
+
+    case 'nutritionGoal': {
+      let targetWeightKg = values.targetWeight as number;
+      if (context?.units && targetWeightKg != null) {
+        targetWeightKg = displayToKg(targetWeightKg, context.units);
+      }
+
+      await NutritionGoalService.saveGoals({
+        totalCalories: values.totalCalories as number,
+        protein: values.protein as number,
+        carbs: values.carbs as number,
+        fats: values.fats as number,
+        fiber: (values.fiber as number) ?? 0,
+        eatingPhase: values.eatingPhase as any,
+        targetWeight: targetWeightKg,
+        targetBodyFat: (values.targetBodyFat as number) ?? 0,
+        targetBMI: (values.targetBMI as number) ?? 0,
+        targetFFMI: (values.targetFFMI as number) ?? 0,
+      });
+      break;
+    }
+
+    case 'nutritionCheckin': {
+      const currentGoal = await NutritionGoalService.getCurrent();
+      if (!currentGoal) {
+        throw new Error('No active nutrition goal found. Create a nutrition goal first.');
+      }
+
+      let targetWeightKg = values.targetWeight as number;
+      if (context?.units && targetWeightKg != null) {
+        targetWeightKg = displayToKg(targetWeightKg, context.units);
+      }
+
+      await NutritionCheckinService.create(currentGoal.id, {
+        checkinDate: (values.checkinDate as number) ?? Date.now(),
+        targetWeight: targetWeightKg,
+        targetBodyFat: (values.targetBodyFat as number) ?? 0,
+        targetBmi: (values.targetBmi as number) ?? 0,
+        targetFfmi: (values.targetFfmi as number) ?? 0,
+      });
+      break;
+    }
+
+    default:
+      throw new Error(`Creating not implemented for entity type: ${entityType}`);
   }
 }
