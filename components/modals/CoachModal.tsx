@@ -780,7 +780,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const handleConfirmClearHistory = useCallback(async () => {
     try {
       setIsClearingHistory(true);
-      await clearHistory();
+      await clearHistory(conversationContext);
       showSnackbar('success', t('coach.success.historyCleared'), {
         action: t('snackbar.ok'),
       });
@@ -792,7 +792,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     } finally {
       setIsClearingHistory(false);
     }
-  }, [clearHistory, showSnackbar, t]);
+  }, [clearHistory, conversationContext, showSnackbar, t]);
 
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [

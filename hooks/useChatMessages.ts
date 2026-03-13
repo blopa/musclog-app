@@ -88,7 +88,7 @@ export type UseChatMessagesResult = {
   hasMore: boolean;
   loadMore: () => Promise<void>;
   sendMessage: (text: string) => Promise<void>;
-  clearHistory: () => Promise<void>;
+  clearHistory: (conversationContext?: 'general' | 'exercise' | 'nutrition') => Promise<void>;
   sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
   clearPendingCoachMessage: () => void;
@@ -316,26 +316,54 @@ export function useChatMessages(
     [messages]
   );
 
-  const clearHistory = useCallback(async () => {
-    if (!sessionId) {
-      return;
-    }
+  const clearHistory = useCallback(
+    async (contextToClear?: 'general' | 'exercise' | 'nutrition') => {
+      if (!sessionId) {
+        return;
+      }
 
-    try {
-      await ChatService.deleteSession(sessionId);
-      rawMessagesRef.current = [];
-      pendingCoachMessageRef.current = null;
-      setMessages([]);
-      setPendingCoachMessage(null);
-      setCurrentOffset(0);
-      setHasMore(false);
-      setFailedMessageText(null);
-      setEphemeralErrorMessage(null);
-    } catch (err) {
-      console.error('[useChatMessages] clearHistory error:', err);
-      throw err;
-    }
-  }, [sessionId]);
+      try {
+        if (contextToClear) {
+          // Delete only messages for the specified context
+          await ChatService.deleteSessionMessagesByContext(sessionId, contextToClear);
+
+          // Get message IDs to remove before filtering rawMessagesRef
+          const messageIdsToRemove = rawMessagesRef.current
+            .filter((r) => r.context === contextToClear)
+            .map((r) => r.id);
+
+          // Filter out deleted messages from local state
+          rawMessagesRef.current = rawMessagesRef.current.filter(
+            (r) => r.context !== contextToClear
+          );
+
+          // Remove messages from UI state if we're viewing the cleared context
+          if (contextToClear === conversationContext) {
+            setMessages((prev) => prev.filter((m) => !messageIdsToRemove.includes(String(m._id))));
+            setCurrentOffset(0);
+            setHasMore(false);
+            setFailedMessageText(null);
+            setEphemeralErrorMessage(null);
+          }
+        } else {
+          // If no context specified, delete entire session (backward compatibility)
+          await ChatService.deleteSession(sessionId);
+          rawMessagesRef.current = [];
+          pendingCoachMessageRef.current = null;
+          setMessages([]);
+          setPendingCoachMessage(null);
+          setCurrentOffset(0);
+          setHasMore(false);
+          setFailedMessageText(null);
+          setEphemeralErrorMessage(null);
+        }
+      } catch (err) {
+        console.error('[useChatMessages] clearHistory error:', err);
+        throw err;
+      }
+    },
+    [sessionId, conversationContext]
+  );
 
   const sendMessage = useCallback(
     async (text: string) => {

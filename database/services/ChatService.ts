@@ -132,4 +132,35 @@ export class ChatService {
       );
     });
   }
+
+  /**
+   * Delete all messages for a specific conversation context within a session.
+   * @param sessionId The session ID
+   * @param context The conversation context to delete ('general' | 'exercise' | 'nutrition')
+   */
+  static async deleteSessionMessagesByContext(
+    sessionId: string,
+    context: ChatMessageContext
+  ): Promise<void> {
+    const messages = await database
+      .get<ChatMessage>('chat_messages')
+      .query(
+        Q.where('session_id', sessionId),
+        Q.where('context', context),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    await database.write(async () => {
+      const now = Date.now();
+      await Promise.all(
+        messages.map((msg) =>
+          msg.update((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
 }

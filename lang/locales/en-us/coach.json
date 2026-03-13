@@ -61,13 +61,13 @@
     "menu": {
       "title": "Chat options",
       "clearHistory": "Clear chat history",
-      "clearHistoryDesc": "Delete all messages in this conversation.",
+      "clearHistoryDesc": "Delete all messages in this conversation context.",
       "shareHistory": "Share chat history",
       "shareHistoryDesc": "Export this whole conversation as plain text."
     },
     "confirmClear": {
       "title": "Clear chat history?",
-      "message": "This will permanently delete all messages in this conversation. This cannot be undone."
+      "message": "This will permanently delete all messages in this conversation context. This cannot be undone."
     },
     "share": {
       "title": "Chat with Loggy",

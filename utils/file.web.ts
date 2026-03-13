@@ -50,9 +50,7 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
   });
 }
 
-export async function pickDocument(
-  types?: string[]
-): Promise<{
+export async function pickDocument(types?: string[]): Promise<{
   canceled: boolean;
   assets?: { name: string; uri: string; size?: number; mimeType?: string }[];
 }> {
