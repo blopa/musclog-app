@@ -72,6 +72,17 @@
       "title": "Chat with Loggy",
       "noMessages": "There is no chat history to share yet.",
       "failed": "Failed to share chat history. Please try again."
+    },
+    "message": {
+      "menuTitle": "Message actions",
+      "copy": "Copy",
+      "copyDesc": "Copy message text to clipboard",
+      "share": "Share",
+      "shareDesc": "Share this message",
+      "delete": "Delete",
+      "deleteDesc": "Remove this message from the conversation",
+      "copied": "Message copied to clipboard",
+      "deleted": "Message deleted"
     }
   }
 }

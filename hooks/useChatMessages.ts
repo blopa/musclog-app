@@ -97,6 +97,7 @@ export type UseChatMessagesResult = {
   clearFailedMessageText: () => void;
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
+  deleteMessage: (messageId: string | number) => Promise<void>;
 };
 
 type AISettings = {
@@ -300,6 +301,20 @@ export function useChatMessages(
   const clearFailedMessageText = useCallback(() => {
     setFailedMessageText(null);
   }, []);
+
+  const deleteMessage = useCallback(
+    async (messageId: string | number) => {
+      const id = String(messageId);
+      if (!messages.some((m) => String(m._id) === id)) {
+        return;
+      }
+      await ChatService.deleteMessage(id);
+      rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== id);
+      setMessages((prev) => prev.filter((m) => String(m._id) !== id));
+      setCurrentOffset((prev) => Math.max(0, prev - 1));
+    },
+    [messages]
+  );
 
   const clearHistory = useCallback(async () => {
     if (!sessionId) {
@@ -616,5 +631,6 @@ export function useChatMessages(
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    deleteMessage,
   };
 }

@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
-  Activity,
+  Copy,
   Dumbbell,
   PlusCircle,
   Send as SendIcon,
@@ -179,7 +181,8 @@ const renderBubble = (
   props: BubbleProps<ExtendedIMessage>,
   theme: Theme,
   conversationContext: string,
-  onViewWorkoutDetails?: (workoutLogId: string) => void
+  onViewWorkoutDetails?: (workoutLogId: string) => void,
+  onLongPress?: (message: ExtendedIMessage) => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -188,7 +191,11 @@ const renderBubble = (
   if (isUser) {
     const bubbleGradient = getConversationContextBubbleGradient(conversationContext, theme);
     return (
-      <View style={styles.userBubbleContainer}>
+      <Pressable
+        style={styles.userBubbleContainer}
+        onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
+        delayLongPress={350}
+      >
         {!!currentMessage?.text ? (
           <LinearGradient
             colors={bubbleGradient as readonly [string, string, ...string[]]}
@@ -211,11 +218,15 @@ const renderBubble = (
             })}
           </Text>
         ) : null}
-      </View>
+      </Pressable>
     );
   } else {
     return (
-      <View style={styles.aiBubbleContainer}>
+      <Pressable
+        style={styles.aiBubbleContainer}
+        onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
+        delayLongPress={350}
+      >
         {!!currentMessage?.user.name ? (
           <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
             {currentMessage.user.name}
@@ -227,7 +238,7 @@ const renderBubble = (
         {currentMessage?.workoutCompleted || currentMessage?.workout
           ? renderCustomView(props, onViewWorkoutDetails)
           : null}
-      </View>
+      </Pressable>
     );
   }
 };
@@ -437,6 +448,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     loadMore,
     sendMessage,
     clearHistory,
+    deleteMessage,
     sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
@@ -453,6 +465,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
@@ -592,6 +605,66 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
   }, []);
+
+  const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    setSelectedMessage(message);
+  }, []);
+
+  const messageMenuItems = useMemo(
+    () =>
+      selectedMessage
+        ? [
+            {
+              icon: Copy,
+              iconColor: theme.colors.text.primary,
+              iconBgColor: theme.colors.background.iconDarker,
+              title: t('coach.message.copy'),
+              description: t('coach.message.copyDesc'),
+              onPress: async () => {
+                setSelectedMessage(null);
+                await Clipboard.setStringAsync(selectedMessage.text ?? '');
+                showSnackbar('success', t('coach.message.copied'), { action: t('snackbar.ok') });
+              },
+            },
+            {
+              icon: Share2,
+              iconColor: theme.colors.text.primary,
+              iconBgColor: theme.colors.background.iconDarker,
+              title: t('coach.message.share'),
+              description: t('coach.message.shareDesc'),
+              onPress: () => {
+                setSelectedMessage(null);
+                Share.share({ message: selectedMessage.text ?? '' }).catch(() => {});
+              },
+            },
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error50,
+              iconBgColor: theme.colors.status.error10,
+              title: t('coach.message.delete'),
+              description: t('coach.message.deleteDesc'),
+              titleColor: theme.colors.status.error50,
+              descriptionColor: theme.colors.status.error50,
+              onPress: async () => {
+                setSelectedMessage(null);
+                await deleteMessage(selectedMessage._id);
+                showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+              },
+            },
+          ]
+        : [],
+    [
+      selectedMessage,
+      deleteMessage,
+      showSnackbar,
+      t,
+      theme.colors.background.iconDarker,
+      theme.colors.status.error10,
+      theme.colors.status.error50,
+      theme.colors.text.primary,
+    ]
+  );
 
   const handleShareHistory = useCallback(async () => {
     if (!sessionId) {
@@ -790,8 +863,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   // stable; only the wrapper closures need to be stabilized here.
   const gcRenderBubble = useCallback(
     (props: Parameters<typeof renderBubble>[0]) =>
-      renderBubble(props, theme, conversationContext, handleViewWorkoutDetails),
-    [theme, conversationContext, handleViewWorkoutDetails]
+      renderBubble(
+        props,
+        theme,
+        conversationContext,
+        handleViewWorkoutDetails,
+        handleMessageLongPress
+      ),
+    [theme, conversationContext, handleViewWorkoutDetails, handleMessageLongPress]
   );
   const gcRenderAvatar = useCallback(
     (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
@@ -980,6 +1059,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         onClose={() => setIsMenuVisible(false)}
         title={t('coach.menu.title')}
         items={headerMenuItems}
+      />
+
+      <BottomPopUpMenu
+        visible={!!selectedMessage}
+        onClose={() => setSelectedMessage(null)}
+        title={t('coach.message.menuTitle')}
+        items={messageMenuItems}
       />
 
       <ConfirmationModal
