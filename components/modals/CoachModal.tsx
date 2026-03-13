@@ -300,16 +300,30 @@ const renderSend = (
   const styles = getStyles(theme);
   // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
   const effectiveText = (failedMessageText ?? props.text ?? '').trim();
+  const isDisabled = !effectiveText;
 
+  // Always render the send button, regardless of GiftedChat's internal logic
   return (
-    <Send {...props} text={effectiveText} containerStyle={styles.sendContainer}>
-      <View
+    <View style={styles.sendContainer}>
+      <Pressable
+        onPress={() => {
+          if (!isDisabled && props.onSend) {
+            props.onSend({ text: effectiveText }, true);
+          }
+        }}
+        disabled={isDisabled}
         className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
-        style={{ backgroundColor: theme.colors.accent.primary }}
+        style={{
+          backgroundColor: isDisabled ? theme.colors.border.light : theme.colors.accent.primary,
+          opacity: isDisabled ? 0.5 : 1,
+        }}
       >
-        <SendIcon size={theme.iconSize.lg} color={theme.colors.text.black} />
-      </View>
-    </Send>
+        <SendIcon
+          size={theme.iconSize.lg}
+          color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.black}
+        />
+      </Pressable>
+    </View>
   );
 };
 

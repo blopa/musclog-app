@@ -50,18 +50,23 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
   });
 }
 
-export async function pickDocument(types?: string[]): Promise<{ canceled: boolean; assets?: { name: string; uri: string; size?: number; mimeType?: string }[] }> {
+export async function pickDocument(
+  types?: string[]
+): Promise<{
+  canceled: boolean;
+  assets?: { name: string; uri: string; size?: number; mimeType?: string }[];
+}> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
-    
+
     // Convert types array to accept attribute format
     if (types && types.length > 0) {
       input.accept = types.join(',');
     } else {
       input.accept = 'image/*,application/pdf,text/plain';
     }
-    
+
     input.onchange = (event: Event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file) {
@@ -71,23 +76,25 @@ export async function pickDocument(types?: string[]): Promise<{ canceled: boolea
 
       // Create a URL for the file
       const uri = URL.createObjectURL(file);
-      
+
       resolve({
         canceled: false,
-        assets: [{
-          name: file.name,
-          uri: uri,
-          size: file.size,
-          mimeType: file.type,
-        }],
+        assets: [
+          {
+            name: file.name,
+            uri: uri,
+            size: file.size,
+            mimeType: file.type,
+          },
+        ],
       });
     };
-    
+
     // Handle case where user cancels the file dialog
     input.oncancel = () => {
       resolve({ canceled: true });
     };
-    
+
     input.click();
   });
 }
