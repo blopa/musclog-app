@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
-import AiCustomPrompt from '../models/AiCustomPrompt';
+import AiCustomPrompt, { type AiCustomPromptContext } from '../models/AiCustomPrompt';
 
 export class AiCustomPromptService {
   /**
@@ -46,7 +46,8 @@ export class AiCustomPromptService {
   static async createPrompt(
     name: string,
     content: string,
-    isActive: boolean = true
+    isActive: boolean = true,
+    context: AiCustomPromptContext = 'general'
   ): Promise<AiCustomPrompt> {
     return await database.write(async () => {
       const now = Date.now();
@@ -54,6 +55,7 @@ export class AiCustomPromptService {
       return await database.get<AiCustomPrompt>('ai_custom_prompts').create((prompt) => {
         prompt.name = name;
         prompt.content = content;
+        prompt.context = context;
         prompt.isActive = isActive;
         prompt.createdAt = now;
         prompt.updatedAt = now;
@@ -69,6 +71,7 @@ export class AiCustomPromptService {
     updates: {
       name?: string;
       content?: string;
+      context?: AiCustomPromptContext;
       isActive?: boolean;
     }
   ): Promise<AiCustomPrompt> {
@@ -83,12 +86,19 @@ export class AiCustomPromptService {
         if (updates.name !== undefined) {
           record.name = updates.name;
         }
+
         if (updates.content !== undefined) {
           record.content = updates.content;
         }
+
+        if (updates.context !== undefined) {
+          record.context = updates.context;
+        }
+
         if (updates.isActive !== undefined) {
           record.isActive = updates.isActive;
         }
+
         record.updatedAt = Date.now();
       });
 

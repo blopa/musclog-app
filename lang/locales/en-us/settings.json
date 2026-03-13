@@ -124,7 +124,11 @@
       "promptContentPlaceholder": "Enter your custom instructions here...",
       "deletePrompt": "Delete Prompt",
       "deletePromptConfirm": "Are you sure you want to delete this prompt?",
-      "noPrompts": "No custom prompts added yet."
+      "noPrompts": "No custom prompts added yet.",
+      "promptContext": "Context",
+      "promptContextGeneral": "General",
+      "promptContextNutrition": "Nutrition",
+      "promptContextExercise": "Exercise"
     },
     "visualSettings": {
       "title": "Interface",

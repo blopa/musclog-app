@@ -1,7 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../database-instance';
-import ChatMessage, { type ChatMessageType, type ChatSender } from '../models/ChatMessage';
+import ChatMessage, {
+  type ChatMessageContext,
+  type ChatMessageType,
+  type ChatSender,
+} from '../models/ChatMessage';
 
 export class ChatService {
   static generateSessionId(): string {
@@ -13,6 +17,7 @@ export class ChatService {
     sender: ChatSender;
     message: string;
     messageType?: ChatMessageType;
+    context?: ChatMessageContext;
     payloadJson?: string;
     summarizedMessage?: string;
   }): Promise<ChatMessage> {
@@ -23,6 +28,7 @@ export class ChatService {
         record.sender = params.sender;
         record.message = params.message;
         record.messageType = params.messageType ?? 'text';
+        record.context = params.context ?? 'general';
         record.payloadJson = params.payloadJson;
         record.summarizedMessage = params.summarizedMessage;
         record.createdAt = now;

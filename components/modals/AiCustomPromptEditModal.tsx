@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { AiCustomPrompt } from '../../database/models';
+import { type AiCustomPromptContext } from '../../database/models/AiCustomPrompt';
 import { useAiCustomPrompts } from '../../hooks/useAiCustomPrompts';
 import { useTheme } from '../../hooks/useTheme';
 import { BottomPopUp } from '../BottomPopUp';
 import { Button } from '../theme/Button';
+import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 
@@ -27,30 +29,39 @@ export function AiCustomPromptEditModal({
 
   const [name, setName] = useState('');
   const [content, setContent] = useState('');
+  const [context, setContext] = useState<AiCustomPromptContext>('general');
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     if (prompt) {
       setName(prompt.name);
       setContent(prompt.content);
+      setContext(prompt.context ?? 'general');
       setIsActive(prompt.isActive);
     } else {
       setName('');
       setContent('');
+      setContext('general');
       setIsActive(true);
     }
   }, [prompt, visible]);
 
   const handleSave = async () => {
     if (prompt) {
-      await updatePrompt(prompt.id, { name, content, isActive });
+      await updatePrompt(prompt.id, { name, content, context, isActive });
     } else {
-      await createPrompt(name, content, isActive);
+      await createPrompt(name, content, isActive, context);
     }
     onClose();
   };
 
   const isSaveDisabled = !name.trim() || !content.trim();
+
+  const contextOptions = [
+    { label: t('settings.aiSettings.promptContextGeneral'), value: 'general' },
+    { label: t('settings.aiSettings.promptContextNutrition'), value: 'nutrition' },
+    { label: t('settings.aiSettings.promptContextExercise'), value: 'exercise' },
+  ];
 
   return (
     <BottomPopUp
@@ -76,6 +87,21 @@ export function AiCustomPromptEditModal({
           numberOfLines={6}
           required
         />
+
+        <View className="gap-2">
+          <Text
+            className="text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.aiSettings.promptContext')}
+          </Text>
+          <SegmentedControl
+            options={contextOptions}
+            value={context}
+            onValueChange={(v) => setContext(v as AiCustomPromptContext)}
+            variant="outline"
+          />
+        </View>
 
         <ToggleInput
           items={[

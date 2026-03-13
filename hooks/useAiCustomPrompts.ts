@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '../database';
-import AiCustomPrompt from '../database/models/AiCustomPrompt';
+import AiCustomPrompt, { type AiCustomPromptContext } from '../database/models/AiCustomPrompt';
 import { AiCustomPromptService } from '../database/services';
 
 export interface UseAiCustomPromptsParams {
@@ -14,10 +14,20 @@ export type UseAiCustomPromptsResult = {
   prompts: AiCustomPrompt[];
   isLoading: boolean;
   refresh: () => Promise<void>;
-  createPrompt: (name: string, content: string, isActive?: boolean) => Promise<AiCustomPrompt>;
+  createPrompt: (
+    name: string,
+    content: string,
+    isActive?: boolean,
+    context?: AiCustomPromptContext
+  ) => Promise<AiCustomPrompt>;
   updatePrompt: (
     id: string,
-    updates: { name?: string; content?: string; isActive?: boolean }
+    updates: {
+      name?: string;
+      content?: string;
+      context?: AiCustomPromptContext;
+      isActive?: boolean;
+    }
   ) => Promise<AiCustomPrompt>;
   deletePrompt: (id: string) => Promise<void>;
   togglePromptActive: (id: string) => Promise<AiCustomPrompt>;
@@ -50,8 +60,13 @@ export function useAiCustomPrompts({
   }, [loadPrompts]);
 
   const createPrompt = useCallback(
-    async (name: string, content: string, isActive: boolean = true) => {
-      const newPrompt = await AiCustomPromptService.createPrompt(name, content, isActive);
+    async (
+      name: string,
+      content: string,
+      isActive: boolean = true,
+      context: AiCustomPromptContext = 'general'
+    ) => {
+      const newPrompt = await AiCustomPromptService.createPrompt(name, content, isActive, context);
       if (!enableReactivity) {
         await loadPrompts();
       }
@@ -61,7 +76,15 @@ export function useAiCustomPrompts({
   );
 
   const updatePrompt = useCallback(
-    async (id: string, updates: { name?: string; content?: string; isActive?: boolean }) => {
+    async (
+      id: string,
+      updates: {
+        name?: string;
+        content?: string;
+        context?: AiCustomPromptContext;
+        isActive?: boolean;
+      }
+    ) => {
       const updated = await AiCustomPromptService.updatePrompt(id, updates);
       if (!enableReactivity) {
         await loadPrompts();

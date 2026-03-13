@@ -91,6 +91,30 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
                     </View>
                   </View>
 
+                  <View className="mt-1 flex-row items-center gap-2">
+                    <View
+                      style={{
+                        backgroundColor: theme.colors.accent.primary20,
+                        borderRadius: theme.borderRadius.sm,
+                        paddingHorizontal: theme.spacing.padding.sm,
+                        paddingVertical: 2,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.accent.primary,
+                          fontWeight: '600',
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        {t(
+                          `settings.aiSettings.promptContext${(prompt.context ?? 'general').charAt(0).toUpperCase()}${(prompt.context ?? 'general').slice(1)}`
+                        )}
+                      </Text>
+                    </View>
+                  </View>
+
                   <Text className="mt-2 text-sm text-text-secondary" numberOfLines={3}>
                     {prompt.content}
                   </Text>
