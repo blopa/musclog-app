@@ -375,7 +375,10 @@ export class SettingsService {
   }
 
   static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {
-    return await SettingsService.getStringSetting(CONVERSATION_CONTEXT, 'general') as unknown as 'general' | 'exercise' | 'nutrition';
+    return (await SettingsService.getStringSetting(CONVERSATION_CONTEXT, 'general')) as unknown as
+      | 'general'
+      | 'exercise'
+      | 'nutrition';
   }
 
   /**

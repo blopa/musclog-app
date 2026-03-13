@@ -97,6 +97,25 @@ const getConversationContextBackgroundColor = (
   }
 };
 
+const getConversationContextBubbleGradient = (
+  conversationContext: string,
+  theme: Theme
+): readonly [string, string, ...string[]] => {
+  switch (conversationContext) {
+    case 'general':
+      // Indigo to purple gradient for general context
+      return theme.colors.gradients.userBubble;
+    case 'exercise':
+      // Blue to emerald gradient for exercise context
+      return theme.colors.gradients.blueEmerald;
+    case 'nutrition':
+      // Green to jade gradient for nutrition context (current default)
+      return theme.colors.gradients.celebrationGlow;
+    default:
+      return theme.colors.gradients.userBubble;
+  }
+};
+
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
 const renderMessageText = (props: any, theme: Theme) => {
@@ -159,6 +178,7 @@ const renderCustomView = (
 const renderBubble = (
   props: BubbleProps<ExtendedIMessage>,
   theme: Theme,
+  conversationContext: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void
 ) => {
   const { currentMessage, user } = props;
@@ -166,11 +186,12 @@ const renderBubble = (
   const styles = getStyles(theme);
 
   if (isUser) {
+    const bubbleGradient = getConversationContextBubbleGradient(conversationContext, theme);
     return (
       <View style={styles.userBubbleContainer}>
         {!!currentMessage?.text ? (
           <LinearGradient
-            colors={theme.colors.gradients.userBubble}
+            colors={bubbleGradient as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.userBubbleGradient}
@@ -769,8 +790,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   // stable; only the wrapper closures need to be stabilized here.
   const gcRenderBubble = useCallback(
     (props: Parameters<typeof renderBubble>[0]) =>
-      renderBubble(props, theme, handleViewWorkoutDetails),
-    [theme, handleViewWorkoutDetails]
+      renderBubble(props, theme, conversationContext, handleViewWorkoutDetails),
+    [theme, conversationContext, handleViewWorkoutDetails]
   );
   const gcRenderAvatar = useCallback(
     (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),

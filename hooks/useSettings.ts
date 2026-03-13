@@ -174,7 +174,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
     foodSearchSource: (rawFoodSearchSource as FoodSearchSource) || 'both',
-    conversationContext: (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
+    conversationContext:
+      (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
     isLoading: false,
   };
 }
