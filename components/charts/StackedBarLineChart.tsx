@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import { CartesianChart, Line, Scatter, StackedBar } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
   /** X value (e.g. 0 = Mon, 1 = Tue, ...) */
@@ -42,7 +43,7 @@ export type StackedBarLineChartProps = {
   /** Right Y-axis tick labels */
   rightAxisLabels?: string[];
   /** X-axis labels (e.g. ['Mon', 'Tue', ...]) */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Format stacked total tooltip */
   totalFormatter?: (total: number, datum: StackedBarLineChartDatum) => string;
   /** Format line tooltip */
@@ -412,33 +413,32 @@ export function StackedBarLineChart({
           style={{
             position: 'relative',
             marginTop: 8,
-            paddingHorizontal: 0,
-            marginLeft: '10%',
-            marginRight: '10%',
             height: 20,
-            width: '80%',
+            width: '100%',
           }}
-          onLayout={(e) => setLabelContainerWidth(e.nativeEvent.layout.width)}
         >
           {xAxisLabels.map((label, index) => (
             <View
               key={index}
               style={{
                 position: 'absolute',
-                left: xLabelLeft(index),
-                width: LABEL_BOX_WIDTH,
+                left: `${label.positionPercent}%`,
+                width: 40,
+                marginLeft: -20,
                 alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
+                  fontSize: 10,
+                  fontWeight: '500',
                   color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft: label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
                 }}
+                numberOfLines={1}
               >
-                {label}
+                {label.label}
               </Text>
             </View>
           ))}

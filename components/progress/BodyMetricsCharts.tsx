@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
+import { getXAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -41,6 +42,7 @@ export function BodyMetricsCharts({
               Math.max(...weightHistory.map((p) => p.value)) * 1.05,
             ]}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
+            xAxisLabels={getXAxisLabels(weightHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}
@@ -61,6 +63,7 @@ export function BodyMetricsCharts({
               Math.max(...fatHistory.map((p) => p.value)) * 1.1,
             ]}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
+            xAxisLabels={getXAxisLabels(fatHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}
@@ -78,6 +81,7 @@ export function BodyMetricsCharts({
               Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
             ]}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+            xAxisLabels={getXAxisLabels(ffmiHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}

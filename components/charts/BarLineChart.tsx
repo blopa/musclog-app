@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type BarLineChartDatum = {
   /** X value (e.g. 0 = Mon, 1 = Tue, ...) */
@@ -40,7 +41,7 @@ export type BarLineChartProps = {
   /** Right Y-axis tick labels (default: 60, 80, 100, 120, 140) */
   rightAxisLabels?: string[];
   /** X-axis labels (e.g. ['Mon', 'Tue', ...]) */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Format bar tooltip (default: formats steps with commas) */
   stepsFormatter?: (value: number) => string;
   /** Format line tooltip (default: value as string) */
@@ -386,15 +387,8 @@ export function BarLineChart({
           style={{
             position: 'relative',
             marginTop: 8,
-            paddingHorizontal: 0,
-            marginLeft: '10%',
-            marginRight: '10%',
             height: 20,
-            width: '80%',
-          }}
-          onLayout={(e) => {
-            const w = e.nativeEvent.layout.width;
-            setLabelContainerWidth(Math.max(0, w));
+            width: '100%',
           }}
         >
           {xAxisLabels.map((label, index) => (
@@ -402,20 +396,23 @@ export function BarLineChart({
               key={index}
               style={{
                 position: 'absolute',
-                left: xLabelLeft(index),
-                width: LABEL_BOX_WIDTH,
+                left: `${label.positionPercent}%`,
+                width: 40,
+                marginLeft: -20,
                 alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
+                  fontSize: 10,
+                  fontWeight: '500',
                   color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft: label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
                 }}
+                numberOfLines={1}
               >
-                {label}
+                {label.label}
               </Text>
             </View>
           ))}

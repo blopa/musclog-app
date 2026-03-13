@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MenstrualPhasePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
+import { getXAxisLabels } from '../../utils/chartUtils';
 import { MultipleLinesChart } from '../charts/MultipleLinesChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -11,23 +12,9 @@ interface MenstrualPerformanceChartProps {
   allData: Record<TimeAggregation, MenstrualPhasePoint[]>;
 }
 
-const MAX_X_LABELS = 8;
 const formatDate = (timestamp: number): string => {
   const d = new Date(timestamp);
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
-const getXAxisLabels = (dates: number[]): string[] => {
-  if (dates.length === 0) {
-    return [];
-  }
-  if (dates.length <= MAX_X_LABELS) {
-    return dates.map(formatDate);
-  }
-  const indices = Array.from({ length: MAX_X_LABELS }, (_, i) =>
-    Math.round((i / (MAX_X_LABELS - 1)) * (dates.length - 1))
-  );
-  return indices.map((i) => formatDate(dates[i]));
 };
 
 export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChartProps) {
@@ -63,7 +50,10 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
     );
   }
 
-  const xAxisLabels = getXAxisLabels(data.map((d) => d.date));
+  const xAxisLabels = getXAxisLabels(
+    data.map((d) => ({ x: d.date })),
+    formatDate
+  );
   const series = [
     {
       key: 'workoutScore',

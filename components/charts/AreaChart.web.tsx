@@ -11,6 +11,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type AreaChartDatum = { x: number; [key: string]: number };
 
@@ -29,7 +30,7 @@ export type AreaChartProps = {
   height?: number;
   xDomain?: [number, number];
   yDomain?: [number, number];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   yAxisLabels?: { label: string; yDomainValue: number }[];
   peak?: { seriesKey: string; pointIndex: number; label?: string };
   showGridLines?: boolean;
@@ -238,17 +239,37 @@ export function AreaChart({
 
       {xAxisLabels != null && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
           style={{
             marginTop: xAxisGap,
             paddingLeft: 20,
             paddingRight: 20,
+            height: 20,
+            position: 'relative',
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[10px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={index}
+              style={{
+                position: 'absolute',
+                left: `calc(20px + ${label.positionPercent}% * (100% - 40px) / 100)`,
+                width: 40,
+                transform: [{ translateX: -20 }],
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

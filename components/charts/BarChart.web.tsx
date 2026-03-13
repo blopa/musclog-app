@@ -8,6 +8,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type BarChartDataPoint = {
   /** X value (category index or numeric label) */
@@ -36,7 +37,7 @@ export type BarChartProps = {
   /** Custom Y-axis domain [min, max] */
   yDomain?: [number, number];
   /** Custom X-axis labels to display below the chart */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Y-axis labels overlaid on the chart. yDomainValue should be in the y-domain space [yDomain[0], yDomain[1]]. */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
@@ -189,11 +190,37 @@ export function BarChart({
         />
       </VictoryChart>
       {xAxisLabels && xAxisLabels.length > 0 ? (
-        <View className="mt-4 flex-row justify-between px-1" style={{ marginTop: marginBottom }}>
+        <View
+          style={{
+            position: 'relative',
+            marginTop: marginBottom,
+            height: 20,
+            width: '100%',
+          }}
+        >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[10px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={index}
+              style={{
+                position: 'absolute',
+                left: `${label.positionPercent}%`,
+                width: 40,
+                transform: [{ translateX: -20 }],
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

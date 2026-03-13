@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarChartDatum = {
   x: number;
@@ -17,7 +18,7 @@ export type StackedBarChartProps = {
   gridLineColor?: string;
   xDomain?: [number, number];
   yDomain?: [number, number];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   yAxisLabels?: { label: string; yDomainValue: number }[];
   marginTop?: number;
   marginBottom?: number;
@@ -160,6 +161,7 @@ export function StackedBarChart({
             position: 'relative',
             marginTop: 8,
             height: 20,
+            width: '100%',
           }}
         >
           {xAxisLabels.map((label, index) => (
@@ -167,21 +169,22 @@ export function StackedBarChart({
               key={index}
               style={{
                 position: 'absolute',
-                left: `${xLabelPosition(index) * 100}%`,
-                marginLeft: -20,
+                left: `${label.positionPercent}%`,
                 width: 40,
+                transform: [{ translateX: -20 }],
                 alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
+                  fontSize: 10,
+                  fontWeight: '500',
                   color: theme.colors.text.tertiary,
+                  textAlign: 'center',
                 }}
+                numberOfLines={1}
               >
-                {label}
+                {label.label}
               </Text>
             </View>
           ))}

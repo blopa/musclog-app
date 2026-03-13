@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
+import { getXAxisLabels } from '../../utils/chartUtils';
 import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -12,23 +13,9 @@ interface MacroMuscleChartProps {
   units: string;
 }
 
-const MAX_X_LABELS = 8;
 const formatDate = (timestamp: number): string => {
   const d = new Date(timestamp);
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
-const getXAxisLabels = (dates: number[]): string[] => {
-  if (dates.length === 0) {
-    return [];
-  }
-  if (dates.length <= MAX_X_LABELS) {
-    return dates.map(formatDate);
-  }
-  const indices = Array.from({ length: MAX_X_LABELS }, (_, i) =>
-    Math.round((i / (MAX_X_LABELS - 1)) * (dates.length - 1))
-  );
-  return indices.map((i) => formatDate(dates[i]));
 };
 
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
@@ -65,7 +52,10 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
     );
   }
 
-  const xAxisLabels = getXAxisLabels(data.map((d) => d.date));
+  const xAxisLabels = getXAxisLabels(
+    data.map((d) => ({ x: d.date })),
+    formatDate
+  );
   const macroSeries = [
     { key: 'protein', label: t('nutrition.protein'), color: theme.colors.macros.protein.bg },
     { key: 'carbs', label: t('nutrition.carbs'), color: theme.colors.macros.carbs.bg },

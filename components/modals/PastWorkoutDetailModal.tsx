@@ -14,6 +14,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
+import { XAxisLabel } from '../../utils/chartUtils';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../charts/LineChart';
 import { MenuButton } from '../theme/MenuButton';
@@ -116,7 +117,7 @@ function WorkoutSummaryCard({
 type VolumeTrendCardProps = {
   percentage: number;
   data: LineChartDataPoint[];
-  labels: string[];
+  labels: XAxisLabel[];
   onInteractionStart?: () => void;
   onInteractionEnd?: () => void;
 };
