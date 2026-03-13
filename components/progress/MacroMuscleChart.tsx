@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels } from '../../utils/chartUtils';
+import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -56,6 +56,9 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
     data.map((d) => ({ x: d.date })),
     formatDate
   );
+
+  const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;
+  const yAxisLabels = getYAxisLabels(0, maxY, 3, (v) => `${Math.round(v)}g`);
   const macroSeries = [
     { key: 'protein', label: t('nutrition.protein'), color: theme.colors.macros.protein.bg },
     { key: 'carbs', label: t('nutrition.carbs'), color: theme.colors.macros.carbs.bg },
@@ -96,7 +99,8 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           series={macroSeries}
           height={200}
           xAxisLabels={xAxisLabels}
-          yDomain={[0, Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1]}
+          yAxisLabels={yAxisLabels}
+          yDomain={[0, maxY]}
         />
         <View className="mt-4 px-2">
           <Text className="mb-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">

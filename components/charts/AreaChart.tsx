@@ -142,9 +142,9 @@ export function AreaChart({
               zIndex: 2,
             }}
           >
-            {yAxisLabels.map(({ label }) => (
+            {yAxisLabels.map(({ label }, i) => (
               <Text
-                key={label}
+                key={`${label}-${i}`}
                 style={{
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: '600',

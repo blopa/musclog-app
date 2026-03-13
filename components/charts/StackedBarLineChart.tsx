@@ -222,9 +222,9 @@ export function StackedBarLineChart({
             zIndex: 2,
           }}
         >
-          {leftAxisLabels.map((label) => (
+          {[...leftAxisLabels].reverse().map((label, i) => (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -249,9 +249,9 @@ export function StackedBarLineChart({
             zIndex: 2,
           }}
         >
-          {rightAxisLabels.map((label) => (
+          {[...rightAxisLabels].reverse().map((label, i) => (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',

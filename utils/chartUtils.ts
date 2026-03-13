@@ -5,7 +5,14 @@ export interface XAxisLabel {
   positionPercent: number;
 }
 
-const MAX_X_LABELS = 8;
+export interface YAxisLabel {
+  label: string;
+  yDomainValue: number;
+}
+
+export const MAX_X_LABELS = 8;
+export const X_AXIS_LABEL_WIDTH = 40;
+export const X_AXIS_LABEL_OFFSET = 20;
 
 /**
  * Calculates X-axis labels with precise percentage positions.
@@ -52,4 +59,30 @@ export function getXAxisLabels<T extends { x: number }>(
   }
 
   return labels;
+}
+
+/**
+ * Generates Y-axis labels for a given range
+ */
+export function getYAxisLabels(
+  min: number,
+  max: number,
+  count: number = 3,
+  formatFn?: (v: number) => string
+): YAxisLabel[] {
+  if (count <= 0) return [];
+  const labels: YAxisLabel[] = [];
+  const range = max - min;
+  const step = count > 1 ? range / (count - 1) : 0;
+  const formatValue = formatFn || ((v: number) => String(Math.round(v * 10) / 10));
+
+  for (let i = 0; i < count; i++) {
+    const value = min + i * step;
+    labels.push({
+      label: formatValue(value),
+      yDomainValue: value,
+    });
+  }
+
+  return labels.reverse(); // Return from top to bottom
 }

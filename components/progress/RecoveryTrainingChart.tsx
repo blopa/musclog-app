@@ -5,6 +5,7 @@ import { CartesianChart, Scatter } from 'victory-native';
 
 import { RecoveryTrainingPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
+import { getYAxisLabels } from '../../utils/chartUtils';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface RecoveryTrainingChartProps {
@@ -55,6 +56,8 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const xMin = Math.min(...bubbleData.map((d) => d.x));
   const xMax = Math.max(...bubbleData.map((d) => d.x));
 
+  const yAxisLabels = getYAxisLabels(0, 11, 3);
+
   return (
     <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
       <View className="mb-4 flex-row items-center gap-2">
@@ -83,9 +86,30 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           xKey="x"
           yKeys={['y']}
           domain={{ x: [xMin * 0.9, xMax * 1.1], y: [0, 11] }}
+          axisOptions={{
+            labelColor: 'transparent',
+          }}
         >
           {({ points }) => (
-            <Scatter
+            <>
+              {yAxisLabels.map((label) => (
+                <Text
+                  key={label.label}
+                  pointerEvents="none"
+                  style={{
+                    position: 'absolute',
+                    left: 6,
+                    top: (1 - label.yDomainValue / 11) * 250 - 6,
+                    fontSize: theme.typography.fontSize.xxs,
+                    fontWeight: '600',
+                    color: theme.colors.text.tertiary,
+                    zIndex: 1,
+                  }}
+                >
+                  {label.label}
+                </Text>
+              ))}
+              <Scatter
               points={points.y}
               radius={(pt) => {
                 // pt is { x: number, xValue: number, y: number, yValue: number }
@@ -94,8 +118,9 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
                 const datum = bubbleData.find((d) => d.x === (pt.xValue as number));
                 return datum ? datum.r : 5;
               }}
-              color={theme.colors.accent.secondary}
-            />
+                color={theme.colors.accent.secondary}
+              />
+            </>
           )}
         </CartesianChart>
         <View className="mt-2 flex-row justify-between px-8">

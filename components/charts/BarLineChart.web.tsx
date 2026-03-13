@@ -134,7 +134,7 @@ export function BarLineChart({
         >
           {[...leftAxisLabels].reverse().map((label, i) => (
             <Text
-              key={i}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -160,7 +160,7 @@ export function BarLineChart({
         >
           {[...rightAxisLabels].reverse().map((label, i) => (
             <Text
-              key={i}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',

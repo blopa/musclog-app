@@ -305,12 +305,12 @@ export function LineChart({
             ) : null}
           </>
         ) : null}
-        {yAxisLabels?.map(({ label, yDomainValue }) => {
+        {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yDomainFinal[1] - yDomainFinal[0];
           const topOffset = (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
           return (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               pointerEvents="none"
               style={{
                 position: 'absolute',
