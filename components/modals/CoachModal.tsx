@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
-import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
+  Paperclip,
   PlusCircle,
   Send as SendIcon,
   Share2,
@@ -55,10 +55,10 @@ import {
   useChatMessages,
 } from '../../hooks/useChatMessages';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
-import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import { pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -69,6 +69,8 @@ import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
+
+const ENABLE_FILE_ATTACHMENT = false; // TODO: remove this once we support file attachments
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
@@ -323,12 +325,14 @@ function ComposerWithRestoredText({
   theme,
   failedMessageText,
   clearFailedMessageText,
+  onAttachFile,
 }: {
   props: ComposerProps;
   t: TFunction;
   theme: Theme;
   failedMessageText: string | null;
   clearFailedMessageText: () => void;
+  onAttachFile: () => void;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -352,6 +356,17 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
+      {ENABLE_FILE_ATTACHMENT ? (
+        <Pressable
+          onPress={onAttachFile}
+          className="mr-2 items-center justify-center p-2 active:scale-90"
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.7 : 1,
+          })}
+        >
+          <Paperclip size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+        </Pressable>
+      ) : null}
       <Composer
         {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
@@ -371,7 +386,8 @@ const renderComposer = (
   t: TFunction,
   theme: Theme,
   failedMessageText: string | null,
-  clearFailedMessageText: () => void
+  clearFailedMessageText: () => void,
+  onAttachFile: () => void
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -379,6 +395,7 @@ const renderComposer = (
     theme={theme}
     failedMessageText={failedMessageText}
     clearFailedMessageText={clearFailedMessageText}
+    onAttachFile={onAttachFile}
   />
 );
 
@@ -601,6 +618,25 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     setPendingIntention(null);
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
+
+  const handleAttachFile = useCallback(async () => {
+    try {
+      const result = await pickDocument(['image/*', 'application/pdf', 'text/plain']);
+
+      if (!result.canceled && result.assets?.[0]) {
+        const file = result.assets[0];
+        // For now, we'll just mention the file in the message
+        // In a full implementation, you might want to upload the file or handle it differently
+        const fileMessage = `📎 Attached: ${file.name}`;
+        sendMessage(fileMessage);
+      }
+    } catch (error) {
+      console.error('Error picking document:', error);
+      showSnackbar('error', t('coach.errors.filePickFailed'), {
+        action: t('snackbar.ok'),
+      });
+    }
+  }, [sendMessage, showSnackbar, t]);
 
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
@@ -891,8 +927,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderComposer = useCallback(
     (props: Parameters<typeof renderComposer>[0]) =>
-      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText),
-    [t, theme, failedMessageText, clearFailedMessageText]
+      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText, handleAttachFile),
+    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile]
   );
 
   const gcRenderSend = useCallback(

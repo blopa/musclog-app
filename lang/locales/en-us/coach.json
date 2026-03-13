@@ -26,7 +26,8 @@
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
       "generalError": "Sorry, something went wrong. Please try again.",
       "progressInsightFailed": "Could not analyze progress. Try again later.",
-      "nutritionInsightFailed": "Could not check nutrition. Try again later."
+      "nutritionInsightFailed": "Could not check nutrition. Try again later.",
+      "filePickFailed": "Failed to pick file. Please try again."
     },
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
