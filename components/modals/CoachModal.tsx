@@ -375,6 +375,8 @@ type CoachModalProps = {
   onClose: () => void;
 };
 
+// TODO: if the message fails to be sent to Gemini or Openai due to lack of credits, show a message in the chat
+// explaining it and with a button to open the setting screen.
 export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
