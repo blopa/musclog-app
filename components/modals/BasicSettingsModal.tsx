@@ -120,6 +120,7 @@ export function BasicSettingsModal({
     }
   }, [hasUsdaApiKey, t]);
 
+  // TODO: add an option for local search only, and update the rest of the codebase to handle this case
   const foodSearchMenuItems: BottomPopUpMenuItem[] = [
     ...(hasUsdaApiKey
       ? [
