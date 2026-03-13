@@ -374,6 +374,10 @@ export class SettingsService {
     return SettingsService.getBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, false);
   }
 
+  static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {
+    return await SettingsService.getStringSetting(CONVERSATION_CONTEXT, 'general') as unknown as 'general' | 'exercise' | 'nutrition';
+  }
+
   /**
    * Upsert the food search source setting ('both' | 'openfood' | 'usda')
    */
