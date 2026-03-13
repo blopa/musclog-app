@@ -3,13 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
-import i18n from '../../lang/lang';
-
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import i18n from '../../lang/lang';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -275,6 +274,23 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
   const showLoading = isLoading || isTransforming;
 
+  // Helper functions to avoid nested ternaries
+  const getEmptyStateTitle = () => {
+    if (searchQuery.trim()) {
+      return t('meals.noMealsFound');
+    }
+
+    return activeFilter === 'all' ? t('meals.noMealsYet') : t('meals.noMealsFound');
+  };
+
+  const getEmptyStateMessage = () => {
+    if (searchQuery.trim()) {
+      return t('meals.noMealsMatch', { query: searchQuery });
+    }
+
+    return activeFilter === 'all' ? t('meals.createFirstMeal') : t('meals.tryDifferentFilter');
+  };
+
   return (
     <FullScreenModal
       visible={visible}
@@ -342,12 +358,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.xl,
                 }}
               >
-                {searchQuery.trim()
-                  ? // TODO: use a helper function to avoid nested ternary
-                    t('meals.noMealsFound')
-                  : activeFilter === 'all'
-                    ? t('meals.noMealsYet')
-                    : t('meals.noMealsFound')}
+                {getEmptyStateTitle()}
               </Text>
               <Text
                 className="text-center font-medium"
@@ -356,12 +367,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                {searchQuery.trim()
-                  ? // TODO: use a helper function to avoid nested ternary
-                    t('meals.noMealsMatch', { query: searchQuery })
-                  : activeFilter === 'all'
-                    ? t('meals.createFirstMeal')
-                    : t('meals.tryDifferentFilter')}
+                {getEmptyStateMessage()}
               </Text>
             </View>
           ) : (

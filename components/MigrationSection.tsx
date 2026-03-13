@@ -91,8 +91,8 @@ export const MigrationSection = () => {
             {migrationSummary.nutritionLogsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.exercises')}:{' '}
-            {migrationSummary.exercisesCount} {t('settings.migration.records')}
+            • {t('settings.migration.summaryItems.exercises')}: {migrationSummary.exercisesCount}{' '}
+            {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
             • {t('settings.migration.summaryItems.workouts')}: {migrationSummary.workoutsCount}{' '}
@@ -186,7 +186,9 @@ export const MigrationSection = () => {
       ) : null}
 
       {!migrationSummary && !checkingOldDatabase ? (
-        <Text className="py-2 text-sm text-text-tertiary">{t('settings.migration.clickToCheck')}</Text>
+        <Text className="py-2 text-sm text-text-tertiary">
+          {t('settings.migration.clickToCheck')}
+        </Text>
       ) : null}
 
       {migrationResult ? (
@@ -194,7 +196,9 @@ export const MigrationSection = () => {
           className="mt-2 self-center rounded-lg border border-border-light bg-bg-primary px-4 py-2"
           onPress={resetMigration}
         >
-          <Text className="text-sm text-text-secondary">{t('settings.migration.resetMigration')}</Text>
+          <Text className="text-sm text-text-secondary">
+            {t('settings.migration.resetMigration')}
+          </Text>
         </Pressable>
       ) : null}
     </View>

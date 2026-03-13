@@ -68,7 +68,9 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
               color={theme.colors.accent.primary}
             />
           </View>
-          <Text className="text-base text-text-primary">{selectedIcon || t('common.selectIcon')}</Text>
+          <Text className="text-base text-text-primary">
+            {selectedIcon || t('common.selectIcon')}
+          </Text>
         </View>
         <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
       </Pressable>

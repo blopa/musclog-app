@@ -14,11 +14,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import i18n from '../lang/lang';
-
 import { type EatingPhase } from '../database/models';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
+import i18n from '../lang/lang';
 import { displayToKg, kgToDisplay } from '../utils/unitConversion';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
