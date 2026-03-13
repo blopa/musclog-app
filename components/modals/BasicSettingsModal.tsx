@@ -20,6 +20,7 @@ import { type FoodSearchSource } from '../../constants/settings';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
+import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
@@ -111,6 +112,13 @@ export function BasicSettingsModal({
   ];
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
+
+  // TODO: this is only here for debugging purposes
+  useEffect(() => {
+    if (!hasUsdaApiKey) {
+      showSnackbar('error', 'API KEY IS MISSING');
+    }
+  }, [hasUsdaApiKey, t]);
 
   const foodSearchMenuItems: BottomPopUpMenuItem[] = [
     ...(hasUsdaApiKey
@@ -255,7 +263,6 @@ export function BasicSettingsModal({
           </View>
         </View>
 
-        {/* TODO: for some reason this UI is not showing up on mobile - I did add the key to EAS so idk what's going on, seems like some sort of UI issue for mobile, because on web I can see it */}
         {foodSearchMenuItems.length > 1 ? (
           <View
             style={{

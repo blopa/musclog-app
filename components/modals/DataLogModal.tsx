@@ -33,6 +33,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
+import { getCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -556,6 +557,7 @@ export function DataLogModal({
   const [createFoodPortionModalVisible, setCreateFoodPortionModalVisible] = useState(false);
   const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
   const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
+  const [createChatMessageModalVisible, setCreateChatMessageModalVisible] = useState(false);
 
   const translations = getDataLogModalTranslations(variant, t, { units });
 
@@ -1203,6 +1205,19 @@ export function DataLogModal({
       case 'workoutLog':
         // Workout logs are created from active workout sessions
         break;
+      case 'chatMessage':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('coach.chatMessages.createMessage'),
+          description: t('coach.chatMessages.createMessageDesc'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateChatMessageModalVisible(true);
+          },
+        });
+        break;
     }
 
     return menuItems;
@@ -1441,6 +1456,45 @@ export function DataLogModal({
         <CreateWorkoutModal
           visible={createWorkoutModalVisible}
           onClose={() => setCreateWorkoutModalVisible(false)}
+        />
+      ) : null}
+
+      {/* TODO: make this genetic and add option to add any of the other models */}
+      {createChatMessageModalVisible ? (
+        <GenericEditModal
+          visible={createChatMessageModalVisible}
+          onClose={() => setCreateChatMessageModalVisible(false)}
+          title={t('coach.chatMessages.createMessage')}
+          fields={[
+            {
+              type: 'text',
+              key: 'message',
+              label: 'Message',
+              placeholder: 'Type your message...',
+              required: true,
+              multiline: true,
+            },
+            {
+              type: 'select',
+              key: 'sender',
+              label: 'coach.chatMessages.sender',
+              required: true,
+              options: [
+                { value: 'user', label: 'coach.chatMessages.senderUser' },
+                { value: 'coach', label: 'coach.chatMessages.senderCoach' },
+              ],
+            },
+          ]}
+          initialValues={{ message: '', sender: 'user' }}
+          onSave={async (values) => {
+            const sessionId = (await getCurrentChatSessionId()) ?? ChatService.generateSessionId();
+            await ChatService.saveMessage({
+              sessionId,
+              sender: values.sender as 'user' | 'coach',
+              message: String(values.message ?? ''),
+            });
+            await refresh();
+          }}
         />
       ) : null}
     </>

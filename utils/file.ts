@@ -1,3 +1,4 @@
+import { reloadAppAsync } from 'expo';
 import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
@@ -6,6 +7,7 @@ import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import { ImageManipulator } from 'expo-image-manipulator';
+import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
 import { DevSettings } from 'react-native';
@@ -154,6 +156,12 @@ export async function copyBundledExerciseImageToDocument(
 
   const destFile = new File(exercisesDir, destFilename);
 
+  // If the file was already copied (e.g. a previous interrupted seeding run, or
+  // multiple exercises sharing the same fallback image), reuse it.
+  if (destFile.exists) {
+    return destFile.uri;
+  }
+
   try {
     // Use expo-asset to download and resolve the bundled asset
     // This works in both development and production builds
@@ -175,15 +183,22 @@ export async function copyBundledExerciseImageToDocument(
 
 export async function reloadApp() {
   if (__DEV__) {
-    // In development mode, use DevSettings.reload() to reload the app
+    // In development mode, use DevSettings.reload() to reload the app (does not work in prod)
     DevSettings.reload();
     return;
   }
 
-  // In production, check if Updates is enabled before reloading
-  if (Updates.isEnabled) {
-    await Updates.reloadAsync();
-  } else {
-    console.warn('Updates is not enabled. App reload skipped.');
+  // Production mode: try multiple reload strategies
+  try {
+    if (reloadAppAsync) {
+      await reloadAppAsync();
+    } else if (Updates.isEnabled) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await Updates.reloadAsync();
+    }
+
+    router.replace('/');
+  } catch (error) {
+    router.replace('/');
   }
 }

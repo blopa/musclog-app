@@ -55,6 +55,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     // Check if seeding has already been completed
     const seedingComplete = await AsyncStorage.getItem(SEEDING_COMPLETE_KEY);
     if (seedingComplete === 'true') {
+      // Repair any exercises that were seeded without an image due to a prior bug
+      await ExerciseService.repairMissingExerciseImages();
       console.log('Production data seeding already completed, skipping');
       return true;
     }

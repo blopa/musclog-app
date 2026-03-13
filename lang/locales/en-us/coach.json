@@ -44,7 +44,13 @@
       "editMessage": "Edit message",
       "editMessageDesc": "Change the message text",
       "deleteMessage": "Delete message",
-      "deleteMessageDesc": "Permanently remove this message"
+      "deleteMessageDesc": "Permanently remove this message",
+      "createMessage": "Create message",
+      "createMessageDesc": "Add a new message to the history",
+      "createMessageFailed": "Failed to create message",
+      "sender": "Sender",
+      "senderUser": "User",
+      "senderCoach": "Coach"
     },
     "menu": {
       "title": "Chat options",
