@@ -45,7 +45,6 @@ export default function ProgressScreen() {
     hasAnyAggregationData,
   } = useProgressData();
 
-  // TODO: use isSyncing
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -96,6 +95,7 @@ export default function ProgressScreen() {
       ? [
           {
             title: t('progress.getAiInsights'),
+            // TODO: use i18n
             description: 'Get AI-powered insights on your progress',
             icon: Sparkles,
             onPress: () => {
@@ -108,6 +108,7 @@ export default function ProgressScreen() {
       : []),
     {
       title: t('progress.manageMetrics'),
+      // TODO: use i18n
       description: 'Add or edit your weight and body fat data',
       icon: Scale,
       onPress: () => {
@@ -118,6 +119,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.manageNutrition'),
+      // TODO: use i18n
       description: 'Review and edit your food logs',
       icon: Utensils,
       onPress: () => {
@@ -128,6 +130,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.listMeasurements'),
+      // TODO: use i18n
       description: 'View all your body measurements',
       icon: Ruler,
       onPress: () => {
@@ -138,10 +141,11 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.syncHealthConnect'),
-      description: 'Import data from Google Health Connect',
+      // TODO: use i18n
+      description: isSyncing ? 'Syncing...' : 'Import data from Google Health Connect',
       icon: RefreshCw,
-      onPress: handleSync,
-      iconColor: theme.colors.accent.secondary,
+      onPress: isSyncing ? () => {} : handleSync,
+      iconColor: isSyncing ? theme.colors.text.secondary : theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
     },
   ];
