@@ -800,7 +800,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       <View className="flex-1 bg-bg-primary">
         <View
           className="flex-row items-center gap-3 border-b px-4 py-3"
-          style={{ borderColor: theme.colors.border.light }}
+          style={{
+            borderColor: theme.colors.border.light,
+            backgroundColor:
+              // TODO: use a helper function to avoid using nested ternary
+              conversationContext === 'general'
+                ? 'transparent'
+                : conversationContext === 'exercise'
+                  ? theme.colors.status.info20
+                  : theme.colors.accent.primary20,
+          }}
         >
           <View className="relative">
             <Image
@@ -817,21 +826,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             <View
               className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
               style={{
-                backgroundColor: isOnline
-                  ? theme.colors.accent.primary
-                  : theme.colors.status.error,
+                backgroundColor: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
                 borderColor: theme.colors.background.primary,
                 borderWidth: theme.borderWidth.medium,
               }}
             />
           </View>
           <View className="flex-1">
-            <View className="flex-row items-baseline gap-1.5 flex-wrap">
+            <View className="flex-row flex-wrap items-baseline gap-1.5">
               <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
-              <Text
-                className="text-sm font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>
             </View>
@@ -862,16 +866,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               {
                 label: t('coach.context.general'),
                 value: 'general',
-                icon: (
-                  <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                ),
+                icon: <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
               },
               {
                 label: t('coach.context.exercise'),
                 value: 'exercise',
-                icon: (
-                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                ),
+                icon: <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
               },
               {
                 label: t('coach.context.nutrition'),
