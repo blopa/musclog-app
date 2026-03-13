@@ -5,6 +5,11 @@
     "name": "Loggy",
     "status": "Online",
     "statusOffline": "Offline",
+    "context": {
+      "general": "General",
+      "exercise": "Fitness",
+      "nutrition": "Nutrition"
+    },
     "placeholder": "Type a message...",
     "todayAt": "Today, {{time}}",
     "actions": {

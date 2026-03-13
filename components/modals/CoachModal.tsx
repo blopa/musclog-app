@@ -3,6 +3,8 @@ import NetInfo from '@react-native-community/netinfo';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
+  Activity,
+  Dumbbell,
   PlusCircle,
   Send as SendIcon,
   Share2,
@@ -10,6 +12,7 @@ import {
   TrendingUp,
   UtensilsCrossed,
   X,
+  Zap,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +46,7 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
 } from '../../constants/chat';
-import { ChatService } from '../../database/services';
+import { ChatService, SettingsService } from '../../database/services';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
@@ -58,6 +61,7 @@ import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { useSnackbar } from '../SnackbarContext';
 import { MenuButton } from '../theme/MenuButton';
+import { SegmentedControl } from '../theme/SegmentedControl';
 import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -545,6 +549,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
 
+  const handleConversationContextChange = useCallback(
+    async (value: string) => {
+      const context = value as 'general' | 'exercise' | 'nutrition';
+      await SettingsService.setCoachConversationContext(context);
+    },
+    []
+  );
+
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
   }, []);
@@ -849,6 +861,37 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               </Text>
             </View>
           </View>
+        </View>
+
+        <View className="border-b px-4 py-3" style={{ borderColor: theme.colors.border.light }}>
+          <SegmentedControl
+            options={[
+              {
+                label: t('coach.context.general'),
+                value: 'general',
+                icon: (
+                  <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                ),
+              },
+              {
+                label: t('coach.context.exercise'),
+                value: 'exercise',
+                icon: (
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                ),
+              },
+              {
+                label: t('coach.context.nutrition'),
+                value: 'nutrition',
+                icon: (
+                  <UtensilsCrossed size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                ),
+              },
+            ]}
+            value={conversationContext}
+            onValueChange={handleConversationContextChange}
+            variant="outline"
+          />
         </View>
 
         <View

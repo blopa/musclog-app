@@ -41,6 +41,7 @@ export function SegmentedControl({
     <View className={containerClass}>
       {options.map((option) => {
         const isSelected = value === option.value;
+        
         return (
           <Pressable
             key={option.value}
