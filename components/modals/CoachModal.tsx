@@ -810,7 +810,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             <View
               className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
               style={{
-                backgroundColor: theme.colors.accent.primary,
+                backgroundColor: isOnline
+                  ? theme.colors.accent.primary
+                  : theme.colors.status.error,
                 borderColor: theme.colors.background.primary,
                 borderWidth: theme.borderWidth.medium,
               }}
