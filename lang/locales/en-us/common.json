@@ -53,6 +53,9 @@
       "daily": "Daily",
       "weekly": "Weekly",
       "monthly": "Monthly"
-    }
+    },
+    "appName": "MUSCLOG",
+    "selectIcon": "Select icon",
+    "selectIconLabel": "Select Icon"
   }
 }

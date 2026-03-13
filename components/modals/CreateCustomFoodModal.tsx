@@ -263,7 +263,7 @@ export default function CreateCustomFoodModal({
     },
     {
       key: 'monounsaturatedFat' as const,
-      label: 'Monounsaturated Fat',
+      label: t('food.newCustomFood.monounsatFat'),
       value: micronutrients.monounsaturatedFat,
       icon: Droplet,
       iconColor: theme.colors.status.emerald,

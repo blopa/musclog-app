@@ -14,6 +14,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import i18n from '../lang/lang';
+
 import { type EatingPhase } from '../database/models';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
@@ -141,16 +143,16 @@ function getMacroInsight(
   // Keto: Very low carbs (5-15%), high fat (55-65%), moderate protein (25-35%)
   if (carbsPercentage <= 15 && fatsPercentage >= 55 && fatsPercentage <= 65) {
     return {
-      title: 'Keto',
-      subtitle: 'Low Carb',
+      title: i18n.t('nutritionGoals.dietTypes.keto.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.keto.subtitle'),
     };
   }
 
   // Low Carb: Low carbs (10-25%), higher fat (45-60%)
   if (carbsPercentage <= 25 && carbsPercentage > 15 && fatsPercentage >= 45) {
     return {
-      title: 'Low Carb',
-      subtitle: 'Fat Adapted',
+      title: i18n.t('nutritionGoals.dietTypes.lowCarb.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.lowCarb.subtitle'),
     };
   }
 
@@ -158,13 +160,13 @@ function getMacroInsight(
   if (proteinPercentage >= 35) {
     if (carbsPercentage >= 40) {
       return {
-        title: 'High Protein',
-        subtitle: 'Muscle Building',
+        title: i18n.t('nutritionGoals.dietTypes.highProteinMuscle.title'),
+        subtitle: i18n.t('nutritionGoals.dietTypes.highProteinMuscle.subtitle'),
       };
     } else {
       return {
-        title: 'High Protein',
-        subtitle: 'Fat Loss',
+        title: i18n.t('nutritionGoals.dietTypes.highProteinFatLoss.title'),
+        subtitle: i18n.t('nutritionGoals.dietTypes.highProteinFatLoss.subtitle'),
       };
     }
   }
@@ -172,8 +174,8 @@ function getMacroInsight(
   // High Carb: 50%+ carbs
   if (carbsPercentage >= 50) {
     return {
-      title: 'High Carb',
-      subtitle: 'Energy Focus',
+      title: i18n.t('nutritionGoals.dietTypes.highCarb.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.highCarb.subtitle'),
     };
   }
 
@@ -187,31 +189,31 @@ function getMacroInsight(
     fatsPercentage <= 40
   ) {
     return {
-      title: 'Balanced',
-      subtitle: 'Optimal',
+      title: i18n.t('nutritionGoals.dietTypes.balanced.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.balanced.subtitle'),
     };
   }
 
   // Moderate Fat: Higher fat (40-50%), moderate protein/carbs
   if (fatsPercentage >= 40 && fatsPercentage <= 50) {
     return {
-      title: 'Moderate Fat',
-      subtitle: 'Sustained Energy',
+      title: i18n.t('nutritionGoals.dietTypes.moderateFat.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.moderateFat.subtitle'),
     };
   }
 
   // Low Fat: Low fat (<20%), higher protein/carbs
   if (fatsPercentage < 20) {
     return {
-      title: 'Low Fat',
-      subtitle: 'Lean Diet',
+      title: i18n.t('nutritionGoals.dietTypes.lowFat.title'),
+      subtitle: i18n.t('nutritionGoals.dietTypes.lowFat.subtitle'),
     };
   }
 
   // Default/Fallback
   return {
-    title: 'Custom',
-    subtitle: 'Your Plan',
+    title: i18n.t('nutritionGoals.dietTypes.custom.title'),
+    subtitle: i18n.t('nutritionGoals.dietTypes.custom.subtitle'),
   };
 }
 

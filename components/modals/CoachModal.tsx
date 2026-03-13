@@ -76,7 +76,7 @@ const ENABLE_FILE_ATTACHMENT = false; // TODO: remove this once we support file 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
-      return 'Workout Gen.';
+      return t('coach.actions.workoutGen');
     case ANALYZE_PROGRESS:
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:

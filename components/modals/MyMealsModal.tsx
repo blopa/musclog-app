@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
+import i18n from '../../lang/lang';
+
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
@@ -43,12 +45,12 @@ const deriveTags = (
 
   // Check for high protein
   if (nutrients.protein >= 40) {
-    tags.push('High Protein');
+    tags.push(i18n.t('meals.tags.highProtein'));
   }
 
   // Check for keto friendly (low carbs)
   if (nutrients.carbs < 20) {
-    tags.push('Keto Friendly');
+    tags.push(i18n.t('meals.tags.ketoFriendly'));
   }
 
   // Check for vegetarian keywords
@@ -57,7 +59,7 @@ const deriveTags = (
     fullText.includes('vegetarian') ||
     (fullText.includes('egg') && !fullText.includes('chicken') && !fullText.includes('salmon'))
   ) {
-    tags.push('Vegetarian');
+    tags.push(i18n.t('meals.tags.vegetarian'));
   }
 
   // Infer meal type from name
@@ -67,11 +69,11 @@ const deriveTags = (
     lowerName.includes('oatmeal') ||
     lowerName.includes('toast')
   ) {
-    tags.push('Breakfast');
+    tags.push(i18n.t('meals.tags.breakfast'));
   } else if (lowerName.includes('lunch') || lowerName.includes('bowl')) {
-    tags.push('Lunch');
+    tags.push(i18n.t('meals.tags.lunch'));
   } else if (lowerName.includes('dinner') || lowerName.includes('salad')) {
-    tags.push('Dinner');
+    tags.push(i18n.t('meals.tags.dinner'));
   }
 
   return tags;
@@ -145,7 +147,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
             return {
               id: meal.id,
-              title: meal.name ?? 'Untitled Meal',
+              title: meal.name ?? t('meals.untitledMeal'),
               tags,
               calories: Math.round(nutrients.calories),
               macros: {
@@ -166,7 +168,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     };
 
     transformMeals();
-  }, [meals]);
+  }, [meals, t]);
 
   // Filter meals based on active filter and search query
   const filteredMeals = useMemo(() => {
@@ -295,7 +297,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             label=""
             value={searchQuery}
             onChangeText={handleSearchChange}
-            placeholder="Search meals..."
+            placeholder={t('meals.searchPlaceholder')}
             icon={<Search size={theme.iconSize.md} color={theme.colors.text.secondary} />}
           />
         </View>
@@ -328,7 +330,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                Loading meals...
+                {t('meals.loadingMeals')}
               </Text>
             </View>
           ) : filteredMeals.length === 0 ? (
@@ -341,10 +343,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                 }}
               >
                 {searchQuery.trim()
-                  ? 'No meals found'
+                  ? // TODO: use a helper function to avoid nested ternary
+                    t('meals.noMealsFound')
                   : activeFilter === 'all'
-                    ? 'No meals yet'
-                    : 'No meals found'}
+                    ? t('meals.noMealsYet')
+                    : t('meals.noMealsFound')}
               </Text>
               <Text
                 className="text-center font-medium"
@@ -354,10 +357,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                 }}
               >
                 {searchQuery.trim()
-                  ? `No meals match "${searchQuery}"`
+                  ? // TODO: use a helper function to avoid nested ternary
+                    t('meals.noMealsMatch', { query: searchQuery })
                   : activeFilter === 'all'
-                    ? 'Create your first meal to get started'
-                    : 'Try a different filter'}
+                    ? t('meals.createFirstMeal')
+                    : t('meals.tryDifferentFilter')}
               </Text>
             </View>
           ) : (
@@ -377,7 +381,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               {hasMore ? (
                 <View className="py-4">
                   <Button
-                    label={isLoadingMore ? 'Loading more...' : 'Load More'}
+                    label={isLoadingMore ? t('meals.loadingMore') : t('meals.loadMore')}
                     onPress={loadMore}
                     size="sm"
                     variant="outline"

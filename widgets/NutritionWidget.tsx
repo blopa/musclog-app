@@ -66,7 +66,7 @@ export function NutritionWidget({
         }}
       >
         <TextWidget
-          text="MUSCLOG"
+          text={i18n.t('common.appName')}
           style={{
             fontSize: theme.typography.fontSize.xs,
             color: theme.colors.text.primary as ColorProp,
@@ -132,7 +132,7 @@ export function NutritionWidget({
             style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 3 }}
           >
             <TextWidget
-              text="PROT"
+              text={i18n.t('nutrition.macros.protein').toUpperCase().slice(0, 4)}
               style={{
                 fontSize: 9,
                 fontWeight: 'bold',
@@ -169,7 +169,7 @@ export function NutritionWidget({
             style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 3 }}
           >
             <TextWidget
-              text="CARB"
+              text={i18n.t('nutrition.carbs').toUpperCase().slice(0, 4)}
               style={{
                 fontSize: 9,
                 fontWeight: 'bold',
@@ -206,7 +206,7 @@ export function NutritionWidget({
             style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 3 }}
           >
             <TextWidget
-              text="FAT"
+              text={i18n.t('nutrition.fat').toUpperCase()}
               style={{
                 fontSize: 9,
                 fontWeight: 'bold',

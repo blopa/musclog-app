@@ -82,6 +82,44 @@
         "strengthSurplus": "Strength Surplus Strategy"
       }
     },
-    "errorSaving": "Error Saving"
+    "errorSaving": "Error Saving",
+    "dietTypes": {
+      "keto": {
+        "title": "Keto",
+        "subtitle": "Low Carb"
+      },
+      "lowCarb": {
+        "title": "Low Carb",
+        "subtitle": "Fat Adapted"
+      },
+      "highProteinMuscle": {
+        "title": "High Protein",
+        "subtitle": "Muscle Building"
+      },
+      "highProteinFatLoss": {
+        "title": "High Protein",
+        "subtitle": "Fat Loss"
+      },
+      "highCarb": {
+        "title": "High Carb",
+        "subtitle": "Energy Focus"
+      },
+      "balanced": {
+        "title": "Balanced",
+        "subtitle": "Optimal"
+      },
+      "moderateFat": {
+        "title": "Moderate Fat",
+        "subtitle": "Sustained Energy"
+      },
+      "lowFat": {
+        "title": "Low Fat",
+        "subtitle": "Lean Diet"
+      },
+      "custom": {
+        "title": "Custom",
+        "subtitle": "Your Plan"
+      }
+    }
   }
 }

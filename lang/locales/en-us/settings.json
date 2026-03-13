@@ -30,6 +30,34 @@
       "foodSearchUSDA": "USDA",
       "foodSearchUSDADescription": "US Department of Agriculture database"
     },
+    "migration": {
+      "title": "Data Migration",
+      "description": "Import data from old database to new WatermelonDB",
+      "checkMigrationData": "Check Migration Data",
+      "migrating": "Migrating...",
+      "importData": "Import Data",
+      "summary": "Migration Summary:",
+      "records": "records",
+      "migrated": "migrated",
+      "tablesFound": "Tables Found:",
+      "successful": "Migration Successful!",
+      "failed": "Migration Failed",
+      "error": "Error: {{error}}",
+      "clickToCheck": "Click Check Migration Data to see what can be migrated",
+      "resetMigration": "Reset Migration",
+      "summaryItems": {
+        "fitnessGoals": "Fitness Goals",
+        "userMetrics": "User Metrics",
+        "users": "Users",
+        "foods": "Foods",
+        "nutritionLogs": "Nutrition Logs",
+        "exercises": "Exercises",
+        "workouts": "Workouts",
+        "workoutLogs": "Workout Logs",
+        "templateSets": "Template Sets",
+        "logSets": "Log Sets"
+      }
+    },
     "advancedSettings": {
       "title": "Local Data Settings",
       "subtitle": "Data export, integrations, cache",
