@@ -1459,7 +1459,7 @@ export function DataLogModal({
         />
       ) : null}
 
-      {/*TODO: make this genetic and add option to add any of the other models*/}
+      {/* TODO: make this genetic and add option to add any of the other models */}
       {createChatMessageModalVisible ? (
         <GenericEditModal
           visible={createChatMessageModalVisible}
