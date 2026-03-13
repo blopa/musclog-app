@@ -95,8 +95,7 @@ export default function ProgressScreen() {
       ? [
           {
             title: t('progress.getAiInsights'),
-            // TODO: use i18n
-            description: 'Get AI-powered insights on your progress',
+            description: t('progress.getAiInsightsDescription'),
             icon: Sparkles,
             onPress: () => {
               router.push('/chat?context=progression');
@@ -108,8 +107,7 @@ export default function ProgressScreen() {
       : []),
     {
       title: t('progress.manageMetrics'),
-      // TODO: use i18n
-      description: 'Add or edit your weight and body fat data',
+      description: t('progress.manageMetricsDescription'),
       icon: Scale,
       onPress: () => {
         router.push('/settings');
@@ -119,8 +117,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.manageNutrition'),
-      // TODO: use i18n
-      description: 'Review and edit your food logs',
+      description: t('progress.manageNutritionDescription'),
       icon: Utensils,
       onPress: () => {
         router.push('/nutrition/manage');
@@ -130,8 +127,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.listMeasurements'),
-      // TODO: use i18n
-      description: 'View all your body measurements',
+      description: t('progress.listMeasurementsDescription'),
       icon: Ruler,
       onPress: () => {
         router.push('/profile');
@@ -141,8 +137,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.syncHealthConnect'),
-      // TODO: use i18n
-      description: isSyncing ? 'Syncing...' : 'Import data from Google Health Connect',
+      description: isSyncing ? t('progress.syncing') : t('progress.syncHealthConnectDescription'),
       icon: RefreshCw,
       onPress: isSyncing ? () => {} : handleSync,
       iconColor: isSyncing ? theme.colors.text.secondary : theme.colors.accent.secondary,

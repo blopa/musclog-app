@@ -1,5 +1,6 @@
 import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-widget';
 
+import i18n from '../lang/lang';
 import { theme } from '../theme';
 
 interface NutritionWidgetProps {
@@ -82,8 +83,7 @@ export function NutritionWidget({
             }}
           />
           <TextWidget
-            // TODO: use i18n
-            text={` / ${targetCalories.toLocaleString()} kcal`}
+            text={` / ${targetCalories.toLocaleString()} ${i18n.t('common.kcal')}`}
             style={{
               fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.secondary as ColorProp,
