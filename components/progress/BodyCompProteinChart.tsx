@@ -5,6 +5,7 @@ import { CartesianChart, Line, Scatter } from 'victory-native';
 
 import { BodyCompProteinPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
+import { getYAxisLabels } from '../../utils/chartUtils';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface BodyCompProteinChartProps {
@@ -72,6 +73,8 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
     { x: xMax, y: slope * xMax + intercept },
   ];
 
+  const yAxisLabels = getYAxisLabels(yMin - 0.5, yMax + 0.5, 3, (v) => `${v.toFixed(1)}`);
+
   return (
     <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
       <View className="mb-4 flex-row items-center gap-2">
@@ -91,15 +94,35 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           </TouchableOpacity>
         ))}
       </View>
-      <View style={{ height: 250 }}>
+      <View style={{ height: 250, position: 'relative' }}>
         <Text className="mb-2 text-center text-xs text-text-tertiary">
           {t('progress.proteinVsWeightChange', { unit: weightLabel })}
         </Text>
+        {yAxisLabels.map((label) => (
+          <Text
+            key={label.label}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 6,
+              top: (1 - (label.yDomainValue - (yMin - 0.5)) / (yMax - yMin + 1)) * 250 - 6 + 20, // +20 for header text
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              color: theme.colors.text.tertiary,
+              zIndex: 1,
+            }}
+          >
+            {label.label}
+          </Text>
+        ))}
         <CartesianChart
           data={scatterData}
           xKey="x"
           yKeys={['y']}
           domain={{ x: [xMin * 0.9, xMax * 1.1], y: [yMin - 0.5, yMax + 0.5] }}
+          axisOptions={{
+            labelColor: 'transparent',
+          }}
         >
           {({ points }) => (
             <>

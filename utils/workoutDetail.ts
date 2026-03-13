@@ -7,6 +7,7 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
+import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
@@ -43,7 +44,7 @@ export type WorkoutDetailData = {
   volumeTrend: {
     percentage: number;
     data: LineChartDataPoint[];
-    labels: string[];
+    labels: XAxisLabel[];
   };
   exercises: WorkoutExercise[];
 };
@@ -70,7 +71,7 @@ async function calculateVolumeTrend(
 ): Promise<{
   percentage: number;
   data: LineChartDataPoint[];
-  labels: string[];
+  labels: XAxisLabel[];
 }> {
   if (!currentWorkoutLog.templateId || !currentWorkoutLog.totalVolume) {
     return {
@@ -129,40 +130,34 @@ async function calculateVolumeTrend(
   const chartHeight = 100;
 
   const data: LineChartDataPoint[] = sortedLogs.map((log, index) => {
-    const x = (index / (sortedLogs.length - 1)) * chartWidth;
+    const x = index; // Use index as x for getXAxisLabels
     const normalizedVolume = ((log.totalVolume || 0) - minVolume) / volumeRange;
     const y = chartHeight - normalizedVolume * chartHeight;
     return { x, y };
   });
 
-  const labels: string[] = [];
-  if (sortedLogs.length >= 4) {
-    const firstDate = new Date(sortedLogs[0].startedAt || sortedLogs[0].completedAt || Date.now());
-    const midDate = new Date(
-      sortedLogs[Math.floor(sortedLogs.length / 2)].startedAt ||
-        sortedLogs[Math.floor(sortedLogs.length / 2)].completedAt ||
-        Date.now()
-    );
-    const lastDate = new Date(
-      sortedLogs[sortedLogs.length - 1].startedAt ||
-        sortedLogs[sortedLogs.length - 1].completedAt ||
-        Date.now()
-    );
-
-    labels.push(format(firstDate, 'MMM d'));
-    labels.push(format(midDate, 'MMM d'));
-    labels.push(format(lastDate, 'MMM d'));
-    labels.push(t('common.today') || 'TODAY');
-  } else {
-    sortedLogs.forEach((log) => {
+  const labels = getXAxisLabels(
+    sortedLogs.map((log, index) => ({
+      x: index,
+      date: new Date(log.startedAt || log.completedAt || Date.now()),
+    })),
+    (x) => {
+      const log = sortedLogs[x];
       const date = new Date(log.startedAt || log.completedAt || Date.now());
-      labels.push(format(date, 'MMM d'));
-    });
-  }
+      return format(date, 'MMM d');
+    }
+  );
+
+  // Map data x back to chartWidth scale if needed, but LineChart can handle domain [0, n-1]
+  // We'll just update the data x to match the indices used for labels
+  const chartData: LineChartDataPoint[] = data.map((d, i) => ({
+    x: i,
+    y: d.y,
+  }));
 
   return {
     percentage: percentageChange,
-    data,
+    data: chartData,
     labels,
   };
 }

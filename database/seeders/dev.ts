@@ -11,6 +11,7 @@ import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
+import MenstrualCycle from '../models/MenstrualCycle';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogExercise from '../models/WorkoutLogExercise';
@@ -807,6 +808,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
   let created = 0;
 
   try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     await database.write(async () => {
       // Get some exercises to use in workouts
       const exercises = await database.get<Exercise>('exercises').query().fetch();
@@ -1359,6 +1361,24 @@ async function seedUserMetrics(): Promise<{ created: number }> {
           metric.updatedAt = now;
         });
         created++;
+
+        // Add energy levels (mood)
+        const energyValue = 5 + Math.sin(data.date / (5 * 24 * 60 * 60 * 1000)) * 4;
+        const encryptedEnergy = await encryptUserMetricFields({
+          value: energyValue,
+          unit: '',
+          date: data.date,
+        });
+        await database.get<UserMetric>('user_metrics').create((metric) => {
+          metric.type = 'mood';
+          metric.valueRaw = encryptedEnergy.value;
+          metric.unitRaw = encryptedEnergy.unit;
+          metric.date = data.date;
+          metric.timezone = timezone;
+          metric.createdAt = now;
+          metric.updatedAt = now;
+        });
+        created++;
       }
     });
 
@@ -1367,6 +1387,31 @@ async function seedUserMetrics(): Promise<{ created: number }> {
   } catch (error) {
     console.error('Error seeding user metrics:', error);
     throw error;
+  }
+}
+
+async function seedMenstrualCycle(): Promise<void> {
+  const now = Date.now();
+  try {
+    const existing = await database.get<MenstrualCycle>('menstrual_cycles').query().fetch();
+    if (existing.length > 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      await database.get<MenstrualCycle>('menstrual_cycles').create((c) => {
+        c.avgCycleLength = 28;
+        c.avgPeriodDuration = 5;
+        c.useHormonalBirthControl = false;
+        c.lastPeriodStartDate = Date.now() - 14 * 24 * 60 * 60 * 1000;
+        c.isActive = true;
+        c.createdAt = now;
+        c.updatedAt = now;
+      });
+    });
+    console.log('Seeded menstrual cycle');
+  } catch (error) {
+    console.error('Error seeding menstrual cycle:', error);
   }
 }
 
@@ -1569,16 +1614,15 @@ async function seedFoods(): Promise<{ created: number }> {
         return date.getTime();
       };
 
-      const nutritionLogs = [
-        { name: 'Banana', daysAgo: 0, type: 'breakfast', amount: 120 }, // 120g banana
-        { name: 'Greek Yogurt', daysAgo: 0, type: 'snack', amount: 150 },
-        { name: 'Chicken Breast', daysAgo: 0, type: 'lunch', amount: 200 },
-        { name: 'Brown Rice', daysAgo: 0, type: 'lunch', amount: 150 },
-        { name: 'Salmon', daysAgo: 0, type: 'dinner', amount: 180 },
-        { name: 'Sweet Potato', daysAgo: 0, type: 'dinner', amount: 200 },
-        { name: 'Protein Power Smoothie', daysAgo: 2, type: 'snack', amount: 250 }, // 250ml smoothie
-        { name: 'Mediterranean Quinoa Bowl', daysAgo: 3, type: 'lunch', amount: 350 }, // 350g bowl
-      ];
+      const nutritionLogs = [];
+      for (let i = 0; i < 60; i++) {
+        nutritionLogs.push({ name: 'Banana', daysAgo: i, type: 'breakfast', amount: 120 });
+        nutritionLogs.push({ name: 'Greek Yogurt', daysAgo: i, type: 'snack', amount: 150 });
+        nutritionLogs.push({ name: 'Chicken Breast', daysAgo: i, type: 'lunch', amount: 200 });
+        nutritionLogs.push({ name: 'Brown Rice', daysAgo: i, type: 'lunch', amount: 150 });
+        nutritionLogs.push({ name: 'Salmon', daysAgo: i, type: 'dinner', amount: 180 });
+        nutritionLogs.push({ name: 'Sweet Potato', daysAgo: i, type: 'dinner', amount: 200 });
+      }
 
       for (const nl of nutritionLogs) {
         const f = foodByName.get(nl.name.toLowerCase());
@@ -1761,6 +1805,7 @@ export async function seedDevData(): Promise<boolean> {
 
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
+  await seedMenstrualCycle();
 
   console.log(
     `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Meals: ${mealsSeeded.created} meals`

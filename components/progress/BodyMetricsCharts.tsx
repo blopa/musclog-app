@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
+import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -40,7 +41,14 @@ export function BodyMetricsCharts({
               Math.min(...weightHistory.map((p) => p.value)) * 0.95,
               Math.max(...weightHistory.map((p) => p.value)) * 1.05,
             ]}
+            yAxisLabels={getYAxisLabels(
+              Math.min(...weightHistory.map((p) => p.value)) * 0.95,
+              Math.max(...weightHistory.map((p) => p.value)) * 1.05,
+              3,
+              (v) => `${Math.round(v)} ${weightLabel}`
+            )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
+            xAxisLabels={getXAxisLabels(weightHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}
@@ -60,7 +68,14 @@ export function BodyMetricsCharts({
               Math.min(...fatHistory.map((p) => p.value)) * 0.9,
               Math.max(...fatHistory.map((p) => p.value)) * 1.1,
             ]}
+            yAxisLabels={getYAxisLabels(
+              Math.min(...fatHistory.map((p) => p.value)) * 0.9,
+              Math.max(...fatHistory.map((p) => p.value)) * 1.1,
+              3,
+              (v) => `${Math.round(v)}%`
+            )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
+            xAxisLabels={getXAxisLabels(fatHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}
@@ -77,7 +92,13 @@ export function BodyMetricsCharts({
               Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
               Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
             ]}
+            yAxisLabels={getYAxisLabels(
+              Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
+              Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
+              3
+            )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+            xAxisLabels={getXAxisLabels(ffmiHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}

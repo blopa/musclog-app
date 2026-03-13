@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type MultipleLinesChartDatum = { x: number; [key: string]: number };
 
@@ -28,7 +29,7 @@ export type MultipleLinesChartProps = {
   height?: number;
   xDomain?: [number, number];
   yDomain?: [number, number];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   yAxisLabels?: { label: string; yDomainValue: number }[];
   callouts?: MultipleLinesChartCallout[];
   showGridLines?: boolean;
@@ -242,18 +243,39 @@ export function MultipleLinesChart({
 
       {xAxisLabels != null && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
           style={{
             marginTop: 8,
             marginBottom: marginBottom,
             paddingLeft: 32,
-            paddingRight: 0,
+            height: 20,
+            position: 'relative',
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[11px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={`${label.label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: `calc(32px + ${label.positionPercent} * (100% - 32px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

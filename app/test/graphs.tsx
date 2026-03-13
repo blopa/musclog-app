@@ -26,6 +26,7 @@ import {
 import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
+import { getXAxisLabels } from '../../utils/chartUtils';
 
 export default function GraphsTestScreen() {
   // Sample data for LineChart
@@ -303,7 +304,10 @@ export default function GraphsTestScreen() {
                 heartRateDomain={[60, 140]}
                 leftAxisLabels={['0', '6k', '12k']}
                 rightAxisLabels={['60', '100', '140']}
-                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                xAxisLabels={getXAxisLabels(
+                  barLineChartData,
+                  (x) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][x]
+                )}
                 barSeriesLabel="Steps Taken"
                 lineSeriesLabel="Avg Heart Rate"
                 stepsFormatter={(v) => v.toLocaleString()}
@@ -341,7 +345,10 @@ export default function GraphsTestScreen() {
                 stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
                 leftAxisLabels={['0', '10', '20', '25']}
                 rightAxisLabels={['60', '80', '100']}
-                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                xAxisLabels={getXAxisLabels(
+                  stackedBarLineChartData,
+                  (x) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][x]
+                )}
                 barSeriesLabel="Total"
                 lineSeriesLabel="Avg Heart Rate"
                 totalFormatter={(t) => String(Math.round(t))}
@@ -448,7 +455,10 @@ export default function GraphsTestScreen() {
                 showGridLines={showGridLines}
                 interactive={interactive}
                 showLastPoint={showLastPoint}
-                xAxisLabels={['0', '2', '4', '6', '8']}
+                xAxisLabels={getXAxisLabels(
+                  [0, 1, 2, 3, 4].map((i) => ({ x: i * 100 })),
+                  (x) => String(x / 50)
+                )}
                 yAxisLabels={[
                   { label: '100', yDomainValue: 100 },
                   { label: '50', yDomainValue: 50 },
@@ -481,7 +491,10 @@ export default function GraphsTestScreen() {
                 data={barChartData}
                 height={200}
                 showGridLines={showGridLines}
-                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+                xAxisLabels={getXAxisLabels(
+                  barChartData,
+                  (x) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][x - 1]
+                )}
                 yDomain={[0, 100]}
                 yAxisLabels={[
                   { label: '100', yDomainValue: 100 },
@@ -516,7 +529,10 @@ export default function GraphsTestScreen() {
                 height={200}
                 yDomain={[0, 25]}
                 stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
-                xAxisLabels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+                xAxisLabels={getXAxisLabels(
+                  stackedBarData,
+                  (x) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][x]
+                )}
                 yAxisLabels={[
                   { label: '25', yDomainValue: 25 },
                   { label: '20', yDomainValue: 20 },
@@ -553,7 +569,10 @@ export default function GraphsTestScreen() {
                 series={areaChartSeries}
                 height={280}
                 yDomain={[0, 100]}
-                xAxisLabels={['08:00', '12:00', '16:00', '20:00', '00:00']}
+                xAxisLabels={getXAxisLabels(
+                  areaChartData,
+                  (x) => ['08:00', '12:00', '16:00', '20:00', '00:00'][x]
+                )}
                 yAxisLabels={[
                   { label: '100', yDomainValue: 100 },
                   { label: '75', yDomainValue: 75 },
@@ -581,7 +600,10 @@ export default function GraphsTestScreen() {
                 series={multipleLinesSeries}
                 height={200}
                 yDomain={[0, 100]}
-                xAxisLabels={['M', 'T', 'W', 'T', 'F', 'S', 'S']}
+                xAxisLabels={getXAxisLabels(
+                  multipleLinesData,
+                  (x) => ['M', 'T', 'W', 'T', 'F', 'S', 'S'][x]
+                )}
                 yAxisLabels={[
                   { label: '100%', yDomainValue: 100 },
                   { label: '75%', yDomainValue: 75 },

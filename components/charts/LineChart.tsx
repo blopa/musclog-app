@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 export type LineChartDataPoint = {
   x: number;
@@ -53,7 +54,7 @@ export type LineChartProps = {
   /** Grid line tick values for Y-axis (default: calculated based on chartHeight) */
   gridTickValues?: number[];
   /** Custom X-axis labels to display below the chart */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Y-axis labels overlaid on the chart. yDomainValue should be in the y-domain space [yDomain[0], yDomain[1]]. */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top for the chart container (default: 16) */
@@ -304,12 +305,12 @@ export function LineChart({
             ) : null}
           </>
         ) : null}
-        {yAxisLabels?.map(({ label, yDomainValue }) => {
+        {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yDomainFinal[1] - yDomainFinal[0];
           const topOffset = (1 - (yDomainValue - yDomainFinal[0]) / yRange) * height;
           return (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               pointerEvents="none"
               style={{
                 position: 'absolute',
@@ -326,11 +327,39 @@ export function LineChart({
         })}
       </View>
       {xAxisLabels && xAxisLabels.length > 0 ? (
-        <View className="mt-4 flex-row justify-between px-1" style={{ marginTop: marginBottom }}>
+        <View
+          style={{
+            position: 'relative',
+            marginTop: marginBottom,
+            height: 20,
+            width: '100%',
+          }}
+        >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[10px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={`${label.label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: `${label.positionPercent}%`,
+                width: 40,
+                marginLeft: -20,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

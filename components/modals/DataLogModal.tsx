@@ -482,6 +482,22 @@ function formatWorkoutVolume(
   });
 }
 
+// Helper: get the create modal title for a given variant
+function getCreateModalTitle(variant: DataLogModalVariant, t: TFunction): string {
+  switch (variant) {
+    case 'chatMessage':
+      return t('coach.chatMessages.createMessage');
+    case 'userMetric':
+      return t('bodyMetrics.addEntry.title');
+    case 'nutritionGoal':
+      return t('goalsManagement.newGoal');
+    case 'nutritionCheckin':
+      return t('goalsManagement.createCheckin');
+    default:
+      return t('common.createNew');
+  }
+}
+
 // Base type that MealDataDisplayItem, FoodDataDisplayItem, ExerciseDataDisplayItem, and WorkoutLogDataDisplayItem satisfy
 export type DataLogDisplayItem = {
   id: string;
@@ -1502,18 +1518,7 @@ export function DataLogModal({
         <GenericEditModal
           visible={createGenericModalVisible}
           onClose={() => setCreateGenericModalVisible(false)}
-          title={
-          // TODO: move this to a helper function to avoid using nested ternary
-            variant === 'chatMessage'
-              ? t('coach.chatMessages.createMessage')
-              : variant === 'userMetric'
-                ? t('bodyMetrics.addEntry.title')
-                : variant === 'nutritionGoal'
-                  ? t('goalsManagement.newGoal')
-                  : variant === 'nutritionCheckin'
-                    ? t('goalsManagement.createCheckin')
-                    : t('common.createNew')
-          }
+          title={getCreateModalTitle(variant, t)}
           fields={getCreateFields(variant)}
           initialValues={getCreateInitialValues(variant)}
           onSave={async (values) => {

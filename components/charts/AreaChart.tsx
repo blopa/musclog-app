@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 /** Map chart points to victory-native PointsArray (includes xValue, yValue) */
 function toPointsArray(
@@ -39,7 +40,7 @@ export type AreaChartProps = {
   /** Y domain [min, max] (default: [0, 100]) */
   yDomain?: [number, number];
   /** X-axis labels below the chart */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Y-axis labels on the left */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Peak marker: which series and which point index; optional label (e.g. "Peak") */
@@ -141,9 +142,9 @@ export function AreaChart({
               zIndex: 2,
             }}
           >
-            {yAxisLabels.map(({ label }) => (
+            {yAxisLabels.map(({ label }, i) => (
               <Text
-                key={label}
+                key={`${label}-${i}`}
                 style={{
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: '600',
@@ -191,7 +192,7 @@ export function AreaChart({
                   const fillColor = withAlpha(s.color, areaOpacity);
                   const pointsArray = toPointsArray(pts);
                   return (
-                    <View key={s.key}>
+                    <React.Fragment key={s.key}>
                       <Area
                         points={pointsArray}
                         y0={chartBounds.bottom}
@@ -205,7 +206,7 @@ export function AreaChart({
                         strokeWidth={idx === series.length - 1 ? 2.5 : 2}
                         strokeCap="round"
                       />
-                    </View>
+                    </React.Fragment>
                   );
                 })}
                 {peak != null && peakSeries != null
@@ -271,17 +272,40 @@ export function AreaChart({
       {/* X-axis labels */}
       {xAxisLabels != null && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
           style={{
+            position: 'relative',
             marginTop: 4,
             paddingLeft: 20,
             paddingRight: 20,
+            height: 20,
+            width: '100%',
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[10px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={`${label.label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: 20 + (label.positionPercent / 100) * chartWidth,
+                width: 40,
+                marginLeft: -20,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

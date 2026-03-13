@@ -10,6 +10,7 @@ import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
+import { getXAxisLabels } from '../../utils/chartUtils';
 import { kgToDisplay, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
@@ -336,27 +337,16 @@ export default function BodyMetricsHistoryModal({
     ];
   }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit]);
 
-  // X-axis labels from actual date range (first, middle, last)
+  // X-axis labels from actual date range
   const xAxisLabels = useMemo(() => {
     if (!allMetricsForChart || allMetricsForChart.length === 0) {
       return [];
     }
     const sorted = [...allMetricsForChart].sort((a, b) => a.decrypted.date - b.decrypted.date);
-    const dates = sorted.map((m) => m.decrypted.date);
-    if (dates.length === 1) {
-      return [format(dates[0], 'MMM d')];
-    }
-    if (dates.length === 2) {
-      return [format(dates[0], 'MMM d'), format(dates[1], 'MMM d')];
-    }
-    const first = 0;
-    const mid = Math.floor(dates.length / 2);
-    const last = dates.length - 1;
-    return [
-      format(dates[first], 'MMM d'),
-      format(dates[mid], 'MMM d'),
-      format(dates[last], 'MMM d'),
-    ];
+    return getXAxisLabels(
+      sorted.map((m) => ({ x: m.decrypted.date })),
+      (x) => format(x, 'MMM d')
+    );
   }, [allMetricsForChart]);
 
   const handleNewMetric = () => {

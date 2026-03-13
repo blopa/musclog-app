@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, View } from 'react-native';
 import {
   VictoryArea,
@@ -11,6 +10,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type AreaChartDatum = { x: number; [key: string]: number };
 
@@ -29,7 +29,7 @@ export type AreaChartProps = {
   height?: number;
   xDomain?: [number, number];
   yDomain?: [number, number];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   yAxisLabels?: { label: string; yDomainValue: number }[];
   peak?: { seriesKey: string; pointIndex: number; label?: string };
   showGridLines?: boolean;
@@ -238,17 +238,39 @@ export function AreaChart({
 
       {xAxisLabels != null && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
           style={{
             marginTop: xAxisGap,
-            paddingLeft: 20,
-            paddingRight: 20,
+            paddingLeft: padding.left,
+            paddingRight: padding.right,
+            height: 20,
+            position: 'relative',
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[10px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={`${label.label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: `calc(${padding.left}px + ${label.positionPercent} * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

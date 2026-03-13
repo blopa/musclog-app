@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarChartDatum = {
   x: number;
@@ -17,7 +18,7 @@ export type StackedBarChartProps = {
   gridLineColor?: string;
   xDomain?: [number, number];
   yDomain?: [number, number];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   yAxisLabels?: { label: string; yDomainValue: number }[];
   marginTop?: number;
   marginBottom?: number;
@@ -80,9 +81,7 @@ export function StackedBarChart({
     data.map((d) => ({ x: d.x, y: d.segments[3] ?? 0 })),
   ];
 
-  const xDomainMin = paddedXDomain[0];
-  const xDomainSpan = paddedXDomain[1] - paddedXDomain[0];
-  const xLabelPosition = (index: number) => (data[index].x - xDomainMin) / xDomainSpan;
+  const padding = { left: 20, right: 20 };
 
   return (
     <View className={className} style={{ marginTop }}>
@@ -160,28 +159,32 @@ export function StackedBarChart({
             position: 'relative',
             marginTop: 8,
             height: 20,
+            width: '100%',
           }}
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${xLabelPosition(index) * 100}%`,
-                marginLeft: -20,
-                width: 40,
+                left: `calc(${padding.left}px + ${label.positionPercent} * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
+                  fontSize: 10,
+                  fontWeight: '500',
                   color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
+                numberOfLines={1}
               >
-                {label}
+                {label.label}
               </Text>
             </View>
           ))}

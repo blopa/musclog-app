@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
+import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarChart } from '../charts/BarChart';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -36,6 +37,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               Math.max(...workoutVolumeHistory.map((p) => p.volume)) * 1.2,
             ]}
             tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
+            xAxisLabels={getXAxisLabels(workoutVolumeHistory.map((p) => ({ x: p.date })))}
           />
         </ProgressChartSection>
       ) : null}
@@ -49,7 +51,10 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
             data={muscleGroupSets.map((m, i) => ({ x: i, y: m.sets }))}
             height={200}
             barColor="#ec4899"
-            xAxisLabels={muscleGroupSets.map((m) => m.muscleGroup)}
+            xAxisLabels={getXAxisLabels(
+              muscleGroupSets.map((m, i) => ({ x: i })),
+              (x) => muscleGroupSets[x].muscleGroup
+            )}
             tooltipFormatter={(p) => `${muscleGroupSets[p.x].muscleGroup}: ${p.y} sets`}
           />
         </ProgressChartSection>

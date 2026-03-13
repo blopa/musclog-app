@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
@@ -31,7 +32,7 @@ export type BarLineChartProps = {
   heartRateDomain?: [number, number];
   leftAxisLabels?: string[];
   rightAxisLabels?: string[];
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   stepsFormatter?: (value: number) => string;
   heartRateFormatter?: (value: number) => string;
   interactive?: boolean;
@@ -94,6 +95,7 @@ export function BarLineChart({
   const chartHeight = height + 128;
   const chartPaddingTop = 6;
   const chartPaddingBottom = 4;
+  const padding = { left: 40, right: 0 };
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
@@ -133,7 +135,7 @@ export function BarLineChart({
         >
           {[...leftAxisLabels].reverse().map((label, i) => (
             <Text
-              key={i}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -159,7 +161,7 @@ export function BarLineChart({
         >
           {[...rightAxisLabels].reverse().map((label, i) => (
             <Text
-              key={i}
+              key={`${label}-${i}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -256,20 +258,53 @@ export function BarLineChart({
               }}
             />
             <VictoryAxis
-              tickValues={data.map((_, i) => i)}
-              tickFormat={(t) => (xAxisLabels && xAxisLabels[t] != null ? xAxisLabels[t] : '')}
               style={{
                 axis: { stroke: 'transparent' },
                 grid: { stroke: 'transparent' },
                 ticks: { stroke: 'transparent' },
-                tickLabels: {
-                  fill: theme.colors.text.tertiary,
-                  fontSize: 14,
-                  fontWeight: 600,
-                },
+                tickLabels: { fill: 'transparent' },
               }}
             />
           </VictoryChart>
+
+          {xAxisLabels && xAxisLabels.length > 0 ? (
+            <View
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 20,
+              }}
+            >
+              {xAxisLabels.map((label, index) => (
+                <View
+                  key={`${label.label}-${index}`}
+                  style={{
+                    position: 'absolute',
+                    left: `calc(${padding.left}px + ${label.positionPercent} * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                    width: X_AXIS_LABEL_WIDTH,
+                    transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      fontWeight: '500',
+                      color: theme.colors.text.tertiary,
+                      textAlign: 'center',
+                      marginLeft:
+                        label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
+                    }}
+                    numberOfLines={1}
+                  >
+                    {label.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
 
           {interactive && activeDatum ? (
             <>

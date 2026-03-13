@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 /** Map chart points to victory-native PointsArray (includes xValue, yValue) */
 function toPointsArray(
@@ -48,7 +49,7 @@ export type MultipleLinesChartProps = {
   /** Y domain [min, max] (default: [0, 100]) */
   yDomain?: [number, number];
   /** X-axis labels below the chart */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Y-axis labels on the left */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Optional callout labels at specific series/point indices */
@@ -139,9 +140,9 @@ export function MultipleLinesChart({
               zIndex: 2,
             }}
           >
-            {yAxisLabels.map(({ label }) => (
+            {yAxisLabels.map(({ label }, i) => (
               <Text
-                key={label}
+                key={`${label}-${i}`}
                 style={{
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: '600',
@@ -258,18 +259,39 @@ export function MultipleLinesChart({
 
       {xAxisLabels != null && xAxisLabels.length > 0 ? (
         <View
-          className="flex-row justify-between px-1"
           style={{
             marginTop: 8,
             marginBottom: marginBottom,
             paddingLeft: 32,
-            paddingRight: 0,
+            height: 20,
+            position: 'relative',
           }}
         >
           {xAxisLabels.map((label, index) => (
-            <Text key={index} className="text-[11px] font-medium text-text-tertiary">
-              {label}
-            </Text>
+            <View
+              key={`${label.label}-${index}`}
+              style={{
+                position: 'absolute',
+                left: 32 + (label.positionPercent / 100) * chartWidth,
+                width: 40,
+                marginLeft: -20,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: '500',
+                  color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
+                }}
+                numberOfLines={1}
+              >
+                {label.label}
+              </Text>
+            </View>
           ))}
         </View>
       ) : null}

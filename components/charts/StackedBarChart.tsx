@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { XAxisLabel } from '../../utils/chartUtils';
 
 /** One bar: x plus up to 4 segment values (e.g. [coffee, chocolate, soda, iceCream]) */
 export type StackedBarChartDatum = {
@@ -27,7 +28,7 @@ export type StackedBarChartProps = {
   /** Custom Y-axis domain [min, max]; default [0, max total across bars] */
   yDomain?: [number, number];
   /** Custom X-axis labels below the chart */
-  xAxisLabels?: string[];
+  xAxisLabels?: XAxisLabel[];
   /** Y-axis labels overlaid on the chart */
   yAxisLabels?: { label: string; yDomainValue: number }[];
   /** Custom margin top (default: 16) */
@@ -137,12 +138,12 @@ export function StackedBarChart({
           )}
         </CartesianChart>
 
-        {yAxisLabels?.map(({ label, yDomainValue }) => {
+        {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yMax - yMin;
           const topOffset = (1 - (yDomainValue - yMin) / yRange) * height;
           return (
             <Text
-              key={label}
+              key={`${label}-${i}`}
               pointerEvents="none"
               style={{
                 position: 'absolute',
@@ -164,30 +165,33 @@ export function StackedBarChart({
           style={{
             position: 'relative',
             marginTop: 8,
-            paddingHorizontal: 0,
             height: 20,
+            width: '100%',
           }}
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${xLabelPosition(index) * 100}%`,
-                transform: [{ translateX: -20 }],
+                left: `${label.positionPercent}%`,
                 width: 40,
+                marginLeft: -20,
                 alignItems: 'center',
-                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
+                  fontSize: 10,
+                  fontWeight: '500',
                   color: theme.colors.text.tertiary,
+                  textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
                 }}
+                numberOfLines={1}
               >
-                {label}
+                {label.label}
               </Text>
             </View>
           ))}
