@@ -396,8 +396,13 @@ export function useChatMessages(
         // Cap at 20 messages, use summarized_message if available.
         // Exclude the current user message from history — we pass it separately to sendCoachMessage
         // so it is not sent twice to the LLM.
+        // Filter to only include messages from the current conversation context.
         const maxHistoryLength = 20;
-        const slicedHistory = rawMessagesRef.current.slice(-maxHistoryLength);
+        const contextFilteredHistory = rawMessagesRef.current.filter(
+          (record) => record.context === conversationContext
+        );
+
+        const slicedHistory = contextFilteredHistory.slice(-maxHistoryLength);
         const historyWithoutCurrentMessage = slicedHistory.slice(0, -1);
 
         const systemMessage = await getChatMessagePromptContent();
