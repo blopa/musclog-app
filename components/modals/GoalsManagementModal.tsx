@@ -230,9 +230,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           </View>
         ) : (
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="shrink-0 px-6 pb-6" />
+            <View className="shrink-0 px-4 pb-6" />
             {/* Scrollable content */}
-            <View className="flex-1 px-6 pb-32">
+            <View className="flex-1 px-4 pb-32">
               {/* Current Goals Section */}
               {currentGoal ? (
                 <View className="mb-8">

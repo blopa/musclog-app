@@ -75,7 +75,7 @@ export function CenteredModal({
               borderBottomColor: theme.colors.border.dark,
             }}
           >
-            <View className="flex-row items-center justify-between px-6 py-5">
+            <View className="flex-row items-center justify-between px-4 py-5">
               <View className="flex-1">
                 <Text className="text-xl font-bold text-text-primary">{title}</Text>
                 {subtitle ? (
@@ -93,7 +93,7 @@ export function CenteredModal({
 
           {/* Footer */}
           {footer ? (
-            <View className="border-t border-border-dark bg-bg-overlay/50 px-6 py-4">{footer}</View>
+            <View className="border-t border-border-dark bg-bg-overlay/50 px-4 py-4">{footer}</View>
           ) : null}
         </Pressable>
       </Pressable>

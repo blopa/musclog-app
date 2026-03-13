@@ -289,7 +289,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     >
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
-        <View className="px-6 pb-4 pt-6">
+        <View className="px-4 pb-4 pt-6">
           {/* Search Input */}
           <TextInput
             label=""
