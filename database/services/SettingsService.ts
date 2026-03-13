@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
+  CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -280,6 +281,13 @@ export class SettingsService {
    */
   static async setNotificationsWorkoutDuration(value: boolean) {
     await SettingsService.setBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, value);
+  }
+
+  /**
+   * Set the coach conversation context
+   */
+  static async setCoachConversationContext(value: 'general' | 'exercise' | 'nutrition') {
+    await SettingsService.setStringSetting(CONVERSATION_CONTEXT, value);
   }
 
   /**

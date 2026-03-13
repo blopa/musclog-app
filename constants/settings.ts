@@ -124,6 +124,8 @@ export const NOTIFICATIONS_REST_TIMER_SETTING_TYPE = 'notifications_rest_timer';
  */
 export const NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE = 'notifications_workout_duration';
 
+export const CONVERSATION_CONTEXT = 'conversation_context';
+
 /**
  * Setting type for language preference (stored in WatermelonDB settings table).
  * value: string (language code like 'en-US').
