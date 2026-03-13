@@ -92,6 +92,7 @@
     "expo-updates": "~29.0.16",
     "expo-web-browser": "15.0.10",
     "glob": "13.0.6",
+    "html-to-image": "^1.11.13",
     "i18next": "25.8.18",
     "ics": "3.8.1",
     "intl-pluralrules": "2.0.1",
