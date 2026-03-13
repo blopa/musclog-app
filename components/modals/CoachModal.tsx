@@ -49,6 +49,7 @@ import {
   type ExtendedIMessage,
   useChatMessages,
 } from '../../hooks/useChatMessages';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
@@ -401,6 +402,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
+  const { conversationContext } = useSettings();
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
@@ -818,8 +820,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               }}
             />
           </View>
-          <View>
-            <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+          <View className="flex-1">
+            <View className="flex-row items-baseline gap-1.5 flex-wrap">
+              <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+              <Text
+                className="text-sm font-medium"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
+              </Text>
+            </View>
             <View className="flex-row items-center gap-1">
               <View
                 className="h-1.5 w-1.5 rounded-full"

@@ -11,6 +11,7 @@ import type {
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
+  CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -98,6 +99,7 @@ type SettingsState = {
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
   foodSearchSource: FoodSearchSource;
+  conversationContext: 'general' | 'exercise' | 'nutrition';
   isLoading: boolean;
 };
 
@@ -128,6 +130,7 @@ const DEFAULT_STATE: SettingsState = {
   navSlot2: 'food',
   navSlot3: 'profile',
   foodSearchSource: 'both',
+  conversationContext: 'general',
   isLoading: true,
 };
 
@@ -142,6 +145,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
   const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
+  const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
 
   return {
     units,
@@ -170,6 +174,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
     foodSearchSource: (rawFoodSearchSource as FoodSearchSource) || 'both',
+    conversationContext: (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
     isLoading: false,
   };
 }
@@ -200,6 +205,7 @@ export function useSettings(): UseSettingsResult & {
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
+  conversationContext: 'general' | 'exercise' | 'nutrition';
 } {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
 
