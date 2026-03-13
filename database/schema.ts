@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
-  version: 1, // no need to change for now
+  version: 2,
   tables: [
     // 1. Master List of Exercises
     tableSchema({
@@ -392,6 +392,19 @@ export const schema = appSchema({
         { name: 'message_type', type: 'string' }, // 'text' for now
         { name: 'payload_json', type: 'string', isOptional: true },
         { name: 'summarized_message', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // AI Custom Prompts
+    tableSchema({
+      name: 'ai_custom_prompts',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'content', type: 'string' },
+        { name: 'is_active', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
