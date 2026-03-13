@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
-  version: 2,
+  version: 1, // no need to change for now
   tables: [
     // 1. Master List of Exercises
     tableSchema({
@@ -390,6 +390,7 @@ export const schema = appSchema({
         { name: 'sender', type: 'string' }, // 'user' | 'coach'
         { name: 'message', type: 'string' },
         { name: 'message_type', type: 'string' }, // 'text' for now
+        // { name: 'context', type: 'string' }, // TODO: uncomment this for conversation context of the message, can be 'nutrition', 'exercise' or 'general' - then update model, services and react hooks
         { name: 'payload_json', type: 'string', isOptional: true },
         { name: 'summarized_message', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
@@ -404,6 +405,7 @@ export const schema = appSchema({
       columns: [
         { name: 'name', type: 'string' },
         { name: 'content', type: 'string' },
+        // { name: 'context', type: 'string' }, // TODO: uncomment this for conversation context of the message, can be 'nutrition', 'exercise' or 'general' - then update model, services and react hooks
         { name: 'is_active', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

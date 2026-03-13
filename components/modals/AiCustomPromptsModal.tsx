@@ -48,7 +48,10 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
         </Pressable>
       }
     >
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: theme.spacing.padding.base }}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: theme.spacing.padding.base }}
+      >
         {prompts.length === 0 ? (
           <View className="flex-1 items-center justify-center py-20">
             <Text className="text-center text-text-secondary">
@@ -83,7 +86,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
                         onPress={() => setPromptToDelete(prompt)}
                         className="h-8 w-8 items-center justify-center rounded-full active:bg-bg-overlay"
                       >
-                        <Trash2 size={theme.iconSize.sm} color={theme.colors.status.discard} />
+                        <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error20} />
                       </Pressable>
                     </View>
                   </View>

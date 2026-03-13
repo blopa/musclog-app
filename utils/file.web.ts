@@ -1,4 +1,5 @@
 import Quagga from '@ericblade/quagga2';
+import { router } from 'expo-router';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
 
@@ -30,6 +31,7 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
         resolve();
         return;
       }
+
       try {
         const dbDump = await new Promise<string>((res, rej) => {
           const reader = new FileReader();
@@ -38,8 +40,8 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
           reader.readAsText(file);
         });
         await restoreDatabase(dbDump, decryptionPhrase);
-        window.location.reload();
         resolve();
+        await reloadApp();
       } catch (error) {
         reject(error);
       }
@@ -149,5 +151,6 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
 }
 
 export async function reloadApp() {
+  router.replace('/');
   window.location.reload();
 }

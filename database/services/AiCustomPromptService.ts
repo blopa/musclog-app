@@ -43,7 +43,11 @@ export class AiCustomPromptService {
   /**
    * Create a new custom prompt
    */
-  static async createPrompt(name: string, content: string, isActive: boolean = true): Promise<AiCustomPrompt> {
+  static async createPrompt(
+    name: string,
+    content: string,
+    isActive: boolean = true
+  ): Promise<AiCustomPrompt> {
     return await database.write(async () => {
       const now = Date.now();
 

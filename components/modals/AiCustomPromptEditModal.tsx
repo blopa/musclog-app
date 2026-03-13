@@ -16,7 +16,11 @@ type AiCustomPromptEditModalProps = {
   prompt?: AiCustomPrompt;
 };
 
-export function AiCustomPromptEditModal({ visible, onClose, prompt }: AiCustomPromptEditModalProps) {
+export function AiCustomPromptEditModal({
+  visible,
+  onClose,
+  prompt,
+}: AiCustomPromptEditModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { createPrompt, updatePrompt } = useAiCustomPrompts();
@@ -85,12 +89,7 @@ export function AiCustomPromptEditModal({ visible, onClose, prompt }: AiCustomPr
         />
 
         <View className="mb-4 mt-2 flex-row gap-4">
-          <Button
-            label={t('common.cancel')}
-            onPress={onClose}
-            variant="outline"
-            width="flex-1"
-          />
+          <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
           <Button
             label={t('save')}
             onPress={handleSave}

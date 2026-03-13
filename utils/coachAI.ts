@@ -5,6 +5,7 @@ import i18n from '../lang/lang';
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
+  getActiveCustomPrompts,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,

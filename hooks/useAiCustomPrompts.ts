@@ -15,7 +15,10 @@ export type UseAiCustomPromptsResult = {
   isLoading: boolean;
   refresh: () => Promise<void>;
   createPrompt: (name: string, content: string, isActive?: boolean) => Promise<AiCustomPrompt>;
-  updatePrompt: (id: string, updates: { name?: string; content?: string; isActive?: boolean }) => Promise<AiCustomPrompt>;
+  updatePrompt: (
+    id: string,
+    updates: { name?: string; content?: string; isActive?: boolean }
+  ) => Promise<AiCustomPrompt>;
   deletePrompt: (id: string) => Promise<void>;
   togglePromptActive: (id: string) => Promise<AiCustomPrompt>;
 };
@@ -46,36 +49,48 @@ export function useAiCustomPrompts({
     await loadPrompts();
   }, [loadPrompts]);
 
-  const createPrompt = useCallback(async (name: string, content: string, isActive: boolean = true) => {
-    const newPrompt = await AiCustomPromptService.createPrompt(name, content, isActive);
-    if (!enableReactivity) {
-      await loadPrompts();
-    }
-    return newPrompt;
-  }, [enableReactivity, loadPrompts]);
+  const createPrompt = useCallback(
+    async (name: string, content: string, isActive: boolean = true) => {
+      const newPrompt = await AiCustomPromptService.createPrompt(name, content, isActive);
+      if (!enableReactivity) {
+        await loadPrompts();
+      }
+      return newPrompt;
+    },
+    [enableReactivity, loadPrompts]
+  );
 
-  const updatePrompt = useCallback(async (id: string, updates: { name?: string; content?: string; isActive?: boolean }) => {
-    const updated = await AiCustomPromptService.updatePrompt(id, updates);
-    if (!enableReactivity) {
-      await loadPrompts();
-    }
-    return updated;
-  }, [enableReactivity, loadPrompts]);
+  const updatePrompt = useCallback(
+    async (id: string, updates: { name?: string; content?: string; isActive?: boolean }) => {
+      const updated = await AiCustomPromptService.updatePrompt(id, updates);
+      if (!enableReactivity) {
+        await loadPrompts();
+      }
+      return updated;
+    },
+    [enableReactivity, loadPrompts]
+  );
 
-  const deletePrompt = useCallback(async (id: string) => {
-    await AiCustomPromptService.deletePrompt(id);
-    if (!enableReactivity) {
-      await loadPrompts();
-    }
-  }, [enableReactivity, loadPrompts]);
+  const deletePrompt = useCallback(
+    async (id: string) => {
+      await AiCustomPromptService.deletePrompt(id);
+      if (!enableReactivity) {
+        await loadPrompts();
+      }
+    },
+    [enableReactivity, loadPrompts]
+  );
 
-  const togglePromptActive = useCallback(async (id: string) => {
-    const toggled = await AiCustomPromptService.togglePromptActive(id);
-    if (!enableReactivity) {
-      await loadPrompts();
-    }
-    return toggled;
-  }, [enableReactivity, loadPrompts]);
+  const togglePromptActive = useCallback(
+    async (id: string) => {
+      const toggled = await AiCustomPromptService.togglePromptActive(id);
+      if (!enableReactivity) {
+        await loadPrompts();
+      }
+      return toggled;
+    },
+    [enableReactivity, loadPrompts]
+  );
 
   useEffect(() => {
     if (!enableReactivity) {
@@ -83,15 +98,14 @@ export function useAiCustomPrompts({
       return;
     }
 
-    const query = database.get<AiCustomPrompt>('ai_custom_prompts').query(
-      Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy('created_at', Q.desc)
-    );
+    const query = database
+      .get<AiCustomPrompt>('ai_custom_prompts')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc));
 
     const subscription = query.observe().subscribe({
       next: (data) => {
         if (activeOnly) {
-          setPrompts(data.filter(p => p.isActive));
+          setPrompts(data.filter((p) => p.isActive));
         } else {
           setPrompts(data);
         }
@@ -105,15 +119,18 @@ export function useAiCustomPrompts({
     return () => subscription.unsubscribe();
   }, [enableReactivity, activeOnly, loadPrompts]);
 
-  return useMemo(() => ({
-    prompts,
-    isLoading,
-    refresh,
-    createPrompt,
-    updatePrompt,
-    deletePrompt,
-    togglePromptActive,
-  }), [prompts, isLoading, refresh, createPrompt, updatePrompt, deletePrompt, togglePromptActive]);
+  return useMemo(
+    () => ({
+      prompts,
+      isLoading,
+      refresh,
+      createPrompt,
+      updatePrompt,
+      deletePrompt,
+      togglePromptActive,
+    }),
+    [prompts, isLoading, refresh, createPrompt, updatePrompt, deletePrompt, togglePromptActive]
+  );
 }
 
 export default useAiCustomPrompts;

@@ -5,7 +5,10 @@ import { View } from 'react-native';
 import { showSnackbar } from '../utils/snackbarService';
 
 function sanitizeFilename(title: string): string {
-  return title.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
+  return title
+    .replace(/[^a-zA-Z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .toLowerCase();
 }
 
 function waitForNextFrame(): Promise<void> {
