@@ -77,10 +77,27 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           </TouchableOpacity>
         ))}
       </View>
-      <View style={{ height: 250 }}>
+      <View style={{ height: 250, position: 'relative' }}>
         <Text className="mb-2 text-center text-xs text-text-tertiary">
           Volume vs Exhaustion (Bubble size = Calories)
         </Text>
+        {yAxisLabels.map((label) => (
+          <Text
+            key={label.label}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 6,
+              top: (1 - label.yDomainValue / 11) * 250 - 6 + 20, // +20 for header text
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              color: theme.colors.text.tertiary,
+              zIndex: 1,
+            }}
+          >
+            {label.label}
+          </Text>
+        ))}
         <CartesianChart
           data={bubbleData}
           xKey="x"
@@ -92,32 +109,15 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
         >
           {({ points }) => (
             <>
-              {yAxisLabels.map((label) => (
-                <Text
-                  key={label.label}
-                  pointerEvents="none"
-                  style={{
-                    position: 'absolute',
-                    left: 6,
-                    top: (1 - label.yDomainValue / 11) * 250 - 6,
-                    fontSize: theme.typography.fontSize.xxs,
-                    fontWeight: '600',
-                    color: theme.colors.text.tertiary,
-                    zIndex: 1,
-                  }}
-                >
-                  {label.label}
-                </Text>
-              ))}
               <Scatter
-              points={points.y}
-              radius={(pt) => {
-                // pt is { x: number, xValue: number, y: number, yValue: number }
-                // We want to find the corresponding bubbleData point.
-                // bubbleData is sorted by x.
-                const datum = bubbleData.find((d) => d.x === (pt.xValue as number));
-                return datum ? datum.r : 5;
-              }}
+                points={points.y}
+                radius={(pt) => {
+                  // pt is { x: number, xValue: number, y: number, yValue: number }
+                  // We want to find the corresponding bubbleData point.
+                  // bubbleData is sorted by x.
+                  const datum = bubbleData.find((d) => d.x === (pt.xValue as number));
+                  return datum ? datum.r : 5;
+                }}
                 color={theme.colors.accent.secondary}
               />
             </>

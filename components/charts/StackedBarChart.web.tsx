@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type StackedBarChartDatum = {
   x: number;
@@ -81,9 +81,7 @@ export function StackedBarChart({
     data.map((d) => ({ x: d.x, y: d.segments[3] ?? 0 })),
   ];
 
-  const xDomainMin = paddedXDomain[0];
-  const xDomainSpan = paddedXDomain[1] - paddedXDomain[0];
-  const xLabelPosition = (index: number) => (data[index].x - xDomainMin) / xDomainSpan;
+  const padding = { left: 20, right: 20 };
 
   return (
     <View className={className} style={{ marginTop }}>
@@ -166,12 +164,12 @@ export function StackedBarChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${label.positionPercent}%`,
-                width: 40,
-                transform: [{ translateX: -20 }],
+                left: `calc(${padding.left}px + ${label.positionPercent}% * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
               }}
             >
@@ -181,6 +179,8 @@ export function StackedBarChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
                 numberOfLines={1}
               >

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
@@ -192,7 +192,7 @@ export function AreaChart({
                   const fillColor = withAlpha(s.color, areaOpacity);
                   const pointsArray = toPointsArray(pts);
                   return (
-                    <View key={s.key}>
+                    <React.Fragment key={s.key}>
                       <Area
                         points={pointsArray}
                         y0={chartBounds.bottom}
@@ -206,7 +206,7 @@ export function AreaChart({
                         strokeWidth={idx === series.length - 1 ? 2.5 : 2}
                         strokeCap="round"
                       />
-                    </View>
+                    </React.Fragment>
                   );
                 })}
                 {peak != null && peakSeries != null
@@ -283,7 +283,7 @@ export function AreaChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
                 left: 20 + (label.positionPercent / 100) * chartWidth,

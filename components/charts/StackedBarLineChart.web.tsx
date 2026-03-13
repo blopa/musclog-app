@@ -12,7 +12,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
   x: number;
@@ -123,6 +123,7 @@ export function StackedBarLineChart({
   const chartHeight = height + 128;
   const chartPaddingTop = 6;
   const chartPaddingBottom = 4;
+  const padding = { left: 40, right: 0 };
 
   return (
     <View className={className} style={{ paddingHorizontal: 4 }}>
@@ -159,9 +160,9 @@ export function StackedBarLineChart({
             zIndex: 2,
           }}
         >
-          {[...leftAxisLabels].reverse().map((label) => (
+          {[...leftAxisLabels].reverse().map((label, idx) => (
             <Text
-              key={label}
+              key={`${label}-${idx}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -185,9 +186,9 @@ export function StackedBarLineChart({
             zIndex: 2,
           }}
         >
-          {[...rightAxisLabels].reverse().map((label) => (
+          {[...rightAxisLabels].reverse().map((label, idx) => (
             <Text
-              key={label}
+              key={`${label}-${idx}`}
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 fontWeight: '600',
@@ -311,12 +312,12 @@ export function StackedBarLineChart({
             >
               {xAxisLabels.map((label, index) => (
                 <View
-                  key={index}
+                  key={`${label.label}-${index}`}
                   style={{
                     position: 'absolute',
-                    left: `${label.positionPercent}%`,
-                    width: 40,
-                    transform: [{ translateX: -20 }],
+                    left: `calc(${padding.left}px + ${label.positionPercent}% * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                    width: X_AXIS_LABEL_WIDTH,
+                    transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                     alignItems: 'center',
                   }}
                 >
@@ -326,6 +327,8 @@ export function StackedBarLineChart({
                       fontWeight: '500',
                       color: theme.colors.text.tertiary,
                       textAlign: 'center',
+                      marginLeft:
+                        label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                     }}
                     numberOfLines={1}
                   >

@@ -269,7 +269,7 @@ export function MultipleLinesChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
                 left: 32 + (label.positionPercent / 100) * chartWidth,

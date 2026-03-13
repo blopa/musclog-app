@@ -11,7 +11,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type AreaChartDatum = { x: number; [key: string]: number };
 
@@ -241,20 +241,20 @@ export function AreaChart({
         <View
           style={{
             marginTop: xAxisGap,
-            paddingLeft: 20,
-            paddingRight: 20,
+            paddingLeft: padding.left,
+            paddingRight: padding.right,
             height: 20,
             position: 'relative',
           }}
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `calc(20px + ${label.positionPercent}% * (100% - 40px) / 100)`,
-                width: 40,
-                transform: [{ translateX: -20 }],
+                left: `calc(${padding.left}px + ${label.positionPercent}% * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
               }}
             >
@@ -264,6 +264,8 @@ export function AreaChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
                 numberOfLines={1}
               >

@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type MultipleLinesChartDatum = { x: number; [key: string]: number };
 
@@ -253,12 +253,12 @@ export function MultipleLinesChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `calc(32px + ${label.positionPercent}% * (100% - 32px) / 100)`,
-                width: 40,
-                transform: [{ translateX: -20 }],
+                left: `calc(32px + ${label.positionPercent}% * (100% - 32px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
               }}
             >
@@ -268,6 +268,8 @@ export function MultipleLinesChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
                 numberOfLines={1}
               >

@@ -10,7 +10,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type LineChartDataPoint = {
   x: number;
@@ -273,12 +273,12 @@ export function LineChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${label.positionPercent}%`,
-                width: 40,
-                transform: [{ translateX: -20 }],
+                left: `${label.positionPercent}%` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
               }}
             >
@@ -288,6 +288,8 @@ export function LineChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
                 numberOfLines={1}
               >

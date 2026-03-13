@@ -8,7 +8,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel } from '../../utils/chartUtils';
+import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
 
 export type BarChartDataPoint = {
   /** X value (category index or numeric label) */
@@ -119,6 +119,7 @@ export function BarChart({
   ) : undefined;
 
   const yDomainFinal: [number, number] = [yMin, yMax];
+  const padding = { left: 20, right: 20 };
 
   return (
     <View className={className || 'relative w-full'} style={{ marginTop }}>
@@ -200,12 +201,12 @@ export function BarChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${label.positionPercent}%`,
-                width: 40,
-                transform: [{ translateX: -20 }],
+                left: `calc(${padding.left}px + ${label.positionPercent}% * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                width: X_AXIS_LABEL_WIDTH,
+                transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                 alignItems: 'center',
               }}
             >
@@ -215,6 +216,8 @@ export function BarChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
+                  marginLeft:
+                    label.positionPercent === 0 ? 10 : label.positionPercent === 100 ? -10 : 0,
                 }}
                 numberOfLines={1}
               >

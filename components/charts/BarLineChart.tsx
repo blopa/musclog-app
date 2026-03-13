@@ -393,7 +393,7 @@ export function BarLineChart({
         >
           {xAxisLabels.map((label, index) => (
             <View
-              key={index}
+              key={`${label.label}-${index}`}
               style={{
                 position: 'absolute',
                 left: `${label.positionPercent}%`,

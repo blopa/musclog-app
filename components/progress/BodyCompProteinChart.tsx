@@ -94,10 +94,27 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           </TouchableOpacity>
         ))}
       </View>
-      <View style={{ height: 250 }}>
+      <View style={{ height: 250, position: 'relative' }}>
         <Text className="mb-2 text-center text-xs text-text-tertiary">
           {t('progress.proteinVsWeightChange', { unit: weightLabel })}
         </Text>
+        {yAxisLabels.map((label) => (
+          <Text
+            key={label.label}
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              left: 6,
+              top: (1 - (label.yDomainValue - (yMin - 0.5)) / (yMax - yMin + 1)) * 250 - 6 + 20, // +20 for header text
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              color: theme.colors.text.tertiary,
+              zIndex: 1,
+            }}
+          >
+            {label.label}
+          </Text>
+        ))}
         <CartesianChart
           data={scatterData}
           xKey="x"
@@ -109,24 +126,6 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
         >
           {({ points }) => (
             <>
-              {yAxisLabels.map((label) => (
-                <Text
-                  key={label.label}
-                  pointerEvents="none"
-                  style={{
-                    position: 'absolute',
-                    left: 6,
-                    top:
-                      (1 - (label.yDomainValue - (yMin - 0.5)) / (yMax - yMin + 1)) * 250 - 6,
-                    fontSize: theme.typography.fontSize.xxs,
-                    fontWeight: '600',
-                    color: theme.colors.text.tertiary,
-                    zIndex: 1,
-                  }}
-                >
-                  {label.label}
-                </Text>
-              ))}
               <Scatter points={points.y} radius={4} color={theme.colors.accent.primary} />
               <Line
                 points={
