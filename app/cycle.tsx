@@ -67,7 +67,7 @@ export default function CycleScreen() {
   return (
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-6 py-8">
+        <View className="px-4 py-8">
           {/* Title */}
           <View className="mb-6 flex-row items-center justify-between">
             <Text className="text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
