@@ -405,6 +405,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
   const {
     messages,
     pendingCoachMessage,
@@ -420,10 +422,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
-  } = useChatMessages();
+  } = useChatMessages(conversationContext);
+
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
-  const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);

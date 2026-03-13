@@ -42,11 +42,13 @@ export class ChatService {
    * @param sessionId
    * @param limit  How many messages to return
    * @param offset How many messages to skip (for load-more of older messages)
+   * @param context Optional context filter ('general' | 'exercise' | 'nutrition')
    */
   static async getSessionMessages(
     sessionId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
+    context?: ChatMessageContext
   ): Promise<ChatMessage[]> {
     let query = database
       .get<ChatMessage>('chat_messages')
@@ -55,6 +57,10 @@ export class ChatService {
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('created_at', Q.desc)
       );
+
+    if (context) {
+      query = query.extend(Q.where('context', context));
+    }
 
     if (limit !== undefined) {
       if (offset && offset > 0) {
