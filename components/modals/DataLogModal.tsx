@@ -33,7 +33,6 @@ import { useTheme } from '../../hooks/useTheme';
 import { useUserMetricDataLogs } from '../../hooks/useUserMetricDataLogs';
 import { useWorkoutLogDataLogs } from '../../hooks/useWorkoutLogDataLogs';
 import { useWorkoutTemplateDataLogs } from '../../hooks/useWorkoutTemplateDataLogs';
-import { getCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -52,7 +51,12 @@ import CreateWorkoutModal from './CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from './CreateWorkoutOptionsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { GenericEditModal } from './GenericEditModal';
-import { getEditFields } from './GenericEditModal/entityEditConfig';
+import {
+  createRecord,
+  getCreateFields,
+  getCreateInitialValues,
+  getEditFields,
+} from './GenericEditModal/entityEditConfig';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
 
 export type DataLogModalVariant =
@@ -557,7 +561,7 @@ export function DataLogModal({
   const [createFoodPortionModalVisible, setCreateFoodPortionModalVisible] = useState(false);
   const [createWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
   const [createWorkoutOptionsModalVisible, setCreateWorkoutOptionsModalVisible] = useState(false);
-  const [createChatMessageModalVisible, setCreateChatMessageModalVisible] = useState(false);
+  const [createGenericModalVisible, setCreateGenericModalVisible] = useState(false);
 
   const translations = getDataLogModalTranslations(variant, t, { units });
 
@@ -1196,11 +1200,46 @@ export function DataLogModal({
         });
         break;
       case 'userMetric':
-        // User metrics are typically added from the main metrics screen, not here
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('bodyMetrics.addEntry.title'),
+          description: t('bodyMetrics.addEntry.description'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateGenericModalVisible(true);
+          },
+        });
         break;
       case 'nutrition_log':
+        // Nutrition logs are created from the food logging flow
+        break;
       case 'nutritionGoal':
-        // These are typically created from other flows
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('goalsManagement.newGoal'),
+          description: t('goalsManagement.createGoalDesc'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateGenericModalVisible(true);
+          },
+        });
+        break;
+      case 'nutritionCheckin':
+        menuItems.push({
+          icon: CreateIcon,
+          iconColor: theme.colors.text.primary,
+          iconBgColor: theme.colors.background.iconDarker,
+          title: t('goalsManagement.createCheckin'),
+          description: t('goalsManagement.createCheckinDesc'),
+          onPress: () => {
+            setShowCreateMenu(false);
+            setCreateGenericModalVisible(true);
+          },
+        });
         break;
       case 'workoutLog':
         // Workout logs are created from active workout sessions
@@ -1214,7 +1253,7 @@ export function DataLogModal({
           description: t('coach.chatMessages.createMessageDesc'),
           onPress: () => {
             setShowCreateMenu(false);
-            setCreateChatMessageModalVisible(true);
+            setCreateGenericModalVisible(true);
           },
         });
         break;
@@ -1459,40 +1498,26 @@ export function DataLogModal({
         />
       ) : null}
 
-      {/* TODO: make this genetic and add option to add any of the other models */}
-      {createChatMessageModalVisible ? (
+      {createGenericModalVisible ? (
         <GenericEditModal
-          visible={createChatMessageModalVisible}
-          onClose={() => setCreateChatMessageModalVisible(false)}
-          title={t('coach.chatMessages.createMessage')}
-          fields={[
-            {
-              type: 'text',
-              key: 'message',
-              label: 'Message',
-              placeholder: 'Type your message...',
-              required: true,
-              multiline: true,
-            },
-            {
-              type: 'select',
-              key: 'sender',
-              label: 'coach.chatMessages.sender',
-              required: true,
-              options: [
-                { value: 'user', label: 'coach.chatMessages.senderUser' },
-                { value: 'coach', label: 'coach.chatMessages.senderCoach' },
-              ],
-            },
-          ]}
-          initialValues={{ message: '', sender: 'user' }}
+          visible={createGenericModalVisible}
+          onClose={() => setCreateGenericModalVisible(false)}
+          title={
+          // TODO: move this to a helper function to avoid using nested ternary
+            variant === 'chatMessage'
+              ? t('coach.chatMessages.createMessage')
+              : variant === 'userMetric'
+                ? t('bodyMetrics.addEntry.title')
+                : variant === 'nutritionGoal'
+                  ? t('goalsManagement.newGoal')
+                  : variant === 'nutritionCheckin'
+                    ? t('goalsManagement.createCheckin')
+                    : t('common.createNew')
+          }
+          fields={getCreateFields(variant)}
+          initialValues={getCreateInitialValues(variant)}
           onSave={async (values) => {
-            const sessionId = (await getCurrentChatSessionId()) ?? ChatService.generateSessionId();
-            await ChatService.saveMessage({
-              sessionId,
-              sender: values.sender as 'user' | 'coach',
-              message: String(values.message ?? ''),
-            });
+            await createRecord(variant, values, { units });
             await refresh();
           }}
         />

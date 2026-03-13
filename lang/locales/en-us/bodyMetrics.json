@@ -66,6 +66,7 @@
     },
     "addEntry": {
       "title": "Add Entry",
+      "description": "Record a new body metric measurement",
       "enterWeight": "Enter Weight",
       "enterBodyFat": "Enter Body Fat",
       "enterHeight": "Enter Height",
