@@ -29,6 +29,7 @@ export function SegmentedControl({
   const containerBase = 'flex-row rounded-lg p-1';
 
   const containerClass =
+    // TODO: use a helper function to avoid using nested ternary
     variant === 'elevated'
       ? `${containerBase} bg-bg-cardElevated shadow-md`
       : variant === 'gradient'
