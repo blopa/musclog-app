@@ -181,6 +181,7 @@ type AISettingsModalProps = {
   onOpenAiModelPress?: (model: string) => void;
 };
 
+// TODO: add option for the user to add custom system prompts, as many as they want - meaning add a new table in the schema.ts, a new model, a new service and a new react hook
 export function AISettingsModal({
   visible,
   onClose,
@@ -197,6 +198,7 @@ export function AISettingsModal({
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  // TODO: implement all the gemini features with openai too
   const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
