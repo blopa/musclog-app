@@ -81,6 +81,22 @@ const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction):
   }
 };
 
+const getConversationContextBackgroundColor = (
+  conversationContext: string,
+  theme: Theme
+): string => {
+  switch (conversationContext) {
+    case 'general':
+      return 'transparent';
+    case 'exercise':
+      return theme.colors.status.info20;
+    case 'nutrition':
+      return theme.colors.accent.primary20;
+    default:
+      return 'transparent';
+  }
+};
+
 // --- Custom Render Functions (Defined Outside for Stability) ---
 
 const renderMessageText = (props: any, theme: Theme) => {
@@ -802,13 +818,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           className="flex-row items-center gap-3 border-b px-4 py-3"
           style={{
             borderColor: theme.colors.border.light,
-            backgroundColor:
-              // TODO: use a helper function to avoid using nested ternary
-              conversationContext === 'general'
-                ? 'transparent'
-                : conversationContext === 'exercise'
-                  ? theme.colors.status.info20
-                  : theme.colors.accent.primary20,
+            backgroundColor: getConversationContextBackgroundColor(conversationContext, theme),
           }}
         >
           <View className="relative">
