@@ -195,9 +195,11 @@ const renderAvatar = (props: any, theme: Theme) => {
   if (props.currentMessage?.user._id === 1) {
     return null;
   }
+
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
   }
+
   return (
     <View style={[styles.avatar, { overflow: 'hidden' }]}>
       <Image
@@ -399,7 +401,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -408,7 +410,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
-      setIsOnline(state.isConnected ?? true);
+      setIsOnline(state.isConnected ?? false);
     });
   }, []);
 
