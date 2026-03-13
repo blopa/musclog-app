@@ -46,12 +46,13 @@ import {
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
 } from '../../constants/chat';
-import { ChatService, SettingsService } from '../../database/services';
+import { ChatService } from '../../database/services';
 import {
   AI_COACH_AVATAR,
   type ExtendedIMessage,
   useChatMessages,
 } from '../../hooks/useChatMessages';
+import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
@@ -406,7 +407,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   } = useChatMessages();
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
-  const { conversationContext } = useSettings();
+  const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
@@ -548,14 +549,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     setPendingIntention(null);
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
-
-  const handleConversationContextChange = useCallback(
-    async (value: string) => {
-      const context = value as 'general' | 'exercise' | 'nutrition';
-      await SettingsService.setCoachConversationContext(context);
-    },
-    []
-  );
 
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
@@ -889,7 +882,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               },
             ]}
             value={conversationContext}
-            onValueChange={handleConversationContextChange}
+            onValueChange={(value) =>
+              handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
+            }
             variant="outline"
           />
         </View>

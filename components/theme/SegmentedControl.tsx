@@ -28,15 +28,22 @@ export function SegmentedControl({
   const theme = useTheme();
   const containerBase = 'flex-row rounded-lg p-1';
 
-  const containerClass =
-    // TODO: use a helper function to avoid using nested ternary
-    variant === 'elevated'
-      ? `${containerBase} bg-bg-cardElevated shadow-md`
-      : variant === 'gradient'
-        ? `${containerBase} bg-bg-cardElevated`
-        : variant === 'outline'
-          ? `${containerBase} bg-transparent border border-border-light`
-          : `${containerBase} bg-bg-card`;
+  const getContainerClass = (variant: SegmentedControlVariant): string => {
+    switch (variant) {
+      case 'elevated':
+        return `${containerBase} bg-bg-cardElevated shadow-md`;
+      case 'gradient':
+        return `${containerBase} bg-bg-cardElevated`;
+      case 'outline':
+        return `${containerBase} bg-transparent border border-border-light`;
+      case 'clean':
+        return `${containerBase} bg-bg-card`;
+      default:
+        return `${containerBase} bg-bg-card`;
+    }
+  };
+
+  const containerClass = getContainerClass(variant);
 
   return (
     <View className={containerClass}>
