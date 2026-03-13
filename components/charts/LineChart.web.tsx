@@ -10,7 +10,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type LineChartDataPoint = {
   x: number;

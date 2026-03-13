@@ -1503,7 +1503,7 @@ export function DataLogModal({
           visible={createGenericModalVisible}
           onClose={() => setCreateGenericModalVisible(false)}
           title={
-          // TODO: move this to a helper function to avoid using nested ternary
+            // TODO: move this to a helper function to avoid using nested ternary
             variant === 'chatMessage'
               ? t('coach.chatMessages.createMessage')
               : variant === 'userMetric'

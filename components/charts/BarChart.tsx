@@ -256,7 +256,8 @@ export function BarChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft: label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
+                  marginLeft:
+                    label.positionPercent === 0 ? 20 : label.positionPercent === 100 ? -20 : 0,
                 }}
                 numberOfLines={1}
               >

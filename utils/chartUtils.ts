@@ -26,7 +26,9 @@ export function getXAxisLabels<T extends { x: number }>(
   data: T[],
   formatFn?: (x: number) => string
 ): XAxisLabel[] {
-  if (data.length === 0) return [];
+  if (data.length === 0) {
+    return [];
+  }
   if (data.length === 1) {
     return [
       {
@@ -70,7 +72,9 @@ export function getYAxisLabels(
   count: number = 3,
   formatFn?: (v: number) => string
 ): YAxisLabel[] {
-  if (count <= 0) return [];
+  if (count <= 0) {
+    return [];
+  }
   const labels: YAxisLabel[] = [];
   const range = max - min;
   const step = count > 1 ? range / (count - 1) : 0;

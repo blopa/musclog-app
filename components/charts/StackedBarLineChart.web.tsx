@@ -12,7 +12,7 @@ import {
 } from 'victory';
 
 import { useTheme } from '../../hooks/useTheme';
-import { XAxisLabel, X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH } from '../../utils/chartUtils';
+import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
   x: number;
@@ -315,7 +315,7 @@ export function StackedBarLineChart({
                   key={`${label.label}-${index}`}
                   style={{
                     position: 'absolute',
-                    left: `calc(${padding.left}px + ${label.positionPercent}% * (100% - ${padding.left + padding.right}px) / 100)` as any,
+                    left: `calc(${padding.left}px + ${label.positionPercent} * (100% - ${padding.left + padding.right}px) / 100)` as any,
                     width: X_AXIS_LABEL_WIDTH,
                     transform: [{ translateX: -X_AXIS_LABEL_OFFSET }] as any,
                     alignItems: 'center',

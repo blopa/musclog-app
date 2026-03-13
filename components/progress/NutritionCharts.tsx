@@ -103,7 +103,11 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
   }, [nutritionHistory, weightHistory]);
 
   const xAxisLabels = useMemo(
-    () => getXAxisLabels(nutritionHistory.map((d) => ({ x: d.date })), formatDate),
+    () =>
+      getXAxisLabels(
+        nutritionHistory.map((d) => ({ x: d.date })),
+        formatDate
+      ),
     [nutritionHistory]
   );
 

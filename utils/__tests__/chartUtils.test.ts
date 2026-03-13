@@ -13,11 +13,7 @@ describe('getXAxisLabels', () => {
   });
 
   it('returns all labels when data length <= MAX_X_LABELS', () => {
-    const data = [
-      { x: 100 },
-      { x: 200 },
-      { x: 300 }
-    ];
+    const data = [{ x: 100 }, { x: 200 }, { x: 300 }];
     const labels = getXAxisLabels(data);
     expect(labels).toHaveLength(3);
     expect(labels[0].positionPercent).toBe(0);

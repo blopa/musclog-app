@@ -2,12 +2,12 @@ import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
 import type { LineChartDataPoint } from '../components/charts/LineChart';
-import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import type { Units } from '../constants/settings';
 import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
+import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
