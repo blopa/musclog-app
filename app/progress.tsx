@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
+import { ActivityIndicator, InteractionManager, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
@@ -20,6 +20,7 @@ import { RecoveryTrainingChart } from '../components/progress/RecoveryTrainingCh
 import { VolumeCaloriesChart } from '../components/progress/VolumeCaloriesChart';
 import { WorkoutCharts } from '../components/progress/WorkoutCharts';
 import { MenuButton } from '../components/theme/MenuButton';
+import { ChartTooltipProvider, useChartTooltip } from '../context/ChartTooltipContext';
 import { useAiEnabled } from '../hooks/useAiEnabled';
 import { useProgressData } from '../hooks/useProgressData';
 import { useSettings } from '../hooks/useSettings';
@@ -159,22 +160,69 @@ export default function ProgressScreen() {
           headerShadowVisible: false,
         }}
       />
-      <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
-        <ProgressDateFilter
-          activePreset={preset}
-          onPresetChange={changePreset}
+      <ChartTooltipProvider>
+        <ProgressScreenContent
+          allAggregationData={allAggregationData}
+          chartPhase={chartPhase}
+          data={data}
+          hasAnyAggregationData={hasAnyAggregationData}
+          insets={insets}
+          isLoading={isLoading}
+          menuItems={menuItems}
+          preset={preset}
+          changePreset={changePreset}
+          setUseWeeklyAverages={setUseWeeklyAverages}
+          showMenu={showMenu}
+          setShowMenu={setShowMenu}
+          t={t}
+          theme={theme}
+          units={units}
           useWeeklyAverages={useWeeklyAverages}
-          onToggleWeeklyAverages={setUseWeeklyAverages}
         />
+      </ChartTooltipProvider>
+    </MasterLayout>
+  );
+}
 
-        {isLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-          </View>
-        ) : (
+function ProgressScreenContent({
+  allAggregationData,
+  chartPhase,
+  data,
+  hasAnyAggregationData,
+  insets,
+  isLoading,
+  menuItems,
+  preset,
+  changePreset,
+  setUseWeeklyAverages,
+  showMenu,
+  setShowMenu,
+  t,
+  theme,
+  units,
+  useWeeklyAverages,
+}: any) {
+  const { dismissAll } = useChartTooltip();
+
+  return (
+    <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
+      <ProgressDateFilter
+        activePreset={preset}
+        onPresetChange={changePreset}
+        useWeeklyAverages={useWeeklyAverages}
+        onToggleWeeklyAverages={setUseWeeklyAverages}
+      />
+
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      ) : (
+        <Pressable onPress={dismissAll} style={{ flex: 1 }}>
           <ScrollView
             className="flex-1"
             contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+            onScrollBeginDrag={dismissAll}
           >
             <View className="px-4">
               {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
@@ -208,7 +256,7 @@ export default function ProgressScreen() {
               {/* Phase 3: remaining charts — rendered 400ms after interactions */}
               {chartPhase >= 3 && data ? (
                 <>
-                  {hasAnyAggregationData((d) => d.correlationHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.correlationHistory) ? (
                     <VolumeCaloriesChart
                       allData={{
                         daily: allAggregationData.daily?.correlationHistory ?? [],
@@ -218,7 +266,7 @@ export default function ProgressScreen() {
                       units={units}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d) => d.bodyCompProteinHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.bodyCompProteinHistory) ? (
                     <BodyCompProteinChart
                       allData={{
                         daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
@@ -228,7 +276,7 @@ export default function ProgressScreen() {
                       units={units}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d) => d.menstrualPhaseHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
                     <MenstrualPerformanceChart
                       allData={{
                         daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
@@ -237,7 +285,7 @@ export default function ProgressScreen() {
                       }}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d) => d.recoveryTrainingHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.recoveryTrainingHistory) ? (
                     <RecoveryTrainingChart
                       allData={{
                         daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
@@ -246,7 +294,7 @@ export default function ProgressScreen() {
                       }}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d) => d.macroMuscleHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.macroMuscleHistory) ? (
                     <MacroMuscleChart
                       allData={{
                         daily: allAggregationData.daily?.macroMuscleHistory ?? [],
@@ -258,35 +306,40 @@ export default function ProgressScreen() {
                   ) : null}
 
                   {data.measurementsHistory
-                    ? Object.entries(data.measurementsHistory).map(([type, history]) => (
-                        <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
-                          <LineChart
-                            data={history.map((p) => ({ x: p.date, y: p.value }))}
-                            height={150}
-                            xDomain={[history[0].date, history[history.length - 1].date]}
-                            yDomain={[
-                              Math.min(...history.map((p) => p.value)) * 0.95,
-                              Math.max(...history.map((p) => p.value)) * 1.05,
-                            ]}
-                            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-                          />
-                        </ProgressChartSection>
-                      ))
+                    ? Object.entries(data.measurementsHistory).map(
+                        ([type, history]: [string, any]) => (
+                          <ProgressChartSection
+                            key={type}
+                            title={t(`progress.measurement.${type}`)}
+                          >
+                            <LineChart
+                              data={history.map((p: any) => ({ x: p.date, y: p.value }))}
+                              height={150}
+                              xDomain={[history[0].date, history[history.length - 1].date]}
+                              yDomain={[
+                                Math.min(...history.map((p: any) => p.value)) * 0.95,
+                                Math.max(...history.map((p: any) => p.value)) * 1.05,
+                              ]}
+                              tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+                            />
+                          </ProgressChartSection>
+                        )
+                      )
                     : null}
                 </>
               ) : null}
             </View>
             <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
           </ScrollView>
-        )}
+        </Pressable>
+      )}
 
-        <BottomPopUpMenu
-          visible={showMenu}
-          onClose={() => setShowMenu(false)}
-          title={t('progress.quickActions')}
-          items={menuItems}
-        />
-      </View>
-    </MasterLayout>
+      <BottomPopUpMenu
+        visible={showMenu}
+        onClose={() => setShowMenu(false)}
+        title={t('progress.quickActions')}
+        items={menuItems}
+      />
+    </View>
   );
 }

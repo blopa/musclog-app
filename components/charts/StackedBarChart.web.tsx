@@ -1,8 +1,17 @@
+import type { MouseEvent } from 'react';
+import { useEffect, useId, useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+};
 
 export type StackedBarChartDatum = {
   x: number;
@@ -26,9 +35,16 @@ export type StackedBarChartProps = {
   totalLabelFormatter?: (total: number, datum: StackedBarChartDatum) => string;
   className?: string;
   domainPadding?: { left?: number; right?: number; top?: number; bottom?: number };
+  /** Enable touch/hover interaction to show a tooltip (default: true) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded total) */
+  tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
 
 const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
+
+const TOOLTIP_WIDTH = 90;
+const TOOLTIP_HEIGHT = 36;
 
 export function StackedBarChart({
   data,
@@ -45,8 +61,18 @@ export function StackedBarChart({
   marginBottom = 16,
   className,
   domainPadding: _domainPadding = { left: 20, right: 20, top: 10 },
+  interactive = true,
+  tooltipFormatter,
 }: StackedBarChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0) {
     return null;
@@ -151,6 +177,76 @@ export function StackedBarChart({
             }}
           />
         </VictoryChart>
+        {interactive && (
+          <View
+            {...({
+              style: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                zIndex: 1,
+              },
+              onClick: (e: MouseEvent<HTMLElement>) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                const xValue = paddedXDomain[0] + ratio * (paddedXDomain[1] - paddedXDomain[0]);
+                let nearest = data[0];
+                let minDist = Math.abs(data[0].x - xValue);
+                for (const d of data) {
+                  const dist = Math.abs(d.x - xValue);
+                  if (dist < minDist) {
+                    minDist = dist;
+                    nearest = d;
+                  }
+                }
+                const total =
+                  (nearest.segments[0] ?? 0) +
+                  (nearest.segments[1] ?? 0) +
+                  (nearest.segments[2] ?? 0) +
+                  (nearest.segments[3] ?? 0);
+                const label = tooltipFormatter ? tooltipFormatter(nearest) : String(Math.round(total));
+                notifyChartActive(chartId);
+                setActiveLabel(label);
+              },
+            } as ViewWithMouseProps)}
+          />
+        )}
+        {interactive && activeLabel ? (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: TOOLTIP_WIDTH,
+              height: TOOLTIP_HEIGHT,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.xs,
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding['1half'],
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              zIndex: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}
+            >
+              {activeLabel}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       {xAxisLabels && xAxisLabels.length > 0 ? (

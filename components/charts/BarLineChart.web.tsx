@@ -1,15 +1,16 @@
 import type { MouseEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
-  onMouseMove?: (e: MouseEvent<HTMLElement>) => void;
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
   onMouseLeave?: () => void;
 };
 
@@ -62,7 +63,14 @@ export function BarLineChart({
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setHoveredIndex(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
   const lineColorResolved = lineColor ?? theme.colors.background.white;
@@ -89,9 +97,6 @@ export function BarLineChart({
   const chartXDomain: [number, number] = [xDomain[0], xDomain[1]];
 
   const activeDatum = hoveredIndex != null ? data[hoveredIndex] : null;
-  const stepsRangeForTooltip = stepsMax - stepsMin;
-  const barTopRatio = activeDatum ? (stepsMax - activeDatum.steps) / stepsRangeForTooltip : 0;
-  const lineTopRatio = activeDatum ? (hrMax - activeDatum.heartRate) / (hrMax - hrMin) : 0;
   const chartHeight = height + 128;
   const chartPaddingTop = 6;
   const chartPaddingBottom = 4;
@@ -174,29 +179,40 @@ export function BarLineChart({
         </View>
 
         <View
-          {...({
-            style: {
-              position: 'absolute',
-              left: 32,
-              right: 32,
-              top: 0,
-              bottom: 0,
-              overflow: 'hidden',
-            },
-            onMouseMove: (e: MouseEvent<HTMLElement>) => {
-              if (!interactive) {
-                return;
-              }
-              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-              const chartWidth = rect.width;
-              const x = e.clientX - rect.left;
-              const t = Math.max(0, Math.min(1, x / chartWidth));
-              const index = Math.round(t * (data.length - 1));
-              setHoveredIndex(Math.min(index, data.length - 1));
-            },
-            onMouseLeave: () => setHoveredIndex(null),
-          } as ViewWithMouseProps)}
+          style={{
+            position: 'absolute',
+            left: 32,
+            right: 32,
+            top: 0,
+            bottom: 0,
+            overflow: 'hidden',
+          }}
         >
+          {interactive && (
+            <View
+              {...({
+                style: {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  zIndex: 1,
+                },
+                onClick: (e: MouseEvent<HTMLElement>) => {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                  const chartWidth = rect.width;
+                  const x = e.clientX - rect.left;
+                  const t = Math.max(0, Math.min(1, x / chartWidth));
+                  const index = Math.round(t * (data.length - 1));
+                  notifyChartActive(chartId);
+                  setHoveredIndex(Math.min(index, data.length - 1));
+                },
+              } as ViewWithMouseProps)}
+            />
+          )}
           <VictoryChart
             height={chartHeight}
             padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 40, right: 0 }}
@@ -307,28 +323,25 @@ export function BarLineChart({
           ) : null}
 
           {interactive && activeDatum ? (
-            <>
+            <View
+              pointerEvents="none"
+              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+            >
               <View
-                pointerEvents="none"
                 style={{
-                  position: 'absolute',
-                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
-                  top: barTopRatio * chartHeight - 38,
-                  transform: 'translateX(-50%)',
-                  width: 72,
+                  minWidth: 72,
                   height: 32,
-                  backgroundColor: theme.colors.text.white,
+                  backgroundColor: theme.colors.background.card,
                   borderRadius: theme.borderRadius.xs,
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                  zIndex: 10,
                 }}
               >
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}
@@ -337,13 +350,8 @@ export function BarLineChart({
                 </Text>
               </View>
               <View
-                pointerEvents="none"
                 style={{
-                  position: 'absolute',
-                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
-                  top: lineTopRatio * chartHeight - 38,
-                  transform: 'translateX(-50%)',
-                  width: 72,
+                  minWidth: 72,
                   height: 32,
                   backgroundColor: lineColorResolved,
                   borderRadius: theme.borderRadius.xs,
@@ -351,12 +359,11 @@ export function BarLineChart({
                   justifyContent: 'center',
                   alignItems: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                  zIndex: 10,
                 }}
               >
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.background.card,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}
@@ -364,7 +371,7 @@ export function BarLineChart({
                   {heartRateFormatter(activeDatum.heartRate)}
                 </Text>
               </View>
-            </>
+            </View>
           ) : null}
         </View>
       </View>

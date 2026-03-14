@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Bar, CartesianChart } from 'victory-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -79,15 +79,15 @@ export function BarChart({
   onInteractionEnd,
 }: BarChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
   const [activePoint, setActivePoint] = useState<BarChartDataPoint | null>(null);
   const containerWidthRef = useRef(0);
-  const tooltipLeft = useSharedValue(0);
-  const tooltipTop = useSharedValue(0);
 
-  const tooltipStyle = useAnimatedStyle(() => ({
-    left: Math.max(0, Math.min(containerWidthRef.current - TOOLTIP_WIDTH, tooltipLeft.value)),
-    top: Math.max(0, tooltipTop.value),
-  }));
+  useEffect(() => {
+    registerChart(chartId, () => setActivePoint(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0) {
     return null;
@@ -107,10 +107,7 @@ export function BarChart({
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
-    const barCenterX = ((nearest.x - xMin) / (xMax - xMin)) * w;
-    const barTopY = ((yMax - nearest.y) / (yMax - yMin)) * height;
-    tooltipLeft.value = barCenterX - TOOLTIP_WIDTH / 2;
-    tooltipTop.value = barTopY - TOOLTIP_HEIGHT - 8;
+    notifyChartActive(chartId);
     setActivePoint(nearest);
   };
 
@@ -155,16 +152,13 @@ export function BarChart({
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
+            onResponderTerminationRequest={() => true}
             onResponderGrant={(e) => {
               onInteractionStart?.();
               handleTouchAt(e.nativeEvent.locationX);
             }}
             onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => {
-              setActivePoint(null);
-              onInteractionEnd?.();
-            }}
+            onResponderRelease={() => onInteractionEnd?.()}
             onResponderTerminate={() => {
               setActivePoint(null);
               onInteractionEnd?.();
@@ -172,32 +166,31 @@ export function BarChart({
           />
         ) : null}
         {interactive && activePoint ? (
-          <Animated.View
+          <View
             pointerEvents="none"
-            style={[
-              tooltipStyle,
-              {
-                position: 'absolute',
-                width: TOOLTIP_WIDTH,
-                height: TOOLTIP_HEIGHT,
-                backgroundColor: theme.colors.text.white,
-                borderRadius: theme.borderRadius.xs,
-                paddingHorizontal: theme.spacing.padding.sm,
-                paddingVertical: theme.spacing.padding['1half'],
-                shadowColor: theme.colors.text.black,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 4,
-                elevation: 4,
-                zIndex: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            ]}
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: TOOLTIP_WIDTH,
+              height: TOOLTIP_HEIGHT,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.xs,
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding['1half'],
+              shadowColor: theme.colors.text.black,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 4,
+              zIndex: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <Text
               style={{
-                color: theme.colors.text.black,
+                color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: '600',
                 textAlign: 'center',
@@ -207,7 +200,7 @@ export function BarChart({
                 ? tooltipFormatter(activePoint)
                 : String(Math.round(activePoint.y * 10) / 10)}
             </Text>
-          </Animated.View>
+          </View>
         ) : null}
         {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yMax - yMin;

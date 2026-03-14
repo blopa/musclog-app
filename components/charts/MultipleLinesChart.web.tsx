@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import type { MouseEvent } from 'react';
+import React, { useEffect, useId, useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+};
 
 export type MultipleLinesChartDatum = { x: number; [key: string]: number };
 
@@ -38,10 +46,17 @@ export type MultipleLinesChartProps = {
   marginTop?: number;
   marginBottom?: number;
   className?: string;
+  /** Enable touch/hover interaction to show a tooltip (default: true) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded y values) */
+  tooltipFormatter?: (point: MultipleLinesChartDatum) => string;
 };
 
 const CALLOUT_WIDTH = 44;
 const CALLOUT_HEIGHT = 28;
+
+const TOOLTIP_WIDTH = 120;
+const TOOLTIP_HEIGHT = 56;
 
 export function MultipleLinesChart({
   title,
@@ -60,9 +75,19 @@ export function MultipleLinesChart({
   marginTop = 16,
   marginBottom = 16,
   className,
+  interactive = true,
+  tooltipFormatter,
 }: MultipleLinesChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [chartWidth, setChartWidth] = useState(0);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0 || series.length === 0) {
     return null;
@@ -188,6 +213,76 @@ export function MultipleLinesChart({
               }}
             />
           </VictoryChart>
+          {interactive && (
+            <View
+              {...({
+                style: {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  zIndex: 1,
+                },
+                onClick: (e: MouseEvent<HTMLElement>) => {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                  const clickX = e.clientX - rect.left;
+                  const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                  const xValue = xDomainFinal[0] + ratio * (xDomainFinal[1] - xDomainFinal[0]);
+                  let nearest = data[0];
+                  let minDist = Math.abs(data[0].x - xValue);
+                  for (const d of data) {
+                    const dist = Math.abs(d.x - xValue);
+                    if (dist < minDist) {
+                      minDist = dist;
+                      nearest = d;
+                    }
+                  }
+                  const label = tooltipFormatter
+                    ? tooltipFormatter(nearest)
+                    : series
+                        .map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`)
+                        .join('\n');
+                  notifyChartActive(chartId);
+                  setActiveLabel(label);
+                },
+              } as ViewWithMouseProps)}
+            />
+          )}
+          {interactive && activeLabel ? (
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                minWidth: TOOLTIP_WIDTH,
+                minHeight: TOOLTIP_HEIGHT,
+                backgroundColor: theme.colors.background.card,
+                borderRadius: theme.borderRadius.xs,
+                paddingHorizontal: theme.spacing.padding.sm,
+                paddingVertical: theme.spacing.padding.sm,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                zIndex: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  color: theme.colors.text.primary,
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                {activeLabel}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
         {callouts.map((callout, idx) => {
