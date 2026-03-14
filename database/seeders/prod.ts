@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
+import usdaFoundationFoodsData from '../../data/usda_foundation_foods.json';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
 import { getEncryptionKey } from '../../utils/encryption';
 import { database } from '../database-instance';
@@ -9,6 +10,7 @@ import {
   ChatService,
   ExerciseService,
   FoodPortionService,
+  FoodService,
   type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
@@ -39,6 +41,135 @@ const clearAsyncStorage = async () => {
     await AsyncStorage.setItem(ENCRYPTION_KEY, existingEncryptionKey);
   }
 };
+
+/**
+ * Seed USDA foundation foods from JSON data (converted from CSV)
+ */
+async function seedUSDAFoundationFoods(): Promise<void> {
+  try {
+    // Check if foods already exist (skip if already seeded)
+    const existingFoods = await FoodService.getAllFoods();
+    const existingFoodsByExternalId = new Set(
+      existingFoods.map((food) => food.externalId).filter((id): id is string => !!id)
+    );
+
+    if (existingFoodsByExternalId.size > 0) {
+      console.log(
+        `Skipping USDA foundation foods seeding: ${existingFoodsByExternalId.size} foods already exist`
+      );
+      return;
+    }
+
+    const rows = usdaFoundationFoodsData as Record<string, string>[];
+
+    if (rows.length === 0) {
+      console.warn('No data found in USDA foundation foods JSON');
+      return;
+    }
+
+    console.log(`Seeding ${rows.length} foods from USDA foundation foods data`);
+
+    // Get the 100g portion (should exist after createCommonPortions)
+    const portion100g = await FoodPortionService.get100gPortion();
+    if (!portion100g) {
+      throw new Error('100g portion not found. Ensure common portions are seeded first.');
+    }
+
+    // Create foods in batches
+    const batchSize = 50;
+    let createdCount = 0;
+    let skippedCount = 0;
+
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize);
+
+      await database.write(async () => {
+        for (const row of batch) {
+          const externalId = String(row.external_id || '');
+
+          // Skip if already exists
+          if (existingFoodsByExternalId.has(externalId)) {
+            skippedCount++;
+            continue;
+          }
+
+          try {
+            // Parse numeric values
+            const kcal = parseFloat(row.kcal || '0') || 0;
+            const protein = parseFloat(row.protein || '0') || 0;
+            const carbs = parseFloat(row.carbs || '0') || 0;
+            const fat = parseFloat(row.fat || '0') || 0;
+            const fiber = parseFloat(row.fiber || '0') || 0;
+            const sugar = parseFloat(row.sugar || '0') || undefined;
+            const sodium = parseFloat(row.sodium || '0') || undefined;
+            const magnesium = parseFloat(row.magnesium || '0') || undefined;
+            const vitaminC = parseFloat(row.vitamin_c || '0') || undefined;
+            const vitaminD = parseFloat(row.vitamin_d || '0') || undefined;
+
+            // Build micros object (only include non-zero values)
+            const micros: Record<string, number> = {};
+            if (sugar && sugar > 0) {
+              micros.sugar = sugar;
+            }
+
+            if (sodium && sodium > 0) {
+              micros.sodium = sodium;
+            }
+
+            if (magnesium && magnesium > 0) {
+              micros.magnesium = magnesium;
+            }
+
+            if (vitaminC && vitaminC > 0) {
+              micros.vitaminC = vitaminC;
+            }
+
+            if (vitaminD && vitaminD > 0) {
+              micros.vitaminD = vitaminD;
+            }
+
+            // Create product object for createFromUSDAProduct
+            const product = {
+              description: row.description || row.name || '',
+              fdcId: parseInt(externalId, 10) || 0,
+              gtinUpc: row.barcode || undefined,
+            };
+
+            // Create food using FoodService
+            await FoodService.createFromUSDAProduct(
+              product,
+              {
+                calories: kcal,
+                protein,
+                carbs,
+                fat,
+                fiber,
+                sugar: sugar && sugar > 0 ? sugar : undefined,
+                sodium: sodium && sodium > 0 ? sodium : undefined,
+                micros: Object.keys(micros).length > 0 ? micros : undefined,
+              },
+              portion100g,
+              externalId
+            );
+
+            createdCount++;
+            existingFoodsByExternalId.add(externalId); // Track created food
+          } catch (error) {
+            console.warn(`Failed to create food from row: ${row.name || row.description}`, error);
+            skippedCount++;
+          }
+        }
+      });
+    }
+
+    console.log(
+      `USDA foundation foods seeding completed: ${createdCount} created, ${skippedCount} skipped`
+    );
+  } catch (error) {
+    console.error('Error seeding USDA foundation foods:', error);
+    // Don't throw - allow seeding to continue even if this fails
+  }
+}
 
 /**
  * Seed production data
@@ -151,7 +282,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
 
-    // TODO: seed the data from usda_foundation_foods.csv into the foods table
+    // 5. Seed USDA foundation foods from CSV
+    await seedUSDAFoundationFoods();
 
     // Set the anonymousBugReport setting to true by default
     await SettingsService.setAnonymousBugReport(true);
