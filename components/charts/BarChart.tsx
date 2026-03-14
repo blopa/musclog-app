@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Bar, CartesianChart } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -81,11 +81,11 @@ export function BarChart({
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
-  const [activePoint, setActivePoint] = useState<BarChartDataPoint | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const containerWidthRef = useRef(0);
 
   useEffect(() => {
-    registerChart(chartId, () => setActivePoint(null));
+    registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId]);
 
@@ -107,8 +107,11 @@ export function BarChart({
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
+    const label = tooltipFormatter
+      ? tooltipFormatter(nearest)
+      : String(Math.round(nearest.y * 10) / 10);
     notifyChartActive(chartId);
-    setActivePoint(nearest);
+    setActiveLabel(label);
   };
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
@@ -148,24 +151,16 @@ export function BarChart({
           )}
         </CartesianChart>
         {interactive ? (
-          <View
+          <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => true}
-            onResponderGrant={(e) => {
+            onPress={(e) => {
               onInteractionStart?.();
               handleTouchAt(e.nativeEvent.locationX);
-            }}
-            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => onInteractionEnd?.()}
-            onResponderTerminate={() => {
-              setActivePoint(null);
               onInteractionEnd?.();
             }}
           />
         ) : null}
-        {interactive && activePoint ? (
+        {interactive && activeLabel ? (
           <View
             pointerEvents="none"
             style={{
@@ -196,9 +191,7 @@ export function BarChart({
                 textAlign: 'center',
               }}
             >
-              {tooltipFormatter
-                ? tooltipFormatter(activePoint)
-                : String(Math.round(activePoint.y * 10) / 10)}
+              {activeLabel}
             </Text>
           </View>
         ) : null}

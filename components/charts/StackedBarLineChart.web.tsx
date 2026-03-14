@@ -24,7 +24,6 @@ export type StackedBarLineChartDatum = {
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
-  onMouseLeave?: () => void;
 };
 
 export type StackedBarLineChartProps = {
@@ -162,7 +161,7 @@ export function StackedBarLineChart({
             bottom: chartPaddingBottom,
             width: 28,
             justifyContent: 'space-between',
-            zIndex: 2,
+            zIndex: 10,
           }}
         >
           {[...leftAxisLabels].reverse().map((label, idx) => (
@@ -188,7 +187,7 @@ export function StackedBarLineChart({
             width: 28,
             justifyContent: 'space-between',
             alignItems: 'flex-end',
-            zIndex: 2,
+            zIndex: 10,
           }}
         >
           {[...rightAxisLabels].reverse().map((label, idx) => (
@@ -215,7 +214,7 @@ export function StackedBarLineChart({
             overflow: 'hidden',
           }}
         >
-          {interactive && (
+          {interactive ? (
             <View
               {...({
                 style: {
@@ -226,9 +225,10 @@ export function StackedBarLineChart({
                   bottom: 0,
                   cursor: 'pointer',
                   pointerEvents: 'auto',
-                  zIndex: 1,
+                  zIndex: 10,
                 },
                 onClick: (e: MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
                   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                   const chartWidth = rect.width;
                   const x = e.clientX - rect.left;
@@ -239,7 +239,7 @@ export function StackedBarLineChart({
                 },
               } as ViewWithMouseProps)}
             />
-          )}
+          ) : null}
           <VictoryChart
             height={chartHeight}
             padding={{
@@ -358,7 +358,7 @@ export function StackedBarLineChart({
           {interactive && activeDatum ? (
             <View
               pointerEvents="none"
-              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 100 }}
             >
               <View
                 style={{

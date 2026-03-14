@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
@@ -120,13 +120,13 @@ export function LineChart({
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
-  const [activePoint, setActivePoint] = useState<LineChartDataPoint | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const containerWidthRef = useRef(0);
   const activeXPos = useSharedValue(0);
   const activeYPos = useSharedValue(0);
 
   useEffect(() => {
-    registerChart(chartId, () => setActivePoint(null));
+    registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId]);
 
@@ -162,8 +162,11 @@ export function LineChart({
     const pixelY = ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
+    const label = tooltipFormatter
+      ? tooltipFormatter(nearest)
+      : String(Math.round(nearest.y * 10) / 10);
     notifyChartActive(chartId);
-    setActivePoint(nearest);
+    setActiveLabel(label);
   };
 
   // CartesianChart (victory-native) uses standard math coordinates: y=0 at bottom, y increases upward.
@@ -224,24 +227,16 @@ export function LineChart({
           )}
         </CartesianChart>
         {interactive ? (
-          <View
+          <Pressable
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => true}
-            onResponderGrant={(e) => {
+            onPress={(e) => {
               onInteractionStart?.();
               handleTouchAt(e.nativeEvent.locationX);
-            }}
-            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => onInteractionEnd?.()}
-            onResponderTerminate={() => {
-              setActivePoint(null);
               onInteractionEnd?.();
             }}
           />
         ) : null}
-        {interactive && activePoint ? (
+        {interactive && activeLabel ? (
           <>
             <Animated.View
               pointerEvents="none"
@@ -302,9 +297,7 @@ export function LineChart({
                   textAlign: 'center',
                 }}
               >
-                {tooltipFormatter
-                  ? tooltipFormatter(activePoint)
-                  : String(Math.round(activePoint.y * 10) / 10)}
+                {activeLabel}
               </Text>
             </View>
           </>

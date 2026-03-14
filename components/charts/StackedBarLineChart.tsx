@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { CartesianChart, Line, Scatter, StackedBar } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -89,12 +89,16 @@ export function StackedBarLineChart({
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
 
   useEffect(() => {
-    registerChart(chartId, () => setActiveIndex(null));
+    registerChart(chartId, () => {
+      setActiveLabel(null);
+      setActiveLabelSecondary(null);
+    });
     return () => unregisterChart(chartId);
   }, [chartId]);
 
@@ -144,10 +148,9 @@ export function StackedBarLineChart({
     }
 
     notifyChartActive(chartId);
-    setActiveIndex(idx);
+    setActiveLabel(totalFormatter(sumSegments(datum), datum));
+    setActiveLabelSecondary(lineFormatter(datum.lineValue));
   };
-
-  const activeDatum = activeIndex != null ? data[activeIndex] : null;
 
   const CHART_PADDING_X = 12;
   const xLabelLeft = (index: number) => {
@@ -316,7 +319,7 @@ export function StackedBarLineChart({
             )}
           </CartesianChart>
 
-          {interactive && activeDatum ? (
+          {interactive && activeLabel ? (
             <View
               pointerEvents="none"
               style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
@@ -329,34 +332,30 @@ export function StackedBarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {totalFormatter(sumSegments(activeDatum), activeDatum)}
+                  {activeLabel}
                 </Text>
               </View>
-              <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
-                <Text
-                  style={{
-                    color: theme.colors.background.card,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: '700',
-                  }}
-                >
-                  {lineFormatter(activeDatum.lineValue)}
-                </Text>
-              </View>
+              {activeLabelSecondary ? (
+                <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
+                  <Text
+                    style={{
+                      color: theme.colors.background.card,
+                      fontSize: theme.typography.fontSize.xs,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {activeLabelSecondary}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
         </View>
 
         {interactive ? (
-          <View
+          <Pressable
             style={{ position: 'absolute', left: 32, right: 32, top: 0, bottom: 0 }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => true}
-            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => {}}
-            onResponderTerminate={() => setActiveIndex(null)}
+            onPress={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
       </View>

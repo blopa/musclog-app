@@ -6,6 +6,11 @@ import { Text, View } from 'react-native';
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+  style?: ViewProps['style'] & { cursor?: string; boxShadow?: string };
+};
+
 const DEFAULT_NEON = '#00FFA2';
 const DEFAULT_BORDER = '#1C2623';
 
@@ -75,7 +80,7 @@ export function TrainingConsistencyChart({
             paddingHorizontal: theme.spacing.padding.sm,
             paddingVertical: theme.spacing.padding.xs,
             boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-            zIndex: 10,
+            zIndex: 100,
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -190,7 +195,8 @@ export function TrainingConsistencyChart({
                           }
                         : {}),
                     },
-                    onClick: () => {
+                    onClick: (e: MouseEvent<HTMLElement>) => {
+                      e.stopPropagation();
                       notifyChartActive(chartId);
                       setActiveLabel(`${value} PRs`);
                     },

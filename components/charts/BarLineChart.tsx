@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -79,12 +79,16 @@ export function BarLineChart({
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+  const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
 
   useEffect(() => {
-    registerChart(chartId, () => setActiveIndex(null));
+    registerChart(chartId, () => {
+      setActiveLabel(null);
+      setActiveLabelSecondary(null);
+    });
     return () => unregisterChart(chartId);
   }, [chartId]);
 
@@ -108,19 +112,18 @@ export function BarLineChart({
     }
     const t = Math.max(0, Math.min(1, touchX / chartWidth));
     const index = Math.round(t * (data.length - 1));
-    const datum = data[Math.min(index, data.length - 1)];
+    const idx = Math.min(index, data.length - 1);
+    const datum = data[idx];
     if (!datum) {
       return;
     }
 
-    const idx = Math.min(index, data.length - 1);
     notifyChartActive(chartId);
-    setActiveIndex(idx);
+    setActiveLabel(stepsFormatter(datum.steps));
+    setActiveLabelSecondary(heartRateFormatter(datum.heartRate));
   };
 
   const chartData = data as { x: number; steps: number; heartRate: number }[];
-
-  const activeDatum = activeIndex != null ? data[activeIndex] : null;
 
   // Match chart's domainPadding (left: 12, right: 12): data x [0, n-1] maps to 12px .. (width - 12)px
   const CHART_PADDING_X = 12;
@@ -291,7 +294,7 @@ export function BarLineChart({
             )}
           </CartesianChart>
 
-          {interactive && activeDatum ? (
+          {interactive && activeLabel ? (
             <View
               pointerEvents="none"
               style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
@@ -304,34 +307,30 @@ export function BarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {stepsFormatter(activeDatum.steps)}
+                  {activeLabel}
                 </Text>
               </View>
-              <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
-                <Text
-                  style={{
-                    color: theme.colors.background.card,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: '700',
-                  }}
-                >
-                  {heartRateFormatter(activeDatum.heartRate)}
-                </Text>
-              </View>
+              {activeLabelSecondary ? (
+                <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
+                  <Text
+                    style={{
+                      color: theme.colors.background.card,
+                      fontSize: theme.typography.fontSize.xs,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {activeLabelSecondary}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
         </View>
 
         {interactive ? (
-          <View
+          <Pressable
             style={{ position: 'absolute', left: 32, right: 32, top: 0, bottom: 0 }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => true}
-            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => {}}
-            onResponderTerminate={() => setActiveIndex(null)}
+            onPress={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
       </View>

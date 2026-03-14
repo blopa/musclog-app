@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -102,12 +102,12 @@ export function MultipleLinesChart({
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
-  const [activePoint, setActivePoint] = useState<MultipleLinesChartDatum | null>(null);
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const containerWidthRef = useRef(0);
   const [chartWidth, setChartWidth] = useState(0);
 
   useEffect(() => {
-    registerChart(chartId, () => setActivePoint(null));
+    registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId]);
 
@@ -132,8 +132,11 @@ export function MultipleLinesChart({
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
+    const label = tooltipFormatter
+      ? tooltipFormatter(nearest)
+      : series.map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`).join('\n');
     notifyChartActive(chartId);
-    setActivePoint(nearest);
+    setActiveLabel(label);
   };
 
   return (
@@ -240,18 +243,13 @@ export function MultipleLinesChart({
         </View>
 
         {interactive ? (
-          <View
+          <Pressable
             style={{ position: 'absolute', top: 0, left: 32, right: 0, bottom: marginBottom + 16 }}
-            onStartShouldSetResponder={() => true}
-            onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => true}
-            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderTerminate={() => setActivePoint(null)}
+            onPress={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
 
-        {interactive && activePoint ? (
+        {interactive && activeLabel ? (
           <View
             pointerEvents="none"
             style={{
@@ -282,11 +280,7 @@ export function MultipleLinesChart({
                 textAlign: 'center',
               }}
             >
-              {tooltipFormatter
-                ? tooltipFormatter(activePoint)
-                : series
-                    .map((s) => `${s.label}: ${Math.round((activePoint[s.key] ?? 0) * 10) / 10}`)
-                    .join('\n')}
+              {activeLabel}
             </Text>
           </View>
         ) : null}

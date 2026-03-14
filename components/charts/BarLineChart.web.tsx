@@ -11,7 +11,6 @@ import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
-  onMouseLeave?: () => void;
 };
 
 export type BarLineChartDatum = {
@@ -135,7 +134,7 @@ export function BarLineChart({
             bottom: chartPaddingBottom,
             width: 28,
             justifyContent: 'space-between',
-            zIndex: 2,
+            zIndex: 10,
           }}
         >
           {[...leftAxisLabels].reverse().map((label, i) => (
@@ -161,7 +160,7 @@ export function BarLineChart({
             width: 28,
             justifyContent: 'space-between',
             alignItems: 'flex-end',
-            zIndex: 2,
+            zIndex: 10,
           }}
         >
           {[...rightAxisLabels].reverse().map((label, i) => (
@@ -188,7 +187,7 @@ export function BarLineChart({
             overflow: 'hidden',
           }}
         >
-          {interactive && (
+          {interactive ? (
             <View
               {...({
                 style: {
@@ -199,9 +198,10 @@ export function BarLineChart({
                   bottom: 0,
                   cursor: 'pointer',
                   pointerEvents: 'auto',
-                  zIndex: 1,
+                  zIndex: 10,
                 },
                 onClick: (e: MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
                   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                   const chartWidth = rect.width;
                   const x = e.clientX - rect.left;
@@ -212,7 +212,7 @@ export function BarLineChart({
                 },
               } as ViewWithMouseProps)}
             />
-          )}
+          ) : null}
           <VictoryChart
             height={chartHeight}
             padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 40, right: 0 }}
@@ -325,7 +325,7 @@ export function BarLineChart({
           {interactive && activeDatum ? (
             <View
               pointerEvents="none"
-              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 100 }}
             >
               <View
                 style={{

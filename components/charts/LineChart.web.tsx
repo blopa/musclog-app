@@ -11,7 +11,6 @@ import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
-  onMouseLeave?: () => void;
 };
 
 export type LineChartDataPoint = {
@@ -169,7 +168,7 @@ export function LineChart({
               fontSize: theme.typography.fontSize.xxs,
               fontWeight: '600',
               color: theme.colors.text.tertiary,
-              zIndex: 1,
+              zIndex: 10,
             }}
           >
             {label}
@@ -177,7 +176,7 @@ export function LineChart({
         );
       })}
       <View style={{ position: 'relative', height }}>
-        {interactive && (
+        {interactive ? (
           <View
             {...({
               style: {
@@ -188,9 +187,10 @@ export function LineChart({
                 bottom: 0,
                 cursor: 'pointer',
                 pointerEvents: 'auto',
-                zIndex: 1,
+                zIndex: 10,
               },
               onClick: (e: MouseEvent<HTMLElement>) => {
+                e.stopPropagation();
                 const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
                 const ratio = Math.max(0, Math.min(1, clickX / rect.width));
@@ -212,7 +212,7 @@ export function LineChart({
               },
             } as ViewWithMouseProps)}
           />
-        )}
+        ) : null}
         <VictoryChart
           height={height}
           padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -295,13 +295,13 @@ export function LineChart({
               top: 6,
               right: 6,
               minWidth: 90,
-              height: 36,
+              minHeight: 36,
               backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
               boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-              zIndex: 10,
+              zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',
             }}

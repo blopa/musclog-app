@@ -132,7 +132,7 @@ export function MultipleLinesChart({
               bottom: marginBottom + 16,
               width: 28,
               justifyContent: 'space-between',
-              zIndex: 2,
+              zIndex: 10,
             }}
           >
             {yAxisLabels.map(({ label }) => (
@@ -213,7 +213,7 @@ export function MultipleLinesChart({
               }}
             />
           </VictoryChart>
-          {interactive && (
+          {interactive ? (
             <View
               {...({
                 style: {
@@ -224,9 +224,10 @@ export function MultipleLinesChart({
                   bottom: 0,
                   cursor: 'pointer',
                   pointerEvents: 'auto',
-                  zIndex: 1,
+                  zIndex: 10,
                 },
                 onClick: (e: MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
                   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                   const clickX = e.clientX - rect.left;
                   const ratio = Math.max(0, Math.min(1, clickX / rect.width));
@@ -250,7 +251,7 @@ export function MultipleLinesChart({
                 },
               } as ViewWithMouseProps)}
             />
-          )}
+          ) : null}
           {interactive && activeLabel ? (
             <View
               pointerEvents="none"
@@ -265,19 +266,21 @@ export function MultipleLinesChart({
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.sm,
                 boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                zIndex: 10,
+                zIndex: 100,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <Text
-                style={{
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize.xxs,
-                  fontWeight: '600',
-                  textAlign: 'center',
-                  whiteSpace: 'pre-line',
-                }}
+                style={
+                  {
+                    color: theme.colors.text.primary,
+                    fontSize: theme.typography.fontSize.xxs,
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    whiteSpace: 'pre-line',
+                  } as any
+                }
               >
                 {activeLabel}
               </Text>
