@@ -215,7 +215,7 @@ export function StackedBarLineChart({
             overflow: 'hidden',
           }}
         >
-          {interactive && (
+          {interactive ? (
             <View
               {...({
                 style: {
@@ -239,7 +239,7 @@ export function StackedBarLineChart({
                 },
               } as ViewWithMouseProps)}
             />
-          )}
+          ) : null}
           <VictoryChart
             height={chartHeight}
             padding={{

@@ -133,7 +133,7 @@ export function BarChart({
         );
       })}
       <View style={{ position: 'relative', height }}>
-        {interactive && (
+        {interactive ? (
           <View
             {...({
               style: {
@@ -168,7 +168,7 @@ export function BarChart({
               },
             } as ViewWithMouseProps)}
           />
-        )}
+        ) : null}
         <VictoryChart
           height={height}
           padding={{ left: 0, right: 0, top: 0, bottom: 0 }}

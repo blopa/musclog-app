@@ -177,7 +177,7 @@ export function StackedBarChart({
             }}
           />
         </VictoryChart>
-        {interactive && (
+        {interactive ? (
           <View
             {...({
               style: {
@@ -209,13 +209,15 @@ export function StackedBarChart({
                   (nearest.segments[1] ?? 0) +
                   (nearest.segments[2] ?? 0) +
                   (nearest.segments[3] ?? 0);
-                const label = tooltipFormatter ? tooltipFormatter(nearest) : String(Math.round(total));
+                const label = tooltipFormatter
+                  ? tooltipFormatter(nearest)
+                  : String(Math.round(total));
                 notifyChartActive(chartId);
                 setActiveLabel(label);
               },
             } as ViewWithMouseProps)}
           />
-        )}
+        ) : null}
         {interactive && activeLabel ? (
           <View
             pointerEvents="none"

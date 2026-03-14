@@ -6,6 +6,11 @@ import { Text, View } from 'react-native';
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+};
+
 const DEFAULT_NEON = '#00FFA2';
 const DEFAULT_BORDER = '#1C2623';
 
