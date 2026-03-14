@@ -122,6 +122,7 @@ export function LineChart({
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const containerWidthRef = useRef(0);
+  const pointsPixelRef = useRef<Array<{ x: number | null; y: number | null }>>([]);
   const activeXPos = useSharedValue(0);
   const activeYPos = useSharedValue(0);
 
@@ -158,8 +159,10 @@ export function LineChart({
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
-    const pixelX = ((nearest.x - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0])) * w;
-    const pixelY = ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
+    const nearestIndex = data.indexOf(nearest);
+    const pixelPoint = pointsPixelRef.current[nearestIndex];
+    const pixelX = pixelPoint?.x ?? ((nearest.x - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0])) * w;
+    const pixelY = pixelPoint?.y ?? ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
     const label = tooltipFormatter
@@ -192,7 +195,9 @@ export function LineChart({
             labelColor: 'transparent',
           }}
         >
-          {({ points, chartBounds }) => (
+          {({ points, chartBounds }) => {
+            pointsPixelRef.current = points.y;
+            return (
             <>
               <Area
                 points={points.y}
@@ -224,7 +229,8 @@ export function LineChart({
                 </>
               ) : null}
             </>
-          )}
+            );
+          }}
         </CartesianChart>
         {interactive ? (
           <View
