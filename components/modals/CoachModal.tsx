@@ -67,7 +67,6 @@ import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { useSnackbar } from '../SnackbarContext';
 import { MenuButton } from '../theme/MenuButton';
-import { SegmentedControl } from '../theme/SegmentedControl';
 import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -1195,32 +1194,57 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         </View>
 
         <View className="border-b px-4 py-3" style={{ borderColor: theme.colors.border.light }}>
-          <SegmentedControl
-            options={[
-              {
-                label: t('coach.context.general'),
-                value: 'general',
-                icon: <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
-              },
-              {
-                label: t('coach.context.exercise'),
-                value: 'exercise',
-                icon: <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
-              },
-              {
-                label: t('coach.context.nutrition'),
-                value: 'nutrition',
-                icon: (
-                  <UtensilsCrossed size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                ),
-              },
-            ]}
-            value={conversationContext}
-            onValueChange={(value) =>
-              handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
-            }
-            variant="outline"
-          />
+          <View
+            style={{
+              flexDirection: 'row',
+              borderRadius: theme.borderRadius.lg,
+              padding: 4,
+              backgroundColor: theme.colors.background.cardElevated,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.border.light,
+            }}
+          >
+            {(
+              [
+                { value: 'general', label: t('coach.context.general'), Icon: Zap },
+                { value: 'exercise', label: t('coach.context.exercise'), Icon: Dumbbell },
+                { value: 'nutrition', label: t('coach.context.nutrition'), Icon: UtensilsCrossed },
+              ] as const
+            ).map(({ value, label, Icon }) => {
+              const isSelected = conversationContext === value;
+              return (
+                <Pressable
+                  key={value}
+                  style={{
+                    flex: 1,
+                    borderRadius: theme.borderRadius.sm,
+                    paddingVertical: theme.spacing.padding.sm,
+                    backgroundColor: isSelected ? theme.colors.background.card : 'transparent',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                  onPress={() => handleConversationContextChange(value)}
+                  {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+                >
+                  <Icon
+                    size={theme.iconSize.sm}
+                    color={isSelected ? theme.colors.text.primary : theme.colors.text.secondary}
+                  />
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: 'bold',
+                      color: isSelected ? theme.colors.text.primary : theme.colors.text.secondary,
+                    }}
+                  >
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
 
         <View
