@@ -2,7 +2,12 @@ import { reloadAppAsync } from 'expo';
 import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { cacheDirectory, copyAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  copyAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
