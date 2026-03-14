@@ -6,7 +6,7 @@ import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
@@ -65,11 +65,10 @@ export async function pickDocument(types?: string[]): Promise<DocumentPicker.Doc
 }
 
 export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
-  const manipulatedImage = await ImageManipulator.manipulateAsync(
-    photoUri,
-    [{ resize: { width } }],
-    { compress: 0.7, format: SaveFormat.JPEG }
-  );
+  const manipulatedImage = await ImageManipulator.manipulateAsync(photoUri, [{ resize: { width } }], {
+    compress: 0.7,
+    format: ImageManipulator.SaveFormat.JPEG,
+  });
 
   return manipulatedImage.uri;
 }
@@ -84,7 +83,7 @@ export async function createThumbnail(
 ): Promise<{ uri: string; base64?: string }> {
   const result = await ImageManipulator.manipulateAsync(uri, [{ resize: { width } }], {
     compress: 0.7,
-    format: SaveFormat.JPEG,
+    format: ImageManipulator.SaveFormat.JPEG,
     base64: true,
   });
   return { uri: result.uri, base64: result.base64 };
