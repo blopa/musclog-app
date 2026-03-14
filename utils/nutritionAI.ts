@@ -21,6 +21,7 @@ export function normalizeMacrosByGrams(macros: MacroEstimate, grams: number): Ma
     carbs: Math.round(macros.carbs * factor * 10) / 10,
     fat: Math.round(macros.fat * factor * 10) / 10,
     protein: Math.round(macros.protein * factor * 10) / 10,
+    fiber: Math.round(macros.fiber * factor * 10) / 10,
     grams: 100,
     barcode: macros.barcode,
   };
