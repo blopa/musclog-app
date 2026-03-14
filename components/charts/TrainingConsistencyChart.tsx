@@ -1,5 +1,7 @@
-import { Text, View } from 'react-native';
+import { useEffect, useId, useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 
 const DEFAULT_NEON = '#00FFA2';
@@ -51,6 +53,9 @@ const OPACITIES: Record<number, number> = {
   5: 1,
 };
 
+const TOOLTIP_WIDTH = 100;
+const TOOLTIP_HEIGHT = 40;
+
 export function TrainingConsistencyChart({
   title,
   subtitle,
@@ -67,6 +72,14 @@ export function TrainingConsistencyChart({
   className,
 }: TrainingConsistencyChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
   const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
   const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
@@ -77,7 +90,42 @@ export function TrainingConsistencyChart({
   const colCount = Math.ceil(cells.length / rowCount) || columns;
 
   return (
-    <View className={className}>
+    <View className={className} style={{ position: 'relative' }}>
+      {activeLabel ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            top: 6,
+            right: 6,
+            minWidth: TOOLTIP_WIDTH,
+            height: TOOLTIP_HEIGHT,
+            backgroundColor: theme.colors.background.card,
+            borderRadius: theme.borderRadius.xs,
+            paddingHorizontal: theme.spacing.padding.sm,
+            paddingVertical: theme.spacing.padding.xs,
+            shadowColor: theme.colors.text.black,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.15,
+            shadowRadius: 4,
+            elevation: 4,
+            zIndex: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}
+          >
+            {activeLabel}
+          </Text>
+        </View>
+      ) : null}
       {/* Header */}
       <View className="mb-6 flex-row items-center justify-between" style={{ marginBottom: 24 }}>
         <View>
@@ -159,8 +207,12 @@ export function TrainingConsistencyChart({
               const isMax = intensity === 5;
 
               return (
-                <View
+                <Pressable
                   key={rowIndex}
+                  onPress={() => {
+                    notifyChartActive(chartId);
+                    setActiveLabel(`${value} PRs`);
+                  }}
                   style={{
                     flex: 1,
                     minHeight: 0,

@@ -1,16 +1,18 @@
+import type { MouseEvent } from 'react';
+import { useEffect, useId, useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
-import {
-  VictoryArea,
-  VictoryAxis,
-  VictoryChart,
-  VictoryLine,
-  VictoryScatter,
-  VictoryTooltip,
-  VictoryVoronoiContainer,
-} from 'victory';
+import { VictoryArea, VictoryAxis, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+  onMouseLeave?: () => void;
+};
 
 export type LineChartDataPoint = {
   x: number;
@@ -123,6 +125,14 @@ export function LineChart({
   tooltipFormatter,
 }: LineChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0) {
     return null;
@@ -141,26 +151,6 @@ export function LineChart({
 
   // Last data point for the circle marker
   const lastPoint = data[data.length - 1];
-
-  const containerComponent = interactive ? (
-    <VictoryVoronoiContainer
-      voronoiDimension="x"
-      labels={({ datum }: { datum: LineChartDataPoint }) =>
-        tooltipFormatter ? tooltipFormatter(datum) : String(Math.round(datum.y * 10) / 10)
-      }
-      labelComponent={
-        <VictoryTooltip
-          style={{ fontSize: theme.typography.fontSize.xs, fontWeight: '600' }}
-          flyoutStyle={{
-            fill: theme.colors.text.white,
-            stroke: theme.colors.background.separatorLight,
-            strokeWidth: 1,
-          }}
-          flyoutPadding={{ top: 6, bottom: 6, left: 10, right: 10 }}
-        />
-      }
-    />
-  ) : undefined;
 
   return (
     <View className={className || `relative w-full`} style={{ marginTop }}>
@@ -186,81 +176,149 @@ export function LineChart({
           </Text>
         );
       })}
-      <VictoryChart
-        height={height}
-        padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        domain={{ x: xDomainFinal, y: yDomainFinal }}
-        containerComponent={containerComponent}
-        style={{
-          parent: {
-            height,
-            width: '100%',
-          },
-        }}
-      >
-        {/* Grid lines - horizontal dashed lines */}
-        {showGridLines ? (
+      <View style={{ position: 'relative', height }}>
+        {interactive && (
+          <View
+            {...({
+              style: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                zIndex: 1,
+              },
+              onClick: (e: MouseEvent<HTMLElement>) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                const xValue = xDomainFinal[0] + ratio * (xDomainFinal[1] - xDomainFinal[0]);
+                let nearest = data[0];
+                let minDist = Math.abs(data[0].x - xValue);
+                for (const d of data) {
+                  const dist = Math.abs(d.x - xValue);
+                  if (dist < minDist) {
+                    minDist = dist;
+                    nearest = d;
+                  }
+                }
+                const label = tooltipFormatter
+                  ? tooltipFormatter(nearest)
+                  : String(Math.round(nearest.y * 10) / 10);
+                notifyChartActive(chartId);
+                setActiveLabel(label);
+              },
+            } as ViewWithMouseProps)}
+          />
+        )}
+        <VictoryChart
+          height={height}
+          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          domain={{ x: xDomainFinal, y: yDomainFinal }}
+          style={{
+            parent: {
+              height,
+              width: '100%',
+            },
+          }}
+        >
+          {/* Grid lines - horizontal dashed lines */}
+          {showGridLines ? (
+            <VictoryAxis
+              dependentAxis
+              style={{
+                axis: { stroke: 'transparent' },
+                grid: {
+                  stroke: gridLineColor || theme.colors.border.light,
+                  strokeDasharray: '4,4',
+                  strokeWidth: 1,
+                },
+                ticks: { stroke: 'transparent' },
+                tickLabels: { fill: 'transparent' },
+              }}
+              tickValues={defaultGridTickValues}
+            />
+          ) : null}
+          {/* Area fill with gradient */}
+          <VictoryArea
+            data={data}
+            interpolation={interpolation}
+            style={{
+              data: {
+                fill: areaColor || theme.colors.accent.primary30,
+              },
+            }}
+          />
+          {/* Line */}
+          <VictoryLine
+            data={data}
+            interpolation={interpolation}
+            style={{
+              data: {
+                stroke: lineColor || theme.colors.accent.primary,
+                strokeWidth: lineWidth,
+                strokeLinecap: 'round',
+              },
+            }}
+          />
+          {/* Data point circle at the end */}
+          {showLastPoint ? (
+            <VictoryScatter
+              data={[lastPoint]}
+              size={lastPointSize}
+              style={{
+                data: {
+                  fill: lineColor || theme.colors.accent.primary,
+                  stroke: lastPointStrokeColor || theme.colors.background.card,
+                  strokeWidth: lastPointStrokeWidth,
+                },
+              }}
+            />
+          ) : null}
+          {/* Hidden independent axis (x-axis) */}
           <VictoryAxis
-            dependentAxis
             style={{
               axis: { stroke: 'transparent' },
-              grid: {
-                stroke: gridLineColor || theme.colors.border.light,
-                strokeDasharray: '4,4',
-                strokeWidth: 1,
-              },
+              grid: { stroke: 'transparent' },
               ticks: { stroke: 'transparent' },
               tickLabels: { fill: 'transparent' },
             }}
-            tickValues={defaultGridTickValues}
           />
-        ) : null}
-        {/* Area fill with gradient */}
-        <VictoryArea
-          data={data}
-          interpolation={interpolation}
-          style={{
-            data: {
-              fill: areaColor || theme.colors.accent.primary30,
-            },
-          }}
-        />
-        {/* Line */}
-        <VictoryLine
-          data={data}
-          interpolation={interpolation}
-          style={{
-            data: {
-              stroke: lineColor || theme.colors.accent.primary,
-              strokeWidth: lineWidth,
-              strokeLinecap: 'round',
-            },
-          }}
-        />
-        {/* Data point circle at the end */}
-        {showLastPoint ? (
-          <VictoryScatter
-            data={[lastPoint]}
-            size={lastPointSize}
+        </VictoryChart>
+        {interactive && activeLabel ? (
+          <View
+            pointerEvents="none"
             style={{
-              data: {
-                fill: lineColor || theme.colors.accent.primary,
-                stroke: lastPointStrokeColor || theme.colors.background.card,
-                strokeWidth: lastPointStrokeWidth,
-              },
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: 90,
+              height: 36,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.xs,
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding['1half'],
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              zIndex: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-          />
+          >
+            <Text
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}
+            >
+              {activeLabel}
+            </Text>
+          </View>
         ) : null}
-        {/* Hidden independent axis (x-axis) */}
-        <VictoryAxis
-          style={{
-            axis: { stroke: 'transparent' },
-            grid: { stroke: 'transparent' },
-            ticks: { stroke: 'transparent' },
-            tickLabels: { fill: 'transparent' },
-          }}
-        />
-      </VictoryChart>
+      </View>
       {/* Custom X-axis labels */}
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View
