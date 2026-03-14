@@ -1,14 +1,18 @@
+import type { MouseEvent } from 'react';
+import { useEffect, useId, useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
-import {
-  VictoryAxis,
-  VictoryBar,
-  VictoryChart,
-  VictoryTooltip,
-  VictoryVoronoiContainer,
-} from 'victory';
+import { VictoryAxis, VictoryBar, VictoryChart } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
+
+/** View props plus web mouse events (RN Web renders View as div and supports these) */
+type ViewWithMouseProps = ViewProps & {
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+  onMouseLeave?: () => void;
+};
 
 export type BarChartDataPoint = {
   /** X value (category index or numeric label) */
@@ -78,7 +82,15 @@ export function BarChart({
   tooltipFormatter,
 }: BarChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const barColorResolved = barColor ?? theme.colors.accent.primary;
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0) {
     return null;
@@ -93,30 +105,6 @@ export function BarChart({
   const xSpan = xMax - xMin || 1;
   const xPadding = xSpan / data.length;
   const paddedXDomain: [number, number] = [xMin - xPadding, xMax + xPadding];
-
-  const containerComponent = interactive ? (
-    <VictoryVoronoiContainer
-      voronoiDimension="x"
-      labels={({ datum }: { datum: BarChartDataPoint }) =>
-        tooltipFormatter ? tooltipFormatter(datum) : String(Math.round(datum.y * 10) / 10)
-      }
-      labelComponent={
-        <VictoryTooltip
-          style={{
-            fontSize: theme.typography.fontSize.xs,
-            fontWeight: '600',
-            fill: theme.colors.text.black,
-          }}
-          flyoutStyle={{
-            fill: theme.colors.text.white,
-            stroke: theme.colors.background.separatorLight,
-            strokeWidth: 1,
-          }}
-          flyoutPadding={{ top: 6, bottom: 6, left: 10, right: 10 }}
-        />
-      }
-    />
-  ) : undefined;
 
   const yDomainFinal: [number, number] = [yMin, yMax];
   const padding = { left: 20, right: 20 };
@@ -144,52 +132,112 @@ export function BarChart({
           </Text>
         );
       })}
-      <VictoryChart
-        height={height}
-        padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        domain={{ x: paddedXDomain, y: [yMin, yMax] }}
-        containerComponent={containerComponent}
-        style={{
-          parent: {
-            height,
-            width: '100%',
+      <View
+        {...({
+          style: { position: 'relative', height },
+          onClick: (e: MouseEvent<HTMLElement>) => {
+            if (!interactive) {
+              return;
+            }
+            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+            const xValue = paddedXDomain[0] + ratio * (paddedXDomain[1] - paddedXDomain[0]);
+            let nearest = data[0];
+            let minDist = Math.abs(data[0].x - xValue);
+            for (const d of data) {
+              const dist = Math.abs(d.x - xValue);
+              if (dist < minDist) {
+                minDist = dist;
+                nearest = d;
+              }
+            }
+            const label = tooltipFormatter
+              ? tooltipFormatter(nearest)
+              : String(Math.round(nearest.y * 10) / 10);
+            notifyChartActive(chartId);
+            setActiveLabel(label);
           },
-        }}
+          onMouseLeave: () => setActiveLabel(null),
+        } as ViewWithMouseProps)}
       >
-        {showGridLines ? (
+        <VictoryChart
+          height={height}
+          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          domain={{ x: paddedXDomain, y: [yMin, yMax] }}
+          style={{
+            parent: {
+              height,
+              width: '100%',
+            },
+          }}
+        >
+          {showGridLines ? (
+            <VictoryAxis
+              dependentAxis
+              style={{
+                axis: { stroke: 'transparent' },
+                grid: {
+                  stroke: gridLineColor ?? theme.colors.border.light,
+                  strokeDasharray: '4,4',
+                  strokeWidth: 1,
+                },
+                ticks: { stroke: 'transparent' },
+                tickLabels: { fill: 'transparent' },
+              }}
+            />
+          ) : null}
+          <VictoryBar
+            data={data}
+            barRatio={1 - innerPadding}
+            cornerRadius={{ top: roundedCornerRadius }}
+            style={{
+              data: {
+                fill: barColorResolved,
+              },
+            }}
+          />
           <VictoryAxis
-            dependentAxis
             style={{
               axis: { stroke: 'transparent' },
-              grid: {
-                stroke: gridLineColor ?? theme.colors.border.light,
-                strokeDasharray: '4,4',
-                strokeWidth: 1,
-              },
+              grid: { stroke: 'transparent' },
               ticks: { stroke: 'transparent' },
               tickLabels: { fill: 'transparent' },
             }}
           />
+        </VictoryChart>
+        {interactive && activeLabel ? (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: 90,
+              height: 36,
+              backgroundColor: theme.colors.text.white,
+              borderRadius: theme.borderRadius.xs,
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding['1half'],
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              zIndex: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: theme.colors.text.black,
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}
+            >
+              {activeLabel}
+            </Text>
+          </View>
         ) : null}
-        <VictoryBar
-          data={data}
-          barRatio={1 - innerPadding}
-          cornerRadius={{ top: roundedCornerRadius }}
-          style={{
-            data: {
-              fill: barColorResolved,
-            },
-          }}
-        />
-        <VictoryAxis
-          style={{
-            axis: { stroke: 'transparent' },
-            grid: { stroke: 'transparent' },
-            ticks: { stroke: 'transparent' },
-            tickLabels: { fill: 'transparent' },
-          }}
-        />
-      </VictoryChart>
+      </View>
       {xAxisLabels && xAxisLabels.length > 0 ? (
         <View
           style={{

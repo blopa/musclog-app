@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -52,7 +52,6 @@ export type BarLineChartProps = {
   className?: string;
 };
 
-const TOOLTIP_WIDTH = 72;
 const TOOLTIP_HEIGHT = 32;
 
 const DEFAULT_LEFT_LABELS = ['0', '3k', '6k', '9k', '12k'];
@@ -78,36 +77,25 @@ export function BarLineChart({
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
-  const chartWidthSv = useSharedValue(0);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveIndex(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
   const lineColorResolved = lineColor ?? theme.colors.background.white;
-
-  const barTooltipLeft = useSharedValue(0);
-  const barTooltipTop = useSharedValue(0);
-  const lineTooltipLeft = useSharedValue(0);
-  const lineTooltipTop = useSharedValue(0);
-
-  const barTooltipStyle = useAnimatedStyle(() => ({
-    left: Math.max(0, Math.min(chartWidthSv.value - TOOLTIP_WIDTH, barTooltipLeft.value)),
-    top: Math.max(0, barTooltipTop.value),
-  }));
-
-  const lineTooltipStyle = useAnimatedStyle(() => ({
-    left: Math.max(0, Math.min(chartWidthSv.value - TOOLTIP_WIDTH, lineTooltipLeft.value)),
-    top: Math.max(0, lineTooltipTop.value),
-  }));
 
   if (data.length === 0) {
     return null;
   }
 
   const xDomain: [number, number] = [0, data.length - 1];
-  const stepsRange = stepsDomain[1] - stepsDomain[0];
-  const hrRange = heartRateDomain[1] - heartRateDomain[0];
 
   const handleTouchAt = (touchX: number) => {
     const w = containerWidthRef.current;
@@ -126,15 +114,8 @@ export function BarLineChart({
     }
 
     const idx = Math.min(index, data.length - 1);
+    notifyChartActive(chartId);
     setActiveIndex(idx);
-    const barCenterX = (idx / Math.max(1, data.length - 1)) * chartWidth;
-    const barTopY = ((stepsDomain[1] - datum.steps) / stepsRange) * (height - 24) + 12;
-    barTooltipLeft.value = barCenterX - TOOLTIP_WIDTH / 2;
-    barTooltipTop.value = barTopY - TOOLTIP_HEIGHT - 6;
-
-    const lineY = ((heartRateDomain[1] - datum.heartRate) / hrRange) * (height - 24) + 12;
-    lineTooltipLeft.value = barCenterX - TOOLTIP_WIDTH / 2;
-    lineTooltipTop.value = lineY - TOOLTIP_HEIGHT - 6;
   };
 
   const chartData = data as { x: number; steps: number; heartRate: number }[];
@@ -152,6 +133,20 @@ export function BarLineChart({
     const dataWidth = labelContainerWidth - 2 * CHART_PADDING_X;
     const barCenterX = CHART_PADDING_X + (index / Math.max(1, data.length - 1)) * dataWidth;
     return barCenterX - LABEL_BOX_WIDTH / 2;
+  };
+
+  const tooltipPillStyle = {
+    minWidth: 72,
+    height: TOOLTIP_HEIGHT,
+    borderRadius: theme.borderRadius.xs,
+    paddingHorizontal: theme.spacing.padding.sm,
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    shadowColor: theme.colors.text.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   };
 
   return (
@@ -180,9 +175,7 @@ export function BarLineChart({
       <View
         style={{ height, position: 'relative' }}
         onLayout={(e) => {
-          const w = e.nativeEvent.layout.width;
-          containerWidthRef.current = w;
-          chartWidthSv.value = Math.max(0, w - 64);
+          containerWidthRef.current = e.nativeEvent.layout.width;
         }}
       >
         {/* Left Y-axis labels */}
@@ -299,29 +292,11 @@ export function BarLineChart({
           </CartesianChart>
 
           {interactive && activeDatum ? (
-            <>
-              <Animated.View
-                pointerEvents="none"
-                style={[
-                  barTooltipStyle,
-                  {
-                    position: 'absolute',
-                    width: TOOLTIP_WIDTH,
-                    height: TOOLTIP_HEIGHT,
-                    backgroundColor: theme.colors.text.white,
-                    borderRadius: theme.borderRadius.xs,
-                    paddingHorizontal: theme.spacing.padding.sm,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    shadowColor: theme.colors.text.black,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 4,
-                    elevation: 4,
-                    zIndex: 10,
-                  },
-                ]}
-              >
+            <View
+              pointerEvents="none"
+              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+            >
+              <View style={[tooltipPillStyle, { backgroundColor: theme.colors.text.white }]}>
                 <Text
                   style={{
                     color: theme.colors.text.black,
@@ -331,29 +306,8 @@ export function BarLineChart({
                 >
                   {stepsFormatter(activeDatum.steps)}
                 </Text>
-              </Animated.View>
-              <Animated.View
-                pointerEvents="none"
-                style={[
-                  lineTooltipStyle,
-                  {
-                    position: 'absolute',
-                    width: TOOLTIP_WIDTH,
-                    height: TOOLTIP_HEIGHT,
-                    backgroundColor: lineColorResolved,
-                    borderRadius: theme.borderRadius.xs,
-                    paddingHorizontal: theme.spacing.padding.sm,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    shadowColor: theme.colors.text.black,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 4,
-                    elevation: 4,
-                    zIndex: 10,
-                  },
-                ]}
-              >
+              </View>
+              <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
                 <Text
                   style={{
                     color: theme.colors.text.black,
@@ -363,8 +317,8 @@ export function BarLineChart({
                 >
                   {heartRateFormatter(activeDatum.heartRate)}
                 </Text>
-              </Animated.View>
-            </>
+              </View>
+            </View>
           ) : null}
         </View>
 
@@ -373,10 +327,10 @@ export function BarLineChart({
             style={{ position: 'absolute', left: 32, right: 32, top: 0, bottom: 0 }}
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
+            onResponderTerminationRequest={() => true}
             onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
             onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
-            onResponderRelease={() => setActiveIndex(null)}
+            onResponderRelease={() => {}}
             onResponderTerminate={() => setActiveIndex(null)}
           />
         ) : null}

@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -117,10 +118,17 @@ export function LineChart({
   onInteractionEnd,
 }: LineChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
   const [activePoint, setActivePoint] = useState<LineChartDataPoint | null>(null);
   const containerWidthRef = useRef(0);
   const activeXPos = useSharedValue(0);
   const activeYPos = useSharedValue(0);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActivePoint(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   const cursorLineStyle = useAnimatedStyle(() => ({
     left: activeXPos.value,
@@ -129,11 +137,6 @@ export function LineChart({
   const activeDotStyle = useAnimatedStyle(() => ({
     left: activeXPos.value - 6,
     top: activeYPos.value - 6,
-  }));
-
-  const tooltipStyle = useAnimatedStyle(() => ({
-    left: Math.max(0, activeXPos.value - TOOLTIP_WIDTH / 2),
-    top: Math.max(0, activeYPos.value - TOOLTIP_HEIGHT - 12),
   }));
 
   if (data.length === 0) {
@@ -159,6 +162,7 @@ export function LineChart({
     const pixelY = ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
+    notifyChartActive(chartId);
     setActivePoint(nearest);
   };
 
@@ -224,14 +228,17 @@ export function LineChart({
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             onStartShouldSetResponder={() => true}
             onMoveShouldSetResponder={() => true}
-            onResponderTerminationRequest={() => false}
+            onResponderTerminationRequest={() => true}
             onResponderGrant={(e) => {
               onInteractionStart?.();
               handleTouchAt(e.nativeEvent.locationX);
             }}
             onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
             onResponderRelease={() => onInteractionEnd?.()}
-            onResponderTerminate={() => onInteractionEnd?.()}
+            onResponderTerminate={() => {
+              setActivePoint(null);
+              onInteractionEnd?.();
+            }}
           />
         ) : null}
         {interactive && activePoint ? (
@@ -265,44 +272,41 @@ export function LineChart({
                 },
               ]}
             />
-            {activePoint ? (
-              <Animated.View
-                pointerEvents="none"
-                style={[
-                  tooltipStyle,
-                  {
-                    position: 'absolute',
-                    width: TOOLTIP_WIDTH,
-                    height: TOOLTIP_HEIGHT,
-                    backgroundColor: theme.colors.background.card,
-                    borderRadius: theme.borderRadius.xs,
-                    paddingHorizontal: theme.spacing.padding.sm,
-                    paddingVertical: theme.spacing.padding['1half'],
-                    shadowColor: theme.colors.text.black,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 4,
-                    elevation: 4,
-                    zIndex: 10,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  },
-                ]}
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                minWidth: TOOLTIP_WIDTH,
+                height: TOOLTIP_HEIGHT,
+                backgroundColor: theme.colors.background.card,
+                borderRadius: theme.borderRadius.xs,
+                paddingHorizontal: theme.spacing.padding.sm,
+                paddingVertical: theme.spacing.padding['1half'],
+                shadowColor: theme.colors.text.black,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 4,
+                elevation: 4,
+                zIndex: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  color: theme.colors.text.primary,
+                  fontSize: theme.typography.fontSize.xs,
+                  fontWeight: '600',
+                  textAlign: 'center',
+                }}
               >
-                <Text
-                  style={{
-                    color: theme.colors.text.primary,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: '600',
-                    textAlign: 'center',
-                  }}
-                >
-                  {tooltipFormatter
-                    ? tooltipFormatter(activePoint)
-                    : String(Math.round(activePoint.y * 10) / 10)}
-                </Text>
-              </Animated.View>
-            ) : null}
+                {tooltipFormatter
+                  ? tooltipFormatter(activePoint)
+                  : String(Math.round(activePoint.y * 10) / 10)}
+              </Text>
+            </View>
           </>
         ) : null}
         {yAxisLabels?.map(({ label, yDomainValue }, i) => {

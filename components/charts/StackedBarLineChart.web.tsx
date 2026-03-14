@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 import {
@@ -11,6 +11,7 @@ import {
   VictoryStack,
 } from 'victory';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
@@ -22,7 +23,7 @@ export type StackedBarLineChartDatum = {
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
-  onMouseMove?: (e: MouseEvent<HTMLElement>) => void;
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
   onMouseLeave?: () => void;
 };
 
@@ -77,7 +78,14 @@ export function StackedBarLineChart({
   className,
 }: StackedBarLineChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setHoveredIndex(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   const colors: string[] = [
     stackColors?.[0] ?? (theme.colors.accent?.primary as string) ?? DEFAULT_STACK_COLORS[0],
@@ -117,9 +125,6 @@ export function StackedBarLineChart({
   ];
 
   const activeDatum = hoveredIndex != null ? data[hoveredIndex] : null;
-  const barTopRatio = activeDatum ? (stackedMax - sumSegments(activeDatum)) / stackedRange : 0;
-  const lineTopRatio = activeDatum ? (lineMax - activeDatum.lineValue) / lineRange : 0;
-
   const chartHeight = height + 128;
   const chartPaddingTop = 6;
   const chartPaddingBottom = 4;
@@ -210,7 +215,7 @@ export function StackedBarLineChart({
               bottom: 0,
               overflow: 'hidden',
             },
-            onMouseMove: (e: MouseEvent<HTMLElement>) => {
+            onClick: (e: MouseEvent<HTMLElement>) => {
               if (!interactive) {
                 return;
               }
@@ -219,6 +224,7 @@ export function StackedBarLineChart({
               const x = e.clientX - rect.left;
               const t = Math.max(0, Math.min(1, x / chartWidth));
               const index = Math.round(t * (data.length - 1));
+              notifyChartActive(chartId);
               setHoveredIndex(Math.min(index, data.length - 1));
             },
             onMouseLeave: () => setHoveredIndex(null),
@@ -340,15 +346,13 @@ export function StackedBarLineChart({
           ) : null}
 
           {interactive && activeDatum ? (
-            <>
+            <View
+              pointerEvents="none"
+              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+            >
               <View
-                pointerEvents="none"
                 style={{
-                  position: 'absolute',
-                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
-                  top: barTopRatio * chartHeight - 38,
-                  transform: 'translateX(-50%)',
-                  width: 72,
+                  minWidth: 72,
                   height: 32,
                   backgroundColor: theme.colors.text.white,
                   borderRadius: theme.borderRadius.xs,
@@ -356,7 +360,6 @@ export function StackedBarLineChart({
                   justifyContent: 'center',
                   alignItems: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-                  zIndex: 10,
                 }}
               >
                 <Text
@@ -370,13 +373,8 @@ export function StackedBarLineChart({
                 </Text>
               </View>
               <View
-                pointerEvents="none"
                 style={{
-                  position: 'absolute',
-                  left: `${((hoveredIndex ?? 0) / Math.max(1, data.length - 1)) * 100}%`,
-                  top: lineTopRatio * chartHeight - 38,
-                  transform: 'translateX(-50%)',
-                  width: 72,
+                  minWidth: 72,
                   height: 32,
                   backgroundColor: lineColorResolved,
                   borderRadius: theme.borderRadius.xs,
@@ -384,7 +382,6 @@ export function StackedBarLineChart({
                   justifyContent: 'center',
                   alignItems: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                  zIndex: 10,
                 }}
               >
                 <Text
@@ -397,7 +394,7 @@ export function StackedBarLineChart({
                   {lineFormatter(activeDatum.lineValue)}
                 </Text>
               </View>
-            </>
+            </View>
           ) : null}
         </View>
       </View>
