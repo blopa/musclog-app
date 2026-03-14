@@ -6,6 +6,8 @@ import usdaFoundationFoodsData from '../../data/usda_foundation_foods.json';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
 import { getEncryptionKey } from '../../utils/encryption';
 import { database } from '../database-instance';
+import Food from '../models/Food';
+import FoodFoodPortion from '../models/FoodFoodPortion';
 import {
   ChatService,
   ExerciseService,
@@ -91,6 +93,8 @@ async function seedUSDAFoundationFoods(): Promise<void> {
       const batch = rows.slice(i, i + batchSize);
 
       await database.write(async () => {
+        const now = Date.now();
+
         for (const row of batch) {
           const externalId = String(row.external_id || '');
 
@@ -135,29 +139,45 @@ async function seedUSDAFoundationFoods(): Promise<void> {
               micros.vitaminD = vitaminD;
             }
 
-            // Create product object for createFromUSDAProduct
-            const product = {
-              description: row.description || row.name || '',
-              fdcId: parseInt(externalId, 10) || 0,
-              gtinUpc: row.barcode || undefined,
-            };
+            // Create food directly in the write transaction (avoid nested writes)
+            const food = await database.get<Food>('foods').create((food) => {
+              food.isAiGenerated = false;
+              food.name = row.description || row.name || '';
+              food.brand = undefined;
+              food.barcode = row.barcode || undefined;
+              food.externalId = externalId;
 
-            // Create food using FoodService
-            await FoodService.createFromUSDAProduct(
-              product,
-              {
-                calories: kcal,
-                protein,
-                carbs,
-                fat,
-                fiber,
+              food.calories = kcal;
+              food.protein = protein;
+              food.carbs = carbs;
+              food.fat = fat;
+              food.fiber = fiber;
+
+              // Store micros
+              const microsData = {
                 sugar: sugar && sugar > 0 ? sugar : undefined,
                 sodium: sodium && sodium > 0 ? sodium : undefined,
-                micros: Object.keys(micros).length > 0 ? micros : undefined,
-              },
-              portion100g,
-              externalId
-            );
+                ...micros,
+              };
+
+              food.micros = Object.fromEntries(
+                Object.entries(microsData).filter(([_, value]) => value !== undefined)
+              );
+
+              food.isFavorite = false;
+              food.source = 'usda';
+              food.createdAt = now;
+              food.updatedAt = now;
+            });
+
+            // Link food to the 100g portion
+            await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+              ffp.foodId = food.id;
+              ffp.foodPortionId = portion100g.id;
+              ffp.isDefault = true;
+              ffp.createdAt = now;
+              ffp.updatedAt = now;
+            });
 
             createdCount++;
             existingFoodsByExternalId.add(externalId); // Track created food
