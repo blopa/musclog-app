@@ -1798,8 +1798,12 @@ async function seedMeals(): Promise<{ created: number }> {
   }
 }
 
+// TODO: also seed a user, a nutrition goal, various chat messages, a whole convo history for each of the convo context: general, nutrition and exercise
+// also seed a menstrual cycle and a menstrual cycle logs
+// TODO: make sure that the nutrition logs seedes here are from the last 7 days
+// TODO: anything else?
 export async function seedDevData(): Promise<boolean> {
-  return true;
+  // return true;
   const exercisesSeeded = await seedExercisesIfEmpty();
   const foodsSeeded = await seedFoods();
   const mealsSeeded = await seedMeals();
