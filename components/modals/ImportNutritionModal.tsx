@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
+import AiService from '../../services/AiService';
 import { parsePastNutrition } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { FullScreenModal } from './FullScreenModal';

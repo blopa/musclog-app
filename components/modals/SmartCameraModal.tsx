@@ -19,8 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
 import { NutritionService } from '../../database/services';
-import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
+import AiService from '../../services/AiService';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
   estimateNutritionFromPhoto,

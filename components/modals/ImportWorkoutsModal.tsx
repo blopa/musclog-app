@@ -13,8 +13,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ExerciseService } from '../../database/services';
-import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
+import AiService from '../../services/AiService';
 import { parsePastWorkouts } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { processParsedWorkouts } from '../../utils/workoutAI';

@@ -15,8 +15,8 @@ import {
 } from '../../database/services';
 import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
 import AiService from '../../services/AiService';
+import { theme } from '../../theme';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
