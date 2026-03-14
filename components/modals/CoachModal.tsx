@@ -400,6 +400,7 @@ function ComposerWithRestoredText({
   failedMessageText,
   clearFailedMessageText,
   onAttachFile,
+  isImageAttachmentEnabled,
 }: {
   props: ComposerProps;
   t: TFunction;
@@ -407,6 +408,7 @@ function ComposerWithRestoredText({
   failedMessageText: string | null;
   clearFailedMessageText: () => void;
   onAttachFile: () => void;
+  isImageAttachmentEnabled: boolean;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -430,7 +432,7 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
-      {ENABLE_FILE_ATTACHMENT ? (
+      {ENABLE_FILE_ATTACHMENT && isImageAttachmentEnabled ? (
         <Pressable
           onPress={onAttachFile}
           className="mr-2 items-center justify-center p-2 active:scale-90"
@@ -461,7 +463,8 @@ const renderComposer = (
   theme: Theme,
   failedMessageText: string | null,
   clearFailedMessageText: () => void,
-  onAttachFile: () => void
+  onAttachFile: () => void,
+  isImageAttachmentEnabled: boolean
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -470,6 +473,7 @@ const renderComposer = (
     failedMessageText={failedMessageText}
     clearFailedMessageText={clearFailedMessageText}
     onAttachFile={onAttachFile}
+    isImageAttachmentEnabled={isImageAttachmentEnabled}
   />
 );
 
@@ -625,6 +629,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     syncIntention();
   }, [visible, pendingIntention, messages, clearPendingCoachMessage]);
 
+  // Ensure attached image is cleared if intention is no longer Track Meal
+  useEffect(() => {
+    if (pendingIntention !== TRACK_MEAL && attachedImage) {
+      setAttachedImage(null);
+    }
+  }, [pendingIntention, attachedImage]);
+
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -733,6 +744,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const handleClearIntention = useCallback(async () => {
     await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
     setPendingIntention(null);
+    setAttachedImage(null);
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
 
@@ -1076,14 +1088,27 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderComposer = useCallback(
     (props: Parameters<typeof renderComposer>[0]) =>
-      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText, handleAttachFile),
-    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile]
+      renderComposer(
+        props,
+        t,
+        theme,
+        failedMessageText,
+        clearFailedMessageText,
+        handleAttachFile,
+        pendingIntention === TRACK_MEAL
+      ),
+    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile, pendingIntention]
   );
 
   const gcRenderSend = useCallback(
     (props: Parameters<typeof renderSend>[0]) =>
-      renderSend(props, theme, failedMessageText, !!attachedImage),
-    [theme, failedMessageText, attachedImage]
+      renderSend(
+        props,
+        theme,
+        failedMessageText,
+        !!attachedImage && pendingIntention === TRACK_MEAL
+      ),
+    [theme, failedMessageText, attachedImage, pendingIntention]
   );
 
   const gcRenderDay = useCallback(
