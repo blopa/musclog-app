@@ -78,7 +78,7 @@ export function BarLineChart({
 }: BarLineChartProps) {
   const theme = useTheme();
   const chartId = useId();
-  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
@@ -297,7 +297,13 @@ export function BarLineChart({
           {interactive && activeLabel ? (
             <View
               pointerEvents="none"
-              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
+              style={{
+                position: 'absolute',
+                top: 6,
+                ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
+                gap: 4,
+                zIndex: 10,
+              }}
             >
               <View style={[tooltipPillStyle, { backgroundColor: theme.colors.background.card }]}>
                 <Text

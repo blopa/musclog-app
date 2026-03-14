@@ -1,5 +1,7 @@
 import {
   Activity,
+  AlignHorizontalJustifyEnd,
+  AlignHorizontalJustifyStart,
   Apple,
   Bug,
   CalendarCheck,
@@ -69,6 +71,8 @@ export function AdvancedSettingsModal({
   const {
     anonymousBugReport: debouncedAnonymousBugReport,
     handleAnonymousBugReportChange,
+    chartTooltipPosition: debouncedChartTooltipPosition,
+    handleChartTooltipPositionChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -164,6 +168,33 @@ export function AdvancedSettingsModal({
     },
   ];
 
+  const chartTooltipPositionItems = [
+    {
+      key: 'chart-tooltip-left',
+      label: t('settings.advancedSettings.chartTooltipLeft'),
+      subtitle: t('settings.advancedSettings.chartTooltipLeftSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.accent.primary20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <AlignHorizontalJustifyStart
+            size={theme.iconSize.xl}
+            color={theme.colors.accent.primary}
+          />
+        </View>
+      ),
+      value: debouncedChartTooltipPosition === 'left',
+      onValueChange: (v: boolean) => handleChartTooltipPositionChange(v ? 'left' : 'right'),
+    },
+  ];
+
   return (
     <>
       <FullScreenModal
@@ -221,6 +252,17 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.privacyDiagnostics')}
             </Text>
             <ToggleInput items={bugReportItems} />
+          </View>
+
+          {/* Charts Section */}
+          <View>
+            <Text
+              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.text.secondary }}
+            >
+              {t('settings.advancedSettings.charts')}
+            </Text>
+            <ToggleInput items={chartTooltipPositionItems} />
           </View>
 
           {/* Data Management Section */}

@@ -153,6 +153,12 @@ export const NAV_SLOT_3_SETTING_TYPE = 'nav_slot_3';
  */
 export const FOOD_SEARCH_SOURCE_SETTING_TYPE = 'food_search_source';
 
+/**
+ * Setting type for chart tooltip position preference.
+ * value: 'left' | 'right'.
+ */
+export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -165,6 +171,7 @@ export type NavItemKey =
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda';
+export type ChartTooltipPosition = 'left' | 'right';
 
 export type UseSettingsResult = {
   units: Units;
@@ -178,4 +185,5 @@ export type UseSettingsResult = {
   notificationsRestTimer: boolean;
   notificationsWorkoutDuration: boolean;
   foodSearchSource: FoodSearchSource;
+  chartTooltipPosition: ChartTooltipPosition;
 };

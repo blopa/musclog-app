@@ -64,6 +64,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'units',
       'foodSearchSource',
       'conversationContext',
+      'chartTooltipPosition',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -211,6 +212,10 @@ export function useDebouncedSettings(debounceMs = 200) {
   const handleConversationContextChange = createSettingHandler<
     'general' | 'exercise' | 'nutrition'
   >('conversationContext', SettingsService.setCoachConversationContext);
+  const handleChartTooltipPositionChange = createSettingHandler<'left' | 'right'>(
+    'chartTooltipPosition',
+    SettingsService.setChartTooltipPosition
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -286,6 +291,9 @@ export function useDebouncedSettings(debounceMs = 200) {
               value as 'general' | 'exercise' | 'nutrition'
             );
             break;
+          case 'chartTooltipPosition':
+            await SettingsService.setChartTooltipPosition(value as 'left' | 'right');
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -341,6 +349,9 @@ export function useDebouncedSettings(debounceMs = 200) {
     conversationContext:
       (localSettings.conversationContext as 'general' | 'exercise' | 'nutrition') ??
       actualSettings.conversationContext,
+    chartTooltipPosition:
+      (localSettings.chartTooltipPosition as 'left' | 'right') ??
+      actualSettings.chartTooltipPosition,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -369,6 +380,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUseOcrBeforeAiChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
+    handleChartTooltipPositionChange,
 
     // Utilities
     flushAllPendingChanges,

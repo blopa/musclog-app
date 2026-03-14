@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
@@ -386,6 +387,13 @@ export class SettingsService {
    */
   static async setFoodSearchSource(source: FoodSearchSource) {
     await SettingsService.setStringSetting(FOOD_SEARCH_SOURCE_SETTING_TYPE, source);
+  }
+
+  /**
+   * Upsert the chart tooltip position setting ('left' | 'right')
+   */
+  static async setChartTooltipPosition(position: 'left' | 'right') {
+    await SettingsService.setStringSetting(CHART_TOOLTIP_POSITION_SETTING_TYPE, position);
   }
 
   /**

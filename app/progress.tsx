@@ -32,7 +32,7 @@ export default function ProgressScreen() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { units } = useSettings();
+  const { units, chartTooltipPosition } = useSettings();
   const { isEnabled: aiEnabled } = useAiEnabled();
   const {
     data,
@@ -160,7 +160,7 @@ export default function ProgressScreen() {
           headerShadowVisible: false,
         }}
       />
-      <ChartTooltipProvider>
+      <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
         <ProgressScreenContent
           allAggregationData={allAggregationData}
           chartPhase={chartPhase}

@@ -7,11 +7,18 @@ interface ChartTooltipContextValue {
   unregisterChart: (id: string) => void;
   notifyChartActive: (id: string) => void;
   dismissAll: () => void;
+  tooltipPosition: 'left' | 'right';
 }
 
 const ChartTooltipContext = createContext<ChartTooltipContextValue | null>(null);
 
-export function ChartTooltipProvider({ children }: { children: React.ReactNode }) {
+export function ChartTooltipProvider({
+  children,
+  tooltipPosition = 'right',
+}: {
+  children: React.ReactNode;
+  tooltipPosition?: 'left' | 'right';
+}) {
   const registry = useRef<Map<string, DismissFn>>(new Map());
 
   const registerChart = useCallback((id: string, dismiss: DismissFn) => {
@@ -36,7 +43,7 @@ export function ChartTooltipProvider({ children }: { children: React.ReactNode }
 
   return (
     <ChartTooltipContext.Provider
-      value={{ registerChart, unregisterChart, notifyChartActive, dismissAll }}
+      value={{ registerChart, unregisterChart, notifyChartActive, dismissAll, tooltipPosition }}
     >
       {children}
     </ChartTooltipContext.Provider>
@@ -51,6 +58,7 @@ export function useChartTooltip() {
       unregisterChart: (_id: string) => {},
       notifyChartActive: (_id: string) => {},
       dismissAll: () => {},
+      tooltipPosition: 'right' as const,
     };
   }
 

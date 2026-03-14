@@ -63,7 +63,7 @@ export function BarLineChart({
 }: BarLineChartProps) {
   const theme = useTheme();
   const chartId = useId();
-  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -325,7 +325,13 @@ export function BarLineChart({
           {interactive && activeDatum ? (
             <View
               pointerEvents="none"
-              style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 100 }}
+              style={{
+                position: 'absolute',
+                top: 6,
+                ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
+                gap: 4,
+                zIndex: 100,
+              }}
             >
               <View
                 style={{

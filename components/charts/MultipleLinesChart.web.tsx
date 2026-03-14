@@ -80,7 +80,7 @@ export function MultipleLinesChart({
 }: MultipleLinesChartProps) {
   const theme = useTheme();
   const chartId = useId();
-  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [chartWidth, setChartWidth] = useState(0);
 
@@ -258,7 +258,7 @@ export function MultipleLinesChart({
               style={{
                 position: 'absolute',
                 top: 6,
-                right: 6,
+                ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
                 minWidth: TOOLTIP_WIDTH,
                 minHeight: TOOLTIP_HEIGHT,
                 backgroundColor: theme.colors.background.card,

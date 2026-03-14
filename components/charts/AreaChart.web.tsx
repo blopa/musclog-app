@@ -85,7 +85,7 @@ export function AreaChart({
 }: AreaChartProps) {
   const theme = useTheme();
   const chartId = useId();
-  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
 
   useEffect(() => {
@@ -305,7 +305,7 @@ export function AreaChart({
             style={{
               position: 'absolute',
               top: 6,
-              right: 6,
+              ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
               minWidth: TOOLTIP_WIDTH,
               minHeight: TOOLTIP_HEIGHT,
               backgroundColor: theme.colors.background.card,

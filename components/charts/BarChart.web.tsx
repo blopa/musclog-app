@@ -82,7 +82,7 @@ export function BarChart({
 }: BarChartProps) {
   const theme = useTheme();
   const chartId = useId();
-  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const barColorResolved = barColor ?? theme.colors.accent.primary;
 
@@ -220,7 +220,7 @@ export function BarChart({
             style={{
               position: 'absolute',
               top: 6,
-              right: 6,
+              ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
               minWidth: 90,
               minHeight: 36,
               backgroundColor: theme.colors.background.card,

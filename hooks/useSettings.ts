@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
 
 import type {
+  ChartTooltipPosition,
   FoodSearchSource,
   NavItemKey,
   ThemeOption,
@@ -10,6 +11,7 @@ import type {
 } from '../constants/settings';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
@@ -100,6 +102,7 @@ type SettingsState = {
   navSlot3: NavItemKey;
   foodSearchSource: FoodSearchSource;
   conversationContext: 'general' | 'exercise' | 'nutrition';
+  chartTooltipPosition: ChartTooltipPosition;
   isLoading: boolean;
 };
 
@@ -131,6 +134,7 @@ const DEFAULT_STATE: SettingsState = {
   navSlot3: 'profile',
   foodSearchSource: 'both',
   conversationContext: 'general',
+  chartTooltipPosition: 'right',
   isLoading: true,
 };
 
@@ -146,6 +150,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
   const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
+  const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
 
   return {
     units,
@@ -176,6 +181,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     foodSearchSource: (rawFoodSearchSource as FoodSearchSource) || 'both',
     conversationContext:
       (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
+    chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     isLoading: false,
   };
 }
@@ -207,6 +213,7 @@ export function useSettings(): UseSettingsResult & {
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
   conversationContext: 'general' | 'exercise' | 'nutrition';
+  chartTooltipPosition: ChartTooltipPosition;
 } {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
 
