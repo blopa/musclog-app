@@ -314,21 +314,32 @@ async function sendViaOpenAI(
 
   const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
 
-  const completion = await client.chat.completions.create({
-    model: config.model,
-    messages,
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'coach_response',
-        strict: true,
-        schema,
+  try {
+    const completion = await client.chat.completions.create({
+      model: config.model,
+      messages,
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'coach_response',
+          strict: true,
+          schema,
+        },
       },
-    },
-  });
+    });
 
-  const raw = completion.choices[0]?.message?.content ?? '{}';
-  return parseCoachResponse(raw);
+    const raw = completion.choices[0]?.message?.content ?? '{}';
+    return parseCoachResponse(raw);
+  } catch (error: any) {
+    console.error('[coachAI] sendViaOpenAI error:', error);
+    // Return a friendly error message if the API call fails (e.g. invalid key, quota exceeded)
+    const errorMsg = error?.message || 'Error communicating with OpenAI';
+    return {
+      msg4User: `Error: ${errorMsg}`,
+      sumMsg: 'OpenAI error',
+    };
+  }
+
 }
 
 // --- Helpers for insight/parsing/vision ---
@@ -359,7 +370,6 @@ async function generateText(
   }
 
   const client = new OpenAI({ apiKey: config.apiKey });
-  const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -465,6 +475,7 @@ async function generateStructured<T>(
     }
   }
   const client = new OpenAI({ apiKey: config.apiKey });
+  const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
