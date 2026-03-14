@@ -10,7 +10,7 @@ export function SmartCameraWidget() {
         width: 'match_parent',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.colors.background.primary as ColorProp,
+        // backgroundColor: theme.colors.background.primary as ColorProp,
         borderRadius: theme.borderRadius.xl,
       }}
       clickAction="OPEN_URI"
