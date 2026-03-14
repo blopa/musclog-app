@@ -227,6 +227,11 @@ export async function copyBundledExerciseImageToDocument(
   }
 }
 
+export function shouldSeedDevData() {
+  // return __DEV__;
+  return false;
+}
+
 export async function reloadApp() {
   if (__DEV__) {
     // In development mode, use DevSettings.reload() to reload the app (does not work in prod)

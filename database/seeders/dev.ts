@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import ChatMessage from '../models/ChatMessage';
@@ -1602,77 +1603,221 @@ async function seedFoods(): Promise<{ created: number }> {
 
         created++;
       }
+    });
 
-      // Seed a few nutrition logs referencing the foods we just created
-      const seededFoods = await database.get<Food>('foods').query().fetch();
-      const foodByName = new Map<string, Food>(
-        seededFoods.map((f) => [(f.name ?? '').toLowerCase(), f])
-      );
+    console.log(`Seeded foods database: ${created} foods created`);
+    return { created };
+  } catch (error) {
+    console.error('Error seeding foods database:', error);
+    throw error;
+  }
+}
 
-      const daysAgo = (days: number): number => {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        date.setUTCHours(0, 0, 0, 0); // midnight for the day
-        return date.getTime();
-      };
+/**
+ * Seeds nutrition logs (last 14 days) and a default nutrition goal.
+ * Runs independently of food seeding so it works even when foods were already
+ * seeded by the production seeder (USDA foods).
+ */
+async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
+  const now = Date.now();
+  let created = 0;
 
-      const nutritionLogs = [];
-      for (let i = 0; i < 14; i++) {
-        nutritionLogs.push({ name: 'Banana', daysAgo: i, type: 'breakfast', amount: 120 });
-        nutritionLogs.push({ name: 'Greek Yogurt', daysAgo: i, type: 'snack', amount: 150 });
-        nutritionLogs.push({ name: 'Chicken Breast', daysAgo: i, type: 'lunch', amount: 200 });
-        nutritionLogs.push({ name: 'Brown Rice', daysAgo: i, type: 'lunch', amount: 150 });
-        nutritionLogs.push({ name: 'Salmon', daysAgo: i, type: 'dinner', amount: 180 });
-        nutritionLogs.push({ name: 'Sweet Potato', daysAgo: i, type: 'dinner', amount: 200 });
-      }
+  try {
+    const existingLogs = await database.get<any>('nutrition_logs').query().fetch();
+    if (existingLogs.length > 0) {
+      console.log(`Skipping nutrition log seeding: ${existingLogs.length} logs already exist`);
+      return { created: 0 };
+    }
 
-      for (const nl of nutritionLogs) {
-        const f = foodByName.get(nl.name.toLowerCase());
-        if (!f) {
-          continue;
+    // These foods must exist with exact names so logs can reference them.
+    // We create them here if missing — USDA food names differ (e.g. "Bananas, raw").
+    const devFoodDefs = [
+      { name: 'Banana', calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3, fiber: 2.6 },
+      { name: 'Greek Yogurt', calories: 100, protein: 17, carbs: 6, fat: 0.7, fiber: 0 },
+      { name: 'Chicken Breast', calories: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0 },
+      { name: 'Brown Rice', calories: 111, protein: 2.6, carbs: 23, fat: 0.9, fiber: 1.8 },
+      { name: 'Salmon', calories: 208, protein: 20, carbs: 0, fat: 13, fiber: 0 },
+      { name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
+    ];
+
+    // Get or create the 100g portion needed to link foods
+    const existing100g = await database
+      .get<FoodPortion>('food_portions')
+      .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+      .fetch();
+
+    const devFoods = new Map<string, Food>();
+
+    await database.write(async () => {
+      const portion100g =
+        existing100g.length > 0
+          ? existing100g[0]
+          : await database.get<FoodPortion>('food_portions').create((p) => {
+              p.name = '100g';
+              p.gramWeight = 100;
+              p.createdAt = now;
+              p.updatedAt = now;
+            });
+
+      for (const def of devFoodDefs) {
+        // Check by exact name (case-insensitive)
+        const existing = await database
+          .get<Food>('foods')
+          .query(Q.where('name', def.name))
+          .fetch();
+
+        let food: Food;
+        if (existing.length > 0) {
+          food = existing[0];
+        } else {
+          food = await database.get<Food>('foods').create((f) => {
+            f.isAiGenerated = false;
+            f.name = def.name;
+            f.calories = def.calories;
+            f.protein = def.protein;
+            f.carbs = def.carbs;
+            f.fat = def.fat;
+            f.fiber = def.fiber;
+            f.micros = {};
+            f.isFavorite = false;
+            f.source = 'user';
+            f.createdAt = now;
+            f.updatedAt = now;
+          });
+
+          await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+            ffp.foodId = food.id;
+            ffp.foodPortionId = portion100g.id;
+            ffp.isDefault = true;
+            ffp.createdAt = now;
+            ffp.updatedAt = now;
+          });
         }
 
-        const encrypted = await encryptNutritionLogSnapshot({
-          loggedFoodName: f.name ?? 'No named food', // this is sev so whatever
-          loggedCalories: f.calories ?? 0,
-          loggedProtein: f.protein ?? 0,
-          loggedCarbs: f.carbs ?? 0,
-          loggedFat: f.fat ?? 0,
-          loggedFiber: f.fiber ?? 0,
-          loggedMicros: f.micros,
-        });
+        devFoods.set(def.name, food);
+      }
+    });
 
-        await database.get<any>('nutrition_logs').create((log: any) => {
-          log.foodId = f.id;
-          log.date = daysAgo(nl.daysAgo);
-          log.type = nl.type;
-          log.amount = nl.amount;
-          log.portionId = undefined;
-          log.loggedFoodNameRaw = encrypted.loggedFoodName;
-          log.loggedCaloriesRaw = encrypted.loggedCalories;
-          log.loggedProteinRaw = encrypted.loggedProtein;
-          log.loggedCarbsRaw = encrypted.loggedCarbs;
-          log.loggedFatRaw = encrypted.loggedFat;
-          log.loggedFiberRaw = encrypted.loggedFiber;
-          log.loggedMicrosRaw = encrypted.loggedMicrosJson;
-          log.createdAt = now;
-          log.updatedAt = now;
-        });
-        created++;
+    const daysAgo = (days: number): number => {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      date.setHours(0, 0, 0, 0); // local midnight — matches NutritionService query logic
+      return date.getTime();
+    };
+
+    // Each day rotates through different meal combinations
+    const dailyPlans: { name: string; type: string; amount: number }[][] = [
+      // Day 0 — standard day
+      [
+        { name: 'Banana', type: 'breakfast', amount: 120 },
+        { name: 'Greek Yogurt', type: 'breakfast', amount: 150 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 200 },
+        { name: 'Brown Rice', type: 'lunch', amount: 150 },
+        { name: 'Salmon', type: 'dinner', amount: 180 },
+        { name: 'Sweet Potato', type: 'dinner', amount: 200 },
+      ],
+      // Day 1 — lighter lunch, bigger dinner
+      [
+        { name: 'Greek Yogurt', type: 'breakfast', amount: 200 },
+        { name: 'Banana', type: 'snack', amount: 100 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 150 },
+        { name: 'Salmon', type: 'dinner', amount: 220 },
+        { name: 'Sweet Potato', type: 'dinner', amount: 250 },
+      ],
+      // Day 2 — rice-heavy day
+      [
+        { name: 'Banana', type: 'breakfast', amount: 130 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 220 },
+        { name: 'Brown Rice', type: 'lunch', amount: 200 },
+        { name: 'Greek Yogurt', type: 'snack', amount: 150 },
+        { name: 'Sweet Potato', type: 'dinner', amount: 180 },
+      ],
+      // Day 3 — salmon day, no snack
+      [
+        { name: 'Greek Yogurt', type: 'breakfast', amount: 180 },
+        { name: 'Brown Rice', type: 'lunch', amount: 180 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 180 },
+        { name: 'Salmon', type: 'dinner', amount: 200 },
+        { name: 'Sweet Potato', type: 'dinner', amount: 220 },
+      ],
+      // Day 4 — two snacks, lighter meals
+      [
+        { name: 'Banana', type: 'breakfast', amount: 110 },
+        { name: 'Greek Yogurt', type: 'snack', amount: 120 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 160 },
+        { name: 'Brown Rice', type: 'lunch', amount: 130 },
+        { name: 'Banana', type: 'snack', amount: 90 },
+        { name: 'Salmon', type: 'dinner', amount: 160 },
+      ],
+      // Day 5 — big lunch
+      [
+        { name: 'Greek Yogurt', type: 'breakfast', amount: 150 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 250 },
+        { name: 'Brown Rice', type: 'lunch', amount: 200 },
+        { name: 'Sweet Potato', type: 'lunch', amount: 150 },
+        { name: 'Salmon', type: 'dinner', amount: 150 },
+      ],
+      // Day 6 — rest day, lower carbs
+      [
+        { name: 'Greek Yogurt', type: 'breakfast', amount: 200 },
+        { name: 'Chicken Breast', type: 'lunch', amount: 200 },
+        { name: 'Salmon', type: 'dinner', amount: 200 },
+        { name: 'Sweet Potato', type: 'dinner', amount: 150 },
+      ],
+    ];
+
+    await database.write(async () => {
+      for (let i = 0; i < 14; i++) {
+        const date = daysAgo(i);
+        const plan = dailyPlans[i % dailyPlans.length];
+        for (const entry of plan) {
+          const f = devFoods.get(entry.name);
+          if (!f) {
+            continue;
+          }
+
+          const encrypted = await encryptNutritionLogSnapshot({
+            loggedFoodName: f.name ?? 'Unknown',
+            loggedCalories: f.calories ?? 0,
+            loggedProtein: f.protein ?? 0,
+            loggedCarbs: f.carbs ?? 0,
+            loggedFat: f.fat ?? 0,
+            loggedFiber: f.fiber ?? 0,
+            loggedMicros: f.micros,
+          });
+
+          await database.get<any>('nutrition_logs').create((log: any) => {
+            log.foodId = f.id;
+            log.date = date;
+            log.type = entry.type;
+            log.amount = entry.amount;
+            log.portionId = undefined;
+            log.loggedFoodNameRaw = encrypted.loggedFoodName;
+            log.loggedCaloriesRaw = encrypted.loggedCalories;
+            log.loggedProteinRaw = encrypted.loggedProtein;
+            log.loggedCarbsRaw = encrypted.loggedCarbs;
+            log.loggedFatRaw = encrypted.loggedFat;
+            log.loggedFiberRaw = encrypted.loggedFiber;
+            log.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            log.createdAt = now;
+            log.updatedAt = now;
+          });
+          created++;
+        }
       }
 
       // Seed a default nutrition goal if none exist
-      const existingNutritionGoals = await database.get<any>('nutrition_goals').query().fetch();
-      if (existingNutritionGoals.length === 0) {
+      const existingGoals = await database.get<any>('nutrition_goals').query().fetch();
+      if (existingGoals.length === 0) {
         await database.get<any>('nutrition_goals').create((goal: any) => {
           goal.totalCalories = 2500;
-          goal.protein = 180; // grams
-          goal.carbs = 300; // grams
-          goal.fats = 80; // grams
-          goal.fiber = 30; // grams
+          goal.protein = 180;
+          goal.carbs = 300;
+          goal.fats = 80;
+          goal.fiber = 30;
           goal.eatingPhase = 'maintain';
-          goal.targetWeight = 78.5; // kg
-          goal.targetBodyFat = 15.0; // %
+          goal.targetWeight = 78.5;
+          goal.targetBodyFat = 15.0;
           goal.targetBmi = 24.2;
           goal.targetFfmi = 19.5;
           goal.targetDate = undefined;
@@ -1684,10 +1829,10 @@ async function seedFoods(): Promise<{ created: number }> {
       }
     });
 
-    console.log(`Seeded foods database: ${created} foods created`);
+    console.log(`Seeded nutrition logs and goal: ${created} records created`);
     return { created };
   } catch (error) {
-    console.error('Error seeding foods database:', error);
+    console.error('Error seeding nutrition logs and goal:', error);
     throw error;
   }
 }
@@ -1831,15 +1976,25 @@ async function seedUser(): Promise<boolean> {
 async function seedChatHistory(): Promise<{ created: number }> {
   let created = 0;
   try {
-    const existingMessages = await database.get<ChatMessage>('chat_messages').query().fetch();
-    if (existingMessages.length > 0) {
-      console.log(`Skipping chat history seeding: ${existingMessages.length} messages already exist`);
+    // Only skip if dev conversation messages (exercise/nutrition context) already exist.
+    // The prod seeder creates a single 'general' welcome message which should not block seeding.
+    const existingDevMessages = await database
+      .get<ChatMessage>('chat_messages')
+      .query(Q.where('context', Q.notEq('general')))
+      .fetch();
+    if (existingDevMessages.length > 0) {
+      console.log(`Skipping chat history seeding: ${existingDevMessages.length} non-general messages already exist`);
       return { created: 0 };
     }
 
     const now = Date.now();
     // Space messages a few minutes apart to simulate real conversations
     const msAgo = (minutes: number): number => now - minutes * 60 * 1000;
+
+    // Single sessionId shared across all contexts — matches how the app works
+    const sessionId = ChatService.generateSessionId();
+    // Persist so the app's useChatMessages hook resolves to the same session
+    await setCurrentChatSessionId(sessionId);
 
     interface MessageDef {
       sender: 'user' | 'coach';
@@ -1851,7 +2006,6 @@ async function seedChatHistory(): Promise<{ created: number }> {
       context: 'general' | 'nutrition' | 'exercise',
       messages: MessageDef[]
     ): Promise<void> => {
-      const sessionId = ChatService.generateSessionId();
       await database.write(async () => {
         for (const msg of messages) {
           const ts = msAgo(msg.minutesAgo);
@@ -2034,6 +2188,7 @@ export async function seedDevData(): Promise<boolean> {
   const userSeeded = await seedUser();
   const exercisesSeeded = await seedExercisesIfEmpty();
   const foodsSeeded = await seedFoods();
+  const nutritionSeeded = await seedNutritionLogsAndGoal();
   const mealsSeeded = await seedMeals();
 
   const workoutData = await seedWorkoutTemplatesAndHistory();
@@ -2042,7 +2197,7 @@ export async function seedDevData(): Promise<boolean> {
   const chatSeeded = await seedChatHistory();
 
   console.log(
-    `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`
+    `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Nutrition logs: ${nutritionSeeded.created}, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`
   );
 
   return (
@@ -2052,6 +2207,7 @@ export async function seedDevData(): Promise<boolean> {
     workoutData.workoutsCreated > 0 ||
     userMetricsSeeded.created > 0 ||
     foodsSeeded.created > 0 ||
+    nutritionSeeded.created > 0 ||
     mealsSeeded.created > 0 ||
     chatSeeded.created > 0
   );

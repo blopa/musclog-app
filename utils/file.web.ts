@@ -210,6 +210,11 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
   }
 }
 
+export function shouldSeedDevData() {
+  // TODO: check if the page has a query param demoModeEnabled=true
+  return false;
+}
+
 export async function reloadApp() {
   router.replace('/');
   window.location.reload();

@@ -15,7 +15,7 @@ import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
 import { theme } from '../../theme';
-import { importDatabase } from '../../utils/file';
+import { importDatabase, shouldSeedDevData } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -56,8 +56,9 @@ export default function LandingScreen() {
           },
         });
 
-        if (__DEV__) {
+        if (shouldSeedDevData()) {
           await seedDevData();
+          router.push('/');
         }
       } catch (error) {
         console.error('Error initializing app:', error);
@@ -67,7 +68,7 @@ export default function LandingScreen() {
     };
 
     initializeApp();
-  }, []);
+  }, [router]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
