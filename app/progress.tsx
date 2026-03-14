@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Sparkles, Utensils } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, InteractionManager, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
@@ -218,120 +218,115 @@ function ProgressScreenContent({
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
       ) : (
-        <Pressable onPress={dismissAll} style={{ flex: 1 }}>
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
-            onScrollBeginDrag={dismissAll}
-          >
-            <View className="px-4">
-              {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+          onScrollBeginDrag={dismissAll}
+        >
+          <View className="px-4">
+            {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
 
-              {/* Phase 1: primary chart — renders immediately on load */}
-              {chartPhase >= 1 ? (
-                <BodyMetricsCharts
+            {/* Phase 1: primary chart — renders immediately on load */}
+            {chartPhase >= 1 ? (
+              <BodyMetricsCharts
+                weightHistory={data?.weightHistory || []}
+                fatHistory={data?.fatHistory || []}
+                ffmiHistory={data?.ffmiHistory || []}
+                units={units}
+              />
+            ) : null}
+
+            {/* Phase 2: secondary charts — rendered after interactions complete */}
+            {chartPhase >= 2 ? (
+              <>
+                <NutritionCharts
+                  nutritionHistory={data?.nutritionHistory || []}
                   weightHistory={data?.weightHistory || []}
-                  fatHistory={data?.fatHistory || []}
-                  ffmiHistory={data?.ffmiHistory || []}
                   units={units}
                 />
-              ) : null}
 
-              {/* Phase 2: secondary charts — rendered after interactions complete */}
-              {chartPhase >= 2 ? (
-                <>
-                  <NutritionCharts
-                    nutritionHistory={data?.nutritionHistory || []}
-                    weightHistory={data?.weightHistory || []}
+                <WorkoutCharts
+                  workoutVolumeHistory={data?.workoutVolumeHistory || []}
+                  muscleGroupSets={data?.muscleGroupSets || []}
+                />
+              </>
+            ) : null}
+
+            {/* Phase 3: remaining charts — rendered 400ms after interactions */}
+            {chartPhase >= 3 && data ? (
+              <>
+                {hasAnyAggregationData((d: any) => d.correlationHistory) ? (
+                  <VolumeCaloriesChart
+                    allData={{
+                      daily: allAggregationData.daily?.correlationHistory ?? [],
+                      weekly: allAggregationData.weekly?.correlationHistory ?? [],
+                      monthly: allAggregationData.monthly?.correlationHistory ?? [],
+                    }}
                     units={units}
                   />
-
-                  <WorkoutCharts
-                    workoutVolumeHistory={data?.workoutVolumeHistory || []}
-                    muscleGroupSets={data?.muscleGroupSets || []}
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.bodyCompProteinHistory) ? (
+                  <BodyCompProteinChart
+                    allData={{
+                      daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
+                      weekly: allAggregationData.weekly?.bodyCompProteinHistory ?? [],
+                      monthly: allAggregationData.monthly?.bodyCompProteinHistory ?? [],
+                    }}
+                    units={units}
                   />
-                </>
-              ) : null}
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
+                  <MenstrualPerformanceChart
+                    allData={{
+                      daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
+                      weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
+                      monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.recoveryTrainingHistory) ? (
+                  <RecoveryTrainingChart
+                    allData={{
+                      daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
+                      weekly: allAggregationData.weekly?.recoveryTrainingHistory ?? [],
+                      monthly: allAggregationData.monthly?.recoveryTrainingHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.macroMuscleHistory) ? (
+                  <MacroMuscleChart
+                    allData={{
+                      daily: allAggregationData.daily?.macroMuscleHistory ?? [],
+                      weekly: allAggregationData.weekly?.macroMuscleHistory ?? [],
+                      monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
+                    }}
+                    units={units}
+                  />
+                ) : null}
 
-              {/* Phase 3: remaining charts — rendered 400ms after interactions */}
-              {chartPhase >= 3 && data ? (
-                <>
-                  {hasAnyAggregationData((d: any) => d.correlationHistory) ? (
-                    <VolumeCaloriesChart
-                      allData={{
-                        daily: allAggregationData.daily?.correlationHistory ?? [],
-                        weekly: allAggregationData.weekly?.correlationHistory ?? [],
-                        monthly: allAggregationData.monthly?.correlationHistory ?? [],
-                      }}
-                      units={units}
-                    />
-                  ) : null}
-                  {hasAnyAggregationData((d: any) => d.bodyCompProteinHistory) ? (
-                    <BodyCompProteinChart
-                      allData={{
-                        daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
-                        weekly: allAggregationData.weekly?.bodyCompProteinHistory ?? [],
-                        monthly: allAggregationData.monthly?.bodyCompProteinHistory ?? [],
-                      }}
-                      units={units}
-                    />
-                  ) : null}
-                  {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
-                    <MenstrualPerformanceChart
-                      allData={{
-                        daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
-                        weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
-                        monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
-                      }}
-                    />
-                  ) : null}
-                  {hasAnyAggregationData((d: any) => d.recoveryTrainingHistory) ? (
-                    <RecoveryTrainingChart
-                      allData={{
-                        daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
-                        weekly: allAggregationData.weekly?.recoveryTrainingHistory ?? [],
-                        monthly: allAggregationData.monthly?.recoveryTrainingHistory ?? [],
-                      }}
-                    />
-                  ) : null}
-                  {hasAnyAggregationData((d: any) => d.macroMuscleHistory) ? (
-                    <MacroMuscleChart
-                      allData={{
-                        daily: allAggregationData.daily?.macroMuscleHistory ?? [],
-                        weekly: allAggregationData.weekly?.macroMuscleHistory ?? [],
-                        monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
-                      }}
-                      units={units}
-                    />
-                  ) : null}
-
-                  {data.measurementsHistory
-                    ? Object.entries(data.measurementsHistory).map(
-                        ([type, history]: [string, any]) => (
-                          <ProgressChartSection
-                            key={type}
-                            title={t(`progress.measurement.${type}`)}
-                          >
-                            <LineChart
-                              data={history.map((p: any) => ({ x: p.date, y: p.value }))}
-                              height={150}
-                              xDomain={[history[0].date, history[history.length - 1].date]}
-                              yDomain={[
-                                Math.min(...history.map((p: any) => p.value)) * 0.95,
-                                Math.max(...history.map((p: any) => p.value)) * 1.05,
-                              ]}
-                              tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-                            />
-                          </ProgressChartSection>
-                        )
+                {data.measurementsHistory
+                  ? Object.entries(data.measurementsHistory).map(
+                      ([type, history]: [string, any]) => (
+                        <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
+                          <LineChart
+                            data={history.map((p: any) => ({ x: p.date, y: p.value }))}
+                            height={150}
+                            xDomain={[history[0].date, history[history.length - 1].date]}
+                            yDomain={[
+                              Math.min(...history.map((p: any) => p.value)) * 0.95,
+                              Math.max(...history.map((p: any) => p.value)) * 1.05,
+                            ]}
+                            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+                          />
+                        </ProgressChartSection>
                       )
-                    : null}
-                </>
-              ) : null}
-            </View>
-            <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
-          </ScrollView>
-        </Pressable>
+                    )
+                  : null}
+              </>
+            ) : null}
+          </View>
+          <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
+        </ScrollView>
       )}
 
       <BottomPopUpMenu

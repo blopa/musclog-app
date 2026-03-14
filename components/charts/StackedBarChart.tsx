@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -185,9 +185,11 @@ export function StackedBarChart({
         </CartesianChart>
 
         {interactive ? (
-          <Pressable
+          <View
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onPress={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onStartShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => true}
+            onResponderRelease={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
 

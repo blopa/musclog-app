@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
@@ -227,13 +227,11 @@ export function LineChart({
           )}
         </CartesianChart>
         {interactive ? (
-          <Pressable
+          <View
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onPress={(e) => {
-              onInteractionStart?.();
-              handleTouchAt(e.nativeEvent.locationX);
-              onInteractionEnd?.();
-            }}
+            onStartShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => true}
+            onResponderRelease={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
         {interactive && activeLabel ? (

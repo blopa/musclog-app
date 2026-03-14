@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
@@ -268,9 +268,11 @@ export function AreaChart({
         </View>
 
         {interactive ? (
-          <Pressable
+          <View
             style={{ position: 'absolute', top: 0, left: 20, right: 20, bottom: marginBottom + 4 }}
-            onPress={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onStartShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => true}
+            onResponderRelease={(e) => handleTouchAt(e.nativeEvent.locationX)}
           />
         ) : null}
 
