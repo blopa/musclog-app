@@ -69,10 +69,17 @@ async function seedUSDAFoundationFoods(): Promise<void> {
 
     console.log(`Seeding ${rows.length} foods from USDA foundation foods data`);
 
-    // Get the 100g portion (should exist after createCommonPortions)
-    const portion100g = await FoodPortionService.get100gPortion();
+    // Ensure the 100g portion exists (should exist after createCommonPortions, but create if missing)
+    let portion100g = await FoodPortionService.get100gPortion();
     if (!portion100g) {
-      throw new Error('100g portion not found. Ensure common portions are seeded first.');
+      // Create 100g portion if it doesn't exist (fallback)
+      console.log('100g portion not found, creating it...');
+      portion100g = await FoodPortionService.getOrCreatePortion(
+        i18n.t('food.portions.100g'),
+        100,
+        'scale',
+        true
+      );
     }
 
     // Create foods in batches
