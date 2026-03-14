@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowRight, Download, Dumbbell } from 'lucide-react-native';
@@ -11,6 +12,11 @@ import { CenteredModal } from '../../components/modals/CenteredModal';
 import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TextInput } from '../../components/theme/TextInput';
+import {
+  CURRENT_ONBOARDING_VERSION,
+  ONBOARDING_COMPLETED,
+  ONBOARDING_VERSION,
+} from '../../constants/misc';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
@@ -56,8 +62,15 @@ export default function LandingScreen() {
           },
         });
 
+        // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
           await seedDevData();
+          await AsyncStorage.multiSet([
+            [ONBOARDING_COMPLETED, 'true'],
+            // TODO: we might not want to force it to be the current version
+            [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+          ]);
+
           router.push('/');
         }
       } catch (error) {

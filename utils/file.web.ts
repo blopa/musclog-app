@@ -211,7 +211,12 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
 }
 
 export function shouldSeedDevData() {
-  // TODO: check if the page has a query param demoModeEnabled=true
+  // Check if the page has a query param demoModeEnabled=true
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('demoModeEnabled') === 'true';
+  }
+
   return false;
 }
 

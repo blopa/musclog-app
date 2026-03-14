@@ -1661,10 +1661,7 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
 
       for (const def of devFoodDefs) {
         // Check by exact name (case-insensitive)
-        const existing = await database
-          .get<Food>('foods')
-          .query(Q.where('name', def.name))
-          .fetch();
+        const existing = await database.get<Food>('foods').query(Q.where('name', def.name)).fetch();
 
         let food: Food;
         if (existing.length > 0) {
@@ -1983,7 +1980,9 @@ async function seedChatHistory(): Promise<{ created: number }> {
       .query(Q.where('context', Q.notEq('general')))
       .fetch();
     if (existingDevMessages.length > 0) {
-      console.log(`Skipping chat history seeding: ${existingDevMessages.length} non-general messages already exist`);
+      console.log(
+        `Skipping chat history seeding: ${existingDevMessages.length} non-general messages already exist`
+      );
       return { created: 0 };
     }
 
@@ -2033,7 +2032,8 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "Hi! I'm trying to build muscle and lose some fat at the same time. Is that even possible?",
+        message:
+          "Hi! I'm trying to build muscle and lose some fat at the same time. Is that even possible?",
         minutesAgo: threeDaysMin + 18,
       },
       {
@@ -2044,13 +2044,13 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "That makes sense. How much sleep should I be getting?",
+        message: 'That makes sense. How much sleep should I be getting?',
         minutesAgo: threeDaysMin + 14,
       },
       {
         sender: 'coach',
         message:
-          "Aim for 7–9 hours per night. Sleep is when your body releases growth hormone and repairs muscle tissue. Consistently getting less than 7 hours can blunt muscle growth, increase cortisol, and make it harder to lose fat. If you struggle with sleep, try keeping a consistent sleep schedule and avoiding screens 30 minutes before bed.",
+          'Aim for 7–9 hours per night. Sleep is when your body releases growth hormone and repairs muscle tissue. Consistently getting less than 7 hours can blunt muscle growth, increase cortisol, and make it harder to lose fat. If you struggle with sleep, try keeping a consistent sleep schedule and avoiding screens 30 minutes before bed.',
         minutesAgo: threeDaysMin + 12,
       },
       {
@@ -2071,7 +2071,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
     await createConversation('nutrition', [
       {
         sender: 'user',
-        message: "I had chicken breast, brown rice, and broccoli for lunch. How does that look?",
+        message: 'I had chicken breast, brown rice, and broccoli for lunch. How does that look?',
         minutesAgo: twoDaysMin + 30,
       },
       {
@@ -2082,7 +2082,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "About 200g chicken, 150g rice, and a handful of broccoli.",
+        message: 'About 200g chicken, 150g rice, and a handful of broccoli.',
         minutesAgo: twoDaysMin + 25,
       },
       {
@@ -2093,13 +2093,14 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "I had oatmeal with a banana and some greek yogurt. Is that a good pre-workout meal?",
+        message:
+          'I had oatmeal with a banana and some greek yogurt. Is that a good pre-workout meal?',
         minutesAgo: twoDaysMin + 20,
       },
       {
         sender: 'coach',
         message:
-          "Yes! Oatmeal + banana gives you fast and slow-digesting carbs for sustained energy, and the Greek yogurt adds a nice protein boost. Eating this 1–2 hours before training is ideal. One tip: add a handful of berries or some nut butter to get more micronutrients or healthy fats.",
+          'Yes! Oatmeal + banana gives you fast and slow-digesting carbs for sustained energy, and the Greek yogurt adds a nice protein boost. Eating this 1–2 hours before training is ideal. One tip: add a handful of berries or some nut butter to get more micronutrients or healthy fats.',
         minutesAgo: twoDaysMin + 17,
       },
       {
@@ -2120,7 +2121,8 @@ async function seedChatHistory(): Promise<{ created: number }> {
     await createConversation('exercise', [
       {
         sender: 'user',
-        message: "I just finished my Upper Body Power workout. Bench press felt really heavy today.",
+        message:
+          'I just finished my Upper Body Power workout. Bench press felt really heavy today.',
         minutesAgo: oneDayMin + 40,
       },
       {
@@ -2131,7 +2133,8 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "OHP and lat pulldown felt fine. Bicep curls were the easiest part as always haha.",
+        message:
+          'OHP and lat pulldown felt fine. Bicep curls were the easiest part as always haha.',
         minutesAgo: oneDayMin + 35,
       },
       {
@@ -2142,7 +2145,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "Should I add more sets to the bench or stick with 3 working sets?",
+        message: 'Should I add more sets to the bench or stick with 3 working sets?',
         minutesAgo: oneDayMin + 30,
       },
       {
@@ -2153,7 +2156,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
       },
       {
         sender: 'user',
-        message: "Makes sense. What about my leg day? Should I add Romanian deadlifts?",
+        message: 'Makes sense. What about my leg day? Should I add Romanian deadlifts?',
         minutesAgo: oneDayMin + 25,
       },
       {
