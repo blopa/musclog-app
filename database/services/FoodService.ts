@@ -60,7 +60,7 @@ export class FoodService {
         food.name = getProductName(product);
         food.brand = product.brands;
         food.barcode = product.code;
-        food.externalId = externalId ?? product.code; // Use provided externalId or default to product.code
+        food.externalId = externalId ?? product._id; // Use provided externalId or default to product.code
         food.imageUrl = product.image_url; // Save image URL from API
 
         food.calories = nutritionData.calories;
