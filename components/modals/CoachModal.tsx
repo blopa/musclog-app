@@ -7,6 +7,7 @@ import type { TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
+  Images,
   Paperclip,
   PlusCircle,
   Send as SendIcon,
@@ -59,6 +60,8 @@ import {
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { ImageManipulator } from 'expo-image-manipulator';
+
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { pickDocument, readFileAsStringAsync } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -159,6 +162,42 @@ const renderMessageText = (props: any, theme: Theme) => {
   );
 };
 
+const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <View
+        style={{
+          width: 150,
+          height: 100,
+          borderRadius: 8,
+          backgroundColor: theme.colors.background.card,
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: 3,
+        }}
+      >
+        <Images size={24} color={theme.colors.text.tertiary} />
+      </View>
+    );
+  }
+
+  return (
+    <Image
+      source={{ uri: props.currentMessage.image }}
+      style={{
+        width: 150,
+        height: 100,
+        borderRadius: 8,
+        margin: 3,
+      }}
+      resizeMode="cover"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void
@@ -218,6 +257,7 @@ const renderBubble = (
         onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
         delayLongPress={350}
       >
+        {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text ? (
           <LinearGradient
             colors={bubbleGradient as readonly [string, string, ...string[]]}
@@ -254,6 +294,7 @@ const renderBubble = (
             {currentMessage.user.name}
           </Text>
         ) : null}
+        {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
         ) : null}
@@ -314,12 +355,13 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
 const renderSend = (
   props: SendProps<ExtendedIMessage>,
   theme: Theme,
-  failedMessageText: string | null
+  failedMessageText: string | null,
+  hasAttachedImage: boolean
 ) => {
   const styles = getStyles(theme);
   // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
   const effectiveText = (failedMessageText ?? props.text ?? '').trim();
-  const isDisabled = !effectiveText;
+  const isDisabled = !effectiveText && !hasAttachedImage;
 
   // Always render the send button, regardless of GiftedChat's internal logic
   return (
@@ -438,12 +480,35 @@ const renderInputToolbar = (
   theme: Theme,
   pendingIntention: string | null,
   onClearIntention: () => void,
+  attachedImage: { uri: string } | null,
+  onRemoveImage: () => void,
   t: TFunction
 ) => {
   const styles = getStyles(theme);
 
   return (
     <View>
+      {attachedImage ? (
+        <View className="px-4 py-2">
+          <View
+            className="relative h-20 w-20 rounded-lg"
+            style={{ backgroundColor: theme.colors.background.card }}
+          >
+            <Image
+              source={{ uri: attachedImage.uri }}
+              style={{ width: '100%', height: '100%', borderRadius: 8 }}
+              resizeMode="cover"
+            />
+            <Pressable
+              onPress={onRemoveImage}
+              className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
+              style={{ backgroundColor: theme.colors.background.gray700 }}
+            >
+              <X size={12} color={theme.colors.text.white} />
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       {pendingIntention ? (
         <View className="px-4 py-2">
           <View
@@ -513,6 +578,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
@@ -589,12 +655,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
       const text = newMessages[0]?.text;
-      const image = newMessages[0]?.image;
+      const image = attachedImage?.base64;
       if (text || image) {
         sendMessage(text ?? '', image);
+        setAttachedImage(null);
       }
     },
-    [sendMessage]
+    [sendMessage, attachedImage]
   );
 
   const handleGenerateWorkouts = useCallback(async () => {
@@ -677,8 +744,18 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
       if (!result.canceled && result.assets?.[0]) {
         const file = result.assets[0];
-        const base64 = await readFileAsStringAsync(file.uri, { encoding: 'base64' });
-        sendMessage('', base64);
+
+        // Create a thumbnail for efficient chat preview (max 300px)
+        const manipResult = await ImageManipulator.manipulateAsync(
+          file.uri,
+          [{ resize: { width: 300 } }],
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+        );
+
+        setAttachedImage({
+          uri: manipResult.uri,
+          base64: manipResult.base64 || '',
+        });
       }
     } catch (error) {
       console.error('Error picking document:', error);
@@ -991,8 +1068,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderInputToolbar = useCallback(
     (props: Parameters<typeof renderInputToolbar>[0]) =>
-      renderInputToolbar(props, theme, pendingIntention, handleClearIntention, t),
-    [theme, pendingIntention, handleClearIntention, t]
+      renderInputToolbar(
+        props,
+        theme,
+        pendingIntention,
+        handleClearIntention,
+        attachedImage,
+        () => setAttachedImage(null),
+        t
+      ),
+    [theme, pendingIntention, handleClearIntention, attachedImage, t]
   );
 
   const gcRenderComposer = useCallback(
@@ -1002,13 +1087,19 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   );
 
   const gcRenderSend = useCallback(
-    (props: Parameters<typeof renderSend>[0]) => renderSend(props, theme, failedMessageText),
-    [theme, failedMessageText]
+    (props: Parameters<typeof renderSend>[0]) =>
+      renderSend(props, theme, failedMessageText, !!attachedImage),
+    [theme, failedMessageText, attachedImage]
   );
 
   const gcRenderDay = useCallback(
     (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme),
     [t, theme]
+  );
+
+  const gcRenderMessageImage = useCallback(
+    (props: any) => <MessageImage props={props} theme={theme} />,
+    [theme]
   );
 
   const gcScrollToBottomComponent = useCallback(() => null, []);
@@ -1130,6 +1221,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderSend={gcRenderSend}
             renderAccessory={renderAccessory}
             renderDay={gcRenderDay}
+            renderMessageImage={gcRenderMessageImage}
             scrollToBottomComponent={gcScrollToBottomComponent}
             minInputToolbarHeight={0}
             listProps={{

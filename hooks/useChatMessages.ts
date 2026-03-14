@@ -77,6 +77,10 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
           duration: payload.duration,
           personalRecords: payload.personalRecords,
         };
+      } else if (payload.type === 'image' && payload.image) {
+        msg.image = payload.image.startsWith('data:')
+          ? payload.image
+          : `data:image/jpeg;base64,${payload.image}`;
       }
     } catch {
       // ignore malformed payload
@@ -398,6 +402,9 @@ export function useChatMessages(
           sender: 'user',
           message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
           context: conversationContext,
+          payloadJson: base64Image
+            ? JSON.stringify({ type: 'image', image: base64Image })
+            : undefined,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
         setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
