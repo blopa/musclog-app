@@ -293,16 +293,19 @@ export function MultipleLinesChart({
           if (!datum) {
             return null;
           }
+
           const yVal = (datum as Record<string, number>)[callout.seriesKey];
           if (yVal == null) {
             return null;
           }
+
           const dataX = datum.x;
           const pixelX =
             32 +
             ((dataX - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0] || 1)) * chartWidth -
             CALLOUT_WIDTH / 2;
           const pixelY = (1 - (yVal - yDomainFinal[0]) / yRange) * chartHeight - CALLOUT_HEIGHT - 4;
+
           return (
             <View
               key={idx}

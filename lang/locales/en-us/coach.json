@@ -12,15 +12,18 @@
     },
     "placeholder": "Type a message...",
     "todayAt": "Today, {{time}}",
+    "imageSent": "Sent an image",
     "actions": {
       "createWorkout": "Create Workout",
       "analyzeProgress": "Analyze Progress",
       "nutritionCheck": "Nutrition Check",
+      "trackMeal": "Track Meal",
       "workoutGen": "Workout Gen."
     },
     "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
     "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
     "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
+    "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
     "welcomeMessage": "Hello. My name is Loggy, I am your AI Fitness Coach. I'm here to help you achieve your fitness goals, track your progress, and provide personalized guidance. Feel free to ask me anything about workouts, nutrition, or your fitness journey!",
     "errors": {
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
@@ -28,10 +31,12 @@
       "generalError": "Sorry, something went wrong. Please try again.",
       "progressInsightFailed": "Could not analyze progress. Try again later.",
       "nutritionInsightFailed": "Could not check nutrition. Try again later.",
+      "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
       "filePickFailed": "Failed to pick file. Please try again."
     },
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
+      "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}} kcal.",
       "historyCleared": "Chat history cleared."
     },
     "aiInstructions": {

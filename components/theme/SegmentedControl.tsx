@@ -53,7 +53,7 @@ export function SegmentedControl({
         return (
           <Pressable
             key={option.value}
-            className="flex-1"
+            className={`flex-1 rounded-md py-2 ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
@@ -83,19 +83,15 @@ export function SegmentedControl({
                 </View>
               </LinearGradient>
             ) : (
-              <View
-                className={`flex-1 rounded-md py-2 ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
-              >
-                <View className="flex-row items-center justify-center gap-1.5">
-                  {option.icon}
-                  <Text
-                    className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
-                      isSelected ? 'text-text-primary' : 'text-text-tertiary'
-                    }`}
-                  >
-                    {option.label}
-                  </Text>
-                </View>
+              <View className="flex-row items-center justify-center gap-1.5">
+                {option.icon}
+                <Text
+                  className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
+                    isSelected ? 'text-text-primary' : 'text-text-tertiary'
+                  }`}
+                >
+                  {option.label}
+                </Text>
               </View>
             )}
           </Pressable>

@@ -727,6 +727,21 @@ const MACRO_CALORIE_NOTE =
   'Keep in mind the relation between macros and calories: 1g protein ≈ 4 kcal, 1g carbs ≈ 4 kcal, 1g fat ≈ 9 kcal, 1g fiber ≈ 2 kcal. Ensure your kcal estimate is consistent with the macros you return.';
 
 /**
+ * System prompt for meal tracking (text or photo)
+ */
+export const getTrackMealPrompt = (language: string = 'en-US'): string => {
+  return [
+    'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
+    'Analyze the provided meal (description or photo) and break it down into its main ingredients.',
+    'For each ingredient, estimate the macronutrients (calories, protein, carbs, fat, fiber) based on a reasonable portion size for that specific meal.',
+    'Be as accurate as possible. If a photo is provided, use it to judge portions.',
+    MACRO_CALORIE_NOTE,
+    `Your response must be in ${language}.`,
+    'Return the data as a structured list of ingredients.',
+  ].join('\n');
+};
+
+/**
  * System prompt for meal photo nutrition estimation
  */
 export const getEstimateNutritionFromPhotoPrompt = (): string => {
@@ -1121,6 +1136,64 @@ export const getParseRetrospectiveNutritionFunctions = ():
           },
         },
         required: ['nutritionEntries'],
+      },
+    },
+  ];
+};
+
+/**
+ * Function schema for meal tracking with multiple ingredients
+ */
+export const getTrackMealFunctions = ():
+  | FunctionDeclaration[]
+  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  return [
+    {
+      name: 'trackMeal',
+      description: 'Break down a meal into ingredients and estimate their macronutrients',
+      parameters: {
+        type: 'object',
+        properties: {
+          ingredients: {
+            type: 'array',
+            description: 'List of ingredients in the meal',
+            items: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  description: 'Name of the ingredient (e.g., "Basmati Rice", "Chicken Breast")',
+                },
+                kcal: {
+                  type: 'number',
+                  description: 'Kilocalories',
+                },
+                carbs: {
+                  type: 'number',
+                  description: 'Carbohydrates in grams',
+                },
+                fat: {
+                  type: 'number',
+                  description: 'Fat in grams',
+                },
+                protein: {
+                  type: 'number',
+                  description: 'Protein in grams',
+                },
+                fiber: {
+                  type: 'number',
+                  description: 'Fiber in grams',
+                },
+                grams: {
+                  type: 'number',
+                  description: 'Estimated weight of this ingredient in grams',
+                },
+              },
+              required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams'],
+            },
+          },
+        },
+        required: ['ingredients'],
       },
     },
   ];

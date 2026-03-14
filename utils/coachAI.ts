@@ -22,6 +22,8 @@ import {
   getRecentWorkoutInsightsPromptByLogId,
   getRecentWorkoutsInsightsPrompt,
   getRetrospectiveNutritionPrompt,
+  getTrackMealFunctions,
+  getTrackMealPrompt,
   getWorkoutInsightsPrompt,
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
@@ -116,6 +118,20 @@ export type ParsedNutrition = {
   sugar?: number;
   sodium?: number;
   cholesterol?: number;
+};
+
+export type TrackMealIngredient = {
+  name: string;
+  kcal: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  fiber?: number;
+  grams: number;
+};
+
+export type TrackMealResponse = {
+  ingredients: TrackMealIngredient[];
 };
 
 export type NutritionEntry = {
@@ -524,6 +540,47 @@ async function generateWithImageStructured<T>(
     const clean = raw.replace(/```json|```/g, '').trim();
     return JSON.parse(clean) as T;
   } catch {
+    return null;
+  }
+}
+
+/**
+ * Track a meal from description or base64 image
+ */
+export async function trackMeal(
+  config: CoachAIConfig,
+  userMessage: string,
+  base64Image?: string
+): Promise<TrackMealResponse | null> {
+  try {
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = getTrackMealPrompt(lang);
+    const fns = getTrackMealFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+
+    if (base64Image) {
+      const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+      const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+      return await generateWithImageStructured<TrackMealResponse>(
+        config,
+        systemPrompt,
+        base64,
+        mimeType,
+        schema,
+        'trackMeal',
+        userMessage
+      );
+    }
+
+    return await generateStructured<TrackMealResponse>(
+      config,
+      systemPrompt,
+      userMessage,
+      schema,
+      'trackMeal'
+    );
+  } catch (error) {
+    console.error('[coachAI] trackMeal error:', error);
     return null;
   }
 }

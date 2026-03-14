@@ -190,7 +190,6 @@ type AISettingsModalProps = {
   onOpenAiModelPress?: (model: string) => void;
 };
 
-// TODO: add option for the user to add custom system prompts, as many as they want - meaning add a new table in the schema.ts, a new model, a new service and a new react hook
 export function AISettingsModal({
   visible,
   onClose,

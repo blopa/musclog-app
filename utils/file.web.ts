@@ -160,6 +160,19 @@ export async function detectBarcodes(imageUri: string) {
   return quaggaResult?.codeResult?.code ?? null;
 }
 
+/**
+ * Creates a small thumbnail of an image, optionally returning base64.
+ * Used for chat previews.
+ */
+export async function createThumbnail(
+  uri: string,
+  width: number = 300
+): Promise<{ uri: string; base64?: string }> {
+  const dataUrl = await resizeImage(uri, width);
+  const base64 = dataUrl.split(',')[1];
+  return { uri, base64 };
+}
+
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
   return { path: options.imageUri };
 }
