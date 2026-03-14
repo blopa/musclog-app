@@ -151,6 +151,8 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
 
+    // TODO: seed the data from usda_foundation_foods.csv into the foods table
+
     // Set the anonymousBugReport setting to true by default
     await SettingsService.setAnonymousBugReport(true);
     console.log('Set anonymous bug report to true by default');
