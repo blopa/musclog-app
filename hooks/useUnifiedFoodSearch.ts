@@ -349,7 +349,7 @@ export function useUnifiedFoodSearch({
       seenNames.add(normalizedName);
       return true;
     });
-  }, [localResults, apiResultsFormatted, debouncedSearchTerm]);
+  }, [debouncedSearchTerm, localResults, apiResultsFormatted, usdaResultsFormatted]);
 
   // Separate results by source for filtering
   const resultsBySource = useMemo(

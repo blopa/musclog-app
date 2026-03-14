@@ -302,7 +302,17 @@ export function useNutritionLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, mode, date, startDate, endDate, mealType, initialLimit, getAll]);
+  }, [
+    visible,
+    defaultDailyNutrients,
+    mode,
+    date,
+    startDate,
+    endDate,
+    mealType,
+    initialLimit,
+    getAll,
+  ]);
 
   // Load more logs (pagination)
   const loadMore = useCallback(async () => {

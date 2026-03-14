@@ -90,7 +90,7 @@ export function StackedBarChart({
   useEffect(() => {
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
 
   if (data.length === 0) {
     return null;

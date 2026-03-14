@@ -84,7 +84,7 @@ export function StackedBarLineChart({
   useEffect(() => {
     registerChart(chartId, () => setHoveredIndex(null));
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
 
   const colors: string[] = [
     stackColors?.[0] ?? (theme.colors.accent?.primary as string) ?? DEFAULT_STACK_COLORS[0],

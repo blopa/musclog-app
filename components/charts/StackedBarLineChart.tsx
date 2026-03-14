@@ -100,7 +100,7 @@ export function StackedBarLineChart({
       setActiveLabelSecondary(null);
     });
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
 
   const colors: string[] = [
     stackColors?.[0] ?? theme.colors.accent.primary ?? DEFAULT_STACK_COLORS[0],

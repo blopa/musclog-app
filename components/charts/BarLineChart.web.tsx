@@ -69,7 +69,7 @@ export function BarLineChart({
   useEffect(() => {
     registerChart(chartId, () => setHoveredIndex(null));
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
   const lineColorResolved = lineColor ?? theme.colors.background.white;

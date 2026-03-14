@@ -79,7 +79,7 @@ export function TrainingConsistencyChart({
   useEffect(() => {
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
   const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
   const textPrimary = theme.colors?.text?.primary ?? '#ffffff';

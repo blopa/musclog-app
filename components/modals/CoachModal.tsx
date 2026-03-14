@@ -767,7 +767,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         action: t('snackbar.ok'),
       });
     }
-  }, [sendMessage, showSnackbar, t]);
+  }, [showSnackbar, t]);
 
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
@@ -1020,6 +1020,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     handleAnalyzeProgress,
     handleGenerateWorkouts,
     handleNutritionCheck,
+    handleTrackMeal,
     pendingIntention,
     t,
     theme.colors.accent.primary,

@@ -626,12 +626,13 @@ export function FoodSearchModal({
   }, [
     t,
     resultsBySource.all.length,
-    favoriteFoodsCount,
+    resultsBySource.api.length,
+    resultsBySource.usda.length,
     formatCount,
-    apiCount,
-    mealsTotalCount,
+    favoriteFoodsCount,
     searchQuery,
     filteredMealCardsData.length,
+    mealsTotalCount,
   ]);
 
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
