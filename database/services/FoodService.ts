@@ -26,7 +26,8 @@ export class FoodService {
       micros?: MicrosData;
       isFavorite?: boolean;
     },
-    customPortion?: FoodPortion | null
+    customPortion?: FoodPortion | null,
+    externalId?: string
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
@@ -59,6 +60,7 @@ export class FoodService {
         food.name = getProductName(product);
         food.brand = product.brands;
         food.barcode = product.code;
+        food.externalId = externalId ?? product.code; // Use provided externalId or default to product.code
         food.imageUrl = product.image_url; // Save image URL from API
 
         food.calories = nutritionData.calories;
@@ -115,7 +117,8 @@ export class FoodService {
       micros?: MicrosData;
       isFavorite?: boolean;
     },
-    customPortion?: FoodPortion | null
+    customPortion?: FoodPortion | null,
+    externalId?: string
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
@@ -148,6 +151,7 @@ export class FoodService {
         food.name = product.description;
         food.brand = product.brandOwner || product.brandName;
         food.barcode = product.gtinUpc || String(product.fdcId);
+        food.externalId = externalId ?? String(product.fdcId); // Use provided externalId or default to fdcId
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
@@ -350,6 +354,22 @@ export class FoodService {
   }
 
   /**
+   * Get food by external ID (from external data integrations like USDA or Open Food Facts)
+   */
+  static async getFoodByExternalId(externalId: string): Promise<Food | null> {
+    try {
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.where('external_id', externalId))
+        .fetch();
+
+      return foods.length > 0 ? foods[0] : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Get food by ID
    */
   static async getFoodById(id: string): Promise<Food | null> {
@@ -370,6 +390,7 @@ export class FoodService {
       name?: string;
       brand?: string;
       barcode?: string;
+      externalId?: string;
       calories?: number;
       protein?: number;
       carbs?: number;
@@ -394,6 +415,9 @@ export class FoodService {
         }
         if (updates.barcode !== undefined) {
           record.barcode = updates.barcode;
+        }
+        if (updates.externalId !== undefined) {
+          record.externalId = updates.externalId;
         }
         if (updates.calories !== undefined) {
           record.calories = updates.calories;
@@ -465,6 +489,7 @@ export class FoodService {
         food.name = `${originalFood.name} (Copy)`;
         food.brand = originalFood.brand;
         food.barcode = originalFood.barcode;
+        food.externalId = originalFood.externalId; // Copy external ID
         food.imageUrl = originalFood.imageUrl;
         food.calories = originalFood.calories;
         food.protein = originalFood.protein;
