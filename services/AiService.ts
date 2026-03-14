@@ -20,7 +20,7 @@ export class AiService {
           return {
             provider: 'gemini',
             accessToken,
-            model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+            model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.0-flash',
             language: await SettingsService.getLanguage(),
           };
         }
@@ -28,19 +28,19 @@ export class AiService {
 
       // 2. Priority: Manual Gemini API key
       const enableGemini = await SettingsService.getEnableGoogleGemini();
-      const geminiKey = await SettingsService.getGoogleGeminiApiKey();
+      const geminiKey = (await SettingsService.getGoogleGeminiApiKey()).trim();
       if (enableGemini && geminiKey) {
         return {
           provider: 'gemini',
           apiKey: geminiKey,
-          model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
+          model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.0-flash',
           language: await SettingsService.getLanguage(),
         };
       }
 
       // 3. Priority: OpenAI API key
       const enableOpenAi = await SettingsService.getEnableOpenAi();
-      const openAiKey = await SettingsService.getOpenAiApiKey();
+      const openAiKey = (await SettingsService.getOpenAiApiKey()).trim();
       if (enableOpenAi && openAiKey) {
         return {
           provider: 'openai',

@@ -7,7 +7,6 @@ import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
 const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
 
-
 /**
  * Check if task should run today
  * Returns true if it's a new day since last run

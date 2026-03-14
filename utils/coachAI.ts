@@ -88,6 +88,7 @@ export type MacroEstimate = {
   carbs: number;
   fat: number;
   protein: number;
+  fiber: number;
   grams: number;
   barcode?: string;
 };
@@ -299,7 +300,7 @@ async function sendViaOpenAI(
   history: ChatHistoryEntry[],
   userMessage: string
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language);
 
@@ -339,7 +340,6 @@ async function sendViaOpenAI(
       sumMsg: 'OpenAI error',
     };
   }
-
 }
 
 // --- Helpers for insight/parsing/vision ---
@@ -369,7 +369,7 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -407,7 +407,7 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -474,7 +474,7 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -550,7 +550,7 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({

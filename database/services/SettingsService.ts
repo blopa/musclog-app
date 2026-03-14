@@ -340,11 +340,11 @@ export class SettingsService {
   }
 
   static async getEnableGoogleGemini(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, false);
+    return SettingsService.getBooleanSetting(ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true);
   }
 
   static async getEnableOpenAi(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, false);
+    return SettingsService.getBooleanSetting(ENABLE_OPENAI_SETTING_TYPE, true);
   }
 
   static async getNotifications(): Promise<boolean> {

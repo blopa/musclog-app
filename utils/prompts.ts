@@ -1249,6 +1249,10 @@ export const getEstimateMacrosFunctions = (
       type: 'number',
       description: 'Protein in grams',
     },
+    fiber: {
+      type: 'number',
+      description: 'Fiber in grams',
+    },
     grams: {
       type: 'number',
       description: 'Total weight of the food item',
@@ -1262,7 +1266,7 @@ export const getEstimateMacrosFunctions = (
     };
   }
 
-  const required = ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams'];
+  const required = ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'];
   if (includeBarcode) {
     required.push('barcode');
   }
