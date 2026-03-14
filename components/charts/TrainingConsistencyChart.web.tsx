@@ -1,5 +1,9 @@
+import type { MouseEvent } from 'react';
+import { useEffect, useId, useState } from 'react';
+import type { ViewProps } from 'react-native';
 import { Text, View } from 'react-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 
 const DEFAULT_NEON = '#00FFA2';
@@ -15,6 +19,9 @@ const OPACITIES: Record<number, number> = {
 };
 
 export type { TrainingConsistencyChartProps } from './TrainingConsistencyChart';
+
+const TOOLTIP_WIDTH = 100;
+const TOOLTIP_HEIGHT = 40;
 
 export function TrainingConsistencyChart({
   title,
@@ -32,6 +39,14 @@ export function TrainingConsistencyChart({
   className,
 }: import('./TrainingConsistencyChart').TrainingConsistencyChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activeLabel, setActiveLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActiveLabel(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
   const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
   const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
@@ -45,7 +60,38 @@ export function TrainingConsistencyChart({
   const cellHeight = rowCount > 0 ? (gridHeight - (rowCount - 1) * gap) / rowCount : 0;
 
   return (
-    <View className={className}>
+    <View className={className} style={{ position: 'relative' }}>
+      {activeLabel ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            top: 6,
+            right: 6,
+            minWidth: TOOLTIP_WIDTH,
+            height: TOOLTIP_HEIGHT,
+            backgroundColor: theme.colors.background.card,
+            borderRadius: theme.borderRadius.xs,
+            paddingHorizontal: theme.spacing.padding.sm,
+            paddingVertical: theme.spacing.padding.xs,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+            zIndex: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              color: theme.colors.text.primary,
+              fontSize: theme.typography.fontSize.xxs,
+              fontWeight: '600',
+              textAlign: 'center',
+            }}
+          >
+            {activeLabel}
+          </Text>
+        </View>
+      ) : null}
       {/* Header */}
       <View className="mb-6 flex-row items-center justify-between" style={{ marginBottom: 24 }}>
         <View>
@@ -130,18 +176,25 @@ export function TrainingConsistencyChart({
               return (
                 <View
                   key={rowIndex}
-                  style={{
-                    height: cellHeight,
-                    width: '100%',
-                    borderRadius: 4,
-                    backgroundColor: isEmpty ? borderColor : accentColor,
-                    opacity: isEmpty ? 1 : opacity,
-                    ...(showGlowOnMax && isMax && !isEmpty
-                      ? {
-                          boxShadow: `0 0 ${8}px ${accentColor}66`,
-                        }
-                      : {}),
-                  }}
+                  {...({
+                    style: {
+                      height: cellHeight,
+                      width: '100%',
+                      borderRadius: 4,
+                      backgroundColor: isEmpty ? borderColor : accentColor,
+                      opacity: isEmpty ? 1 : opacity,
+                      cursor: 'pointer',
+                      ...(showGlowOnMax && isMax && !isEmpty
+                        ? {
+                            boxShadow: `0 0 ${8}px ${accentColor}66`,
+                          }
+                        : {}),
+                    },
+                    onClick: () => {
+                      notifyChartActive(chartId);
+                      setActiveLabel(`${value} PRs`);
+                    },
+                  } as ViewWithMouseProps)}
                 />
               );
             })}

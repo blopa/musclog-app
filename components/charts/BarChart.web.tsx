@@ -132,35 +132,43 @@ export function BarChart({
           </Text>
         );
       })}
-      <View
-        {...({
-          style: { position: 'relative', height },
-          onClick: (e: MouseEvent<HTMLElement>) => {
-            if (!interactive) {
-              return;
-            }
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-            const xValue = paddedXDomain[0] + ratio * (paddedXDomain[1] - paddedXDomain[0]);
-            let nearest = data[0];
-            let minDist = Math.abs(data[0].x - xValue);
-            for (const d of data) {
-              const dist = Math.abs(d.x - xValue);
-              if (dist < minDist) {
-                minDist = dist;
-                nearest = d;
-              }
-            }
-            const label = tooltipFormatter
-              ? tooltipFormatter(nearest)
-              : String(Math.round(nearest.y * 10) / 10);
-            notifyChartActive(chartId);
-            setActiveLabel(label);
-          },
-          onMouseLeave: () => setActiveLabel(null),
-        } as ViewWithMouseProps)}
-      >
+      <View style={{ position: 'relative', height }}>
+        {interactive && (
+          <View
+            {...({
+              style: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                zIndex: 1,
+              },
+              onClick: (e: MouseEvent<HTMLElement>) => {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                const xValue = paddedXDomain[0] + ratio * (paddedXDomain[1] - paddedXDomain[0]);
+                let nearest = data[0];
+                let minDist = Math.abs(data[0].x - xValue);
+                for (const d of data) {
+                  const dist = Math.abs(d.x - xValue);
+                  if (dist < minDist) {
+                    minDist = dist;
+                    nearest = d;
+                  }
+                }
+                const label = tooltipFormatter
+                  ? tooltipFormatter(nearest)
+                  : String(Math.round(nearest.y * 10) / 10);
+                notifyChartActive(chartId);
+                setActiveLabel(label);
+              },
+            } as ViewWithMouseProps)}
+          />
+        )}
         <VictoryChart
           height={height}
           padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -215,7 +223,7 @@ export function BarChart({
               right: 6,
               minWidth: 90,
               height: 36,
-              backgroundColor: theme.colors.text.white,
+              backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
@@ -227,7 +235,7 @@ export function BarChart({
           >
             <Text
               style={{
-                color: theme.colors.text.black,
+                color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: '600',
                 textAlign: 'center',

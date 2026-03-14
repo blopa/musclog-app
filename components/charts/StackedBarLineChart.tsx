@@ -321,10 +321,10 @@ export function StackedBarLineChart({
               pointerEvents="none"
               style={{ position: 'absolute', top: 6, right: 6, gap: 4, zIndex: 10 }}
             >
-              <View style={[tooltipPillStyle, { backgroundColor: theme.colors.text.white }]}>
+              <View style={[tooltipPillStyle, { backgroundColor: theme.colors.background.card }]}>
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}
@@ -335,7 +335,7 @@ export function StackedBarLineChart({
               <View style={[tooltipPillStyle, { backgroundColor: lineColorResolved }]}>
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.background.card,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}

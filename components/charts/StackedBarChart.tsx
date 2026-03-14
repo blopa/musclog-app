@@ -1,6 +1,8 @@
+import { useEffect, useId, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
+import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -43,6 +45,10 @@ export type StackedBarChartProps = {
   className?: string;
   /** Domain padding (default: { left: 20, right: 20, top: 10 }) */
   domainPadding?: { left?: number; right?: number; top?: number; bottom?: number };
+  /** Enable touch interaction to show a tooltip on press (default: true) */
+  interactive?: boolean;
+  /** Format the tooltip label for a given data point (default: shows rounded total) */
+  tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
 
 const DEFAULT_COLORS = [
@@ -51,6 +57,9 @@ const DEFAULT_COLORS = [
   '#eab308', // yellow
   '#22c55e', // green
 ];
+
+const TOOLTIP_WIDTH = 90;
+const TOOLTIP_HEIGHT = 36;
 
 export function StackedBarChart({
   data,
@@ -69,8 +78,19 @@ export function StackedBarChart({
   totalLabelFormatter = (t) => String(Math.round(t)),
   className,
   domainPadding = { left: 20, right: 20, top: 10 },
+  interactive = true,
+  tooltipFormatter,
 }: StackedBarChartProps) {
   const theme = useTheme();
+  const chartId = useId();
+  const { registerChart, unregisterChart, notifyChartActive } = useChartTooltip();
+  const [activePoint, setActivePoint] = useState<StackedBarChartDatum | null>(null);
+  const containerWidthRef = useRef(0);
+
+  useEffect(() => {
+    registerChart(chartId, () => setActivePoint(null));
+    return () => unregisterChart(chartId);
+  }, [chartId]);
 
   if (data.length === 0) {
     return null;
@@ -110,9 +130,27 @@ export function StackedBarChart({
   const yMin = yDomain?.[0] ?? 0;
   const yMax = yDomain?.[1] ?? maxTotal;
 
+  const handleTouchAt = (touchX: number) => {
+    const w = containerWidthRef.current;
+    if (w === 0) {
+      return;
+    }
+    const domainX = xMin + (touchX / w) * (xMax - xMin);
+    const nearest = data.reduce((prev, curr) =>
+      Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
+    );
+    notifyChartActive(chartId);
+    setActivePoint(nearest);
+  };
+
   return (
     <View className={className} style={{ marginTop }}>
-      <View style={{ height, position: 'relative' }}>
+      <View
+        style={{ height, position: 'relative' }}
+        onLayout={(e) => {
+          containerWidthRef.current = e.nativeEvent.layout.width;
+        }}
+      >
         <CartesianChart
           data={chartData}
           xKey="x"
@@ -137,6 +175,64 @@ export function StackedBarChart({
             />
           )}
         </CartesianChart>
+
+        {interactive ? (
+          <View
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onStartShouldSetResponder={() => true}
+            onMoveShouldSetResponder={() => true}
+            onResponderTerminationRequest={() => true}
+            onResponderGrant={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onResponderMove={(e) => handleTouchAt(e.nativeEvent.locationX)}
+            onResponderTerminate={() => setActivePoint(null)}
+          />
+        ) : null}
+
+        {interactive && activePoint ? (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: TOOLTIP_WIDTH,
+              height: TOOLTIP_HEIGHT,
+              backgroundColor: theme.colors.background.card,
+              borderRadius: theme.borderRadius.xs,
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding['1half'],
+              shadowColor: theme.colors.text.black,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 4,
+              zIndex: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize.xs,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}
+            >
+              {tooltipFormatter
+                ? tooltipFormatter(activePoint)
+                : String(
+                    Math.round(
+                      ((activePoint.segments[0] ?? 0) +
+                        (activePoint.segments[1] ?? 0) +
+                        (activePoint.segments[2] ?? 0) +
+                        (activePoint.segments[3] ?? 0)) *
+                        10
+                    ) / 10
+                  )}
+            </Text>
+          </View>
+        ) : null}
 
         {yAxisLabels?.map(({ label, yDomainValue }, i) => {
           const yRange = yMax - yMin;

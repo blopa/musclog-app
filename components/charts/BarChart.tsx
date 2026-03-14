@@ -174,7 +174,7 @@ export function BarChart({
               right: 6,
               minWidth: TOOLTIP_WIDTH,
               height: TOOLTIP_HEIGHT,
-              backgroundColor: theme.colors.text.white,
+              backgroundColor: theme.colors.background.card,
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
@@ -190,7 +190,7 @@ export function BarChart({
           >
             <Text
               style={{
-                color: theme.colors.text.black,
+                color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: '600',
                 textAlign: 'center',

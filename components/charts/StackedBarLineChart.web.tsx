@@ -206,30 +206,40 @@ export function StackedBarLineChart({
         </View>
 
         <View
-          {...({
-            style: {
-              position: 'absolute',
-              left: 32,
-              right: 32,
-              top: 0,
-              bottom: 0,
-              overflow: 'hidden',
-            },
-            onClick: (e: MouseEvent<HTMLElement>) => {
-              if (!interactive) {
-                return;
-              }
-              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-              const chartWidth = rect.width;
-              const x = e.clientX - rect.left;
-              const t = Math.max(0, Math.min(1, x / chartWidth));
-              const index = Math.round(t * (data.length - 1));
-              notifyChartActive(chartId);
-              setHoveredIndex(Math.min(index, data.length - 1));
-            },
-            onMouseLeave: () => setHoveredIndex(null),
-          } as ViewWithMouseProps)}
+          style={{
+            position: 'absolute',
+            left: 32,
+            right: 32,
+            top: 0,
+            bottom: 0,
+            overflow: 'hidden',
+          }}
         >
+          {interactive && (
+            <View
+              {...({
+                style: {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  zIndex: 1,
+                },
+                onClick: (e: MouseEvent<HTMLElement>) => {
+                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                  const chartWidth = rect.width;
+                  const x = e.clientX - rect.left;
+                  const t = Math.max(0, Math.min(1, x / chartWidth));
+                  const index = Math.round(t * (data.length - 1));
+                  notifyChartActive(chartId);
+                  setHoveredIndex(Math.min(index, data.length - 1));
+                },
+              } as ViewWithMouseProps)}
+            />
+          )}
           <VictoryChart
             height={chartHeight}
             padding={{
@@ -354,7 +364,7 @@ export function StackedBarLineChart({
                 style={{
                   minWidth: 72,
                   height: 32,
-                  backgroundColor: theme.colors.text.white,
+                  backgroundColor: theme.colors.background.card,
                   borderRadius: theme.borderRadius.xs,
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
@@ -364,7 +374,7 @@ export function StackedBarLineChart({
               >
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}
@@ -386,7 +396,7 @@ export function StackedBarLineChart({
               >
                 <Text
                   style={{
-                    color: theme.colors.text.black,
+                    color: theme.colors.background.card,
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: '700',
                   }}
