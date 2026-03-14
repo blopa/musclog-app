@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
+import ChatMessage from '../models/ChatMessage';
 import Exercise, {
   type EquipmentType,
   type MechanicType,
@@ -12,6 +13,7 @@ import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import MenstrualCycle from '../models/MenstrualCycle';
+import User from '../models/User';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogExercise from '../models/WorkoutLogExercise';
@@ -19,7 +21,7 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { ExerciseService, MealService } from '../services';
+import { ChatService, ExerciseService, MealService, UserService } from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -1615,7 +1617,7 @@ async function seedFoods(): Promise<{ created: number }> {
       };
 
       const nutritionLogs = [];
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 14; i++) {
         nutritionLogs.push({ name: 'Banana', daysAgo: i, type: 'breakfast', amount: 120 });
         nutritionLogs.push({ name: 'Greek Yogurt', daysAgo: i, type: 'snack', amount: 150 });
         nutritionLogs.push({ name: 'Chicken Breast', daysAgo: i, type: 'lunch', amount: 200 });
@@ -1798,12 +1800,238 @@ async function seedMeals(): Promise<{ created: number }> {
   }
 }
 
-// TODO: also seed a user, a nutrition goal, various chat messages, a whole convo history for each of the convo context: general, nutrition and exercise
-// also seed a menstrual cycle and a menstrual cycle logs
-// TODO: make sure that the nutrition logs seedes here are from the last 7 days
-// TODO: anything else?
+async function seedUser(): Promise<boolean> {
+  try {
+    const existingUser = await UserService.getCurrentUser();
+    if (existingUser) {
+      return false;
+    }
+
+    await UserService.initializeUser({
+      fullName: 'Alex Johnson',
+      dateOfBirth: new Date(1990, 3, 15).getTime(), // April 15, 1990
+      gender: 'male',
+      fitnessGoal: 'hypertrophy',
+      weightGoal: 'maintain',
+      activityLevel: 3,
+      liftingExperience: 'intermediate',
+      email: 'alex@example.com',
+      avatarIcon: 'person',
+      avatarColor: 'blue',
+    });
+
+    console.log('Seeded dev user: Alex Johnson');
+    return true;
+  } catch (error) {
+    console.error('Error seeding user:', error);
+    throw error;
+  }
+}
+
+async function seedChatHistory(): Promise<{ created: number }> {
+  let created = 0;
+  try {
+    const existingMessages = await database.get<ChatMessage>('chat_messages').query().fetch();
+    if (existingMessages.length > 0) {
+      console.log(`Skipping chat history seeding: ${existingMessages.length} messages already exist`);
+      return { created: 0 };
+    }
+
+    const now = Date.now();
+    // Space messages a few minutes apart to simulate real conversations
+    const msAgo = (minutes: number): number => now - minutes * 60 * 1000;
+
+    interface MessageDef {
+      sender: 'user' | 'coach';
+      message: string;
+      minutesAgo: number;
+    }
+
+    const createConversation = async (
+      context: 'general' | 'nutrition' | 'exercise',
+      messages: MessageDef[]
+    ): Promise<void> => {
+      const sessionId = ChatService.generateSessionId();
+      await database.write(async () => {
+        for (const msg of messages) {
+          const ts = msAgo(msg.minutesAgo);
+          await database.get<ChatMessage>('chat_messages').create((record) => {
+            record.sessionId = sessionId;
+            record.sender = msg.sender;
+            record.message = msg.message;
+            record.messageType = 'text';
+            record.context = context;
+            record.createdAt = ts;
+            record.updatedAt = ts;
+          });
+          created++;
+        }
+      });
+    };
+
+    // General context conversation (from ~3 days ago)
+    const threeDaysMin = 3 * 24 * 60;
+    await createConversation('general', [
+      {
+        sender: 'coach',
+        message: "Hey Alex! I'm Loggy, your personal fitness coach. How can I help you today?",
+        minutesAgo: threeDaysMin + 20,
+      },
+      {
+        sender: 'user',
+        message: "Hi! I'm trying to build muscle and lose some fat at the same time. Is that even possible?",
+        minutesAgo: threeDaysMin + 18,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Great question! Body recomposition — building muscle while losing fat — is definitely possible, especially for people at an intermediate level like you. The key is eating around your maintenance calories with high protein (around 2g per kg of bodyweight), progressive overload in your training, and getting quality sleep. It's slower than a dedicated bulk or cut, but very achievable.",
+        minutesAgo: threeDaysMin + 16,
+      },
+      {
+        sender: 'user',
+        message: "That makes sense. How much sleep should I be getting?",
+        minutesAgo: threeDaysMin + 14,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Aim for 7–9 hours per night. Sleep is when your body releases growth hormone and repairs muscle tissue. Consistently getting less than 7 hours can blunt muscle growth, increase cortisol, and make it harder to lose fat. If you struggle with sleep, try keeping a consistent sleep schedule and avoiding screens 30 minutes before bed.",
+        minutesAgo: threeDaysMin + 12,
+      },
+      {
+        sender: 'user',
+        message: "Got it. I usually get around 7 hours. Seems like I'm on the right track!",
+        minutesAgo: threeDaysMin + 10,
+      },
+      {
+        sender: 'coach',
+        message:
+          "You are! 7 hours is solid. Keep it consistent and pair it with your training and nutrition, and you'll see great results over time. Is there anything else on your mind?",
+        minutesAgo: threeDaysMin + 8,
+      },
+    ]);
+
+    // Nutrition context conversation (from ~2 days ago)
+    const twoDaysMin = 2 * 24 * 60;
+    await createConversation('nutrition', [
+      {
+        sender: 'user',
+        message: "I had chicken breast, brown rice, and broccoli for lunch. How does that look?",
+        minutesAgo: twoDaysMin + 30,
+      },
+      {
+        sender: 'coach',
+        message:
+          "That's a textbook bodybuilding meal — well done! You're getting lean protein from the chicken, complex carbs and fiber from the rice and broccoli. If I had to estimate: roughly 450–550 kcal, ~45g protein, ~50g carbs, ~5g fat. How much of each did you have?",
+        minutesAgo: twoDaysMin + 27,
+      },
+      {
+        sender: 'user',
+        message: "About 200g chicken, 150g rice, and a handful of broccoli.",
+        minutesAgo: twoDaysMin + 25,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Nice portions! That gives you roughly 62g of protein from the chicken alone — great for muscle synthesis. Your total is around 520 kcal. Make sure the rest of your meals today keep you around your target of 2500 kcal and 180g protein. How's your breakfast been?",
+        minutesAgo: twoDaysMin + 22,
+      },
+      {
+        sender: 'user',
+        message: "I had oatmeal with a banana and some greek yogurt. Is that a good pre-workout meal?",
+        minutesAgo: twoDaysMin + 20,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Yes! Oatmeal + banana gives you fast and slow-digesting carbs for sustained energy, and the Greek yogurt adds a nice protein boost. Eating this 1–2 hours before training is ideal. One tip: add a handful of berries or some nut butter to get more micronutrients or healthy fats.",
+        minutesAgo: twoDaysMin + 17,
+      },
+      {
+        sender: 'user',
+        message: "I'll try the nut butter idea. Thanks!",
+        minutesAgo: twoDaysMin + 15,
+      },
+      {
+        sender: 'coach',
+        message:
+          "You're welcome! Keep logging your meals — consistency in tracking is one of the best habits you can build. You're doing great so far today!",
+        minutesAgo: twoDaysMin + 13,
+      },
+    ]);
+
+    // Exercise context conversation (from ~1 day ago)
+    const oneDayMin = 1 * 24 * 60;
+    await createConversation('exercise', [
+      {
+        sender: 'user',
+        message: "I just finished my Upper Body Power workout. Bench press felt really heavy today.",
+        minutesAgo: oneDayMin + 40,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Nice work finishing the session! Heavy days happen — it could be accumulated fatigue, hydration, sleep, or just natural variation. Looking at your log, you hit 80kg×8, 80kg×8, and 85kg×6. That's solid volume. How did the rest of the session feel?",
+        minutesAgo: oneDayMin + 37,
+      },
+      {
+        sender: 'user',
+        message: "OHP and lat pulldown felt fine. Bicep curls were the easiest part as always haha.",
+        minutesAgo: oneDayMin + 35,
+      },
+      {
+        sender: 'coach',
+        message:
+          "That's pretty common — biceps get a lot of indirect work from rows and pulldowns so they're usually less fatigued. For the bench, try dropping 5% weight next session and focusing on a slow 3-second eccentric. That can help with strength-endurance and reduce joint stress.",
+        minutesAgo: oneDayMin + 32,
+      },
+      {
+        sender: 'user',
+        message: "Should I add more sets to the bench or stick with 3 working sets?",
+        minutesAgo: oneDayMin + 30,
+      },
+      {
+        sender: 'coach',
+        message:
+          "3 working sets is a great starting point for hypertrophy — it's well within the effective volume range (10–20 sets per muscle group per week). If you're recovering well and want to push more volume, you can add a 4th set in a few weeks. For now, focus on progressive overload by adding 2.5kg once you can hit all reps with good form.",
+        minutesAgo: oneDayMin + 27,
+      },
+      {
+        sender: 'user',
+        message: "Makes sense. What about my leg day? Should I add Romanian deadlifts?",
+        minutesAgo: oneDayMin + 25,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Romanian deadlifts (RDLs) are excellent for hamstring development and hip hinge mechanics. Given that your leg day already has squats, leg press, and deadlifts, I'd swap a deadlift set for RDLs, or add them as a lighter accessory at the end. Start with 3×10–12 at moderate weight and focus on feeling the hamstring stretch.",
+        minutesAgo: oneDayMin + 22,
+      },
+      {
+        sender: 'user',
+        message: "Perfect, I'll try that next leg day. Thanks Loggy!",
+        minutesAgo: oneDayMin + 20,
+      },
+      {
+        sender: 'coach',
+        message:
+          "Anytime! You're making great progress — your squat has gone up 15kg over the past 3 months. Keep pushing and let me know how the RDLs feel!",
+        minutesAgo: oneDayMin + 18,
+      },
+    ]);
+
+    console.log(`Seeded chat history: ${created} messages created across 3 conversation contexts`);
+    return { created };
+  } catch (error) {
+    console.error('Error seeding chat history:', error);
+    throw error;
+  }
+}
+
 export async function seedDevData(): Promise<boolean> {
   // return true;
+  const userSeeded = await seedUser();
   const exercisesSeeded = await seedExercisesIfEmpty();
   const foodsSeeded = await seedFoods();
   const mealsSeeded = await seedMeals();
@@ -1811,17 +2039,20 @@ export async function seedDevData(): Promise<boolean> {
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
+  const chatSeeded = await seedChatHistory();
 
   console.log(
-    `Dev data seeding complete. Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Meals: ${mealsSeeded.created} meals`
+    `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`
   );
 
   return (
+    userSeeded ||
     exercisesSeeded ||
     workoutData.templatesCreated > 0 ||
     workoutData.workoutsCreated > 0 ||
     userMetricsSeeded.created > 0 ||
     foodsSeeded.created > 0 ||
-    mealsSeeded.created > 0
+    mealsSeeded.created > 0 ||
+    chatSeeded.created > 0
   );
 }
