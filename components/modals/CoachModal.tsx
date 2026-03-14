@@ -60,10 +60,8 @@ import {
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
-import { ImageManipulator } from 'expo-image-manipulator';
-
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { pickDocument, readFileAsStringAsync } from '../../utils/file';
+import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -746,15 +744,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         const file = result.assets[0];
 
         // Create a thumbnail for efficient chat preview (max 300px)
-        const manipResult = await ImageManipulator.manipulateAsync(
-          file.uri,
-          [{ resize: { width: 300 } }],
-          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
-        );
+        const { uri, base64 } = await createThumbnail(file.uri, 300);
 
         setAttachedImage({
-          uri: manipResult.uri,
-          base64: manipResult.base64 || '',
+          uri,
+          base64: base64 || '',
         });
       }
     } catch (error) {

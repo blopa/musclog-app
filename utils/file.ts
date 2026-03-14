@@ -6,7 +6,7 @@ import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
-import { ImageManipulator } from 'expo-image-manipulator';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as Updates from 'expo-updates';
@@ -68,10 +68,26 @@ export async function resizeImage(photoUri: string, width: number = 512): Promis
   const manipulatedImage = await ImageManipulator.manipulateAsync(
     photoUri,
     [{ resize: { width } }],
-    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+    { compress: 0.7, format: SaveFormat.JPEG }
   );
 
   return manipulatedImage.uri;
+}
+
+/**
+ * Creates a small thumbnail of an image, optionally returning base64.
+ * Used for chat previews.
+ */
+export async function createThumbnail(
+  uri: string,
+  width: number = 300
+): Promise<{ uri: string; base64?: string }> {
+  const result = await ImageManipulator.manipulateAsync(uri, [{ resize: { width } }], {
+    compress: 0.7,
+    format: SaveFormat.JPEG,
+    base64: true,
+  });
+  return { uri: result.uri, base64: result.base64 };
 }
 
 export async function detectBarcodes(imageUri: string) {
