@@ -73,8 +73,6 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
-const ENABLE_FILE_ATTACHMENT = true;
-
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
@@ -432,7 +430,7 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
-      {ENABLE_FILE_ATTACHMENT && isImageAttachmentEnabled ? (
+      {isImageAttachmentEnabled ? (
         <Pressable
           onPress={onAttachFile}
           className="mr-2 items-center justify-center p-2 active:scale-90"
