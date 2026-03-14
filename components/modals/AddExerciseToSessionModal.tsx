@@ -1,7 +1,7 @@
-import { PlusCircle, Search } from 'lucide-react-native';
+import { Dumbbell, PlusCircle, Search, User } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
@@ -10,6 +10,7 @@ import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
+import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
@@ -80,8 +81,8 @@ export function AddExerciseToSessionModal({
     getAll: true,
   });
 
-  const exercisesByGroup = useMemo(() => {
-    const grouped: Record<MuscleGroupFilter, typeof allExercises> = {
+  const exerciseOptions = useMemo(() => {
+    const grouped: Record<MuscleGroupFilter, SelectorOption<string>[]> = {
       all: [],
       chest: [],
       back: [],
@@ -90,24 +91,51 @@ export function AddExerciseToSessionModal({
     };
     allExercises.forEach((exercise) => {
       const group = normalizeMuscleGroup(exercise.muscleGroup ?? '');
-      if (group) {
-        grouped[group].push(exercise);
-        grouped.all.push(exercise);
+      if (!group) {
+        return;
       }
+
+      const equipment = (exercise.equipmentType ?? '').toLowerCase();
+      const mechanic = (exercise.mechanicType ?? '').toLowerCase();
+      let exerciseType = 'isolation';
+      if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
+        exerciseType = 'bodyweight';
+      } else if (mechanic.includes('compound')) {
+        exerciseType = 'compound';
+      } else if (equipment.includes('machine')) {
+        exerciseType = 'machine';
+      }
+
+      const option: SelectorOption<string> = {
+        id: exercise.id,
+        label: exercise.name ?? '',
+        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        icon: exerciseType === 'bodyweight' ? User : Dumbbell,
+        iconBgColor:
+          exerciseType === 'bodyweight'
+            ? theme.colors.background.white5
+            : theme.colors.accent.primary10,
+        iconColor:
+          exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
+        imageUrl: exercise.imageUrl,
+      };
+
+      grouped[group].push(option);
+      grouped.all.push(option);
     });
     Object.keys(grouped).forEach((key) => {
       const k = key as MuscleGroupFilter;
-      grouped[k].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+      grouped[k].sort((a, b) => a.label.localeCompare(b.label));
     });
     return grouped;
-  }, [allExercises]);
+  }, [allExercises, theme]);
 
   const filteredExercises = useMemo(
     () =>
-      exercisesByGroup[activeMuscle].filter((ex) =>
-        (ex.name ?? '').toLowerCase().includes(searchQuery.toLowerCase())
+      exerciseOptions[activeMuscle].filter((ex) =>
+        ex.label.toLowerCase().includes(searchQuery.toLowerCase())
       ),
-    [exercisesByGroup, activeMuscle, searchQuery]
+    [exerciseOptions, activeMuscle, searchQuery]
   );
 
   const selectedExercise = useMemo(
@@ -232,47 +260,12 @@ export function AddExerciseToSessionModal({
                   <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                 </View>
               ) : filteredExercises.length > 0 ? (
-                <View className="gap-2">
-                  {filteredExercises.map((exercise) => (
-                    <Pressable
-                      key={exercise.id}
-                      onPress={() => setSelectedExerciseId(exercise.id)}
-                      className="flex-row items-center gap-4 rounded-xl border border-border-default bg-bg-card p-4"
-                      style={{ borderColor: theme.colors.background.white5 }}
-                    >
-                      <View
-                        className="h-12 w-12 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: theme.colors.accent.primary20 }}
-                      >
-                        <Text
-                          className="font-bold text-accent-primary"
-                          style={{ fontSize: theme.typography.fontSize.lg }}
-                        >
-                          {(exercise.name ?? '').charAt(0)}
-                        </Text>
-                      </View>
-                      <View className="min-w-0 flex-1">
-                        <Text
-                          className="font-bold text-text-primary"
-                          numberOfLines={1}
-                          style={{ fontSize: theme.typography.fontSize.base }}
-                        >
-                          {exercise.name ?? ''}
-                        </Text>
-                        <Text
-                          className="text-text-secondary"
-                          numberOfLines={1}
-                          style={{ fontSize: theme.typography.fontSize.sm }}
-                        >
-                          {[exercise.muscleGroup, exercise.equipmentType]
-                            .filter(Boolean)
-                            .join(' • ')}
-                        </Text>
-                      </View>
-                      <Text style={{ color: theme.colors.text.secondary }}>&gt;</Text>
-                    </Pressable>
-                  ))}
-                </View>
+                <OptionsSelector
+                  title=""
+                  options={filteredExercises}
+                  selectedId={selectedExerciseId ?? undefined}
+                  onSelect={(id) => setSelectedExerciseId(id as string)}
+                />
               ) : (
                 <View className="items-center justify-center py-12">
                   <Text

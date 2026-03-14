@@ -76,7 +76,11 @@ const OptionItem = memo(
                 {option.imageUrl?.trim() ? (
                   <Image
                     source={{ uri: option.imageUrl }}
-                    style={{ width: theme.size['10'], height: theme.size['10'], borderRadius: theme.borderRadius.full }}
+                    style={{
+                      width: theme.size['10'],
+                      height: theme.size['10'],
+                      borderRadius: theme.borderRadius.full,
+                    }}
                     resizeMode="cover"
                   />
                 ) : (
