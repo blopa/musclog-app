@@ -52,6 +52,18 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
   }
 }
 
+export async function pickDocument(types?: string[]): Promise<DocumentPicker.DocumentPickerResult> {
+  try {
+    return await DocumentPicker.getDocumentAsync({
+      type: types || ['image/*', 'application/pdf', 'text/plain'],
+      copyToCacheDirectory: true,
+    });
+  } catch (error) {
+    console.error('Error picking document:', error);
+    throw error;
+  }
+}
+
 export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
   const manipulatedImage = await ImageManipulator.manipulateAsync(
     photoUri,

@@ -50,6 +50,12 @@
     "listMeasurements": "List Measurements",
     "syncHealthConnect": "Sync Health Connect",
     "getAiInsights": "Get Progression Insights",
+    "getAiInsightsDescription": "Get AI-powered insights on your progress",
+    "manageMetricsDescription": "Add or edit your weight and body fat data",
+    "manageNutritionDescription": "Review and edit your food logs",
+    "listMeasurementsDescription": "View all your body measurements",
+    "syncHealthConnectDescription": "Import data from Google Health Connect",
+    "syncing": "Syncing...",
     "quickActions": "Quick Actions",
     "measurement": {
       "chest": "Chest",

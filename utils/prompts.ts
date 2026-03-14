@@ -5,6 +5,7 @@ import OpenAI from 'openai';
 import type { Units } from '../constants/settings';
 import { User } from '../database/models';
 import {
+  AiCustomPromptService,
   ExerciseService,
   NutritionGoalService,
   NutritionService,
@@ -23,8 +24,29 @@ export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_S
 /**
  * Base system prompt for Loggy persona
  */
-export const getBaseSystemPrompt = (language: string = 'en-US'): string => {
-  return `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
+/**
+ * Get active custom system prompts formatted for inclusion
+ */
+export const getActiveCustomPrompts = async (): Promise<string> => {
+  try {
+    const activePrompts = await AiCustomPromptService.getActivePrompts();
+    if (activePrompts.length === 0) {
+      return '';
+    }
+    return activePrompts.map((p) => p.content).join('\n\n');
+  } catch (error) {
+    console.error('[prompts] Error fetching active custom prompts:', error);
+    return '';
+  }
+};
+
+/**
+ * Base system prompt for Loggy persona
+ */
+export const getBaseSystemPrompt = async (language: string = 'en-US'): Promise<string> => {
+  const customPrompts = await getActiveCustomPrompts();
+  const basePrompt =
+    `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
 Your goal is to provide expert, motivating, and practical fitness advice.
 
 STRICT GUIDELINES:
@@ -33,6 +55,8 @@ STRICT GUIDELINES:
 3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}`.trim();
+
+  return customPrompts ? `${basePrompt}\n\n${customPrompts}` : basePrompt;
 };
 
 /**
@@ -231,7 +255,7 @@ export const getChatMessagePromptContent = async (
   }
 
   const sections = [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
@@ -268,7 +292,7 @@ export const createWorkoutPlanPrompt = async (
   }
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
     'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
@@ -381,7 +405,7 @@ export const getNutritionInsightsPrompt = async (
   );
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `Please provide insights about the user's nutrition in these ${diffInDays} days range, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -433,7 +457,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
   );
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `Please provide insights about the user's workouts in these ${diffInDays} days range, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -474,7 +498,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
   }
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `The user just completed a "${workoutTitle}" workout. Your task is to:
 1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)
 2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan
@@ -551,7 +575,7 @@ export const getWorkoutInsightsPrompt = async (
   }
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `Please provide insights about the user's "${workoutTitle}" workout, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -580,7 +604,7 @@ export const getRecentWorkoutInsightsPrompt = async (
   const resolvedJson = workoutJson ?? '{}';
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `Please provide insights and feedback about the user's recent "${workoutTitle}" workout performance, including volume, exercise selection, rest times, and effort level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -640,7 +664,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
   }
 
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `Analyze the volume trend for the user's "${workoutTitle}" workout over time. Identify patterns, recommend adjustments, and assess progress.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -654,13 +678,13 @@ export const getWorkoutVolumeInsightsPrompt = async (
 /**
  * System prompt for parsing past workouts from natural language
  */
-export const getParsePastWorkoutsPrompt = (
+export const getParsePastWorkoutsPrompt = async (
   userMessage: string,
   exerciseNames: string[],
   language: string = 'en-US'
-): string => {
+): Promise<string> => {
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     "Parse past workouts from the user's text description. Try to match exercise names to the provided list.",
     `If too long, only parse the first 20 workouts. Available exercises: ${exerciseNames.join(', ')}`,
     `User's message:\n${userMessage}`,
@@ -670,12 +694,12 @@ export const getParsePastWorkoutsPrompt = (
 /**
  * System prompt for parsing past nutrition from natural language
  */
-export const getParsePastNutritionPrompt = (
+export const getParsePastNutritionPrompt = async (
   userMessage: string,
   language: string = 'en-US'
-): string => {
+): Promise<string> => {
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     "Parse past nutrition data from the user's text into structured entries. Parse up to 20 entries.",
     'Extract: date, calories, protein, carbs, fat, fiber, and other macronutrients if available.',
     `User's message:\n${userMessage}`,
@@ -685,13 +709,13 @@ export const getParsePastNutritionPrompt = (
 /**
  * System prompt for retrospective nutrition logging
  */
-export const getRetrospectiveNutritionPrompt = (
+export const getRetrospectiveNutritionPrompt = async (
   targetDate: string,
   userMessage: string,
   language: string = 'en-US'
-): string => {
+): Promise<string> => {
   return [
-    getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language),
     `The user wants to log nutrition data for ${targetDate}. Break down their natural language description into individual food items.`,
     'Categorize each item by meal type: 1=Breakfast, 2=Lunch, 3=Dinner, 4=Snack.',
     'Estimate reasonable portions and nutritional values based on common serving sizes.',

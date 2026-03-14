@@ -254,12 +254,12 @@ export default function ProfileScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Syncing Indicator */}
         {isSyncing ? (
-          <View className="px-6 pt-6">
+          <View className="px-4 pt-6">
             <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
         ) : null}
         {/* Header */}
-        <View className="flex-row items-center justify-between px-6 py-6">
+        <View className="flex-row items-center justify-between px-4 py-6">
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
           <Pressable
             className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
@@ -326,7 +326,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Current Stats Section */}
-        <View className="mb-8 px-6">
+        <View className="mb-8 px-4">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">
               {t('profile.currentStats')}
@@ -360,7 +360,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Management Section */}
-        <View className="mb-8 px-6">
+        <View className="mb-8 px-4">
           <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('profile.management')}
           </Text>

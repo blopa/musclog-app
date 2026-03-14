@@ -1,8 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
+  Copy,
+  Dumbbell,
+  Paperclip,
   PlusCircle,
   Send as SendIcon,
   Share2,
@@ -10,6 +15,7 @@ import {
   TrendingUp,
   UtensilsCrossed,
   X,
+  Zap,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,29 +55,85 @@ import {
   type ExtendedIMessage,
   useChatMessages,
 } from '../../hooks/useChatMessages';
+import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import { pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { useSnackbar } from '../SnackbarContext';
 import { MenuButton } from '../theme/MenuButton';
+import { SegmentedControl } from '../theme/SegmentedControl';
 import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
+const ENABLE_FILE_ATTACHMENT = false; // TODO: remove this once we support file attachments
+
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
-      return 'Workout Gen.';
+      return t('coach.actions.workoutGen');
     case ANALYZE_PROGRESS:
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:
       return t('coach.actions.nutritionCheck');
     default:
       return pendingIntention;
+  }
+};
+
+const getConversationContextBackgroundColor = (
+  conversationContext: string,
+  theme: Theme
+): string => {
+  switch (conversationContext) {
+    case 'general':
+      return 'transparent';
+    case 'exercise':
+      return theme.colors.status.info20;
+    case 'nutrition':
+      return theme.colors.accent.primary20;
+    default:
+      return 'transparent';
+  }
+};
+
+const getConversationContextBubbleGradient = (
+  conversationContext: string,
+  theme: Theme
+): readonly [string, string, ...string[]] => {
+  switch (conversationContext) {
+    case 'general':
+      // Indigo to purple gradient for general context
+      return theme.colors.gradients.userBubble;
+    case 'exercise':
+      // Blue to emerald gradient for exercise context
+      return theme.colors.gradients.blueEmerald;
+    case 'nutrition':
+      // Green to jade gradient for nutrition context (current default)
+      return theme.colors.gradients.celebrationGlow;
+    default:
+      return theme.colors.gradients.userBubble;
+  }
+};
+
+const getConversationContextIcon = (
+  conversationContext: string,
+  theme: Theme
+): { Icon: typeof Zap | typeof Dumbbell | typeof UtensilsCrossed; color: string } => {
+  switch (conversationContext) {
+    case 'general':
+      return { Icon: Zap, color: theme.colors.background.gray700 };
+    case 'exercise':
+      return { Icon: Dumbbell, color: theme.colors.status.info };
+    case 'nutrition':
+      return { Icon: UtensilsCrossed, color: theme.colors.accent.primary };
+    default:
+      return { Icon: Zap, color: theme.colors.background.gray700 };
   }
 };
 
@@ -137,18 +199,25 @@ const renderCustomView = (
 const renderBubble = (
   props: BubbleProps<ExtendedIMessage>,
   theme: Theme,
-  onViewWorkoutDetails?: (workoutLogId: string) => void
+  conversationContext: string,
+  onViewWorkoutDetails?: (workoutLogId: string) => void,
+  onLongPress?: (message: ExtendedIMessage) => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
   const styles = getStyles(theme);
 
   if (isUser) {
+    const bubbleGradient = getConversationContextBubbleGradient(conversationContext, theme);
     return (
-      <View style={styles.userBubbleContainer}>
+      <Pressable
+        style={styles.userBubbleContainer}
+        onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
+        delayLongPress={350}
+      >
         {!!currentMessage?.text ? (
           <LinearGradient
-            colors={theme.colors.gradients.userBubble}
+            colors={bubbleGradient as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.userBubbleGradient}
@@ -168,11 +237,15 @@ const renderBubble = (
             })}
           </Text>
         ) : null}
-      </View>
+      </Pressable>
     );
   } else {
     return (
-      <View style={styles.aiBubbleContainer}>
+      <Pressable
+        style={styles.aiBubbleContainer}
+        onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
+        delayLongPress={350}
+      >
         {!!currentMessage?.user.name ? (
           <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
             {currentMessage.user.name}
@@ -184,7 +257,7 @@ const renderBubble = (
         {currentMessage?.workoutCompleted || currentMessage?.workout
           ? renderCustomView(props, onViewWorkoutDetails)
           : null}
-      </View>
+      </Pressable>
     );
   }
 };
@@ -195,9 +268,11 @@ const renderAvatar = (props: any, theme: Theme) => {
   if (props.currentMessage?.user._id === 1) {
     return null;
   }
+
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
   }
+
   return (
     <View style={[styles.avatar, { overflow: 'hidden' }]}>
       <Image
@@ -241,16 +316,30 @@ const renderSend = (
   const styles = getStyles(theme);
   // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
   const effectiveText = (failedMessageText ?? props.text ?? '').trim();
+  const isDisabled = !effectiveText;
 
+  // Always render the send button, regardless of GiftedChat's internal logic
   return (
-    <Send {...props} text={effectiveText} containerStyle={styles.sendContainer}>
-      <View
+    <View style={styles.sendContainer}>
+      <Pressable
+        onPress={() => {
+          if (!isDisabled && props.onSend) {
+            props.onSend({ text: effectiveText }, true);
+          }
+        }}
+        disabled={isDisabled}
         className="h-12 w-12 items-center justify-center rounded-full active:scale-90"
-        style={{ backgroundColor: theme.colors.accent.primary }}
+        style={{
+          backgroundColor: isDisabled ? theme.colors.border.light : theme.colors.accent.primary,
+          opacity: isDisabled ? 0.5 : 1,
+        }}
       >
-        <SendIcon size={theme.iconSize.lg} color={theme.colors.text.black} />
-      </View>
-    </Send>
+        <SendIcon
+          size={theme.iconSize.lg}
+          color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.black}
+        />
+      </Pressable>
+    </View>
   );
 };
 
@@ -267,12 +356,14 @@ function ComposerWithRestoredText({
   theme,
   failedMessageText,
   clearFailedMessageText,
+  onAttachFile,
 }: {
   props: ComposerProps;
   t: TFunction;
   theme: Theme;
   failedMessageText: string | null;
   clearFailedMessageText: () => void;
+  onAttachFile: () => void;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -296,6 +387,17 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
+      {ENABLE_FILE_ATTACHMENT ? (
+        <Pressable
+          onPress={onAttachFile}
+          className="mr-2 items-center justify-center p-2 active:scale-90"
+          style={({ pressed }) => ({
+            opacity: pressed ? 0.7 : 1,
+          })}
+        >
+          <Paperclip size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+        </Pressable>
+      ) : null}
       <Composer
         {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
@@ -315,7 +417,8 @@ const renderComposer = (
   t: TFunction,
   theme: Theme,
   failedMessageText: string | null,
-  clearFailedMessageText: () => void
+  clearFailedMessageText: () => void,
+  onAttachFile: () => void
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -323,6 +426,7 @@ const renderComposer = (
     theme={theme}
     failedMessageText={failedMessageText}
     clearFailedMessageText={clearFailedMessageText}
+    onAttachFile={onAttachFile}
   />
 );
 
@@ -381,6 +485,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
+  const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
   const {
     messages,
     pendingCoachMessage,
@@ -390,25 +496,28 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     loadMore,
     sendMessage,
     clearHistory,
+    deleteMessage,
     sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
-  } = useChatMessages();
+  } = useChatMessages(conversationContext);
+
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
-      setIsOnline(state.isConnected ?? true);
+      setIsOnline(state.isConnected ?? false);
     });
   }, []);
 
@@ -541,9 +650,88 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
 
+  const handleAttachFile = useCallback(async () => {
+    try {
+      const result = await pickDocument(['image/*', 'application/pdf', 'text/plain']);
+
+      if (!result.canceled && result.assets?.[0]) {
+        const file = result.assets[0];
+        // For now, we'll just mention the file in the message
+        // In a full implementation, you might want to upload the file or handle it differently
+        const fileMessage = `📎 Attached: ${file.name}`;
+        sendMessage(fileMessage);
+      }
+    } catch (error) {
+      console.error('Error picking document:', error);
+      showSnackbar('error', t('coach.errors.filePickFailed'), {
+        action: t('snackbar.ok'),
+      });
+    }
+  }, [sendMessage, showSnackbar, t]);
+
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
   }, []);
+
+  const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    setSelectedMessage(message);
+  }, []);
+
+  const messageMenuItems = useMemo(
+    () =>
+      selectedMessage
+        ? [
+            {
+              icon: Copy,
+              iconColor: theme.colors.text.primary,
+              iconBgColor: theme.colors.background.iconDarker,
+              title: t('coach.message.copy'),
+              description: t('coach.message.copyDesc'),
+              onPress: async () => {
+                setSelectedMessage(null);
+                await Clipboard.setStringAsync(selectedMessage.text ?? '');
+                showSnackbar('success', t('coach.message.copied'), { action: t('snackbar.ok') });
+              },
+            },
+            {
+              icon: Share2,
+              iconColor: theme.colors.text.primary,
+              iconBgColor: theme.colors.background.iconDarker,
+              title: t('coach.message.share'),
+              description: t('coach.message.shareDesc'),
+              onPress: () => {
+                setSelectedMessage(null);
+                Share.share({ message: selectedMessage.text ?? '' }).catch(() => {});
+              },
+            },
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error50,
+              iconBgColor: theme.colors.status.error10,
+              title: t('coach.message.delete'),
+              description: t('coach.message.deleteDesc'),
+              titleColor: theme.colors.status.error50,
+              descriptionColor: theme.colors.status.error50,
+              onPress: async () => {
+                setSelectedMessage(null);
+                await deleteMessage(selectedMessage._id);
+                showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+              },
+            },
+          ]
+        : [],
+    [
+      selectedMessage,
+      deleteMessage,
+      showSnackbar,
+      t,
+      theme.colors.background.iconDarker,
+      theme.colors.status.error10,
+      theme.colors.status.error50,
+      theme.colors.text.primary,
+    ]
+  );
 
   const handleShareHistory = useCallback(async () => {
     if (!sessionId) {
@@ -592,7 +780,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const handleConfirmClearHistory = useCallback(async () => {
     try {
       setIsClearingHistory(true);
-      await clearHistory();
+      await clearHistory(conversationContext);
       showSnackbar('success', t('coach.success.historyCleared'), {
         action: t('snackbar.ok'),
       });
@@ -604,7 +792,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     } finally {
       setIsClearingHistory(false);
     }
-  }, [clearHistory, showSnackbar, t]);
+  }, [clearHistory, conversationContext, showSnackbar, t]);
 
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [
@@ -742,8 +930,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   // stable; only the wrapper closures need to be stabilized here.
   const gcRenderBubble = useCallback(
     (props: Parameters<typeof renderBubble>[0]) =>
-      renderBubble(props, theme, handleViewWorkoutDetails),
-    [theme, handleViewWorkoutDetails]
+      renderBubble(
+        props,
+        theme,
+        conversationContext,
+        handleViewWorkoutDetails,
+        handleMessageLongPress
+      ),
+    [theme, conversationContext, handleViewWorkoutDetails, handleMessageLongPress]
   );
   const gcRenderAvatar = useCallback(
     (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
@@ -764,8 +958,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderComposer = useCallback(
     (props: Parameters<typeof renderComposer>[0]) =>
-      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText),
-    [t, theme, failedMessageText, clearFailedMessageText]
+      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText, handleAttachFile),
+    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile]
   );
 
   const gcRenderSend = useCallback(
@@ -780,6 +974,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcScrollToBottomComponent = useCallback(() => null, []);
 
+  const contextIcon = useMemo(() => {
+    const { Icon, color } = getConversationContextIcon(conversationContext, theme);
+    return <Icon size={theme.iconSize.lg} color={color} />;
+  }, [conversationContext, theme]);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -791,7 +990,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       <View className="flex-1 bg-bg-primary">
         <View
           className="flex-row items-center gap-3 border-b px-4 py-3"
-          style={{ borderColor: theme.colors.border.light }}
+          style={{
+            borderColor: theme.colors.border.light,
+            backgroundColor: getConversationContextBackgroundColor(conversationContext, theme),
+          }}
         >
           <View className="relative">
             <Image
@@ -808,14 +1010,19 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             <View
               className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
               style={{
-                backgroundColor: theme.colors.accent.primary,
+                backgroundColor: isOnline ? theme.colors.accent.primary : theme.colors.status.error,
                 borderColor: theme.colors.background.primary,
                 borderWidth: theme.borderWidth.medium,
               }}
             />
           </View>
-          <View>
-            <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+          <View className="flex-1">
+            <View className="flex-row flex-wrap items-baseline gap-1.5">
+              <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
+                - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
+              </Text>
+            </View>
             <View className="flex-row items-center gap-1">
               <View
                 className="h-1.5 w-1.5 rounded-full"
@@ -835,6 +1042,36 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               </Text>
             </View>
           </View>
+          {contextIcon}
+        </View>
+
+        <View className="border-b px-4 py-3" style={{ borderColor: theme.colors.border.light }}>
+          <SegmentedControl
+            options={[
+              {
+                label: t('coach.context.general'),
+                value: 'general',
+                icon: <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
+              },
+              {
+                label: t('coach.context.exercise'),
+                value: 'exercise',
+                icon: <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
+              },
+              {
+                label: t('coach.context.nutrition'),
+                value: 'nutrition',
+                icon: (
+                  <UtensilsCrossed size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                ),
+              },
+            ]}
+            value={conversationContext}
+            onValueChange={(value) =>
+              handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
+            }
+            variant="outline"
+          />
         </View>
 
         <View
@@ -895,6 +1132,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         onClose={() => setIsMenuVisible(false)}
         title={t('coach.menu.title')}
         items={headerMenuItems}
+      />
+
+      <BottomPopUpMenu
+        visible={!!selectedMessage}
+        onClose={() => setSelectedMessage(null)}
+        title={t('coach.message.menuTitle')}
+        items={messageMenuItems}
       />
 
       <ConfirmationModal

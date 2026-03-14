@@ -1,10 +1,12 @@
 import { Database, Download } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useOldDatabaseMigration } from '../hooks/useOldDatabaseMigration';
 import { theme } from '../theme';
 
 export const MigrationSection = () => {
+  const { t } = useTranslation();
   const {
     migrationSummary,
     migrationResult,
@@ -19,11 +21,9 @@ export const MigrationSection = () => {
     <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
       <View className="flex-row items-center gap-2">
         <Download size={theme.iconSize.lg} color={theme.colors.text.primary} />
-        <Text className="text-lg font-bold text-text-primary">Data Migration</Text>
+        <Text className="text-lg font-bold text-text-primary">{t('settings.migration.title')}</Text>
       </View>
-      <Text className="text-sm text-text-secondary">
-        Import data from old database to new WatermelonDB
-      </Text>
+      <Text className="text-sm text-text-secondary">{t('settings.migration.description')}</Text>
 
       <View className="flex-row gap-2">
         <Pressable
@@ -42,7 +42,7 @@ export const MigrationSection = () => {
               checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
             }`}
           >
-            Check Migration Data
+            {t('settings.migration.checkMigrationData')}
           </Text>
         </Pressable>
 
@@ -60,46 +60,58 @@ export const MigrationSection = () => {
           <Text
             className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-black'}`}
           >
-            {migrating ? 'Migrating...' : 'Import Data'}
+            {migrating ? t('settings.migration.migrating') : t('settings.migration.importData')}
           </Text>
         </Pressable>
       </View>
 
       {migrationSummary ? (
         <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-          <Text className="mb-2 text-sm font-bold text-text-primary">Migration Summary:</Text>
-          <Text className="text-sm text-text-secondary">
-            • Fitness Goals: {migrationSummary.fitnessGoalsCount} records
+          <Text className="mb-2 text-sm font-bold text-text-primary">
+            {t('settings.migration.summary')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • User Metrics: {migrationSummary.userMetricsCount} records
+            • {t('settings.migration.summaryItems.fitnessGoals')}:{' '}
+            {migrationSummary.fitnessGoalsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Users: {migrationSummary.usersCount} records
+            • {t('settings.migration.summaryItems.userMetrics')}:{' '}
+            {migrationSummary.userMetricsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Foods: {migrationSummary.foodsCount} records
+            • {t('settings.migration.summaryItems.users')}: {migrationSummary.usersCount}{' '}
+            {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Nutrition Logs: {migrationSummary.nutritionLogsCount} records
+            • {t('settings.migration.summaryItems.foods')}: {migrationSummary.foodsCount}{' '}
+            {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Exercises: {migrationSummary.exercisesCount} records
+            • {t('settings.migration.summaryItems.nutritionLogs')}:{' '}
+            {migrationSummary.nutritionLogsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Workouts: {migrationSummary.workoutsCount} records
+            • {t('settings.migration.summaryItems.exercises')}: {migrationSummary.exercisesCount}{' '}
+            {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Workout Logs: {migrationSummary.workoutLogsCount} records
+            • {t('settings.migration.summaryItems.workouts')}: {migrationSummary.workoutsCount}{' '}
+            {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Template Sets: {migrationSummary.templateSetsCount} records
+            • {t('settings.migration.summaryItems.workoutLogs')}:{' '}
+            {migrationSummary.workoutLogsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Log Sets: {migrationSummary.logSetsCount} records
+            • {t('settings.migration.summaryItems.templateSets')}:{' '}
+            {migrationSummary.templateSetsCount} {t('settings.migration.records')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • Tables Found: {migrationSummary.tables.join(', ')}
+            • {t('settings.migration.summaryItems.logSets')}: {migrationSummary.logSetsCount}{' '}
+            {t('settings.migration.records')}
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            • {t('settings.migration.tablesFound')} {migrationSummary.tables.join(', ')}
           </Text>
         </View>
       ) : null}
@@ -117,51 +129,65 @@ export const MigrationSection = () => {
               migrationResult.success ? 'text-status-success' : 'text-status-error'
             }`}
           >
-            {migrationResult.success ? 'Migration Successful!' : 'Migration Failed'}
+            {migrationResult.success
+              ? t('settings.migration.successful')
+              : t('settings.migration.failed')}
           </Text>
 
           {migrationResult.success ? (
             <View>
               <Text className="text-status-success text-sm">
-                • Fitness Goals: {migrationResult.details.fitnessGoalsMigrated} migrated
+                • {t('settings.migration.summaryItems.fitnessGoals')}:{' '}
+                {migrationResult.details.fitnessGoalsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • User Metrics: {migrationResult.details.userMetricsMigrated} migrated
+                • {t('settings.migration.summaryItems.userMetrics')}:{' '}
+                {migrationResult.details.userMetricsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Users: {migrationResult.details.usersMigrated} migrated
+                • {t('settings.migration.summaryItems.users')}:{' '}
+                {migrationResult.details.usersMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Foods: {migrationResult.details.foodsMigrated} migrated
+                • {t('settings.migration.summaryItems.foods')}:{' '}
+                {migrationResult.details.foodsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Nutrition Logs: {migrationResult.details.nutritionLogsMigrated} migrated
+                • {t('settings.migration.summaryItems.nutritionLogs')}:{' '}
+                {migrationResult.details.nutritionLogsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Exercises: {migrationResult.details.exercisesMigrated} migrated
+                • {t('settings.migration.summaryItems.exercises')}:{' '}
+                {migrationResult.details.exercisesMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Workouts: {migrationResult.details.workoutsMigrated} migrated
+                • {t('settings.migration.summaryItems.workouts')}:{' '}
+                {migrationResult.details.workoutsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Workout Logs: {migrationResult.details.workoutLogsMigrated} migrated
+                • {t('settings.migration.summaryItems.workoutLogs')}:{' '}
+                {migrationResult.details.workoutLogsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Template Sets: {migrationResult.details.templateSetsMigrated} migrated
+                • {t('settings.migration.summaryItems.templateSets')}:{' '}
+                {migrationResult.details.templateSetsMigrated} {t('settings.migration.migrated')}
               </Text>
               <Text className="text-status-success text-sm">
-                • Log Sets: {migrationResult.details.logSetsMigrated} migrated
+                • {t('settings.migration.summaryItems.logSets')}:{' '}
+                {migrationResult.details.logSetsMigrated} {t('settings.migration.migrated')}
               </Text>
             </View>
           ) : (
-            <Text className="text-status-error text-sm">Error: {migrationResult.error}</Text>
+            <Text className="text-status-error text-sm">
+              {t('settings.migration.error', { error: migrationResult.error })}
+            </Text>
           )}
         </View>
       ) : null}
 
       {!migrationSummary && !checkingOldDatabase ? (
         <Text className="py-2 text-sm text-text-tertiary">
-          Click Check Migration Data to see what can be migrated
+          {t('settings.migration.clickToCheck')}
         </Text>
       ) : null}
 
@@ -170,7 +196,9 @@ export const MigrationSection = () => {
           className="mt-2 self-center rounded-lg border border-border-light bg-bg-primary px-4 py-2"
           onPress={resetMigration}
         >
-          <Text className="text-sm text-text-secondary">Reset Migration</Text>
+          <Text className="text-sm text-text-secondary">
+            {t('settings.migration.resetMigration')}
+          </Text>
         </Pressable>
       ) : null}
     </View>

@@ -390,8 +390,23 @@ export const schema = appSchema({
         { name: 'sender', type: 'string' }, // 'user' | 'coach'
         { name: 'message', type: 'string' },
         { name: 'message_type', type: 'string' }, // 'text' for now
+        { name: 'context', type: 'string' }, // 'nutrition' | 'exercise' | 'general'
         { name: 'payload_json', type: 'string', isOptional: true },
         { name: 'summarized_message', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // AI Custom Prompts
+    tableSchema({
+      name: 'ai_custom_prompts',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'content', type: 'string' },
+        { name: 'context', type: 'string' }, // 'nutrition' | 'exercise' | 'general'
+        { name: 'is_active', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

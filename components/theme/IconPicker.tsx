@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ChevronDown } from 'lucide-react-native';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -44,6 +45,7 @@ type IconPickerProps = {
 };
 
 export function IconPicker({ value, onSelect, label }: IconPickerProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const selectedIcon = value || 'restaurant';
@@ -66,7 +68,9 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
               color={theme.colors.accent.primary}
             />
           </View>
-          <Text className="text-base text-text-primary">{selectedIcon || 'Select icon'}</Text>
+          <Text className="text-base text-text-primary">
+            {selectedIcon || t('common.selectIcon')}
+          </Text>
         </View>
         <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
       </Pressable>
@@ -74,7 +78,7 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
       <BottomPopUp
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        title={label || 'Select Icon'}
+        title={label || t('common.selectIconLabel')}
         maxHeight="80%"
       >
         <ScrollView className="p-6" showsVerticalScrollIndicator={false}>

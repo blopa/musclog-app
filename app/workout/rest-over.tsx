@@ -176,9 +176,9 @@ export default function RestOverScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}
-            title={error || 'Workout not found'}
-            description="Unable to load rest over screen. Please try again."
-            buttonLabel="Go Back"
+            title={error || t('workoutSession.notFoundTitle')}
+            description={t('workoutSession.notFoundDescription')}
+            buttonLabel={t('workoutSession.goBack')}
             onButtonPress={() => router.replace('/workout/workouts')}
           />
         </View>

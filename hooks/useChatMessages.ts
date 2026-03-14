@@ -88,7 +88,7 @@ export type UseChatMessagesResult = {
   hasMore: boolean;
   loadMore: () => Promise<void>;
   sendMessage: (text: string) => Promise<void>;
-  clearHistory: () => Promise<void>;
+  clearHistory: (conversationContext?: 'general' | 'exercise' | 'nutrition') => Promise<void>;
   sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
   clearPendingCoachMessage: () => void;
@@ -97,6 +97,7 @@ export type UseChatMessagesResult = {
   clearFailedMessageText: () => void;
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
+  deleteMessage: (messageId: string | number) => Promise<void>;
 };
 
 type AISettings = {
@@ -143,7 +144,9 @@ async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | nu
   return null;
 }
 
-export function useChatMessages(): UseChatMessagesResult {
+export function useChatMessages(
+  conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
+): UseChatMessagesResult {
   const { t } = useTranslation();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
@@ -184,7 +187,7 @@ export function useChatMessages(): UseChatMessagesResult {
     };
   }, []);
 
-  // Initial load once sessionId is resolved
+  // Initial load once sessionId is resolved, reload when context changes
   useEffect(() => {
     if (!sessionId) {
       return;
@@ -193,8 +196,17 @@ export function useChatMessages(): UseChatMessagesResult {
     let cancelled = false;
     const doTask = async () => {
       setIsLoading(true);
+      // Reset state when context changes
+      setCurrentOffset(0);
+      setHasMore(false);
+      rawMessagesRef.current = [];
       try {
-        const records = await ChatService.getSessionMessages(sessionId, INITIAL_LIMIT, 0);
+        const records = await ChatService.getSessionMessages(
+          sessionId,
+          INITIAL_LIMIT,
+          0,
+          conversationContext
+        );
         if (cancelled) {
           return;
         }
@@ -205,7 +217,12 @@ export function useChatMessages(): UseChatMessagesResult {
         setCurrentOffset(records.length);
 
         // Check if there are older messages
-        const lookAhead = await ChatService.getSessionMessages(sessionId, 1, records.length);
+        const lookAhead = await ChatService.getSessionMessages(
+          sessionId,
+          1,
+          records.length,
+          conversationContext
+        );
         if (!cancelled) {
           setHasMore(lookAhead.length > 0);
         }
@@ -223,7 +240,7 @@ export function useChatMessages(): UseChatMessagesResult {
     return () => {
       cancelled = true;
     };
-  }, [sessionId]);
+  }, [sessionId, conversationContext]);
 
   const loadMore = useCallback(async () => {
     if (isLoadingMore || !hasMore || !sessionId) {
@@ -235,7 +252,8 @@ export function useChatMessages(): UseChatMessagesResult {
       const olderRecords = await ChatService.getSessionMessages(
         sessionId,
         BATCH_SIZE,
-        currentOffset
+        currentOffset,
+        conversationContext
       );
 
       if (olderRecords.length === 0) {
@@ -255,7 +273,12 @@ export function useChatMessages(): UseChatMessagesResult {
       if (olderRecords.length < BATCH_SIZE) {
         setHasMore(false);
       } else {
-        const lookAhead = await ChatService.getSessionMessages(sessionId, 1, newOffset);
+        const lookAhead = await ChatService.getSessionMessages(
+          sessionId,
+          1,
+          newOffset,
+          conversationContext
+        );
         setHasMore(lookAhead.length > 0);
       }
     } catch (err) {
@@ -263,7 +286,7 @@ export function useChatMessages(): UseChatMessagesResult {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, sessionId, currentOffset]);
+  }, [isLoadingMore, hasMore, sessionId, currentOffset, conversationContext]);
 
   const addPendingCoachMessage = useCallback((msg: ExtendedIMessage) => {
     pendingCoachMessageRef.current = msg;
@@ -279,26 +302,68 @@ export function useChatMessages(): UseChatMessagesResult {
     setFailedMessageText(null);
   }, []);
 
-  const clearHistory = useCallback(async () => {
-    if (!sessionId) {
-      return;
-    }
+  const deleteMessage = useCallback(
+    async (messageId: string | number) => {
+      const id = String(messageId);
+      if (!messages.some((m) => String(m._id) === id)) {
+        return;
+      }
+      await ChatService.deleteMessage(id);
+      rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== id);
+      setMessages((prev) => prev.filter((m) => String(m._id) !== id));
+      setCurrentOffset((prev) => Math.max(0, prev - 1));
+    },
+    [messages]
+  );
 
-    try {
-      await ChatService.deleteSession(sessionId);
-      rawMessagesRef.current = [];
-      pendingCoachMessageRef.current = null;
-      setMessages([]);
-      setPendingCoachMessage(null);
-      setCurrentOffset(0);
-      setHasMore(false);
-      setFailedMessageText(null);
-      setEphemeralErrorMessage(null);
-    } catch (err) {
-      console.error('[useChatMessages] clearHistory error:', err);
-      throw err;
-    }
-  }, [sessionId]);
+  const clearHistory = useCallback(
+    async (contextToClear?: 'general' | 'exercise' | 'nutrition') => {
+      if (!sessionId) {
+        return;
+      }
+
+      try {
+        if (contextToClear) {
+          // Delete only messages for the specified context
+          await ChatService.deleteSessionMessagesByContext(sessionId, contextToClear);
+
+          // Get message IDs to remove before filtering rawMessagesRef
+          const messageIdsToRemove = rawMessagesRef.current
+            .filter((r) => r.context === contextToClear)
+            .map((r) => r.id);
+
+          // Filter out deleted messages from local state
+          rawMessagesRef.current = rawMessagesRef.current.filter(
+            (r) => r.context !== contextToClear
+          );
+
+          // Remove messages from UI state if we're viewing the cleared context
+          if (contextToClear === conversationContext) {
+            setMessages((prev) => prev.filter((m) => !messageIdsToRemove.includes(String(m._id))));
+            setCurrentOffset(0);
+            setHasMore(false);
+            setFailedMessageText(null);
+            setEphemeralErrorMessage(null);
+          }
+        } else {
+          // If no context specified, delete entire session (backward compatibility)
+          await ChatService.deleteSession(sessionId);
+          rawMessagesRef.current = [];
+          pendingCoachMessageRef.current = null;
+          setMessages([]);
+          setPendingCoachMessage(null);
+          setCurrentOffset(0);
+          setHasMore(false);
+          setFailedMessageText(null);
+          setEphemeralErrorMessage(null);
+        }
+      } catch (err) {
+        console.error('[useChatMessages] clearHistory error:', err);
+        throw err;
+      }
+    },
+    [sessionId, conversationContext]
+  );
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -325,6 +390,7 @@ export function useChatMessages(): UseChatMessagesResult {
           sessionId,
           sender: 'user',
           message: text.trim(),
+          context: conversationContext,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
         setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
@@ -373,8 +439,13 @@ export function useChatMessages(): UseChatMessagesResult {
         // Cap at 20 messages, use summarized_message if available.
         // Exclude the current user message from history — we pass it separately to sendCoachMessage
         // so it is not sent twice to the LLM.
+        // Filter to only include messages from the current conversation context.
         const maxHistoryLength = 20;
-        const slicedHistory = rawMessagesRef.current.slice(-maxHistoryLength);
+        const contextFilteredHistory = rawMessagesRef.current.filter(
+          (record) => record.context === conversationContext
+        );
+
+        const slicedHistory = contextFilteredHistory.slice(-maxHistoryLength);
         const historyWithoutCurrentMessage = slicedHistory.slice(0, -1);
 
         const systemMessage = await getChatMessagePromptContent();
@@ -536,6 +607,7 @@ export function useChatMessages(): UseChatMessagesResult {
           message: reply.msg4User,
           summarizedMessage: reply.sumMsg,
           payloadJson,
+          context: conversationContext,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
         setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
@@ -555,7 +627,7 @@ export function useChatMessages(): UseChatMessagesResult {
         setIsSending(false);
       }
     },
-    [sessionId, isSending, t, clearFailedMessageText]
+    [sessionId, isSending, t, clearFailedMessageText, conversationContext]
   );
 
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
@@ -587,5 +659,6 @@ export function useChatMessages(): UseChatMessagesResult {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    deleteMessage,
   };
 }

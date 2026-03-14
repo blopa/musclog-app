@@ -1,4 +1,5 @@
 // Export all models
+export { default as AiCustomPrompt } from './AiCustomPrompt';
 export { default as ChatMessage } from './ChatMessage';
 export { default as Exercise } from './Exercise';
 export { default as Food } from './Food';

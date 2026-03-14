@@ -165,6 +165,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setNotificationsWorkoutDuration(false);
     console.log('Set default notification settings to false');
 
+    await SettingsService.setCoachConversationContext('general');
+    console.log('Set default coach conversation context to general');
+
     // Set default navigation bar slots
     await SettingsService.setNavSlot(1, 'workouts');
     await SettingsService.setNavSlot(2, 'food');

@@ -63,6 +63,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'useOcrBeforeAi',
       'units',
       'foodSearchSource',
+      'conversationContext',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -207,6 +208,9 @@ export function useDebouncedSettings(debounceMs = 200) {
     'foodSearchSource',
     SettingsService.setFoodSearchSource
   );
+  const handleConversationContextChange = createSettingHandler<
+    'general' | 'exercise' | 'nutrition'
+  >('conversationContext', SettingsService.setCoachConversationContext);
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -277,6 +281,11 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
             break;
+          case 'conversationContext':
+            await SettingsService.setCoachConversationContext(
+              value as 'general' | 'exercise' | 'nutrition'
+            );
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -329,6 +338,9 @@ export function useDebouncedSettings(debounceMs = 200) {
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
+    conversationContext:
+      (localSettings.conversationContext as 'general' | 'exercise' | 'nutrition') ??
+      actualSettings.conversationContext,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -356,6 +368,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
     handleFoodSearchSourceChange,
+    handleConversationContextChange,
 
     // Utilities
     flushAllPendingChanges,

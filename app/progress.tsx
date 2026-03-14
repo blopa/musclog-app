@@ -45,7 +45,6 @@ export default function ProgressScreen() {
     hasAnyAggregationData,
   } = useProgressData();
 
-  // TODO: use isSyncing
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -96,7 +95,7 @@ export default function ProgressScreen() {
       ? [
           {
             title: t('progress.getAiInsights'),
-            description: 'Get AI-powered insights on your progress',
+            description: t('progress.getAiInsightsDescription'),
             icon: Sparkles,
             onPress: () => {
               router.push('/chat?context=progression');
@@ -108,7 +107,7 @@ export default function ProgressScreen() {
       : []),
     {
       title: t('progress.manageMetrics'),
-      description: 'Add or edit your weight and body fat data',
+      description: t('progress.manageMetricsDescription'),
       icon: Scale,
       onPress: () => {
         router.push('/settings');
@@ -118,7 +117,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.manageNutrition'),
-      description: 'Review and edit your food logs',
+      description: t('progress.manageNutritionDescription'),
       icon: Utensils,
       onPress: () => {
         router.push('/nutrition/manage');
@@ -128,7 +127,7 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.listMeasurements'),
-      description: 'View all your body measurements',
+      description: t('progress.listMeasurementsDescription'),
       icon: Ruler,
       onPress: () => {
         router.push('/profile');
@@ -138,10 +137,10 @@ export default function ProgressScreen() {
     },
     {
       title: t('progress.syncHealthConnect'),
-      description: 'Import data from Google Health Connect',
+      description: isSyncing ? t('progress.syncing') : t('progress.syncHealthConnectDescription'),
       icon: RefreshCw,
-      onPress: handleSync,
-      iconColor: theme.colors.accent.secondary,
+      onPress: isSyncing ? () => {} : handleSync,
+      iconColor: isSyncing ? theme.colors.text.secondary : theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
     },
   ];

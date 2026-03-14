@@ -5,12 +5,18 @@
     "name": "Loggy",
     "status": "Online",
     "statusOffline": "Offline",
+    "context": {
+      "general": "General",
+      "exercise": "Fitness",
+      "nutrition": "Nutrition"
+    },
     "placeholder": "Type a message...",
     "todayAt": "Today, {{time}}",
     "actions": {
       "createWorkout": "Create Workout",
       "analyzeProgress": "Analyze Progress",
-      "nutritionCheck": "Nutrition Check"
+      "nutritionCheck": "Nutrition Check",
+      "workoutGen": "Workout Gen."
     },
     "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
     "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
@@ -21,7 +27,8 @@
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
       "generalError": "Sorry, something went wrong. Please try again.",
       "progressInsightFailed": "Could not analyze progress. Try again later.",
-      "nutritionInsightFailed": "Could not check nutrition. Try again later."
+      "nutritionInsightFailed": "Could not check nutrition. Try again later.",
+      "filePickFailed": "Failed to pick file. Please try again."
     },
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
@@ -55,18 +62,29 @@
     "menu": {
       "title": "Chat options",
       "clearHistory": "Clear chat history",
-      "clearHistoryDesc": "Delete all messages in this conversation.",
+      "clearHistoryDesc": "Delete all messages in this conversation context.",
       "shareHistory": "Share chat history",
       "shareHistoryDesc": "Export this whole conversation as plain text."
     },
     "confirmClear": {
       "title": "Clear chat history?",
-      "message": "This will permanently delete all messages in this conversation. This cannot be undone."
+      "message": "This will permanently delete all messages in this conversation context. This cannot be undone."
     },
     "share": {
       "title": "Chat with Loggy",
       "noMessages": "There is no chat history to share yet.",
       "failed": "Failed to share chat history. Please try again."
+    },
+    "message": {
+      "menuTitle": "Message actions",
+      "copy": "Copy",
+      "copyDesc": "Copy message text to clipboard",
+      "share": "Share",
+      "shareDesc": "Share this message",
+      "delete": "Delete",
+      "deleteDesc": "Remove this message from the conversation",
+      "copied": "Message copied to clipboard",
+      "deleted": "Message deleted"
     }
   }
 }

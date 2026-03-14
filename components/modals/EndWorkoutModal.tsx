@@ -163,7 +163,7 @@ export function EndWorkoutModal({
               </View>
 
               {/* Action Buttons */}
-              <View className="gap-3 px-6 pb-6">
+              <View className="gap-3 px-4 pb-6">
                 <Button
                   label={t('endWorkout.finishAndSave')}
                   icon={Save}

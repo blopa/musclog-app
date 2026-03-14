@@ -132,7 +132,7 @@ export function DatePickerModal({
     <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
       <View className="flex-1">
         {/* Title Section */}
-        <View className="px-6 pb-6 pt-2">
+        <View className="px-4 pb-6 pt-2">
           <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
             {t('datePicker.selectDate')}
           </Text>

@@ -490,7 +490,7 @@ export default function ViewExerciseModal({
             </View>
 
             <View
-              className="px-6 py-6"
+              className="px-4 py-6"
               style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}
             >
               <GenericCard variant="default" size="sm">
@@ -539,7 +539,7 @@ export default function ViewExerciseModal({
               </GenericCard>
             </View>
 
-            <View className="px-6 py-4">
+            <View className="px-4 py-4">
               <View className="mb-4 flex-row items-center justify-between">
                 <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
                   {t('exercises.viewExercise.workoutsUsingThis')}

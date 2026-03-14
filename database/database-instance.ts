@@ -2,6 +2,7 @@ import { Database } from '@nozbe/watermelondb';
 
 import adapter from './adapter';
 // Import all models
+import AiCustomPrompt from './models/AiCustomPrompt';
 import ChatMessage from './models/ChatMessage';
 import Exercise from './models/Exercise';
 import Food from './models/Food';
@@ -31,6 +32,7 @@ import WorkoutTemplateSet from './models/WorkoutTemplateSet';
 export const database = new Database({
   adapter,
   modelClasses: [
+    AiCustomPrompt,
     Exercise,
     UserMetric,
     UserMetricsNote,

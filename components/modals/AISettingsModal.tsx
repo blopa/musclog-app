@@ -1,4 +1,12 @@
-import { Apple, Bot, ChevronDown, Dumbbell, ScanText } from 'lucide-react-native';
+import {
+  Apple,
+  Bot,
+  ChevronDown,
+  ChevronRight,
+  Dumbbell,
+  ScanText,
+  Settings2,
+} from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Pressable, Text, View } from 'react-native';
@@ -13,6 +21,7 @@ import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
 import { SecretInput } from '../theme/SecretInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -204,6 +213,7 @@ export function AISettingsModal({
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -478,6 +488,48 @@ export function AISettingsModal({
           />
         </View>
 
+        {/* Custom Prompts Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.aiSettings.customPrompts')}
+          </Text>
+          <Pressable
+            onPress={() => setIsCustomPromptsVisible(true)}
+            className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4 active:bg-bg-overlay"
+            style={{
+              borderColor: theme.colors.border.light,
+              borderWidth: theme.borderWidth.thin,
+            }}
+          >
+            <View className="flex-row items-center gap-3">
+              <View
+                style={{
+                  width: theme.size['8'],
+                  height: theme.size['8'],
+                  borderRadius: theme.borderRadius.full / 2,
+                  backgroundColor: theme.colors.accent.primary20,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+              <View>
+                <Text className="text-sm font-medium text-text-primary">
+                  {t('settings.aiSettings.manageCustomPrompts')}
+                </Text>
+                <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
+                  {t('settings.aiSettings.customPromptsSubtitle')}
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+          </Pressable>
+        </View>
+
         <LegalLinksCard />
 
         {/* Model Selection Menus */}
@@ -506,6 +558,11 @@ export function AISettingsModal({
         message={t('settings.aiSettings.disconnectGoogleMessage')}
         confirmLabel={t('settings.aiSettings.disconnectGoogleConfirm')}
         variant="destructive"
+      />
+
+      <AiCustomPromptsModal
+        visible={isCustomPromptsVisible}
+        onClose={() => setIsCustomPromptsVisible(false)}
       />
     </FullScreenModal>
   );

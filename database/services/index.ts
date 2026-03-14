@@ -10,6 +10,9 @@ export { ExerciseService } from './ExerciseService';
 // Export chat service
 export { ChatService } from './ChatService';
 
+// Export AI custom prompt service
+export { AiCustomPromptService } from './AiCustomPromptService';
+
 // Export existing services
 export { GoogleAuthService } from './GoogleAuthService';
 export {

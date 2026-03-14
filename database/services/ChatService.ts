@@ -1,7 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../database-instance';
-import ChatMessage, { type ChatMessageType, type ChatSender } from '../models/ChatMessage';
+import ChatMessage, {
+  type ChatMessageContext,
+  type ChatMessageType,
+  type ChatSender,
+} from '../models/ChatMessage';
 
 export class ChatService {
   static generateSessionId(): string {
@@ -13,6 +17,7 @@ export class ChatService {
     sender: ChatSender;
     message: string;
     messageType?: ChatMessageType;
+    context?: ChatMessageContext;
     payloadJson?: string;
     summarizedMessage?: string;
   }): Promise<ChatMessage> {
@@ -23,6 +28,7 @@ export class ChatService {
         record.sender = params.sender;
         record.message = params.message;
         record.messageType = params.messageType ?? 'text';
+        record.context = params.context ?? 'general';
         record.payloadJson = params.payloadJson;
         record.summarizedMessage = params.summarizedMessage;
         record.createdAt = now;
@@ -36,11 +42,13 @@ export class ChatService {
    * @param sessionId
    * @param limit  How many messages to return
    * @param offset How many messages to skip (for load-more of older messages)
+   * @param context Optional context filter ('general' | 'exercise' | 'nutrition')
    */
   static async getSessionMessages(
     sessionId: string,
     limit?: number,
-    offset?: number
+    offset?: number,
+    context?: ChatMessageContext
   ): Promise<ChatMessage[]> {
     let query = database
       .get<ChatMessage>('chat_messages')
@@ -49,6 +57,10 @@ export class ChatService {
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('created_at', Q.desc)
       );
+
+    if (context) {
+      query = query.extend(Q.where('context', context));
+    }
 
     if (limit !== undefined) {
       if (offset && offset > 0) {
@@ -106,6 +118,37 @@ export class ChatService {
     const messages = await database
       .get<ChatMessage>('chat_messages')
       .query(Q.where('session_id', sessionId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    await database.write(async () => {
+      const now = Date.now();
+      await Promise.all(
+        messages.map((msg) =>
+          msg.update((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
+   * Delete all messages for a specific conversation context within a session.
+   * @param sessionId The session ID
+   * @param context The conversation context to delete ('general' | 'exercise' | 'nutrition')
+   */
+  static async deleteSessionMessagesByContext(
+    sessionId: string,
+    context: ChatMessageContext
+  ): Promise<void> {
+    const messages = await database
+      .get<ChatMessage>('chat_messages')
+      .query(
+        Q.where('session_id', sessionId),
+        Q.where('context', context),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     await database.write(async () => {

@@ -8,6 +8,7 @@ import { MealService } from '../../database/services';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import i18n from '../../lang/lang';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -43,12 +44,12 @@ const deriveTags = (
 
   // Check for high protein
   if (nutrients.protein >= 40) {
-    tags.push('High Protein');
+    tags.push(i18n.t('meals.tags.highProtein'));
   }
 
   // Check for keto friendly (low carbs)
   if (nutrients.carbs < 20) {
-    tags.push('Keto Friendly');
+    tags.push(i18n.t('meals.tags.ketoFriendly'));
   }
 
   // Check for vegetarian keywords
@@ -57,7 +58,7 @@ const deriveTags = (
     fullText.includes('vegetarian') ||
     (fullText.includes('egg') && !fullText.includes('chicken') && !fullText.includes('salmon'))
   ) {
-    tags.push('Vegetarian');
+    tags.push(i18n.t('meals.tags.vegetarian'));
   }
 
   // Infer meal type from name
@@ -67,11 +68,11 @@ const deriveTags = (
     lowerName.includes('oatmeal') ||
     lowerName.includes('toast')
   ) {
-    tags.push('Breakfast');
+    tags.push(i18n.t('meals.tags.breakfast'));
   } else if (lowerName.includes('lunch') || lowerName.includes('bowl')) {
-    tags.push('Lunch');
+    tags.push(i18n.t('meals.tags.lunch'));
   } else if (lowerName.includes('dinner') || lowerName.includes('salad')) {
-    tags.push('Dinner');
+    tags.push(i18n.t('meals.tags.dinner'));
   }
 
   return tags;
@@ -145,7 +146,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
             return {
               id: meal.id,
-              title: meal.name ?? 'Untitled Meal',
+              title: meal.name ?? t('meals.untitledMeal'),
               tags,
               calories: Math.round(nutrients.calories),
               macros: {
@@ -166,7 +167,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     };
 
     transformMeals();
-  }, [meals]);
+  }, [meals, t]);
 
   // Filter meals based on active filter and search query
   const filteredMeals = useMemo(() => {
@@ -273,6 +274,23 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
 
   const showLoading = isLoading || isTransforming;
 
+  // Helper functions to avoid nested ternaries
+  const getEmptyStateTitle = () => {
+    if (searchQuery.trim()) {
+      return t('meals.noMealsFound');
+    }
+
+    return activeFilter === 'all' ? t('meals.noMealsYet') : t('meals.noMealsFound');
+  };
+
+  const getEmptyStateMessage = () => {
+    if (searchQuery.trim()) {
+      return t('meals.noMealsMatch', { query: searchQuery });
+    }
+
+    return activeFilter === 'all' ? t('meals.createFirstMeal') : t('meals.tryDifferentFilter');
+  };
+
   return (
     <FullScreenModal
       visible={visible}
@@ -289,13 +307,13 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     >
       <View className="flex-1 bg-bg-primary">
         {/* Header */}
-        <View className="px-6 pb-4 pt-6">
+        <View className="px-4 pb-4 pt-6">
           {/* Search Input */}
           <TextInput
             label=""
             value={searchQuery}
             onChangeText={handleSearchChange}
-            placeholder="Search meals..."
+            placeholder={t('meals.searchPlaceholder')}
             icon={<Search size={theme.iconSize.md} color={theme.colors.text.secondary} />}
           />
         </View>
@@ -328,7 +346,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                Loading meals...
+                {t('meals.loadingMeals')}
               </Text>
             </View>
           ) : filteredMeals.length === 0 ? (
@@ -340,11 +358,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.xl,
                 }}
               >
-                {searchQuery.trim()
-                  ? 'No meals found'
-                  : activeFilter === 'all'
-                    ? 'No meals yet'
-                    : 'No meals found'}
+                {getEmptyStateTitle()}
               </Text>
               <Text
                 className="text-center font-medium"
@@ -353,11 +367,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
-                {searchQuery.trim()
-                  ? `No meals match "${searchQuery}"`
-                  : activeFilter === 'all'
-                    ? 'Create your first meal to get started'
-                    : 'Try a different filter'}
+                {getEmptyStateMessage()}
               </Text>
             </View>
           ) : (
@@ -377,7 +387,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               {hasMore ? (
                 <View className="py-4">
                   <Button
-                    label={isLoadingMore ? 'Loading more...' : 'Load More'}
+                    label={isLoadingMore ? t('meals.loadingMore') : t('meals.loadMore')}
                     onPress={loadMore}
                     size="sm"
                     variant="outline"

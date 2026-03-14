@@ -238,7 +238,7 @@ export default function WorkoutsScreen() {
       <View className="flex-1">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Header */}
-          <View className="px-6 py-6">
+          <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
               {!isSearchActive ? (
                 <GradientText
@@ -304,7 +304,7 @@ export default function WorkoutsScreen() {
           </View>
 
           {/* Workouts List */}
-          <View className="mx-6 mb-8 gap-4">
+          <View className="mx-4 mb-8 gap-4">
             {/* Error State */}
             {error ? (
               <ErrorStateCard

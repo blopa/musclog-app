@@ -5,6 +5,7 @@ import i18n from '../lang/lang';
 import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
+  getActiveCustomPrompts,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,
@@ -136,8 +137,9 @@ export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_S
  * Merged System Prompt:
  * Combines Loggy's app integration with Chad's PhD personality and guardrails.
  */
-const getSystemPrompt = (language: string = 'en-US') =>
-  `
+const getSystemPrompt = async (language: string = 'en-US') => {
+  const customPrompts = await getActiveCustomPrompts();
+  const basePrompt = `
 You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
 Your goal is to provide expert, motivating, and practical fitness advice.
 
@@ -148,6 +150,9 @@ STRICT GUIDELINES:
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
 5. CONCISE: ${BE_CONCISE_PROMPT}
 `.trim();
+
+  return customPrompts ? `${basePrompt}\n\n${customPrompts}` : basePrompt;
+};
 
 const baseSchemaProperties = {
   msg4User: {
@@ -218,7 +223,8 @@ async function sendViaGemini(
   history: ChatHistoryEntry[],
   userMessage: string
 ): Promise<CoachResponse> {
-  const systemParts: Part[] = [{ text: getSystemPrompt(config.language) }];
+  const systemPrompt = await getSystemPrompt(config.language);
+  const systemParts: Part[] = [{ text: systemPrompt }];
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
 
   const genModel = await configureBasicGenAI(
@@ -247,9 +253,10 @@ async function sendViaOpenAI(
 ): Promise<CoachResponse> {
   const client = new OpenAI({ apiKey: config.apiKey });
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
+  const systemPrompt = await getSystemPrompt(config.language);
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-    { role: 'system', content: getSystemPrompt(config.language) },
+    { role: 'system', content: systemPrompt },
     ...history.map((entry) => ({
       role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
       content: entry.content,
@@ -752,7 +759,11 @@ export async function estimateNutritionFromPhoto(
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
   try {
-    const systemPrompt = getEstimateNutritionFromPhotoPrompt();
+    const customPrompts = await getActiveCustomPrompts();
+    const baseSystemPrompt = getEstimateNutritionFromPhotoPrompt();
+    const systemPrompt = customPrompts
+      ? `${baseSystemPrompt}\n\n${customPrompts}`
+      : baseSystemPrompt;
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
     const fns = getEstimateMacrosFunctions(false);
@@ -795,7 +806,11 @@ export async function extractMacrosFromLabelPhoto(
   context?: MealPhotoContext | null
 ): Promise<MacroEstimate | null> {
   try {
-    const systemPrompt = getExtractMacrosFromLabelPrompt();
+    const customPrompts = await getActiveCustomPrompts();
+    const baseSystemPrompt = getExtractMacrosFromLabelPrompt();
+    const systemPrompt = customPrompts
+      ? `${baseSystemPrompt}\n\n${customPrompts}`
+      : baseSystemPrompt;
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
     const fns = getEstimateMacrosFunctions(true);
@@ -846,7 +861,11 @@ export async function extractMacrosFromLabelText(
       return null;
     }
 
-    const systemPrompt = getExtractMacrosFromLabelTextPrompt();
+    const customPrompts = await getActiveCustomPrompts();
+    const baseSystemPrompt = getExtractMacrosFromLabelTextPrompt();
+    const systemPrompt = customPrompts
+      ? `${baseSystemPrompt}\n\n${customPrompts}`
+      : baseSystemPrompt;
     const fns = getEstimateMacrosFunctions(true);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
@@ -889,7 +908,7 @@ export async function parsePastWorkouts(
 ): Promise<ParsedWorkout[] | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
+    const systemPrompt = await getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
     const fns = getParsePastWorkoutsFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<{ pastWorkouts: ParsedWorkout[] }>(
@@ -915,7 +934,7 @@ export async function parsePastNutrition(
 ): Promise<ParsedNutrition[] | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = getParsePastNutritionPrompt(userMessage, lang);
+    const systemPrompt = await getParsePastNutritionPrompt(userMessage, lang);
     const fns = getParsePastNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<{ pastNutrition: ParsedNutrition[] }>(
@@ -942,7 +961,7 @@ export async function parseRetrospectiveNutrition(
 ): Promise<NutritionEntry[] | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
+    const systemPrompt = await getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
     const fns = getParseRetrospectiveNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
     const parsed = await generateStructured<{ nutritionEntries: NutritionEntry[] }>(

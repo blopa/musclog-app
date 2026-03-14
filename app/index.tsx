@@ -302,7 +302,7 @@ export default function HomeScreen() {
     <MasterLayout>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="flex-row items-center justify-between px-6 py-6">
+        <View className="flex-row items-center justify-between px-4 py-6">
           <Pressable
             className="flex-row items-center gap-3"
             onPress={() => setIsUserMenuVisible(true)}
@@ -380,7 +380,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Daily Summary Card */}
-        <View className="mb-6 px-6">
+        <View className="mb-6 px-4">
           {isLoadingNutritionSummary ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
@@ -405,7 +405,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View className="mx-6 mb-8 flex-row gap-4">
+        <View className="mx-4 mb-8 flex-row gap-4">
           <ActionButton
             variant="workout"
             label={t('home.actions.startWorkout')}
@@ -417,7 +417,7 @@ export default function HomeScreen() {
             onPress={() => setIsAddFoodVisible(true)}
           />
         </View>
-        <View className="mx-6 mb-8">
+        <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentFoods')}
@@ -496,7 +496,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Recent Workouts */}
-        <View className="mx-6 mb-8">
+        <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">
               {t('home.sections.recentWorkouts')}

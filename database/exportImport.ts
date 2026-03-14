@@ -74,6 +74,9 @@ const RESTORE_ORDER: string[] = [
 
   // Chat messages (independent)
   'chat_messages',
+
+  // AI custom prompts (independent)
+  'ai_custom_prompts',
 ];
 
 const SETTINGS_EXCLUDED_TYPES = [GOOGLE_GEMINI_API_KEY_SETTING_TYPE, OPENAI_API_KEY_SETTING_TYPE];
