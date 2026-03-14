@@ -2,7 +2,7 @@ import { reloadAppAsync } from 'expo';
 import { Asset } from 'expo-asset';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
-import { cacheDirectory, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import { cacheDirectory, copyAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 import { ReadingOptions } from 'expo-file-system/src/legacy/FileSystem.types';
 import ExpoImageCropTool from 'expo-image-crop-tool';
 import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
@@ -194,17 +194,20 @@ export async function copyBundledExerciseImageToDocument(
   }
 
   try {
-    // Use expo-asset to download and resolve the bundled asset
-    // This works in both development and production builds
+    // Use expo-asset to resolve the bundled asset.
+    // In production EAS builds on Android, asset.localUri can be null even after
+    // downloadAsync() because assets embedded in the APK/AAB aren't always extracted
+    // to a local file path. asset.uri is always set and the legacy copyAsync handles
+    // file://, asset://, and https:// URIs correctly in all environments.
     const asset = await Asset.fromModule(assetSource).downloadAsync();
-    if (asset.localUri) {
-      const srcFile = new File(asset.localUri);
-      srcFile.copy(destFile);
-      console.log(`Successfully copied exercise image: ${destFilename} -> ${destFile.uri}`);
-      return destFile.uri;
-    } else {
-      throw new Error('Asset download failed - no localUri available');
+    const sourceUri = asset.localUri ?? asset.uri;
+    if (!sourceUri) {
+      throw new Error('Asset has no resolvable URI');
     }
+
+    await copyAsync({ from: sourceUri, to: destFile.uri });
+    console.log(`Successfully copied exercise image: ${destFilename} -> ${destFile.uri}`);
+    return destFile.uri;
   } catch (error) {
     console.error('Failed to copy exercise image:', {
       error,
