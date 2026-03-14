@@ -260,7 +260,7 @@ export function AreaChart({
             }}
           />
         </VictoryChart>
-        {interactive && (
+        {interactive ? (
           <View
             {...({
               style: {
@@ -296,7 +296,7 @@ export function AreaChart({
               },
             } as ViewWithMouseProps)}
           />
-        )}
+        ) : null}
         {interactive && activeLabel ? (
           <View
             pointerEvents="none"
@@ -317,13 +317,15 @@ export function AreaChart({
             }}
           >
             <Text
-              style={{
-                color: theme.colors.text.primary,
-                fontSize: theme.typography.fontSize.xxs,
-                fontWeight: '600',
-                textAlign: 'center',
-                whiteSpace: 'pre-line',
-              }}
+              style={
+                {
+                  color: theme.colors.text.primary,
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  whiteSpace: 'pre-line',
+                } as any
+              }
             >
               {activeLabel}
             </Text>

@@ -73,8 +73,6 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
-const ENABLE_FILE_ATTACHMENT = true;
-
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
@@ -432,7 +430,7 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
-      {ENABLE_FILE_ATTACHMENT && isImageAttachmentEnabled ? (
+      {isImageAttachmentEnabled ? (
         <Pressable
           onPress={onAttachFile}
           className="mr-2 items-center justify-center p-2 active:scale-90"
@@ -1128,6 +1126,54 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     return <Icon size={theme.iconSize.lg} color={color} />;
   }, [conversationContext, theme]);
 
+  const conversationContextOptions = useMemo(
+    () => [
+      {
+        value: 'general',
+        label: t('coach.context.general'),
+        icon: (
+          <Zap
+            size={theme.iconSize.sm}
+            color={
+              conversationContext === 'general'
+                ? theme.colors.text.primary
+                : theme.colors.text.tertiary
+            }
+          />
+        ),
+      },
+      {
+        value: 'exercise',
+        label: t('coach.context.exercise'),
+        icon: (
+          <Dumbbell
+            size={theme.iconSize.sm}
+            color={
+              conversationContext === 'exercise'
+                ? theme.colors.text.primary
+                : theme.colors.text.tertiary
+            }
+          />
+        ),
+      },
+      {
+        value: 'nutrition',
+        label: t('coach.context.nutrition'),
+        icon: (
+          <UtensilsCrossed
+            size={theme.iconSize.sm}
+            color={
+              conversationContext === 'nutrition'
+                ? theme.colors.text.primary
+                : theme.colors.text.tertiary
+            }
+          />
+        ),
+      },
+    ],
+    [conversationContext, theme, t]
+  );
+
   return (
     <FullScreenModal
       visible={visible}
@@ -1196,30 +1242,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
         <View className="border-b px-4 py-3" style={{ borderColor: theme.colors.border.light }}>
           <SegmentedControl
-            options={[
-              {
-                label: t('coach.context.general'),
-                value: 'general',
-                icon: <Zap size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
-              },
-              {
-                label: t('coach.context.exercise'),
-                value: 'exercise',
-                icon: <Dumbbell size={theme.iconSize.sm} color={theme.colors.text.tertiary} />,
-              },
-              {
-                label: t('coach.context.nutrition'),
-                value: 'nutrition',
-                icon: (
-                  <UtensilsCrossed size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                ),
-              },
-            ]}
+            options={conversationContextOptions}
             value={conversationContext}
             onValueChange={(value) =>
               handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
             }
-            variant="outline"
+            variant="elevated"
           />
         </View>
 

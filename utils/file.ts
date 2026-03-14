@@ -65,10 +65,14 @@ export async function pickDocument(types?: string[]): Promise<DocumentPicker.Doc
 }
 
 export async function resizeImage(photoUri: string, width: number = 512): Promise<string> {
-  const manipulatedImage = await ImageManipulator.manipulateAsync(photoUri, [{ resize: { width } }], {
-    compress: 0.7,
-    format: ImageManipulator.SaveFormat.JPEG,
-  });
+  const manipulatedImage = await ImageManipulator.manipulateAsync(
+    photoUri,
+    [{ resize: { width } }],
+    {
+      compress: 0.7,
+      format: ImageManipulator.SaveFormat.JPEG,
+    }
+  );
 
   return manipulatedImage.uri;
 }

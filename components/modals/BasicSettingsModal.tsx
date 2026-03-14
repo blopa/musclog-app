@@ -20,7 +20,6 @@ import { type FoodSearchSource } from '../../constants/settings';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
-import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
@@ -112,13 +111,6 @@ export function BasicSettingsModal({
   ];
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
-
-  // TODO: this is only here for debugging purposes
-  useEffect(() => {
-    if (!hasUsdaApiKey) {
-      showSnackbar('error', 'API KEY IS MISSING');
-    }
-  }, [hasUsdaApiKey, t]);
 
   // TODO: add an option for local search only, and update the rest of the codebase to handle this case
   const foodSearchMenuItems: BottomPopUpMenuItem[] = [

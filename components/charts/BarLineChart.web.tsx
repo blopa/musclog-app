@@ -188,7 +188,7 @@ export function BarLineChart({
             overflow: 'hidden',
           }}
         >
-          {interactive && (
+          {interactive ? (
             <View
               {...({
                 style: {
@@ -212,7 +212,7 @@ export function BarLineChart({
                 },
               } as ViewWithMouseProps)}
             />
-          )}
+          ) : null}
           <VictoryChart
             height={chartHeight}
             padding={{ top: chartPaddingTop, bottom: -chartPaddingBottom, left: 40, right: 0 }}
