@@ -1,6 +1,6 @@
 import { Check, LucideIcon } from 'lucide-react-native';
 import { ComponentType, memo, ReactElement, useCallback, useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 
@@ -11,6 +11,7 @@ export type SelectorOption<T extends string | number> = {
   icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;
+  imageUrl?: string;
 };
 
 type OptionsSelectorProps<T extends string | number> = {
@@ -69,9 +70,18 @@ const OptionItem = memo(
                   backgroundColor: option.iconBgColor,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  overflow: 'hidden',
                 }}
               >
-                <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                {option.imageUrl?.trim() ? (
+                  <Image
+                    source={{ uri: option.imageUrl }}
+                    style={{ width: theme.size['10'], height: theme.size['10'], borderRadius: theme.borderRadius.full }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                )}
               </View>
               <View style={{ flex: 1 }}>
                 <Text

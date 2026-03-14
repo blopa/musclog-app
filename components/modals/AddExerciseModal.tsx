@@ -25,6 +25,7 @@ type ExerciseId = string;
 type ExerciseOption = SelectorOption<ExerciseId> & {
   category: string;
   type: MechanicType | EquipmentType;
+  imageUrl?: string;
 };
 
 type AddExerciseModalProps = {
@@ -149,6 +150,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             : theme.colors.accent.primary10,
         iconColor:
           exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
+        imageUrl: exercise.imageUrl,
         category: exercise.muscleGroup ?? '',
         type: exerciseType,
       };

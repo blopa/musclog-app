@@ -62,6 +62,68 @@ const EXERCISE_IMAGE_ASSETS: Record<number, number> = {
   105: require('../assets/exercises/exercise105.png'),
 };
 
+/**
+ * Force Metro bundler to include all exercise image assets in production builds.
+ * This array ensures all require() statements are tracked and included in the bundle,
+ * even when accessed dynamically via EXERCISE_IMAGE_ASSETS.
+ */
+const _ALL_EXERCISE_IMAGE_ASSETS = [
+  EXERCISE_IMAGE_ASSETS[1],
+  EXERCISE_IMAGE_ASSETS[2],
+  EXERCISE_IMAGE_ASSETS[3],
+  EXERCISE_IMAGE_ASSETS[4],
+  EXERCISE_IMAGE_ASSETS[5],
+  EXERCISE_IMAGE_ASSETS[6],
+  EXERCISE_IMAGE_ASSETS[7],
+  EXERCISE_IMAGE_ASSETS[8],
+  EXERCISE_IMAGE_ASSETS[9],
+  EXERCISE_IMAGE_ASSETS[10],
+  EXERCISE_IMAGE_ASSETS[11],
+  EXERCISE_IMAGE_ASSETS[12],
+  EXERCISE_IMAGE_ASSETS[13],
+  EXERCISE_IMAGE_ASSETS[14],
+  EXERCISE_IMAGE_ASSETS[15],
+  EXERCISE_IMAGE_ASSETS[16],
+  EXERCISE_IMAGE_ASSETS[17],
+  EXERCISE_IMAGE_ASSETS[18],
+  EXERCISE_IMAGE_ASSETS[19],
+  EXERCISE_IMAGE_ASSETS[20],
+  EXERCISE_IMAGE_ASSETS[21],
+  EXERCISE_IMAGE_ASSETS[22],
+  EXERCISE_IMAGE_ASSETS[23],
+  EXERCISE_IMAGE_ASSETS[24],
+  EXERCISE_IMAGE_ASSETS[25],
+  EXERCISE_IMAGE_ASSETS[26],
+  EXERCISE_IMAGE_ASSETS[27],
+  EXERCISE_IMAGE_ASSETS[28],
+  EXERCISE_IMAGE_ASSETS[29],
+  EXERCISE_IMAGE_ASSETS[30],
+  EXERCISE_IMAGE_ASSETS[31],
+  EXERCISE_IMAGE_ASSETS[32],
+  EXERCISE_IMAGE_ASSETS[33],
+  EXERCISE_IMAGE_ASSETS[34],
+  EXERCISE_IMAGE_ASSETS[38],
+  EXERCISE_IMAGE_ASSETS[39],
+  EXERCISE_IMAGE_ASSETS[41],
+  EXERCISE_IMAGE_ASSETS[47],
+  EXERCISE_IMAGE_ASSETS[48],
+  EXERCISE_IMAGE_ASSETS[49],
+  EXERCISE_IMAGE_ASSETS[51],
+  EXERCISE_IMAGE_ASSETS[52],
+  EXERCISE_IMAGE_ASSETS[53],
+  EXERCISE_IMAGE_ASSETS[64],
+  EXERCISE_IMAGE_ASSETS[65],
+  EXERCISE_IMAGE_ASSETS[84],
+  EXERCISE_IMAGE_ASSETS[85],
+  EXERCISE_IMAGE_ASSETS[86],
+  EXERCISE_IMAGE_ASSETS[89],
+  EXERCISE_IMAGE_ASSETS[90],
+  EXERCISE_IMAGE_ASSETS[91],
+  EXERCISE_IMAGE_ASSETS[94],
+  EXERCISE_IMAGE_ASSETS[105],
+  FALLBACK_EXERCISE_IMAGE,
+];
+
 const MAX_IMAGE_NUMBER = Math.max(...Object.keys(EXERCISE_IMAGE_ASSETS).map(Number));
 
 /**
@@ -91,4 +153,21 @@ export function getExerciseImageFilenameByIndex(index: number): string {
   }
 
   return 'fallback.png';
+}
+
+/**
+ * Preloads all exercise image assets to ensure they're available in production builds.
+ * This should be called early in the app lifecycle, ideally before seeding exercises.
+ * Uses expo-asset to download and cache all bundled images.
+ */
+export async function preloadExerciseImages(): Promise<void> {
+  try {
+    const { Asset } = await import('expo-asset');
+    // Asset.loadAsync accepts module IDs (numbers from require()) directly
+    await Asset.loadAsync(_ALL_EXERCISE_IMAGE_ASSETS);
+    console.log(`Preloaded ${_ALL_EXERCISE_IMAGE_ASSETS.length} exercise image assets`);
+  } catch (error) {
+    console.warn('Failed to preload exercise images:', error);
+    // Don't throw - app should continue even if preloading fails
+  }
 }

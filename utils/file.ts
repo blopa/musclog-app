@@ -200,12 +200,19 @@ export async function copyBundledExerciseImageToDocument(
     if (asset.localUri) {
       const srcFile = new File(asset.localUri);
       srcFile.copy(destFile);
+      console.log(`Successfully copied exercise image: ${destFilename} -> ${destFile.uri}`);
       return destFile.uri;
     } else {
       throw new Error('Asset download failed - no localUri available');
     }
   } catch (error) {
-    console.error('Failed to copy exercise image:', error);
+    console.error('Failed to copy exercise image:', {
+      error,
+      assetSource,
+      destFilename,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      errorStack: error instanceof Error ? error.stack : undefined,
+    });
     throw new Error(
       `Failed to copy exercise image: ${error instanceof Error ? error.message : 'Unknown error'}`
     );

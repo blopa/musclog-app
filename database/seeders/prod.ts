@@ -5,6 +5,7 @@ import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '../../constants/database';
 import usdaFoundationFoodsData from '../../data/usda_foundation_foods.json';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '../../lang/lang';
 import { getEncryptionKey } from '../../utils/encryption';
+import { preloadExerciseImages } from '../../utils/exerciseImage';
 import { database } from '../database-instance';
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
@@ -246,6 +247,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       const createdPortions = await FoodPortionService.createCommonPortions();
       console.log(`Seeded ${createdPortions.length} common food portions`);
     }
+
+    // Preload exercise images before seeding to ensure they're available in production builds
+    await preloadExerciseImages();
 
     // 2. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
     const existingExercises = await ExerciseService.getAllExercises();
