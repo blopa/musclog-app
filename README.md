@@ -24,7 +24,7 @@
 
 ---
 
-# Musclog - Lift, Log, Repeat
+# Musclog - Lift, Log, Repeat (V1 - deprecated)
 
 Musclog is a mobile application designed to elevate your fitness journey by providing a seamless way to log, manage, and analyze your workouts. Built with React Native and Expo, Musclog is your go-to tool for tracking your progress, scheduling workouts, and integrating health data - all in one user-friendly interface.
 
