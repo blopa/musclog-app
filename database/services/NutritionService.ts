@@ -868,4 +868,111 @@ export class NutritionService {
 
     return log;
   }
+
+  /**
+   * Log multiple custom AI-generated meals in a batch.
+   */
+  static async logCustomMealsBatch(
+    ingredients: {
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber?: number;
+      grams: number;
+    }[],
+    date: Date,
+    mealType: MealType
+  ): Promise<NutritionLog[]> {
+    const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const now = Date.now();
+
+    const logs = await database.write(async () => {
+      const createdLogs: NutritionLog[] = [];
+
+      for (const ingredient of ingredients) {
+        // Create a temporary food entry for each ingredient
+        const tempFood = await database.get<Food>('foods').create((food) => {
+          food.isAiGenerated = true;
+          food.name = ingredient.name;
+          food.brand = undefined;
+          food.barcode = undefined;
+          food.calories = (ingredient.calories / ingredient.grams) * 100; // Normalize to 100g
+          food.protein = (ingredient.protein / ingredient.grams) * 100;
+          food.carbs = (ingredient.carbs / ingredient.grams) * 100;
+          food.fat = (ingredient.fat / ingredient.grams) * 100;
+          food.fiber = ((ingredient.fiber ?? 0) / ingredient.grams) * 100;
+          food.micros = {
+            sugar: 0,
+            sodium: 0,
+          };
+          food.isFavorite = false;
+          food.createdAt = now;
+          food.updatedAt = now;
+        });
+
+        // Create encrypted snapshot for the nutrition log
+        const encrypted = await encryptNutritionLogSnapshot({
+          loggedFoodName: ingredient.name,
+          loggedCalories: ingredient.calories,
+          loggedProtein: ingredient.protein,
+          loggedCarbs: ingredient.carbs,
+          loggedFat: ingredient.fat,
+          loggedFiber: ingredient.fiber ?? 0,
+          loggedMicros: {},
+        });
+
+        const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
+          record.foodId = tempFood.id;
+          record.date = dateTimestamp;
+          record.type = mealType;
+          record.amount = ingredient.grams;
+          record.loggedFoodNameRaw = encrypted.loggedFoodName;
+          record.loggedCaloriesRaw = encrypted.loggedCalories;
+          record.loggedProteinRaw = encrypted.loggedProtein;
+          record.loggedCarbsRaw = encrypted.loggedCarbs;
+          record.loggedFatRaw = encrypted.loggedFat;
+          record.loggedFiberRaw = encrypted.loggedFiber;
+          record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          record.createdAt = now;
+          record.updatedAt = now;
+        });
+
+        createdLogs.push(log);
+      }
+
+      return createdLogs;
+    });
+
+    // Update widgets and Health Connect
+    if (Platform.OS === 'android') {
+      await requestNutritionWidgetUpdate();
+
+      for (const log of logs) {
+        try {
+          const [nutrients, snapshot] = await Promise.all([
+            log.getNutrients(),
+            log.getDecryptedSnapshot(),
+          ]);
+
+          await writeNutritionLogToHealthConnect({
+            logId: log.id,
+            date: dateTimestamp,
+            mealType,
+            foodName: snapshot.loggedFoodName ?? '',
+            calories: nutrients.calories,
+            protein: nutrients.protein,
+            carbs: nutrients.carbs,
+            fat: nutrients.fat,
+            fiber: nutrients.fiber,
+          }).catch(() => undefined);
+        } catch (error) {
+          console.error('Error syncing log to Health Connect:', error);
+        }
+      }
+    }
+
+    return logs;
+  }
 }

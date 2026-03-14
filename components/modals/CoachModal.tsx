@@ -7,6 +7,7 @@ import type { TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
+  Images,
   Paperclip,
   PlusCircle,
   Send as SendIcon,
@@ -48,6 +49,7 @@ import {
   CHAT_INTENTION_KEY,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
+  TRACK_MEAL,
 } from '../../constants/chat';
 import { ChatService } from '../../database/services';
 import {
@@ -59,7 +61,7 @@ import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { pickDocument } from '../../utils/file';
+import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -71,7 +73,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
-const ENABLE_FILE_ATTACHMENT = false; // TODO: remove this once we support file attachments
+const ENABLE_FILE_ATTACHMENT = true;
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
@@ -81,6 +83,8 @@ const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction):
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:
       return t('coach.actions.nutritionCheck');
+    case TRACK_MEAL:
+      return t('coach.actions.trackMeal');
     default:
       return pendingIntention;
   }
@@ -156,6 +160,42 @@ const renderMessageText = (props: any, theme: Theme) => {
   );
 };
 
+const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) {
+    return (
+      <View
+        style={{
+          width: 150,
+          height: 100,
+          borderRadius: 8,
+          backgroundColor: theme.colors.background.card,
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: 3,
+        }}
+      >
+        <Images size={24} color={theme.colors.text.tertiary} />
+      </View>
+    );
+  }
+
+  return (
+    <Image
+      source={{ uri: props.currentMessage.image }}
+      style={{
+        width: 150,
+        height: 100,
+        borderRadius: 8,
+        margin: 3,
+      }}
+      resizeMode="cover"
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void
@@ -215,6 +255,7 @@ const renderBubble = (
         onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
         delayLongPress={350}
       >
+        {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text ? (
           <LinearGradient
             colors={bubbleGradient as readonly [string, string, ...string[]]}
@@ -251,6 +292,7 @@ const renderBubble = (
             {currentMessage.user.name}
           </Text>
         ) : null}
+        {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
         ) : null}
@@ -311,12 +353,13 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
 const renderSend = (
   props: SendProps<ExtendedIMessage>,
   theme: Theme,
-  failedMessageText: string | null
+  failedMessageText: string | null,
+  hasAttachedImage: boolean
 ) => {
   const styles = getStyles(theme);
   // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
   const effectiveText = (failedMessageText ?? props.text ?? '').trim();
-  const isDisabled = !effectiveText;
+  const isDisabled = !effectiveText && !hasAttachedImage;
 
   // Always render the send button, regardless of GiftedChat's internal logic
   return (
@@ -357,6 +400,7 @@ function ComposerWithRestoredText({
   failedMessageText,
   clearFailedMessageText,
   onAttachFile,
+  isImageAttachmentEnabled,
 }: {
   props: ComposerProps;
   t: TFunction;
@@ -364,6 +408,7 @@ function ComposerWithRestoredText({
   failedMessageText: string | null;
   clearFailedMessageText: () => void;
   onAttachFile: () => void;
+  isImageAttachmentEnabled: boolean;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -387,7 +432,7 @@ function ComposerWithRestoredText({
 
   return (
     <View style={styles.composerWrapper}>
-      {ENABLE_FILE_ATTACHMENT ? (
+      {ENABLE_FILE_ATTACHMENT && isImageAttachmentEnabled ? (
         <Pressable
           onPress={onAttachFile}
           className="mr-2 items-center justify-center p-2 active:scale-90"
@@ -418,7 +463,8 @@ const renderComposer = (
   theme: Theme,
   failedMessageText: string | null,
   clearFailedMessageText: () => void,
-  onAttachFile: () => void
+  onAttachFile: () => void,
+  isImageAttachmentEnabled: boolean
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -427,6 +473,7 @@ const renderComposer = (
     failedMessageText={failedMessageText}
     clearFailedMessageText={clearFailedMessageText}
     onAttachFile={onAttachFile}
+    isImageAttachmentEnabled={isImageAttachmentEnabled}
   />
 );
 
@@ -435,12 +482,35 @@ const renderInputToolbar = (
   theme: Theme,
   pendingIntention: string | null,
   onClearIntention: () => void,
+  attachedImage: { uri: string } | null,
+  onRemoveImage: () => void,
   t: TFunction
 ) => {
   const styles = getStyles(theme);
 
   return (
     <View>
+      {attachedImage ? (
+        <View className="px-4 py-2">
+          <View
+            className="relative h-20 w-20 rounded-lg"
+            style={{ backgroundColor: theme.colors.background.card }}
+          >
+            <Image
+              source={{ uri: attachedImage.uri }}
+              style={{ width: '100%', height: '100%', borderRadius: 8 }}
+              resizeMode="cover"
+            />
+            <Pressable
+              onPress={onRemoveImage}
+              className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
+              style={{ backgroundColor: theme.colors.background.gray700 }}
+            >
+              <X size={12} color={theme.colors.text.white} />
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
       {pendingIntention ? (
         <View className="px-4 py-2">
           <View
@@ -510,6 +580,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
@@ -558,6 +629,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     syncIntention();
   }, [visible, pendingIntention, messages, clearPendingCoachMessage]);
 
+  // Ensure attached image is cleared if intention is no longer Track Meal
+  useEffect(() => {
+    if (pendingIntention !== TRACK_MEAL && attachedImage) {
+      setAttachedImage(null);
+    }
+  }, [pendingIntention, attachedImage]);
+
   // On Android, KeyboardAvoidingView doesn't work inside a Modal.
   // We manually track the keyboard height and apply it as padding.
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -586,11 +664,13 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
       const text = newMessages[0]?.text;
-      if (text) {
-        sendMessage(text);
+      const image = attachedImage?.base64;
+      if (text || image) {
+        sendMessage(text ?? '', image);
+        setAttachedImage(null);
       }
     },
-    [sendMessage]
+    [sendMessage, attachedImage]
   );
 
   const handleGenerateWorkouts = useCallback(async () => {
@@ -604,6 +684,23 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       addPendingCoachMessage({
         _id: `pending-workout-gen-${Date.now()}`,
         text: t('coach.workoutGenerationPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+
+  const handleTrackMeal = useCallback(async () => {
+    if (pendingIntention === TRACK_MEAL) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
+      setPendingIntention(TRACK_MEAL);
+      addPendingCoachMessage({
+        _id: `pending-track-meal-${Date.now()}`,
+        text: t('coach.trackMealPrompt'),
         createdAt: new Date(),
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
@@ -647,19 +744,24 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const handleClearIntention = useCallback(async () => {
     await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
     setPendingIntention(null);
+    setAttachedImage(null);
     clearPendingCoachMessage();
   }, [clearPendingCoachMessage]);
 
   const handleAttachFile = useCallback(async () => {
     try {
-      const result = await pickDocument(['image/*', 'application/pdf', 'text/plain']);
+      const result = await pickDocument(['image/*']);
 
       if (!result.canceled && result.assets?.[0]) {
         const file = result.assets[0];
-        // For now, we'll just mention the file in the message
-        // In a full implementation, you might want to upload the file or handle it differently
-        const fileMessage = `📎 Attached: ${file.name}`;
-        sendMessage(fileMessage);
+
+        // Create a thumbnail for efficient chat preview (max 300px)
+        const { uri, base64 } = await createThumbnail(file.uri, 300);
+
+        setAttachedImage({
+          uri,
+          base64: base64 || '',
+        });
       }
     } catch (error) {
       console.error('Error picking document:', error);
@@ -875,6 +977,26 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
+          onPress={handleTrackMeal}
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+          style={{
+            borderColor:
+              pendingIntention === TRACK_MEAL
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === TRACK_MEAL ? 2 : 1,
+            backgroundColor:
+              pendingIntention === TRACK_MEAL
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
+          }}
+        >
+          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.trackMeal')}
+          </Text>
+        </Pressable>
+        <Pressable
           onPress={handleNutritionCheck}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
@@ -952,24 +1074,51 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderInputToolbar = useCallback(
     (props: Parameters<typeof renderInputToolbar>[0]) =>
-      renderInputToolbar(props, theme, pendingIntention, handleClearIntention, t),
-    [theme, pendingIntention, handleClearIntention, t]
+      renderInputToolbar(
+        props,
+        theme,
+        pendingIntention,
+        handleClearIntention,
+        attachedImage,
+        () => setAttachedImage(null),
+        t
+      ),
+    [theme, pendingIntention, handleClearIntention, attachedImage, t]
   );
 
   const gcRenderComposer = useCallback(
     (props: Parameters<typeof renderComposer>[0]) =>
-      renderComposer(props, t, theme, failedMessageText, clearFailedMessageText, handleAttachFile),
-    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile]
+      renderComposer(
+        props,
+        t,
+        theme,
+        failedMessageText,
+        clearFailedMessageText,
+        handleAttachFile,
+        pendingIntention === TRACK_MEAL
+      ),
+    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile, pendingIntention]
   );
 
   const gcRenderSend = useCallback(
-    (props: Parameters<typeof renderSend>[0]) => renderSend(props, theme, failedMessageText),
-    [theme, failedMessageText]
+    (props: Parameters<typeof renderSend>[0]) =>
+      renderSend(
+        props,
+        theme,
+        failedMessageText,
+        !!attachedImage && pendingIntention === TRACK_MEAL
+      ),
+    [theme, failedMessageText, attachedImage, pendingIntention]
   );
 
   const gcRenderDay = useCallback(
     (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme),
     [t, theme]
+  );
+
+  const gcRenderMessageImage = useCallback(
+    (props: any) => <MessageImage props={props} theme={theme} />,
+    [theme]
   );
 
   const gcScrollToBottomComponent = useCallback(() => null, []);
@@ -1091,6 +1240,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
             renderSend={gcRenderSend}
             renderAccessory={renderAccessory}
             renderDay={gcRenderDay}
+            renderMessageImage={gcRenderMessageImage}
             scrollToBottomComponent={gcScrollToBottomComponent}
             minInputToolbarHeight={0}
             listProps={{
