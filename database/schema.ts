@@ -155,6 +155,7 @@ export const schema = appSchema({
         { name: 'carbs', type: 'number' },
         { name: 'fat', type: 'number' },
         { name: 'fiber', type: 'number' },
+        // { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // TODO: add this - ID from external data integrations (e.g. USDA)
 
         // Extended data (Fiber, Sugar, Sodium, Vitamins, Alcohol, etc.) stored as JSON
         // Usage: @json decorator in the Model
