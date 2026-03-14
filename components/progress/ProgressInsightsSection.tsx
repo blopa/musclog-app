@@ -19,6 +19,12 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
     </View>
   );
 
+  const hasEmpiricalTdee = insights.empiricalTdee != null && insights.empiricalTdee !== 0;
+  const hasWeightChange = insights.weightChangeWeekly != null && insights.weightChangeWeekly !== 0;
+  const hasFatMassChange = insights.fatMassChange != null && insights.fatMassChange !== 0;
+  const hasLeanMassChange = insights.leanBodyMassChange != null && insights.leanBodyMassChange !== 0;
+  const hasAnyWeeklyChange = hasWeightChange || hasFatMassChange || hasLeanMassChange;
+
   return (
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
@@ -27,17 +33,17 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
             {t('progress.metabolicSummary')}
           </Text>
           <View className="flex-row flex-wrap">
-            <View className="flex-1 items-center justify-center border-r border-border-light p-2">
-              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
-                {t('progress.empiricalTdee')}
-              </Text>
-              <Text className="text-lg font-bold text-accent-primary">
-                {Math.round(insights.empiricalTdee)}
-              </Text>
-              <Text className="text-center text-[8px] uppercase text-text-tertiary">
-                {t('progress.basedOnRecentActivity')}
-              </Text>
-            </View>
+            {hasEmpiricalTdee ? <View className="flex-1 items-center justify-center border-r border-border-light p-2">
+                <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
+                  {t('progress.empiricalTdee')}
+                </Text>
+                <Text className="text-lg font-bold text-accent-primary">
+                  {Math.round(insights.empiricalTdee)}
+                </Text>
+                <Text className="text-center text-[8px] uppercase text-text-tertiary">
+                  {t('progress.basedOnRecentActivity')}
+                </Text>
+              </View> : null}
             <View className="flex-1 items-center justify-center p-2">
               <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
                 {t('progress.statisticalTdee')}
@@ -53,25 +59,25 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
         </View>
       </GenericCard>
 
-      <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
-        <View className="flex-row flex-wrap p-2">
-          {renderStat(
-            t('progress.weeklyWeightChange'),
-            `${insights.weightChangeWeekly > 0 ? '+' : ''}${insights.weightChangeWeekly.toFixed(2)}`,
-            insights.weightChangeWeekly > 0 ? 'text-red-500' : 'text-green-500'
-          )}
-          {renderStat(
-            t('progress.fatMassChange'),
-            `${insights.fatMassChange > 0 ? '+' : ''}${insights.fatMassChange.toFixed(2)}`,
-            insights.fatMassChange > 0 ? 'text-red-500' : 'text-green-500'
-          )}
-          {renderStat(
-            t('progress.leanMassChange'),
-            `${insights.leanBodyMassChange > 0 ? '+' : ''}${insights.leanBodyMassChange.toFixed(2)}`,
-            insights.leanBodyMassChange > 0 ? 'text-green-500' : 'text-red-500'
-          )}
-        </View>
-      </GenericCard>
+      {hasAnyWeeklyChange ? <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+          <View className="flex-row flex-wrap p-2">
+            {hasWeightChange ? renderStat(
+                t('progress.weeklyWeightChange'),
+                `${insights.weightChangeWeekly > 0 ? '+' : ''}${insights.weightChangeWeekly.toFixed(2)}`,
+                insights.weightChangeWeekly > 0 ? 'text-red-500' : 'text-green-500'
+              ) : null}
+            {hasFatMassChange ? renderStat(
+                t('progress.fatMassChange'),
+                `${insights.fatMassChange > 0 ? '+' : ''}${insights.fatMassChange.toFixed(2)}`,
+                insights.fatMassChange > 0 ? 'text-red-500' : 'text-green-500'
+              ) : null}
+            {hasLeanMassChange ? renderStat(
+                t('progress.leanMassChange'),
+                `${insights.leanBodyMassChange > 0 ? '+' : ''}${insights.leanBodyMassChange.toFixed(2)}`,
+                insights.leanBodyMassChange > 0 ? 'text-green-500' : 'text-red-500'
+              ) : null}
+          </View>
+        </GenericCard> : null}
 
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
