@@ -122,14 +122,14 @@ export function LineChart({
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const containerWidthRef = useRef(0);
-  const pointsPixelRef = useRef<Array<{ x: number | null; y: number | null }>>([]);
+  const pointsPixelRef = useRef<{ x: number | null; y: number | null }[]>([]);
   const activeXPos = useSharedValue(0);
   const activeYPos = useSharedValue(0);
 
   useEffect(() => {
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
-  }, [chartId]);
+  }, [chartId, registerChart, unregisterChart]);
 
   const cursorLineStyle = useAnimatedStyle(() => ({
     left: activeXPos.value,
@@ -155,19 +155,26 @@ export function LineChart({
     if (w === 0) {
       return;
     }
+
     const domainX = xDomainFinal[0] + (touchX / w) * (xDomainFinal[1] - xDomainFinal[0]);
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
     );
+
     const nearestIndex = data.indexOf(nearest);
     const pixelPoint = pointsPixelRef.current[nearestIndex];
-    const pixelX = pixelPoint?.x ?? ((nearest.x - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0])) * w;
-    const pixelY = pixelPoint?.y ?? ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
+    const pixelX =
+      pixelPoint?.x ?? ((nearest.x - xDomainFinal[0]) / (xDomainFinal[1] - xDomainFinal[0])) * w;
+    const pixelY =
+      pixelPoint?.y ??
+      ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
+
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
     const label = tooltipFormatter
       ? tooltipFormatter(nearest)
       : String(Math.round(nearest.y * 10) / 10);
+
     notifyChartActive(chartId);
     setActiveLabel(label);
   };
@@ -196,39 +203,43 @@ export function LineChart({
           }}
         >
           {({ points, chartBounds }) => {
-            pointsPixelRef.current = points.y;
+            pointsPixelRef.current = points.y.map((p) => ({
+              x: p.x,
+              y: p.y ?? null,
+            }));
+
             return (
-            <>
-              <Area
-                points={points.y}
-                y0={chartBounds.bottom}
-                curveType={curveType}
-                color={areaColorResolved}
-              />
-              <Line
-                points={points.y}
-                curveType={curveType}
-                color={lineColorResolved}
-                strokeWidth={lineWidth}
-                strokeCap="round"
-              />
-              {showLastPoint && points.y.length > 0 ? (
-                <>
-                  <Scatter
-                    points={points.y.slice(-1)}
-                    radius={lastPointSize / 2 + lastPointStrokeWidth}
-                    color={lastPointStrokeColor ?? theme.colors.background.card}
-                    style="fill"
-                  />
-                  <Scatter
-                    points={points.y.slice(-1)}
-                    radius={lastPointSize / 2}
-                    color={lineColorResolved}
-                    style="fill"
-                  />
-                </>
-              ) : null}
-            </>
+              <>
+                <Area
+                  points={points.y}
+                  y0={chartBounds.bottom}
+                  curveType={curveType}
+                  color={areaColorResolved}
+                />
+                <Line
+                  points={points.y}
+                  curveType={curveType}
+                  color={lineColorResolved}
+                  strokeWidth={lineWidth}
+                  strokeCap="round"
+                />
+                {showLastPoint && points.y.length > 0 ? (
+                  <>
+                    <Scatter
+                      points={points.y.slice(-1)}
+                      radius={lastPointSize / 2 + lastPointStrokeWidth}
+                      color={lastPointStrokeColor ?? theme.colors.background.card}
+                      style="fill"
+                    />
+                    <Scatter
+                      points={points.y.slice(-1)}
+                      radius={lastPointSize / 2}
+                      color={lineColorResolved}
+                      style="fill"
+                    />
+                  </>
+                ) : null}
+              </>
             );
           }}
         </CartesianChart>
