@@ -29,3 +29,8 @@ export const ANALYZE_PROGRESS = 'ANALYZE_PROGRESS';
  * User wants a nutrition check (intention set; check runs on next send)
  */
 export const NUTRITION_CHECK = 'NUTRITION_CHECK';
+
+/**
+ * User wants to track a meal (intention set; tracking runs on next send)
+ */
+export const TRACK_MEAL = 'TRACK_MEAL';

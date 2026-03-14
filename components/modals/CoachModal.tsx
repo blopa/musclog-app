@@ -48,6 +48,7 @@ import {
   CHAT_INTENTION_KEY,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
+  TRACK_MEAL,
 } from '../../constants/chat';
 import { ChatService } from '../../database/services';
 import {
@@ -59,7 +60,7 @@ import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
-import { pickDocument } from '../../utils/file';
+import { pickDocument, readFileAsStringAsync } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -71,7 +72,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
-const ENABLE_FILE_ATTACHMENT = false; // TODO: remove this once we support file attachments
+const ENABLE_FILE_ATTACHMENT = true;
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
   switch (pendingIntention) {
@@ -81,6 +82,8 @@ const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction):
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:
       return t('coach.actions.nutritionCheck');
+    case TRACK_MEAL:
+      return t('coach.actions.trackMeal');
     default:
       return pendingIntention;
   }
@@ -586,8 +589,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const onSend = useCallback(
     (newMessages: ExtendedIMessage[] = []) => {
       const text = newMessages[0]?.text;
-      if (text) {
-        sendMessage(text);
+      const image = newMessages[0]?.image;
+      if (text || image) {
+        sendMessage(text ?? '', image);
       }
     },
     [sendMessage]
@@ -604,6 +608,23 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       addPendingCoachMessage({
         _id: `pending-workout-gen-${Date.now()}`,
         text: t('coach.workoutGenerationPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+
+  const handleTrackMeal = useCallback(async () => {
+    if (pendingIntention === TRACK_MEAL) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
+      setPendingIntention(TRACK_MEAL);
+      addPendingCoachMessage({
+        _id: `pending-track-meal-${Date.now()}`,
+        text: t('coach.trackMealPrompt'),
         createdAt: new Date(),
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
@@ -652,14 +673,12 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const handleAttachFile = useCallback(async () => {
     try {
-      const result = await pickDocument(['image/*', 'application/pdf', 'text/plain']);
+      const result = await pickDocument(['image/*']);
 
       if (!result.canceled && result.assets?.[0]) {
         const file = result.assets[0];
-        // For now, we'll just mention the file in the message
-        // In a full implementation, you might want to upload the file or handle it differently
-        const fileMessage = `📎 Attached: ${file.name}`;
-        sendMessage(fileMessage);
+        const base64 = await readFileAsStringAsync(file.uri, { encoding: 'base64' });
+        sendMessage('', base64);
       }
     } catch (error) {
       console.error('Error picking document:', error);
@@ -872,6 +891,26 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.analyzeProgress')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={handleTrackMeal}
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+          style={{
+            borderColor:
+              pendingIntention === TRACK_MEAL
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === TRACK_MEAL ? 2 : 1,
+            backgroundColor:
+              pendingIntention === TRACK_MEAL
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
+          }}
+        >
+          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.accent.primary} />
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.trackMeal')}
           </Text>
         </Pressable>
         <Pressable

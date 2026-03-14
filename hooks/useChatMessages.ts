@@ -8,9 +8,15 @@ import {
   CHAT_INTENTION_KEY,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
+  TRACK_MEAL,
 } from '../constants/chat';
 import ChatMessage from '../database/models/ChatMessage';
-import { ChatService, GoogleAuthService, SettingsService } from '../database/services';
+import {
+  ChatService,
+  GoogleAuthService,
+  NutritionService,
+  SettingsService,
+} from '../database/services';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
   type ChatHistoryEntry,
@@ -20,6 +26,7 @@ import {
   getNutritionInsights,
   getRecentWorkoutsInsights,
   sendCoachMessage,
+  trackMeal,
 } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
 import { getChatMessagePromptContent } from '../utils/prompts';
@@ -87,7 +94,7 @@ export type UseChatMessagesResult = {
   isSending: boolean;
   hasMore: boolean;
   loadMore: () => Promise<void>;
-  sendMessage: (text: string) => Promise<void>;
+  sendMessage: (text: string, base64Image?: string) => Promise<void>;
   clearHistory: (conversationContext?: 'general' | 'exercise' | 'nutrition') => Promise<void>;
   sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
@@ -366,8 +373,8 @@ export function useChatMessages(
   );
 
   const sendMessage = useCallback(
-    async (text: string) => {
-      if (!text.trim() || isSending || !sessionId) {
+    async (text: string, base64Image?: string) => {
+      if ((!text.trim() && !base64Image) || isSending || !sessionId) {
         return;
       }
 
@@ -389,7 +396,7 @@ export function useChatMessages(
         userRecord = await ChatService.saveMessage({
           sessionId,
           sender: 'user',
-          message: text.trim(),
+          message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
           context: conversationContext,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
@@ -585,6 +592,69 @@ export function useChatMessages(
           }
 
           reply = { msg4User: result, sumMsg: result.substring(0, 200) };
+          await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+        } else if (pendingIntention === TRACK_MEAL) {
+          const result = await trackMeal(aiConfig, text.trim(), base64Image);
+          if (!result || result.ingredients.length === 0) {
+            if (userRecord) {
+              const recordId = userRecord.id;
+              await ChatService.deleteMessage(recordId);
+              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+              setMessages((prev) => prev.filter((m) => m._id !== recordId));
+            }
+
+            setFailedMessageText(text.trim());
+            setEphemeralErrorMessage(t('coach.errors.trackMealFailed'));
+            return;
+          }
+
+          // Determine meal type based on current hour
+          const hour = new Date().getHours();
+          let mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'snack';
+          if (hour >= 5 && hour < 11) {
+            mealType = 'breakfast';
+          } else if (hour >= 11 && hour < 16) {
+            mealType = 'lunch';
+          } else if (hour >= 16 && hour < 22) {
+            mealType = 'dinner';
+          }
+
+          // Save to nutrition logs
+          await NutritionService.logCustomMealsBatch(
+            result.ingredients.map((i) => ({
+              name: i.name,
+              calories: i.kcal,
+              protein: i.protein,
+              carbs: i.carbs,
+              fat: i.fat,
+              fiber: i.fiber,
+              grams: i.grams,
+            })),
+            new Date(),
+            mealType
+          );
+
+          const totalCalories = Math.round(
+            result.ingredients.reduce((acc, curr) => acc + curr.kcal, 0)
+          );
+          const ingredientNames = result.ingredients.map((i) => i.name).join(', ');
+
+          reply = {
+            msg4User: t('coach.success.trackMealSuccess', {
+              count: result.ingredients.length,
+              ingredients: ingredientNames,
+              calories: totalCalories,
+            }),
+            sumMsg: `Tracked meal with ${result.ingredients.length} ingredients`,
+          };
+
+          payloadJson = JSON.stringify({
+            type: 'trackMeal',
+            ingredients: result.ingredients,
+            totalCalories,
+            mealType,
+          });
+
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
         } else {
           // Default: send regular chat message
