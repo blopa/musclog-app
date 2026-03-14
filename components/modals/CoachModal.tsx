@@ -1246,7 +1246,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           <SegmentedControl
             options={conversationContextOptions}
             value={conversationContext}
-            onValueChange={handleConversationContextChange}
+            onValueChange={(value) =>
+              handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
+            }
             variant="elevated"
           />
         </View>
