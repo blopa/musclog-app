@@ -12,11 +12,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ExerciseService, GoogleAuthService } from '../../database/services';
-import { SettingsService } from '../../database/services/SettingsService';
+import { ExerciseService } from '../../database/services';
+import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
-import { type CoachAIConfig, parsePastWorkouts } from '../../utils/coachAI';
-import { getAccessToken } from '../../utils/googleAuth';
+import { parsePastWorkouts } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { processParsedWorkouts } from '../../utils/workoutAI';
 import { FullScreenModal } from './FullScreenModal';
@@ -48,44 +47,7 @@ export function ImportWorkoutsModal({
 
     setIsProcessing(true);
     try {
-      const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
-        try {
-          const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-          if (oauthGeminiEnabled) {
-            const accessToken = await getAccessToken();
-            if (accessToken) {
-              return {
-                provider: 'gemini',
-                accessToken,
-                model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-              };
-            }
-          }
-          const enableGemini = await SettingsService.getEnableGoogleGemini();
-          const geminiKey = await SettingsService.getGoogleGeminiApiKey();
-          if (enableGemini && geminiKey) {
-            return {
-              provider: 'gemini',
-              apiKey: geminiKey,
-              model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-            };
-          }
-          const enableOpenAi = await SettingsService.getEnableOpenAi();
-          const openAiKey = await SettingsService.getOpenAiApiKey();
-          if (enableOpenAi && openAiKey) {
-            return {
-              provider: 'openai',
-              apiKey: openAiKey,
-              model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
-            };
-          }
-          return null;
-        } catch {
-          return null;
-        }
-      };
-
-      const aiConfig = await resolveAIConfig();
+      const aiConfig = await AiService.getAiConfig();
       if (!aiConfig) {
         showSnackbar('error', t('ai.settings.notConfigured'));
         setIsProcessing(false);

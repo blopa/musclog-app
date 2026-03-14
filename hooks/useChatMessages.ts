@@ -11,16 +11,11 @@ import {
   TRACK_MEAL,
 } from '../constants/chat';
 import ChatMessage from '../database/models/ChatMessage';
-import {
-  ChatService,
-  GoogleAuthService,
-  NutritionService,
-  SettingsService,
-} from '../database/services';
+import { ChatService, NutritionService } from '../database/services';
+import AiService from '../services/AiService';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
   type ChatHistoryEntry,
-  type CoachAIConfig,
   type CoachResponse,
   generateWorkoutPlan,
   getNutritionInsights,
@@ -28,7 +23,6 @@ import {
   sendCoachMessage,
   trackMeal,
 } from '../utils/coachAI';
-import { getAccessToken } from '../utils/googleAuth';
 import { getChatMessagePromptContent } from '../utils/prompts';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
@@ -110,50 +104,6 @@ export type UseChatMessagesResult = {
   ephemeralErrorAsMessage: ExtendedIMessage | null;
   deleteMessage: (messageId: string | number) => Promise<void>;
 };
-
-type AISettings = {
-  enableGoogleGemini: boolean;
-  enableOpenAi: boolean;
-  googleGeminiApiKey: string;
-  googleGeminiModel: string;
-  openAiApiKey: string;
-  openAiModel: string;
-};
-
-async function resolveAIConfig(settings: AISettings): Promise<CoachAIConfig | null> {
-  // Priority 1: Google OAuth access token (user signed in with Google)
-  const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-  if (oauthGeminiEnabled) {
-    const accessToken = await getAccessToken();
-    if (accessToken) {
-      return {
-        provider: 'gemini',
-        accessToken,
-        model: settings.googleGeminiModel || 'gemini-2.5-flash',
-      };
-    }
-  }
-
-  // Priority 2: Manual Gemini API key
-  if (settings.enableGoogleGemini && settings.googleGeminiApiKey) {
-    return {
-      provider: 'gemini',
-      apiKey: settings.googleGeminiApiKey,
-      model: settings.googleGeminiModel || 'gemini-2.5-flash',
-    };
-  }
-
-  // Priority 3: OpenAI API key
-  if (settings.enableOpenAi && settings.openAiApiKey) {
-    return {
-      provider: 'openai',
-      apiKey: settings.openAiApiKey,
-      model: settings.openAiModel || 'gpt-4o',
-    };
-  }
-
-  return null;
-}
 
 export function useChatMessages(
   conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
@@ -410,31 +360,8 @@ export function useChatMessages(
         setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
         setCurrentOffset((prev) => prev + 1);
 
-        // 3. Read AI settings from DB
-        const [
-          enableGoogleGemini,
-          enableOpenAi,
-          googleGeminiApiKey,
-          googleGeminiModel,
-          openAiApiKey,
-          openAiModel,
-        ] = await Promise.all([
-          SettingsService.getEnableGoogleGemini(),
-          SettingsService.getEnableOpenAi(),
-          SettingsService.getGoogleGeminiApiKey(),
-          SettingsService.getGoogleGeminiModel(),
-          SettingsService.getOpenAiApiKey(),
-          SettingsService.getOpenAiModel(),
-        ]);
-
-        const aiConfig = await resolveAIConfig({
-          enableGoogleGemini,
-          enableOpenAi,
-          googleGeminiApiKey,
-          googleGeminiModel,
-          openAiApiKey,
-          openAiModel,
-        });
+        // 3. Read AI config via AiService
+        const aiConfig = await AiService.getAiConfig();
 
         if (!aiConfig) {
           console.warn('[useChatMessages] No AI provider configured');

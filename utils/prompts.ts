@@ -790,6 +790,7 @@ export const getExtractMacrosFromLabelTextPrompt = (): string => {
 export const getSendChatMessageFunctions = ():
   | FunctionDeclaration[]
   | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const BE_CONCISE_PROMPT_LOCAL = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
   return [
     {
       name: 'generateMessage',
@@ -799,7 +800,7 @@ export const getSendChatMessageFunctions = ():
         properties: {
           msg4User: {
             type: 'string',
-            description: `A message to be displayed to the user. ${BE_CONCISE_PROMPT}`,
+            description: `A message to be displayed to the user. ${BE_CONCISE_PROMPT_LOCAL}`,
           },
           sumMsg: {
             type: 'string',
@@ -812,7 +813,7 @@ export const getSendChatMessageFunctions = ():
               "A brief 1-2 sentence summary of the user's message, capturing their intent (for history compression).",
           },
         },
-        required: ['msg4User', 'sumMsg'],
+        required: ['msg4User', 'sumMsg', 'sumUserMsg'],
       },
     },
   ];
@@ -883,7 +884,7 @@ export const getGenerateWorkoutPlanFunctions = ():
                   },
                 },
               },
-              required: ['title', 'recurringOnWeekDay', 'exercises'],
+              required: ['title', 'description', 'recurringOnWeekDay', 'exercises'],
             },
           },
         },
@@ -1010,13 +1011,15 @@ export const getParsePastWorkoutsFunctions = ():
                             reps: { type: 'number' },
                             weight: { type: 'number' },
                           },
+                          required: ['reps', 'weight'],
                         },
                       },
                     },
+                    required: ['name', 'muscleGroup', 'type', 'sets'],
                   },
                 },
               },
-              required: ['title', 'date', 'exercises'],
+              required: ['title', 'date', 'duration', 'description', 'exercises'],
             },
           },
         },
@@ -1073,7 +1076,17 @@ export const getParsePastNutritionFunctions = ():
                   type: 'number',
                 },
               },
-              required: ['date', 'calories', 'protein', 'carbs', 'fat'],
+              required: [
+                'date',
+                'calories',
+                'protein',
+                'carbs',
+                'fat',
+                'fiber',
+                'sugar',
+                'sodium',
+                'cholesterol',
+              ],
             },
           },
         },
@@ -1131,7 +1144,17 @@ export const getParseRetrospectiveNutritionFunctions = ():
                   type: 'number',
                 },
               },
-              required: ['productTitle', 'calories', 'carbs', 'fat', 'protein', 'mealType'],
+              required: [
+                'productTitle',
+                'calories',
+                'carbs',
+                'fat',
+                'protein',
+                'mealType',
+                'fiber',
+                'sodium',
+                'sugar',
+              ],
             },
           },
         },
@@ -1189,7 +1212,7 @@ export const getTrackMealFunctions = ():
                   description: 'Estimated weight of this ingredient in grams',
                 },
               },
-              required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams'],
+              required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
             },
           },
         },
@@ -1226,6 +1249,10 @@ export const getEstimateMacrosFunctions = (
       type: 'number',
       description: 'Protein in grams',
     },
+    fiber: {
+      type: 'number',
+      description: 'Fiber in grams',
+    },
     grams: {
       type: 'number',
       description: 'Total weight of the food item',
@@ -1239,6 +1266,11 @@ export const getEstimateMacrosFunctions = (
     };
   }
 
+  const required = ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'];
+  if (includeBarcode) {
+    required.push('barcode');
+  }
+
   return [
     {
       name: 'estimateMacros',
@@ -1246,9 +1278,7 @@ export const getEstimateMacrosFunctions = (
       parameters: {
         type: 'object',
         properties,
-        required: includeBarcode
-          ? ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams']
-          : ['name', 'kcal', 'carbs', 'fat', 'protein', 'grams'],
+        required,
       },
     },
   ];

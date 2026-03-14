@@ -1,62 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-import { ChatService, GoogleAuthService } from '../database/services';
-import { SettingsService } from '../database/services/SettingsService';
-import { type CoachAIConfig, getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
-import { getAccessToken } from './googleAuth';
+import { ChatService } from '../database/services';
+import AiService from '../services/AiService';
+import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
 const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
-
-/**
- * Resolve AI config from settings (same as in workout-summary.tsx)
- */
-async function resolveAIConfig(): Promise<CoachAIConfig | null> {
-  try {
-    // Priority 1: Google OAuth access token
-    const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-    if (oauthGeminiEnabled) {
-      const accessToken = await getAccessToken();
-      if (accessToken) {
-        const model = await SettingsService.getGoogleGeminiModel();
-        return {
-          provider: 'gemini',
-          accessToken,
-          model: model || 'gemini-2.5-flash',
-        };
-      }
-    }
-
-    // Priority 2: Manual Gemini API key
-    const enableGoogleGemini = await SettingsService.getEnableGoogleGemini();
-    const googleGeminiApiKey = await SettingsService.getGoogleGeminiApiKey();
-    if (enableGoogleGemini && googleGeminiApiKey) {
-      const model = await SettingsService.getGoogleGeminiModel();
-      return {
-        provider: 'gemini',
-        apiKey: googleGeminiApiKey,
-        model: model || 'gemini-2.5-flash',
-      };
-    }
-
-    // Priority 3: OpenAI API key
-    const enableOpenAi = await SettingsService.getEnableOpenAi();
-    const openAiApiKey = await SettingsService.getOpenAiApiKey();
-    if (enableOpenAi && openAiApiKey) {
-      const model = await SettingsService.getOpenAiModel();
-      return {
-        provider: 'openai',
-        apiKey: openAiApiKey,
-        model: model || 'gpt-4o',
-      };
-    }
-
-    return null;
-  } catch (error) {
-    console.error('[resolveAIConfig] Error:', error);
-    return null;
-  }
-}
 
 /**
  * Check if task should run today
@@ -117,7 +66,7 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
     console.log('[configureDailyTasks] Starting daily tasks');
 
     // Get AI config
-    const aiConfig = await resolveAIConfig();
+    const aiConfig = await AiService.getAiConfig();
     if (!aiConfig) {
       console.log('[configureDailyTasks] AI not configured, skipping insights');
       return;

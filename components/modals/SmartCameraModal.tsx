@@ -18,18 +18,17 @@ import { Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
-import { GoogleAuthService, NutritionService, SettingsService } from '../../database/services';
+import { NutritionService } from '../../database/services';
+import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
-  type CoachAIConfig,
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
   extractMacrosFromLabelText,
   type MacroEstimate,
 } from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
-import { getAccessToken } from '../../utils/googleAuth';
 import { performOcr } from '../../utils/ocr';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
@@ -194,44 +193,6 @@ export default function SmartCameraModal({
     async (fileUri: string) => {
       setIsProcessingAi(true);
       try {
-        const resolveAIConfig = async (): Promise<CoachAIConfig | null> => {
-          try {
-            const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-            if (oauthGeminiEnabled) {
-              const accessToken = await getAccessToken();
-              if (accessToken) {
-                return {
-                  provider: 'gemini',
-                  accessToken,
-                  model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-                };
-              }
-            }
-            const enableGemini = await SettingsService.getEnableGoogleGemini();
-            const geminiKey = await SettingsService.getGoogleGeminiApiKey();
-            if (enableGemini && geminiKey) {
-              return {
-                provider: 'gemini',
-                apiKey: geminiKey,
-                model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-              };
-            }
-
-            const enableOpenAi = await SettingsService.getEnableOpenAi();
-            const openAiKey = await SettingsService.getOpenAiApiKey();
-            if (enableOpenAi && openAiKey) {
-              return {
-                provider: 'openai',
-                apiKey: openAiKey,
-                model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
-              };
-            }
-            return null;
-          } catch {
-            return null;
-          }
-        };
-
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi) {
             const text = await performOcr(fileUri);
@@ -240,7 +201,7 @@ export default function SmartCameraModal({
               return;
             }
 
-            const aiConfig = await resolveAIConfig();
+            const aiConfig = await AiService.getAiConfig();
             if (!aiConfig) {
               showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
               return;
@@ -268,7 +229,7 @@ export default function SmartCameraModal({
               encoding: 'base64',
             } as { encoding: 'base64' });
 
-            const aiConfig = await resolveAIConfig();
+            const aiConfig = await AiService.getAiConfig();
             if (!aiConfig) {
               showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
               return;
@@ -300,7 +261,7 @@ export default function SmartCameraModal({
           const base64 = await readFileAsStringAsync(fileUri, {
             encoding: 'base64',
           } as { encoding: 'base64' });
-          const aiConfig = await resolveAIConfig();
+          const aiConfig = await AiService.getAiConfig();
           if (!aiConfig) {
             showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
             return;

@@ -88,6 +88,7 @@ export type MacroEstimate = {
   carbs: number;
   fat: number;
   protein: number;
+  fiber: number;
   grams: number;
   barcode?: string;
 };
@@ -232,6 +233,38 @@ function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): 
   return [...historyContents, { parts: [{ text: userMessage } as Part], role: 'user' }];
 }
 
+/**
+ * Recursively adds additionalProperties: false to all objects in a JSON schema.
+ * Required for OpenAI's 'strict: true' mode.
+ */
+function makeSchemaStrict(schema: any): any {
+  if (typeof schema !== 'object' || schema === null) {
+    return schema;
+  }
+
+  if (schema.type === 'object') {
+    const properties = schema.properties ? { ...schema.properties } : {};
+    Object.keys(properties).forEach((key) => {
+      properties[key] = makeSchemaStrict(properties[key]);
+    });
+
+    return {
+      ...schema,
+      properties,
+      additionalProperties: false,
+    };
+  }
+
+  if (schema.type === 'array' && schema.items) {
+    return {
+      ...schema,
+      items: makeSchemaStrict(schema.items),
+    };
+  }
+
+  return schema;
+}
+
 // --- Provider Implementations ---
 
 async function sendViaGemini(
@@ -267,7 +300,7 @@ async function sendViaOpenAI(
   history: ChatHistoryEntry[],
   userMessage: string
 ): Promise<CoachResponse> {
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
   const systemPrompt = await getSystemPrompt(config.language);
 
@@ -280,26 +313,33 @@ async function sendViaOpenAI(
     { role: 'user', content: userMessage },
   ];
 
-  const schema = buildResponseSchema(includeUserSummary);
+  const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
 
-  const completion = await client.chat.completions.create({
-    model: config.model,
-    messages,
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'coach_response',
-        strict: true,
-        schema: {
-          ...schema,
-          additionalProperties: false,
+  try {
+    const completion = await client.chat.completions.create({
+      model: config.model,
+      messages,
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'coach_response',
+          strict: true,
+          schema,
         },
       },
-    },
-  });
+    });
 
-  const raw = completion.choices[0]?.message?.content ?? '{}';
-  return parseCoachResponse(raw);
+    const raw = completion.choices[0]?.message?.content ?? '{}';
+    return parseCoachResponse(raw);
+  } catch (error: any) {
+    console.error('[coachAI] sendViaOpenAI error:', error);
+    // Return a friendly error message if the API call fails (e.g. invalid key, quota exceeded)
+    const errorMsg = error?.message || 'Error communicating with OpenAI';
+    return {
+      msg4User: `Error: ${errorMsg}`,
+      sumMsg: 'OpenAI error',
+    };
+  }
 }
 
 // --- Helpers for insight/parsing/vision ---
@@ -329,7 +369,7 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -367,7 +407,7 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const historyMessages = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
     content: e.content,
@@ -434,7 +474,8 @@ async function generateStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -446,7 +487,7 @@ async function generateStructured<T>(
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: { ...schema, additionalProperties: false },
+        schema: strictSchema,
       },
     },
   });
@@ -509,7 +550,8 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
-  const client = new OpenAI({ apiKey: config.apiKey });
+  const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
+  const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -528,7 +570,7 @@ async function generateWithImageStructured<T>(
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: { ...schema, additionalProperties: false },
+        schema: strictSchema,
       },
     },
   });
