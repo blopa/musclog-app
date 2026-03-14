@@ -30,6 +30,24 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ---
 
+## Screenshots
+
+<div align="center">
+  <img src="screenshots/phone/screenshot-1.png" alt="App Dashboard" width="200"/>
+  <img src="screenshots/phone/screenshot-2.png" alt="Workout Logging" width="200"/>
+  <img src="screenshots/phone/screenshot-3.png" alt="Nutrition Tracking" width="200"/>
+  <img src="screenshots/phone/screenshot-4.png" alt="Progress Charts" width="200"/>
+</div>
+
+<div align="center">
+  <img src="screenshots/phone/screenshot-5.png" alt="AI Coach Chat" width="200"/>
+  <img src="screenshots/phone/screenshot-6.png" alt="Food Search" width="200"/>
+  <img src="screenshots/phone/screenshot-7.png" alt="Cycle Tracking" width="200"/>
+  <img src="screenshots/phone/screenshot-8.png" alt="Settings" width="200"/>
+</div>
+
+---
+
 ## Key Features
 
 ### 🏋️ Track Workouts
