@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://play.google.com/store/apps/details?id=com.werules.logger">
-        <img src="https://raw.githubusercontent.com/blopa/musclog-app/main/assets/images/icon.png" width="20%" alt="Musclog-logo">
+        <img src="/assets/icon.png" width="20%" alt="Musclog-logo">
     </a>
 </p>
 <p align="center">
@@ -214,11 +214,8 @@ npm run web       # Web browser
 AI features are optional. To enable them, add your keys to `.env`:
 
 ```env
-# Google Gemini (optional)
-EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_key
-
-# OpenAI (optional)
-OPENAI_API_KEY=your_openai_key
+# USDA api key
+EXPO_PUBLIC_USDA_API_KEY=your_gemini_key
 
 # Sentry error tracking (optional)
 EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn
