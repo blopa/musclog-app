@@ -232,6 +232,38 @@ function buildGeminiContents(history: ChatHistoryEntry[], userMessage: string): 
   return [...historyContents, { parts: [{ text: userMessage } as Part], role: 'user' }];
 }
 
+/**
+ * Recursively adds additionalProperties: false to all objects in a JSON schema.
+ * Required for OpenAI's 'strict: true' mode.
+ */
+function makeSchemaStrict(schema: any): any {
+  if (typeof schema !== 'object' || schema === null) {
+    return schema;
+  }
+
+  if (schema.type === 'object') {
+    const properties = schema.properties ? { ...schema.properties } : {};
+    Object.keys(properties).forEach((key) => {
+      properties[key] = makeSchemaStrict(properties[key]);
+    });
+
+    return {
+      ...schema,
+      properties,
+      additionalProperties: false,
+    };
+  }
+
+  if (schema.type === 'array' && schema.items) {
+    return {
+      ...schema,
+      items: makeSchemaStrict(schema.items),
+    };
+  }
+
+  return schema;
+}
+
 // --- Provider Implementations ---
 
 async function sendViaGemini(
@@ -280,7 +312,7 @@ async function sendViaOpenAI(
     { role: 'user', content: userMessage },
   ];
 
-  const schema = buildResponseSchema(includeUserSummary);
+  const schema = makeSchemaStrict(buildResponseSchema(includeUserSummary));
 
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -290,10 +322,7 @@ async function sendViaOpenAI(
       json_schema: {
         name: 'coach_response',
         strict: true,
-        schema: {
-          ...schema,
-          additionalProperties: false,
-        },
+        schema,
       },
     },
   });
@@ -330,6 +359,7 @@ async function generateText(
   }
 
   const client = new OpenAI({ apiKey: config.apiKey });
+  const strictSchema = makeSchemaStrict(schema);
   const completion = await client.chat.completions.create({
     model: config.model,
     messages: [
@@ -446,7 +476,7 @@ async function generateStructured<T>(
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: { ...schema, additionalProperties: false },
+        schema: strictSchema,
       },
     },
   });
@@ -510,6 +540,7 @@ async function generateWithImageStructured<T>(
     }
   }
   const client = new OpenAI({ apiKey: config.apiKey });
+  const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
   const completion = await client.chat.completions.create({
     model: config.model,
@@ -528,7 +559,7 @@ async function generateWithImageStructured<T>(
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: { ...schema, additionalProperties: false },
+        schema: strictSchema,
       },
     },
   });

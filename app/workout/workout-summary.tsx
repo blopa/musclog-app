@@ -16,50 +16,13 @@ import {
 import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
+import AiService from '../../services/AiService';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../../utils/chatSessionStorage';
-import { type CoachAIConfig, getRecentWorkoutInsights } from '../../utils/coachAI';
-import { getAccessToken } from '../../utils/googleAuth';
+import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
-
-async function resolveAIConfig(): Promise<CoachAIConfig | null> {
-  try {
-    const oauthGeminiEnabled = await GoogleAuthService.getOAuthGeminiEnabled();
-    if (oauthGeminiEnabled) {
-      const accessToken = await getAccessToken();
-      if (accessToken) {
-        return {
-          provider: 'gemini',
-          accessToken,
-          model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-        };
-      }
-    }
-    const enableGoogleGemini = await SettingsService.getEnableGoogleGemini();
-    const googleGeminiApiKey = await SettingsService.getGoogleGeminiApiKey();
-    if (enableGoogleGemini && googleGeminiApiKey) {
-      return {
-        provider: 'gemini',
-        apiKey: googleGeminiApiKey,
-        model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.5-flash',
-      };
-    }
-    const enableOpenAi = await SettingsService.getEnableOpenAi();
-    const openAiApiKey = await SettingsService.getOpenAiApiKey();
-    if (enableOpenAi && openAiApiKey) {
-      return {
-        provider: 'openai',
-        apiKey: openAiApiKey,
-        model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
-      };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
 
 export default function WorkoutSummaryScreen() {
   const { t } = useTranslation();
@@ -233,7 +196,7 @@ export default function WorkoutSummaryScreen() {
 
     setIsFeedbackLoading(true);
     try {
-      const aiConfig = await resolveAIConfig();
+      const aiConfig = await AiService.getAiConfig();
       if (!aiConfig) {
         showSnackbar('error', t('ai.settings.notConfigured'));
         setIsFeedbackLoading(false);
