@@ -10,6 +10,7 @@ import {
   deleteAllData,
   getAccessToken,
   getGoogleClientId,
+  getGoogleRedirectUri,
   type GoogleAuthData,
   handleGoogleSignIn,
   isGoogleSignedIn,
@@ -179,6 +180,28 @@ describe('utils/googleAuth', () => {
     it('should return web client ID for web platform', () => {
       mockPlatform.OS = 'web';
       expect(getGoogleClientId()).toBe(GOOGLE_CLIENT_ID_WEB);
+    });
+  });
+
+  describe('getGoogleRedirectUri', () => {
+    it('should return mobile redirect URI for iOS', () => {
+      mockPlatform.OS = 'ios';
+      expect(getGoogleRedirectUri()).toBe(GOOGLE_REDIRECT_URI_MOBILE);
+    });
+
+    it('should return mobile redirect URI for Android', () => {
+      mockPlatform.OS = 'android';
+      expect(getGoogleRedirectUri()).toBe(GOOGLE_REDIRECT_URI_MOBILE);
+    });
+
+    it('should return web redirect URI for web platform', () => {
+      const mockWebUrl = 'http://localhost:8081/';
+      const Linking = require('expo-linking');
+      Linking.createURL.mockReturnValue(mockWebUrl);
+      mockPlatform.OS = 'web';
+
+      expect(getGoogleRedirectUri()).toBe(mockWebUrl);
+      expect(Linking.createURL).toHaveBeenCalledWith('/');
     });
   });
 

@@ -4,9 +4,9 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { GOOGLE_REDIRECT_URI_MOBILE, GOOGLE_SCOPES } from '../constants/misc';
+import { GOOGLE_SCOPES } from '../constants/misc';
 import i18n from '../lang/lang';
-import { getGoogleClientId } from '../utils/googleAuth';
+import { getGoogleClientId, getGoogleRedirectUri } from '../utils/googleAuth';
 import { showSnackbar } from '../utils/snackbarService';
 
 // This is required for the OAuth flow to work correctly on mobile
@@ -88,7 +88,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
 
         try {
           setIsSigningIn(true);
-          const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
+          const tokenData = await exchangeCodeForToken(authCode, getGoogleRedirectUri());
           setAuthData(tokenData);
         } catch (error) {
           console.error('Google sign-in failed:', error);
@@ -109,9 +109,10 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
 
   const promptAsync = async (shouldExchangeCode = false) => {
     try {
-      const authUrl = buildAuthUrl(GOOGLE_REDIRECT_URI_MOBILE);
+      const redirectUri = getGoogleRedirectUri();
+      const authUrl = buildAuthUrl(redirectUri);
 
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, GOOGLE_REDIRECT_URI_MOBILE);
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
       if (result.type === 'success' && result.url) {
         const queryParams = Linking.parse(result.url);
@@ -123,7 +124,7 @@ export const useGoogleAuth = (shouldExchangeCode = false) => {
           setIsSigningIn(true);
 
           if (shouldExchangeCode) {
-            const tokenData = await exchangeCodeForToken(authCode, GOOGLE_REDIRECT_URI_MOBILE);
+            const tokenData = await exchangeCodeForToken(authCode, redirectUri);
             setAuthData(tokenData);
           }
 

@@ -4,14 +4,15 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import {
-  GOOGLE_REDIRECT_URI_MOBILE,
-  TEMP_GOOGLE_AUTH_CODE,
-  TEMP_GOOGLE_USER_NAME,
-} from '../constants/misc';
+import { TEMP_GOOGLE_AUTH_CODE, TEMP_GOOGLE_USER_NAME } from '../constants/misc';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useTheme } from '../hooks/useTheme';
-import { getAccessToken, getGoogleUserInfo, handleGoogleSignIn } from '../utils/googleAuth';
+import {
+  getAccessToken,
+  getGoogleRedirectUri,
+  getGoogleUserInfo,
+  handleGoogleSignIn,
+} from '../utils/googleAuth';
 import { setSentryUser } from '../utils/sentry';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
@@ -56,7 +57,7 @@ export function ConnectGoogleAccountBody({
         const code = await AsyncStorage.getItem(TEMP_GOOGLE_AUTH_CODE);
         if (code) {
           await AsyncStorage.removeItem(TEMP_GOOGLE_AUTH_CODE);
-          const tokenData = await exchangeCodeForToken(code, GOOGLE_REDIRECT_URI_MOBILE);
+          const tokenData = await exchangeCodeForToken(code, getGoogleRedirectUri());
           const { isValid, accessToken } = await handleGoogleSignIn(tokenData);
 
           if (isValid) {

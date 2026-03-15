@@ -29,7 +29,7 @@ import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
-import { GOOGLE_REDIRECT_URI_MOBILE, TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
+import { TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
 import { type MealType } from '../database/models';
 import { FoodService, NutritionGoalService } from '../database/services';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
@@ -40,7 +40,7 @@ import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
-import { handleGoogleSignIn } from '../utils/googleAuth';
+import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
 import { showSnackbar } from '../utils/snackbarService';
 
@@ -270,7 +270,7 @@ export default function HomeScreen() {
         } else if (codeParam) {
           // Post-onboarding Google auth (e.g. from AI Settings modal)
           try {
-            const tokenData = await exchangeCodeForToken(codeParam, GOOGLE_REDIRECT_URI_MOBILE);
+            const tokenData = await exchangeCodeForToken(codeParam, getGoogleRedirectUri());
             await handleGoogleSignIn(tokenData);
           } catch (e) {
             console.warn('Failed to exchange Google auth code after onboarding', e);
