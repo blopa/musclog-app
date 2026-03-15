@@ -26,6 +26,7 @@ type LogMealModalProps = {
     carbs: number;
     fat: number;
   };
+  initialMealType?: MealType;
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
@@ -64,12 +65,12 @@ const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType
   },
 ];
 
-export function LogMealModal({ visible, onClose, meal, onLogMeal }: LogMealModalProps) {
+export function LogMealModal({ visible, onClose, meal, initialMealType, onLogMeal }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);
 
   const formatDate = useCallback((date: Date) => {

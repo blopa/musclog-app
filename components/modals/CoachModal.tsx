@@ -39,7 +39,6 @@ import {
   GiftedChat,
   InputToolbar,
   InputToolbarProps,
-  Send,
   SendProps,
 } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -1392,14 +1391,30 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         <LogMealModal
           visible
           onClose={() => setSelectedMealForTracking(null)}
-          meal={{
-            name: selectedMealForTracking.mealTypeIdentifier,
-            type: selectedMealForTracking.mealTypeIdentifier,
-            calories: selectedMealForTracking.calories,
-            protein: selectedMealForTracking.protein,
-            carbs: selectedMealForTracking.carbs,
-            fat: selectedMealForTracking.fats,
-          }}
+          meal={(() => {
+            const rawIngredients = selectedMealForTracking.ingredients
+              .map((i) => i.name)
+              .join(', ');
+
+            const ingredientsDesc =
+              rawIngredients.length > 80
+                ? `${rawIngredients.substring(0, 77)}...`
+                : rawIngredients;
+
+            const mealLabel =
+              selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
+              selectedMealForTracking.mealTypeIdentifier.slice(1);
+
+            return {
+              name: ingredientsDesc,
+              type: mealLabel,
+              calories: selectedMealForTracking.calories,
+              protein: selectedMealForTracking.protein,
+              carbs: selectedMealForTracking.carbs,
+              fat: selectedMealForTracking.fats,
+            };
+          })()}
+          initialMealType={selectedMealForTracking.mealTypeIdentifier}
           onLogMeal={async (date, logMealType) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
