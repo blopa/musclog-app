@@ -49,7 +49,7 @@ export const getGoogleClientId = (): string => {
 
 // Get the appropriate redirect URI based on platform
 export const getGoogleRedirectUri = (): string => {
-  return Platform.OS === 'web' ? Linking.createURL('') : GOOGLE_REDIRECT_URI_MOBILE;
+  return Platform.OS === 'web' ? Linking.createURL('/') : GOOGLE_REDIRECT_URI_MOBILE;
 };
 
 const handleGoogleAuthError = async () => {
