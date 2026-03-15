@@ -917,6 +917,46 @@ export class NutritionService {
   }
 
   /**
+   * Normalize AI meal ingredients so that ingredients with a known foodId use
+   * the database food's per-100g macros scaled to the ingredient's gram amount.
+   * This ensures the chat preview total matches what will actually be logged.
+   */
+  static async normalizeAiMealIngredients<
+    T extends {
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber?: number;
+      grams: number;
+      foodId?: string;
+    },
+  >(ingredients: T[]): Promise<T[]> {
+    return Promise.all(
+      ingredients.map(async (ingredient) => {
+        if (!ingredient.foodId) {
+          return ingredient;
+        }
+        try {
+          const food = await database.get<Food>('foods').find(ingredient.foodId);
+          const scale = ingredient.grams / 100;
+          return {
+            ...ingredient,
+            kcal: (food.calories ?? 0) * scale,
+            protein: (food.protein ?? 0) * scale,
+            carbs: (food.carbs ?? 0) * scale,
+            fat: (food.fat ?? 0) * scale,
+            fiber: (food.fiber ?? 0) * scale,
+          };
+        } catch {
+          // Food not found — fall back to LLM values
+          return ingredient;
+        }
+      })
+    );
+  }
+
+  /**
    * Log multiple custom AI-generated meals in a batch.
    */
   static async logCustomMealsBatch(

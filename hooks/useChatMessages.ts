@@ -551,23 +551,33 @@ export function useChatMessages(
             return;
           }
 
-          const totalCalories = Math.round(
-            result.meals.flatMap((m) => m.ingredients).reduce((acc, i) => acc + i.kcal, 0)
+          // Normalize ingredients: replace LLM-estimated macros with actual DB
+          // values for any ingredient that was matched to a local food (foodId).
+          // This keeps the chat preview consistent with what will actually be logged.
+          const normalizedMeals = await Promise.all(
+            result.meals.map(async (m) => ({
+              ...m,
+              ingredients: await NutritionService.normalizeAiMealIngredients(m.ingredients),
+            }))
           );
-          const mealNames = result.meals.map((m) => m.mealType).join(', ');
+
+          const totalCalories = Math.round(
+            normalizedMeals.flatMap((m) => m.ingredients).reduce((acc, i) => acc + i.kcal, 0)
+          );
+          const mealNames = normalizedMeals.map((m) => m.mealType).join(', ');
 
           reply = {
             msg4User: t('coach.success.trackMealReady', {
-              count: result.meals.length,
+              count: normalizedMeals.length,
               meals: mealNames,
               calories: totalCalories,
             }),
-            sumMsg: `Analyzed ${result.meals.length} meal(s) (${totalCalories} kcal total)`,
+            sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
           const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
-            meals: result.meals.map((m) => ({ ...m, was_tracked: false })),
+            meals: normalizedMeals.map((m) => ({ ...m, was_tracked: false })),
           };
           payloadJson = JSON.stringify(trackMealPayload);
 
