@@ -171,6 +171,7 @@ export type NavItemKey =
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda';
+export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation';
 export type ChartTooltipPosition = 'left' | 'right';
 
 export type UseSettingsResult = {

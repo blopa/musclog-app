@@ -79,7 +79,7 @@ type FoodDetailsModalProps = {
   initialDate?: Date;
   /** Initial serving size in grams for duplicate mode */
   initialServingSize?: number;
-  source?: 'openfood' | 'usda' | 'local' | 'ai';
+  source?: 'openfood' | 'usda' | 'local' | 'ai' | 'foundation';
   onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
   onLogMeal?: (data: { meal: string; date: Date }) => void;
   /** Called when barcode lookup has finished (product found or not). Used to hide camera loading overlay. */

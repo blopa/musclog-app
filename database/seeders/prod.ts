@@ -167,7 +167,7 @@ async function seedUSDAFoundationFoods(): Promise<void> {
               );
 
               food.isFavorite = false;
-              food.source = 'usda';
+              food.source = 'foundation';
               food.createdAt = now;
               food.updatedAt = now;
             });
