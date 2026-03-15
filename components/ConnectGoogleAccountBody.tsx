@@ -6,6 +6,7 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { TEMP_GOOGLE_AUTH_CODE, TEMP_GOOGLE_USER_NAME } from '../constants/misc';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
+import { useNavigationItems } from '../hooks/useNavigationItems';
 import { useTheme } from '../hooks/useTheme';
 import {
   getAccessToken,
@@ -38,18 +39,29 @@ export function ConnectGoogleAccountBody({
   const theme = useTheme();
   const { t } = useTranslation();
   const [userName, setUserName] = useState<string | undefined>(undefined);
+  const { setNavSlot } = useNavigationItems();
 
-  const getSetUSerInfo = useCallback(async (token: string) => {
-    const userInfo = await getGoogleUserInfo(token);
-    if (userInfo) {
-      if (userInfo.name) {
-        setUserName(userInfo.name);
-        await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
+  const getSetUSerInfo = useCallback(
+    async (token: string) => {
+      const userInfo = await getGoogleUserInfo(token);
+      if (userInfo) {
+        if (userInfo.name) {
+          setUserName(userInfo.name);
+          await AsyncStorage.setItem(TEMP_GOOGLE_USER_NAME, userInfo.name);
+        }
+
+        setSentryUser({ id: userInfo.id, email: userInfo.email });
+
+        // Set the last navigation item to "coach" after successful Google auth
+        try {
+          await setNavSlot(3, 'coach');
+        } catch (error) {
+          console.error('Failed to set navigation slot to coach:', error);
+        }
       }
-
-      setSentryUser({ id: userInfo.id, email: userInfo.email });
-    }
-  }, []);
+    },
+    [setNavSlot]
+  );
 
   useEffect(() => {
     const loadCodeParam = async () => {
