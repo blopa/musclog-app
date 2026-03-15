@@ -178,8 +178,32 @@ export default function DebugTestScreen() {
       await database.write(async () => {
         await database.unsafeResetDatabase();
       });
-      // Small delay to ensure the database adapter is fully ready after reset
-      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // TODO: super ugly hack, figure out a way to not do this
+      // Longer delay to ensure IndexedDB connections are closed and database is ready.
+      // On web, IndexedDB may log "blocked" warnings if connections are still open during
+      // deletion. These warnings are harmless - the adapter handles them internally and
+      // the reset completes successfully. This delay minimizes the chance of seeing them.
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Verify database is ready by attempting a simple query
+      // This ensures the reset completed and the database is accessible
+      let retries = 0;
+      const maxRetries = 3;
+      while (retries < maxRetries) {
+        try {
+          await database.get<Setting>('settings').query().fetchCount();
+          break; // Success, exit retry loop
+        } catch (verifyError) {
+          retries++;
+          if (retries >= maxRetries) {
+            throw verifyError; // Re-throw if all retries failed
+          }
+          // Wait before retrying
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
+
       console.log('Database has been deleted and will be recreated on next app load.');
     } catch (error) {
       console.error('Error deleting database:', error);
