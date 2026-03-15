@@ -142,7 +142,12 @@ export const isGoogleSignedIn = async (): Promise<boolean> => {
     }
   }
 
-  // Token missing or expired — try to refresh silently using stored refresh token
+  // Only attempt refresh if the user previously logged in (has a stored refresh token)
+  const refreshToken = await GoogleAuthService.getRefreshToken();
+  if (!refreshToken) {
+    return false;
+  }
+
   const refreshed = await refreshAccessToken();
   return refreshed !== undefined;
 };
