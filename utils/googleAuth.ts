@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetch } from 'expo/fetch';
-import { Platform } from 'react-native';
-
 import * as Linking from 'expo-linking';
+import { Platform } from 'react-native';
 
 import {
   GOOGLE_ACCESS_TOKEN,
@@ -13,7 +12,7 @@ import {
   LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
   ONBOARDING_COMPLETED,
 } from '../constants/misc';
-import { GoogleAuthService } from '../database/services/GoogleAuthService';
+import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
 import { captureException, setSentryUser } from './sentry';
 import { showSnackbar } from './snackbarService';
