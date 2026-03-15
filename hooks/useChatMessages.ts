@@ -11,6 +11,7 @@ import {
   TRACK_MEAL,
 } from '../constants/chat';
 import ChatMessage from '../database/models/ChatMessage';
+import { type MealType } from '../database/models';
 import { ChatService, NutritionService } from '../database/services';
 import AiService from '../services/AiService';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
@@ -142,7 +143,7 @@ export type UseChatMessagesResult = {
     mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
     ingredients: TrackMealIngredient[],
     date: Date,
-    logMealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+    logMealType: MealType
   ) => Promise<void>;
 };
 
@@ -653,7 +654,7 @@ export function useChatMessages(
       mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
       ingredients: TrackMealIngredient[],
       date: Date,
-      logMealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+      logMealType: MealType
     ) => {
       await NutritionService.logCustomMealsBatch(
         ingredients.map((i) => ({

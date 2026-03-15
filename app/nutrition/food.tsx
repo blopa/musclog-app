@@ -596,7 +596,11 @@ export default function FoodScreen() {
                       size="md"
                       width="flex-1"
                       onPress={() => {
-                        openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
+                        openCamera({
+                          mode: 'barcode-scan',
+                          hideCameraModePicker: false,
+                          logDate: selectedDate,
+                        });
                       }}
                     />
                     {isAiFeaturesEnabled ? (
@@ -607,7 +611,11 @@ export default function FoodScreen() {
                         size="md"
                         width="flex-1"
                         onPress={() => {
-                          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
+                          openCamera({
+                            mode: 'ai-meal-photo',
+                            hideCameraModePicker: false,
+                            logDate: selectedDate,
+                          });
                         }}
                       />
                     ) : null}
@@ -830,11 +838,11 @@ export default function FoodScreen() {
         }}
         onAiCameraPress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false });
+          openCamera({ mode: 'ai-meal-photo', hideCameraModePicker: false, logDate: selectedDate });
         }}
         onScanBarcodePress={() => {
           setIsAddFoodModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false });
+          openCamera({ mode: 'barcode-scan', hideCameraModePicker: false, logDate: selectedDate });
         }}
         onSearchFoodPress={() => {
           setIsAddFoodModalVisible(false);
@@ -911,7 +919,7 @@ export default function FoodScreen() {
         }}
         onBarcodeScanPress={() => {
           setIsFoodSearchModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: true });
+          openCamera({ mode: 'barcode-scan', hideCameraModePicker: true, logDate: selectedDate });
         }}
         isAiEnabled={isAiFeaturesEnabled}
       />

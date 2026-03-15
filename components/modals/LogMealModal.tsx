@@ -36,6 +36,7 @@ type LogMealModalProps = {
   };
   ingredients?: Ingredient[];
   initialMealType?: MealType;
+  initialDate?: Date;
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
@@ -45,11 +46,12 @@ export function LogMealModal({
   meal,
   ingredients,
   initialMealType,
+  initialDate,
   onLogMeal,
 }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);

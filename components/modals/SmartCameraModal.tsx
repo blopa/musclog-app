@@ -54,6 +54,7 @@ type CameraModalProps = {
   hideCameraModePicker?: boolean;
   isAiEnabled?: boolean;
   useOcrBeforeAi?: boolean;
+  logDate?: Date;
 };
 
 export default function SmartCameraModal({
@@ -63,6 +64,7 @@ export default function SmartCameraModal({
   hideCameraModePicker = false,
   isAiEnabled = true,
   useOcrBeforeAi = false,
+  logDate,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -987,6 +989,7 @@ export default function SmartCameraModal({
             onFoodTracked={handleClose}
             isAiEnabled={isAiEnabled}
             canEdit={!!productFromAiLabel}
+            initialDate={logDate}
           />
         ) : null}
 
@@ -1048,6 +1051,7 @@ export default function SmartCameraModal({
             }}
             meal={selectedMealForLogging}
             onLogMeal={handleLogMeal}
+            initialDate={logDate}
           />
         ) : null}
       </View>

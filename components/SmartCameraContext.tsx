@@ -8,6 +8,7 @@ export type { CameraMode };
 type OpenCameraOptions = {
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
+  logDate?: Date;
 };
 
 type SmartCameraContextType = {
@@ -21,10 +22,12 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
+  const [logDate, setLogDate] = useState<Date | undefined>(undefined);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
+    setLogDate(options?.logDate);
     setIsVisible(true);
   }, []);
 
@@ -39,6 +42,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={isAiFeaturesEnabled}
           useOcrBeforeAi={useOcrBeforeAi}
+          logDate={logDate}
         />
       ) : null}
     </SmartCameraContext.Provider>
