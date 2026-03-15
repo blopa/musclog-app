@@ -1,7 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
-import { ChatService } from '../database/services';
+import {
+  ChatService,
+  NutritionService,
+  SettingsService,
+  WorkoutService,
+} from '../database/services';
+import i18n from '../lang/lang';
 import AiService from '../services/AiService';
 import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
@@ -81,42 +87,78 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
     const startDateStr = startDate.toISOString().split('T')[0];
     const endDateStr = today.toISOString().split('T')[0];
 
-    // Generate workout insights
-    try {
-      console.log('[configureDailyTasks] Generating workout insights...');
-      const workoutInsights = await getRecentWorkoutsInsights(aiConfig, startDateStr, endDateStr);
+    const [workoutInsightsEnabled, nutritionInsightsEnabled] = await Promise.all([
+      SettingsService.getWorkoutInsights(),
+      SettingsService.getDailyNutritionInsights(),
+    ]);
 
-      if (workoutInsights) {
-        await ChatService.saveMessage({
-          sender: 'coach',
-          message: workoutInsights,
-          context: 'exercise',
-          messageType: 'text',
-          summarizedMessage: workoutInsights.substring(0, 200),
+    // Generate workout insights
+    if (!workoutInsightsEnabled) {
+      console.log('[configureDailyTasks] Workout insights disabled, skipping');
+    } else {
+      try {
+        const startTs = new Date(startDateStr).setUTCHours(0, 0, 0, 0);
+        const endTs = new Date(endDateStr).setUTCHours(23, 59, 59, 999);
+        const workoutLogs = await WorkoutService.getWorkoutHistory({
+          startDate: startTs,
+          endDate: endTs,
         });
-        console.log('[configureDailyTasks] Workout insights generated and saved');
+
+        let workoutMessage: string;
+        if (workoutLogs.length === 0) {
+          workoutMessage = i18n.t('coach.insights.noWorkoutLogs');
+        } else {
+          console.log('[configureDailyTasks] Generating workout insights...');
+          workoutMessage =
+            (await getRecentWorkoutsInsights(aiConfig, startDateStr, endDateStr)) ?? '';
+        }
+
+        if (workoutMessage) {
+          await ChatService.saveMessage({
+            sender: 'coach',
+            message: workoutMessage,
+            context: 'exercise',
+            messageType: 'text',
+            summarizedMessage: workoutMessage.substring(0, 200),
+          });
+          console.log('[configureDailyTasks] Workout insights saved');
+        }
+      } catch (error) {
+        console.error('[configureDailyTasks] Error generating workout insights:', error);
       }
-    } catch (error) {
-      console.error('[configureDailyTasks] Error generating workout insights:', error);
     }
 
     // Generate nutrition insights
-    try {
-      console.log('[configureDailyTasks] Generating nutrition insights...');
-      const nutritionInsights = await getNutritionInsights(aiConfig, startDateStr, endDateStr);
+    if (!nutritionInsightsEnabled) {
+      console.log('[configureDailyTasks] Nutrition insights disabled, skipping');
+    } else {
+      try {
+        const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
+          new Date(startDateStr),
+          new Date(endDateStr)
+        );
 
-      if (nutritionInsights) {
-        await ChatService.saveMessage({
-          sender: 'coach',
-          message: nutritionInsights,
-          context: 'nutrition',
-          messageType: 'text',
-          summarizedMessage: nutritionInsights.substring(0, 200),
-        });
-        console.log('[configureDailyTasks] Nutrition insights generated and saved');
+        let nutritionMessage: string;
+        if (nutritionLogs.length === 0) {
+          nutritionMessage = i18n.t('coach.insights.noNutritionLogs');
+        } else {
+          console.log('[configureDailyTasks] Generating nutrition insights...');
+          nutritionMessage = (await getNutritionInsights(aiConfig, startDateStr, endDateStr)) ?? '';
+        }
+
+        if (nutritionMessage) {
+          await ChatService.saveMessage({
+            sender: 'coach',
+            message: nutritionMessage,
+            context: 'nutrition',
+            messageType: 'text',
+            summarizedMessage: nutritionMessage.substring(0, 200),
+          });
+          console.log('[configureDailyTasks] Nutrition insights saved');
+        }
+      } catch (error) {
+        console.error('[configureDailyTasks] Error generating nutrition insights:', error);
       }
-    } catch (error) {
-      console.error('[configureDailyTasks] Error generating nutrition insights:', error);
     }
 
     // Mark today as complete and notify if insights were generated

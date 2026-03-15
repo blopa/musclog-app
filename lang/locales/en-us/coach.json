@@ -27,6 +27,10 @@
     "welcomeMessage": "Hello. My name is Loggy, I am your AI Fitness Coach. I'm here to help you achieve your fitness goals, track your progress, and provide personalized guidance. Feel free to ask me anything about workouts, nutrition, or your fitness journey!",
     "welcomeMessageExercise": "Hello! I'm Loggy. I'm here to help you with your training, whether it's building a new workout plan, checking your form, or analyzing your progress. What's on your training schedule today?",
     "welcomeMessageNutrition": "Hi! I'm Loggy. I can help you stay on top of your nutrition by tracking your meals, estimating macros, and providing dietary insights. Tell me about your recent meals or ask me any nutrition questions!",
+    "insights": {
+      "noNutritionLogs": "I can't provide nutrition insights because you haven't tracked any meals in the past 7 days. Start logging your food to get personalized nutrition feedback!",
+      "noWorkoutLogs": "I can't provide workout insights because you haven't completed any workouts in the past 7 days. Get moving and I'll be ready to analyze your training!"
+    },
     "errors": {
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",

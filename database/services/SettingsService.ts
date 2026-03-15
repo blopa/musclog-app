@@ -394,6 +394,14 @@ export class SettingsService {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
   }
 
+  static async getDailyNutritionInsights(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true);
+  }
+
+  static async getWorkoutInsights(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(WORKOUT_INSIGHTS_SETTING_TYPE, false);
+  }
+
   /**
    * Upsert the food search source setting ('both' | 'openfood' | 'usda')
    */
