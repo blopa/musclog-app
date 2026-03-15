@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetch } from 'expo/fetch';
+import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
 import {
@@ -7,6 +8,7 @@ import {
   GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE,
   GOOGLE_CLIENT_ID_MOBILE,
   GOOGLE_CLIENT_ID_WEB,
+  GOOGLE_REDIRECT_URI_MOBILE,
   LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN,
   ONBOARDING_COMPLETED,
 } from '../constants/misc';
@@ -43,6 +45,11 @@ export async function isValidAccessToken(accessToken: string): Promise<boolean> 
 // Get the appropriate client ID based on platform
 export const getGoogleClientId = (): string => {
   return Platform.OS === 'web' ? GOOGLE_CLIENT_ID_WEB : GOOGLE_CLIENT_ID_MOBILE;
+};
+
+// Get the appropriate redirect URI based on platform
+export const getGoogleRedirectUri = (): string => {
+  return Platform.OS === 'web' ? Linking.createURL('/') : GOOGLE_REDIRECT_URI_MOBILE;
 };
 
 const handleGoogleAuthError = async () => {
