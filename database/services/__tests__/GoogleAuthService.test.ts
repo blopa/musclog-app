@@ -1,5 +1,4 @@
 import {
-  AI_SETTINGS_TYPE,
   GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
   GOOGLE_REFRESH_TOKEN_TYPE,
 } from '../../../constants/misc';
@@ -458,64 +457,6 @@ describe('GoogleAuthService', () => {
   });
 
   describe('setAISettingsEnabled', () => {
-    it('should create new setting when none exists', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue({});
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        await callback(mockWriter);
-        return Promise.resolve();
-      });
-
-      await GoogleAuthService.setAISettingsEnabled(true);
-
-      expect(mockCreate).toHaveBeenCalled();
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockSetting = {} as any;
-      createCall(mockSetting);
-      expect(mockSetting.type).toBe(AI_SETTINGS_TYPE);
-      expect(mockSetting.value).toBe('true');
-    });
-
-    it('should update existing setting when found', async () => {
-      const mockSetting = createMockSetting({
-        type: AI_SETTINGS_TYPE,
-        value: 'false',
-        update: jest.fn((callback) => {
-          callback({ value: 'true', updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockSetting]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        await callback(mockWriter);
-        return Promise.resolve();
-      });
-
-      await GoogleAuthService.setAISettingsEnabled(true);
-
-      expect(mockSetting.update).toHaveBeenCalled();
-    });
-
     it('should handle boolean conversion correctly', async () => {
       const mockQuery = {
         fetch: jest.fn().mockResolvedValue([]),
@@ -535,45 +476,10 @@ describe('GoogleAuthService', () => {
         return Promise.resolve();
       });
 
-      await GoogleAuthService.setAISettingsEnabled(false);
-
       const createCall = mockCreate.mock.calls[0][0];
       const mockSetting = {} as any;
       createCall(mockSetting);
       expect(mockSetting.value).toBe('false');
-    });
-
-    it('should update existing setting with false value', async () => {
-      const mockSetting = createMockSetting({
-        type: AI_SETTINGS_TYPE,
-        value: 'true',
-        update: jest.fn((callback) => {
-          callback({ value: 'false', updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockSetting]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        await callback(mockWriter);
-        return Promise.resolve();
-      });
-
-      await GoogleAuthService.setAISettingsEnabled(false);
-
-      expect(mockSetting.update).toHaveBeenCalled();
-      const updateCall = mockSetting.update.mock.calls[0][0];
-      const mockUpdated = {} as any;
-      updateCall(mockUpdated);
-      expect(mockUpdated.value).toBe('false');
     });
   });
 });

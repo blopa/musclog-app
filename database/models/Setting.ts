@@ -15,7 +15,6 @@ export type SettingType =
   | 'sync_wifi_only'
   | 'google_refresh_token_type'
   | 'google_oauth_gemini_enabled_type'
-  | 'ai_settings_type'
   | 'health_connect_sync_enabled'
   | 'health_connect_last_sync'
   | 'health_connect_sync_in_progress'

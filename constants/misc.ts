@@ -18,7 +18,6 @@ export const GOOGLE_SCOPES = [
 // Setting Types (stored in WatermelonDB)
 export const GOOGLE_REFRESH_TOKEN_TYPE = 'google_refresh_token_type';
 export const GOOGLE_OAUTH_GEMINI_ENABLED_TYPE = 'google_oauth_gemini_enabled_type';
-export const AI_SETTINGS_TYPE = 'ai_settings_type';
 
 // AsyncStorage Keys (for short-lived tokens)
 export const GOOGLE_ACCESS_TOKEN = 'googleAccessToken';

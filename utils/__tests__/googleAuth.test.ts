@@ -489,7 +489,6 @@ describe('utils/googleAuth', () => {
       mockIsValidAccessToken.mockResolvedValue(true);
       mockGoogleAuthService.saveRefreshToken.mockResolvedValue();
       mockGoogleAuthService.setOAuthGeminiEnabled.mockResolvedValue();
-      mockGoogleAuthService.setAISettingsEnabled.mockResolvedValue();
 
       const result = await handleGoogleSignIn(mockAuthData);
 
@@ -506,7 +505,6 @@ describe('utils/googleAuth', () => {
         mockAuthData.refresh_token
       );
       expect(mockGoogleAuthService.setOAuthGeminiEnabled).toHaveBeenCalledWith(true);
-      expect(mockGoogleAuthService.setAISettingsEnabled).toHaveBeenCalledWith(true);
       expect(mockIsValidAccessToken).toHaveBeenCalledWith(mockAuthData.access_token);
     });
 
@@ -517,7 +515,6 @@ describe('utils/googleAuth', () => {
       };
       mockIsValidAccessToken.mockResolvedValue(true);
       mockGoogleAuthService.setOAuthGeminiEnabled.mockResolvedValue();
-      mockGoogleAuthService.setAISettingsEnabled.mockResolvedValue();
 
       const result = await handleGoogleSignIn(webAuthData);
 
@@ -530,7 +527,6 @@ describe('utils/googleAuth', () => {
       mockIsValidAccessToken.mockResolvedValue(false);
       mockGoogleAuthService.saveRefreshToken.mockResolvedValue();
       mockGoogleAuthService.setOAuthGeminiEnabled.mockResolvedValue();
-      mockGoogleAuthService.setAISettingsEnabled.mockResolvedValue();
 
       const result = await handleGoogleSignIn(mockAuthData);
 
@@ -555,7 +551,6 @@ describe('utils/googleAuth', () => {
       expect(result).toBe(false);
       expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(GOOGLE_ACCESS_TOKEN, '');
       expect(mockGoogleAuthService.setOAuthGeminiEnabled).not.toHaveBeenCalled();
-      expect(mockGoogleAuthService.setAISettingsEnabled).not.toHaveBeenCalled();
       expect(mockIsValidAccessToken).toHaveBeenCalledWith('');
     });
 
@@ -567,7 +562,6 @@ describe('utils/googleAuth', () => {
       mockIsValidAccessToken.mockResolvedValue(true);
       mockGoogleAuthService.saveRefreshToken.mockResolvedValue();
       mockGoogleAuthService.setOAuthGeminiEnabled.mockResolvedValue();
-      mockGoogleAuthService.setAISettingsEnabled.mockResolvedValue();
 
       const result = await handleGoogleSignIn(authDataWithoutExpires);
 

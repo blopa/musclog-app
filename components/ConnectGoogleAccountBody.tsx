@@ -56,7 +56,6 @@ export function ConnectGoogleAccountBody({
         // Enable OAuth Gemini and AI settings after successful Google auth
         try {
           await GoogleAuthService.setOAuthGeminiEnabled(true);
-          await GoogleAuthService.setAISettingsEnabled(true);
         } catch (error) {
           console.error('Failed to enable Gemini:', error);
         }

@@ -1,10 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import {
-  AI_SETTINGS_TYPE,
-  GOOGLE_OAUTH_GEMINI_ENABLED_TYPE,
-  GOOGLE_REFRESH_TOKEN_TYPE,
-} from '../../constants/misc';
+import { GOOGLE_OAUTH_GEMINI_ENABLED_TYPE, GOOGLE_REFRESH_TOKEN_TYPE } from '../../constants/misc';
 import { database } from '../database-instance';
 import Setting from '../models/Setting';
 
@@ -107,33 +103,6 @@ export class GoogleAuthService {
       } else {
         await database.get<Setting>('settings').create((setting) => {
           setting.type = GOOGLE_OAUTH_GEMINI_ENABLED_TYPE;
-          setting.value = enabled ? 'true' : 'false';
-          setting.createdAt = now;
-          setting.updatedAt = now;
-        });
-      }
-    });
-  }
-
-  /**
-   * Set AI settings enabled
-   */
-  static async setAISettingsEnabled(enabled: boolean): Promise<void> {
-    const now = Date.now();
-    const existingSettings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', AI_SETTINGS_TYPE), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    await database.write(async () => {
-      if (existingSettings.length > 0) {
-        await existingSettings[0].update((setting) => {
-          setting.value = enabled ? 'true' : 'false';
-          setting.updatedAt = now;
-        });
-      } else {
-        await database.get<Setting>('settings').create((setting) => {
-          setting.type = AI_SETTINGS_TYPE;
           setting.value = enabled ? 'true' : 'false';
           setting.createdAt = now;
           setting.updatedAt = now;

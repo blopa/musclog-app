@@ -232,7 +232,6 @@ export const handleGoogleSignIn = async (
     if (accessToken) {
       // Enable OAuth Gemini and AI settings if we have an access token
       await GoogleAuthService.setOAuthGeminiEnabled(true);
-      await GoogleAuthService.setAISettingsEnabled(true);
     }
 
     const expirationTime = new Date().getTime() + (expiresIn ?? 0) * 1000;
