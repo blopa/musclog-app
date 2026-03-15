@@ -273,18 +273,21 @@ export default function SmartCameraModal({
 
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
           if (result) {
+            // Normalize: if the AI matched a DB food (foodId), replace LLM estimates
+            // with the actual DB macros scaled to grams so the preview matches what's logged.
+            const [normalized] = await NutritionService.normalizeAiMealIngredients([result]);
             showSnackbar(
               'success',
               t('food.aiCamera.analysisSuccess', {
-                name: result.name,
-                kcal: result.kcal,
-                protein: result.protein,
-                carbs: result.carbs,
-                fat: result.fat,
+                name: normalized.name,
+                kcal: Math.round(normalized.kcal),
+                protein: normalized.protein,
+                carbs: normalized.carbs,
+                fat: normalized.fat,
               })
             );
 
-            setSelectedMealForLogging(mapMacroEstimateToMeal(result));
+            setSelectedMealForLogging(mapMacroEstimateToMeal(normalized));
             setIsLogMealModalVisible(true);
           } else {
             showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
