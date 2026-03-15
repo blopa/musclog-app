@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 import type {
   ChartTooltipPosition,
@@ -43,7 +43,7 @@ import {
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
-import { isGoogleSignedIn } from '../utils/googleAuth';
+import { GOOGLE_AUTH_CHANGED_EVENT, isGoogleSignedIn } from '../utils/googleAuth';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 // Build a type→value map from an array of Setting records.
@@ -227,18 +227,32 @@ export function useSettings(): UseSettingsResult & {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
 
   useEffect(() => {
-    isGoogleSignedIn()
-      .then(setIsGoogleConnected)
-      .catch(() => {});
+    const checkGoogleAuth = () => {
+      isGoogleSignedIn()
+        .then(setIsGoogleConnected)
+        .catch(() => {});
+    };
+
+    checkGoogleAuth();
+
     const subscription = AppState.addEventListener('change', (appState) => {
       if (appState === 'active') {
-        isGoogleSignedIn()
-          .then(setIsGoogleConnected)
-          .catch(() => {});
+        checkGoogleAuth();
       }
     });
 
-    return () => subscription.remove();
+    // On web the popup flow never changes AppState, so we listen for an explicit event
+    // dispatched by handleGoogleSignIn / deleteAllData instead.
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.addEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
+    }
+
+    return () => {
+      subscription.remove();
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        window.removeEventListener(GOOGLE_AUTH_CHANGED_EVENT, checkGoogleAuth);
+      }
+    };
   }, []);
 
   useEffect(() => {

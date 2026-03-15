@@ -17,6 +17,16 @@ import i18n from '../lang/lang';
 import { captureException, setSentryUser } from './sentry';
 import { showSnackbar } from './snackbarService';
 
+export const GOOGLE_AUTH_CHANGED_EVENT = 'google_auth_changed';
+
+// Notify listeners (web only) that Google auth state has changed.
+// On native, AppState 'active' events serve the same purpose.
+const notifyGoogleAuthChanged = () => {
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(GOOGLE_AUTH_CHANGED_EVENT));
+  }
+};
+
 export interface GoogleUserInfo {
   email: string;
   family_name?: string;
@@ -240,11 +250,14 @@ export const handleGoogleSignIn = async (
     await AsyncStorage.setItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE, expirationTime.toString());
 
     // Validate access token by checking if it works with Gemini
-    return {
+    const result = {
       isValid: await isValidAccessToken(accessToken),
       refreshToken,
       accessToken,
     };
+
+    notifyGoogleAuthChanged();
+    return result;
   }
   throw new Error('Google sign-in failed or cancelled.');
 };
@@ -257,4 +270,5 @@ export const deleteAllData = async (): Promise<void> => {
   await GoogleAuthService.clearRefreshToken();
   await GoogleAuthService.setOAuthGeminiEnabled(false);
   await AsyncStorage.multiRemove([GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE]);
+  notifyGoogleAuthChanged();
 };
