@@ -222,13 +222,16 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Seeding flag is not set: either first run or app was closed during a previous
     // migration. Reset the database so we always start a fresh seed + migration.
+    // Note: unsafeResetDatabase() should NOT be called inside a write transaction
     try {
-      await database.write(async () => {
-        await database.unsafeResetDatabase();
-      });
+      await database.unsafeResetDatabase();
+      // Small delay to ensure the database adapter is fully ready after reset
+      // This prevents race conditions where queries are attempted during reset
+      await new Promise((resolve) => setTimeout(resolve, 100));
       console.log('Database reset (clean slate for seeding/migration)');
     } catch (error) {
-      console.error('Error deleting database:', error);
+      console.error('Error resetting database:', error);
+      throw error; // Re-throw to prevent continuing with a broken database state
     }
 
     // Clear async storage

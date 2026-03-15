@@ -239,10 +239,28 @@ export function useNutritionLogs({
         setDailyNutrients(nutrients);
 
         // Get total count of all logs in database
-        const allLogsCount = await database
-          .get<NutritionLog>('nutrition_logs')
-          .query(Q.where('deleted_at', Q.eq(null)))
-          .fetchCount();
+        // Retry on reset error to handle race conditions during database initialization
+        let allLogsCount = 0;
+        try {
+          allLogsCount = await database
+            .get<NutritionLog>('nutrition_logs')
+            .query(Q.where('deleted_at', Q.eq(null)))
+            .fetchCount();
+        } catch (error: any) {
+          const isResetError =
+            error?.message?.includes('database is being reset') ||
+            error?.message?.includes('underlyingAdapter');
+          if (isResetError) {
+            // Retry after a short delay
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            allLogsCount = await database
+              .get<NutritionLog>('nutrition_logs')
+              .query(Q.where('deleted_at', Q.eq(null)))
+              .fetchCount();
+          } else {
+            throw error;
+          }
+        }
         setTotalCount(allLogsCount);
       } else if (mode === 'range' && startDate && endDate) {
         // Range mode

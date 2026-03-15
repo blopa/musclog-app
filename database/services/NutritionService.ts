@@ -8,6 +8,36 @@ import { database } from '../index';
 import Food from '../models/Food';
 import NutritionLog, { MealType } from '../models/NutritionLog';
 
+/**
+ * Helper function to retry database queries that fail during database reset.
+ * WatermelonDB throws an error when queries are attempted during reset.
+ * This function retries the query with exponential backoff.
+ */
+async function retryOnResetError<T>(
+  queryFn: () => Promise<T>,
+  maxRetries: number = 3,
+  initialDelay: number = 100
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await queryFn();
+    } catch (error: any) {
+      const isResetError =
+        error?.message?.includes('database is being reset') ||
+        error?.message?.includes('underlyingAdapter');
+
+      if (isResetError && attempt < maxRetries - 1) {
+        // Exponential backoff: 100ms, 200ms, 400ms
+        const delay = initialDelay * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
 export class NutritionService {
   /**
    * Log food consumption. Stores a snapshot of the food's macros/micros per 100g at log time.
@@ -97,13 +127,15 @@ export class NutritionService {
     const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
     const nextDayTimestamp = dateTimestamp + 24 * 60 * 60 * 1000;
 
-    return await database
-      .get<NutritionLog>('nutrition_logs')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1))
-      )
-      .fetch();
+    return await retryOnResetError(() =>
+      database
+        .get<NutritionLog>('nutrition_logs')
+        .query(
+          Q.where('deleted_at', Q.eq(null)),
+          Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1))
+        )
+        .fetch()
+    );
   }
 
   /**
@@ -146,13 +178,15 @@ export class NutritionService {
       new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime() +
       24 * 60 * 60 * 1000;
 
-    return await database
-      .get<NutritionLog>('nutrition_logs')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(startTimestamp, endTimestamp - 1))
-      )
-      .fetch();
+    return await retryOnResetError(() =>
+      database
+        .get<NutritionLog>('nutrition_logs')
+        .query(
+          Q.where('deleted_at', Q.eq(null)),
+          Q.where('date', Q.between(startTimestamp, endTimestamp - 1))
+        )
+        .fetch()
+    );
   }
 
   /**
