@@ -1,13 +1,11 @@
-import type { TFunction } from 'i18next';
-import { Apple, Check, Coffee, Info, Moon, Utensils } from 'lucide-react-native';
+import { Check, Coffee, Info } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
-import type { Theme } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
-import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
+import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerModal } from './DatePickerModal';
@@ -40,41 +38,6 @@ type LogMealModalProps = {
   initialMealType?: MealType;
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
-
-const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
-  {
-    id: 'breakfast',
-    label: t('food.meals.breakfast'),
-    description: t('food.meals.descriptions.breakfast'),
-    icon: Coffee,
-    iconBgColor: theme.colors.status.warning10,
-    iconColor: theme.colors.status.warning,
-  },
-  {
-    id: 'lunch',
-    label: t('food.meals.lunch'),
-    description: t('food.meals.descriptions.lunch'),
-    icon: Utensils,
-    iconBgColor: theme.colors.status.info10,
-    iconColor: theme.colors.status.info,
-  },
-  {
-    id: 'dinner',
-    label: t('food.meals.dinner'),
-    description: t('food.meals.descriptions.dinner'),
-    icon: Moon,
-    iconBgColor: theme.colors.status.purple10,
-    iconColor: theme.colors.status.purple,
-  },
-  {
-    id: 'snack',
-    label: t('food.meals.snacks'),
-    description: t('food.meals.descriptions.snack'),
-    icon: Apple,
-    iconBgColor: theme.colors.status.success20,
-    iconColor: theme.colors.status.success,
-  },
-];
 
 export function LogMealModal({
   visible,
@@ -131,7 +94,7 @@ export function LogMealModal({
         footer={footer}
         scrollable
       >
-        <View className="mb-6 mt-6 space-y-6 px-4">
+        <View className="mb-6 mt-6 gap-6 px-4">
           {/* Meal Details Card */}
           <GenericCard variant="highlighted" backgroundVariant="gradient">
             <View className="relative">
@@ -318,12 +281,26 @@ export function LogMealModal({
           </View>
 
           {/* Meal Type Selector */}
-          <OptionsSelector<MealType>
-            title={t('meals.mealType')}
-            options={getMealTypeOptions(theme, t)}
-            selectedId={selectedMealType}
-            onSelect={setSelectedMealType}
-          />
+          <View>
+            <Text
+              className="mb-3 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.text.secondary }}
+            >
+              {t('meals.mealType')}
+            </Text>
+            <FilterTabs
+              tabs={[
+                { id: 'breakfast', label: t('food.meals.breakfast') },
+                { id: 'lunch', label: t('food.meals.lunch') },
+                { id: 'dinner', label: t('food.meals.dinner') },
+                { id: 'snack', label: t('food.meals.snacks') },
+              ]}
+              activeTab={selectedMealType}
+              onTabChange={(tabId) => setSelectedMealType(tabId as MealType)}
+              showContainer={false}
+              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+            />
+          </View>
         </View>
       </FullScreenModal>
 
