@@ -13,7 +13,17 @@
       "vegetarian": "Vegetarian",
       "breakfast": "Breakfast",
       "lunch": "Lunch",
-      "dinner": "Dinner"
+      "dinner": "Dinner",
+      "snack": "Snack"
+    },
+    "chatMealCard": {
+      "mealCount": "{{count}} meal",
+      "mealCount_plural": "{{count}} meals",
+      "viewBreakfast": "View Breakfast",
+      "viewLunch": "View Lunch",
+      "viewDinner": "View Dinner",
+      "viewSnack": "View Snack",
+      "tracked": "Tracked"
     },
     "untitledMeal": "Untitled Meal",
     "searchPlaceholder": "Search meals...",

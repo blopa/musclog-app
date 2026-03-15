@@ -1,10 +1,10 @@
 import { Check } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
-
-// TODO: use a color from theme instead
-const INDIGO = '#6366f1';
+import { Button } from '../theme/Button';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
@@ -22,17 +22,18 @@ type ChatMealCardProps = {
   onViewDetails: (mealType: MealType) => void;
 };
 
-const MEAL_LABEL: Record<MealType, string> = {
-  // TODO: use i18n here
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
-};
-
 export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
+  const { t } = useTranslation();
   const totalCalories = meals.reduce((s, m) => s + m.calories, 0);
+
+  const getMealLabel = useCallback((mealType: MealType): string => {
+    return t(`meals.tags.${mealType}`);
+  }, []);
+
+  const getViewMealLabel = useCallback((mealType: MealType): string => {
+    return t(`meals.chatMealCard.view${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`);
+  }, []);
 
   return (
     <View
@@ -41,7 +42,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
         backgroundColor: theme.colors.background.card,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
-        minWidth: 240, // TODO: use a size from theme instead
+        minWidth: theme.size['240'],
       }}
     >
       {/* Summary header */}
@@ -50,15 +51,14 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
           className="text-xs font-bold uppercase tracking-wider"
           style={{ color: theme.colors.text.tertiary }}
         >
-          {meals.length === 1 ? '1 meal' : `${meals.length} meals`}
+          {t('meals.chatMealCard.mealCount', { count: meals.length })}
         </Text>
         <View className="flex-row items-baseline gap-1">
           <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
             {totalCalories}
           </Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
-            {/*TODO: use i18n here*/}
-            kcal
+            {t('common.kcal')}
           </Text>
         </View>
       </View>
@@ -78,10 +78,10 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 className="text-xs font-bold uppercase tracking-wider"
                 style={{ color: theme.colors.text.tertiary }}
               >
-                {MEAL_LABEL[meal.mealType]}
+                {getMealLabel(meal.mealType)}
               </Text>
               <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {meal.calories} kcal
+                {meal.calories} {t('common.kcal')}
               </Text>
             </View>
 
@@ -111,7 +111,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 >
                   C
                 </Text>
-                <Text className="text-xs font-bold" style={{ color: INDIGO }}>
+                <Text className="text-xs font-bold" style={{ color: theme.colors.status.indigo }}>
                   {meal.carbs}g
                 </Text>
               </View>
@@ -143,24 +143,20 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               >
                 <Check size={12} color={theme.colors.accent.primary} />
                 <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  Tracked
+                  {t('meals.chatMealCard.tracked')}
                 </Text>
               </View>
             ) : (
-              // TODO: use the Button from the theme dir
-              <Pressable
+              <Button
+                label={getViewMealLabel(meal.mealType)}
                 onPress={() => onViewDetails(meal.mealType)}
-                className="items-center rounded-lg py-1.5 active:opacity-70"
+                size="sm"
+                variant="secondary"
+                width="full"
                 style={{
-                  borderWidth: theme.borderWidth.thin,
                   borderColor: `${theme.colors.accent.primary}33`,
                 }}
-              >
-                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  {/*TODO: use i18n here*/}
-                  View {MEAL_LABEL[meal.mealType]}
-                </Text>
-              </Pressable>
+              />
             )}
           </View>
         </View>

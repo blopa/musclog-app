@@ -954,6 +954,7 @@ export const theme = {
     '400': 400, // Common max width value
     '480': 480, // Common max width value
     '160': 160, // Common size value (for illustrations/glows)
+    '240': 240, // Common min width value (for cards)
     '250': 250, // Common size value (for background glows)
     '256': 256, // Common size value (for illustrations)
     '280': 280, // Common max width value

@@ -35,6 +35,7 @@ type ThemeButtonProps = {
   style?: ViewStyle;
 };
 
+// TODO: add a XS variant
 const getSizeConfig = (theme: Theme) => {
   return {
     sm: {
