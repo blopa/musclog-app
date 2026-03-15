@@ -19,11 +19,11 @@ const SmartCameraContext = createContext<SmartCameraContextType | undefined>(und
 export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const { isAiFeaturesEnabled, useOcrBeforeAi } = useSettings();
   const [isVisible, setIsVisible] = useState(false);
-  const [cameraMode, setCameraMode] = useState<CameraMode>('ai-meal-photo');
+  const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
-    setCameraMode(options?.mode ?? 'ai-meal-photo');
+    setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
     setIsVisible(true);
   }, []);
