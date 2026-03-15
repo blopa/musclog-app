@@ -19,6 +19,7 @@
     "chatMealCard": {
       "mealCount": "{{count}} meal",
       "mealCount_plural": "{{count}} meals",
+      "view": "View",
       "viewBreakfast": "View Breakfast",
       "viewLunch": "View Lunch",
       "viewDinner": "View Dinner",
