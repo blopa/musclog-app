@@ -172,7 +172,8 @@ export type NavItemKey =
   | 'coach'
   | 'cycle'
   | 'settings'
-  | 'progress';
+  | 'progress'
+  | 'groups';
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
