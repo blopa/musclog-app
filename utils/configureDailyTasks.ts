@@ -94,6 +94,7 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
           sessionId,
           sender: 'coach',
           message: workoutInsights,
+          context: 'exercise',
           messageType: 'text',
           summarizedMessage: workoutInsights.substring(0, 200),
         });
@@ -113,6 +114,7 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
           sessionId,
           sender: 'coach',
           message: nutritionInsights,
+          context: 'nutrition',
           messageType: 'text',
           summarizedMessage: nutritionInsights.substring(0, 200),
         });

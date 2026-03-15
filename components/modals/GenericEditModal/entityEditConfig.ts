@@ -749,6 +749,17 @@ export function getCreateFields(entityType: DataLogModalVariant): EditFieldConfi
           { value: 'coach', label: 'coach.chatMessages.senderCoach' },
         ],
       },
+      {
+        type: 'select',
+        key: 'context',
+        label: 'common.context',
+        required: true,
+        options: [
+          { value: 'general', label: 'coach.context.general' },
+          { value: 'exercise', label: 'coach.context.exercise' },
+          { value: 'nutrition', label: 'coach.context.nutrition' },
+        ],
+      },
     ];
   }
 
@@ -761,7 +772,7 @@ export function getCreateFields(entityType: DataLogModalVariant): EditFieldConfi
 export function getCreateInitialValues(entityType: DataLogModalVariant): EditFormValues {
   switch (entityType) {
     case 'chatMessage':
-      return { message: '', sender: 'user' };
+      return { message: '', sender: 'user', context: 'general' };
 
     case 'userMetric':
       return { type: 'weight', value: 0, date: Date.now() };
@@ -840,6 +851,7 @@ export async function createRecord(
         sessionId,
         sender: values.sender as 'user' | 'coach',
         message: String(values.message ?? ''),
+        context: (values.context as any) ?? 'general',
       });
       break;
     }
