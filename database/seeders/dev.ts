@@ -14,7 +14,6 @@ import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import MenstrualCycle from '../models/MenstrualCycle';
-import User from '../models/User';
 import UserMetric from '../models/UserMetric';
 import WorkoutLog from '../models/WorkoutLog';
 import WorkoutLogExercise from '../models/WorkoutLogExercise';
@@ -22,7 +21,7 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { ChatService, ExerciseService, MealService, UserService } from '../services';
+import { ChatService, ExerciseService, MealService, SettingsService, UserService } from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -2186,7 +2185,6 @@ async function seedChatHistory(): Promise<{ created: number }> {
   }
 }
 
-// TODO: also seed so that the last item in the navigation menu is the Coach button - check prod.ts to see how to see these.
 export async function seedDevData(): Promise<boolean> {
   // return true;
   const userSeeded = await seedUser();
@@ -2199,6 +2197,12 @@ export async function seedDevData(): Promise<boolean> {
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
   const chatSeeded = await seedChatHistory();
+
+  // Set default navigation bar slots with Coach as the last item
+  await SettingsService.setNavSlot(1, 'workouts');
+  await SettingsService.setNavSlot(2, 'food');
+  await SettingsService.setNavSlot(3, 'coach');
+  console.log('Set default navigation bar slots: workouts, food, coach');
 
   console.log(
     `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Nutrition logs: ${nutritionSeeded.created}, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`
