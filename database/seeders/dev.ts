@@ -2186,6 +2186,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
   }
 }
 
+// TODO: also seed so that the last item in the navigation menu is the Coach button - check prod.ts to see how to see these.
 export async function seedDevData(): Promise<boolean> {
   // return true;
   const userSeeded = await seedUser();
