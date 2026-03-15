@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
+// TODO: use a color from theme instead
 const INDIGO = '#6366f1';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
@@ -22,6 +23,7 @@ type ChatMealCardProps = {
 };
 
 const MEAL_LABEL: Record<MealType, string> = {
+  // TODO: use i18n here
   breakfast: 'Breakfast',
   lunch: 'Lunch',
   dinner: 'Dinner',
@@ -39,7 +41,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
         backgroundColor: theme.colors.background.card,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
-        minWidth: 240,
+        minWidth: 240, // TODO: use a size from theme instead
       }}
     >
       {/* Summary header */}
@@ -55,6 +57,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
             {totalCalories}
           </Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
+            {/*TODO: use i18n here*/}
             kcal
           </Text>
         </View>
@@ -144,6 +147,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 </Text>
               </View>
             ) : (
+              // TODO: use the Button from the theme dir
               <Pressable
                 onPress={() => onViewDetails(meal.mealType)}
                 className="items-center rounded-lg py-1.5 active:opacity-70"
@@ -153,6 +157,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 }}
               >
                 <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+                  {/*TODO: use i18n here*/}
                   View {MEAL_LABEL[meal.mealType]}
                 </Text>
               </Pressable>

@@ -190,9 +190,9 @@ export function LogMealModal({
                 </View>
 
                 {/* Nutrition Stats */}
-                <View className="mt-6 grid grid-cols-4 gap-2">
+                <View className="mt-6 flex-row gap-2">
                   <View
-                    className="flex-col items-center rounded-lg p-2"
+                    className="flex-1 flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
@@ -216,7 +216,7 @@ export function LogMealModal({
                   </View>
 
                   <View
-                    className="flex-col items-center rounded-lg p-2"
+                    className="flex-1 flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
@@ -240,7 +240,7 @@ export function LogMealModal({
                   </View>
 
                   <View
-                    className="flex-col items-center rounded-lg p-2"
+                    className="flex-1 flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
@@ -261,7 +261,7 @@ export function LogMealModal({
                   </View>
 
                   <View
-                    className="flex-col items-center rounded-lg p-2"
+                    className="flex-1 flex-col items-center rounded-lg p-2"
                     style={{
                       backgroundColor: theme.colors.background.white5,
                       alignItems: 'center',
