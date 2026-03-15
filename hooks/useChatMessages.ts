@@ -44,6 +44,13 @@ export interface ExtendedIMessage extends IMessage {
     duration: string;
     personalRecords: number;
   };
+  meal?: {
+    mealName: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  };
 }
 
 const INITIAL_LIMIT = 10;

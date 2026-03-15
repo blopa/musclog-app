@@ -63,6 +63,7 @@ import type { Theme } from '../../theme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
 import { useSnackbar } from '../SnackbarContext';
@@ -225,6 +226,24 @@ const renderCustomView = (
           onStartWorkout={() => {
             // TODO: Implement workout start functionality from coach modal
             console.log('Start workout');
+          }}
+        />
+      </View>
+    );
+  }
+
+  if (currentMessage?.meal) {
+    return (
+      <View className="mt-2 w-full max-w-sm">
+        <ChatMealCard
+          mealName={currentMessage.meal.mealName}
+          calories={currentMessage.meal.calories}
+          protein={currentMessage.meal.protein}
+          carbs={currentMessage.meal.carbs}
+          fats={currentMessage.meal.fats}
+          onViewDetails={() => {
+            // TODO: Implement meal details navigation
+            console.log('View meal details');
           }}
         />
       </View>
@@ -653,10 +672,25 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     };
   }, []);
 
+  const MOCK_MEAL_MESSAGE: ExtendedIMessage = {
+    _id: 'mock-meal-demo',
+    text: '',
+    createdAt: new Date(Date.now() - 60_000),
+    user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+    meal: {
+      mealName: 'Post-Workout Meal',
+      calories: 650,
+      protein: 45,
+      carbs: 60,
+      fats: 12,
+    },
+  };
+
   const displayMessages = [
     ...(ephemeralErrorAsMessage ? [ephemeralErrorAsMessage] : []),
     ...(pendingCoachMessage ? [pendingCoachMessage] : []),
     ...messages,
+    MOCK_MEAL_MESSAGE,
   ];
 
   const onSend = useCallback(

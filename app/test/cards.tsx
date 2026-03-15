@@ -16,6 +16,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
+import { ChatMealCard } from '../../components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '../../components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../../components/cards/ChatWorkoutCompletedCard';
 import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
@@ -408,6 +409,36 @@ export default function CardsTestScreen() {
               duration="1h 5m"
               personalRecords={0}
               onViewDetails={() => console.log('View workout details')}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Chat Meal Card" subtitle="Display meal information in chat format">
+          <ChatMealCard
+            mealName="Post-Workout Shake"
+            calories={320}
+            protein={25}
+            carbs={45}
+            fats={8}
+            onViewDetails={() => console.log('View meal details')}
+          />
+          <View className="mt-4">
+            <ChatMealCard
+              mealName="Grilled Chicken & Rice"
+              calories={450}
+              protein={35}
+              carbs={52}
+              fats={12}
+              onViewDetails={() => console.log('View meal details')}
+            />
+          </View>
+          <View className="mt-4">
+            <ChatMealCard
+              mealName="Greek Yogurt Parfait"
+              calories={280}
+              protein={20}
+              carbs={38}
+              fats={6}
             />
           </View>
         </TestSection>
