@@ -227,10 +227,14 @@ export function useSettings(): UseSettingsResult & {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
 
   useEffect(() => {
-    isGoogleSignedIn().then(setIsGoogleConnected);
+    isGoogleSignedIn()
+      .then(setIsGoogleConnected)
+      .catch(() => {});
     const subscription = AppState.addEventListener('change', (appState) => {
       if (appState === 'active') {
-        isGoogleSignedIn().then(setIsGoogleConnected);
+        isGoogleSignedIn()
+          .then(setIsGoogleConnected)
+          .catch(() => {});
       }
     });
 

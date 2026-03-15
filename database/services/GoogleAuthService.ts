@@ -9,16 +9,21 @@ export class GoogleAuthService {
    * Get refresh token from WatermelonDB Setting
    */
   static async getRefreshToken(): Promise<string | null> {
-    const settings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', GOOGLE_REFRESH_TOKEN_TYPE), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    try {
+      const settings = await database
+        .get<Setting>('settings')
+        .query(Q.where('type', GOOGLE_REFRESH_TOKEN_TYPE), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
 
-    if (settings.length === 0 || !settings[0].value) {
+      if (settings.length === 0 || !settings[0].value) {
+        return null;
+      }
+
+      return settings[0].value;
+    } catch {
+      // Database may be resetting (e.g. first-run seeding); no token available yet
       return null;
     }
-
-    return settings[0].value;
   }
 
   /**
