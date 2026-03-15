@@ -2218,8 +2218,10 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
 
   if (clear) {
     try {
-      // Note: unsafeResetDatabase() should NOT be called inside a write transaction
-      await database.unsafeResetDatabase();
+      // Note: In newer versions of WatermelonDB, unsafeResetDatabase() must be called inside a write block on some adapters (like LokiJS on Web)
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
       // Small delay to ensure the database adapter is fully ready after reset
       // This prevents race conditions where queries are attempted during reset
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -2239,7 +2241,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   const nutritionSeeded = await seedNutritionLogsAndGoal();
   const mealsSeeded = await seedMeals();
 
-  const workoutData = await seedWorkoutTemplatesAndHistory();
+  const workoutData = await seedWorkoutTemplatesAndHistory(true);
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
   const chatSeeded = await seedChatHistory();

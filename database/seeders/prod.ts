@@ -222,9 +222,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Seeding flag is not set: either first run or app was closed during a previous
     // migration. Reset the database so we always start a fresh seed + migration.
-    // Note: unsafeResetDatabase() should NOT be called inside a write transaction
+    // Note: In newer versions of WatermelonDB, unsafeResetDatabase() must be called inside a write block on some adapters (like LokiJS on Web)
     try {
-      await database.unsafeResetDatabase();
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
       // Small delay to ensure the database adapter is fully ready after reset
       // This prevents race conditions where queries are attempted during reset
       await new Promise((resolve) => setTimeout(resolve, 100));

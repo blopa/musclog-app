@@ -53,20 +53,21 @@ export default function LandingScreen() {
           }
         }
 
-        await seedProductionData({
-          onProgress: (info) => {
-            setInitPhase(info.phase);
-            setInitStep(info.step ?? null);
-            setInitProgressCurrent(info.current ?? null);
-            setInitProgressTotal(info.total ?? null);
-          },
-        });
-
         // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
+          setInitPhase('seeding');
+          setInitStep('Dev Data');
           await seedDevData();
-
-          router.push('/');
+          router.replace('/');
+        } else {
+          await seedProductionData({
+            onProgress: (info) => {
+              setInitPhase(info.phase);
+              setInitStep(info.step ?? null);
+              setInitProgressCurrent(info.current ?? null);
+              setInitProgressTotal(info.total ?? null);
+            },
+          });
         }
       } catch (error) {
         console.error('Error initializing app:', error);
