@@ -2185,6 +2185,7 @@ async function seedChatHistory(): Promise<{ created: number }> {
   }
 }
 
+// TODO: not only seed data, but also clear the asyncstorage and delete the database
 export async function seedDevData(): Promise<boolean> {
   // return true;
   const userSeeded = await seedUser();
