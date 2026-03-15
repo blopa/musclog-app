@@ -609,6 +609,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
+  const [isDeleteMessageModalVisible, setIsDeleteMessageModalVisible] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<ExtendedIMessage | null>(null);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
@@ -861,10 +863,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               description: t('coach.message.deleteDesc'),
               titleColor: theme.colors.status.error50,
               descriptionColor: theme.colors.status.error50,
-              onPress: async () => {
+              onPress: () => {
+                setMessageToDelete(selectedMessage);
                 setSelectedMessage(null);
-                await deleteMessage(selectedMessage._id);
-                showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+                setIsDeleteMessageModalVisible(true);
               },
             },
           ]
@@ -1401,6 +1403,26 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         confirmLabel={t('common.delete')}
         variant="destructive"
         isLoading={isClearingHistory}
+      />
+
+      <ConfirmationModal
+        visible={isDeleteMessageModalVisible}
+        onClose={() => {
+          setIsDeleteMessageModalVisible(false);
+          setMessageToDelete(null);
+        }}
+        onConfirm={async () => {
+          if (messageToDelete) {
+            await deleteMessage(messageToDelete._id);
+            showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+          }
+          setIsDeleteMessageModalVisible(false);
+          setMessageToDelete(null);
+        }}
+        title={t('coach.message.delete')}
+        message={t('coach.message.deleteDesc')}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
       />
 
       {selectedMealForTracking && mealForLogMealModal ? (
