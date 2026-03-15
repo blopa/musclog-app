@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { TEMP_GOOGLE_AUTH_CODE, TEMP_GOOGLE_USER_NAME } from '../constants/misc';
+import { GoogleAuthService } from '../database/services';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNavigationItems } from '../hooks/useNavigationItems';
 import { useTheme } from '../hooks/useTheme';
@@ -51,6 +52,14 @@ export function ConnectGoogleAccountBody({
         }
 
         setSentryUser({ id: userInfo.id, email: userInfo.email });
+
+        // Enable OAuth Gemini and AI settings after successful Google auth
+        try {
+          await GoogleAuthService.setOAuthGeminiEnabled(true);
+          await GoogleAuthService.setAISettingsEnabled(true);
+        } catch (error) {
+          console.error('Failed to enable Gemini:', error);
+        }
 
         // Set the last navigation item to "coach" after successful Google auth
         try {
