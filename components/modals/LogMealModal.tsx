@@ -11,7 +11,7 @@ import { CenteredModal } from './CenteredModal';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
-type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
 type Ingredient = {
   name: string;
@@ -294,6 +294,7 @@ export function LogMealModal({
                 { id: 'lunch', label: t('food.meals.lunch') },
                 { id: 'dinner', label: t('food.meals.dinner') },
                 { id: 'snack', label: t('food.meals.snacks') },
+                { id: 'other', label: t('food.meals.other') },
               ]}
               activeTab={selectedMealType}
               onTabChange={(tabId) => setSelectedMealType(tabId as MealType)}
