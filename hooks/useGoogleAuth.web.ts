@@ -35,6 +35,7 @@ const getWebRedirectUri = () => {
   if (pathname.endsWith('/') && pathname.length > 1) {
     pathname = pathname.slice(0, -1);
   }
+
   return window.location.origin + (pathname === '/' ? '' : pathname);
 };
 
