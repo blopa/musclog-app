@@ -38,6 +38,7 @@ export async function processCalculateVolumeResponse(
       sessionId,
       sender: 'coach',
       message: response.messageToUser,
+      context: 'exercise',
       messageType: 'text',
       summarizedMessage: response.messageToUser.substring(0, 200),
     });
@@ -61,6 +62,7 @@ export async function processFeedbackResponse(
       sessionId,
       sender: 'coach',
       message: feedbackMessage,
+      context: 'exercise',
       messageType: 'text',
       summarizedMessage: feedbackMessage.substring(0, 200),
     });
