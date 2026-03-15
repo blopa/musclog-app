@@ -44,6 +44,7 @@ import enUsFoodSearch from './locales/en-us/foodSearch.json';
 import enUsFreeTraining from './locales/en-us/freeTraining.json';
 import enUsGoalHistoryCard from './locales/en-us/goalHistoryCard.json';
 import enUsGoalsManagement from './locales/en-us/goalsManagement.json';
+import enUsGroups from './locales/en-us/groups.json';
 import enUsHealthConnect from './locales/en-us/healthConnect.json';
 import enUsHome from './locales/en-us/home.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
@@ -122,6 +123,7 @@ const resources = {
       ...enUsFoodSearch,
       ...enUsGoalHistoryCard,
       ...enUsGoalsManagement,
+      ...enUsGroups,
       ...enUsHealthConnect,
       ...enUsHome,
       ...enUsLogSetPerformance,

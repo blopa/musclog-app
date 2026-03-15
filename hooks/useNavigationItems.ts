@@ -21,6 +21,7 @@ const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
   'profile',
   'settings',
   'progress',
+  'groups',
 ];
 
 /**
