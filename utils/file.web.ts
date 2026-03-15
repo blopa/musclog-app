@@ -128,13 +128,17 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
   }
 }
 
-export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
-  // Not really necessary to be implemented for web
-  return tempUri;
-}
-
-export async function deleteExerciseImage(imageUri: string): Promise<void> {
-  // Not really necessary to be implemented for web
+/**
+ * Creates a small thumbnail of an image, optionally returning base64.
+ * Used for chat previews.
+ */
+export async function createThumbnail(
+  uri: string,
+  width: number = 300
+): Promise<{ uri: string; base64?: string }> {
+  const dataUrl = await resizeImage(uri, width);
+  const base64 = dataUrl.split(',')[1];
+  return { uri, base64 };
 }
 
 export async function detectBarcodes(imageUri: string) {
@@ -160,17 +164,13 @@ export async function detectBarcodes(imageUri: string) {
   return quaggaResult?.codeResult?.code ?? null;
 }
 
-/**
- * Creates a small thumbnail of an image, optionally returning base64.
- * Used for chat previews.
- */
-export async function createThumbnail(
-  uri: string,
-  width: number = 300
-): Promise<{ uri: string; base64?: string }> {
-  const dataUrl = await resizeImage(uri, width);
-  const base64 = dataUrl.split(',')[1];
-  return { uri, base64 };
+export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
+  // Not really necessary to be implemented for web
+  return tempUri;
+}
+
+export async function deleteExerciseImage(imageUri: string): Promise<void> {
+  // Not really necessary to be implemented for web
 }
 
 export async function openCropperAsync(options: any): Promise<{ path: string }> {
@@ -208,6 +208,13 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
     console.error('[file.web.ts] Error reading file:', error);
     throw error;
   }
+}
+
+export async function copyBundledExerciseImageToDocument(
+  assetSource: number,
+  destFilename: string
+): Promise<string> {
+  return '#';
 }
 
 export function shouldSeedDevData() {
