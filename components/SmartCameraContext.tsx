@@ -13,6 +13,7 @@ type OpenCameraOptions = {
 
 type SmartCameraContextType = {
   openCamera: (options?: OpenCameraOptions) => void;
+  setCurrentDate: (date: Date | undefined) => void;
 };
 
 const SmartCameraContext = createContext<SmartCameraContextType | undefined>(undefined);
@@ -27,12 +28,18 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
-    setLogDate(options?.logDate);
+    if (options?.logDate !== undefined) {
+      setLogDate(options.logDate);
+    }
     setIsVisible(true);
   }, []);
 
+  const setCurrentDate = useCallback((date: Date | undefined) => {
+    setLogDate(date);
+  }, []);
+
   return (
-    <SmartCameraContext.Provider value={{ openCamera }}>
+    <SmartCameraContext.Provider value={{ openCamera, setCurrentDate }}>
       {children}
       {isVisible ? (
         <SmartCameraModal

@@ -61,7 +61,7 @@ export default function FoodScreen() {
   const { units, isAiFeaturesEnabled } = useSettings();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
-  const { openCamera } = useSmartCamera();
+  const { openCamera, setCurrentDate } = useSmartCamera();
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [isFoodSearchModalVisible, setIsFoodSearchModalVisible] = useState(false);
@@ -81,6 +81,13 @@ export default function FoodScreen() {
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
+
+  // Keep camera context aware of the current date so the nav-bar camera button
+  // (which has no logDate) also opens FoodMealDetailsModal on the right date.
+  useEffect(() => {
+    setCurrentDate(selectedDate);
+    return () => setCurrentDate(undefined);
+  }, [selectedDate, setCurrentDate]);
   const [isMealMenuVisible, setIsMealMenuVisible] = useState(false);
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [isCreateMealModalVisible, setIsCreateMealModalVisible] = useState(false);
