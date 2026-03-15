@@ -200,14 +200,13 @@ export function AISettingsModal({
   onGeminiModelPress,
   openAiApiKey = '',
   onOpenAiApiKeyChange,
+  // TODO: implement usage of onGetOpenAiKeyPress like we have for gemini
   onGetOpenAiKeyPress,
   openAiModel = 'GPT-4o',
   onOpenAiModelPress,
 }: AISettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  // TODO: implement all the gemini features with openai too
-  const [openAiKeyVisible, setOpenAiKeyVisible] = useState(false);
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
