@@ -2253,7 +2253,10 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
     [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
   ]);
 
-  // TODO: seed that gemini will be enabled and see a gemini api key too (can be anything, just a string)
+  // Seed Gemini AI settings
+  await SettingsService.setEnableGoogleGemini(true);
+  await SettingsService.setGoogleGeminiApiKey('dev-gemini-api-key-12345');
+  console.log('Seeded Gemini AI settings: enabled=true, apiKey=dev-gemini-api-key-12345');
 
   console.log(
     `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Nutrition logs: ${nutritionSeeded.created}, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`
