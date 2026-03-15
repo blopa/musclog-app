@@ -2,6 +2,11 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
+import {
+  CURRENT_ONBOARDING_VERSION,
+  ONBOARDING_COMPLETED,
+  ONBOARDING_VERSION,
+} from '../../constants/misc';
 import { setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
@@ -2241,6 +2246,14 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   await SettingsService.setNavSlot(2, 'food');
   await SettingsService.setNavSlot(3, 'coach');
   console.log('Set default navigation bar slots: workouts, food, coach');
+
+  await AsyncStorage.multiSet([
+    [ONBOARDING_COMPLETED, 'true'],
+    // TODO: we might not want to force it to be the current version
+    [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+  ]);
+
+  // TODO: seed that gemini will be enabled and see a gemini api key too (can be anything, just a string)
 
   console.log(
     `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Nutrition logs: ${nutritionSeeded.created}, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`

@@ -65,11 +65,6 @@ export default function LandingScreen() {
         // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
           await seedDevData();
-          await AsyncStorage.multiSet([
-            [ONBOARDING_COMPLETED, 'true'],
-            // TODO: we might not want to force it to be the current version
-            [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
-          ]);
 
           router.push('/');
         }
