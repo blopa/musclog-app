@@ -143,6 +143,7 @@
       "disconnectGoogleTitle": "Disconnect from Google",
       "disconnectGoogleMessage": "Your Google account will be disconnected. AI features that rely on your Google account will stop working until you reconnect.",
       "disconnectGoogleConfirm": "Disconnect",
+      "getOpenAiKey": "Get OpenAI Key",
       "customPrompts": "Custom System Prompts",
       "customPromptsSubtitle": "Add your own instructions to all AI features",
       "manageCustomPrompts": "Manage Custom Prompts",

@@ -200,7 +200,6 @@ export function AISettingsModal({
   onGeminiModelPress,
   openAiApiKey = '',
   onOpenAiApiKeyChange,
-  // TODO: implement usage of onGetOpenAiKeyPress like we have for gemini
   onGetOpenAiKeyPress,
   openAiModel = 'GPT-4o',
   onOpenAiModelPress,
@@ -428,6 +427,17 @@ export function AISettingsModal({
           sectionTitleColor={theme.colors.accent.primary}
           toggleItems={openAiToggleItems}
           enabled={debouncedEnableOpenAi}
+          headerContent={
+            onGetOpenAiKeyPress ? (
+              <Button
+                label={t('settings.aiSettings.getOpenAiKey')}
+                onPress={onGetOpenAiKeyPress}
+                size="sm"
+                width="full"
+                variant="outline"
+              />
+            ) : undefined
+          }
           apiKeyLabel={t('settings.aiSettings.openAiApiKey')}
           apiKeyValue={localOpenAiApiKey}
           onApiKeyChange={setLocalOpenAiApiKey}
