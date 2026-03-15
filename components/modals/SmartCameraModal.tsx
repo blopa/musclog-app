@@ -747,6 +747,7 @@ export default function SmartCameraModal({
               className="mt-6 text-center text-sm font-medium drop-shadow-md"
               style={{ color: theme.colors.overlay.white90 }}
             >
+              {/*TODO: move this to a helper function to avoid nested ternary*/}
               {cameraMode === 'ai-meal-photo'
                 ? t('food.aiCamera.mealInstruction')
                 : cameraMode === 'ai-label-scan'

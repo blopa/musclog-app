@@ -211,7 +211,7 @@ export default function HomeScreen() {
     global.__PENDING_WIDGET_ACTION = undefined;
 
     if (action === 'open-camera') {
-      openCamera({ mode: 'ai-meal-photo' });
+      openCamera({ mode: 'barcode-scan' });
     }
   }, [navigationState?.key, openCamera]);
 
@@ -220,7 +220,7 @@ export default function HomeScreen() {
     const handleUrl = ({ url }: { url: string }) => {
       const { queryParams } = ExpoLinking.parse(url);
       if (queryParams?.action === 'open-camera') {
-        openCamera({ mode: 'ai-meal-photo' });
+        openCamera({ mode: 'barcode-scan' });
       } else if (queryParams?.action === 'open-nutrition') {
         router.push('/nutrition/food');
       }
