@@ -14,7 +14,6 @@ import {
   UserMetricService,
   WorkoutTemplateService,
 } from '../../../database/services';
-import { getCurrentChatSessionId } from '../../../utils/chatSessionStorage';
 import { displayToCm, displayToKg } from '../../../utils/unitConversion';
 import { WORKOUT_ICON_OPTIONS } from '../../../utils/workoutIconUtils';
 import type { DataLogModalVariant } from '../DataLogModal';
@@ -846,9 +845,7 @@ export async function createRecord(
 ): Promise<void> {
   switch (entityType) {
     case 'chatMessage': {
-      const sessionId = (await getCurrentChatSessionId()) ?? ChatService.generateSessionId();
       await ChatService.saveMessage({
-        sessionId,
         sender: values.sender as 'user' | 'coach',
         message: String(values.message ?? ''),
         context: (values.context as any) ?? 'general',

@@ -18,7 +18,6 @@ import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
 import { theme } from '../../theme';
-import { getCurrentChatSessionId, setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
@@ -40,7 +39,6 @@ export default function WorkoutSummaryScreen() {
   const [personalRecords, setPersonalRecords] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string>('');
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
 
   useEffect(() => {
@@ -62,14 +60,6 @@ export default function WorkoutSummaryScreen() {
 
         // Get workout with details
         const { workoutLog } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-
-        // Get or create the shared coach chat session
-        let chatSessionId = await getCurrentChatSessionId();
-        if (!chatSessionId) {
-          chatSessionId = ChatService.generateSessionId();
-          await setCurrentChatSessionId(chatSessionId);
-        }
-        setSessionId(chatSessionId);
 
         // Complete workout if not already completed
         let completedWorkout = workoutLog;
@@ -145,7 +135,6 @@ export default function WorkoutSummaryScreen() {
           weightUnit,
         };
         await ChatService.saveMessage({
-          sessionId: chatSessionId,
           sender: 'coach',
           message: t('workoutSummary.completedMessage', {
             workoutName: completedWorkout.workoutName,
@@ -192,7 +181,7 @@ export default function WorkoutSummaryScreen() {
   };
 
   const handleGetFeedback = async () => {
-    if (!workoutLogId || !sessionId) {
+    if (!workoutLogId) {
       showSnackbar('error', t('workout.summary.noWorkoutId'));
       return;
     }
@@ -209,7 +198,7 @@ export default function WorkoutSummaryScreen() {
       const feedback = await getRecentWorkoutInsights(aiConfig, workoutLogId);
 
       if (feedback) {
-        await processFeedbackResponse(feedback, sessionId);
+        await processFeedbackResponse(feedback);
         setUnreadCount((prev) => prev + 1);
         showSnackbar('success', t('workout.summary.feedbackReceived'), {
           action: t('snackbar.ok'),

@@ -582,7 +582,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     sendMessage,
     clearHistory,
     deleteMessage,
-    sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,
@@ -907,15 +906,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   }, [selectedMealForTracking]);
 
   const handleShareHistory = useCallback(async () => {
-    if (!sessionId) {
-      showSnackbar('error', t('coach.errors.generalError'), {
-        action: t('snackbar.ok'),
-      });
-      return;
-    }
-
     try {
-      const records = await ChatService.getSessionMessages(sessionId);
+      const records = await ChatService.getMessagesByContext(conversationContext);
       if (!records.length) {
         showSnackbar('error', t('coach.share.noMessages'), {
           action: t('snackbar.ok'),
@@ -943,7 +935,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         action: t('snackbar.ok'),
       });
     }
-  }, [sessionId, showSnackbar, t]);
+  }, [conversationContext, showSnackbar, t]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);

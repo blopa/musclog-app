@@ -15,8 +15,7 @@ import type {
  */
 export async function processCalculateVolumeResponse(
   response: CalculateVolumeResponse,
-  workoutLogId: string,
-  sessionId: string
+  workoutLogId: string
 ): Promise<void> {
   try {
     // Prepare set updates from AI response
@@ -35,7 +34,6 @@ export async function processCalculateVolumeResponse(
 
     // Save AI feedback message to chat
     await ChatService.saveMessage({
-      sessionId,
       sender: 'coach',
       message: response.messageToUser,
       context: 'exercise',
@@ -52,14 +50,10 @@ export async function processCalculateVolumeResponse(
  * Process recent workout insights response from AI
  * Saves feedback to chat
  */
-export async function processFeedbackResponse(
-  feedbackMessage: string,
-  sessionId: string
-): Promise<void> {
+export async function processFeedbackResponse(feedbackMessage: string): Promise<void> {
   try {
     // Save AI feedback message to chat
     await ChatService.saveMessage({
-      sessionId,
       sender: 'coach',
       message: feedbackMessage,
       context: 'exercise',
@@ -77,8 +71,7 @@ export async function processFeedbackResponse(
  * Creates new workout templates in the database and saves feedback to chat
  */
 export async function processWorkoutPlanResponse(
-  response: GenerateWorkoutPlanResponse,
-  sessionId: string
+  response: GenerateWorkoutPlanResponse
 ): Promise<{ templateIds: string[]; description: string }> {
   try {
     const createdTemplateIds: string[] = [];

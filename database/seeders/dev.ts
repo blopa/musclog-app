@@ -7,7 +7,6 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '../../constants/misc';
-import { setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import ChatMessage from '../models/ChatMessage';
@@ -2003,11 +2002,6 @@ async function seedChatHistory(): Promise<{ created: number }> {
     // Space messages a few minutes apart to simulate real conversations
     const msAgo = (minutes: number): number => now - minutes * 60 * 1000;
 
-    // Single sessionId shared across all contexts — matches how the app works
-    const sessionId = ChatService.generateSessionId();
-    // Persist so the app's useChatMessages hook resolves to the same session
-    await setCurrentChatSessionId(sessionId);
-
     interface MessageDef {
       sender: 'user' | 'coach';
       message: string;
@@ -2022,7 +2016,6 @@ async function seedChatHistory(): Promise<{ created: number }> {
         for (const msg of messages) {
           const ts = msAgo(msg.minutesAgo);
           await database.get<ChatMessage>('chat_messages').create((record) => {
-            record.sessionId = sessionId;
             record.sender = msg.sender;
             record.message = msg.message;
             record.messageType = 'text';

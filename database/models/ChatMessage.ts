@@ -92,7 +92,6 @@ export default class ChatMessage extends Model {
     // No relationships defined for chat messages currently
   };
 
-  @field('session_id') sessionId!: string;
   @field('sender') sender!: ChatSender;
   @field('message') message!: string;
   @field('message_type') messageType!: ChatMessageType;

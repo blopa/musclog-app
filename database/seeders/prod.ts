@@ -294,8 +294,6 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     const existingMessages = await ChatService.getAllMessages(1, 0);
 
     if (existingMessages.length === 0) {
-      const sessionId = ChatService.generateSessionId();
-
       const contexts = [
         { key: 'coach.welcomeMessage', context: 'general' },
         { key: 'coach.welcomeMessageExercise', context: 'exercise' },
@@ -304,7 +302,6 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
       for (const { key, context } of contexts) {
         await ChatService.saveMessage({
-          sessionId,
           sender: 'coach',
           message: i18n.t(key),
           messageType: 'text',

@@ -23,7 +23,6 @@ import ChatMessage, {
 } from '../database/models/ChatMessage';
 import { ChatService, NutritionService } from '../database/services';
 import AiService from '../services/AiService';
-import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
 import {
   type ChatHistoryEntry,
   type CoachResponse,
@@ -151,7 +150,6 @@ export type UseChatMessagesResult = {
   loadMore: () => Promise<void>;
   sendMessage: (text: string, base64Image?: string) => Promise<void>;
   clearHistory: (conversationContext?: 'general' | 'exercise' | 'nutrition') => Promise<void>;
-  sessionId: string | null;
   addPendingCoachMessage: (msg: ExtendedIMessage) => void;
   clearPendingCoachMessage: () => void;
   /** When set, the last send failed and this text should be shown in the input so the user can retry. */
@@ -173,7 +171,6 @@ export function useChatMessages(
   conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
 ): UseChatMessagesResult {
   const { t } = useTranslation();
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -189,35 +186,8 @@ export function useChatMessages(
   // Ref mirror for pendingCoachMessage to avoid stale closure in sendMessage
   const pendingCoachMessageRef = useRef<ExtendedIMessage | null>(null);
 
-  // Resolve or create session ID on mount
+  // Initial load and reload when context changes
   useEffect(() => {
-    let cancelled = false;
-    const doTask = async () => {
-      let sid = await getCurrentChatSessionId();
-
-      if (!sid) {
-        sid = ChatService.generateSessionId();
-        await setCurrentChatSessionId(sid);
-      }
-
-      if (!cancelled) {
-        setSessionId(sid);
-      }
-    };
-
-    doTask();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Initial load once sessionId is resolved, reload when context changes
-  useEffect(() => {
-    if (!sessionId) {
-      return;
-    }
-
     let cancelled = false;
     const doTask = async () => {
       setIsLoading(true);
@@ -226,11 +196,10 @@ export function useChatMessages(
       setHasMore(false);
       rawMessagesRef.current = [];
       try {
-        const records = await ChatService.getSessionMessages(
-          sessionId,
+        const records = await ChatService.getMessagesByContext(
+          conversationContext,
           INITIAL_LIMIT,
-          0,
-          conversationContext
+          0
         );
         if (cancelled) {
           return;
@@ -242,11 +211,10 @@ export function useChatMessages(
         setCurrentOffset(records.length);
 
         // Check if there are older messages
-        const lookAhead = await ChatService.getSessionMessages(
-          sessionId,
+        const lookAhead = await ChatService.getMessagesByContext(
+          conversationContext,
           1,
-          records.length,
-          conversationContext
+          records.length
         );
         if (!cancelled) {
           setHasMore(lookAhead.length > 0);
@@ -265,20 +233,19 @@ export function useChatMessages(
     return () => {
       cancelled = true;
     };
-  }, [sessionId, conversationContext]);
+  }, [conversationContext]);
 
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore || !sessionId) {
+    if (isLoadingMore || !hasMore) {
       return;
     }
 
     setIsLoadingMore(true);
     try {
-      const olderRecords = await ChatService.getSessionMessages(
-        sessionId,
+      const olderRecords = await ChatService.getMessagesByContext(
+        conversationContext,
         BATCH_SIZE,
-        currentOffset,
-        conversationContext
+        currentOffset
       );
 
       if (olderRecords.length === 0) {
@@ -298,12 +265,7 @@ export function useChatMessages(
       if (olderRecords.length < BATCH_SIZE) {
         setHasMore(false);
       } else {
-        const lookAhead = await ChatService.getSessionMessages(
-          sessionId,
-          1,
-          newOffset,
-          conversationContext
-        );
+        const lookAhead = await ChatService.getMessagesByContext(conversationContext, 1, newOffset);
         setHasMore(lookAhead.length > 0);
       }
     } catch (err) {
@@ -311,7 +273,7 @@ export function useChatMessages(
     } finally {
       setIsLoadingMore(false);
     }
-  }, [isLoadingMore, hasMore, sessionId, currentOffset, conversationContext]);
+  }, [isLoadingMore, hasMore, currentOffset, conversationContext]);
 
   const addPendingCoachMessage = useCallback((msg: ExtendedIMessage) => {
     pendingCoachMessageRef.current = msg;
@@ -343,56 +305,38 @@ export function useChatMessages(
 
   const clearHistory = useCallback(
     async (contextToClear?: 'general' | 'exercise' | 'nutrition') => {
-      if (!sessionId) {
-        return;
-      }
-
+      const target = contextToClear ?? conversationContext;
       try {
-        if (contextToClear) {
-          // Delete only messages for the specified context
-          await ChatService.deleteSessionMessagesByContext(sessionId, contextToClear);
+        await ChatService.deleteMessagesByContext(target);
 
-          // Get message IDs to remove before filtering rawMessagesRef
-          const messageIdsToRemove = rawMessagesRef.current
-            .filter((r) => r.context === contextToClear)
-            .map((r) => r.id);
+        // Get message IDs to remove before filtering rawMessagesRef
+        const messageIdsToRemove = rawMessagesRef.current
+          .filter((r) => r.context === target)
+          .map((r) => r.id);
 
-          // Filter out deleted messages from local state
-          rawMessagesRef.current = rawMessagesRef.current.filter(
-            (r) => r.context !== contextToClear
-          );
+        rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.context !== target);
 
-          // Remove messages from UI state if we're viewing the cleared context
-          if (contextToClear === conversationContext) {
-            setMessages((prev) => prev.filter((m) => !messageIdsToRemove.includes(String(m._id))));
-            setCurrentOffset(0);
-            setHasMore(false);
-            setFailedMessageText(null);
-            setEphemeralErrorMessage(null);
-          }
-        } else {
-          // If no context specified, delete entire session (backward compatibility)
-          await ChatService.deleteSession(sessionId);
-          rawMessagesRef.current = [];
-          pendingCoachMessageRef.current = null;
-          setMessages([]);
-          setPendingCoachMessage(null);
+        // Remove messages from UI state if we're viewing the cleared context
+        if (target === conversationContext) {
+          setMessages((prev) => prev.filter((m) => !messageIdsToRemove.includes(String(m._id))));
           setCurrentOffset(0);
           setHasMore(false);
           setFailedMessageText(null);
           setEphemeralErrorMessage(null);
+          pendingCoachMessageRef.current = null;
+          setPendingCoachMessage(null);
         }
       } catch (err) {
         console.error('[useChatMessages] clearHistory error:', err);
         throw err;
       }
     },
-    [sessionId, conversationContext]
+    [conversationContext]
   );
 
   const sendMessage = useCallback(
     async (text: string, base64Image?: string) => {
-      if ((!text.trim() && !base64Image) || isSending || !sessionId) {
+      if ((!text.trim() && !base64Image) || isSending) {
         return;
       }
 
@@ -415,7 +359,6 @@ export function useChatMessages(
           ? { type: 'image', image: base64Image }
           : undefined;
         userRecord = await ChatService.saveMessage({
-          sessionId,
           sender: 'user',
           message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
           context: conversationContext,
@@ -505,7 +448,7 @@ export function useChatMessages(
 
           if (workoutPlan) {
             // Process the workout plan and create templates in database
-            const processResult = await processWorkoutPlanResponse(workoutPlan, sessionId);
+            const processResult = await processWorkoutPlanResponse(workoutPlan);
 
             reply = {
               msg4User: t('coach.success.workoutPlanGenerated', {
@@ -645,7 +588,6 @@ export function useChatMessages(
 
         // 6. Persist coach reply and prepend to UI
         const coachRecord = await ChatService.saveMessage({
-          sessionId,
           sender: 'coach',
           message: reply.msg4User,
           summarizedMessage: reply.sumMsg,
@@ -657,7 +599,7 @@ export function useChatMessages(
         setCurrentOffset((prev) => prev + 1);
       } catch (error) {
         console.error('[useChatMessages] sendMessage error:', error);
-        if (sessionId && userRecord) {
+        if (userRecord) {
           // Revert user message and restore text to input so user can retry
           const recordId = userRecord.id;
           await ChatService.deleteMessage(recordId).catch(() => {});
@@ -670,7 +612,7 @@ export function useChatMessages(
         setIsSending(false);
       }
     },
-    [sessionId, isSending, t, clearFailedMessageText, conversationContext]
+    [isSending, t, clearFailedMessageText, conversationContext]
   );
 
   const markMealAsTracked = useCallback(
@@ -753,7 +695,6 @@ export function useChatMessages(
     loadMore,
     sendMessage,
     clearHistory,
-    sessionId,
     addPendingCoachMessage,
     clearPendingCoachMessage,
     failedMessageText,

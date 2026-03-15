@@ -387,7 +387,6 @@ export const schema = appSchema({
     tableSchema({
       name: 'chat_messages',
       columns: [
-        { name: 'session_id', type: 'string', isIndexed: true },
         { name: 'sender', type: 'string' }, // 'user' | 'coach'
         { name: 'message', type: 'string' },
         { name: 'message_type', type: 'string' }, // 'text' for now

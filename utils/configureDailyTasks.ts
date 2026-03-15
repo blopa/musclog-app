@@ -72,9 +72,6 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
       return;
     }
 
-    // Get a session ID for saving insights
-    const sessionId = ChatService.generateSessionId();
-
     // Calculate date range (last 7 days)
     const today = new Date();
     const startDate = new Date(today);
@@ -91,7 +88,6 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
 
       if (workoutInsights) {
         await ChatService.saveMessage({
-          sessionId,
           sender: 'coach',
           message: workoutInsights,
           context: 'exercise',
@@ -111,7 +107,6 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
 
       if (nutritionInsights) {
         await ChatService.saveMessage({
-          sessionId,
           sender: 'coach',
           message: nutritionInsights,
           context: 'nutrition',
