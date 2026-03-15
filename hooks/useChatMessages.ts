@@ -15,10 +15,10 @@ import ChatMessage, {
   type ChatMessagePayload,
   type ImagePayload,
   isImagePayload,
+  isLegacyTrackMealPayload,
   isTrackMealPayload,
   isWorkoutCompletedPayload,
   type TrackMealPayload,
-  type WorkoutCompletedPayload,
   type WorkoutPlanPayload,
 } from '../database/models/ChatMessage';
 import { ChatService, NutritionService } from '../database/services';
@@ -31,7 +31,6 @@ import {
   getNutritionInsights,
   getRecentWorkoutsInsights,
   sendCoachMessage,
-  type TrackedMeal,
   trackMeal,
   type TrackMealIngredient,
 } from '../utils/coachAI';
@@ -100,7 +99,6 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
           ? payload.image
           : `data:image/jpeg;base64,${payload.image}`;
       } else if (isTrackMealPayload(payload)) {
-        // Support both new { meals: [...] } format and old { ingredients, mealType } format
         const rawMeals = payload.meals;
         msg.meal = {
           messageId: record.id,
@@ -116,6 +114,23 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
               wasTracked: m.was_tracked ?? false,
             };
           }),
+        };
+      } else if (isLegacyTrackMealPayload(payload)) {
+        // Legacy flat format: { type: 'trackMeal', mealType, ingredients }
+        const ingredients: TrackMealIngredient[] = payload.ingredients ?? [];
+        msg.meal = {
+          messageId: record.id,
+          meals: [
+            {
+              mealType: payload.mealType ?? 'snack',
+              calories: Math.round(ingredients.reduce((s, i) => s + i.kcal, 0)),
+              protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
+              carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),
+              fats: Math.round(ingredients.reduce((s, i) => s + i.fat, 0)),
+              ingredients,
+              wasTracked: payload.was_tracked ?? false,
+            },
+          ],
         };
       }
     } catch {

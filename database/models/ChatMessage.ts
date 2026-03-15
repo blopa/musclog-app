@@ -44,12 +44,21 @@ export type TrackMealPayload = {
   meals: (TrackedMeal & { was_tracked?: boolean })[]; // Array of meals analyzed (can be multiple meals from one message)
 };
 
+// Legacy track meal payload - flat shape written before multi-meal support was added
+export type LegacyTrackMealPayload = {
+  type: 'trackMeal';
+  mealType?: TrackedMeal['mealType'];
+  ingredients?: TrackMealIngredient[];
+  was_tracked?: boolean;
+};
+
 // Union type representing all possible payload_json values
 export type ChatMessagePayload =
   | ImagePayload
   | WorkoutCompletedPayload
   | WorkoutPlanPayload
-  | TrackMealPayload;
+  | TrackMealPayload
+  | LegacyTrackMealPayload;
 
 // Helper type guard functions for type narrowing
 export function isImagePayload(payload: ChatMessagePayload): payload is ImagePayload {
@@ -67,7 +76,13 @@ export function isWorkoutPlanPayload(payload: ChatMessagePayload): payload is Wo
 }
 
 export function isTrackMealPayload(payload: ChatMessagePayload): payload is TrackMealPayload {
-  return payload.type === 'trackMeal';
+  return payload.type === 'trackMeal' && Array.isArray((payload as TrackMealPayload).meals);
+}
+
+export function isLegacyTrackMealPayload(
+  payload: ChatMessagePayload
+): payload is LegacyTrackMealPayload {
+  return payload.type === 'trackMeal' && !Array.isArray((payload as TrackMealPayload).meals);
 }
 
 export default class ChatMessage extends Model {
