@@ -150,7 +150,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               <Button
                 label={getViewMealLabel(meal.mealType)}
                 onPress={() => onViewDetails(meal.mealType)}
-                size="sm"
+                size="xs"
                 variant="secondary"
                 width="full"
                 style={{

@@ -6,7 +6,7 @@ import { ActivityIndicator, Platform, Pressable, Text, View, ViewStyle } from 'r
 import { useTheme } from '../../hooks/useTheme';
 import { Theme } from '../../theme';
 
-type ThemeButtonSize = 'sm' | 'md' | 'lg' | 'xl';
+type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
@@ -35,9 +35,17 @@ type ThemeButtonProps = {
   style?: ViewStyle;
 };
 
-// TODO: add a XS variant
 const getSizeConfig = (theme: Theme) => {
   return {
+    xs: {
+      paddingVertical: theme.spacing.padding.sm,
+      borderRadius: theme.borderRadius.md,
+      fontSize: theme.typography.fontSize.xs,
+      fontWeight: theme.typography.fontWeight.bold,
+      iconSize: theme.iconSize.xs,
+      gap: theme.spacing.gap.xs,
+      shadow: theme.shadows.sm,
+    },
     sm: {
       paddingVertical: theme.spacing.padding.md,
       borderRadius: theme.borderRadius.lg,
