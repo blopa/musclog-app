@@ -772,6 +772,7 @@ export const getTrackMealPrompt = async (
     'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
     "Analyze ALL meals and snacks mentioned in the user's message or photo.",
     'Group ingredients by meal type (breakfast, lunch, dinner, snack). If the user only describes one meal, return a single-item meals array.',
+    'You MUST break down dishes into their individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
     'For each ingredient, estimate the macronutrients (calories, protein, carbs, fat, fiber) based on a reasonable portion size for that specific meal.',
     'Be as accurate as possible. If a photo is provided, use it to judge portions.',
   ];
@@ -799,6 +800,7 @@ export const getEstimateNutritionFromPhotoPrompt = async (
   const sections = [
     'You are an expert nutritionist with extensive knowledge of food composition.',
     'Analyze the provided food photo and estimate the macronutrients.',
+    'You MUST break down dishes into their individual ingredients (e.g., instead of "Pizza", return "Pizza Dough", "Tomato Sauce", "Mozzarella Cheese", etc.).',
     'Be as accurate as possible based on portion size visible in the image.',
     'If uncertain about portion size, provide estimates for a typical serving.',
   ];
