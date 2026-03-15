@@ -174,8 +174,10 @@ export default function DebugTestScreen() {
 
   const deleteDatabase = async () => {
     try {
-      // Note: unsafeResetDatabase() should NOT be called inside a write transaction
-      await database.unsafeResetDatabase();
+      // Note: unsafeResetDatabase() MUST be called inside a write transaction
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
       // Small delay to ensure the database adapter is fully ready after reset
       await new Promise((resolve) => setTimeout(resolve, 100));
       console.log('Database has been deleted and will be recreated on next app load.');
