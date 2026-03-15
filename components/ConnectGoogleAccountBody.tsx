@@ -85,8 +85,8 @@ export function ConnectGoogleAccountBody({
     };
 
     checkForExistingToken();
-  // Re-run when isSigningIn flips back to false so the web popup flow
-  // (which saves the token just before isSigningIn → false) is picked up.
+    // Re-run when isSigningIn flips back to false so the web popup flow
+    // (which saves the token just before isSigningIn → false) is picked up.
   }, [getSetUSerInfo, isSigningIn]);
 
   const handleConnect = () => {

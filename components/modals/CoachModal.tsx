@@ -1391,15 +1391,14 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         <LogMealModal
           visible
           onClose={() => setSelectedMealForTracking(null)}
+          // TODO: move this to a useMemo or useCallback
           meal={(() => {
             const rawIngredients = selectedMealForTracking.ingredients
               .map((i) => i.name)
               .join(', ');
 
             const ingredientsDesc =
-              rawIngredients.length > 80
-                ? `${rawIngredients.substring(0, 77)}...`
-                : rawIngredients;
+              rawIngredients.length > 80 ? `${rawIngredients.substring(0, 77)}...` : rawIngredients;
 
             const mealLabel =
               selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
@@ -1414,6 +1413,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
               fat: selectedMealForTracking.fats,
             };
           })()}
+          ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
           onLogMeal={async (date, logMealType) => {
             await markMealAsTracked(

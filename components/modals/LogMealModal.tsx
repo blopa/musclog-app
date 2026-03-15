@@ -1,18 +1,28 @@
 import type { TFunction } from 'i18next';
-import { Apple, Check, Coffee, Moon, Utensils } from 'lucide-react-native';
+import { Apple, Check, Coffee, Info, Moon, Utensils } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { GenericCard } from '../cards/GenericCard';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
+import { CenteredModal } from './CenteredModal';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+type Ingredient = {
+  name: string;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  grams: number;
+};
 
 type LogMealModalProps = {
   visible: boolean;
@@ -26,6 +36,7 @@ type LogMealModalProps = {
     carbs: number;
     fat: number;
   };
+  ingredients?: Ingredient[];
   initialMealType?: MealType;
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
@@ -65,13 +76,21 @@ const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType
   },
 ];
 
-export function LogMealModal({ visible, onClose, meal, initialMealType, onLogMeal }: LogMealModalProps) {
+export function LogMealModal({
+  visible,
+  onClose,
+  meal,
+  ingredients,
+  initialMealType,
+  onLogMeal,
+}: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);
+  const [showIngredients, setShowIngredients] = useState(false);
 
   const formatDate = useCallback((date: Date) => {
     return date.toISOString().split('T')[0];
@@ -126,7 +145,7 @@ export function LogMealModal({ visible, onClose, meal, initialMealType, onLogMea
                 {/* Meal Header */}
                 <View className="mb-4 flex-row items-start justify-between">
                   <View className="flex-1">
-                    <View className="mb-2">
+                    <View className="mb-2 flex-row items-center gap-2">
                       <Text
                         className="text-xs font-semibold uppercase tracking-wider"
                         style={{
@@ -140,6 +159,15 @@ export function LogMealModal({ visible, onClose, meal, initialMealType, onLogMea
                       >
                         {meal.type}
                       </Text>
+                      {ingredients && ingredients.length > 0 ? (
+                        <Pressable
+                          onPress={() => setShowIngredients(true)}
+                          hitSlop={8}
+                          className="active:opacity-60"
+                        >
+                          <Info size={16} color={theme.colors.accent.primary} />
+                        </Pressable>
+                      ) : null}
                     </View>
                     <Text
                       className="mb-1 text-2xl font-bold leading-tight tracking-tight"
@@ -309,6 +337,70 @@ export function LogMealModal({ visible, onClose, meal, initialMealType, onLogMea
           setShowDatePicker(false);
         }}
       />
+
+      {/* Ingredients Detail Popup */}
+      {ingredients && ingredients.length > 0 ? (
+        <CenteredModal
+          visible={showIngredients}
+          onClose={() => setShowIngredients(false)}
+          title={meal.type}
+          subtitle={`${ingredients.length} ingredients`}
+        >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: 360 }}
+            contentContainerStyle={{ gap: 8 }}
+          >
+            {ingredients.map((ingredient, index) => (
+              <View
+                key={`${ingredient.name}-${index}`}
+                className="flex-row items-center justify-between rounded-lg px-3 py-2.5"
+                style={{ backgroundColor: theme.colors.background.white5 }}
+              >
+                <View className="flex-1 pr-3">
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: theme.colors.text.primary }}
+                    numberOfLines={1}
+                  >
+                    {ingredient.name}
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+                    {ingredient.grams}g
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-3">
+                  <View className="items-end">
+                    <Text
+                      className="text-xs font-bold"
+                      style={{ color: theme.colors.accent.primary }}
+                    >
+                      P {ingredient.protein}g
+                    </Text>
+                    <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
+                      C {ingredient.carbs}g
+                    </Text>
+                  </View>
+                  <View className="items-end">
+                    <Text
+                      className="text-xs font-bold"
+                      style={{ color: theme.colors.status.amber }}
+                    >
+                      F {ingredient.fat}g
+                    </Text>
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: theme.colors.text.secondary }}
+                    >
+                      {ingredient.kcal} kcal
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </CenteredModal>
+      ) : null}
     </>
   );
 }
