@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import type { NavItemKey } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
@@ -14,21 +14,96 @@ export type UseNavigationItemsResult = {
   setNavSlot: (slot: SlotNumber, item: NavItemKey) => Promise<void>;
 };
 
+// Fallback items that are always available (never conditionally hidden)
+const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
+  'workouts',
+  'food',
+  'profile',
+  'settings',
+  'progress',
+];
+
+/**
+ * Checks if a navigation item is currently available/visible.
+ */
+function isItemAvailable(
+  item: NavItemKey,
+  isAiFeaturesEnabled: boolean,
+  isCycleActive: boolean
+): boolean {
+  if (item === 'coach' && !isAiFeaturesEnabled) {
+    return false;
+  }
+
+  if (item === 'cycle' && !isCycleActive) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Ensures all slots have valid, renderable items by replacing unavailable items
+ * with fallback items. This guarantees the navigation bar always shows 4 items
+ * (Home + Camera + 3 slots).
+ */
+function ensureValidSlots(
+  slots: Record<SlotNumber, NavItemKey>,
+  isAiFeaturesEnabled: boolean,
+  isCycleActive: boolean
+): Record<SlotNumber, NavItemKey> {
+  const result: Record<SlotNumber, NavItemKey> = { ...slots };
+  const usedItems = new Set<NavItemKey>();
+
+  // First pass: mark all valid items as used
+  ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
+    const item = slots[slot];
+    if (isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+      usedItems.add(item);
+    }
+  });
+
+  // Second pass: replace unavailable items with fallback items
+  ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
+    const item = slots[slot];
+    if (!isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+      // Find the first available fallback item that's not already used
+      const fallback = ALWAYS_AVAILABLE_ITEMS.find((fallbackItem) => !usedItems.has(fallbackItem));
+      if (fallback) {
+        result[slot] = fallback;
+        usedItems.add(fallback);
+      } else {
+        // If all fallbacks are used, use the first one anyway (shouldn't happen with 3 slots and 5 fallbacks)
+        result[slot] = ALWAYS_AVAILABLE_ITEMS[0];
+      }
+    }
+  });
+
+  return result;
+}
+
 export function useNavigationItems(): UseNavigationItemsResult {
   const { isAiFeaturesEnabled, navSlot1, navSlot2, navSlot3 } = useSettings();
   const { isActive: isCycleActive } = useMenstrualCycle();
 
+  const rawSlots = useMemo(
+    () => ({ 1: navSlot1, 2: navSlot2, 3: navSlot3 }),
+    [navSlot1, navSlot2, navSlot3]
+  );
+
+  // Ensure all slots have valid, renderable items
+  const validSlots = useMemo(
+    () => ensureValidSlots(rawSlots, isAiFeaturesEnabled, isCycleActive),
+    [rawSlots, isAiFeaturesEnabled, isCycleActive]
+  );
+
   // Keep a ref synced to the latest slot values so that async swap operations
   // always read the current state even across re-renders mid-await.
-  const slotsRef = useRef<Record<SlotNumber, NavItemKey>>({
-    1: navSlot1,
-    2: navSlot2,
-    3: navSlot3,
-  });
+  const slotsRef = useRef<Record<SlotNumber, NavItemKey>>(validSlots);
 
   useEffect(() => {
-    slotsRef.current = { 1: navSlot1, 2: navSlot2, 3: navSlot3 };
-  }, [navSlot1, navSlot2, navSlot3]);
+    slotsRef.current = validSlots;
+  }, [validSlots]);
 
   const setNavSlot = useCallback(async (slot: SlotNumber, item: NavItemKey) => {
     // Snapshot BEFORE any awaits to avoid stale closure issues
@@ -46,7 +121,7 @@ export function useNavigationItems(): UseNavigationItemsResult {
   }, []);
 
   return {
-    rawSlots: { 1: navSlot1, 2: navSlot2, 3: navSlot3 },
+    rawSlots: validSlots,
     isAiFeaturesEnabled,
     isCycleActive,
     setNavSlot,
