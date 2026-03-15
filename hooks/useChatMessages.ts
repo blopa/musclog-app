@@ -22,6 +22,7 @@ import {
   getRecentWorkoutsInsights,
   sendCoachMessage,
   trackMeal,
+  type TrackMealIngredient,
 } from '../utils/coachAI';
 import { getChatMessagePromptContent } from '../utils/prompts';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
@@ -45,11 +46,14 @@ export interface ExtendedIMessage extends IMessage {
     personalRecords: number;
   };
   meal?: {
+    messageId: string;
     mealName: string;
     calories: number;
     protein: number;
     carbs: number;
     fats: number;
+    ingredients: TrackMealIngredient[];
+    wasTracked: boolean;
   };
 }
 
@@ -82,6 +86,18 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
         msg.image = payload.image.startsWith('data:')
           ? payload.image
           : `data:image/jpeg;base64,${payload.image}`;
+      } else if (payload.type === 'trackMeal') {
+        const ingredients: TrackMealIngredient[] = payload.ingredients ?? [];
+        msg.meal = {
+          messageId: record.id,
+          mealName: payload.mealType ?? 'meal',
+          calories: payload.totalCalories ?? 0,
+          protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
+          carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),
+          fats: Math.round(ingredients.reduce((s, i) => s + i.fat, 0)),
+          ingredients,
+          wasTracked: payload.was_tracked ?? false,
+        };
       }
     } catch {
       // ignore malformed payload
@@ -110,6 +126,12 @@ export type UseChatMessagesResult = {
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
   deleteMessage: (messageId: string | number) => Promise<void>;
+  markMealAsTracked: (
+    messageId: string,
+    ingredients: TrackMealIngredient[],
+    date: Date,
+    mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+  ) => Promise<void>;
 };
 
 export function useChatMessages(
@@ -560,33 +582,18 @@ export function useChatMessages(
             mealType = 'dinner';
           }
 
-          // Save to nutrition logs
-          await NutritionService.logCustomMealsBatch(
-            result.ingredients.map((i) => ({
-              name: i.name,
-              calories: i.kcal,
-              protein: i.protein,
-              carbs: i.carbs,
-              fat: i.fat,
-              fiber: i.fiber,
-              grams: i.grams,
-            })),
-            new Date(),
-            mealType
-          );
-
           const totalCalories = Math.round(
             result.ingredients.reduce((acc, curr) => acc + curr.kcal, 0)
           );
           const ingredientNames = result.ingredients.map((i) => i.name).join(', ');
 
           reply = {
-            msg4User: t('coach.success.trackMealSuccess', {
+            msg4User: t('coach.success.trackMealReady', {
               count: result.ingredients.length,
               ingredients: ingredientNames,
               calories: totalCalories,
             }),
-            sumMsg: `Tracked meal with ${result.ingredients.length} ingredients`,
+            sumMsg: `Analyzed meal with ${result.ingredients.length} ingredients (${totalCalories} kcal)`,
           };
 
           payloadJson = JSON.stringify({
@@ -594,6 +601,7 @@ export function useChatMessages(
             ingredients: result.ingredients,
             totalCalories,
             mealType,
+            was_tracked: false,
           });
 
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
@@ -641,6 +649,42 @@ export function useChatMessages(
     [sessionId, isSending, t, clearFailedMessageText, conversationContext]
   );
 
+  const markMealAsTracked = useCallback(
+    async (
+      messageId: string,
+      ingredients: TrackMealIngredient[],
+      date: Date,
+      mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+    ) => {
+      await NutritionService.logCustomMealsBatch(
+        ingredients.map((i) => ({
+          name: i.name,
+          calories: i.kcal,
+          protein: i.protein,
+          carbs: i.carbs,
+          fat: i.fat,
+          fiber: i.fiber,
+          grams: i.grams,
+        })),
+        date,
+        mealType
+      );
+
+      const record = rawMessagesRef.current.find((r) => r.id === messageId);
+      if (record?.payloadJson) {
+        const updated = { ...JSON.parse(record.payloadJson), was_tracked: true };
+        await ChatService.updateMessagePayload(messageId, JSON.stringify(updated));
+      }
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m._id === messageId && m.meal ? { ...m, meal: { ...m.meal, wasTracked: true } } : m
+        )
+      );
+    },
+    []
+  );
+
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
     if (!ephemeralErrorMessage) {
       return null;
@@ -671,5 +715,6 @@ export function useChatMessages(
     clearFailedMessageText,
     ephemeralErrorAsMessage,
     deleteMessage,
+    markMealAsTracked,
   };
 }

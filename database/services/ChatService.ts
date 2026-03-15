@@ -92,6 +92,16 @@ export class ChatService {
     });
   }
 
+  static async updateMessagePayload(messageId: string, payloadJson: string): Promise<void> {
+    const record = await database.get<ChatMessage>('chat_messages').find(messageId);
+    await database.write(async () => {
+      await record.update((r) => {
+        r.payloadJson = payloadJson;
+        r.updatedAt = Date.now();
+      });
+    });
+  }
+
   static async deleteMessage(recordId: string): Promise<void> {
     const record = await database.get<ChatMessage>('chat_messages').find(recordId);
     await database.write(async () => {

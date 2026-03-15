@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -10,6 +11,7 @@ type ChatMealCardProps = {
   protein: number;
   carbs: number;
   fats: number;
+  wasTracked?: boolean;
   onViewDetails?: () => void;
 };
 
@@ -19,6 +21,7 @@ export function ChatMealCard({
   protein,
   carbs,
   fats,
+  wasTracked = false,
   onViewDetails,
 }: ChatMealCardProps) {
   const theme = useTheme();
@@ -41,11 +44,27 @@ export function ChatMealCard({
         >
           {mealName}
         </Text>
-        <View className="flex-row items-baseline gap-1">
-          <Text className="text-2xl font-bold text-text-primary">{calories}</Text>
-          <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
-            kcal
-          </Text>
+        <View className="flex-row items-center gap-2">
+          {wasTracked ? (
+            <View
+              className="flex-row items-center gap-1 rounded-full px-2 py-0.5"
+              style={{ backgroundColor: theme.colors.accent.primary20 }}
+            >
+              <Check size={10} color={theme.colors.accent.primary} />
+              <Text
+                className="text-[10px] font-bold"
+                style={{ color: theme.colors.accent.primary }}
+              >
+                Tracked
+              </Text>
+            </View>
+          ) : null}
+          <View className="flex-row items-baseline gap-1">
+            <Text className="text-2xl font-bold text-text-primary">{calories}</Text>
+            <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
+              kcal
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -66,10 +85,7 @@ export function ChatMealCard({
           </Text>
         </View>
 
-        <View
-          className="h-6 w-px"
-          style={{ backgroundColor: theme.colors.border.light }}
-        />
+        <View className="h-6 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
         <View className="flex-1 items-center">
           <Text
@@ -83,10 +99,7 @@ export function ChatMealCard({
           </Text>
         </View>
 
-        <View
-          className="h-6 w-px"
-          style={{ backgroundColor: theme.colors.border.light }}
-        />
+        <View className="h-6 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
         <View className="flex-1 items-center">
           <Text
@@ -101,19 +114,28 @@ export function ChatMealCard({
         </View>
       </View>
 
-      {/* View Details Button */}
+      {/* View Details / Already Tracked Button */}
       {onViewDetails ? (
         <View className="px-4 pb-4">
           <Pressable
-            onPress={onViewDetails}
-            className="w-full items-center rounded-lg py-1.5 active:scale-95"
+            onPress={wasTracked ? undefined : onViewDetails}
+            disabled={wasTracked}
+            className="w-full items-center rounded-lg py-1.5"
             style={{
               borderWidth: theme.borderWidth.thin,
-              borderColor: `${theme.colors.accent.primary}33`,
+              borderColor: wasTracked
+                ? theme.colors.border.light
+                : `${theme.colors.accent.primary}33`,
+              opacity: wasTracked ? 0.6 : 1,
             }}
           >
-            <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
-              View Full Details
+            <Text
+              className="text-sm font-bold"
+              style={{
+                color: wasTracked ? theme.colors.text.tertiary : theme.colors.accent.primary,
+              }}
+            >
+              {wasTracked ? 'Already Tracked' : 'View Full Details'}
             </Text>
           </Pressable>
         </View>

@@ -72,6 +72,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+import { LogMealModal } from './LogMealModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
@@ -197,7 +198,8 @@ const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
 
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
-  onViewWorkoutDetails?: (workoutLogId: string) => void
+  onViewWorkoutDetails?: (workoutLogId: string) => void,
+  onViewMealDetails?: (meal: ExtendedIMessage['meal']) => void
 ) => {
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
@@ -241,10 +243,10 @@ const renderCustomView = (
           protein={currentMessage.meal.protein}
           carbs={currentMessage.meal.carbs}
           fats={currentMessage.meal.fats}
-          onViewDetails={() => {
-            // TODO: Implement meal details navigation
-            console.log('View meal details');
-          }}
+          wasTracked={currentMessage.meal.wasTracked}
+          onViewDetails={
+            onViewMealDetails ? () => onViewMealDetails(currentMessage.meal) : undefined
+          }
         />
       </View>
     );
@@ -258,7 +260,8 @@ const renderBubble = (
   theme: Theme,
   conversationContext: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
-  onLongPress?: (message: ExtendedIMessage) => void
+  onLongPress?: (message: ExtendedIMessage) => void,
+  onViewMealDetails?: (meal: ExtendedIMessage['meal']) => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -313,8 +316,8 @@ const renderBubble = (
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
         ) : null}
-        {currentMessage?.workoutCompleted || currentMessage?.workout
-          ? renderCustomView(props, onViewWorkoutDetails)
+        {currentMessage?.workoutCompleted || currentMessage?.workout || currentMessage?.meal
+          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails)
           : null}
       </Pressable>
     );
@@ -590,6 +593,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    markMealAsTracked,
   } = useChatMessages(conversationContext);
 
   const { clearUnreadCount } = useUnreadChat();
@@ -597,6 +601,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [selectedMealForTracking, setSelectedMealForTracking] = useState<
+    ExtendedIMessage['meal'] | null
+  >(null);
   const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
@@ -672,25 +679,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     };
   }, []);
 
-  const MOCK_MEAL_MESSAGE: ExtendedIMessage = {
-    _id: 'mock-meal-demo',
-    text: '',
-    createdAt: new Date(Date.now() - 60_000),
-    user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-    meal: {
-      mealName: 'Post-Workout Meal',
-      calories: 650,
-      protein: 45,
-      carbs: 60,
-      fats: 12,
-    },
-  };
-
   const displayMessages = [
     ...(ephemeralErrorAsMessage ? [ephemeralErrorAsMessage] : []),
     ...(pendingCoachMessage ? [pendingCoachMessage] : []),
     ...messages,
-    MOCK_MEAL_MESSAGE,
   ];
 
   const onSend = useCallback(
@@ -805,6 +797,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const handleViewWorkoutDetails = useCallback((workoutLogId: string) => {
     setSelectedWorkoutId(workoutLogId);
+  }, []);
+
+  const handleViewMealDetails = useCallback((meal: ExtendedIMessage['meal']) => {
+    setSelectedMealForTracking(meal ?? null);
   }, []);
 
   const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
@@ -1090,9 +1086,16 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         theme,
         conversationContext,
         handleViewWorkoutDetails,
-        handleMessageLongPress
+        handleMessageLongPress,
+        handleViewMealDetails
       ),
-    [theme, conversationContext, handleViewWorkoutDetails, handleMessageLongPress]
+    [
+      theme,
+      conversationContext,
+      handleViewWorkoutDetails,
+      handleMessageLongPress,
+      handleViewMealDetails,
+    ]
   );
   const gcRenderAvatar = useCallback(
     (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
@@ -1101,8 +1104,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderCustomView = useCallback(
     (props: Parameters<typeof renderCustomView>[0]) =>
-      renderCustomView(props, handleViewWorkoutDetails),
-    [handleViewWorkoutDetails]
+      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails),
+    [handleViewWorkoutDetails, handleViewMealDetails]
   );
 
   const gcRenderInputToolbar = useCallback(
@@ -1364,6 +1367,30 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         variant="destructive"
         isLoading={isClearingHistory}
       />
+
+      {selectedMealForTracking ? (
+        <LogMealModal
+          visible={!!selectedMealForTracking}
+          onClose={() => setSelectedMealForTracking(null)}
+          meal={{
+            name: selectedMealForTracking.mealName,
+            type: selectedMealForTracking.mealName,
+            calories: selectedMealForTracking.calories,
+            protein: selectedMealForTracking.protein,
+            carbs: selectedMealForTracking.carbs,
+            fat: selectedMealForTracking.fats,
+          }}
+          onLogMeal={async (date, mealType) => {
+            await markMealAsTracked(
+              selectedMealForTracking.messageId,
+              selectedMealForTracking.ingredients,
+              date,
+              mealType
+            );
+            setSelectedMealForTracking(null);
+          }}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

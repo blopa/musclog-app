@@ -37,6 +37,7 @@
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
       "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}} kcal.",
+      "trackMealReady": "I've analyzed your meal ({{count}} ingredients, {{calories}} kcal total). Review and log it when you're ready!",
       "historyCleared": "Chat history cleared."
     },
     "aiInstructions": {
