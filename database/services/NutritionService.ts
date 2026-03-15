@@ -820,12 +820,18 @@ export class NutritionService {
       carbs: number;
       fat: number;
       fiber?: number;
+      foodId?: string;
     },
     date: Date,
     mealType: MealType,
     amount: number = 100 // Default to 100g for custom meals
   ): Promise<NutritionLog> {
     const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+    // If foodId is provided, log directly using the existing food
+    if (mealData.foodId) {
+      return await NutritionService.logFood(mealData.foodId, date, mealType, amount);
+    }
 
     const log = await database.write(async () => {
       const now = Date.now();
@@ -915,6 +921,7 @@ export class NutritionService {
       fat: number;
       fiber?: number;
       grams: number;
+      foodId?: string;
     }[],
     date: Date,
     mealType: MealType
@@ -926,6 +933,42 @@ export class NutritionService {
       const createdLogs: NutritionLog[] = [];
 
       for (const ingredient of ingredients) {
+        // If foodId is provided, find the food and create a log snapshot
+        if (ingredient.foodId) {
+          try {
+            const food = await database.get<Food>('foods').find(ingredient.foodId);
+            const encrypted = await encryptNutritionLogSnapshot({
+              loggedFoodName: food.name ?? ingredient.name,
+              loggedCalories: food.calories ?? 0,
+              loggedProtein: food.protein ?? 0,
+              loggedCarbs: food.carbs ?? 0,
+              loggedFat: food.fat ?? 0,
+              loggedFiber: food.fiber ?? 0,
+              loggedMicros: food.micros,
+            });
+
+            const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
+              record.foodId = food.id;
+              record.date = dateTimestamp;
+              record.type = mealType;
+              record.amount = ingredient.grams;
+              record.loggedFoodNameRaw = encrypted.loggedFoodName;
+              record.loggedCaloriesRaw = encrypted.loggedCalories;
+              record.loggedProteinRaw = encrypted.loggedProtein;
+              record.loggedCarbsRaw = encrypted.loggedCarbs;
+              record.loggedFatRaw = encrypted.loggedFat;
+              record.loggedFiberRaw = encrypted.loggedFiber;
+              record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+              record.createdAt = now;
+              record.updatedAt = now;
+            });
+            createdLogs.push(log);
+            continue;
+          } catch (error) {
+            console.warn(`[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`);
+          }
+        }
+
         // Create a temporary food entry for each ingredient
         const tempFood = await database.get<Food>('foods').create((food) => {
           food.isAiGenerated = true;

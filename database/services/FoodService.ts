@@ -517,4 +517,18 @@ export class FoodService {
       return newFood;
     });
   }
+
+  /**
+   * Get all foundation foods (up to a limit)
+   */
+  static async getFoundationFoods(limit: number = 200): Promise<Food[]> {
+    if (!database) {
+      return [];
+    }
+
+    return await database
+      .get<Food>('foods')
+      .query(Q.where('source', 'foundation'), Q.where('deleted_at', Q.eq(null)), Q.take(limit))
+      .fetch();
+  }
 }

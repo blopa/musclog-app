@@ -139,6 +139,8 @@
       "imageProcessing": "IMAGE PROCESSING",
       "useOcrBeforeAi": "Use OCR Before Sending to AI",
       "useOcrBeforeAiSubtitle": "Process images locally with OCR and send text instead",
+      "sendFoundationFoodsToLlm": "Send Foundation Foods to AI",
+      "sendFoundationFoodsToLlmSubtitle": "Improve ingredient matching using the foundation foods database",
       "disconnectGoogle": "Disconnect from Google",
       "disconnectGoogleTitle": "Disconnect from Google",
       "disconnectGoogleMessage": "Your Google account will be disconnected. AI features that rely on your Google account will stop working until you reconnect.",

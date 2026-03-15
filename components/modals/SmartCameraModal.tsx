@@ -113,6 +113,8 @@ export default function SmartCameraModal({
       protein: result.protein,
       carbs: result.carbs,
       fat: result.fat,
+      foodId: result.foodId,
+      grams: result.grams,
     }),
     [t]
   );
@@ -457,9 +459,11 @@ export default function SmartCameraModal({
             protein: selectedMealForLogging.protein,
             carbs: selectedMealForLogging.carbs,
             fat: selectedMealForLogging.fat,
+            foodId: selectedMealForLogging.foodId,
           },
           date,
-          mealType
+          mealType,
+          selectedMealForLogging.grams
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));

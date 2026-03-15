@@ -380,6 +380,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setFoodSearchSource('both');
     console.log('Set default food search source to both');
 
+    await SettingsService.setSendFoundationFoodsToLlm(true);
+    console.log('Set default send foundation foods to LLM to true');
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');

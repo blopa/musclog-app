@@ -34,6 +34,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
+  SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -99,6 +100,7 @@ type SettingsState = {
   notificationsRestTimer: boolean;
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
+  sendFoundationFoodsToLlm: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -131,6 +133,7 @@ const DEFAULT_STATE: SettingsState = {
   notificationsRestTimer: false,
   notificationsWorkoutDuration: false,
   useOcrBeforeAi: false,
+  sendFoundationFoodsToLlm: true,
   navSlot1: 'workouts',
   navSlot2: 'food',
   navSlot3: 'profile',
@@ -177,6 +180,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     notificationsRestTimer: getBoolean(map, NOTIFICATIONS_REST_TIMER_SETTING_TYPE),
     notificationsWorkoutDuration: getBoolean(map, NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE),
     useOcrBeforeAi: getBoolean(map, USE_OCR_BEFORE_AI_SETTING_TYPE),
+    sendFoundationFoodsToLlm: getBoolean(map, SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true),
     navSlot1: (rawNavSlot1 as NavItemKey) || 'workouts',
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
@@ -210,6 +214,7 @@ export function useSettings(): UseSettingsResult & {
   notificationsRestTimer: boolean;
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
+  sendFoundationFoodsToLlm: boolean;
   isAiFeaturesEnabled: boolean;
   isSignedInWithGoogle: boolean;
   navSlot1: NavItemKey;
