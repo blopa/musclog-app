@@ -248,7 +248,7 @@ export const schema = appSchema({
         { name: 'amount', type: 'number' }, // Quantity eaten
         { name: 'portion_id', type: 'string', isOptional: true }, // Unit used (e.g., linked to food_portions)
 
-        // Encrypted at rest (utils/encryption.ts)
+        // IMPORTANT: logged base macros, scaled to 100g - so if 100g of an food has 100 kcal, but the "amount" in this table is 200g, then the logged macros will be 200 kcal
         { name: 'logged_food_name', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'logged_calories', type: 'string' }, // isEncrypted: true
         { name: 'logged_protein', type: 'string' }, // isEncrypted: true
