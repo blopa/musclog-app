@@ -290,21 +290,29 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
       console.log(`Seeded ${createdExercises.length} common exercises`);
     }
 
-    // 3. Seed initial chat message with welcome message using i18n
+    // 3. Seed initial chat messages with welcome messages for each context using i18n
     const existingMessages = await ChatService.getAllMessages(1, 0);
 
     if (existingMessages.length === 0) {
       const sessionId = ChatService.generateSessionId();
-      const welcomeMessage = i18n.t('coach.welcomeMessage');
 
-      await ChatService.saveMessage({
-        sessionId,
-        sender: 'coach',
-        message: welcomeMessage,
-        messageType: 'text',
-      });
+      const contexts = [
+        { key: 'coach.welcomeMessage', context: 'general' },
+        { key: 'coach.welcomeMessageExercise', context: 'exercise' },
+        { key: 'coach.welcomeMessageNutrition', context: 'nutrition' },
+      ] as const;
 
-      console.log('Seeded initial welcome message from Loggy');
+      for (const { key, context } of contexts) {
+        await ChatService.saveMessage({
+          sessionId,
+          sender: 'coach',
+          message: i18n.t(key),
+          messageType: 'text',
+          context,
+        });
+      }
+
+      console.log('Seeded initial welcome messages for all contexts from Loggy');
     } else {
       console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
     }

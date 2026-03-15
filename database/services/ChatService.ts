@@ -16,8 +16,8 @@ export class ChatService {
     sessionId: string;
     sender: ChatSender;
     message: string;
+    context: ChatMessageContext;
     messageType?: ChatMessageType;
-    context?: ChatMessageContext;
     payloadJson?: string;
     summarizedMessage?: string;
   }): Promise<ChatMessage> {
@@ -28,7 +28,7 @@ export class ChatService {
         record.sender = params.sender;
         record.message = params.message;
         record.messageType = params.messageType ?? 'text';
-        record.context = params.context ?? 'general';
+        record.context = params.context;
         record.payloadJson = params.payloadJson;
         record.summarizedMessage = params.summarizedMessage;
         record.createdAt = now;

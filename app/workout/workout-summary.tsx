@@ -140,6 +140,7 @@ export default function WorkoutSummaryScreen() {
           message: t('workoutSummary.completedMessage', {
             workoutName: completedWorkout.workoutName,
           }),
+          context: 'exercise',
           summarizedMessage: llmSummary,
           payloadJson: JSON.stringify({
             type: 'workoutCompleted',

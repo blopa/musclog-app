@@ -25,6 +25,8 @@
     "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
     "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
     "welcomeMessage": "Hello. My name is Loggy, I am your AI Fitness Coach. I'm here to help you achieve your fitness goals, track your progress, and provide personalized guidance. Feel free to ask me anything about workouts, nutrition, or your fitness journey!",
+    "welcomeMessageExercise": "Hello! I'm Loggy. I'm here to help you with your training, whether it's building a new workout plan, checking your form, or analyzing your progress. What's on your training schedule today?",
+    "welcomeMessageNutrition": "Hi! I'm Loggy. I can help you stay on top of your nutrition by tracking your meals, estimating macros, and providing dietary insights. Tell me about your recent meals or ask me any nutrition questions!",
     "errors": {
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
