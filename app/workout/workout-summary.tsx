@@ -7,6 +7,7 @@ import { ActivityIndicator, Share, View } from 'react-native';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
+import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
 import {
   ChatService,
   GoogleAuthService,
@@ -134,6 +135,15 @@ export default function WorkoutSummaryScreen() {
 
         // Save workout completion message to the shared coach chat session.
         // UI shows it as a card from Loggy; when sending to the LLM we use llmSummary as a user message.
+        const workoutCompletedPayload: WorkoutCompletedPayload = {
+          type: 'workoutCompleted',
+          workoutLogId,
+          workoutName: completedWorkout.workoutName,
+          volume: volumeStr,
+          duration: durationStr,
+          personalRecords: prsCount,
+          weightUnit,
+        };
         await ChatService.saveMessage({
           sessionId: chatSessionId,
           sender: 'coach',
@@ -142,15 +152,7 @@ export default function WorkoutSummaryScreen() {
           }),
           context: 'exercise',
           summarizedMessage: llmSummary,
-          payloadJson: JSON.stringify({
-            type: 'workoutCompleted',
-            workoutLogId,
-            workoutName: completedWorkout.workoutName,
-            volume: volumeStr,
-            duration: durationStr,
-            personalRecords: prsCount,
-            weightUnit,
-          }),
+          payloadJson: JSON.stringify(workoutCompletedPayload),
         });
 
         // Mark this workout as processed to prevent duplicate messages

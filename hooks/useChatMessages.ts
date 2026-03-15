@@ -10,8 +10,17 @@ import {
   NUTRITION_CHECK,
   TRACK_MEAL,
 } from '../constants/chat';
-import ChatMessage from '../database/models/ChatMessage';
 import { type MealType } from '../database/models';
+import ChatMessage, {
+  type ChatMessagePayload,
+  type ImagePayload,
+  isImagePayload,
+  isTrackMealPayload,
+  isWorkoutCompletedPayload,
+  type TrackMealPayload,
+  type WorkoutCompletedPayload,
+  type WorkoutPlanPayload,
+} from '../database/models/ChatMessage';
 import { ChatService, NutritionService } from '../database/services';
 import AiService from '../services/AiService';
 import { getCurrentChatSessionId, setCurrentChatSessionId } from '../utils/chatSessionStorage';
@@ -77,8 +86,8 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 
   if (record.payloadJson) {
     try {
-      const payload = JSON.parse(record.payloadJson);
-      if (payload.type === 'workoutCompleted') {
+      const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+      if (isWorkoutCompletedPayload(payload)) {
         msg.workoutCompleted = {
           workoutLogId: payload.workoutLogId,
           workoutName: payload.workoutName,
@@ -86,15 +95,13 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
           duration: payload.duration,
           personalRecords: payload.personalRecords,
         };
-      } else if (payload.type === 'image' && payload.image) {
+      } else if (isImagePayload(payload)) {
         msg.image = payload.image.startsWith('data:')
           ? payload.image
           : `data:image/jpeg;base64,${payload.image}`;
-      } else if (payload.type === 'trackMeal') {
+      } else if (isTrackMealPayload(payload)) {
         // Support both new { meals: [...] } format and old { ingredients, mealType } format
-        const rawMeals: (TrackedMeal & { was_tracked?: boolean })[] = payload.meals ?? [
-          { mealType: payload.mealType ?? 'snack', ingredients: payload.ingredients ?? [] },
-        ];
+        const rawMeals = payload.meals;
         msg.meal = {
           messageId: record.id,
           meals: rawMeals.map((m) => {
@@ -389,14 +396,15 @@ export function useChatMessages(
         }
 
         // 2. Persist user message and prepend to UI immediately
+        const imagePayload: ImagePayload | undefined = base64Image
+          ? { type: 'image', image: base64Image }
+          : undefined;
         userRecord = await ChatService.saveMessage({
           sessionId,
           sender: 'user',
           message: text.trim() || (base64Image ? t('coach.imageSent') : ''),
           context: conversationContext,
-          payloadJson: base64Image
-            ? JSON.stringify({ type: 'image', image: base64Image })
-            : undefined,
+          payloadJson: imagePayload ? JSON.stringify(imagePayload) : undefined,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, userRecord];
         setMessages((prev) => [toGiftedMessage(userRecord!), ...prev]);
@@ -441,8 +449,8 @@ export function useChatMessages(
           let content = record.summarizedMessage ?? record.message;
           if (record.payloadJson) {
             try {
-              const payload = JSON.parse(record.payloadJson);
-              if (payload.type === 'workoutCompleted' && payload.workoutLogId) {
+              const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+              if (isWorkoutCompletedPayload(payload) && payload.workoutLogId) {
                 role = 'user';
                 content = await buildWorkoutCompletedSummaryForLLM(payload.workoutLogId, {
                   volumeStr: payload.volume ?? '0',
@@ -493,11 +501,12 @@ export function useChatMessages(
             };
 
             // Store workout plan metadata in payload_json for UI rendering
-            payloadJson = JSON.stringify({
+            const workoutPlanPayload: WorkoutPlanPayload = {
               type: 'workoutPlan',
               templateIds: processResult.templateIds,
               count: processResult.templateIds.length,
-            });
+            };
+            payloadJson = JSON.stringify(workoutPlanPayload);
 
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
           } else {
@@ -598,10 +607,11 @@ export function useChatMessages(
             sumMsg: `Analyzed ${result.meals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
-          payloadJson = JSON.stringify({
+          const trackMealPayload: TrackMealPayload = {
             type: 'trackMeal',
             meals: result.meals.map((m) => ({ ...m, was_tracked: false })),
-          });
+          };
+          payloadJson = JSON.stringify(trackMealPayload);
 
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
         } else {
@@ -672,14 +682,16 @@ export function useChatMessages(
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {
-        const p = JSON.parse(record.payloadJson);
-        const updated = {
-          ...p,
-          meals: (p.meals ?? []).map((m: TrackedMeal & { was_tracked?: boolean }) =>
-            m.mealType === mealTypeIdentifier ? { ...m, was_tracked: true } : m
-          ),
-        };
-        await ChatService.updateMessagePayload(messageId, JSON.stringify(updated));
+        const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+        if (isTrackMealPayload(payload)) {
+          const updated: TrackMealPayload = {
+            ...payload,
+            meals: payload.meals.map((m) =>
+              m.mealType === mealTypeIdentifier ? { ...m, was_tracked: true } : m
+            ),
+          };
+          await ChatService.updateMessagePayload(messageId, JSON.stringify(updated));
+        }
       }
 
       setMessages((prev) =>
