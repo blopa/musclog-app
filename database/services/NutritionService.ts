@@ -972,7 +972,9 @@ export class NutritionService {
             createdLogs.push(log);
             continue;
           } catch (error) {
-            console.warn(`[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`);
+            console.warn(
+              `[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`
+            );
           }
         }
 

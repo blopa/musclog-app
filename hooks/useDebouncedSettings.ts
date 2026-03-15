@@ -353,7 +353,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
     sendFoundationFoodsToLlm:
-      (localSettings.sendFoundationFoodsToLlm as boolean) ?? actualSettings.sendFoundationFoodsToLlm,
+      (localSettings.sendFoundationFoodsToLlm as boolean) ??
+      actualSettings.sendFoundationFoodsToLlm,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     conversationContext:
