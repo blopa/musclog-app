@@ -1,5 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { ENCRYPTION_KEY } from '../../constants/database';
 import { setCurrentChatSessionId } from '../../utils/chatSessionStorage';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
@@ -21,7 +23,13 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { ChatService, ExerciseService, MealService, SettingsService, UserService } from '../services';
+import {
+  ChatService,
+  ExerciseService,
+  MealService,
+  SettingsService,
+  UserService,
+} from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -2185,9 +2193,38 @@ async function seedChatHistory(): Promise<{ created: number }> {
   }
 }
 
-// TODO: not only seed data, but also clear the asyncstorage and delete the database
-export async function seedDevData(): Promise<boolean> {
+const clearAsyncStorage = async () => {
+  const existingEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
+
+  try {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage has been cleared successfully.');
+  } catch (error) {
+    console.error('Error clearing AsyncStorage:', error);
+  }
+
+  if (existingEncryptionKey) {
+    await AsyncStorage.setItem(ENCRYPTION_KEY, existingEncryptionKey);
+  }
+};
+
+export async function seedDevData(clear: boolean = true): Promise<boolean> {
   // return true;
+
+  if (clear) {
+    try {
+      await database.write(async () => {
+        await database.unsafeResetDatabase();
+      });
+      console.log('Database reset (clean slate for seeding)');
+    } catch (error) {
+      console.error('Error resetting database:', error);
+    }
+
+    // Clear async storage
+    await clearAsyncStorage();
+  }
+
   const userSeeded = await seedUser();
   const exercisesSeeded = await seedExercisesIfEmpty();
   const foodsSeeded = await seedFoods();
