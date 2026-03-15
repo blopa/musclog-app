@@ -129,27 +129,26 @@ export const refreshAccessToken = async (): Promise<string | undefined> => {
 };
 
 /**
- * Check if user is signed in with Google (has valid access token)
+ * Check if user is signed in with Google (has valid access token, or can refresh)
  */
 export const isGoogleSignedIn = async (): Promise<boolean> => {
   const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
   const tokenExpirationTime = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE);
 
-  if (!accessToken || !tokenExpirationTime) {
-    return false;
+  if (accessToken && tokenExpirationTime) {
+    const expirationTime = parseInt(tokenExpirationTime, 10);
+    if (!isNaN(expirationTime) && new Date().getTime() < expirationTime - 60 * 1000) {
+      return true;
+    }
   }
 
-  const expirationTime = parseInt(tokenExpirationTime, 10);
-  if (isNaN(expirationTime)) {
-    return false;
-  }
-
-  // Check if token is still valid (with 60 second buffer)
-  return new Date().getTime() < expirationTime - 60 * 1000;
+  // Token missing or expired — try to refresh silently using stored refresh token
+  const refreshed = await refreshAccessToken();
+  return refreshed !== undefined;
 };
 
 /**
- * Retrieve a valid access token (refresh if expired)
+ * Retrieve a valid access token (refresh if expired or missing)
  */
 export const getAccessToken = async (): Promise<string | undefined> => {
   const accessToken = await AsyncStorage.getItem(GOOGLE_ACCESS_TOKEN);
@@ -160,8 +159,6 @@ export const getAccessToken = async (): Promise<string | undefined> => {
     if (!isNaN(expirationTime) && new Date().getTime() < expirationTime - 60 * 1000) {
       return accessToken;
     }
-  } else {
-    return;
   }
 
   return await refreshAccessToken();
