@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useMemo, useState } from 'react';
+import { AppState } from 'react-native';
 
 import type {
   ChartTooltipPosition,
@@ -41,6 +42,7 @@ import {
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
+import { isGoogleSignedIn } from '../utils/googleAuth';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 // Build a type→value map from an array of Setting records.
@@ -209,6 +211,7 @@ export function useSettings(): UseSettingsResult & {
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
   isAiFeaturesEnabled: boolean;
+  isSignedInWithGoogle: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -216,6 +219,18 @@ export function useSettings(): UseSettingsResult & {
   chartTooltipPosition: ChartTooltipPosition;
 } {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+
+  useEffect(() => {
+    isGoogleSignedIn().then(setIsGoogleConnected);
+    const subscription = AppState.addEventListener('change', (appState) => {
+      if (appState === 'active') {
+        isGoogleSignedIn().then(setIsGoogleConnected);
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     // Single query for ALL settings — one subscription, one re-render per change.
@@ -248,18 +263,26 @@ export function useSettings(): UseSettingsResult & {
     }
 
     return (
+      isGoogleConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
-  }, [state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
+  }, [
+    isGoogleConnected,
+    state.enableGoogleGemini,
+    state.googleGeminiApiKey,
+    state.enableOpenAi,
+    state.openAiApiKey,
+  ]);
 
   return useMemo(
     () => ({
       ...state,
       isAiFeaturesEnabled,
+      isSignedInWithGoogle: isGoogleConnected,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiFeaturesEnabled]
+    [state, isAiFeaturesEnabled, isGoogleConnected]
   );
 }

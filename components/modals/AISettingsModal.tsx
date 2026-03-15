@@ -9,12 +9,13 @@ import {
 } from 'lucide-react-native';
 import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
-import { deleteAllData, isGoogleSignedIn } from '../../utils/googleAuth';
+import { deleteAllData } from '../../utils/googleAuth';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { GoogleSignInButton } from '../GoogleSignInButton';
@@ -208,9 +209,10 @@ export function AISettingsModal({
   const { t } = useTranslation();
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
-  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
+
+  const { isSignedInWithGoogle: isGoogleConnected } = useSettings();
 
   // Use debounced settings for instant UI updates
   const {
@@ -234,26 +236,8 @@ export function AISettingsModal({
     }
   }, [visible, flushAllPendingChanges]);
 
-  // Check Google connection status when modal opens
-  useEffect(() => {
-    if (visible) {
-      isGoogleSignedIn().then(setIsGoogleConnected);
-    }
-  }, [visible]);
-
-  // Re-check when app comes back to foreground (e.g. after OAuth redirect)
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') {
-        isGoogleSignedIn().then(setIsGoogleConnected);
-      }
-    });
-    return () => subscription.remove();
-  }, []);
-
   const handleDisconnectGoogle = async () => {
     await deleteAllData();
-    setIsGoogleConnected(false);
     if (!googleGeminiApiKey.trim()) {
       handleEnableGoogleGeminiChange(false);
     }
