@@ -732,12 +732,13 @@ const MACRO_CALORIE_NOTE =
 export const getTrackMealPrompt = (language: string = 'en-US'): string => {
   return [
     'You are an expert nutritionist with extensive knowledge of food composition and recipe breakdown.',
-    'Analyze the provided meal (description or photo) and break it down into its main ingredients.',
+    "Analyze ALL meals and snacks mentioned in the user's message or photo.",
+    'Group ingredients by meal type (breakfast, lunch, dinner, snack). If the user only describes one meal, return a single-item meals array.',
     'For each ingredient, estimate the macronutrients (calories, protein, carbs, fat, fiber) based on a reasonable portion size for that specific meal.',
     'Be as accurate as possible. If a photo is provided, use it to judge portions.',
     MACRO_CALORIE_NOTE,
     `Your response must be in ${language}.`,
-    'Return the data as a structured list of ingredients.',
+    'Return the data as a structured list of meals, each with their mealType and ingredients.',
   ].join('\n');
 };
 
@@ -1170,53 +1171,53 @@ export const getParseRetrospectiveNutritionFunctions = ():
 export const getTrackMealFunctions = ():
   | FunctionDeclaration[]
   | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const ingredientSchema = {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        description: 'Name of the ingredient (e.g., "Basmati Rice", "Chicken Breast")',
+      },
+      kcal: { type: 'number', description: 'Kilocalories' },
+      carbs: { type: 'number', description: 'Carbohydrates in grams' },
+      fat: { type: 'number', description: 'Fat in grams' },
+      protein: { type: 'number', description: 'Protein in grams' },
+      fiber: { type: 'number', description: 'Fiber in grams' },
+      grams: { type: 'number', description: 'Estimated weight of this ingredient in grams' },
+    },
+    required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
+  };
+
   return [
     {
       name: 'trackMeal',
-      description: 'Break down a meal into ingredients and estimate their macronutrients',
+      description:
+        'Break down one or more meals into their ingredients and estimate macronutrients. Group ingredients by meal type.',
       parameters: {
         type: 'object',
         properties: {
-          ingredients: {
+          meals: {
             type: 'array',
-            description: 'List of ingredients in the meal',
+            description: 'List of meals identified in the message. Use one entry per meal type.',
             items: {
               type: 'object',
               properties: {
-                name: {
+                mealType: {
                   type: 'string',
-                  description: 'Name of the ingredient (e.g., "Basmati Rice", "Chicken Breast")',
+                  enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+                  description: 'Type of meal',
                 },
-                kcal: {
-                  type: 'number',
-                  description: 'Kilocalories',
-                },
-                carbs: {
-                  type: 'number',
-                  description: 'Carbohydrates in grams',
-                },
-                fat: {
-                  type: 'number',
-                  description: 'Fat in grams',
-                },
-                protein: {
-                  type: 'number',
-                  description: 'Protein in grams',
-                },
-                fiber: {
-                  type: 'number',
-                  description: 'Fiber in grams',
-                },
-                grams: {
-                  type: 'number',
-                  description: 'Estimated weight of this ingredient in grams',
+                ingredients: {
+                  type: 'array',
+                  description: 'List of ingredients in this meal',
+                  items: ingredientSchema,
                 },
               },
-              required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
+              required: ['mealType', 'ingredients'],
             },
           },
         },
-        required: ['ingredients'],
+        required: ['meals'],
       },
     },
   ];

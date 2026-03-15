@@ -5,26 +5,32 @@ import { useTheme } from '../../hooks/useTheme';
 
 const INDIGO = '#6366f1';
 
-type ChatMealCardProps = {
-  mealName: string;
+type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
+type MealRow = {
+  mealType: MealType;
   calories: number;
   protein: number;
   carbs: number;
   fats: number;
-  wasTracked?: boolean;
-  onViewDetails?: () => void;
+  wasTracked: boolean;
 };
 
-export function ChatMealCard({
-  mealName,
-  calories,
-  protein,
-  carbs,
-  fats,
-  wasTracked = false,
-  onViewDetails,
-}: ChatMealCardProps) {
+type ChatMealCardProps = {
+  meals: MealRow[];
+  onViewDetails: (mealType: MealType) => void;
+};
+
+const MEAL_LABEL: Record<MealType, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+  snack: 'Snack',
+};
+
+export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
+  const totalCalories = meals.reduce((s, m) => s + m.calories, 0);
 
   return (
     <View
@@ -36,110 +42,124 @@ export function ChatMealCard({
         minWidth: 240,
       }}
     >
-      {/* Header */}
+      {/* Summary header */}
       <View className="flex-row items-baseline justify-between px-4 pb-2 pt-4">
         <Text
           className="text-xs font-bold uppercase tracking-wider"
           style={{ color: theme.colors.text.tertiary }}
         >
-          {mealName}
+          {meals.length === 1 ? '1 meal' : `${meals.length} meals`}
         </Text>
-        <View className="flex-row items-center gap-2">
-          {wasTracked ? (
-            <View
-              className="flex-row items-center gap-1 rounded-full px-2 py-0.5"
-              style={{ backgroundColor: theme.colors.accent.primary20 }}
-            >
-              <Check size={10} color={theme.colors.accent.primary} />
+        <View className="flex-row items-baseline gap-1">
+          <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+            {totalCalories}
+          </Text>
+          <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
+            kcal
+          </Text>
+        </View>
+      </View>
+
+      {/* Per-meal rows */}
+      {meals.map((meal, index) => (
+        <View key={meal.mealType}>
+          {/* Divider */}
+          <View
+            style={{ height: theme.borderWidth.thin, backgroundColor: theme.colors.border.light }}
+          />
+
+          <View className="px-4 py-3">
+            {/* Meal type label + calories */}
+            <View className="mb-2 flex-row items-baseline justify-between">
               <Text
-                className="text-[10px] font-bold"
-                style={{ color: theme.colors.accent.primary }}
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.text.tertiary }}
               >
-                Tracked
+                {MEAL_LABEL[meal.mealType]}
+              </Text>
+              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
+                {meal.calories} kcal
               </Text>
             </View>
-          ) : null}
-          <View className="flex-row items-baseline gap-1">
-            <Text className="text-2xl font-bold text-text-primary">{calories}</Text>
-            <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
-              kcal
-            </Text>
+
+            {/* Macros row */}
+            <View
+              className="mb-3 flex-row items-center justify-between rounded-lg p-2"
+              style={{ backgroundColor: theme.colors.background.primary }}
+            >
+              <View className="flex-1 items-center">
+                <Text
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  P
+                </Text>
+                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+                  {meal.protein}g
+                </Text>
+              </View>
+
+              <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
+
+              <View className="flex-1 items-center">
+                <Text
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  C
+                </Text>
+                <Text className="text-xs font-bold" style={{ color: INDIGO }}>
+                  {meal.carbs}g
+                </Text>
+              </View>
+
+              <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
+
+              <View className="flex-1 items-center">
+                <Text
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  F
+                </Text>
+                <Text className="text-xs font-bold" style={{ color: theme.colors.status.warning }}>
+                  {meal.fats}g
+                </Text>
+              </View>
+            </View>
+
+            {/* CTA button */}
+            {meal.wasTracked ? (
+              <View
+                className="flex-row items-center justify-center gap-1.5 rounded-lg py-1.5"
+                style={{
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.border.light,
+                  opacity: 0.6,
+                }}
+              >
+                <Check size={12} color={theme.colors.accent.primary} />
+                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+                  Tracked
+                </Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => onViewDetails(meal.mealType)}
+                className="items-center rounded-lg py-1.5 active:opacity-70"
+                style={{
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: `${theme.colors.accent.primary}33`,
+                }}
+              >
+                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+                  View {MEAL_LABEL[meal.mealType]}
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
-      </View>
-
-      {/* Macros Row */}
-      <View
-        className="mx-4 mb-4 flex-row items-center justify-between rounded-lg p-3"
-        style={{ backgroundColor: theme.colors.background.primary }}
-      >
-        <View className="flex-1 items-center">
-          <Text
-            className="text-[10px] font-bold uppercase"
-            style={{ color: theme.colors.text.tertiary }}
-          >
-            Protein
-          </Text>
-          <Text className="mt-0.5 text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
-            P: {protein}g
-          </Text>
-        </View>
-
-        <View className="h-6 w-px" style={{ backgroundColor: theme.colors.border.light }} />
-
-        <View className="flex-1 items-center">
-          <Text
-            className="text-[10px] font-bold uppercase"
-            style={{ color: theme.colors.text.tertiary }}
-          >
-            Carbs
-          </Text>
-          <Text className="mt-0.5 text-sm font-bold" style={{ color: INDIGO }}>
-            C: {carbs}g
-          </Text>
-        </View>
-
-        <View className="h-6 w-px" style={{ backgroundColor: theme.colors.border.light }} />
-
-        <View className="flex-1 items-center">
-          <Text
-            className="text-[10px] font-bold uppercase"
-            style={{ color: theme.colors.text.tertiary }}
-          >
-            Fats
-          </Text>
-          <Text className="mt-0.5 text-sm font-bold" style={{ color: theme.colors.status.warning }}>
-            F: {fats}g
-          </Text>
-        </View>
-      </View>
-
-      {/* View Details / Already Tracked Button */}
-      {onViewDetails ? (
-        <View className="px-4 pb-4">
-          <Pressable
-            onPress={wasTracked ? undefined : onViewDetails}
-            disabled={wasTracked}
-            className="w-full items-center rounded-lg py-1.5"
-            style={{
-              borderWidth: theme.borderWidth.thin,
-              borderColor: wasTracked
-                ? theme.colors.border.light
-                : `${theme.colors.accent.primary}33`,
-              opacity: wasTracked ? 0.6 : 1,
-            }}
-          >
-            <Text
-              className="text-sm font-bold"
-              style={{
-                color: wasTracked ? theme.colors.text.tertiary : theme.colors.accent.primary,
-              }}
-            >
-              {wasTracked ? 'Already Tracked' : 'View Full Details'}
-            </Text>
-          </Pressable>
-        </View>
-      ) : null}
+      ))}
     </View>
   );
 }

@@ -131,8 +131,13 @@ export type TrackMealIngredient = {
   grams: number;
 };
 
-export type TrackMealResponse = {
+export type TrackedMeal = {
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   ingredients: TrackMealIngredient[];
+};
+
+export type TrackMealResponse = {
+  meals: TrackedMeal[];
 };
 
 export type NutritionEntry = {

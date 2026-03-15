@@ -415,30 +415,46 @@ export default function CardsTestScreen() {
 
         <TestSection title="Chat Meal Card" subtitle="Display meal information in chat format">
           <ChatMealCard
-            mealName="Post-Workout Shake"
-            calories={320}
-            protein={25}
-            carbs={45}
-            fats={8}
+            meals={[
+              {
+                mealType: 'snack',
+                calories: 320,
+                protein: 25,
+                carbs: 45,
+                fats: 8,
+                wasTracked: false,
+              },
+            ]}
             onViewDetails={() => console.log('View meal details')}
           />
           <View className="mt-4">
             <ChatMealCard
-              mealName="Grilled Chicken & Rice"
-              calories={450}
-              protein={35}
-              carbs={52}
-              fats={12}
+              meals={[
+                {
+                  mealType: 'lunch',
+                  calories: 450,
+                  protein: 35,
+                  carbs: 52,
+                  fats: 12,
+                  wasTracked: false,
+                },
+              ]}
               onViewDetails={() => console.log('View meal details')}
             />
           </View>
           <View className="mt-4">
             <ChatMealCard
-              mealName="Greek Yogurt Parfait"
-              calories={280}
-              protein={20}
-              carbs={38}
-              fats={6}
+              meals={[
+                {
+                  mealType: 'breakfast',
+                  calories: 280,
+                  protein: 20,
+                  carbs: 38,
+                  fats: 6,
+                  wasTracked: true,
+                },
+              ]}
+              onViewDetails={() => console.log('View meal details')}
             />
           </View>
         </TestSection>

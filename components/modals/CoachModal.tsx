@@ -60,6 +60,7 @@ import {
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
@@ -196,10 +197,12 @@ const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
   );
 };
 
+type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal']) => void
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void
 ) => {
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
@@ -238,15 +241,8 @@ const renderCustomView = (
     return (
       <View className="mt-2 w-full max-w-sm">
         <ChatMealCard
-          mealName={currentMessage.meal.mealName}
-          calories={currentMessage.meal.calories}
-          protein={currentMessage.meal.protein}
-          carbs={currentMessage.meal.carbs}
-          fats={currentMessage.meal.fats}
-          wasTracked={currentMessage.meal.wasTracked}
-          onViewDetails={
-            onViewMealDetails ? () => onViewMealDetails(currentMessage.meal) : undefined
-          }
+          meals={currentMessage.meal.meals}
+          onViewDetails={(mealType) => onViewMealDetails?.(currentMessage.meal!, mealType)}
         />
       </View>
     );
@@ -261,7 +257,7 @@ const renderBubble = (
   conversationContext: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal']) => void
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -601,9 +597,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const [isOnline, setIsOnline] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<string | null>(null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
-  const [selectedMealForTracking, setSelectedMealForTracking] = useState<
-    ExtendedIMessage['meal'] | null
-  >(null);
+  const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
+    messageId: string;
+    mealTypeIdentifier: MealType;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+    ingredients: TrackMealIngredient[];
+  } | null>(null);
   const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
@@ -799,9 +801,27 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     setSelectedWorkoutId(workoutLogId);
   }, []);
 
-  const handleViewMealDetails = useCallback((meal: ExtendedIMessage['meal']) => {
-    setSelectedMealForTracking(meal ?? null);
-  }, []);
+  const handleViewMealDetails = useCallback(
+    (meal: ExtendedIMessage['meal'], mealType: MealType) => {
+      if (!meal) {
+        return;
+      }
+      const entry = meal.meals.find((m) => m.mealType === mealType);
+      if (!entry) {
+        return;
+      }
+      setSelectedMealForTracking({
+        messageId: meal.messageId,
+        mealTypeIdentifier: mealType,
+        calories: entry.calories,
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fats: entry.fats,
+        ingredients: entry.ingredients,
+      });
+    },
+    []
+  );
 
   const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -1370,22 +1390,23 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
       {selectedMealForTracking ? (
         <LogMealModal
-          visible={!!selectedMealForTracking}
+          visible
           onClose={() => setSelectedMealForTracking(null)}
           meal={{
-            name: selectedMealForTracking.mealName,
-            type: selectedMealForTracking.mealName,
+            name: selectedMealForTracking.mealTypeIdentifier,
+            type: selectedMealForTracking.mealTypeIdentifier,
             calories: selectedMealForTracking.calories,
             protein: selectedMealForTracking.protein,
             carbs: selectedMealForTracking.carbs,
             fat: selectedMealForTracking.fats,
           }}
-          onLogMeal={async (date, mealType) => {
+          onLogMeal={async (date, logMealType) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
+              selectedMealForTracking.mealTypeIdentifier,
               selectedMealForTracking.ingredients,
               date,
-              mealType
+              logMealType
             );
             setSelectedMealForTracking(null);
           }}

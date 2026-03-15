@@ -21,6 +21,7 @@ import {
   getNutritionInsights,
   getRecentWorkoutsInsights,
   sendCoachMessage,
+  type TrackedMeal,
   trackMeal,
   type TrackMealIngredient,
 } from '../utils/coachAI';
@@ -47,13 +48,15 @@ export interface ExtendedIMessage extends IMessage {
   };
   meal?: {
     messageId: string;
-    mealName: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-    ingredients: TrackMealIngredient[];
-    wasTracked: boolean;
+    meals: {
+      mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+      ingredients: TrackMealIngredient[];
+      wasTracked: boolean;
+    }[];
   };
 }
 
@@ -87,16 +90,24 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
           ? payload.image
           : `data:image/jpeg;base64,${payload.image}`;
       } else if (payload.type === 'trackMeal') {
-        const ingredients: TrackMealIngredient[] = payload.ingredients ?? [];
+        // Support both new { meals: [...] } format and old { ingredients, mealType } format
+        const rawMeals: (TrackedMeal & { was_tracked?: boolean })[] = payload.meals ?? [
+          { mealType: payload.mealType ?? 'snack', ingredients: payload.ingredients ?? [] },
+        ];
         msg.meal = {
           messageId: record.id,
-          mealName: payload.mealType ?? 'meal',
-          calories: payload.totalCalories ?? 0,
-          protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
-          carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),
-          fats: Math.round(ingredients.reduce((s, i) => s + i.fat, 0)),
-          ingredients,
-          wasTracked: payload.was_tracked ?? false,
+          meals: rawMeals.map((m) => {
+            const ingredients: TrackMealIngredient[] = m.ingredients ?? [];
+            return {
+              mealType: m.mealType,
+              calories: Math.round(ingredients.reduce((s, i) => s + i.kcal, 0)),
+              protein: Math.round(ingredients.reduce((s, i) => s + i.protein, 0)),
+              carbs: Math.round(ingredients.reduce((s, i) => s + i.carbs, 0)),
+              fats: Math.round(ingredients.reduce((s, i) => s + i.fat, 0)),
+              ingredients,
+              wasTracked: m.was_tracked ?? false,
+            };
+          }),
         };
       }
     } catch {
@@ -128,9 +139,10 @@ export type UseChatMessagesResult = {
   deleteMessage: (messageId: string | number) => Promise<void>;
   markMealAsTracked: (
     messageId: string,
+    mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
     ingredients: TrackMealIngredient[],
     date: Date,
-    mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+    logMealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
   ) => Promise<void>;
 };
 
@@ -558,7 +570,7 @@ export function useChatMessages(
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
         } else if (pendingIntention === TRACK_MEAL) {
           const result = await trackMeal(aiConfig, text.trim(), base64Image);
-          if (!result || result.ingredients.length === 0) {
+          if (!result || result.meals.length === 0) {
             if (userRecord) {
               const recordId = userRecord.id;
               await ChatService.deleteMessage(recordId);
@@ -571,37 +583,23 @@ export function useChatMessages(
             return;
           }
 
-          // Determine meal type based on current hour
-          const hour = new Date().getHours();
-          let mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' = 'snack';
-          if (hour >= 5 && hour < 11) {
-            mealType = 'breakfast';
-          } else if (hour >= 11 && hour < 16) {
-            mealType = 'lunch';
-          } else if (hour >= 16 && hour < 22) {
-            mealType = 'dinner';
-          }
-
           const totalCalories = Math.round(
-            result.ingredients.reduce((acc, curr) => acc + curr.kcal, 0)
+            result.meals.flatMap((m) => m.ingredients).reduce((acc, i) => acc + i.kcal, 0)
           );
-          const ingredientNames = result.ingredients.map((i) => i.name).join(', ');
+          const mealNames = result.meals.map((m) => m.mealType).join(', ');
 
           reply = {
             msg4User: t('coach.success.trackMealReady', {
-              count: result.ingredients.length,
-              ingredients: ingredientNames,
+              count: result.meals.length,
+              meals: mealNames,
               calories: totalCalories,
             }),
-            sumMsg: `Analyzed meal with ${result.ingredients.length} ingredients (${totalCalories} kcal)`,
+            sumMsg: `Analyzed ${result.meals.length} meal(s) (${totalCalories} kcal total)`,
           };
 
           payloadJson = JSON.stringify({
             type: 'trackMeal',
-            ingredients: result.ingredients,
-            totalCalories,
-            mealType,
-            was_tracked: false,
+            meals: result.meals.map((m) => ({ ...m, was_tracked: false })),
           });
 
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
@@ -652,9 +650,10 @@ export function useChatMessages(
   const markMealAsTracked = useCallback(
     async (
       messageId: string,
+      mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
       ingredients: TrackMealIngredient[],
       date: Date,
-      mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
+      logMealType: 'breakfast' | 'lunch' | 'dinner' | 'snack'
     ) => {
       await NutritionService.logCustomMealsBatch(
         ingredients.map((i) => ({
@@ -667,19 +666,36 @@ export function useChatMessages(
           grams: i.grams,
         })),
         date,
-        mealType
+        logMealType
       );
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {
-        const updated = { ...JSON.parse(record.payloadJson), was_tracked: true };
+        const p = JSON.parse(record.payloadJson);
+        const updated = {
+          ...p,
+          meals: (p.meals ?? []).map((m: TrackedMeal & { was_tracked?: boolean }) =>
+            m.mealType === mealTypeIdentifier ? { ...m, was_tracked: true } : m
+          ),
+        };
         await ChatService.updateMessagePayload(messageId, JSON.stringify(updated));
       }
 
       setMessages((prev) =>
-        prev.map((m) =>
-          m._id === messageId && m.meal ? { ...m, meal: { ...m.meal, wasTracked: true } } : m
-        )
+        prev.map((msg) => {
+          if (msg._id !== messageId || !msg.meal) {
+            return msg;
+          }
+          return {
+            ...msg,
+            meal: {
+              ...msg.meal,
+              meals: msg.meal.meals.map((m) =>
+                m.mealType === mealTypeIdentifier ? { ...m, wasTracked: true } : m
+              ),
+            },
+          };
+        })
       );
     },
     []
