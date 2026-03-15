@@ -121,18 +121,21 @@ export default function SmartCameraModal({
 
   /** Map AI label macro result to synthetic SearchResultProduct for FoodMealDetailsModal. */
   const macroEstimateToSearchResultProduct = useCallback(
-    (result: MacroEstimate): SearchResultProduct =>
-      ({
+    (result: MacroEstimate): SearchResultProduct => {
+      const grams = result.grams ?? 100;
+      const scale = 100 / grams;
+
+      return {
         product_name: result.name,
         nutriments: {
-          'energy-kcal': result.kcal,
-          'energy-kcal_100g': result.kcal,
-          proteins_100g: result.protein,
-          carbohydrates_100g: result.carbs,
-          fat_100g: result.fat,
+          'energy-kcal_100g': result.kcal * scale,
+          proteins_100g: result.protein * scale,
+          carbohydrates_100g: result.carbs * scale,
+          fat_100g: result.fat * scale,
         },
-        serving_size: result.grams ?? 100,
-      }) as unknown as SearchResultProduct,
+        serving_size: grams,
+      } as unknown as SearchResultProduct;
+    },
     []
   );
 
