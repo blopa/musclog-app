@@ -221,11 +221,13 @@ export function AISettingsModal({
     dailyNutritionInsights: debouncedDailyNutritionInsights,
     workoutInsights: debouncedWorkoutInsights,
     useOcrBeforeAi: debouncedUseOcrBeforeAi,
+    sendFoundationFoodsToLlm: debouncedSendFoundationFoodsToLlm,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
     handleUseOcrBeforeAiChange,
+    handleSendFoundationFoodsToLlmChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -473,6 +475,27 @@ export function AISettingsModal({
                     }}
                   >
                     <ScanText size={theme.iconSize.md} color={theme.colors.status.success} />
+                  </View>
+                ),
+              },
+              {
+                key: 'send-foundation-foods',
+                label: t('settings.aiSettings.sendFoundationFoodsToLlm'),
+                subtitle: t('settings.aiSettings.sendFoundationFoodsToLlmSubtitle'),
+                value: debouncedSendFoundationFoodsToLlm,
+                onValueChange: handleSendFoundationFoodsToLlmChange,
+                icon: (
+                  <View
+                    style={{
+                      width: theme.size['8'],
+                      height: theme.size['8'],
+                      borderRadius: theme.borderRadius.full / 2,
+                      backgroundColor: theme.colors.accent.primary20,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Apple size={theme.iconSize.md} color={theme.colors.accent.primary} />
                   </View>
                 ),
               },

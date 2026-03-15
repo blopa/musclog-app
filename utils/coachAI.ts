@@ -1,6 +1,7 @@
 import { Content, Part } from '@google/generative-ai';
 import OpenAI from 'openai';
 
+import { SettingsService } from '../database/services';
 import i18n from '../lang/lang';
 import { configureBasicGenAI } from './gemini';
 import {
@@ -91,6 +92,7 @@ export type MacroEstimate = {
   fiber: number;
   grams: number;
   barcode?: string;
+  foodId?: string;
 };
 
 export type ParsedWorkout = {
@@ -129,6 +131,7 @@ export type TrackMealIngredient = {
   protein: number;
   fiber?: number;
   grams: number;
+  foodId?: string;
 };
 
 export type TrackedMeal = {
@@ -601,8 +604,9 @@ export async function trackMeal(
 ): Promise<TrackMealResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = getTrackMealPrompt(lang);
-    const fns = getTrackMealFunctions();
+    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const systemPrompt = await getTrackMealPrompt(lang, includeFoundationFoods);
+    const fns = getTrackMealFunctions(includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     if (base64Image) {
@@ -864,13 +868,14 @@ export async function estimateNutritionFromPhoto(
 ): Promise<MacroEstimate | null> {
   try {
     const customPrompts = await getActiveCustomPrompts();
-    const baseSystemPrompt = getEstimateNutritionFromPhotoPrompt();
+    const includeFoundationFoods = await SettingsService.getSendFoundationFoodsToLlm();
+    const baseSystemPrompt = await getEstimateNutritionFromPhotoPrompt(includeFoundationFoods);
     const systemPrompt = customPrompts
       ? `${baseSystemPrompt}\n\n${customPrompts}`
       : baseSystemPrompt;
     const base64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
     const mimeType = base64Image.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
-    const fns = getEstimateMacrosFunctions(false);
+    const fns = getEstimateMacrosFunctions(false, includeFoundationFoods);
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
 
     let userMessageSuffix: string | undefined;

@@ -61,6 +61,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'notificationsRestTimer',
       'notificationsWorkoutDuration',
       'useOcrBeforeAi',
+      'sendFoundationFoodsToLlm',
       'units',
       'foodSearchSource',
       'conversationContext',
@@ -205,6 +206,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'useOcrBeforeAi',
     SettingsService.setUseOcrBeforeAi
   );
+  const handleSendFoundationFoodsToLlmChange = createSettingHandler(
+    'sendFoundationFoodsToLlm',
+    SettingsService.setSendFoundationFoodsToLlm
+  );
   const handleFoodSearchSourceChange = createSettingHandler(
     'foodSearchSource',
     SettingsService.setFoodSearchSource
@@ -283,6 +288,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'useOcrBeforeAi':
             await SettingsService.setUseOcrBeforeAi(value as boolean);
             break;
+          case 'sendFoundationFoodsToLlm':
+            await SettingsService.setSendFoundationFoodsToLlm(value as boolean);
+            break;
           case 'foodSearchSource':
             await SettingsService.setFoodSearchSource(value as any);
             break;
@@ -344,6 +352,9 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.notificationsWorkoutDuration as boolean) ??
       actualSettings.notificationsWorkoutDuration,
     useOcrBeforeAi: (localSettings.useOcrBeforeAi as boolean) ?? actualSettings.useOcrBeforeAi,
+    sendFoundationFoodsToLlm:
+      (localSettings.sendFoundationFoodsToLlm as boolean) ??
+      actualSettings.sendFoundationFoodsToLlm,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
     conversationContext:
@@ -378,6 +389,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleNotificationsWorkoutDurationChange,
     handleUnitsChange,
     handleUseOcrBeforeAiChange,
+    handleSendFoundationFoodsToLlmChange,
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,

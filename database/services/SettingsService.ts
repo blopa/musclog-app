@@ -27,6 +27,7 @@ import {
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
+  SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -299,6 +300,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the send foundation foods to LLM setting
+   */
+  static async setSendFoundationFoodsToLlm(value: boolean) {
+    await SettingsService.setBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the language setting
    */
   static async setLanguage(language: string) {
@@ -380,6 +388,10 @@ export class SettingsService {
       | 'general'
       | 'exercise'
       | 'nutrition';
+  }
+
+  static async getSendFoundationFoodsToLlm(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
   }
 
   /**

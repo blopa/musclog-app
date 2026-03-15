@@ -690,6 +690,7 @@ export function useChatMessages(
           fat: i.fat,
           fiber: i.fiber,
           grams: i.grams,
+          foodId: i.foodId,
         })),
         date,
         logMealType

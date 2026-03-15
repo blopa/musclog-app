@@ -820,6 +820,7 @@ export class NutritionService {
       carbs: number;
       fat: number;
       fiber?: number;
+      foodId?: string;
     },
     date: Date,
     mealType: MealType,
@@ -827,8 +828,20 @@ export class NutritionService {
   ): Promise<NutritionLog> {
     const dateTimestamp = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 
+    // If foodId is provided, log directly using the existing food
+    if (mealData.foodId) {
+      return await NutritionService.logFood(mealData.foodId, date, mealType, amount);
+    }
+
     const log = await database.write(async () => {
       const now = Date.now();
+
+      // Normalize macros to 100g (convention for both Food model and snapshot)
+      const normalizedCalories = (mealData.calories / amount) * 100;
+      const normalizedProtein = (mealData.protein / amount) * 100;
+      const normalizedCarbs = (mealData.carbs / amount) * 100;
+      const normalizedFat = (mealData.fat / amount) * 100;
+      const normalizedFiber = ((mealData.fiber ?? 0) / amount) * 100;
 
       // Create a temporary food entry for the AI-generated meal
       const tempFood = await database.get<Food>('foods').create((food) => {
@@ -836,11 +849,11 @@ export class NutritionService {
         food.name = mealData.name;
         food.brand = undefined;
         food.barcode = undefined;
-        food.calories = mealData.calories;
-        food.protein = mealData.protein;
-        food.carbs = mealData.carbs;
-        food.fat = mealData.fat;
-        food.fiber = mealData.fiber ?? 0;
+        food.calories = normalizedCalories;
+        food.protein = normalizedProtein;
+        food.carbs = normalizedCarbs;
+        food.fat = normalizedFat;
+        food.fiber = normalizedFiber;
         food.micros = {
           sugar: 0,
           sodium: 0,
@@ -853,11 +866,11 @@ export class NutritionService {
       // Create encrypted snapshot for the nutrition log
       const encrypted = await encryptNutritionLogSnapshot({
         loggedFoodName: mealData.name,
-        loggedCalories: mealData.calories,
-        loggedProtein: mealData.protein,
-        loggedCarbs: mealData.carbs,
-        loggedFat: mealData.fat,
-        loggedFiber: mealData.fiber ?? 0,
+        loggedCalories: normalizedCalories,
+        loggedProtein: normalizedProtein,
+        loggedCarbs: normalizedCarbs,
+        loggedFat: normalizedFat,
+        loggedFiber: normalizedFiber,
         loggedMicros: {},
       });
 
@@ -915,6 +928,7 @@ export class NutritionService {
       fat: number;
       fiber?: number;
       grams: number;
+      foodId?: string;
     }[],
     date: Date,
     mealType: MealType
@@ -926,6 +940,44 @@ export class NutritionService {
       const createdLogs: NutritionLog[] = [];
 
       for (const ingredient of ingredients) {
+        // If foodId is provided, find the food and create a log snapshot
+        if (ingredient.foodId) {
+          try {
+            const food = await database.get<Food>('foods').find(ingredient.foodId);
+            const encrypted = await encryptNutritionLogSnapshot({
+              loggedFoodName: food.name ?? ingredient.name,
+              loggedCalories: food.calories ?? 0,
+              loggedProtein: food.protein ?? 0,
+              loggedCarbs: food.carbs ?? 0,
+              loggedFat: food.fat ?? 0,
+              loggedFiber: food.fiber ?? 0,
+              loggedMicros: food.micros,
+            });
+
+            const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
+              record.foodId = food.id;
+              record.date = dateTimestamp;
+              record.type = mealType;
+              record.amount = ingredient.grams;
+              record.loggedFoodNameRaw = encrypted.loggedFoodName;
+              record.loggedCaloriesRaw = encrypted.loggedCalories;
+              record.loggedProteinRaw = encrypted.loggedProtein;
+              record.loggedCarbsRaw = encrypted.loggedCarbs;
+              record.loggedFatRaw = encrypted.loggedFat;
+              record.loggedFiberRaw = encrypted.loggedFiber;
+              record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+              record.createdAt = now;
+              record.updatedAt = now;
+            });
+            createdLogs.push(log);
+            continue;
+          } catch (error) {
+            console.warn(
+              `[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`
+            );
+          }
+        }
+
         // Create a temporary food entry for each ingredient
         const tempFood = await database.get<Food>('foods').create((food) => {
           food.isAiGenerated = true;
@@ -946,14 +998,14 @@ export class NutritionService {
           food.updatedAt = now;
         });
 
-        // Create encrypted snapshot for the nutrition log
+        // Create encrypted snapshot for the nutrition log (convention is per 100g)
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: ingredient.name,
-          loggedCalories: ingredient.calories,
-          loggedProtein: ingredient.protein,
-          loggedCarbs: ingredient.carbs,
-          loggedFat: ingredient.fat,
-          loggedFiber: ingredient.fiber ?? 0,
+          loggedCalories: (ingredient.calories / ingredient.grams) * 100,
+          loggedProtein: (ingredient.protein / ingredient.grams) * 100,
+          loggedCarbs: (ingredient.carbs / ingredient.grams) * 100,
+          loggedFat: (ingredient.fat / ingredient.grams) * 100,
+          loggedFiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
           loggedMicros: {},
         });
 

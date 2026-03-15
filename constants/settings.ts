@@ -140,6 +140,12 @@ export const LANGUAGE_SETTING_TYPE = 'language';
 export const USE_OCR_BEFORE_AI_SETTING_TYPE = 'use_ocr_before_ai';
 
 /**
+ * Setting type for sending foundation foods to AI (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE = 'send_foundation_foods_to_llm';
+
+/**
  * Setting types for customizable navigation bar slots (positions 2, 4, 5).
  * value: NavItemKey string.
  */
