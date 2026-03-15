@@ -882,6 +882,30 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     ]
   );
 
+  const mealForLogMealModal = useMemo(() => {
+    if (!selectedMealForTracking) {
+      return undefined;
+    }
+
+    const rawIngredients = selectedMealForTracking.ingredients.map((i) => i.name).join(', ');
+
+    const ingredientsDesc =
+      rawIngredients.length > 80 ? `${rawIngredients.substring(0, 77)}...` : rawIngredients;
+
+    const mealLabel =
+      selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
+      selectedMealForTracking.mealTypeIdentifier.slice(1);
+
+    return {
+      name: ingredientsDesc,
+      type: mealLabel,
+      calories: selectedMealForTracking.calories,
+      protein: selectedMealForTracking.protein,
+      carbs: selectedMealForTracking.carbs,
+      fat: selectedMealForTracking.fats,
+    };
+  }, [selectedMealForTracking]);
+
   const handleShareHistory = useCallback(async () => {
     if (!sessionId) {
       showSnackbar('error', t('coach.errors.generalError'), {
@@ -1387,32 +1411,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         isLoading={isClearingHistory}
       />
 
-      {selectedMealForTracking ? (
+      {selectedMealForTracking && mealForLogMealModal ? (
         <LogMealModal
           visible
           onClose={() => setSelectedMealForTracking(null)}
-          // TODO: move this to a useMemo or useCallback
-          meal={(() => {
-            const rawIngredients = selectedMealForTracking.ingredients
-              .map((i) => i.name)
-              .join(', ');
-
-            const ingredientsDesc =
-              rawIngredients.length > 80 ? `${rawIngredients.substring(0, 77)}...` : rawIngredients;
-
-            const mealLabel =
-              selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
-              selectedMealForTracking.mealTypeIdentifier.slice(1);
-
-            return {
-              name: ingredientsDesc,
-              type: mealLabel,
-              calories: selectedMealForTracking.calories,
-              protein: selectedMealForTracking.protein,
-              carbs: selectedMealForTracking.carbs,
-              fat: selectedMealForTracking.fats,
-            };
-          })()}
+          meal={mealForLogMealModal}
           ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
           onLogMeal={async (date, logMealType) => {
