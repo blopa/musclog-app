@@ -1,4 +1,4 @@
-import { Plus, UtensilsCrossed } from 'lucide-react-native';
+import { type LucideIcon, Plus, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
@@ -8,6 +8,7 @@ import { addOpacityToHex } from '../../theme';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
+  iconComponent?: LucideIcon; // Lucide icon component
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
   iconBgColor?: string;
@@ -60,6 +61,16 @@ export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps
             resizeMode="cover"
             style={{ borderRadius: theme.borderRadius.xl }}
           />
+        ) : food.iconComponent ? (
+          (() => {
+            const Icon = food.iconComponent;
+            return (
+              <Icon
+                size={theme.iconSize.lg}
+                color={food.iconColor ?? theme.colors.text.secondary}
+              />
+            );
+          })()
         ) : food.iconName === 'utensils-crossed' ? (
           <UtensilsCrossed
             size={theme.iconSize.lg}

@@ -1,4 +1,27 @@
-import { Plus, QrCode, Search, Sparkles } from 'lucide-react-native';
+import {
+  Apple,
+  Beef,
+  Carrot,
+  Coffee,
+  Cookie,
+  CookingPot,
+  Donut,
+  Egg,
+  Fish,
+  Grape,
+  type LucideIcon,
+  Milk,
+  Pizza,
+  Plus,
+  QrCode,
+  Salad,
+  Search,
+  Soup,
+  Sparkles,
+  Utensils,
+  UtensilsCrossed,
+  Wheat,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,6 +53,30 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
+
+const FOOD_ICONS: LucideIcon[] = [
+  Apple,
+  Beef,
+  Carrot,
+  Coffee,
+  Cookie,
+  CookingPot,
+  Donut,
+  Egg,
+  Fish,
+  Grape,
+  Milk,
+  Pizza,
+  Salad,
+  Soup,
+  Utensils,
+  UtensilsCrossed,
+  Wheat,
+];
+
+function pickRandomFoodIcon(): LucideIcon {
+  return FOOD_ICONS[Math.floor(Math.random() * FOOD_ICONS.length)];
+}
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
@@ -243,6 +290,7 @@ export function FoodSearchModal({
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
@@ -276,6 +324,13 @@ export function FoodSearchModal({
       mounted = false;
     };
   }, [visible]);
+
+  // Pick a new random food emoji each time the user starts a new search
+  useEffect(() => {
+    if (searchQuery) {
+      setSearchSessionIcon(pickRandomFoodIcon());
+    }
+  }, [searchQuery]);
 
   // Get recent local foods for the "Recent History" section
   const { foods: recentFoods } = useFoods({
@@ -920,7 +975,12 @@ export function FoodSearchModal({
                                       {resultsBySource.api.map((food: UnifiedFoodResult) => (
                                         <FoodSearchItemCard
                                           key={`api-${food.id}`}
-                                          food={food}
+                                          food={{
+                                            ...food,
+                                            iconComponent: food.imageUrl
+                                              ? undefined
+                                              : searchSessionIcon,
+                                          }}
                                           onAddPress={() => handleFoodClick(food)}
                                         />
                                       ))}
@@ -971,7 +1031,7 @@ export function FoodSearchModal({
                                     {resultsBySource.usda.map((food: UnifiedFoodResult) => (
                                       <FoodSearchItemCard
                                         key={`usda-${food.id}`}
-                                        food={food}
+                                        food={{ ...food, iconComponent: searchSessionIcon }}
                                         onAddPress={() => handleFoodClick(food)}
                                       />
                                     ))}
