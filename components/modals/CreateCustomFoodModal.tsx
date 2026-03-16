@@ -1,5 +1,6 @@
 import {
   Activity,
+  AlignLeft,
   Apple,
   BarChart,
   Battery,
@@ -67,6 +68,7 @@ export default function CreateCustomFoodModal({
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
   const [foodName, setFoodName] = useState('');
   const [brand, setBrand] = useState('');
+  const [description, setDescription] = useState('');
   const [barcode, setBarcode] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
@@ -174,7 +176,8 @@ export default function CreateCustomFoodModal({
           nutrition,
           brand || undefined,
           servingAmount,
-          servingUnit
+          servingUnit,
+          description || undefined
         );
 
         setCreatedFood(newFood);
@@ -601,6 +604,16 @@ export default function CreateCustomFoodModal({
             onChangeText={setBrand}
             placeholder={t('food.newCustomFood.brandPlaceholder')}
             icon={<Cookie size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+          />
+
+          {/* Description */}
+          <TextInput
+            label={t('food.newCustomFood.description')}
+            value={description}
+            onChangeText={setDescription}
+            placeholder={t('food.newCustomFood.descriptionPlaceholder')}
+            icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            multiline
           />
 
           {/* Image URL */}

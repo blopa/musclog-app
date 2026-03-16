@@ -148,8 +148,7 @@ export const schema = appSchema({
         { name: 'name', type: 'string', isIndexed: true },
         { name: 'brand', type: 'string', isOptional: true, isIndexed: true },
         { name: 'barcode', type: 'string', isOptional: true, isIndexed: true },
-
-        // TODO: add food description field and use it to store things like ingredients, allergens, etc. (pulled from external data sources or user input)
+        { name: 'description', type: 'string', isOptional: true }, // Ingredients, allergens, etc. (from external sources or user input)
 
         // Macros per standard serving (usually 100g or 1 serving)
         { name: 'calories', type: 'number' },

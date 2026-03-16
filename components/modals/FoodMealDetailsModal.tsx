@@ -1,5 +1,6 @@
 import { format, isSameDay } from 'date-fns';
 import {
+  AlignLeft,
   BarChart,
   BookmarkPlus,
   Calendar,
@@ -172,10 +173,11 @@ export function FoodMealDetailsModal({
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
   const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
-  /** User edits to AI-sourced product (name, barcode, per-100g macros). */
+  /** User edits to AI-sourced product (name, barcode, description, per-100g macros). */
   const [editedOverrides, setEditedOverrides] = useState<{
     name?: string;
     barcode?: string;
+    description?: string;
     calories?: number;
     protein?: number;
     carbs?: number;
@@ -186,6 +188,7 @@ export function FoodMealDetailsModal({
   const [editForm, setEditForm] = useState<{
     name: string;
     barcode: string;
+    description: string;
     calories: string;
     protein: string;
     carbs: string;
@@ -1061,13 +1064,14 @@ export function FoodMealDetailsModal({
         throw new Error('Product details not loaded');
       }
 
-      // Apply user edits (e.g. from AI-sourced data) to name and barcode
+      // Apply user edits (e.g. from AI-sourced data) to name, barcode and description
       if (editedOverrides) {
         if (productToSave.fdcId) {
           productToSave = {
             ...productToSave,
             description: editedOverrides.name?.trim() || productToSave.description,
             gtinUpc: editedOverrides.barcode?.trim() || productToSave.gtinUpc,
+            ingredients: editedOverrides.description?.trim() || productToSave.ingredients,
           };
         } else {
           const codeFromProduct = (productToSave as { code?: string }).code;
@@ -1077,6 +1081,7 @@ export function FoodMealDetailsModal({
               (editedOverrides.name?.trim() || getProductName(productToSave)).trim() ||
               getProductName(productToSave),
             code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
+            ingredients_text: editedOverrides.description?.trim() || productToSave.ingredients_text,
           } as typeof productToSave;
         }
       }
@@ -1225,9 +1230,16 @@ export function FoodMealDetailsModal({
       (productFromSearch && 'code' in productFromSearch
         ? (productFromSearch as { code?: string }).code
         : undefined) ?? '';
+    const currentDescription =
+      editedOverrides?.description ??
+      food?.description ??
+      (productFromSearch as any)?.ingredients_text ??
+      (productFromSearch as any)?.ingredients ??
+      '';
     setEditForm({
       name: getFoodMealName(),
       barcode: barcode ?? productCode ?? '',
+      description: currentDescription,
       calories: String(baseNutritionalData.calories),
       protein: String(baseNutritionalData.protein),
       carbs: String(baseNutritionalData.carbs),
@@ -1242,6 +1254,8 @@ export function FoodMealDetailsModal({
     baseNutritionalData.fat,
     barcode,
     productFromSearch,
+    food,
+    editedOverrides,
   ]);
 
   const handleSaveEditPopUp = useCallback(() => {
@@ -1255,6 +1269,7 @@ export function FoodMealDetailsModal({
     setEditedOverrides({
       name: editForm.name.trim() || undefined,
       barcode: editForm.barcode.trim() || undefined,
+      description: editForm.description.trim() || undefined,
       calories: Number.isFinite(cal) ? cal : undefined,
       protein: Number.isFinite(pro) ? pro : undefined,
       carbs: Number.isFinite(carb) ? carb : undefined,
@@ -1644,6 +1659,18 @@ export function FoodMealDetailsModal({
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
             </View>
+
+            {/* Description */}
+            <TextInput
+              label={t('food.foodDetails.description')}
+              value={editForm.description}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, description: text } : null))
+              }
+              placeholder={t('food.foodDetails.descriptionPlaceholder')}
+              icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              multiline
+            />
 
             {/* Macronutrients - card layout like CreateCustomFoodModal */}
             <View className="flex-row items-center gap-2">

@@ -62,6 +62,7 @@ export class FoodService {
         food.barcode = product.code;
         food.externalId = externalId ?? product._id; // Use provided externalId or default to product.code
         food.imageUrl = product.image_url; // Save image URL from API
+        food.description = (product as any).ingredients_text || undefined;
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
@@ -152,6 +153,7 @@ export class FoodService {
         food.brand = product.brandOwner || product.brandName;
         food.barcode = product.gtinUpc || String(product.fdcId);
         food.externalId = externalId ?? String(product.fdcId); // Use provided externalId or default to fdcId
+        food.description = product.ingredients || undefined;
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
@@ -207,7 +209,8 @@ export class FoodService {
     },
     brand?: string,
     servingAmount: number = 100,
-    servingUnit: string = 'g'
+    servingUnit: string = 'g',
+    description?: string
   ): Promise<Food> {
     return await database.write(async () => {
       const now = Date.now();
@@ -237,6 +240,7 @@ export class FoodService {
         food.isAiGenerated = false;
         food.name = name;
         food.brand = brand;
+        food.description = description;
 
         food.calories = nutritionData.calories;
         food.protein = nutritionData.protein;
@@ -390,6 +394,7 @@ export class FoodService {
       name?: string;
       brand?: string;
       barcode?: string;
+      description?: string;
       externalId?: string;
       calories?: number;
       protein?: number;
@@ -415,6 +420,9 @@ export class FoodService {
         }
         if (updates.barcode !== undefined) {
           record.barcode = updates.barcode;
+        }
+        if (updates.description !== undefined) {
+          record.description = updates.description;
         }
         if (updates.externalId !== undefined) {
           record.externalId = updates.externalId;
@@ -489,6 +497,7 @@ export class FoodService {
         food.name = `${originalFood.name} (Copy)`;
         food.brand = originalFood.brand;
         food.barcode = originalFood.barcode;
+        food.description = originalFood.description;
         food.externalId = originalFood.externalId; // Copy external ID
         food.imageUrl = originalFood.imageUrl;
         food.calories = originalFood.calories;

@@ -65,6 +65,7 @@ export default class Food extends Model {
   @field('name') name!: string;
   @field('brand') brand?: string;
   @field('barcode') barcode?: string;
+  @field('description') description?: string;
   @field('external_id') externalId?: string;
 
   // Macros per standard serving (usually 100g or 1 serving)
