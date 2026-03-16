@@ -18,6 +18,19 @@ type FoodInfoCardProps = {
   };
 };
 
+const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => string): string => {
+  switch (source) {
+    case 'openfood':
+      return t('food.foodDetails.sourceOpenFood');
+    case 'usda':
+      return t('food.foodDetails.sourceUsda');
+    case 'ai':
+      return t('food.foodDetails.sourceAi');
+    default:
+      return '';
+  }
+};
+
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -41,12 +54,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
             <Text className="text-sm text-text-secondary">{food.category}</Text>
             {food.source === 'openfood' || food.source === 'usda' || food.source === 'ai' ? (
               <Text className="mt-1 text-xs text-text-tertiary opacity-50">
-                {/*TODO: move this to a helper function to avoid nested ternary*/}
-                {food.source === 'openfood'
-                  ? t('food.foodDetails.sourceOpenFood')
-                  : food.source === 'usda'
-                    ? t('food.foodDetails.sourceUsda')
-                    : t('food.foodDetails.sourceAi')}
+                {getSourceText(food.source, t)}
               </Text>
             ) : null}
           </View>

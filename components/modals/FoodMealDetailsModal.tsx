@@ -870,7 +870,11 @@ export function FoodMealDetailsModal({
       initialSource === 'usda'
     ) {
       dataSource = 'usda';
-    } else if (productDetails || productFromSearch?.source === 'openfood' || initialSource === 'openfood') {
+    } else if (
+      productDetails ||
+      productFromSearch?.source === 'openfood' ||
+      initialSource === 'openfood'
+    ) {
       dataSource = 'openfood';
     }
 
@@ -883,7 +887,23 @@ export function FoodMealDetailsModal({
       fat: Math.round(nutritionalData.fat * scaleFactor * 10) / 10,
       source: dataSource,
     };
-  }, [meal, mealNutrients, servingSize, food, localFood, initialSource, productDetails, productFromSearch?.source, getFoodMealName, getProductCategory, nutritionalData.calories, nutritionalData.protein, nutritionalData.carbs, nutritionalData.fat, mealScaleFactor]);
+  }, [
+    meal,
+    mealNutrients,
+    servingSize,
+    food,
+    localFood,
+    initialSource,
+    productDetails,
+    productFromSearch?.source,
+    getFoodMealName,
+    getProductCategory,
+    nutritionalData.calories,
+    nutritionalData.protein,
+    nutritionalData.carbs,
+    nutritionalData.fat,
+    mealScaleFactor,
+  ]);
 
   const scaledFood = getScaledNutrition();
 

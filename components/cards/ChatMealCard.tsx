@@ -27,13 +27,19 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const { t } = useTranslation();
   const totalCalories = meals.reduce((s, m) => s + m.calories, 0);
 
-  const getMealLabel = useCallback((mealType: MealType): string => {
-    return t(`meals.tags.${mealType}`);
-  }, []);
+  const getMealLabel = useCallback(
+    (mealType: MealType): string => {
+      return t(`meals.tags.${mealType}`);
+    },
+    [t]
+  );
 
-  const getViewMealLabel = useCallback((mealType: MealType): string => {
-    return t(`meals.chatMealCard.view${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`);
-  }, []);
+  const getViewMealLabel = useCallback(
+    (mealType: MealType): string => {
+      return t(`meals.chatMealCard.view${mealType.charAt(0).toUpperCase() + mealType.slice(1)}`);
+    },
+    [t]
+  );
 
   return (
     <View
