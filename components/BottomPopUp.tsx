@@ -39,6 +39,14 @@ export function BottomPopUp({
   headerIcon,
   scrollable = true,
 }: BottomPopUpProps) {
+  // On Android, flex:1 children require a definite parent height — maxHeight alone is not enough.
+  // When scrollable=false (custom sticky-header + inner ScrollView layout), set an explicit height
+  // so the content view can actually expand.
+  const sheetHeightStyle =
+    !scrollable && maxHeight !== undefined && Platform.OS !== 'web'
+      ? { height: maxHeight }
+      : undefined;
+
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
@@ -110,15 +118,18 @@ export function BottomPopUp({
         >
           <Animated.View
             className="border-t border-border-dark"
-            style={{
-              transform: [{ translateY: slideAnim }],
-              backgroundColor: theme.colors.background.cardElevated,
-              overflow: 'hidden',
-              borderTopLeftRadius: theme.borderRadius['3xl'],
-              borderTopRightRadius: theme.borderRadius['3xl'],
-              maxHeight: maxHeight || '90%',
-              width: '100%',
-            }}
+            style={[
+              {
+                transform: [{ translateY: slideAnim }],
+                backgroundColor: theme.colors.background.cardElevated,
+                overflow: 'hidden',
+                borderTopLeftRadius: theme.borderRadius['3xl'],
+                borderTopRightRadius: theme.borderRadius['3xl'],
+                maxHeight: maxHeight || '90%',
+                width: '100%',
+              },
+              sheetHeightStyle,
+            ]}
           >
             {/* Header */}
             <LinearGradient
