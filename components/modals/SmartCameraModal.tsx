@@ -47,6 +47,19 @@ const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
+const getCameraInstructionText = (cameraMode: CameraMode, t: (key: string) => string): string => {
+  switch (cameraMode) {
+    case 'ai-meal-photo':
+      return t('food.aiCamera.mealInstruction');
+    case 'ai-label-scan':
+      return t('food.aiCamera.labelInstruction');
+    case 'barcode-scan':
+      return t('food.aiCamera.barcodeAutoInstruction');
+    default:
+      return '';
+  }
+};
+
 type CameraModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -747,12 +760,7 @@ export default function SmartCameraModal({
               className="mt-6 text-center text-sm font-medium drop-shadow-md"
               style={{ color: theme.colors.overlay.white90 }}
             >
-              {/*TODO: move this to a helper function to avoid nested ternary*/}
-              {cameraMode === 'ai-meal-photo'
-                ? t('food.aiCamera.mealInstruction')
-                : cameraMode === 'ai-label-scan'
-                  ? t('food.aiCamera.labelInstruction')
-                  : t('food.aiCamera.barcodeAutoInstruction')}
+              {getCameraInstructionText(cameraMode, t)}
             </Text>
           </View>
 

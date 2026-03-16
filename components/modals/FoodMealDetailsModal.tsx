@@ -41,8 +41,8 @@ import { useTheme } from '../../hooks/useTheme';
 import {
   isMappedNutriments,
   isSuccessFoodDetailProductState,
+  isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
@@ -404,9 +404,9 @@ export function FoodMealDetailsModal({
     }
 
     if (productDetails) {
-      if (productDetails?.status !== 'success' && !productFromSearch && !food && !meal) {
+      if (!isSuccessStatus(productDetails?.status) && !productFromSearch && !food && !meal) {
         setIsFoodNotFoundModalVisible(true);
-      } else if (productDetails?.status === 'success') {
+      } else if (isSuccessStatus(productDetails?.status)) {
         setIsFoodDetailsModalVisible(true);
       }
       onBarcodeLookupComplete?.();
@@ -858,6 +858,26 @@ export function FoodMealDetailsModal({
 
     // For foods, scale by serving size
     const scaleFactor = servingSize / 100; // API data is per 100g
+
+    let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | undefined;
+    if (food || localFood) {
+      dataSource = 'local';
+    } else if (initialSource === 'ai') {
+      dataSource = 'ai';
+    } else if (
+      (productDetails as any)?.source === 'usda' ||
+      productFromSearch?.source === 'usda' ||
+      initialSource === 'usda'
+    ) {
+      dataSource = 'usda';
+    } else if (
+      productDetails ||
+      productFromSearch?.source === 'openfood' ||
+      initialSource === 'openfood'
+    ) {
+      dataSource = 'openfood';
+    }
+
     return {
       name: getFoodMealName(),
       category: getProductCategory(),
@@ -865,18 +885,24 @@ export function FoodMealDetailsModal({
       protein: Math.round(nutritionalData.protein * scaleFactor * 10) / 10,
       carbs: Math.round(nutritionalData.carbs * scaleFactor * 10) / 10,
       fat: Math.round(nutritionalData.fat * scaleFactor * 10) / 10,
+      source: dataSource,
     };
   }, [
-    getProductCategory,
-    getFoodMealName,
     meal,
     mealNutrients,
-    mealScaleFactor,
+    servingSize,
+    food,
+    localFood,
+    initialSource,
+    productDetails,
+    productFromSearch?.source,
+    getFoodMealName,
+    getProductCategory,
     nutritionalData.calories,
+    nutritionalData.protein,
     nutritionalData.carbs,
     nutritionalData.fat,
-    nutritionalData.protein,
-    servingSize,
+    mealScaleFactor,
   ]);
 
   const scaledFood = getScaledNutrition();

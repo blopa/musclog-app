@@ -99,7 +99,12 @@ export async function createThumbnail(
 }
 
 export async function detectBarcodes(imageUri: string) {
-  const barcodes = await RNDetectBarcodes(imageUri, [BarcodeFormat.EAN_13, BarcodeFormat.EAN_8]);
+  const barcodes = await RNDetectBarcodes(imageUri, [
+    BarcodeFormat.EAN_13,
+    BarcodeFormat.EAN_8,
+    BarcodeFormat.UPC_A,
+    BarcodeFormat.UPC_E,
+  ]);
 
   return barcodes.length > 0 ? barcodes[0].rawValue : null;
 }

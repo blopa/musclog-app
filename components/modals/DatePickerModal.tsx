@@ -14,7 +14,9 @@ import {
   setYear,
   startOfMonth,
   startOfWeek,
+  subDays,
   subMonths,
+  subWeeks,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
@@ -77,7 +79,17 @@ export function DatePickerModal({
     onClose();
   };
 
-  const handleQuickDate = (type: 'today' | 'tomorrow' | 'nextMonday') => {
+  const handleQuickDate = (
+    type:
+      | 'today'
+      | 'tomorrow'
+      | 'nextMonday'
+      | 'yesterday'
+      | 'lastWeek'
+      | 'lastMonth'
+      | 'nextWeek'
+      | 'nextMonth'
+  ) => {
     let date: Date;
     switch (type) {
       case 'today':
@@ -89,7 +101,23 @@ export function DatePickerModal({
       case 'nextMonday':
         date = nextMonday(new Date());
         break;
+      case 'yesterday':
+        date = subDays(new Date(), 1);
+        break;
+      case 'lastWeek':
+        date = subWeeks(new Date(), 1);
+        break;
+      case 'lastMonth':
+        date = subMonths(new Date(), 1);
+        break;
+      case 'nextWeek':
+        date = addDays(new Date(), 7);
+        break;
+      case 'nextMonth':
+        date = addMonths(new Date(), 1);
+        break;
     }
+
     setTempSelectedDate(date);
     setCurrentMonth(startOfMonth(date));
   };
@@ -246,6 +274,13 @@ export function DatePickerModal({
             contentContainerStyle={{ gap: theme.spacing.gap.md }}
           >
             <Button
+              label={t('datePicker.yesterday')}
+              variant="secondary"
+              size="sm"
+              width="auto"
+              onPress={() => handleQuickDate('yesterday')}
+            />
+            <Button
               label={t('datePicker.today')}
               variant="secondary"
               size="sm"
@@ -258,13 +293,6 @@ export function DatePickerModal({
               size="sm"
               width="auto"
               onPress={() => handleQuickDate('tomorrow')}
-            />
-            <Button
-              label={t('datePicker.nextMonday')}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              onPress={() => handleQuickDate('nextMonday')}
             />
           </ScrollView>
         </View>

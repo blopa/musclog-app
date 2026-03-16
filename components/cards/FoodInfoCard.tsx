@@ -14,7 +14,21 @@ type FoodInfoCardProps = {
     protein: number;
     carbs: number;
     fat: number;
+    source?: 'openfood' | 'usda' | 'local' | 'ai';
   };
+};
+
+const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => string): string => {
+  switch (source) {
+    case 'openfood':
+      return t('food.foodDetails.sourceOpenFood');
+    case 'usda':
+      return t('food.foodDetails.sourceUsda');
+    case 'ai':
+      return t('food.foodDetails.sourceAi');
+    default:
+      return '';
+  }
 };
 
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
@@ -38,6 +52,11 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View className="flex-1">
             <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text>
             <Text className="text-sm text-text-secondary">{food.category}</Text>
+            {food.source === 'openfood' || food.source === 'usda' || food.source === 'ai' ? (
+              <Text className="mt-1 text-xs text-text-tertiary opacity-50">
+                {getSourceText(food.source, t)}
+              </Text>
+            ) : null}
           </View>
           <View className="items-end">
             <Text className="text-4xl font-black tracking-tight text-accent-primary">

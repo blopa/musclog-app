@@ -873,7 +873,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         : [],
     [
       selectedMessage,
-      deleteMessage,
       showSnackbar,
       t,
       theme.colors.background.iconDarker,

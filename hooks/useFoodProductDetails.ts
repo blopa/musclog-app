@@ -1,9 +1,41 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
+import { isSuccessStatus } from '../types/guards/openFoodFacts';
 import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
 import { getProductName } from '../utils/openFoodFactsMapper';
 import { useSettings } from './useSettings';
+
+/**
+ * Fires both fetch functions in parallel. Resolves with the first non-null result
+ * and aborts the other request immediately. Rejects only if both return null.
+ */
+async function raceToSuccess(
+  offFetch: (signal: AbortSignal) => Promise<ProductDetailsQueryData>,
+  usdaFetch: (signal: AbortSignal) => Promise<ProductDetailsQueryData>
+): Promise<ProductDetailsQueryData> {
+  const offController = new AbortController();
+  const usdaController = new AbortController();
+
+  const wrap = (
+    fn: (signal: AbortSignal) => Promise<ProductDetailsQueryData>,
+    ownController: AbortController,
+    otherController: AbortController
+  ): Promise<ProductDetailsQueryData> =>
+    fn(ownController.signal).then((value) => {
+      if (value === null) {
+        throw new Error('not a success');
+      }
+
+      otherController.abort();
+      return value;
+    });
+
+  return Promise.any([
+    wrap(offFetch, offController, usdaController),
+    wrap(usdaFetch, usdaController, offController),
+  ]);
+}
 
 /**
  * WORKAROUND: We do not use @openfoodfacts/openfoodfacts-nodejs for product-by-barcode
@@ -30,14 +62,20 @@ export type ProductDetailsQueryData =
   | { status: 'error'; error: { message: string } }
   | null;
 
-async function fetchOFFProductByBarcode(barcode: string): Promise<ProductV3Result> {
+async function fetchOFFProductByBarcode(
+  barcode: string,
+  externalSignal?: AbortSignal
+): Promise<ProductV3Result> {
   const url = `${OFF_API_BASE}${PRODUCT_V3_PATH}/${encodeURIComponent(barcode)}`;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeoutController = new AbortController();
+  const timeoutId = setTimeout(() => timeoutController.abort(), REQUEST_TIMEOUT_MS);
+
+  // Propagate external abort (e.g. from raceToSuccess) into the timeout controller
+  externalSignal?.addEventListener('abort', () => timeoutController.abort(), { once: true });
 
   try {
     const res = await fetch(url, {
-      signal: controller.signal,
+      signal: timeoutController.signal,
       headers: { Accept: 'application/json' },
     });
     clearTimeout(timeoutId);
@@ -59,20 +97,21 @@ async function fetchOFFProductByBarcode(barcode: string): Promise<ProductV3Resul
   }
 }
 
-async function fetchUSDAProductByBarcode(barcode: string): Promise<any> {
+async function fetchUSDAProductByBarcode(barcode: string, signal?: AbortSignal): Promise<any> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal });
     if (!res.ok) {
       return null;
     }
+
     const data = await res.json();
     if (data.foods && data.foods.length > 0) {
-      // Get full details for the first match
-      return fetchUSDAProductById(data.foods[0].fdcId);
+      return data.foods[0];
     }
+
     return null;
   } catch (e) {
     console.error('Error fetching from USDA by barcode:', e);
@@ -94,42 +133,6 @@ export async function fetchUSDAProductById(fdcId: string | number): Promise<any>
     console.error('Error fetching USDA product by ID:', e);
     return null;
   }
-}
-
-/** @deprecated */
-export function useFoodSearch(searchTerm: string) {
-  return useQuery({
-    queryKey: ['food-search', searchTerm],
-    queryFn: async () => {
-      if (!searchTerm || searchTerm.trim().length < 2) {
-        return [];
-      }
-
-      // v2 API doesn't support text search, so we use the v1 search endpoint directly
-      // https://world.openfoodfacts.org/cgi/search.pl?search_terms=chicken&json=1
-      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(searchTerm)}&json=1&page_size=20&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch from Open Food Facts');
-      }
-
-      const result = await response.json();
-
-      if (!result.products || result.products.length === 0) {
-        return [];
-      }
-
-      const products: SearchResultProduct[] = result.products.filter(
-        (product: SearchResultProduct) => getProductName(product)
-      );
-
-      return products;
-    },
-    enabled: Boolean(searchTerm && searchTerm.trim().length >= 2),
-    staleTime: 1000 * 60 * 5,
-  });
 }
 
 export function useFoodProductDetails(
@@ -160,19 +163,35 @@ export function useFoodProductDetails(
       const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
       const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
 
+      if (includeOpenFood && includeUSDA) {
+        // Both sources enabled: fire in parallel, resolve with whichever succeeds first
+        // and abort the other request immediately.
+        try {
+          return await raceToSuccess(
+            async (signal) => {
+              const result = await fetchOFFProductByBarcode(barcode, signal);
+              return isSuccessStatus(result.data?.status) ? result.data! : null;
+            },
+            async (signal) => {
+              const usdaData = await fetchUSDAProductByBarcode(barcode, signal);
+              return usdaData
+                ? ({ status: 'success', product: usdaData, source: 'usda' } as any)
+                : null;
+            }
+          );
+        } catch {
+          // Both returned null/non-success
+          return { status: 'failure', code: barcode } as any;
+        }
+      }
+
       if (includeOpenFood) {
         const result = await fetchOFFProductByBarcode(barcode);
-        if (result.data && result.data.status === 'success') {
-          return result.data;
+        if (result.error) {
+          return { status: 'error', error: result.error };
         }
 
-        // If only OFF is enabled, return the result (might be error or not found)
-        if (!includeUSDA) {
-          if (result.error) {
-            return { status: 'error', error: result.error };
-          }
-          return result.data || null;
-        }
+        return result.data || null;
       }
 
       if (includeUSDA) {

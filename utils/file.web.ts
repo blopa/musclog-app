@@ -1,4 +1,4 @@
-import Quagga from '@ericblade/quagga2';
+import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 import { router } from 'expo-router';
 
 import { dumpDatabase, restoreDatabase } from '../database/exportImport';
@@ -142,26 +142,41 @@ export async function createThumbnail(
 }
 
 export async function detectBarcodes(imageUri: string) {
-  const quaggaResult = await Quagga.decodeSingle({
-    src: imageUri,
-    numOfWorkers: 0,
-    decoder: { readers: ['ean_reader', 'ean_8_reader'] },
-    inputStream: {
-      size: 800,
-      area: {
-        top: '10%',
-        right: '5%',
-        left: '5%',
-        bottom: '10%',
-      },
-    },
-    locator: {
-      patchSize: 'large',
-      halfSample: true,
-    },
-  });
+  const readers = [
+    'upc_reader',
+    'upc_e_reader',
+    'ean_reader',
+    'ean_8_reader',
+  ] as QuaggaJSCodeReader[];
+  const attempts = [
+    { patchSize: 'medium', halfSample: false, size: 800 },
+    { patchSize: 'large', halfSample: false, size: 800 },
+    { patchSize: 'small', halfSample: false, size: 800 },
+    { patchSize: 'medium', halfSample: false, size: 0 },
+    { patchSize: 'large', halfSample: false, size: 0 },
+  ];
 
-  return quaggaResult?.codeResult?.code ?? null;
+  for (const { patchSize, halfSample, size } of attempts) {
+    const result = await new Promise<any>((resolve) => {
+      Quagga.decodeSingle(
+        {
+          src: imageUri,
+          numOfWorkers: 0,
+          locate: true,
+          inputStream: { size },
+          locator: { patchSize, halfSample },
+          decoder: { readers },
+        },
+        resolve
+      );
+    });
+
+    if (result?.codeResult?.code) {
+      return result.codeResult.code as string;
+    }
+  }
+
+  return null;
 }
 
 export async function saveExerciseImage(tempUri: string, existingUri?: string): Promise<string> {
