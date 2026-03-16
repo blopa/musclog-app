@@ -21,7 +21,7 @@ import { type FoodSearchSource } from '../../constants/settings';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
-import i18n, { AVAILABLE_LANGUAGES, EN_US, PT_BR } from '../../lang/lang';
+import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '../../lang/lang';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
@@ -156,12 +156,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     usda: t('settings.basicSettings.foodSearchUSDA'),
   }[effectiveFoodSearchSource];
 
-  const languageLabels: Record<string, string> = {
-    [EN_US]: 'English (US)',
-    [PT_BR]: 'Português (BR)',
-  };
-
-  const currentLanguageLabel = languageLabels[language ?? EN_US] ?? language ?? 'English (US)';
+  const currentLanguageLabel = languageLabels[language ?? EN_US] ?? language ?? t('untranslated.en-us');
 
   const languageMenuItems: BottomPopUpMenuItem[] = AVAILABLE_LANGUAGES.map((lang) => ({
     icon: Languages,

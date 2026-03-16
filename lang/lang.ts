@@ -1,9 +1,6 @@
 import 'intl-pluralrules';
 
-import {
-  enUS as localeEnUS,
-  ptBR as localePtBR,
-} from 'date-fns/locale';
+import { enUS as localeEnUS, ptBR as localePtBR } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
