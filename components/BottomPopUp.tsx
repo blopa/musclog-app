@@ -196,7 +196,14 @@ export function BottomPopUp({
           </Animated.View>
         </View>
       </View>
-      <View style={{ height: theme.spacing.margin.base }} />
+      <View
+        style={{
+          height: theme.spacing.margin.base,
+          backgroundColor: theme.colors.background.cardElevated,
+          borderTopColor: theme.colors.background.cardElevated,
+          borderTopWidth: 2,
+        }}
+      />
     </Modal>
   );
 }

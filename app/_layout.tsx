@@ -54,7 +54,9 @@ function AppContent() {
   useEffect(() => {
     // Lock orientation to portrait on phones, allow all orientations on tablets
     async function configureOrientation() {
-      if (Platform.OS === 'web') return;
+      if (Platform.OS === 'web') {
+        return;
+      }
 
       const deviceType = await Device.getDeviceTypeAsync();
       const isTablet = deviceType === Device.DeviceType.TABLET;
