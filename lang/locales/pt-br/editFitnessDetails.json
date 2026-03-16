@@ -1,0 +1,70 @@
+{
+  "editFitnessDetails": {
+    "title": "Edit Fitness Details",
+    "units": "Units",
+    "imperial": "Imperial",
+    "metric": "Metric",
+    "bodyStats": "Body Stats",
+    "currentWeight": "Current Weight",
+    "height": "Height",
+    "fatPercentage": "Body Fat Percentage",
+    "goalsStrategy": "Goals & Strategy",
+    "fitnessGoal": "Fitness Goal",
+    "eatingPhase": "Eating Phase",
+    "cut": "Cut",
+    "maintain": "Maintain",
+    "bulk": "Bulk",
+    "lifestyleContext": "Lifestyle Context",
+    "activityLevel": "Activity Level",
+    "liftingExperience": "Lifting Experience",
+    "saveChanges": "Save Changes",
+    "selectGoal": "Select Fitness Goal",
+    "selectGoalSubtitle": "Choose the goal that best fits your training",
+    "selectActivity": "Select Activity Level",
+    "selectActivitySubtitle": "Choose your daily activity level",
+    "activityLevelLabels": {
+      "sedentary": "Sedentary",
+      "light": "Light",
+      "moderate": "Moderate",
+      "active": "Active",
+      "superActive": "Super Active"
+    },
+    "activityLevelDescriptions": {
+      "sedentary": "Little to no exercise, desk job",
+      "light": "Light exercise 1-3 days/week",
+      "moderate": "Moderate exercise 3-5 days/week",
+      "active": "Hard exercise 6-7 days/week",
+      "superActive": "Very hard exercise & physical job"
+    },
+    "weightGoal": "Your goal",
+    "weightGoalLabels": {
+      "lose": "Lose weight",
+      "maintain": "Maintain",
+      "gain": "Gain muscle"
+    },
+    "fitnessGoalLabels": {
+      "hypertrophy": "Hypertrophy (Build Muscle)",
+      "strength": "Strength (Lift Heavier)",
+      "endurance": "Endurance (Stamina)",
+      "weightLoss": "Weight Loss (Burn Fat)",
+      "general": "General Fitness"
+    },
+    "fitnessGoalDescriptions": {
+      "hypertrophy": "Focus on muscle size and definition",
+      "strength": "Focus on maximum strength and power",
+      "endurance": "Focus on cardiovascular fitness",
+      "weightLoss": "Focus on fat loss and toning",
+      "general": "Maintain overall health and wellness"
+    },
+    "experienceLabels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "experienceDescriptions": {
+      "beginner": "0-1 years of consistent training",
+      "intermediate": "1-3 years of consistent training",
+      "advanced": "3+ years of consistent training"
+    }
+  }
+}

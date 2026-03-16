@@ -1,0 +1,13 @@
+{
+  "restOver": {
+    "startNextSet": "Start Next Set",
+    "upNext": "Up Next",
+    "weight": "Weight",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Reps",
+    "set": "Set",
+    "restTimeIs": "Rest time is",
+    "over": "over!",
+    "timeToGo": "Time to go! Next set is up."
+  }
+}
