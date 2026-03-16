@@ -66,6 +66,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'foodSearchSource',
       'conversationContext',
       'chartTooltipPosition',
+      'language',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -221,6 +222,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'chartTooltipPosition',
     SettingsService.setChartTooltipPosition
   );
+  const handleLanguageChange = createSettingHandler<string>(
+    'language',
+    SettingsService.setLanguage
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -302,6 +307,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'chartTooltipPosition':
             await SettingsService.setChartTooltipPosition(value as 'left' | 'right');
             break;
+          case 'language':
+            await SettingsService.setLanguage(value as string);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -357,6 +365,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       actualSettings.sendFoundationFoodsToLlm,
     units: (localSettings.units as 'metric' | 'imperial') ?? actualSettings.units,
     foodSearchSource: (localSettings.foodSearchSource as any) ?? actualSettings.foodSearchSource,
+    language: (localSettings.language as string) ?? actualSettings.language,
     conversationContext:
       (localSettings.conversationContext as 'general' | 'exercise' | 'nutrition') ??
       actualSettings.conversationContext,
@@ -393,6 +402,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleFoodSearchSourceChange,
     handleConversationContextChange,
     handleChartTooltipPositionChange,
+    handleLanguageChange,
 
     // Utilities
     flushAllPendingChanges,

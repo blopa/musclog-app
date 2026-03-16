@@ -21,6 +21,7 @@ import {
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  LANGUAGE_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -107,10 +108,12 @@ type SettingsState = {
   foodSearchSource: FoodSearchSource;
   conversationContext: 'general' | 'exercise' | 'nutrition';
   chartTooltipPosition: ChartTooltipPosition;
+  language: string;
   isLoading: boolean;
 };
 
 const DEFAULT_STATE: SettingsState = {
+  language: 'en-US',
   units: 'metric',
   theme: 'system',
   connectHealthData: false,
@@ -157,7 +160,10 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
 
+  const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
+
   return {
+    language,
     units,
     theme,
     connectHealthData: getBoolean(map, CONNECT_HEALTH_DATA_SETTING_TYPE),
@@ -222,6 +228,7 @@ export function useSettings(): UseSettingsResult & {
   navSlot3: NavItemKey;
   conversationContext: 'general' | 'exercise' | 'nutrition';
   chartTooltipPosition: ChartTooltipPosition;
+  language: string;
 } {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);

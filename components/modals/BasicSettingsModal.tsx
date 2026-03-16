@@ -3,6 +3,7 @@ import {
   ChevronRight,
   Globe,
   Heart,
+  Languages,
   Leaf,
   Moon,
   RefreshCw,
@@ -20,6 +21,7 @@ import { type FoodSearchSource } from '../../constants/settings';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { useTheme } from '../../hooks/useTheme';
+import i18n, { AVAILABLE_LANGUAGES, EN_US, PT_BR } from '../../lang/lang';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { SettingsCard } from '../cards/SettingsCard';
 import { Button } from '../theme/Button';
@@ -35,17 +37,9 @@ const HAS_THEMES = false; // TODO: remove this once we have option to pick dark 
 type BasicSettingsModalProps = {
   visible: boolean;
   onClose: () => void;
-  // Language settings
-  language?: string;
-  onLanguagePress?: () => void;
 };
 
-export function BasicSettingsModal({
-  visible,
-  onClose,
-  language = 'English (US)',
-  onLanguagePress,
-}: BasicSettingsModalProps) {
+export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { syncNow, isSyncing, isSyncEnabled } = useSyncTracking();
@@ -59,15 +53,18 @@ export function BasicSettingsModal({
     writeHealthData: debouncedWriteHealthData,
     handleThemeChange,
     foodSearchSource,
+    language,
     handleUnitsChange,
     handleConnectHealthDataChange,
     handleReadHealthDataChange,
     handleWriteHealthDataChange,
     handleFoodSearchSourceChange,
+    handleLanguageChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
   const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
+  const [languageMenuVisible, setLanguageMenuVisible] = useState(false);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -158,6 +155,25 @@ export function BasicSettingsModal({
     openfood: t('settings.basicSettings.foodSearchOpenFoodFacts'),
     usda: t('settings.basicSettings.foodSearchUSDA'),
   }[effectiveFoodSearchSource];
+
+  const languageLabels: Record<string, string> = {
+    [EN_US]: 'English (US)',
+    [PT_BR]: 'Português (BR)',
+  };
+
+  const currentLanguageLabel = languageLabels[language ?? EN_US] ?? language ?? 'English (US)';
+
+  const languageMenuItems: BottomPopUpMenuItem[] = AVAILABLE_LANGUAGES.map((lang) => ({
+    icon: Languages,
+    iconColor: theme.colors.accent.primary,
+    iconBgColor: theme.colors.accent.primary10,
+    title: languageLabels[lang] ?? lang,
+    description: lang,
+    onPress: () => {
+      handleLanguageChange(lang);
+      i18n.changeLanguage(lang);
+    },
+  }));
 
   const unitsOptions = [
     {
@@ -287,15 +303,15 @@ export function BasicSettingsModal({
           <SettingsCard
             title={t('settings.basicSettings.language')}
             subtitle={t('settings.basicSettings.languageSubtitle')}
-            onPress={onLanguagePress || (() => {})}
-            icon={<Settings size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+            onPress={() => setLanguageMenuVisible(true)}
+            icon={<Languages size={theme.iconSize.xl} color={theme.colors.text.primary} />}
             rightIcon={
               <View className="flex-row items-center gap-2">
                 <Text
                   className="text-sm font-medium"
                   style={{ color: theme.colors.accent.primary }}
                 >
-                  {language}
+                  {currentLanguageLabel}
                 </Text>
                 <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
               </View>
@@ -384,6 +400,12 @@ export function BasicSettingsModal({
         onClose={() => setFoodSearchMenuVisible(false)}
         title={t('settings.basicSettings.foodSearchSource')}
         items={foodSearchMenuItems}
+      />
+      <BottomPopUpMenu
+        visible={languageMenuVisible}
+        onClose={() => setLanguageMenuVisible(false)}
+        title={t('settings.basicSettings.language')}
+        items={languageMenuItems}
       />
     </FullScreenModal>
   );
