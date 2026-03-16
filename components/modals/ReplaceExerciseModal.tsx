@@ -1,11 +1,19 @@
-import { Repeat, Search } from 'lucide-react-native';
+import { Dumbbell, Repeat, Search } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ImageSourcePropType,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import Exercise from '../../database/models/Exercise';
 import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
+import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
@@ -16,7 +24,7 @@ import { Button } from '../theme/Button';
  * Uses Pick to extract only needed fields from Exercise model.
  */
 export type ReplaceExerciseData = Pick<Exercise, 'id' | 'name' | 'muscleGroup' | 'mechanicType'> & {
-  image?: any; // ImageSourcePropType
+  image?: ImageSourcePropType;
 };
 
 type ReplaceExerciseModalProps = {
@@ -33,7 +41,7 @@ function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
     name: exercise.name,
     muscleGroup: exercise.muscleGroup,
     mechanicType: exercise.mechanicType,
-    image: undefined,
+    image: exercise.imageUrl?.trim() ? { uri: exercise.imageUrl } : FALLBACK_EXERCISE_IMAGE,
   };
 }
 
@@ -205,30 +213,19 @@ export function ReplaceExerciseModal({
               <OptionsSelector
                 title={t('replaceExercise.selectExercise')}
                 options={displayList.map((exercise) => {
-                  const IconComponent = (props: { size: number; color: string }) => {
-                    const size = props.size;
-                    const sx = {
-                      width: size,
-                      height: size,
-                      borderRadius: theme.borderRadius.md,
-                      overflow: 'hidden' as const,
-                      backgroundColor: theme.colors.background.iconDark,
-                    };
-
-                    return exercise.image ? (
-                      <Image source={exercise.image} style={sx} resizeMode="cover" />
-                    ) : (
-                      <View style={sx} />
-                    );
-                  };
+                  const imageUrl =
+                    exercise.image && 'uri' in exercise.image
+                      ? (exercise.image as { uri: string }).uri
+                      : undefined;
 
                   const option: SelectorOption<string> = {
                     id: exercise.id,
                     label: exercise.name,
                     description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
-                    icon: IconComponent,
+                    icon: Dumbbell,
                     iconBgColor: theme.colors.background.iconDark,
                     iconColor: theme.colors.text.primary,
+                    imageUrl,
                   };
 
                   return option;
