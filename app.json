@@ -96,7 +96,7 @@
         }
       ]
     ],
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -110,7 +110,7 @@
       "buildNumber": "160"
     },
     "android": {
-      "softwareKeyboardLayoutMode": "pan",
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
       "versionCode": 160,
       "adaptiveIcon": {

@@ -4,8 +4,10 @@ import '../global.css';
 
 import * as Sentry from '@sentry/react-native';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Device from 'expo-device';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -43,17 +45,29 @@ function AppContent() {
   useEffect(() => {
     // Setup Android Navigation Bar with dynamic theme
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(theme.colors.background.primary).catch((error) => {
-        if (__DEV__) {
-          console.warn(
-            'NavigationBar.setBackgroundColorAsync not available (edge-to-edge enabled):',
-            error.message
-          );
-        }
-      });
-      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
+      // In Android 15+ (edge-to-edge), manual background color is ignored/deprecated.
+      // We still set the button style (icons color) to match the theme.
+      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark').catch(() => {});
     }
-  }, [theme, isDark]);
+  }, [isDark]);
+
+  useEffect(() => {
+    // Lock orientation to portrait on phones, allow all orientations on tablets
+    async function configureOrientation() {
+      if (Platform.OS === 'web') return;
+
+      const deviceType = await Device.getDeviceTypeAsync();
+      const isTablet = deviceType === Device.DeviceType.TABLET;
+
+      if (isTablet) {
+        await ScreenOrientation.unlockAsync();
+      } else {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      }
+    }
+
+    configureOrientation().catch((err) => console.warn('[Orientation] Setup error:', err));
+  }, []);
 
   return (
     <>
