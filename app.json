@@ -110,7 +110,7 @@
       "buildNumber": "160"
     },
     "android": {
-      "softwareKeyboardLayoutMode": "adjustResize",
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
       "versionCode": 160,
       "adaptiveIcon": {
