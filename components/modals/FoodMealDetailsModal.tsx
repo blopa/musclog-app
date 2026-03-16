@@ -41,8 +41,8 @@ import { useTheme } from '../../hooks/useTheme';
 import {
   isMappedNutriments,
   isSuccessFoodDetailProductState,
+  isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import type { SearchResultProduct } from '../../types/openFoodFacts';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
@@ -404,9 +404,9 @@ export function FoodMealDetailsModal({
     }
 
     if (productDetails) {
-      if (productDetails?.status !== 'success' && !productFromSearch && !food && !meal) {
+      if (!isSuccessStatus(productDetails?.status) && !productFromSearch && !food && !meal) {
         setIsFoodNotFoundModalVisible(true);
-      } else if (productDetails?.status === 'success') {
+      } else if (isSuccessStatus(productDetails?.status)) {
         setIsFoodDetailsModalVisible(true);
       }
       onBarcodeLookupComplete?.();

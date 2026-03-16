@@ -7,7 +7,7 @@ export function isMappedNutriments(n: unknown): n is MappedNutriments {
 }
 
 /** OFF API can return 'success' | 'success_with_warnings' | 'success_with_errors'; all indicate a found product. */
-const isSuccessStatus = (s: unknown) =>
+export const isSuccessStatus = (s: unknown) =>
   s === 'success' || s === 'success_with_warnings' || s === 'success_with_errors';
 
 /** V3 API may use product.nutrition (aggregated_set/input_sets) instead of product.nutriments. */

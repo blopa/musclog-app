@@ -1,9 +1,31 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetch } from 'expo/fetch';
 
+import { isSuccessStatus } from '../types/guards/openFoodFacts';
 import type { ProductState, SearchResultProduct } from '../types/openFoodFacts';
 import { getProductName } from '../utils/openFoodFactsMapper';
 import { useSettings } from './useSettings';
+
+/**
+ * Resolves with the first promise whose value satisfies `isSuccess`.
+ * Rejects (via AggregateError) only if all promises return non-success values.
+ */
+async function raceToSuccess<T>(
+  promises: Promise<T>[],
+  isSuccess: (value: T) => boolean
+): Promise<T> {
+  return Promise.any(
+    promises.map((p) =>
+      p.then((value) => {
+        if (!isSuccess(value)) {
+          throw new Error('not a success');
+        }
+
+        return value;
+      })
+    )
+  );
+}
 
 /**
  * WORKAROUND: We do not use @openfoodfacts/openfoodfacts-nodejs for product-by-barcode
@@ -160,19 +182,33 @@ export function useFoodProductDetails(
       const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
       const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
 
+      if (includeOpenFood && includeUSDA) {
+        // Both sources enabled: fire in parallel, resolve with whichever succeeds first.
+        const offPromise: Promise<ProductDetailsQueryData> = fetchOFFProductByBarcode(barcode).then(
+          (result) => (isSuccessStatus(result.data?.status) ? result.data : null)
+        );
+
+        const usdaPromise: Promise<ProductDetailsQueryData> = fetchUSDAProductByBarcode(
+          barcode
+        ).then((usdaData) =>
+          usdaData ? ({ status: 'success', product: usdaData, source: 'usda' } as any) : null
+        );
+
+        try {
+          return await raceToSuccess([offPromise, usdaPromise], (v) => v !== null);
+        } catch {
+          // Both returned null/non-success
+          return { status: 'failure', code: barcode } as any;
+        }
+      }
+
       if (includeOpenFood) {
         const result = await fetchOFFProductByBarcode(barcode);
-        if (result.data && result.data.status === 'success') {
-          return result.data;
+        if (result.error) {
+          return { status: 'error', error: result.error };
         }
 
-        // If only OFF is enabled, return the result (might be error or not found)
-        if (!includeUSDA) {
-          if (result.error) {
-            return { status: 'error', error: result.error };
-          }
-          return result.data || null;
-        }
+        return result.data || null;
       }
 
       if (includeUSDA) {
