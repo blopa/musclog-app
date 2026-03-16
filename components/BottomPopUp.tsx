@@ -39,6 +39,13 @@ export function BottomPopUp({
   headerIcon,
   scrollable = true,
 }: BottomPopUpProps) {
+  // On Android, flex:1 children require a definite parent height — maxHeight alone is not enough.
+  // When scrollable=false (custom sticky-header + inner ScrollView layout), set an explicit height
+  // so the content view can actually expand.
+  const effectiveMaxHeight = maxHeight ?? '90%';
+  const sheetHeightStyle =
+    !scrollable && Platform.OS !== 'web' ? { height: effectiveMaxHeight } : undefined;
+
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
@@ -110,15 +117,18 @@ export function BottomPopUp({
         >
           <Animated.View
             className="border-t border-border-dark"
-            style={{
-              transform: [{ translateY: slideAnim }],
-              backgroundColor: theme.colors.background.cardElevated,
-              overflow: 'hidden',
-              borderTopLeftRadius: theme.borderRadius['3xl'],
-              borderTopRightRadius: theme.borderRadius['3xl'],
-              maxHeight: maxHeight || '90%',
-              width: '100%',
-            }}
+            style={[
+              {
+                transform: [{ translateY: slideAnim }],
+                backgroundColor: theme.colors.background.cardElevated,
+                overflow: 'hidden',
+                borderTopLeftRadius: theme.borderRadius['3xl'],
+                borderTopRightRadius: theme.borderRadius['3xl'],
+                maxHeight: effectiveMaxHeight,
+                width: '100%',
+              },
+              sheetHeightStyle,
+            ]}
           >
             {/* Header */}
             <LinearGradient
@@ -196,7 +206,14 @@ export function BottomPopUp({
           </Animated.View>
         </View>
       </View>
-      <View style={{ height: theme.spacing.margin.base }} />
+      <View
+        style={{
+          height: theme.spacing.margin.base,
+          backgroundColor: theme.colors.background.cardElevated,
+          borderTopColor: theme.colors.background.cardElevated,
+          borderTopWidth: 2,
+        }}
+      />
     </Modal>
   );
 }
