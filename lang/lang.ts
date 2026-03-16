@@ -7,7 +7,6 @@ import {
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import untranslated from './locales/untranslated.json';
 
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
@@ -151,6 +150,8 @@ import ptBrWorkouts from './locales/pt-br/workouts.json';
 import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 import ptBrYourGoogleAuthExpiredReauth from './locales/pt-br/your_google_auth_expired_reauth.json';
+// untranslated
+import untranslated from './locales/untranslated.json';
 
 export const EN_US = 'en-US';
 export const PT_BR = 'pt-BR';

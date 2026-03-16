@@ -151,7 +151,8 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
                 const suffix = fileNameToSuffix(baseName);
                 return `      ...${prefix}${suffix},`;
             });
-            return `  [${constantName(lang)}]: {\n    translation: {\n${spreads.join('\n')}\n    },\n  },`;
+            const allSpreads = [`      ...untranslated,`, ...spreads];
+            return `  [${constantName(lang)}]: {\n    translation: {\n${allSpreads.join('\n')}\n    },\n  },`;
         });
 
         // LOCALE_MAP entries
@@ -173,6 +174,9 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
           "import i18n from 'i18next';",
           "import { initReactI18next } from 'react-i18next';",
           '',
+          "// untranslated",
+          "import untranslated from './locales/untranslated.json';",
+          '',
           jsonImportBlocks.join('\n\n'),
           '',
           constantLines.join('\n'),
@@ -188,6 +192,10 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
           '};',
           '',
           'export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];',
+          '',
+          'export const languageLabels: Record<string, string> = {',
+          languages.map((lang) => `  [${constantName(lang)}]: i18n.t('untranslated.${lang.dir}'),`).join('\n'),
+          '};',
           '',
           'const systemLocales = Localization.getLocales();',
           '',
