@@ -42,10 +42,9 @@ export function BottomPopUp({
   // On Android, flex:1 children require a definite parent height — maxHeight alone is not enough.
   // When scrollable=false (custom sticky-header + inner ScrollView layout), set an explicit height
   // so the content view can actually expand.
+  const effectiveMaxHeight = maxHeight ?? '90%';
   const sheetHeightStyle =
-    !scrollable && maxHeight !== undefined && Platform.OS !== 'web'
-      ? { height: maxHeight }
-      : undefined;
+    !scrollable && Platform.OS !== 'web' ? { height: effectiveMaxHeight } : undefined;
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -125,7 +124,7 @@ export function BottomPopUp({
                 overflow: 'hidden',
                 borderTopLeftRadius: theme.borderRadius['3xl'],
                 borderTopRightRadius: theme.borderRadius['3xl'],
-                maxHeight: maxHeight || '90%',
+                maxHeight: effectiveMaxHeight,
                 width: '100%',
               },
               sheetHeightStyle,
