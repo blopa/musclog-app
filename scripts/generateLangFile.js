@@ -194,12 +194,6 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '',
       'export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];',
       '',
-      'export const languageLabels: Record<string, string> = {',
-      languages
-        .map((lang) => `  [${constantName(lang)}]: i18n.t('untranslated.${lang.dir}'),`)
-        .join('\n'),
-      '};',
-      '',
       'const systemLocales = Localization.getLocales();',
       '',
       'i18n.use(initReactI18next).init({',
@@ -214,6 +208,12 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       `      ?.languageTag || ${constantName(languages[0])},`,
       '  resources,',
       '});',
+      '',
+      'export const languageLabels: Record<string, string> = {',
+      languages
+        .map((lang) => `  [${constantName(lang)}]: i18n.t('untranslated.${lang.dir}'),`)
+        .join('\n'),
+      '};',
       '',
       'export default i18n;',
       '',

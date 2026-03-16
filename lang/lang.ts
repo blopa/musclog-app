@@ -315,11 +315,6 @@ export const LOCALE_MAP = {
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];
 
-export const languageLabels: Record<string, string> = {
-  [EN_US]: i18n.t('untranslated.en-us'),
-  [PT_BR]: i18n.t('untranslated.pt-br'),
-};
-
 const systemLocales = Localization.getLocales();
 
 i18n.use(initReactI18next).init({
@@ -334,5 +329,10 @@ i18n.use(initReactI18next).init({
       ?.languageTag || EN_US,
   resources,
 });
+
+export const languageLabels: Record<string, string> = {
+  [EN_US]: i18n.t('untranslated.en-us'),
+  [PT_BR]: i18n.t('untranslated.pt-br'),
+};
 
 export default i18n;
