@@ -2,9 +2,7 @@ import 'intl-pluralrules';
 
 import {
   enUS as localeEnUS,
-  // es as localeEs,
-  // nl as localeNl,
-  // ptBR as localePtBR,
+  ptBR as localePtBR,
 } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
@@ -66,7 +64,7 @@ import enUsSessionFeedback from './locales/en-us/sessionFeedback.json';
 import enUsSettings from './locales/en-us/settings.json';
 import enUsSnackbar from './locales/en-us/snackbar.json';
 import enUsStartWorkout from './locales/en-us/startWorkout.json';
-import timePicker from './locales/en-us/timePicker.json';
+import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWorkout from './locales/en-us/workout.json';
@@ -82,28 +80,99 @@ import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import enUsYourGoogleAuthExpiredReauth from './locales/en-us/your_google_auth_expired_reauth.json';
+// pt-br
+import ptBrAccessToken from './locales/pt-br/access_token.json';
+import ptBrAddMeal from './locales/pt-br/addMeal.json';
+import ptBrAi from './locales/pt-br/ai.json';
+import ptBrBodyFat from './locales/pt-br/body_fat.json';
+import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
+import ptBrCamera from './locales/pt-br/camera.json';
+import ptBrCoach from './locales/pt-br/coach.json';
+import ptBrCommon from './locales/pt-br/common.json';
+import ptBrConnectGoogleAccount from './locales/pt-br/connectGoogleAccount.json';
+import ptBrCreateWorkout from './locales/pt-br/createWorkout.json';
+import ptBrCurrentGoalsCard from './locales/pt-br/currentGoalsCard.json';
+import ptBrCycle from './locales/pt-br/cycle.json';
+import ptBrDailySummaryCard from './locales/pt-br/dailySummaryCard.json';
+import ptBrDatePicker from './locales/pt-br/datePicker.json';
+import ptBrEatingPhaseBadge from './locales/pt-br/eatingPhaseBadge.json';
+import ptBrEditFitnessDetails from './locales/pt-br/editFitnessDetails.json';
+import ptBrEditPersonalInfo from './locales/pt-br/editPersonalInfo.json';
+import ptBrEditScreenInfo from './locales/pt-br/editScreenInfo.json';
+import ptBrEditSetDetails from './locales/pt-br/editSetDetails.json';
+import ptBrEmptyStates from './locales/pt-br/emptyStates.json';
+import ptBrEndWorkout from './locales/pt-br/endWorkout.json';
+import ptBrErrorDescription from './locales/pt-br/error_description.json';
+import ptBrErrors from './locales/pt-br/errors.json';
+import ptBrExercises from './locales/pt-br/exercises.json';
+import ptBrExerciseTransition from './locales/pt-br/exerciseTransition.json';
+import ptBrExpiresIn from './locales/pt-br/expires_in.json';
+import ptBrFocus from './locales/pt-br/focus.json';
+import ptBrFood from './locales/pt-br/food.json';
+import ptBrFoodFoodPortions from './locales/pt-br/food_food_portions.json';
+import ptBrFoodSearch from './locales/pt-br/foodSearch.json';
+import ptBrFreeTraining from './locales/pt-br/freeTraining.json';
+import ptBrGoalHistoryCard from './locales/pt-br/goalHistoryCard.json';
+import ptBrGoalsManagement from './locales/pt-br/goalsManagement.json';
+import ptBrHealthConnect from './locales/pt-br/healthConnect.json';
+import ptBrHome from './locales/pt-br/home.json';
+import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
+import ptBrMealFoods from './locales/pt-br/meal_foods.json';
+import ptBrMeals from './locales/pt-br/meals.json';
+import ptBrNotifications from './locales/pt-br/notifications.json';
+import ptBrNutrition from './locales/pt-br/nutrition.json';
+import ptBrNutritionLogs from './locales/pt-br/nutrition_logs.json';
+import ptBrNutritionGoals from './locales/pt-br/nutritionGoals.json';
+import ptBrOnboarding from './locales/pt-br/onboarding.json';
+import ptBrOptionsSelector from './locales/pt-br/optionsSelector.json';
+import ptBrPastWorkoutHistory from './locales/pt-br/pastWorkoutHistory.json';
+import ptBrPortionSizes from './locales/pt-br/portionSizes.json';
+import ptBrProfile from './locales/pt-br/profile.json';
+import ptBrProgress from './locales/pt-br/progress.json';
+import ptBrReplaceExercise from './locales/pt-br/replaceExercise.json';
+import ptBrRestOver from './locales/pt-br/restOver.json';
+import ptBrRestTimer from './locales/pt-br/restTimer.json';
+import ptBrSessionFeedback from './locales/pt-br/sessionFeedback.json';
+import ptBrSettings from './locales/pt-br/settings.json';
+import ptBrSnackbar from './locales/pt-br/snackbar.json';
+import ptBrStartWorkout from './locales/pt-br/startWorkout.json';
+import ptBrTimePicker from './locales/pt-br/timePicker.json';
+import ptBrTokenType from './locales/pt-br/token_type.json';
+import ptBrUserMenu from './locales/pt-br/userMenu.json';
+import ptBrWorkout from './locales/pt-br/workout.json';
+import ptBrWorkoutLogSets from './locales/pt-br/workout_log_sets.json';
+import ptBrWorkoutLogs from './locales/pt-br/workout_logs.json';
+import ptBrWorkoutTemplateSets from './locales/pt-br/workout_template_sets.json';
+import ptBrWorkoutDetail from './locales/pt-br/workoutDetail.json';
+import ptBrWorkoutDetails from './locales/pt-br/workoutDetails.json';
+import ptBrWorkoutHistory from './locales/pt-br/workoutHistory.json';
+import ptBrWorkoutLog from './locales/pt-br/workoutLog.json';
+import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
+import ptBrWorkouts from './locales/pt-br/workouts.json';
+import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
+import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
+import ptBrYourGoogleAuthExpiredReauth from './locales/pt-br/your_google_auth_expired_reauth.json';
 
 export const EN_US = 'en-US';
-// export const ES_ES = 'es-ES';
-// export const NL_NL = 'nl-NL';
-// export const PT_BR = 'pt-BR';
+export const PT_BR = 'pt-BR';
 
 const resources = {
   [EN_US]: {
     translation: {
-      ...enUsCommon,
-      ...enUsCycle,
-      ...enUsFocus,
       ...enUsAccessToken,
       ...enUsAddMeal,
       ...enUsAi,
-      ...enUsBodyFat,
       ...enUsBodyMetrics,
+      ...enUsBodyFat,
       ...enUsCamera,
       ...enUsCoach,
+      ...enUsCommon,
+      ...enUsConnectGoogleAccount,
       ...enUsCreateWorkout,
       ...enUsCurrentGoalsCard,
+      ...enUsCycle,
       ...enUsDailySummaryCard,
+      ...enUsDatePicker,
       ...enUsEatingPhaseBadge,
       ...enUsEditFitnessDetails,
       ...enUsEditPersonalInfo,
@@ -113,13 +182,14 @@ const resources = {
       ...enUsEndWorkout,
       ...enUsErrorDescription,
       ...enUsErrors,
-      ...enUsExercises,
       ...enUsExerciseTransition,
+      ...enUsExercises,
       ...enUsExpiresIn,
-      ...enUsFoodFoodPortions,
+      ...enUsFocus,
       ...enUsFood,
-      ...enUsFreeTraining,
       ...enUsFoodSearch,
+      ...enUsFoodFoodPortions,
+      ...enUsFreeTraining,
       ...enUsGoalHistoryCard,
       ...enUsGoalsManagement,
       ...enUsHealthConnect,
@@ -128,14 +198,15 @@ const resources = {
       ...enUsMealFoods,
       ...enUsMeals,
       ...enUsNotifications,
-      ...enUsNutritionGoals,
       ...enUsNutrition,
+      ...enUsNutritionGoals,
       ...enUsNutritionLogs,
       ...enUsOnboarding,
       ...enUsOptionsSelector,
       ...enUsPastWorkoutHistory,
       ...enUsPortionSizes,
       ...enUsProfile,
+      ...enUsProgress,
       ...enUsReplaceExercise,
       ...enUsRestOver,
       ...enUsRestTimer,
@@ -143,6 +214,7 @@ const resources = {
       ...enUsSettings,
       ...enUsSnackbar,
       ...enUsStartWorkout,
+      ...enUsTimePicker,
       ...enUsTokenType,
       ...enUsUserMenu,
       ...enUsWorkout,
@@ -150,32 +222,98 @@ const resources = {
       ...enUsWorkoutDetails,
       ...enUsWorkoutHistory,
       ...enUsWorkoutLog,
-      ...enUsWorkoutLogSets,
-      ...enUsWorkoutLogs,
       ...enUsWorkoutOptions,
       ...enUsWorkoutSession,
       ...enUsWorkoutSummary,
-      ...enUsWorkouts,
+      ...enUsWorkoutLogSets,
+      ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
+      ...enUsWorkouts,
       ...enUsYourGoogleAuthExpiredReauth,
-      ...enUsConnectGoogleAccount,
-      ...enUsDatePicker,
-      ...enUsProgress,
-      ...timePicker,
     },
   },
-  // [ES_ES]: { translation: es },
-  // [NL_NL]: { translation: nl },
-  // [PT_BR]: { translation: ptBR },
+  [PT_BR]: {
+    translation: {
+      ...ptBrAccessToken,
+      ...ptBrAddMeal,
+      ...ptBrAi,
+      ...ptBrBodyMetrics,
+      ...ptBrBodyFat,
+      ...ptBrCamera,
+      ...ptBrCoach,
+      ...ptBrCommon,
+      ...ptBrConnectGoogleAccount,
+      ...ptBrCreateWorkout,
+      ...ptBrCurrentGoalsCard,
+      ...ptBrCycle,
+      ...ptBrDailySummaryCard,
+      ...ptBrDatePicker,
+      ...ptBrEatingPhaseBadge,
+      ...ptBrEditFitnessDetails,
+      ...ptBrEditPersonalInfo,
+      ...ptBrEditScreenInfo,
+      ...ptBrEditSetDetails,
+      ...ptBrEmptyStates,
+      ...ptBrEndWorkout,
+      ...ptBrErrorDescription,
+      ...ptBrErrors,
+      ...ptBrExerciseTransition,
+      ...ptBrExercises,
+      ...ptBrExpiresIn,
+      ...ptBrFocus,
+      ...ptBrFood,
+      ...ptBrFoodSearch,
+      ...ptBrFoodFoodPortions,
+      ...ptBrFreeTraining,
+      ...ptBrGoalHistoryCard,
+      ...ptBrGoalsManagement,
+      ...ptBrHealthConnect,
+      ...ptBrHome,
+      ...ptBrLogSetPerformance,
+      ...ptBrMealFoods,
+      ...ptBrMeals,
+      ...ptBrNotifications,
+      ...ptBrNutrition,
+      ...ptBrNutritionGoals,
+      ...ptBrNutritionLogs,
+      ...ptBrOnboarding,
+      ...ptBrOptionsSelector,
+      ...ptBrPastWorkoutHistory,
+      ...ptBrPortionSizes,
+      ...ptBrProfile,
+      ...ptBrProgress,
+      ...ptBrReplaceExercise,
+      ...ptBrRestOver,
+      ...ptBrRestTimer,
+      ...ptBrSessionFeedback,
+      ...ptBrSettings,
+      ...ptBrSnackbar,
+      ...ptBrStartWorkout,
+      ...ptBrTimePicker,
+      ...ptBrTokenType,
+      ...ptBrUserMenu,
+      ...ptBrWorkout,
+      ...ptBrWorkoutDetail,
+      ...ptBrWorkoutDetails,
+      ...ptBrWorkoutHistory,
+      ...ptBrWorkoutLog,
+      ...ptBrWorkoutOptions,
+      ...ptBrWorkoutSession,
+      ...ptBrWorkoutSummary,
+      ...ptBrWorkoutLogSets,
+      ...ptBrWorkoutLogs,
+      ...ptBrWorkoutTemplateSets,
+      ...ptBrWorkouts,
+      ...ptBrYourGoogleAuthExpiredReauth,
+    },
+  },
 };
 
 export type LanguageKeys = keyof typeof resources;
 
 export const LOCALE_MAP = {
   [EN_US]: localeEnUS,
-  // [ES_ES]: localeEs,
-  // [NL_NL]: localeNl,
-  // [PT_BR]: localePtBR,
+  [PT_BR]: localePtBR,
 };
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];
@@ -184,7 +322,7 @@ const systemLocales = Localization.getLocales();
 
 i18n.use(initReactI18next).init({
   // compatibilityJSON: 'v3',
-  // debug: true,
+  debug: __DEV__,
   fallbackLng: EN_US,
   interpolation: {
     escapeValue: false,

@@ -12,6 +12,7 @@
     "clear-cache": "rm -rf node_modules/.cache /tmp/metro-cache /tmp/haste-map-metro-* .expo .next web-build",
     "bump-app-version": "node scripts/bump.js",
     "check-translations": "node scripts/check-translations.js",
+    "generate-lang": "node scripts/generateLangFile.js",
     "convert-exercise-images": "node scripts/convert-exercise-images-to-png.js",
     "start": "expo start",
     "start-clear": "expo start --clear",
