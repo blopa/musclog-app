@@ -1,38 +1,40 @@
 {
-  "title": "Groups",
-  "empty": {
-    "title": "Stronger Together",
-    "description": "Join a group to compete with friends and track your progress against others. Everything is better with a bit of healthy competition."
-  },
-  "community": {
-    "title": "Community",
-    "heroTitle": "Build your squad",
-    "heroSubtitle": "Compete with friends, share workouts, and reach your goals together.",
-    "joinSection": "Join a Group",
-    "groupIdLabel": "Group ID",
-    "groupIdPlaceholder": "e.g. FIT-8829",
-    "findGroup": "Find Group",
-    "startSection": "Start New Group",
-    "generateGroup": "Generate New Group",
-    "newGroupGenerated": "NEW GROUP GENERATED",
-    "copyId": "Copy ID",
-    "copied": "Group ID copied to clipboard!",
-    "shareMessage": "Join my workout group on Musclog! Group ID: {{groupId}}",
-    "shareSuccess": "Copied",
-    "footerNote": "Share this ID with your friends to start your Musclog journey together."
-  },
-  "ranking": {
-    "workoutVolume": "Workout Volume",
-    "frequency": "Frequency",
-    "duration": "Duration",
-    "last7Days": "Last 7 Days",
-    "updateInterval": "Leaderboard updates every hour",
-    "volumeUnit": "KG VOLUME",
-    "workoutUnit": "WORKOUTS",
-    "workoutUnit_one": "WORKOUT",
-    "workoutUnit_other": "WORKOUTS",
-    "rank": "Rank",
-    "you": "You",
-    "copied": "Group ID copied!"
+  "groups": {
+    "title": "Groups",
+    "empty": {
+      "title": "Stronger Together",
+      "description": "Join a group to compete with friends and track your progress against others. Everything is better with a bit of healthy competition."
+    },
+    "community": {
+      "title": "Community",
+      "heroTitle": "Build your squad",
+      "heroSubtitle": "Compete with friends, share workouts, and reach your goals together.",
+      "joinSection": "Join a Group",
+      "groupIdLabel": "Group ID",
+      "groupIdPlaceholder": "e.g. FIT-8829",
+      "findGroup": "Find Group",
+      "startSection": "Start New Group",
+      "generateGroup": "Generate New Group",
+      "newGroupGenerated": "NEW GROUP GENERATED",
+      "copyId": "Copy ID",
+      "copied": "Group ID copied to clipboard!",
+      "shareMessage": "Join my workout group on Musclog! Group ID: {{groupId}}",
+      "shareSuccess": "Copied",
+      "footerNote": "Share this ID with your friends to start your Musclog journey together."
+    },
+    "ranking": {
+      "workoutVolume": "Workout Volume",
+      "frequency": "Frequency",
+      "duration": "Duration",
+      "last7Days": "Last 7 Days",
+      "updateInterval": "Leaderboard updates every hour",
+      "volumeUnit": "KG VOLUME",
+      "workoutUnit": "WORKOUTS",
+      "workoutUnit_one": "WORKOUT",
+      "workoutUnit_other": "WORKOUTS",
+      "rank": "Rank",
+      "you": "You",
+      "copied": "Group ID copied!"
+    }
   }
 }
