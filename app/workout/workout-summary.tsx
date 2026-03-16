@@ -8,11 +8,7 @@ import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
-import {
-  ChatService,
-  WorkoutAnalytics,
-  WorkoutService,
-} from '../../database/services';
+import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
 import { theme } from '../../theme';

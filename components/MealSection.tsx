@@ -68,7 +68,8 @@ export const MealSectionHeader = memo(function MealSectionHeader({
       >
         <View className="items-end">
           <Text className="text-lg text-text-secondary">
-            {totalCalories.toLocaleString(i18n.language, { useGrouping: false })} {t('food.common.kcal')}
+            {totalCalories.toLocaleString(i18n.language, { useGrouping: false })}{' '}
+            {t('food.common.kcal')}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <Text className="text-sm">
