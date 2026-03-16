@@ -144,7 +144,8 @@ async function seedUSDAFoundationFoods(): Promise<void> {
             // Create food directly in the write transaction (avoid nested writes)
             const food = await database.get<Food>('foods').create((food) => {
               food.isAiGenerated = false;
-              food.name = row.description || row.name || '';
+              food.name = row.name || '';
+              food.description = row.description || ''; // TODO
               food.brand = undefined;
               food.barcode = row.barcode || undefined;
               food.externalId = externalId;

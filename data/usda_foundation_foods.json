@@ -2864,22 +2864,6 @@
     "vitamin_d": "0"
   },
   {
-    "barcode": "811184030925",
-    "description": "Watermelon, seedless, rind only, raw",
-    "external_id": "1995533",
-    "name": "Watermelon Kombucha, Watermelon",
-    "kcal": "13.52",
-    "protein": "0",
-    "carbs": "3.38",
-    "fat": "0",
-    "fiber": "0",
-    "sugar": "0",
-    "sodium": "0",
-    "magnesium": "0",
-    "vitamin_c": "0",
-    "vitamin_d": "0"
-  },
-  {
     "barcode": "811371700648",
     "description": "Orange juice, no pulp, not fortified, from concentrate, refrigerated",
     "external_id": "1917372",
@@ -3360,22 +3344,6 @@
     "vitamin_d": "0"
   },
   {
-    "barcode": "860001806434",
-    "description": "Cucumber, with peel, raw",
-    "external_id": "2593748",
-    "name": "Cucumber Melon Kombucha, Cucumber Melon",
-    "kcal": "13.52",
-    "protein": "0.28",
-    "carbs": "3.1",
-    "fat": "0",
-    "fiber": "0",
-    "sugar": "0",
-    "sodium": "0",
-    "magnesium": "0",
-    "vitamin_c": "0",
-    "vitamin_d": "0"
-  },
-  {
     "barcode": "860150001407",
     "description": "Plantains, ripe, raw",
     "external_id": "2474515",
@@ -3393,7 +3361,7 @@
   },
   {
     "barcode": "860150001407",
-    "description": "Plantains, overripe, raw",
+    "description": "Plantains Tortillas",
     "external_id": "2474515",
     "name": "Plantain Tortillas",
     "kcal": "124.4",
@@ -3409,7 +3377,7 @@
   },
   {
     "barcode": "861420000151",
-    "description": "Flour, spelt, whole grain",
+    "description": "Flour, spelt, whole grain, pumpkin",
     "external_id": "1897135",
     "name": "Pumpkin Flour, Organic Pumpkin Flour",
     "kcal": "374.93",

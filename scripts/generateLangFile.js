@@ -4,6 +4,7 @@
 const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
+const prettier = require('prettier');
 
 const eslintBaseConfig = require('../eslint.config.js');
 
@@ -228,13 +229,18 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       .then((results) => {
         const fixed = results[0].output || output;
 
-        fs.writeFile(outputFilePath, fixed, (writeErr) => {
-          if (writeErr) {
-            console.error('Error writing lang.ts:', writeErr);
-          } else {
-            console.log(`Generated ${outputFilePath}`);
-          }
-        });
+        return prettier
+          .resolveConfig(outputFilePath)
+          .then((config) => prettier.format(fixed, { ...config, filepath: outputFilePath }))
+          .then((formatted) => {
+            fs.writeFile(outputFilePath, formatted, (writeErr) => {
+              if (writeErr) {
+                console.error('Error writing lang.ts:', writeErr);
+              } else {
+                console.log(`Generated ${outputFilePath}`);
+              }
+            });
+          });
       })
       .catch((lintErr) => {
         console.error('Error running ESLint:', lintErr);

@@ -156,7 +156,8 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     usda: t('settings.basicSettings.foodSearchUSDA'),
   }[effectiveFoodSearchSource];
 
-  const currentLanguageLabel = languageLabels[language ?? EN_US] ?? language ?? t('untranslated.en-us');
+  const currentLanguageLabel =
+    languageLabels[language ?? EN_US] ?? language ?? t('untranslated.en-us');
 
   const languageMenuItems: BottomPopUpMenuItem[] = AVAILABLE_LANGUAGES.map((lang) => ({
     icon: Languages,
