@@ -70,7 +70,7 @@
     "calories": "Calorias",
     "macros": {
       "protein": "Proteína",
-      "carbs": "Carboidratos",
+      "carbs": "Carbo",
       "fat": "Gordura",
       "fiber": "Fibras",
       "proteinLegend": "Prot",
@@ -332,7 +332,7 @@
       "macronutrients": "Macronutrientes",
       "calories": "Calorias",
       "protein": "Proteína",
-      "carbs": "Carboidratos",
+      "carbs": "Carbo",
       "fat": "Gordura",
       "fiber": "Fibras",
       "micronutrients": "Micronutrientes",

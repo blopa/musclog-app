@@ -2,7 +2,7 @@
   "nutrition": {
     "analyze": "Analisar",
     "calories": "Calorias",
-    "carbs": "Carboidratos",
+    "carbs": "Carbo",
     "characters": "Caracteres",
     "confirmAndSave": "Confirmar e Salvar",
     "createCustom": "Criar Personalizado",
@@ -51,7 +51,7 @@
     },
     "macros": {
       "protein": "Proteína",
-      "carbs": "Carboidratos",
+      "carbs": "Carbo",
       "fat": "Gordura"
     },
     "mealEstimation": {
