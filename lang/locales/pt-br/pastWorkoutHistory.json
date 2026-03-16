@@ -1,54 +1,54 @@
 {
   "pastWorkoutHistory": {
-    "title": "Workout History",
-    "searchPlaceholder": "Search sessions...",
-    "noWorkoutsFound": "No workouts found matching your search.",
-    "noWorkoutHistory": "No workout history yet.",
-    "loadMore": "Load More",
-    "loadingMore": "Loading...",
+    "title": "Histórico de Treinos",
+    "searchPlaceholder": "Pesquisar sessões...",
+    "noWorkoutsFound": "Nenhum treino encontrado correspondente à sua pesquisa.",
+    "noWorkoutHistory": "Nenhum histórico de treino ainda.",
+    "loadMore": "Carregar Mais",
+    "loadingMore": "Carregando...",
     "stats": {
-      "duration": "Duration",
+      "duration": "Duração",
       "volume": "Volume",
-      "calories": "Calories"
+      "calories": "Calorias"
     },
     "prBadge": {
       "singular": "{{count}} PR",
       "plural": "{{count}} PRs"
     },
     "filters": {
-      "title": "Filter Workouts",
-      "workoutType": "WORKOUT TYPE",
-      "minDuration": "MIN. DURATION",
-      "reset": "Reset",
-      "applyFilters": "Apply Filters",
+      "title": "Filtrar Treinos",
+      "workoutType": "TIPO DE TREINO",
+      "minDuration": "DURAÇÃO MÍN.",
+      "reset": "Redefinir",
+      "applyFilters": "Aplicar Filtros",
       "durationFormats": {
         "zero": "0m",
         "minutes": "{{minutes}}m",
-        "minutesPlus": "{{minutes}}+ mins",
+        "minutesPlus": "{{minutes}}+ min",
         "max": "120m+"
       },
       "workoutTypes": {
-        "all": "All Types",
-        "strength": "Strength",
+        "all": "Todos os Tipos",
+        "strength": "Força",
         "cardio": "Cardio",
         "hiit": "HIIT",
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATE RANGE",
-        "30days": "Last 30 Days",
-        "90days": "Last 90 Days",
-        "custom": "Custom"
+        "title": "INTERVALO DE DATA",
+        "30days": "Últimos 30 Dias",
+        "90days": "Últimos 90 Dias",
+        "custom": "Personalizado"
       },
       "muscleGroups": {
-        "title": "MUSCLE GROUP (MULTI-SELECT)",
-        "chest": "Chest",
-        "back": "Back",
-        "legs": "Legs",
-        "shoulders": "Shoulders",
-        "arms": "Arms",
+        "title": "GRUPO MUSCULAR (MULTI-SELEÇÃO)",
+        "chest": "Peito",
+        "back": "Costas",
+        "legs": "Pernas",
+        "shoulders": "Ombros",
+        "arms": "Braços",
         "core": "Core",
-        "fullBody": "Full Body"
+        "fullBody": "Corpo Inteiro"
       }
     }
   }

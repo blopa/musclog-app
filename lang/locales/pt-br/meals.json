@@ -1,54 +1,54 @@
 {
   "meals": {
-    "title": "My Meals",
+    "title": "Minhas Refeições",
     "filters": {
-      "all": "All",
-      "highProtein": "High Protein",
-      "breakfast": "Breakfast",
-      "lunch": "Lunch"
+      "all": "Todas",
+      "highProtein": "Alto Proteína",
+      "breakfast": "Café da Manhã",
+      "lunch": "Almoço"
     },
     "tags": {
-      "highProtein": "High Protein",
+      "highProtein": "Alto Proteína",
       "ketoFriendly": "Keto Friendly",
-      "vegetarian": "Vegetarian",
-      "breakfast": "Breakfast",
-      "lunch": "Lunch",
-      "dinner": "Dinner",
-      "snack": "Snack"
+      "vegetarian": "Vegetariano",
+      "breakfast": "Café da Manhã",
+      "lunch": "Almoço",
+      "dinner": "Jantar",
+      "snack": "Lanche"
     },
     "chatMealCard": {
-      "mealCount": "{{count}} meal",
-      "mealCount_plural": "{{count}} meals",
-      "view": "View",
-      "viewBreakfast": "View Breakfast",
-      "viewLunch": "View Lunch",
-      "viewDinner": "View Dinner",
-      "viewSnack": "View Snack",
-      "tracked": "Tracked"
+      "mealCount": "{{count}} refeição",
+      "mealCount_plural": "{{count}} refeições",
+      "view": "Ver",
+      "viewBreakfast": "Ver Café da Manhã",
+      "viewLunch": "Ver Almoço",
+      "viewDinner": "Ver Jantar",
+      "viewSnack": "Ver Lanche",
+      "tracked": "Registrado"
     },
-    "untitledMeal": "Untitled Meal",
-    "searchPlaceholder": "Search meals...",
-    "loadingMeals": "Loading meals...",
-    "noMealsFound": "No meals found",
-    "noMealsYet": "No meals yet",
-    "noMealsMatch": "No meals match \"{{query}}\"",
-    "createFirstMeal": "Create your first meal to get started",
-    "tryDifferentFilter": "Try a different filter",
-    "loadingMore": "Loading more...",
-    "loadMore": "Load More",
-    "customMeal": "Custom Meal",
-    "createdByYou": "Created by you",
-    "logMeal": "Log Meal",
-    "mealType": "Meal Type",
+    "untitledMeal": "Refeição Sem Título",
+    "searchPlaceholder": "Pesquisar refeições...",
+    "loadingMeals": "Carregando refeições...",
+    "noMealsFound": "Nenhuma refeição encontrada",
+    "noMealsYet": "Nenhuma refeição ainda",
+    "noMealsMatch": "Nenhuma refeição corresponde a \"{{query}}\"",
+    "createFirstMeal": "Crie sua primeira refeição para começar",
+    "tryDifferentFilter": "Tente um filtro diferente",
+    "loadingMore": "Carregando mais...",
+    "loadMore": "Carregar Mais",
+    "customMeal": "Refeição Personalizada",
+    "createdByYou": "Criada por você",
+    "logMeal": "Registrar Refeição",
+    "mealType": "Tipo de Refeição",
     "history": {
-      "unknownMeal": "Unknown Meal"
+      "unknownMeal": "Refeição Desconhecida"
     },
     "deleteItem": {
-      "title": "Delete Item",
-      "message": "Are you sure you want to delete this item?",
-      "cancel": "Cancel",
-      "delete": "Delete"
+      "title": "Excluir Item",
+      "message": "Tem certeza de que deseja excluir este item?",
+      "cancel": "Cancelar",
+      "delete": "Excluir"
     },
-    "unknownFood": "Unknown"
+    "unknownFood": "Desconhecido"
   }
 }

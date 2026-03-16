@@ -1,14 +1,14 @@
 {
   "restTimer": {
-    "resting": "Resting...",
+    "resting": "Descansando...",
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
-    "skipRest": "SKIP REST",
-    "done": "Done",
-    "reps": "reps",
-    "repsWithCount": "{{count}} reps",
-    "upNext": "UP NEXT",
-    "missingWorkoutData": "Missing workout data",
-    "completedSetNotFound": "Completed set not found"
+    "skipRest": "PULAR DESCANSO",
+    "done": "Concluído",
+    "reps": "repetições",
+    "repsWithCount": "{{count}} repetições",
+    "upNext": "PRÓXIMO",
+    "missingWorkoutData": "Dados do treino ausentes",
+    "completedSetNotFound": "Série completada não encontrada"
   }
 }

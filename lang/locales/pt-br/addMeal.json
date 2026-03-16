@@ -1,11 +1,11 @@
 {
   "addMeal": {
-    "createMeal": "Create Meal",
-    "createMealDesc": "Add a new meal to your daily log",
-    "generateMealAI": "Generate Meal with AI",
-    "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
-    "manageCategories": "Manage Categories",
-    "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
-    "title": "Add Meal"
+    "createMeal": "Criar Refeição",
+    "createMealDesc": "Adicione uma nova refeição ao seu registro diário",
+    "generateMealAI": "Gerar Refeição com IA",
+    "generateMealAIDesc": "Deixe a IA sugerir uma refeição baseada nas suas preferências",
+    "manageCategories": "Gerenciar Categorias",
+    "manageCategoriesDesc": "Organize suas categorias de refeição (café da manhã, almoço, etc.)",
+    "title": "Adicionar Refeição"
   }
 }

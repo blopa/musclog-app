@@ -1,102 +1,102 @@
 {
   "coach": {
     "title": "Chat",
-    "you": "You",
+    "you": "Você",
     "name": "Loggy",
     "status": "Online",
     "statusOffline": "Offline",
     "context": {
-      "general": "General",
+      "general": "Geral",
       "exercise": "Fitness",
-      "nutrition": "Nutrition"
+      "nutrition": "Nutrição"
     },
-    "placeholder": "Type a message...",
-    "todayAt": "Today, {{time}}",
-    "imageSent": "Sent an image",
+    "placeholder": "Digite uma mensagem...",
+    "todayAt": "Hoje, {{time}}",
+    "imageSent": "Enviou uma imagem",
     "actions": {
-      "createWorkout": "Create Workout",
-      "analyzeProgress": "Analyze Progress",
-      "nutritionCheck": "Nutrition Check",
-      "trackMeal": "Track Meal",
-      "workoutGen": "Workout Gen."
+      "createWorkout": "Criar Treino",
+      "analyzeProgress": "Analisar Progresso",
+      "nutritionCheck": "Verificar Nutrição",
+      "trackMeal": "Registrar Refeição",
+      "workoutGen": "Gerar Treino"
     },
-    "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
-    "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
-    "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
-    "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
-    "welcomeMessage": "Hello. My name is Loggy, I am your AI Fitness Coach. I'm here to help you achieve your fitness goals, track your progress, and provide personalized guidance. Feel free to ask me anything about workouts, nutrition, or your fitness journey!",
-    "welcomeMessageExercise": "Hello! I'm Loggy. I'm here to help you with your training, whether it's building a new workout plan, checking your form, or analyzing your progress. What's on your training schedule today?",
-    "welcomeMessageNutrition": "Hi! I'm Loggy. I can help you stay on top of your nutrition by tracking your meals, estimating macros, and providing dietary insights. Tell me about your recent meals or ask me any nutrition questions!",
+    "workoutGenerationPrompt": "Posso ajudar você a criar um plano de treino personalizado! Me conte sobre seus objetivos, equipamentos disponíveis e quantos dias por semana você gostaria de treinar.",
+    "analyzeProgressPrompt": "Vou analisar seus treinos recentes. Tem alguma observação que gostaria de me contar antes de eu fazer isso?",
+    "nutritionCheckPrompt": "Vou revisar sua nutrição dos últimos 7 dias. Tem alguma observação que gostaria de adicionar antes de eu fazer isso?",
+    "trackMealPrompt": "Me diga o que você comeu (você pode até enviar uma foto!), e eu vou estimar os macros e registrar para você.",
+    "welcomeMessage": "Olá. Meu nome é Loggy, sou seu Treinador de Fitness IA. Estou aqui para ajudá-lo a alcançar seus objetivos de fitness, acompanhar seu progresso e fornecer orientação personalizada. Sinta-se à vontade para me perguntar qualquer coisa sobre treinos, nutrição ou sua jornada de fitness!",
+    "welcomeMessageExercise": "Olá! Sou o Loggy. Estou aqui para ajudá-lo com seu treino, seja construindo um novo plano de treino, verificando sua forma ou analisando seu progresso. O que há na sua agenda de treino hoje?",
+    "welcomeMessageNutrition": "Oi! Sou o Loggy. Posso ajudá-lo a ficar em dia com sua nutrição rastreando suas refeições, estimando macros e fornecendo insights dietéticos. Me conte sobre suas refeições recentes ou me faça qualquer pergunta sobre nutrição!",
     "insights": {
-      "noNutritionLogs": "I can't provide nutrition insights because you haven't tracked any meals in the past 7 days. Start logging your food to get personalized nutrition feedback!",
-      "noWorkoutLogs": "I can't provide workout insights because you haven't completed any workouts in the past 7 days. Get moving and I'll be ready to analyze your training!"
+      "noNutritionLogs": "Não posso fornecer insights de nutrição porque você não registrou nenhuma refeição nos últimos 7 dias. Comece a registrar seus alimentos para obter feedback nutricional personalizado!",
+      "noWorkoutLogs": "Não posso fornecer insights de treino porque você não completou nenhum treino nos últimos 7 dias. Comece a se mover e estarei pronto para analisar seu treinamento!"
     },
     "errors": {
-      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
-      "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
-      "generalError": "Sorry, something went wrong. Please try again.",
-      "progressInsightFailed": "Could not analyze progress. Try again later.",
-      "nutritionInsightFailed": "Could not check nutrition. Try again later.",
-      "trackMealFailed": "I couldn't estimate the macros for that meal. Could you describe it in more detail?",
-      "filePickFailed": "Failed to pick file. Please try again."
+      "aiNotConfigured": "Os recursos de IA não estão configurados. Por favor, adicione uma chave de API do Gemini ou OpenAI em Configurações.",
+      "workoutGenerationFailed": "Desculpe, não consegui gerar um plano de treino. Por favor, tente novamente.",
+      "generalError": "Desculpe, algo deu errado. Por favor, tente novamente.",
+      "progressInsightFailed": "Não foi possível analisar o progresso. Tente novamente mais tarde.",
+      "nutritionInsightFailed": "Não foi possível verificar a nutrição. Tente novamente mais tarde.",
+      "trackMealFailed": "Não consegui estimar os macros para essa refeição. Você poderia descrevê-la com mais detalhes?",
+      "filePickFailed": "Falha ao selecionar arquivo. Por favor, tente novamente."
     },
     "success": {
-      "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
-      "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}} kcal.",
-      "trackMealReady": "I've analyzed {{count}} meal(s): {{meals}} ({{calories}} kcal total). Tap a meal to review and log it!",
-      "historyCleared": "Chat history cleared."
+      "workoutPlanGenerated": "Criei {{count}} treinos para você! 💪 {{description}}",
+      "trackMealSuccess": "Registrei {{count}} ingredientes para sua refeição: {{ingredients}}. Total: {{calories}} kcal.",
+      "trackMealReady": "Analisei {{count}} refeição(ões): {{meals}} ({{calories}} kcal no total). Toque em uma refeição para revisar e registrá-la!",
+      "historyCleared": "Histórico do chat limpo."
     },
     "aiInstructions": {
-      "parseWorkouts": "Parse the workouts and return the structured list.",
-      "parseNutrition": "Parse the nutrition data and return the structured list.",
-      "parseRetrospectiveNutrition": "Parse the meals and return the structured list.",
-      "generateWorkoutPlanWithHistory": "Generate a workout plan based on this conversation.",
-      "generateWorkoutPlanDefault": "Generate a basic weekly workout plan (e.g. 3-day split)."
+      "parseWorkouts": "Analise os treinos e retorne a lista estruturada.",
+      "parseNutrition": "Analise os dados de nutrição e retorne a lista estruturada.",
+      "parseRetrospectiveNutrition": "Analise as refeições e retorne a lista estruturada.",
+      "generateWorkoutPlanWithHistory": "Gere um plano de treino baseado nesta conversa.",
+      "generateWorkoutPlanDefault": "Gere um plano de treino semanal básico (ex: divisão de 3 dias)."
     },
     "chatMessages": {
-      "title": "Chat Messages",
-      "searchPlaceholder": "Search messages...",
-      "noMessages": "No messages yet",
-      "noMessagesDesc": "Start a conversation with Loggy",
-      "endOfHistory": "All messages loaded",
-      "messageOptions": "Message options",
-      "editMessage": "Edit message",
-      "editMessageDesc": "Change the message text",
-      "deleteMessage": "Delete message",
-      "deleteMessageDesc": "Permanently remove this message",
-      "createMessage": "Create message",
-      "createMessageDesc": "Add a new message to the history",
-      "createMessageFailed": "Failed to create message",
-      "sender": "Sender",
-      "senderUser": "User",
-      "senderCoach": "Coach"
+      "title": "Mensagens do Chat",
+      "searchPlaceholder": "Pesquisar mensagens...",
+      "noMessages": "Nenhuma mensagem ainda",
+      "noMessagesDesc": "Inicie uma conversa com o Loggy",
+      "endOfHistory": "Todas as mensagens carregadas",
+      "messageOptions": "Opções de mensagem",
+      "editMessage": "Editar mensagem",
+      "editMessageDesc": "Alterar o texto da mensagem",
+      "deleteMessage": "Excluir mensagem",
+      "deleteMessageDesc": "Remover permanentemente esta mensagem",
+      "createMessage": "Criar mensagem",
+      "createMessageDesc": "Adicionar uma nova mensagem ao histórico",
+      "createMessageFailed": "Falha ao criar mensagem",
+      "sender": "Remetente",
+      "senderUser": "Usuário",
+      "senderCoach": "Treinador"
     },
     "menu": {
-      "title": "Chat options",
-      "clearHistory": "Clear chat history",
-      "clearHistoryDesc": "Delete all messages in this conversation context.",
-      "shareHistory": "Share chat history",
-      "shareHistoryDesc": "Export this whole conversation as plain text."
+      "title": "Opções do chat",
+      "clearHistory": "Limpar histórico do chat",
+      "clearHistoryDesc": "Excluir todas as mensagens neste contexto de conversa.",
+      "shareHistory": "Compartilhar histórico do chat",
+      "shareHistoryDesc": "Exportar toda esta conversa como texto simples."
     },
     "confirmClear": {
-      "title": "Clear chat history?",
-      "message": "This will permanently delete all messages in this conversation context. This cannot be undone."
+      "title": "Limpar histórico do chat?",
+      "message": "Isso excluirá permanentemente todas as mensagens neste contexto de conversa. Isso não pode ser desfeito."
     },
     "share": {
-      "title": "Chat with Loggy",
-      "noMessages": "There is no chat history to share yet.",
-      "failed": "Failed to share chat history. Please try again."
+      "title": "Chat com o Loggy",
+      "noMessages": "Ainda não há histórico de chat para compartilhar.",
+      "failed": "Falha ao compartilhar histórico do chat. Por favor, tente novamente."
     },
     "message": {
-      "menuTitle": "Message actions",
-      "copy": "Copy",
-      "copyDesc": "Copy message text to clipboard",
-      "share": "Share",
-      "shareDesc": "Share this message",
-      "delete": "Delete",
-      "deleteDesc": "Remove this message from the conversation",
-      "copied": "Message copied to clipboard",
-      "deleted": "Message deleted"
+      "menuTitle": "Ações da mensagem",
+      "copy": "Copiar",
+      "copyDesc": "Copiar texto da mensagem para a área de transferência",
+      "share": "Compartilhar",
+      "shareDesc": "Compartilhar esta mensagem",
+      "delete": "Excluir",
+      "deleteDesc": "Remover esta mensagem da conversa",
+      "copied": "Mensagem copiada para a área de transferência",
+      "deleted": "Mensagem excluída"
     }
   }
 }

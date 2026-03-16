@@ -1,36 +1,36 @@
 {
   "profile": {
     "header": {
-      "title": "Profile"
+      "title": "Perfil"
     },
-    "goal": "Goal",
-    "currentStats": "Current Stats",
-    "history": "History",
-    "management": "Management",
-    "loading": "Loading...",
+    "goal": "Meta",
+    "currentStats": "Estatísticas Atuais",
+    "history": "Histórico",
+    "management": "Gerenciamento",
+    "loading": "Carregando...",
     "syncing": {
-      "healthKit": "Syncing with HealthKit..."
+      "healthKit": "Sincronizando com HealthKit..."
     },
     "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
+      "male": "Masculino",
+      "female": "Feminino",
+      "other": "Outro"
     },
     "managementItems": {
-      "editPersonal": "Edit Personal Info",
-      "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit Fitness Details",
-      "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App Preferences",
-      "appPreferencesDesc": "Customize app settings and preferences"
+      "editPersonal": "Editar Informações Pessoais",
+      "editPersonalDesc": "Atualize seu nome, avatar e detalhes pessoais",
+      "editFitness": "Editar Detalhes de Fitness",
+      "editFitnessDesc": "Atualize suas metas de fitness e preferências",
+      "appPreferences": "Preferências do App",
+      "appPreferencesDesc": "Personalize configurações e preferências do app"
     },
     "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body Fat",
-      "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
+      "weight": "Peso",
+      "height": "Altura",
+      "bodyFat": "Gordura Corporal",
+      "bmi": "IMC",
+      "age": "Idade",
+      "gender": "Gênero"
     }
   }
 }

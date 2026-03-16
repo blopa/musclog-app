@@ -1,20 +1,20 @@
 {
   "workoutSummary": {
-    "totalTime": "Total Time",
+    "totalTime": "Tempo Total",
     "volume": "Volume",
-    "duration": "Duration",
-    "personalRecords": "Personal Records",
-    "newPRs": "New PRs",
-    "goHome": "Go Home",
-    "youCrushedIt": "You Crushed It!",
-    "feedbackSubmitted": "Workout feedback submitted successfully.",
-    "shareText": "I just crushed a workout!",
-    "shareSummary": "Share Summary",
-    "workoutCompleted": "Workout Completed!",
-    "viewDetails": "View Details",
-    "getFeedback": "Get AI Feedback",
-    "gettingFeedback": "Getting feedback...",
-    "completedMessage": "You have completed the {{workoutName}} workout",
-    "completedSummary": "Workout completed: {{workoutName}}"
+    "duration": "Duração",
+    "personalRecords": "Recordes Pessoais",
+    "newPRs": "Novos PRs",
+    "goHome": "Ir para Início",
+    "youCrushedIt": "Você Arrasou!",
+    "feedbackSubmitted": "Feedback do treino enviado com sucesso.",
+    "shareText": "Acabei de arrasar em um treino!",
+    "shareSummary": "Compartilhar Resumo",
+    "workoutCompleted": "Treino Completado!",
+    "viewDetails": "Ver Detalhes",
+    "getFeedback": "Obter Feedback de IA",
+    "gettingFeedback": "Obtendo feedback...",
+    "completedMessage": "Você completou o treino {{workoutName}}",
+    "completedSummary": "Treino completado: {{workoutName}}"
   }
 }

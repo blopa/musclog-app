@@ -1,26 +1,26 @@
 {
   "workoutDetail": {
-    "totalTime": "Total Time",
+    "totalTime": "Tempo Total",
     "volume": "Volume",
-    "calories": "Calories",
-    "volumeTrend": "Volume Trend",
-    "volumeTrendPercentage": "+{{percentage}}% vs avg",
-    "exercisesCount": "Exercises ({{count}})",
-    "minsSpent": "{{minutes}} mins spent",
-    "saveError": "Failed to save changes. Please try again.",
-    "set": "SET",
-    "weight": "WEIGHT",
+    "calories": "Calorias",
+    "volumeTrend": "Tendência de Volume",
+    "volumeTrendPercentage": "+{{percentage}}% vs média",
+    "exercisesCount": "Exercícios ({{count}})",
+    "minsSpent": "{{minutes}} min gastos",
+    "saveError": "Falha ao salvar alterações. Por favor, tente novamente.",
+    "set": "SÉRIE",
+    "weight": "PESO",
     "reps": "REPS",
-    "partial": "PARTIAL",
-    "editSetsTitle": "Edit Sets",
-    "addSet": "Add New Set",
-    "setLabel": "Set {{index}}",
-    "remove": "Remove",
-    "rir": "RIR (Reps in Reserve)",
+    "partial": "PARCIAL",
+    "editSetsTitle": "Editar Séries",
+    "addSet": "Adicionar Nova Série",
+    "setLabel": "Série {{index}}",
+    "remove": "Remover",
+    "rir": "RIR (Repetições em Reserva)",
     "inputs": {
-      "weightKg": "Weight (kg)",
-      "weightLbs": "Weight (lbs)",
-      "restSec": "Rest (sec)"
+      "weightKg": "Peso (kg)",
+      "weightLbs": "Peso (lbs)",
+      "restSec": "Descanso (seg)"
     }
   }
 }

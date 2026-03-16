@@ -1,46 +1,46 @@
 {
   "workout": {
     "import": {
-      "characters": "Characters",
-      "emptyData": "Please paste or enter workout data.",
-      "formatInfo": "Paste or type your workout log (e.g. from a note or app). AI will parse it and create sessions.",
-      "import": "Import",
-      "importWorkouts": "Import Workouts",
-      "instructions": "Paste your workout data below. Supported: free text, bullet lists, or structured logs.",
-      "pasteWorkoutDataPlaceholder": "Paste workout data here...",
-      "processing": "Processing...",
-      "processingData": "Workouts imported successfully.",
-      "processingFailed": "Could not process the data. Please check the format and try again.",
-      "supportedFormats": "Supported formats"
+      "characters": "Caracteres",
+      "emptyData": "Por favor, cole ou digite dados de treino.",
+      "formatInfo": "Cole ou digite seu registro de treino (ex: de uma nota ou app). A IA vai analisar e criar sessões.",
+      "import": "Importar",
+      "importWorkouts": "Importar Treinos",
+      "instructions": "Cole seus dados de treino abaixo. Suportado: texto livre, listas com marcadores ou registros estruturados.",
+      "pasteWorkoutDataPlaceholder": "Cole dados de treino aqui...",
+      "processing": "Processando...",
+      "processingData": "Treinos importados com sucesso.",
+      "processingFailed": "Não foi possível processar os dados. Por favor, verifique o formato e tente novamente.",
+      "supportedFormats": "Formatos suportados"
     },
-    "sessionOverview": "Session Overview",
-    "startWorkout": "Start Workout",
-    "resumeSession": "Resume Session",
-    "workout": "Workout",
-    "inProgress": "In Progress",
+    "sessionOverview": "Visão Geral da Sessão",
+    "startWorkout": "Iniciar Treino",
+    "resumeSession": "Retomar Sessão",
+    "workout": "Treino",
+    "inProgress": "Em Progresso",
     "type": {
-      "strength": "Strength",
+      "strength": "Força",
       "cardio": "Cardio",
-      "flexibility": "Flexibility",
-      "calisthenics": "Calisthenics",
-      "other": "Other",
-      "free": "Free"
+      "flexibility": "Flexibilidade",
+      "calisthenics": "Calistenia",
+      "other": "Outro",
+      "free": "Livre"
     },
-    "exercises": "{{count}} Exercises",
-    "workoutSequence": "Workout Sequence",
-    "skipped": "SKIPPED",
+    "exercises": "{{count}} Exercícios",
+    "workoutSequence": "Sequência do Treino",
+    "skipped": "PULADO",
     "startFromExercise": {
-      "title": "Start from Exercise",
-      "message": "Do you want to start the workout from {{exerciseName}}?",
-      "confirm": "Start from Here",
-      "cancel": "Cancel"
+      "title": "Iniciar do Exercício",
+      "message": "Você quer iniciar o treino a partir de {{exerciseName}}?",
+      "confirm": "Iniciar daqui",
+      "cancel": "Cancelar"
     },
     "summary": {
-      "failedToLoad": "Failed to load",
-      "noWorkoutId": "No workout ID",
-      "unableToLoad": "Unable to load",
-      "feedbackReceived": "Workout feedback submitted successfully.",
-      "failedToGetFeedback": "Could not get feedback. Please try again."
+      "failedToLoad": "Falha ao carregar",
+      "noWorkoutId": "Nenhum ID de treino",
+      "unableToLoad": "Não foi possível carregar",
+      "feedbackReceived": "Feedback do treino enviado com sucesso.",
+      "failedToGetFeedback": "Não foi possível obter feedback. Por favor, tente novamente."
     }
   }
 }

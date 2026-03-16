@@ -1,11 +1,11 @@
 {
   "logSetPerformance": {
-    "title": "Log Set Performance",
-    "difficulty": "DIFFICULTY (RPE)",
-    "easy": "EASY",
-    "moderate": "MODERATE",
-    "failure": "FAILURE",
-    "cancel": "CANCEL",
-    "logSet": "LOG SET"
+    "title": "Registrar Performance da Série",
+    "difficulty": "DIFICULDADE (RPE)",
+    "easy": "FÁCIL",
+    "moderate": "MODERADO",
+    "failure": "FALHA",
+    "cancel": "CANCELAR",
+    "logSet": "REGISTRAR SÉRIE"
   }
 }

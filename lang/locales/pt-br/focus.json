@@ -1,10 +1,10 @@
 {
   "focus": {
-    "currentPhase": "Current Phase",
-    "day": "Day",
-    "physiologicalInsights": "Physiological Insights",
-    "estrogen": "Estrogen",
-    "metabolism": "Metabolism",
-    "energyLevel": "Energy Level"
+    "currentPhase": "Fase Atual",
+    "day": "Dia",
+    "physiologicalInsights": "Insights Fisiológicos",
+    "estrogen": "Estrogênio",
+    "metabolism": "Metabolismo",
+    "energyLevel": "Nível de Energia"
   }
 }

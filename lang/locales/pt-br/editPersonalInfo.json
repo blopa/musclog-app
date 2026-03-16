@@ -1,16 +1,16 @@
 {
   "editPersonalInfo": {
-    "title": "Edit Personal Info",
-    "fullName": "Full Name",
-    "fullNamePlaceholder": "e.g. Alex Johnson",
-    "emailAddress": "Email Address",
-    "emailPlaceholder": "e.g. alex@example.com",
-    "dateOfBirth": "Date of Birth",
-    "dateOfBirthPlaceholder": "MM/DD/YYYY",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "saveChanges": "Save Changes"
+    "title": "Editar Informações Pessoais",
+    "fullName": "Nome Completo",
+    "fullNamePlaceholder": "ex: Alex Johnson",
+    "emailAddress": "Endereço de Email",
+    "emailPlaceholder": "ex: alex@example.com",
+    "dateOfBirth": "Data de Nascimento",
+    "dateOfBirthPlaceholder": "MM/DD/AAAA",
+    "gender": "Gênero",
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro",
+    "saveChanges": "Salvar Alterações"
   }
 }

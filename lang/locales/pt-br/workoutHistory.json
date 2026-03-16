@@ -1,15 +1,15 @@
 {
   "workoutHistory": {
-    "title": "Session History",
-    "previewTitle": "Workout Preview",
-    "workoutInProgress": "WORKOUT IN PROGRESS",
-    "previewSubtitle": "PREVIEW",
-    "duration": "Duration",
+    "title": "Histórico de Sessões",
+    "previewTitle": "Pré-visualização do Treino",
+    "workoutInProgress": "TREINO EM PROGRESSO",
+    "previewSubtitle": "PRÉ-VISUALIZAÇÃO",
+    "duration": "Duração",
     "volume": "Vol",
-    "setsDone": "Sets Done",
-    "startThisWorkout": "Start this workout",
-    "noExercisesYet": "No exercises yet",
-    "exercise": "Exercise {{number}}",
-    "set": "Set {{number}}"
+    "setsDone": "Séries Feitas",
+    "startThisWorkout": "Iniciar este treino",
+    "noExercisesYet": "Nenhum exercício ainda",
+    "exercise": "Exercício {{number}}",
+    "set": "Série {{number}}"
   }
 }

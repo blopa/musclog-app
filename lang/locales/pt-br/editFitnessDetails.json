@@ -1,70 +1,70 @@
 {
   "editFitnessDetails": {
-    "title": "Edit Fitness Details",
-    "units": "Units",
+    "title": "Editar Detalhes de Fitness",
+    "units": "Unidades",
     "imperial": "Imperial",
-    "metric": "Metric",
-    "bodyStats": "Body Stats",
-    "currentWeight": "Current Weight",
-    "height": "Height",
-    "fatPercentage": "Body Fat Percentage",
-    "goalsStrategy": "Goals & Strategy",
-    "fitnessGoal": "Fitness Goal",
-    "eatingPhase": "Eating Phase",
-    "cut": "Cut",
-    "maintain": "Maintain",
-    "bulk": "Bulk",
-    "lifestyleContext": "Lifestyle Context",
-    "activityLevel": "Activity Level",
-    "liftingExperience": "Lifting Experience",
-    "saveChanges": "Save Changes",
-    "selectGoal": "Select Fitness Goal",
-    "selectGoalSubtitle": "Choose the goal that best fits your training",
-    "selectActivity": "Select Activity Level",
-    "selectActivitySubtitle": "Choose your daily activity level",
+    "metric": "Métrico",
+    "bodyStats": "Estatísticas Corporais",
+    "currentWeight": "Peso Atual",
+    "height": "Altura",
+    "fatPercentage": "Percentual de Gordura Corporal",
+    "goalsStrategy": "Metas e Estratégia",
+    "fitnessGoal": "Meta de Fitness",
+    "eatingPhase": "Fase de Alimentação",
+    "cut": "Definir",
+    "maintain": "Manter",
+    "bulk": "Volume",
+    "lifestyleContext": "Contexto de Estilo de Vida",
+    "activityLevel": "Nível de Atividade",
+    "liftingExperience": "Experiência com Musculação",
+    "saveChanges": "Salvar Alterações",
+    "selectGoal": "Selecionar Meta de Fitness",
+    "selectGoalSubtitle": "Escolha a meta que melhor se adapta ao seu treino",
+    "selectActivity": "Selecionar Nível de Atividade",
+    "selectActivitySubtitle": "Escolha seu nível de atividade diária",
     "activityLevelLabels": {
-      "sedentary": "Sedentary",
-      "light": "Light",
-      "moderate": "Moderate",
-      "active": "Active",
-      "superActive": "Super Active"
+      "sedentary": "Sedentário",
+      "light": "Leve",
+      "moderate": "Moderado",
+      "active": "Ativo",
+      "superActive": "Super Ativo"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Little to no exercise, desk job",
-      "light": "Light exercise 1-3 days/week",
-      "moderate": "Moderate exercise 3-5 days/week",
-      "active": "Hard exercise 6-7 days/week",
-      "superActive": "Very hard exercise & physical job"
+      "sedentary": "Pouco ou nenhum exercício, trabalho de escritório",
+      "light": "Exercício leve 1-3 dias/semana",
+      "moderate": "Exercício moderado 3-5 dias/semana",
+      "active": "Exercício intenso 6-7 dias/semana",
+      "superActive": "Exercício muito intenso e trabalho físico"
     },
-    "weightGoal": "Your goal",
+    "weightGoal": "Seu objetivo",
     "weightGoalLabels": {
-      "lose": "Lose weight",
-      "maintain": "Maintain",
-      "gain": "Gain muscle"
+      "lose": "Perder peso",
+      "maintain": "Manter",
+      "gain": "Ganhar músculo"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrophy (Build Muscle)",
-      "strength": "Strength (Lift Heavier)",
-      "endurance": "Endurance (Stamina)",
-      "weightLoss": "Weight Loss (Burn Fat)",
-      "general": "General Fitness"
+      "hypertrophy": "Hipertrofia (Ganhar Músculo)",
+      "strength": "Força (Levantar Mais)",
+      "endurance": "Resistência (Estamina)",
+      "weightLoss": "Perda de Peso (Queimar Gordura)",
+      "general": "Fitness Geral"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus on muscle size and definition",
-      "strength": "Focus on maximum strength and power",
-      "endurance": "Focus on cardiovascular fitness",
-      "weightLoss": "Focus on fat loss and toning",
-      "general": "Maintain overall health and wellness"
+      "hypertrophy": "Foco em tamanho e definição muscular",
+      "strength": "Foco em força e potência máximas",
+      "endurance": "Foco em condicionamento cardiovascular",
+      "weightLoss": "Foco em perda de gordura e tonificação",
+      "general": "Manter saúde e bem-estar geral"
     },
     "experienceLabels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário",
+      "advanced": "Avançado"
     },
     "experienceDescriptions": {
-      "beginner": "0-1 years of consistent training",
-      "intermediate": "1-3 years of consistent training",
-      "advanced": "3+ years of consistent training"
+      "beginner": "0-1 ano de treino consistente",
+      "intermediate": "1-3 anos de treino consistente",
+      "advanced": "3+ anos de treino consistente"
     }
   }
 }

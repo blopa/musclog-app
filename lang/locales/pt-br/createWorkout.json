@@ -1,41 +1,41 @@
 {
   "createWorkout": {
-    "title": "Create New Workout",
-    "save": "Save",
-    "workoutIcon": "Workout Icon",
-    "essentials": "Essentials",
-    "workoutTitle": "Workout Title",
-    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
-    "description": "Description",
-    "descriptionPlaceholder": "Focus on quads and calves...",
-    "workoutType": "Workout type",
+    "title": "Criar Novo Treino",
+    "save": "Salvar",
+    "workoutIcon": "Ícone do Treino",
+    "essentials": "Essenciais",
+    "workoutTitle": "Título do Treino",
+    "workoutTitlePlaceholder": "ex: Destruição de Pernas",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Foco em quadríceps e panturrilhas...",
+    "workoutType": "Tipo de treino",
     "types": {
-      "strength": "Strength",
+      "strength": "Força",
       "cardio": "Cardio",
-      "flexibility": "Flexibility",
-      "calisthenics": "Calisthenics",
-      "other": "Other"
+      "flexibility": "Flexibilidade",
+      "calisthenics": "Calistenia",
+      "other": "Outro"
     },
-    "intelligence": "Intelligence",
+    "intelligence": "Inteligência",
     "volumeCalculation": {
-      "title": "Volume Calculation",
-      "description": "Choose how Musclog calculates optimal volume for your next session. AI adapts based on recovery data.",
-      "none": "None",
-      "algorithm": "Algorithm",
-      "ai": "AI"
+      "title": "Cálculo de Volume",
+      "description": "Escolha como o Musclog calcula o volume ideal para sua próxima sessão. A IA se adapta com base nos dados de recuperação.",
+      "none": "Nenhum",
+      "algorithm": "Algoritmo",
+      "ai": "IA"
     },
-    "routine": "Routine",
-    "repeatOnDays": "Repeat on days",
-    "weekly": "Weekly",
-    "exercises": "Exercises",
-    "exercisesInWorkout": "Exercises in the workout",
-    "addExerciseError": "Failed to Add Exercise",
-    "editTitle": "Edit Workout",
-    "loadError": "Failed to Load",
-    "noExercisesPlaceholder": "No Exercises",
-    "saveError": "Failed to Save",
+    "routine": "Rotina",
+    "repeatOnDays": "Repetir nos dias",
+    "weekly": "Semanal",
+    "exercises": "Exercícios",
+    "exercisesInWorkout": "Exercícios no treino",
+    "addExerciseError": "Falha ao Adicionar Exercício",
+    "editTitle": "Editar Treino",
+    "loadError": "Falha ao Carregar",
+    "noExercisesPlaceholder": "Sem Exercícios",
+    "saveError": "Falha ao Salvar",
     "validation": {
-      "titleRequiredMessage": "Please enter a workout title"
+      "titleRequiredMessage": "Por favor, digite um título para o treino"
     }
   }
 }

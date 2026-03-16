@@ -1,7 +1,7 @@
 {
   "ai": {
     "settings": {
-      "notConfigured": "AI is not configured. Please add an API key or connect your account in Settings."
+      "notConfigured": "A IA não está configurada. Por favor, adicione uma chave de API ou conecte sua conta em Configurações."
     }
   }
 }

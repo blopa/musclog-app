@@ -1,24 +1,24 @@
 {
   "emptyStates": {
     "workouts": {
-      "title": "No Workouts Yet",
-      "description": "Your fitness journey starts with your first rep. Plan your routine and track your progress here.",
-      "buttonLabel": "Create Your First Workout"
+      "title": "Nenhum Treino Ainda",
+      "description": "Sua jornada de fitness começa com sua primeira repetição. Planeje sua rotina e acompanhe seu progresso aqui.",
+      "buttonLabel": "Criar Seu Primeiro Treino"
     },
     "foods": {
-      "title": "No Food Logged",
-      "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
-      "buttonLabel": "Log Your Meal"
+      "title": "Nenhum Alimento Registrado",
+      "description": "Registre suas refeições para ficar em dia com suas metas de nutrição. Seu corpo vai agradecer.",
+      "buttonLabel": "Registrar Sua Refeição"
     },
     "workout": {
-      "title": "No workouts yet",
-      "description": "Ready for your first session?",
-      "button": "Plan"
+      "title": "Nenhum treino ainda",
+      "description": "Pronto para sua primeira sessão?",
+      "button": "Planejar"
     },
     "food": {
-      "title": "Nothing logged today",
-      "description": "Fuel your body!",
-      "button": "Log"
+      "title": "Nada registrado hoje",
+      "description": "Alimente seu corpo!",
+      "button": "Registrar"
     }
   }
 }

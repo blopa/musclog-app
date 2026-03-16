@@ -1,25 +1,25 @@
 {
   "home": {
     "greeting": {
-      "goodEvening": "Good Evening"
+      "goodEvening": "Boa Noite"
     },
     "actions": {
-      "startWorkout": "Start\nWorkout",
-      "trackFood": "Track\nFood"
+      "startWorkout": "Iniciar\nTreino",
+      "trackFood": "Registrar\nAlimento"
     },
     "sections": {
-      "recentWorkouts": "Recent Workouts",
-      "recentFoods": "Recent Foods",
-      "dailySummary": "Daily Summary"
+      "recentWorkouts": "Treinos Recentes",
+      "recentFoods": "Alimentos Recentes",
+      "dailySummary": "Resumo Diário"
     },
     "navigation": {
-      "home": "Home",
-      "profile": "Profile",
-      "workouts": "Workouts",
-      "food": "Food",
+      "home": "Início",
+      "profile": "Perfil",
+      "workouts": "Treinos",
+      "food": "Alimento",
       "coach": "Chat",
-      "focus": "Focus",
-      "cycle": "Cycle"
+      "focus": "Foco",
+      "cycle": "Ciclo"
     }
   }
 }

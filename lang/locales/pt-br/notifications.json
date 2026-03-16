@@ -1,68 +1,68 @@
 {
   "notifications": {
     "header": {
-      "title": "Notifications",
-      "clearAll": "CLEAR ALL"
+      "title": "Notificações",
+      "clearAll": "LIMPAR TUDO"
     },
     "sections": {
-      "today": "TODAY",
-      "yesterday": "YESTERDAY",
-      "earlier": "EARLIER"
+      "today": "HOJE",
+      "yesterday": "ONTEM",
+      "earlier": "ANTERIOR"
     },
     "channels": {
-      "default": "Default",
-      "activeWorkout": "Active Workout"
+      "default": "Padrão",
+      "activeWorkout": "Treino Ativo"
     },
-    "startNow": "Start Now",
+    "startNow": "Iniciar Agora",
     "types": {
       "aiInsight": {
-        "title": "AI Insight",
-        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
+        "title": "Insight de IA",
+        "description": "Com base nos seus levantamentos recentes, tente aumentar sua ingestão de proteína em 15g hoje para recuperação ideal."
       },
       "workoutReminder": {
-        "title": "Workout Reminder",
-        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
+        "title": "Lembrete de Treino",
+        "description": "Pronto para {{workoutName}}? Agendado para {{time}} hoje."
       },
       "workoutCompleted": {
-        "title": "Workout Completed!",
-        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
+        "title": "Treino Completo!",
+        "description": "Ótimo trabalho no {{workoutName}}. Você queimou {{calories}} kcal."
       },
       "kudosReceived": {
-        "title": "Kudos Received",
-        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
+        "title": "Kudos Recebido",
+        "description": "{{name}} e mais {{count}} curtiram seu marco recente: \"{{milestone}}\""
       },
       "weeklyReport": {
-        "title": "Weekly Report Ready",
-        "description": "Your progress report for last week is available. Check your stats."
+        "title": "Relatório Semanal Pronto",
+        "description": "Seu relatório de progresso da semana passada está disponível. Verifique suas estatísticas."
       },
       "activeWorkout": {
-        "title": "Workout: {{workoutName}}",
+        "title": "Treino: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}"
       },
       "workoutReminderMorning": {
-        "title": "Workout Reminder",
-        "body": "Ready to crush your {{workoutName}} workout today??"
+        "title": "Lembrete de Treino",
+        "body": "Pronto para arrasar no seu treino {{workoutName}} hoje??"
       },
       "nutritionOverview": {
-        "title": "Daily Nutrition Overview",
-        "body": "Check how your nutrition aligned with your goals today!"
+        "title": "Resumo Diário de Nutrição",
+        "body": "Verifique como sua nutrição se alinhou com suas metas hoje!"
       },
       "periodPrediction": {
-        "title": "Period Prediction",
-        "body": "Your period is predicted to start in 2 days. Get ready!"
+        "title": "Previsão de Período",
+        "body": "Seu período está previsto para começar em 2 dias. Prepare-se!"
       },
       "fertileWindow": {
-        "title": "Fertile Window",
-        "body": "Your fertile window is starting! Useful for tracking your energy levels."
+        "title": "Janela Fértil",
+        "body": "Sua janela fértil está começando! Útil para acompanhar seus níveis de energia."
       },
       "restTimerAlert": {
-        "title": "Rest Over - Back to Work!",
-        "body": "Your rest period is up. Time to crush the next set!"
+        "title": "Descanso Terminado - De Volta ao Trabalho!",
+        "body": "Seu período de descanso acabou. Hora de arrasar na próxima série!"
       },
       "workoutDurationWarning": {
-        "title": "Still Working Out?",
-        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
+        "title": "Ainda Treinando?",
+        "body": "Sua sessão está rodando há 5 horas. Não esqueça de finalizá-la no Musclog!"
       }
     }
   }

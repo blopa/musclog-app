@@ -1,12 +1,12 @@
 {
   "timePicker": {
-    "cancel": "Cancel",
-    "confirm": "Set Time",
-    "hours": "Hours",
-    "minutes": "Minutes",
-    "selectTime": "Select Time",
-    "now": "Now",
-    "noon": "Noon",
-    "midnight": "Midnight"
+    "cancel": "Cancelar",
+    "confirm": "Definir Hora",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "selectTime": "Selecionar Hora",
+    "now": "Agora",
+    "noon": "Meio-dia",
+    "midnight": "Meia-noite"
   }
 }

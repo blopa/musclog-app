@@ -1,13 +1,13 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Connection Timeout",
-      "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
-      "tryAgain": "Try Again"
+      "title": "Tempo de Conexão Esgotado",
+      "description": "Não conseguimos alcançar os servidores do Musclog. Por favor, verifique sua conexão com a internet.",
+      "tryAgain": "Tentar Novamente"
     },
-    "failedToLoadData": "Failed to load data",
-    "somethingWentWrong": "Something went wrong",
-    "genericDescription": "An unexpected error occurred.",
-    "reload": "Reload"
+    "failedToLoadData": "Falha ao carregar dados",
+    "somethingWentWrong": "Algo deu errado",
+    "genericDescription": "Ocorreu um erro inesperado.",
+    "reload": "Recarregar"
   }
 }

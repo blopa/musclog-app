@@ -30,7 +30,6 @@ import enUsEditScreenInfo from './locales/en-us/editScreenInfo.json';
 import enUsEditSetDetails from './locales/en-us/editSetDetails.json';
 import enUsEmptyStates from './locales/en-us/emptyStates.json';
 import enUsEndWorkout from './locales/en-us/endWorkout.json';
-import enUsErrorDescription from './locales/en-us/error_description.json';
 import enUsErrors from './locales/en-us/errors.json';
 import enUsExercises from './locales/en-us/exercises.json';
 import enUsExerciseTransition from './locales/en-us/exerciseTransition.json';
@@ -102,7 +101,6 @@ import ptBrEditScreenInfo from './locales/pt-br/editScreenInfo.json';
 import ptBrEditSetDetails from './locales/pt-br/editSetDetails.json';
 import ptBrEmptyStates from './locales/pt-br/emptyStates.json';
 import ptBrEndWorkout from './locales/pt-br/endWorkout.json';
-import ptBrErrorDescription from './locales/pt-br/error_description.json';
 import ptBrErrors from './locales/pt-br/errors.json';
 import ptBrExercises from './locales/pt-br/exercises.json';
 import ptBrExerciseTransition from './locales/pt-br/exerciseTransition.json';
@@ -180,7 +178,6 @@ const resources = {
       ...enUsEditSetDetails,
       ...enUsEmptyStates,
       ...enUsEndWorkout,
-      ...enUsErrorDescription,
       ...enUsErrors,
       ...enUsExerciseTransition,
       ...enUsExercises,
@@ -255,7 +252,6 @@ const resources = {
       ...ptBrEditSetDetails,
       ...ptBrEmptyStates,
       ...ptBrEndWorkout,
-      ...ptBrErrorDescription,
       ...ptBrErrors,
       ...ptBrExerciseTransition,
       ...ptBrExercises,

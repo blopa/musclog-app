@@ -1,13 +1,13 @@
 {
   "restOver": {
-    "startNextSet": "Start Next Set",
-    "upNext": "Up Next",
-    "weight": "Weight",
+    "startNextSet": "Iniciar Próxima Série",
+    "upNext": "Próximo",
+    "weight": "Peso",
     "weightWithUnit": "{{value}} {{unit}}",
-    "reps": "Reps",
-    "set": "Set",
-    "restTimeIs": "Rest time is",
-    "over": "over!",
-    "timeToGo": "Time to go! Next set is up."
+    "reps": "Repetições",
+    "set": "Série",
+    "restTimeIs": "O tempo de descanso",
+    "over": "acabou!",
+    "timeToGo": "Hora de ir! A próxima série está aí."
   }
 }

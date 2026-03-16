@@ -1,89 +1,89 @@
 {
   "bodyMetrics": {
     "header": {
-      "title": "Body Metrics",
-      "newMetric": "New Metric"
+      "title": "Métricas Corporais",
+      "newMetric": "Nova Métrica"
     },
     "metrics": {
-      "weight": "Weight",
-      "bodyFat": "Body Fat",
-      "body_fat": "Body Fat",
-      "muscle_mass": "Muscle Mass",
-      "lean_body_mass": "Lean Body Mass",
-      "basal_metabolic_rate": "Basal Metabolic Rate",
-      "total_calories_burned": "Total Calories Burned",
-      "active_calories_burned": "Active Calories Burned",
-      "bmi": "BMI",
-      "height": "Height",
-      "chest": "Chest",
-      "waist": "Waist",
-      "hips": "Hips",
-      "arms": "Arms",
-      "thighs": "Thighs",
-      "calves": "Calves",
-      "neck": "Neck",
-      "shoulders": "Shoulders",
-      "mood": "Mood",
+      "weight": "Peso",
+      "bodyFat": "Gordura Corporal",
+      "body_fat": "Gordura Corporal",
+      "muscle_mass": "Massa Muscular",
+      "lean_body_mass": "Massa Magra",
+      "basal_metabolic_rate": "Taxa Metabólica Basal",
+      "total_calories_burned": "Total de Calorias Queimadas",
+      "active_calories_burned": "Calorias Ativas Queimadas",
+      "bmi": "IMC",
+      "height": "Altura",
+      "chest": "Peito",
+      "waist": "Cintura",
+      "hips": "Quadril",
+      "arms": "Braços",
+      "thighs": "Coxas",
+      "calves": "Panturrilhas",
+      "neck": "Pescoço",
+      "shoulders": "Ombros",
+      "mood": "Humor",
       "ffmi": "FFMI",
-      "nutrition": "Nutrition",
-      "exercise": "Exercise",
-      "other": "Other"
+      "nutrition": "Nutrição",
+      "exercise": "Exercício",
+      "other": "Outro"
     },
     "current": {
-      "label": "CURRENT"
+      "label": "ATUAL"
     },
     "history": {
-      "title": "History",
-      "filter": "Filter",
-      "loadMore": "Load More",
-      "loadingMore": "Loading...",
+      "title": "Histórico",
+      "filter": "Filtrar",
+      "loadMore": "Carregar Mais",
+      "loadingMore": "Carregando...",
       "notes": {
-        "baseline": "Baseline",
-        "noChange": "No change",
-        "decreased": "Decreased",
-        "increased": "Increased"
+        "baseline": "Linha de Base",
+        "noChange": "Sem alteração",
+        "decreased": "Diminuiu",
+        "increased": "Aumentou"
       }
     },
     "dateFormats": {
-      "today": "Today",
-      "yesterday": "Yesterday"
+      "today": "Hoje",
+      "yesterday": "Ontem"
     },
-    "noDataAvailable": "No data available",
-    "noHistoryDataAvailable": "No history data available",
+    "noDataAvailable": "Nenhum dado disponível",
+    "noHistoryDataAvailable": "Nenhum dado de histórico disponível",
     "manageMetricData": {
-      "title": "Metric History",
-      "searchPlaceholder": "Search by metric type...",
-      "noEntries": "No metric entries yet",
-      "noEntriesDesc": "Add body metric entries to see them here",
-      "endOfHistory": "End of metric history",
-      "metricOptions": "Metric options",
-      "editEntry": "Edit entry",
-      "editEntryDesc": "Change value and date",
-      "duplicateEntry": "Duplicate entry",
-      "duplicateEntryDesc": "Create a copy with a new date",
-      "deleteEntry": "Delete entry",
-      "deleteEntryDesc": "Remove this metric entry"
+      "title": "Histórico de Métricas",
+      "searchPlaceholder": "Pesquisar por tipo de métrica...",
+      "noEntries": "Nenhuma entrada de métrica ainda",
+      "noEntriesDesc": "Adicione entradas de métricas corporais para vê-las aqui",
+      "endOfHistory": "Fim do histórico de métricas",
+      "metricOptions": "Opções de métrica",
+      "editEntry": "Editar entrada",
+      "editEntryDesc": "Alterar valor e data",
+      "duplicateEntry": "Duplicar entrada",
+      "duplicateEntryDesc": "Criar uma cópia com uma nova data",
+      "deleteEntry": "Excluir entrada",
+      "deleteEntryDesc": "Remover esta entrada de métrica"
     },
     "addEntry": {
-      "title": "Add Entry",
-      "description": "Record a new body metric measurement",
-      "enterWeight": "Enter Weight",
-      "enterBodyFat": "Enter Body Fat",
-      "enterHeight": "Enter Height",
-      "date": "Date",
-      "time": "Time",
-      "moodQuestion": "How do you feel today?",
+      "title": "Adicionar Entrada",
+      "description": "Registre uma nova medição de métrica corporal",
+      "enterWeight": "Digite o Peso",
+      "enterBodyFat": "Digite a Gordura Corporal",
+      "enterHeight": "Digite a Altura",
+      "date": "Data",
+      "time": "Hora",
+      "moodQuestion": "Como você se sente hoje?",
       "moods": {
-        "0": "Poor",
-        "1": "Low",
-        "2": "Okay",
-        "3": "Good",
-        "4": "Great"
+        "0": "Ruim",
+        "1": "Baixo",
+        "2": "Razoável",
+        "3": "Bem",
+        "4": "Ótimo"
       },
-      "saveEntry": "Save Entry",
-      "errorSaving": "Error Saving",
-      "note": "Note",
-      "notePlaceholder": "Add a note..."
+      "saveEntry": "Salvar Entrada",
+      "errorSaving": "Erro ao Salvar",
+      "note": "Observação",
+      "notePlaceholder": "Adicione uma observação..."
     }
   }
 }

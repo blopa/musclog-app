@@ -1,20 +1,20 @@
 {
   "connectGoogleAccount": {
-    "title": "Connect Google Account",
-    "unlockTitle": "Unlock",
-    "aiInsights": "AI Insights",
-    "description": "Unlock personalized AI insights by connecting your Google account for seamless integration with your own Gemini key.",
+    "title": "Conectar Conta Google",
+    "unlockTitle": "Desbloquear",
+    "aiInsights": "Insights de IA",
+    "description": "Desbloqueie insights personalizados de IA conectando sua conta Google para integração perfeita com sua própria chave Gemini.",
     "features": {
       "deepAnalysis": {
-        "title": "Deep Analysis",
-        "description": "Personalized workout breakdown"
+        "title": "Análise Profunda",
+        "description": "Análise personalizada de treinos"
       },
       "geminiPowered": {
-        "title": "Gemini Powered",
-        "description": "Advanced LLM fitness intelligence"
+        "title": "Powered by Gemini",
+        "description": "Inteligência fitness avançada com LLM"
       }
     },
-    "connectWithGoogle": "Connect with Google",
-    "maybeLater": "Maybe later"
+    "connectWithGoogle": "Conectar com Google",
+    "maybeLater": "Talvez depois"
   }
 }
