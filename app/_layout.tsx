@@ -15,6 +15,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { CoachProvider } from '../components/CoachContext';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
+import { LanguageInitializer } from '../components/LanguageInitializer';
 import { SmartCameraProvider } from '../components/SmartCameraContext';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
@@ -179,6 +180,7 @@ function RootLayout() {
             )}
           >
             <ThemeProvider>
+              <LanguageInitializer />
               <UnreadChatProvider>
                 <SnackbarProvider>
                   <SmartCameraProvider>
