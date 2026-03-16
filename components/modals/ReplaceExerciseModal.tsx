@@ -214,7 +214,7 @@ export function ReplaceExerciseModal({
                 title={t('replaceExercise.selectExercise')}
                 options={displayList.map((exercise) => {
                   const imageUrl =
-                    exercise.image && 'uri' in exercise.image
+                    exercise.image && typeof exercise.image === 'object' && 'uri' in exercise.image
                       ? (exercise.image as { uri: string }).uri
                       : undefined;
 
