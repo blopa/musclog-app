@@ -64,6 +64,7 @@ export function useUnifiedFoodSearch({
   const { units, foodSearchSource } = useSettings();
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [apiCompleted, setApiCompleted] = useState(false);
+  const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // API pagination states
@@ -86,6 +87,7 @@ export function useUnifiedFoodSearch({
       setDebouncedSearchTerm('');
       setApiCompleted(false);
       setUsdaCompleted(false);
+      setFirstResolvedApi(null);
       setApiOffset(0);
       setUsdaOffset(0);
       setAccumulatedApiResults([]);
@@ -97,6 +99,7 @@ export function useUnifiedFoodSearch({
       setDebouncedSearchTerm(searchTerm.trim());
       setApiCompleted(false);
       setUsdaCompleted(false);
+      setFirstResolvedApi(null);
       setApiOffset(0);
       setUsdaOffset(0);
       setAccumulatedApiResults([]);
@@ -226,6 +229,7 @@ export function useUnifiedFoodSearch({
       if (apiOffset === 0) {
         // First page - replace accumulated results
         setAccumulatedApiResults(apiPageResults);
+        setFirstResolvedApi((prev) => prev ?? 'openfood');
       } else {
         // Additional pages - append to accumulated results
         setAccumulatedApiResults((prev) => [...prev, ...apiPageResults]);
@@ -244,6 +248,7 @@ export function useUnifiedFoodSearch({
     if (isUsdaSuccess && usdaPageResults.length > 0) {
       if (usdaOffset === 0) {
         setAccumulatedUsdaResults(usdaPageResults);
+        setFirstResolvedApi((prev) => prev ?? 'usda');
       } else {
         setAccumulatedUsdaResults((prev) => [...prev, ...usdaPageResults]);
       }
@@ -435,5 +440,6 @@ export function useUnifiedFoodSearch({
     loadMoreLocal,
     loadMoreAPI,
     loadMoreUSDA,
+    firstResolvedApi,
   };
 }

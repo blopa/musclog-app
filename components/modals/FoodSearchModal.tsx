@@ -315,6 +315,7 @@ export function FoodSearchModal({
     loadMoreLocal,
     loadMoreAPI,
     loadMoreUSDA,
+    firstResolvedApi,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -890,99 +891,112 @@ export function FoodSearchModal({
                               </View>
                             ) : null}
 
-                            {/* API Results Section - only show if filter includes api or 'all' */}
-                            {(activeFilter === 'all' || activeFilter === 'openfood') &&
-                            resultsBySource.api.length > 0 ? (
-                              <View className="mb-4">
-                                <View className="mb-3 flex-row items-center gap-2">
-                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                  <View className="flex-row items-center gap-2">
-                                    <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                      {t('foodSearch.openFoodFacts', {
-                                        count: resultsBySource.api.length,
-                                      })}
-                                    </Text>
+                            {/* OFF and USDA sections — ordered by whichever resolved first */}
+                            {(firstResolvedApi === 'usda'
+                              ? (['usda', 'openfood'] as const)
+                              : (['openfood', 'usda'] as const)
+                            ).map((apiSource) => {
+                              if (apiSource === 'openfood') {
+                                if (
+                                  !(activeFilter === 'all' || activeFilter === 'openfood') ||
+                                  resultsBySource.api.length === 0
+                                ) {
+                                  return null;
+                                }
+                                return (
+                                  <View key="openfood" className="mb-4">
+                                    <View className="mb-3 flex-row items-center gap-2">
+                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                      <View className="flex-row items-center gap-2">
+                                        <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                          {t('foodSearch.openFoodFacts', {
+                                            count: resultsBySource.api.length,
+                                          })}
+                                        </Text>
+                                      </View>
+                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                    </View>
+                                    <View className="gap-1.5">
+                                      {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                        <FoodSearchItemCard
+                                          key={`api-${food.id}`}
+                                          food={food}
+                                          onAddPress={() => handleFoodClick(food)}
+                                        />
+                                      ))}
+                                    </View>
+                                    {hasMoreAPI ? (
+                                      <View className="py-3">
+                                        <Button
+                                          label={
+                                            isLoadingMoreAPI
+                                              ? t('foodSearch.loadingMore')
+                                              : t('foodSearch.loadMoreAPI')
+                                          }
+                                          onPress={loadMoreAPI}
+                                          size="sm"
+                                          variant="outline"
+                                          disabled={isLoadingMoreAPI}
+                                          loading={isLoadingMoreAPI}
+                                          width="full"
+                                          iconPosition="left"
+                                        />
+                                      </View>
+                                    ) : null}
                                   </View>
-                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                </View>
-                                <View className="gap-1.5">
-                                  {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                    <FoodSearchItemCard
-                                      key={`api-${food.id}`}
-                                      food={food}
-                                      onAddPress={() => handleFoodClick(food)}
-                                    />
-                                  ))}
-                                </View>
+                                );
+                              }
 
-                                {/* Load More API Button */}
-                                {hasMoreAPI ? (
-                                  <View className="py-3">
-                                    <Button
-                                      label={
-                                        isLoadingMoreAPI
-                                          ? t('foodSearch.loadingMore')
-                                          : t('foodSearch.loadMoreAPI')
-                                      }
-                                      onPress={loadMoreAPI}
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={isLoadingMoreAPI}
-                                      loading={isLoadingMoreAPI}
-                                      width="full"
-                                      iconPosition="left"
-                                    />
+                              // usda
+                              if (
+                                !(activeFilter === 'all' || activeFilter === 'usda') ||
+                                resultsBySource.usda.length === 0
+                              ) {
+                                return null;
+                              }
+                              return (
+                                <View key="usda" className="mb-4">
+                                  <View className="mb-3 flex-row items-center gap-2">
+                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                    <View className="flex-row items-center gap-2">
+                                      <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                        {t('foodSearch.usda', {
+                                          count: resultsBySource.usda.length,
+                                        })}
+                                      </Text>
+                                    </View>
+                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                   </View>
-                                ) : null}
-                              </View>
-                            ) : null}
-
-                            {/* USDA Results Section - only show if filter includes usda or 'all' */}
-                            {(activeFilter === 'all' || activeFilter === 'usda') &&
-                            resultsBySource.usda.length > 0 ? (
-                              <View className="mb-4">
-                                <View className="mb-3 flex-row items-center gap-2">
-                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                  <View className="flex-row items-center gap-2">
-                                    <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                      {t('foodSearch.usda', {
-                                        count: resultsBySource.usda.length,
-                                      })}
-                                    </Text>
+                                  <View className="gap-1.5">
+                                    {resultsBySource.usda.map((food: UnifiedFoodResult) => (
+                                      <FoodSearchItemCard
+                                        key={`usda-${food.id}`}
+                                        food={food}
+                                        onAddPress={() => handleFoodClick(food)}
+                                      />
+                                    ))}
                                   </View>
-                                  <View className="h-0.5 flex-1 bg-text-tertiary/30" />
+                                  {hasMoreUSDA ? (
+                                    <View className="py-3">
+                                      <Button
+                                        label={
+                                          isLoadingMoreUSDA
+                                            ? t('foodSearch.loadingMore')
+                                            : t('foodSearch.loadMoreUSDA')
+                                        }
+                                        onPress={loadMoreUSDA}
+                                        size="sm"
+                                        variant="outline"
+                                        disabled={isLoadingMoreUSDA}
+                                        loading={isLoadingMoreUSDA}
+                                        width="full"
+                                        iconPosition="left"
+                                      />
+                                    </View>
+                                  ) : null}
                                 </View>
-                                <View className="gap-1.5">
-                                  {resultsBySource.usda.map((food: UnifiedFoodResult) => (
-                                    <FoodSearchItemCard
-                                      key={`usda-${food.id}`}
-                                      food={food}
-                                      onAddPress={() => handleFoodClick(food)}
-                                    />
-                                  ))}
-                                </View>
-
-                                {/* Load More USDA Button */}
-                                {hasMoreUSDA ? (
-                                  <View className="py-3">
-                                    <Button
-                                      label={
-                                        isLoadingMoreUSDA
-                                          ? t('foodSearch.loadingMore')
-                                          : t('foodSearch.loadMoreUSDA')
-                                      }
-                                      onPress={loadMoreUSDA}
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={isLoadingMoreUSDA}
-                                      loading={isLoadingMoreUSDA}
-                                      width="full"
-                                      iconPosition="left"
-                                    />
-                                  </View>
-                                ) : null}
-                              </View>
-                            ) : null}
+                              );
+                            })}
                           </>
                         ) : null}
 
@@ -1254,6 +1268,7 @@ export function FoodSearchModal({
               setSelectedFood(null);
             }}
             onFoodTracked={() => {
+              setSearchQuery('');
               onFoodTracked?.();
               onClose();
             }}
@@ -1286,6 +1301,7 @@ export function FoodSearchModal({
               setSelectedMeal(null);
             }}
             onFoodTracked={() => {
+              setSearchQuery('');
               onFoodTracked?.();
               onClose();
             }}

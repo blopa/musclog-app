@@ -28,9 +28,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
-    if (options?.logDate !== undefined) {
-      setLogDate(options.logDate);
-    }
+    setLogDate(options?.logDate);
     setIsVisible(true);
   }, []);
 
