@@ -55,7 +55,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   totalFat = 0,
   menuButton,
 }: MealSectionHeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
@@ -68,7 +68,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
       >
         <View className="items-end">
           <Text className="text-lg text-text-secondary">
-            {totalCalories.toLocaleString('en-US', { useGrouping: false })} {t('food.common.kcal')}
+            {totalCalories.toLocaleString(i18n.language, { useGrouping: false })} {t('food.common.kcal')}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <Text className="text-sm">

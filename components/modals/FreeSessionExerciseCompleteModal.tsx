@@ -49,7 +49,7 @@ export function FreeSessionExerciseCompleteModal({
   isFinishing = false,
 }: FreeSessionExerciseCompleteModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const iconConfig = useMemo(
@@ -70,8 +70,8 @@ export function FreeSessionExerciseCompleteModal({
   const displayVolume = kgToDisplay(totalVolumeKg, units);
   const displayVolumeStr =
     displayVolume % 1 === 0
-      ? displayVolume.toLocaleString('en-US')
-      : displayVolume.toLocaleString('en-US', { maximumFractionDigits: 1 });
+      ? displayVolume.toLocaleString(i18n.language)
+      : displayVolume.toLocaleString(i18n.language, { maximumFractionDigits: 1 });
 
   const emerald = theme.colors.status.emerald;
   const indigo = theme.colors.status.indigo;

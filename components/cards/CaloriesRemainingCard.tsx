@@ -49,7 +49,7 @@ export function CaloriesRemainingCard({
   menuButton,
 }: CaloriesRemainingCardProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const needsVerticalLayout =
     willOverflow(macros.protein.amount, macros.protein.goal) ||
@@ -65,10 +65,10 @@ export function CaloriesRemainingCard({
               <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
               <View className="mb-1 flex-row items-baseline gap-2">
                 <Text className="text-6xl font-bold text-text-primary">
-                  {calories.consumed.toLocaleString('en-US', { useGrouping: false })}
+                  {calories.consumed.toLocaleString(i18n.language, { useGrouping: false })}
                 </Text>
                 <Text className="text-2xl text-text-secondary">
-                  / {calories.total.toLocaleString('en-US', { useGrouping: false })}
+                  / {calories.total.toLocaleString(i18n.language, { useGrouping: false })}
                 </Text>
                 <Text
                   className="ml-auto text-3xl font-semibold"

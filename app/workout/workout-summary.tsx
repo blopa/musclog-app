@@ -10,11 +10,9 @@ import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebr
 import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
 import {
   ChatService,
-  GoogleAuthService,
   WorkoutAnalytics,
   WorkoutService,
 } from '../../database/services';
-import { SettingsService } from '../../database/services/SettingsService';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
 import { theme } from '../../theme';
@@ -25,7 +23,7 @@ import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string }>();
   const workoutLogId = params.workoutLogId;
@@ -95,7 +93,7 @@ export default function WorkoutSummaryScreen() {
         let volumeStr = `0 ${weightUnit}`;
         if (completedWorkout.totalVolume) {
           const displayVolume = kgToDisplay(completedWorkout.totalVolume, units);
-          const formattedVolume = displayVolume.toLocaleString('en-US', {
+          const formattedVolume = displayVolume.toLocaleString(i18n.language, {
             maximumFractionDigits: 0,
           });
           volumeStr = `${formattedVolume} ${weightUnit}`;
