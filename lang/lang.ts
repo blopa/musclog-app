@@ -7,6 +7,7 @@ import {
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import untranslated from './locales/untranslated.json';
 
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
@@ -157,6 +158,7 @@ export const PT_BR = 'pt-BR';
 const resources = {
   [EN_US]: {
     translation: {
+      ...untranslated,
       ...enUsAccessToken,
       ...enUsAddMeal,
       ...enUsAi,
@@ -231,6 +233,7 @@ const resources = {
   },
   [PT_BR]: {
     translation: {
+      ...untranslated,
       ...ptBrAccessToken,
       ...ptBrAddMeal,
       ...ptBrAi,
@@ -313,6 +316,11 @@ export const LOCALE_MAP = {
 };
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];
+
+export const languageLabels: Record<string, string> = {
+  [EN_US]: i18n.t('untranslated.en-us'),
+  [PT_BR]: i18n.t('untranslated.pt-br'),
+};
 
 const systemLocales = Localization.getLocales();
 
