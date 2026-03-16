@@ -14,6 +14,7 @@ type FoodInfoCardProps = {
     protein: number;
     carbs: number;
     fat: number;
+    source?: 'openfood' | 'usda' | 'local' | 'ai';
   };
 };
 
@@ -38,6 +39,16 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View className="flex-1">
             <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text>
             <Text className="text-sm text-text-secondary">{food.category}</Text>
+            {food.source === 'openfood' || food.source === 'usda' || food.source === 'ai' ? (
+              <Text className="mt-1 text-xs text-text-tertiary opacity-50">
+                {/*TODO: move this to a helper function to avoid nested ternary*/}
+                {food.source === 'openfood'
+                  ? t('food.foodDetails.sourceOpenFood')
+                  : food.source === 'usda'
+                    ? t('food.foodDetails.sourceUsda')
+                    : t('food.foodDetails.sourceAi')}
+              </Text>
+            ) : null}
           </View>
           <View className="items-end">
             <Text className="text-4xl font-black tracking-tight text-accent-primary">

@@ -243,7 +243,10 @@
       "loadingMoreDetails": "Loading more details...",
       "successMessage": "Food tracked successfully!",
       "errorMessage": "Failed to track food. Please try again.",
-      "updateFood": "Update Food"
+      "updateFood": "Update Food",
+      "sourceOpenFood": "Open Food Facts",
+      "sourceUsda": "USDA",
+      "sourceAi": "AI"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",
