@@ -66,11 +66,11 @@ export const REQUIRED_PERMISSIONS: Permission[] = [
   { accessType: 'read', recordType: 'Nutrition' },
   { accessType: 'write', recordType: 'Nutrition' },
   { accessType: 'read', recordType: 'TotalCaloriesBurned' },
-  { accessType: 'write', recordType: 'TotalCaloriesBurned' },
+  // write TotalCaloriesBurned not used — app only reads this from external sources
   { accessType: 'read', recordType: 'ActiveCaloriesBurned' },
-  { accessType: 'write', recordType: 'ActiveCaloriesBurned' },
+  // write ActiveCaloriesBurned not used — app only reads this from external sources
   { accessType: 'read', recordType: 'BasalMetabolicRate' },
-  { accessType: 'read', recordType: 'ExerciseSession' },
+  // read ExerciseSession not used — app only writes completed workouts to Health Connect
   { accessType: 'write', recordType: 'ExerciseSession' },
   { accessType: 'read', recordType: 'LeanBodyMass' },
   { accessType: 'write', recordType: 'LeanBodyMass' },
