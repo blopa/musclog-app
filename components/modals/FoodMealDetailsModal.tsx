@@ -1216,7 +1216,7 @@ export function FoodMealDetailsModal({
 
       captureException(error, {
         data: {
-          context: 'FoodMealDetailsModal.handleAddFood',
+          context: 'FoodMealDetailsModal.handleAddFood 2',
           foodName: getFoodMealName(),
           servingSize,
           mealType: selectedMeal,
