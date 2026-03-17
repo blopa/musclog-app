@@ -977,10 +977,7 @@ export default function WorkoutSessionScreen() {
                     fuelingStatus === 'low'
                       ? `${theme.colors.status.warning}66`
                       : `${theme.colors.status.success}66`,
-                  backgroundColor:
-                    fuelingStatus === 'low'
-                      ? `${theme.colors.status.warning}33`
-                      : `${theme.colors.status.success}33`,
+                  backgroundColor: `${theme.colors.background.card}95`,
                 }}
               >
                 <View className="flex-row items-start gap-3">
