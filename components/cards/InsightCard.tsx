@@ -8,10 +8,10 @@ export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
 export type InsightCardSize = 'xs' | 'sm' | 'md';
 
-const sizeStyles: Record<InsightCardSize, { iconSize: number; textClassName: string; labelClassName: string }> = {
-  xs: { iconSize: 10, labelClassName: 'text-xs font-bold uppercase tracking-wider', textClassName: 'font-medium text-xs text-text-primary' },
-  sm: { iconSize: 12, labelClassName: 'text-xs font-bold uppercase tracking-wider', textClassName: 'font-medium text-xs text-text-primary' },
-  md: { iconSize: 16, labelClassName: 'text-sm font-bold uppercase tracking-wider', textClassName: 'font-medium text-text-primary' },
+const sizeStyles: Record<InsightCardSize, { iconSize: number; fontSize: number; iconContainerSize: number }> = {
+  xs: { iconSize: 10, fontSize: theme.typography.fontSize.xxs, iconContainerSize: theme.size['5'] },
+  sm: { iconSize: 12, fontSize: theme.typography.fontSize.xs, iconContainerSize: theme.size['6'] },
+  md: { iconSize: 16, fontSize: theme.typography.fontSize.sm, iconContainerSize: theme.size['8'] },
 };
 
 interface InsightCardProps {
@@ -67,7 +67,7 @@ export function InsightCard({
 }: InsightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { borderColor, backgroundColor, accentColor, iconTextColor } = variantStyles[variant];
-  const { iconSize, textClassName, labelClassName } = sizeStyles[size];
+  const { iconSize, fontSize, iconContainerSize } = sizeStyles[size];
 
   return (
     <Pressable
@@ -77,19 +77,20 @@ export function InsightCard({
     >
       <View className="flex-row items-start gap-3">
         <View
-          className="h-8 w-8 items-center justify-center rounded-full"
-          style={{ backgroundColor: accentColor }}
+          className="items-center justify-center rounded-full"
+          style={{ backgroundColor: accentColor, width: iconContainerSize, height: iconContainerSize }}
         >
           <Icon size={iconSize} color={iconTextColor} />
         </View>
         <View className="flex-1">
           {inlineLabel ? (
             <Text
-              className={textClassName}
+              className="font-medium text-text-primary"
+              style={{ fontSize }}
               numberOfLines={expandable && !isExpanded ? 2 : undefined}
               ellipsizeMode="tail"
             >
-              <Text className="font-bold" style={{ color: accentColor }}>
+              <Text className="font-bold" style={{ color: accentColor, fontSize }}>
                 {label}{' '}
               </Text>
               {message}
@@ -97,7 +98,10 @@ export function InsightCard({
           ) : (
             <>
               <View className="flex-row items-center justify-between">
-                <Text className={labelClassName} style={{ color: accentColor }}>
+                <Text
+                  className="font-bold uppercase tracking-wider"
+                  style={{ color: accentColor, fontSize }}
+                >
                   {label}
                 </Text>
                 {onDismiss ? (
@@ -107,7 +111,8 @@ export function InsightCard({
                 ) : null}
               </View>
               <Text
-                className={`mt-0.5 ${textClassName}`}
+                className="mt-0.5 font-medium text-text-primary"
+                style={{ fontSize }}
                 numberOfLines={expandable && !isExpanded ? 1 : undefined}
                 ellipsizeMode="tail"
               >
