@@ -13,6 +13,7 @@ import {
   Repeat,
   SkipForward,
   WifiOff,
+  X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -245,6 +246,8 @@ export default function WorkoutSessionScreen() {
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+  const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
+  const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -943,17 +946,22 @@ export default function WorkoutSessionScreen() {
 
           {/* Physiological Insight Card */}
           <View className="mx-6 mt-32 gap-3">
-            {isCycleTrackingActive ? (
-              <View className="rounded-2xl border-2 border-accent-primary/20 bg-accent-primary/10 p-4">
-                <View className="flex-row items-center gap-3">
+            {isCycleTrackingActive && !isHormonalInsightDismissed ? (
+              <View className="rounded-2xl border-2 border-accent-primary/40 bg-accent-primary/20 p-4">
+                <View className="flex-row items-start gap-3">
                   <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
                     <Flame size={20} color={theme.colors.text.black} />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
-                      {t('workoutSession.hormonalInsight')}
-                    </Text>
-                    <Text className="font-medium text-text-primary">
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
+                        {t('workoutSession.hormonalInsight')}
+                      </Text>
+                      <Pressable onPress={() => setIsHormonalInsightDismissed(true)}>
+                        <X size={16} color={theme.colors.accent.primary} />
+                      </Pressable>
+                    </View>
+                    <Text className="mt-0.5 font-medium text-text-primary">
                       {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
                     </Text>
                   </View>
@@ -961,21 +969,21 @@ export default function WorkoutSessionScreen() {
               </View>
             ) : null}
 
-            {fuelingStatus !== 'loading' ? (
+            {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
               <View
                 className="rounded-2xl border-2 p-4"
                 style={{
                   borderColor:
                     fuelingStatus === 'low'
-                      ? `${theme.colors.status.warning}33`
-                      : `${theme.colors.status.success}33`,
+                      ? `${theme.colors.status.warning}66`
+                      : `${theme.colors.status.success}66`,
                   backgroundColor:
                     fuelingStatus === 'low'
-                      ? `${theme.colors.status.warning}1A`
-                      : `${theme.colors.status.success}1A`,
+                      ? `${theme.colors.status.warning}33`
+                      : `${theme.colors.status.success}33`,
                 }}
               >
-                <View className="flex-row items-center gap-3">
+                <View className="flex-row items-start gap-3">
                   <View
                     className="h-10 w-10 items-center justify-center rounded-full"
                     style={{
@@ -993,18 +1001,30 @@ export default function WorkoutSessionScreen() {
                     />
                   </View>
                   <View className="flex-1">
-                    <Text
-                      className="text-sm font-bold uppercase tracking-wider"
-                      style={{
-                        color:
-                          fuelingStatus === 'low'
-                            ? theme.colors.status.warning
-                            : theme.colors.status.success,
-                      }}
-                    >
-                      {t('workoutSession.fuelingInsight')}
-                    </Text>
-                    <Text className="font-medium text-text-primary">
+                    <View className="flex-row items-center justify-between">
+                      <Text
+                        className="text-sm font-bold uppercase tracking-wider"
+                        style={{
+                          color:
+                            fuelingStatus === 'low'
+                              ? theme.colors.status.warning
+                              : theme.colors.status.success,
+                        }}
+                      >
+                        {t('workoutSession.fuelingInsight')}
+                      </Text>
+                      <Pressable onPress={() => setIsFuelingInsightDismissed(true)}>
+                        <X
+                          size={16}
+                          color={
+                            fuelingStatus === 'low'
+                              ? theme.colors.status.warning
+                              : theme.colors.status.success
+                          }
+                        />
+                      </Pressable>
+                    </View>
+                    <Text className="mt-0.5 font-medium text-text-primary">
                       {fuelingStatus === 'low'
                         ? t('workoutSession.lowFuelingMessage')
                         : t('workoutSession.fullyFueledMessage', {
