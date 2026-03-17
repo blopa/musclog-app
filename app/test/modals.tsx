@@ -4,11 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MealEstimationModal } from '../../components/MealEstimationModal';
 import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
+import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
 import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMealModal';
 import { AddFoodModal } from '../../components/modals/AddFoodModal';
 import { AddMealModal } from '../../components/modals/AddMealModal';
 import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryModal';
 import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsModal';
+import { AiCustomPromptEditModal } from '../../components/modals/AiCustomPromptEditModal';
+import { AiCustomPromptsModal } from '../../components/modals/AiCustomPromptsModal';
+import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
 import { BasicSettingsModal } from '../../components/modals/BasicSettingsModal';
@@ -24,6 +28,8 @@ import { CreateFoodPortionModal } from '../../components/modals/CreateFoodPortio
 import { CreateMealModal } from '../../components/modals/CreateMealModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import { CycleLogModal } from '../../components/modals/CycleLogModal';
+import { CycleSettingsModal } from '../../components/modals/CycleSettingsModal';
 import {
   ExerciseDataModal,
   FoodDataModal,
@@ -48,31 +54,44 @@ import { FoodNotFoundModal } from '../../components/modals/FoodNotFoundModal';
 import { FoodSearchModal } from '../../components/modals/FoodSearchModal';
 import { FreeSessionExerciseCompleteModal } from '../../components/modals/FreeSessionExerciseCompleteModal';
 import { FullScreenModal } from '../../components/modals/FullScreenModal';
+import { GenericEditModal } from '../../components/modals/GenericEditModal';
 import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { ImportNutritionModal } from '../../components/modals/ImportNutritionModal';
 import { ImportWorkoutsModal } from '../../components/modals/ImportWorkoutsModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';
+import { NotificationsSettingsModal } from '../../components/modals/NotificationsSettingsModal';
 import { NutritionConfirmationModal } from '../../components/modals/NutritionConfirmationModal';
 import { NutritionGoals, NutritionGoalsModal } from '../../components/modals/NutritionGoalsModal';
+import { PastWorkoutBottomMenu } from '../../components/modals/PastWorkoutBottomMenu';
 import PastWorkoutDetailModal from '../../components/modals/PastWorkoutDetailModal';
+import { PastWorkoutsHistoryFilterMenu } from '../../components/modals/PastWorkoutsHistoryFilterMenu';
 import PastWorkoutsHistoryModal from '../../components/modals/PastWorkoutsHistoryModal';
 import { PortionSizesPickerModal } from '../../components/modals/PortionSizesPickerModal';
+import { RecentNutritionHistoryModal } from '../../components/modals/RecentNutritionHistoryModal';
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { RetrospectiveNutritionModal } from '../../components/modals/RetrospectiveNutritionModal';
+import { ScannedFoodDetailsModal } from '../../components/modals/ScannedFoodDetailsModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
+import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { TimePickerModal } from '../../components/modals/TimePickerModal';
 import { UserMenuModal } from '../../components/modals/UserMenuModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
+import { VisualSettingsModal } from '../../components/modals/VisualSettingsModal';
 import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import { Button } from '../../components/theme/Button';
 import { EnrichedWorkoutLogSet } from '../../database/services';
+import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 
 export default function ModalsTestScreen() {
+  // Menstrual cycle data for CycleSettingsModal
+  const { cycle } = useMenstrualCycle();
+
   // Nutrition Goals Modal
   const [isNutritionGoalsVisible, setIsNutritionGoalsVisible] = useState(false);
 
@@ -253,6 +272,52 @@ export default function ModalsTestScreen() {
 
   // Retrospective Nutrition Modal
   const [isRetrospectiveNutritionVisible, setIsRetrospectiveNutritionVisible] = useState(false);
+
+  // AI Nutrition Tracking Context Modal
+  const [isAiNutritionContextVisible, setIsAiNutritionContextVisible] = useState(false);
+
+  // AI Custom Prompts Modal
+  const [isAiCustomPromptsVisible, setIsAiCustomPromptsVisible] = useState(false);
+
+  // AI Custom Prompt Edit Modal
+  const [isAiCustomPromptEditVisible, setIsAiCustomPromptEditVisible] = useState(false);
+
+  // Cycle Log Modal
+  const [isCycleLogVisible, setIsCycleLogVisible] = useState(false);
+
+  // Cycle Settings Modal
+  const [isCycleSettingsVisible, setIsCycleSettingsVisible] = useState(false);
+
+  // Generic Edit Modal
+  const [isGenericEditVisible, setIsGenericEditVisible] = useState(false);
+
+  // Move Copy Meal Modal
+  const [isMoveCopyMealVisible, setIsMoveCopyMealVisible] = useState(false);
+  const [moveCopyMode, setMoveCopyMode] = useState<'move' | 'copy' | 'split'>('move');
+
+  // Notifications Settings Modal
+  const [isNotificationsSettingsVisible, setIsNotificationsSettingsVisible] = useState(false);
+
+  // Past Workout Bottom Menu
+  const [isPastWorkoutBottomMenuVisible, setIsPastWorkoutBottomMenuVisible] = useState(false);
+
+  // Past Workouts History Filter Menu
+  const [isPastWorkoutsFilterVisible, setIsPastWorkoutsFilterVisible] = useState(false);
+
+  // Recent Nutrition History Modal
+  const [isRecentNutritionHistoryVisible, setIsRecentNutritionHistoryVisible] = useState(false);
+
+  // Scanned Food Details Modal
+  const [isScannedFoodDetailsVisible, setIsScannedFoodDetailsVisible] = useState(false);
+
+  // Smart Camera Modal
+  const [isSmartCameraVisible, setIsSmartCameraVisible] = useState(false);
+
+  // Visual Settings Modal
+  const [isVisualSettingsVisible, setIsVisualSettingsVisible] = useState(false);
+
+  // Add Exercise To Session Modal
+  const [isAddExerciseToSessionVisible, setIsAddExerciseToSessionVisible] = useState(false);
 
   const handleSaveGoals = (goals: NutritionGoals) => {
     console.log('Goals saved:', goals);
@@ -1227,6 +1292,261 @@ export default function ModalsTestScreen() {
             />
           </View>
 
+          {/* AI Nutrition Tracking Context Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              AI Nutrition Tracking Context Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for adding context to AI nutrition tracking like meal description and tags.
+            </Text>
+            <Button
+              label="Open AI Nutrition Context Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiNutritionContextVisible(true)}
+            />
+          </View>
+
+          {/* AI Custom Prompts Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              AI Custom Prompts Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for managing AI custom prompts for different contexts.
+            </Text>
+            <Button
+              label="Open AI Custom Prompts Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiCustomPromptsVisible(true)}
+            />
+          </View>
+
+          {/* AI Custom Prompt Edit Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              AI Custom Prompt Edit Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for editing or creating AI custom prompts.
+            </Text>
+            <Button
+              label="Open AI Custom Prompt Edit Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAiCustomPromptEditVisible(true)}
+            />
+          </View>
+
+          {/* Cycle Log Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Cycle Log Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for logging menstrual cycle data including flow and symptoms.
+            </Text>
+            <Button
+              label="Open Cycle Log Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsCycleLogVisible(true)}
+            />
+          </View>
+
+          {/* Cycle Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Cycle Settings Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for configuring menstrual cycle settings and goals.
+            </Text>
+            <Button
+              label="Open Cycle Settings Modal"
+              variant="accent"
+              width="full"
+              disabled={!cycle}
+              onPress={() => cycle && setIsCycleSettingsVisible(true)}
+            />
+          </View>
+
+          {/* Generic Edit Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Generic Edit Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Reusable modal for editing various data types with configurable fields.
+            </Text>
+            <Button
+              label="Open Generic Edit Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsGenericEditVisible(true)}
+            />
+          </View>
+
+          {/* Move Copy Meal Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Move/Copy Meal Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for moving, copying, or splitting meals to different dates.
+            </Text>
+            <View className="flex-row gap-2">
+              <Button
+                label="Move Mode"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => {
+                  setMoveCopyMode('move');
+                  setIsMoveCopyMealVisible(true);
+                }}
+              />
+              <Button
+                label="Copy Mode"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => {
+                  setMoveCopyMode('copy');
+                  setIsMoveCopyMealVisible(true);
+                }}
+              />
+              <Button
+                label="Split Mode"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => {
+                  setMoveCopyMode('split');
+                  setIsMoveCopyMealVisible(true);
+                }}
+              />
+            </View>
+          </View>
+
+          {/* Notifications Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Notifications Settings Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for configuring notification preferences for workouts, nutrition, and cycle.
+            </Text>
+            <Button
+              label="Open Notifications Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsNotificationsSettingsVisible(true)}
+            />
+          </View>
+
+          {/* Past Workout Bottom Menu */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Past Workout Bottom Menu
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Bottom menu with actions for past workouts like edit, share, delete, and preview.
+            </Text>
+            <Button
+              label="Open Past Workout Bottom Menu"
+              variant="accent"
+              width="full"
+              onPress={() => setIsPastWorkoutBottomMenuVisible(true)}
+            />
+          </View>
+
+          {/* Past Workouts History Filter Menu */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Past Workouts History Filter Menu
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Filter menu for past workouts with options for type, muscle groups, and date range.
+            </Text>
+            <Button
+              label="Open Past Workouts Filter Menu"
+              variant="accent"
+              width="full"
+              onPress={() => setIsPastWorkoutsFilterVisible(true)}
+            />
+          </View>
+
+          {/* Recent Nutrition History Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Recent Nutrition History Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal showing recently used food items for quick selection.
+            </Text>
+            <Button
+              label="Open Recent Nutrition History Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsRecentNutritionHistoryVisible(true)}
+            />
+          </View>
+
+          {/* Scanned Food Details Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Scanned Food Details Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal displaying details for scanned barcode products.
+            </Text>
+            <Button
+              label="Open Scanned Food Details Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsScannedFoodDetailsVisible(true)}
+            />
+          </View>
+
+          {/* Smart Camera Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Smart Camera Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Full-screen camera modal for AI meal scanning and barcode detection.
+            </Text>
+            <Button
+              label="Open Smart Camera Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsSmartCameraVisible(true)}
+            />
+          </View>
+
+          {/* Visual Settings Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Visual Settings Modal</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for customizing navigation bar items and visual preferences.
+            </Text>
+            <Button
+              label="Open Visual Settings Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsVisualSettingsVisible(true)}
+            />
+          </View>
+
+          {/* Add Exercise To Session Modal */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">
+              Add Exercise To Session Modal
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Modal for adding exercises to an active workout session with sets configuration.
+            </Text>
+            <Button
+              label="Open Add Exercise To Session Modal"
+              variant="accent"
+              width="full"
+              onPress={() => setIsAddExerciseToSessionVisible(true)}
+            />
+          </View>
+
           {/* Bottom spacing */}
           <View className="h-8" />
         </View>
@@ -1798,6 +2118,116 @@ export default function ModalsTestScreen() {
         visible={isRetrospectiveNutritionVisible}
         onClose={() => setIsRetrospectiveNutritionVisible(false)}
         targetDate={new Date()}
+      />
+
+      <AINutritionTrackingContextModal
+        visible={isAiNutritionContextVisible}
+        onClose={() => setIsAiNutritionContextVisible(false)}
+        onApply={(context) => console.log('AI context applied:', context)}
+      />
+
+      <AiCustomPromptsModal
+        visible={isAiCustomPromptsVisible}
+        onClose={() => setIsAiCustomPromptsVisible(false)}
+      />
+
+      <AiCustomPromptEditModal
+        visible={isAiCustomPromptEditVisible}
+        onClose={() => setIsAiCustomPromptEditVisible(false)}
+      />
+
+      <CycleLogModal
+        visible={isCycleLogVisible}
+        onClose={() => setIsCycleLogVisible(false)}
+        initialDate={new Date()}
+      />
+
+      {cycle ? (
+        <CycleSettingsModal
+          visible={isCycleSettingsVisible}
+          onClose={() => setIsCycleSettingsVisible(false)}
+          cycle={cycle}
+        />
+      ) : null}
+
+      <GenericEditModal
+        visible={isGenericEditVisible}
+        onClose={() => setIsGenericEditVisible(false)}
+        title="Generic Edit Modal"
+        fields={[
+          { key: 'name', label: 'Name', type: 'text', required: true },
+          { key: 'amount', label: 'Amount', type: 'number', required: true },
+          { key: 'active', label: 'Active', type: 'boolean' },
+        ]}
+        initialValues={{ name: 'Test', amount: 100, active: true }}
+        onSave={async (values) => {
+          console.log('Generic edit saved:', values);
+          setIsGenericEditVisible(false);
+        }}
+      />
+
+      <MoveCopyMealModal
+        visible={isMoveCopyMealVisible}
+        onClose={() => setIsMoveCopyMealVisible(false)}
+        onConfirm={async (targetDate, targetMealType, splitPercentage) => {
+          console.log('Move/Copy confirmed:', { targetDate, targetMealType, splitPercentage });
+        }}
+        mode={moveCopyMode}
+        sourceMealType="lunch"
+        sourceDate={new Date()}
+      />
+
+      <NotificationsSettingsModal
+        visible={isNotificationsSettingsVisible}
+        onClose={() => setIsNotificationsSettingsVisible(false)}
+      />
+
+      <PastWorkoutBottomMenu
+        visible={isPastWorkoutBottomMenuVisible}
+        onClose={() => setIsPastWorkoutBottomMenuVisible(false)}
+        workoutName="Sample Workout"
+        onEdit={() => console.log('Edit workout')}
+        onShare={() => console.log('Share workout')}
+        onDelete={() => console.log('Delete workout')}
+        onPreview={() => console.log('Preview workout')}
+      />
+
+      <PastWorkoutsHistoryFilterMenu
+        visible={isPastWorkoutsFilterVisible}
+        onClose={() => setIsPastWorkoutsFilterVisible(false)}
+        onApplyFilters={(filters) => console.log('Applied filters:', filters)}
+        onClearFilters={() => console.log('Cleared filters')}
+      />
+
+      <RecentNutritionHistoryModal
+        visible={isRecentNutritionHistoryVisible}
+        onClose={() => setIsRecentNutritionHistoryVisible(false)}
+        onFoodClick={(food) => console.log('Food clicked:', food)}
+        portion100gName="100g"
+      />
+
+      <ScannedFoodDetailsModal
+        visible={isScannedFoodDetailsVisible}
+        onClose={() => setIsScannedFoodDetailsVisible(false)}
+        barcode="3017620425035"
+        onAddFood={(food) => console.log('Food added from scan:', food)}
+      />
+
+      <SmartCameraModal
+        visible={isSmartCameraVisible}
+        onClose={() => setIsSmartCameraVisible(false)}
+        mode="barcode-scan"
+      />
+
+      <VisualSettingsModal
+        visible={isVisualSettingsVisible}
+        onClose={() => setIsVisualSettingsVisible(false)}
+      />
+
+      <AddExerciseToSessionModal
+        visible={isAddExerciseToSessionVisible}
+        onClose={() => setIsAddExerciseToSessionVisible(false)}
+        workoutLogId="test-workout-log-id"
       />
     </SafeAreaView>
   );
