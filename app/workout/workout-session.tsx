@@ -1023,7 +1023,10 @@ export default function WorkoutSessionScreen() {
                     </View>
                     <Text className="mt-0.5 font-medium text-text-primary">
                       {fuelingStatus === 'low'
-                        ? t('workoutSession.lowFuelingMessage')
+                        ? t('workoutSession.lowFuelingMessage', {
+                            carbs: Math.round(fuelingTotalCarbs),
+                            hours: Math.round(fuelingWindowHours),
+                          })
                         : t('workoutSession.fullyFueledMessage', {
                             carbs: Math.round(fuelingTotalCarbs),
                             hours: Math.round(fuelingWindowHours),
