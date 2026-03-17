@@ -6,6 +6,13 @@ import { theme } from '../../theme';
 
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
+export type InsightCardSize = 'sm' | 'md';
+
+const sizeStyles: Record<InsightCardSize, { iconSize: number; textClassName: string; labelClassName: string }> = {
+  sm: { iconSize: 12, labelClassName: 'text-xs font-bold uppercase tracking-wider', textClassName: 'font-medium text-xs text-text-primary' },
+  md: { iconSize: 16, labelClassName: 'text-sm font-bold uppercase tracking-wider', textClassName: 'font-medium text-text-primary' },
+};
+
 interface InsightCardProps {
   variant: InsightCardVariant;
   icon: LucideIcon;
@@ -14,6 +21,7 @@ interface InsightCardProps {
   onDismiss?: () => void;
   expandable?: boolean;
   inlineLabel?: boolean;
+  size?: InsightCardSize;
 }
 
 const variantStyles: Record<
@@ -54,9 +62,11 @@ export function InsightCard({
   onDismiss,
   expandable = true,
   inlineLabel = false,
+  size = 'md',
 }: InsightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { borderColor, backgroundColor, accentColor, iconTextColor } = variantStyles[variant];
+  const { iconSize, textClassName, labelClassName } = sizeStyles[size];
 
   return (
     <Pressable
@@ -69,12 +79,12 @@ export function InsightCard({
           className="h-8 w-8 items-center justify-center rounded-full"
           style={{ backgroundColor: accentColor }}
         >
-          <Icon size={16} color={iconTextColor} />
+          <Icon size={iconSize} color={iconTextColor} />
         </View>
         <View className="flex-1">
           {inlineLabel ? (
             <Text
-              className="font-medium text-text-primary"
+              className={textClassName}
               numberOfLines={expandable && !isExpanded ? 2 : undefined}
               ellipsizeMode="tail"
             >
@@ -86,20 +96,17 @@ export function InsightCard({
           ) : (
             <>
               <View className="flex-row items-center justify-between">
-                <Text
-                  className="text-sm font-bold uppercase tracking-wider"
-                  style={{ color: accentColor }}
-                >
+                <Text className={labelClassName} style={{ color: accentColor }}>
                   {label}
                 </Text>
                 {onDismiss ? (
                   <Pressable onPress={onDismiss} hitSlop={8}>
-                    <X size={16} color={accentColor} />
+                    <X size={iconSize} color={accentColor} />
                   </Pressable>
                 ) : null}
               </View>
               <Text
-                className="mt-0.5 font-medium text-text-primary"
+                className={`mt-0.5 ${textClassName}`}
                 numberOfLines={expandable && !isExpanded ? 1 : undefined}
                 ellipsizeMode="tail"
               >
