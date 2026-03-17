@@ -14,18 +14,16 @@ import { ToggleInput } from '../theme/ToggleInput';
 interface ProgressDateFilterProps {
   activePreset: DateRangePreset;
   onPresetChange: (preset: DateRangePreset) => void;
-  customRange: { startDate: Date; endDate: Date } | null;
-  onCustomRangeChange: (start: Date, end: Date) => void;
-  onApplyCustomRange: () => void;
+  appliedRange: { startDate: Date; endDate: Date } | null;
+  onApplyCustomRange: (start: Date, end: Date) => void;
   useWeeklyAverages: boolean;
   onToggleWeeklyAverages: (value: boolean) => void;
 }
 
 export function ProgressDateFilter({
   activePreset,
+  appliedRange,
   onPresetChange,
-  customRange,
-  onCustomRangeChange,
   onApplyCustomRange,
   useWeeklyAverages,
   onToggleWeeklyAverages,
@@ -35,6 +33,10 @@ export function ProgressDateFilter({
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  const [tempStartDate, setTempStartDate] = useState(appliedRange?.startDate || new Date());
+  const [tempEndDate, setTempEndDate] = useState(appliedRange?.endDate || new Date());
+  const [showCustomUI, setShowCustomUI] = useState(activePreset === 'custom');
 
   const presets = [
     { label: '7D', id: '7d' },
@@ -47,42 +49,43 @@ export function ProgressDateFilter({
   ];
 
   const handleStartDateSelect = (date: Date) => {
-    const end = customRange?.endDate || new Date();
-    onCustomRangeChange(date, date > end ? date : end);
+    setTempStartDate(date);
+    if (date > tempEndDate) {
+      setTempEndDate(date);
+    }
   };
 
   const handleEndDateSelect = (date: Date) => {
-    const start = customRange?.startDate || new Date();
-    onCustomRangeChange(date < start ? date : start, date);
+    setTempEndDate(date);
+    if (date < tempStartDate) {
+      setTempStartDate(date);
+    }
   };
-
-  const startDate = customRange?.startDate || new Date();
-  const endDate = customRange?.endDate || new Date();
-
-  const [hasCustomSelection, setHasCustomSelection] = useState(false);
 
   const handleApply = () => {
-    onApplyCustomRange();
-    setHasCustomSelection(true);
+    onApplyCustomRange(tempStartDate, tempEndDate);
+    setShowCustomUI(true);
   };
-
-  const isCustomTabActive = activePreset === 'custom' || (!hasCustomSelection && customRange !== null);
 
   return (
     <View className="mb-4 px-4">
       <FilterTabs
         tabs={presets}
-        activeTab={activePreset === 'custom' ? 'custom' : customRange ? (hasCustomSelection ? activePreset : 'custom') : activePreset}
+        activeTab={showCustomUI ? 'custom' : activePreset}
         onTabChange={(id) => {
-           onPresetChange(id as DateRangePreset);
-           if (id !== 'custom') setHasCustomSelection(true);
+          if (id === 'custom') {
+            setShowCustomUI(true);
+          } else {
+            setShowCustomUI(false);
+            onPresetChange(id as DateRangePreset);
+          }
         }}
         containerClassName="mb-4"
         showContainer={true}
         scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
       />
 
-      {(activePreset === 'custom' || (!hasCustomSelection && customRange)) && (
+      {showCustomUI && (
         <View className="mb-4">
           <View className="mb-3 flex-row items-center gap-3">
             <Pressable
@@ -94,7 +97,7 @@ export function ProgressDateFilter({
                   {t('progress.startDate')}
                 </Text>
                 <Text className="text-sm font-semibold text-text-primary">
-                  {format(startDate, 'MMM d, yyyy')}
+                  {format(tempStartDate, 'MMM d, yyyy')}
                 </Text>
               </View>
               <Calendar size={16} color={theme.colors.text.tertiary} />
@@ -109,7 +112,7 @@ export function ProgressDateFilter({
                   {t('progress.endDate')}
                 </Text>
                 <Text className="text-sm font-semibold text-text-primary">
-                  {format(endDate, 'MMM d, yyyy')}
+                  {format(tempEndDate, 'MMM d, yyyy')}
                 </Text>
               </View>
               <Calendar size={16} color={theme.colors.text.tertiary} />
@@ -139,14 +142,14 @@ export function ProgressDateFilter({
       <DatePickerModal
         visible={showStartDatePicker}
         onClose={() => setShowStartDatePicker(false)}
-        selectedDate={startDate}
+        selectedDate={tempStartDate}
         onDateSelect={handleStartDateSelect}
       />
 
       <DatePickerModal
         visible={showEndDatePicker}
         onClose={() => setShowEndDatePicker(false)}
-        selectedDate={endDate}
+        selectedDate={tempEndDate}
         onDateSelect={handleEndDateSelect}
       />
     </View>
