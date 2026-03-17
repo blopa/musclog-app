@@ -1104,7 +1104,7 @@ export default function NutritionGoalsResults() {
             </GenericCard>
           ) : null}
         </View>
-        <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['7xl'] }} />
       </ScrollView>
 
       {/* Bottom Actions */}

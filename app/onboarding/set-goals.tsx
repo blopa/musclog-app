@@ -569,6 +569,7 @@ export default function SetGoals() {
             </View>
           </View>
         </View>
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
       </ScrollView>
 
       {/* Bottom Actions */}

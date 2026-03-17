@@ -667,6 +667,7 @@ export const theme = {
       '4xl': 64,
       '5xl': 96,
       '6xl': 112,
+      '7xl': 128,
     },
   },
 
