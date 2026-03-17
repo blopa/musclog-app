@@ -249,6 +249,7 @@ export default function WorkoutSessionScreen() {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
+  const [isFuelingInsightExpanded, setIsFuelingInsightExpanded] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -980,7 +981,8 @@ export default function WorkoutSessionScreen() {
             ) : null}
 
             {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
-              <View
+              <Pressable
+                onPress={() => setIsFuelingInsightExpanded(!isFuelingInsightExpanded)}
                 className="rounded-2xl border-2 p-4"
                 style={{
                   borderColor:
@@ -1031,7 +1033,11 @@ export default function WorkoutSessionScreen() {
                         />
                       </Pressable>
                     </View>
-                    <Text className="mt-0.5 font-medium text-text-primary">
+                    <Text
+                      className="mt-0.5 font-medium text-text-primary"
+                      numberOfLines={isFuelingInsightExpanded ? undefined : 1}
+                      ellipsizeMode="tail"
+                    >
                       {fuelingStatus === 'low'
                         ? t('workoutSession.lowFuelingMessage', {
                             carbs: Math.round(fuelingTotalCarbs),
@@ -1044,7 +1050,7 @@ export default function WorkoutSessionScreen() {
                     </Text>
                   </View>
                 </View>
-              </View>
+              </Pressable>
             ) : null}
           </View>
 
