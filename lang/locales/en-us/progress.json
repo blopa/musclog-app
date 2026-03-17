@@ -10,6 +10,7 @@
     "custom": "Custom",
     "startDate": "Start Date",
     "endDate": "End Date",
+    "apply": "Apply",
     "weeklyAverages": "Weekly Averages",
     "weight": "Weight",
     "weightTrendSubtitle": "Body weight over time",

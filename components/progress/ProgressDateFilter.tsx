@@ -8,6 +8,7 @@ import { DateRangePreset } from '../../hooks/useProgressData';
 import { useTheme } from '../../hooks/useTheme';
 import { FilterTabs } from '../FilterTabs';
 import { DatePickerModal } from '../modals/DatePickerModal';
+import { Button } from '../theme/Button';
 import { ToggleInput } from '../theme/ToggleInput';
 
 interface ProgressDateFilterProps {
@@ -15,6 +16,7 @@ interface ProgressDateFilterProps {
   onPresetChange: (preset: DateRangePreset) => void;
   customRange: { startDate: Date; endDate: Date } | null;
   onCustomRangeChange: (start: Date, end: Date) => void;
+  onApplyCustomRange: () => void;
   useWeeklyAverages: boolean;
   onToggleWeeklyAverages: (value: boolean) => void;
 }
@@ -24,6 +26,7 @@ export function ProgressDateFilter({
   onPresetChange,
   customRange,
   onCustomRangeChange,
+  onApplyCustomRange,
   useWeeklyAverages,
   onToggleWeeklyAverages,
 }: ProgressDateFilterProps) {
@@ -56,48 +59,80 @@ export function ProgressDateFilter({
   const startDate = customRange?.startDate || new Date();
   const endDate = customRange?.endDate || new Date();
 
+  const [hasCustomSelection, setHasCustomSelection] = useState(false);
+
+  const handleApply = () => {
+    onApplyCustomRange();
+    setHasCustomSelection(true);
+  };
+
+  const isCustomTabActive =
+    activePreset === 'custom' || (!hasCustomSelection && customRange !== null);
+
   return (
     <View className="mb-4 px-4">
       <FilterTabs
         tabs={presets}
-        activeTab={activePreset}
-        onTabChange={(id) => onPresetChange(id as DateRangePreset)}
+        activeTab={
+          activePreset === 'custom'
+            ? 'custom'
+            : customRange
+              ? hasCustomSelection
+                ? activePreset
+                : 'custom'
+              : activePreset
+        }
+        onTabChange={(id) => {
+          onPresetChange(id as DateRangePreset);
+          if (id !== 'custom') {
+            setHasCustomSelection(true);
+          }
+        }}
         containerClassName="mb-4"
         showContainer={true}
         scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
       />
 
-      {activePreset === 'custom' ? (
-        <View className="mb-4 flex-row items-center gap-3">
-          <Pressable
-            onPress={() => setShowStartDatePicker(true)}
-            className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
-          >
-            <View>
-              <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                {t('progress.startDate')}
-              </Text>
-              <Text className="text-sm font-semibold text-text-primary">
-                {format(startDate, 'MMM d, yyyy')}
-              </Text>
-            </View>
-            <Calendar size={16} color={theme.colors.text.tertiary} />
-          </Pressable>
+      {activePreset === 'custom' || (!hasCustomSelection && customRange) ? (
+        <View className="mb-4">
+          <View className="mb-3 flex-row items-center gap-3">
+            <Pressable
+              onPress={() => setShowStartDatePicker(true)}
+              className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
+            >
+              <View>
+                <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                  {t('progress.startDate')}
+                </Text>
+                <Text className="text-sm font-semibold text-text-primary">
+                  {format(startDate, 'MMM d, yyyy')}
+                </Text>
+              </View>
+              <Calendar size={16} color={theme.colors.text.tertiary} />
+            </Pressable>
 
-          <Pressable
-            onPress={() => setShowEndDatePicker(true)}
-            className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
-          >
-            <View>
-              <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-                {t('progress.endDate')}
-              </Text>
-              <Text className="text-sm font-semibold text-text-primary">
-                {format(endDate, 'MMM d, yyyy')}
-              </Text>
-            </View>
-            <Calendar size={16} color={theme.colors.text.tertiary} />
-          </Pressable>
+            <Pressable
+              onPress={() => setShowEndDatePicker(true)}
+              className="flex-1 flex-row items-center justify-between rounded-xl border border-border-light bg-bg-cardDark px-4 py-3"
+            >
+              <View>
+                <Text className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                  {t('progress.endDate')}
+                </Text>
+                <Text className="text-sm font-semibold text-text-primary">
+                  {format(endDate, 'MMM d, yyyy')}
+                </Text>
+              </View>
+              <Calendar size={16} color={theme.colors.text.tertiary} />
+            </Pressable>
+          </View>
+          <Button
+            label={t('progress.apply')}
+            onPress={handleApply}
+            size="sm"
+            variant="gradientCta"
+            width="full"
+          />
         </View>
       ) : null}
 
