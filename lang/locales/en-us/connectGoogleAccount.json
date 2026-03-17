@@ -12,6 +12,14 @@
       "geminiPowered": {
         "title": "Gemini Powered",
         "description": "Advanced LLM fitness intelligence"
+      },
+      "smartGoals": {
+        "title": "Smart Goals",
+        "description": "AI-driven goal tracking and suggestions"
+      },
+      "aiCoach": {
+        "title": "AI Coach",
+        "description": "Your personal AI-powered fitness coach"
       }
     },
     "connectWithGoogle": "Connect with Google",
