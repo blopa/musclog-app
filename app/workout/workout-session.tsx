@@ -26,6 +26,7 @@ import {
   View,
 } from 'react-native';
 
+import { FuelingInsightCard } from '../../components/cards/FuelingInsightCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
@@ -249,7 +250,6 @@ export default function WorkoutSessionScreen() {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
-  const [isFuelingInsightExpanded, setIsFuelingInsightExpanded] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -981,76 +981,12 @@ export default function WorkoutSessionScreen() {
             ) : null}
 
             {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
-              <Pressable
-                onPress={() => setIsFuelingInsightExpanded(!isFuelingInsightExpanded)}
-                className="rounded-2xl border-2 p-4"
-                style={{
-                  borderColor:
-                    fuelingStatus === 'low'
-                      ? `${theme.colors.status.warning}66`
-                      : `${theme.colors.status.success}66`,
-                  backgroundColor: `${theme.colors.background.card}95`,
-                }}
-              >
-                <View className="flex-row items-start gap-3">
-                  <View
-                    className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor:
-                        fuelingStatus === 'low'
-                          ? theme.colors.status.warning
-                          : theme.colors.status.success,
-                    }}
-                  >
-                    <Flame
-                      size={20}
-                      color={
-                        fuelingStatus === 'low' ? theme.colors.text.white : theme.colors.text.black
-                      }
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text
-                        className="text-sm font-bold uppercase tracking-wider"
-                        style={{
-                          color:
-                            fuelingStatus === 'low'
-                              ? theme.colors.status.warning
-                              : theme.colors.status.success,
-                        }}
-                      >
-                        {t('workoutSession.fuelingInsight')}
-                      </Text>
-                      <Pressable onPress={() => setIsFuelingInsightDismissed(true)}>
-                        <X
-                          size={16}
-                          color={
-                            fuelingStatus === 'low'
-                              ? theme.colors.status.warning
-                              : theme.colors.status.success
-                          }
-                        />
-                      </Pressable>
-                    </View>
-                    <Text
-                      className="mt-0.5 font-medium text-text-primary"
-                      numberOfLines={isFuelingInsightExpanded ? undefined : 1}
-                      ellipsizeMode="tail"
-                    >
-                      {fuelingStatus === 'low'
-                        ? t('workoutSession.lowFuelingMessage', {
-                            carbs: Math.round(fuelingTotalCarbs),
-                            hours: Math.round(fuelingWindowHours),
-                          })
-                        : t('workoutSession.fullyFueledMessage', {
-                            carbs: Math.round(fuelingTotalCarbs),
-                            hours: Math.round(fuelingWindowHours),
-                          })}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              <FuelingInsightCard
+                status={fuelingStatus}
+                totalCarbs={fuelingTotalCarbs}
+                windowHours={fuelingWindowHours}
+                onDismiss={() => setIsFuelingInsightDismissed(true)}
+              />
             ) : null}
           </View>
 
