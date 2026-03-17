@@ -36,6 +36,20 @@
     "tryAICamera": "Try AI Camera",
     "tryAICameraDesc": "Scan your meal for instant identification",
     "supportedFormats": "Supported formats",
+    "checkin": {
+      "title": "Weekly Check-in",
+      "noCheckinFound": "No pending check-ins found.",
+      "status": "Current Status",
+      "onTrack": "On Track",
+      "ahead": "Ahead",
+      "behind": "Behind",
+      "adherence": "Weekly Adherence",
+      "summary": "You aimed for {{targetKcal}} kcal/day, but averaged {{actualKcal}} kcal/day. You completed {{workouts}} workouts.",
+      "weightComparison": "Weight: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "You have logged weight less than 4 times this week. Averages may be less accurate.",
+      "keepMacros": "Keep my current macros",
+      "readjust": "Readjust my plan"
+    },
     "common": {
       "kcal": "kcal"
     },

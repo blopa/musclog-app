@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 import { database } from '../database';
 import MenstrualCycle from '../database/models/MenstrualCycle';
+import NutritionCheckin from '../database/models/NutritionCheckin';
 import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
@@ -347,9 +348,69 @@ export class NotificationService {
     });
   }
 
-  // This can be called when the notification is received or opened, or we can pre-calculate it if we want it in the body.
-  // Since we want it in the body, we'd need a background task to update it daily or just schedule it with a generic message.
-  // For "offline/internal" without complex background sync, a daily reminder at 9pm is good.
+  // Nutrition Check-ins
+  static async scheduleCheckinNotifications() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const isNotificationsEnabled = await SettingsService.getNotifications();
+
+    // Clear existing check-in notifications
+    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    for (const notification of scheduledNotifications) {
+      if (notification.content.data?.type === 'nutrition-checkin') {
+        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      }
+    }
+
+    if (!isNotificationsEnabled) {
+      return;
+    }
+
+    // Fetch pending check-ins for the next 30 days
+    const now = Date.now();
+    const thirtyDaysFromNow = now + 30 * 24 * 60 * 60 * 1000;
+
+    const checkins = await database
+      .get<NutritionCheckin>('nutrition_checkins')
+      .query(
+        Q.where('completed', Q.notEq(true)),
+        Q.where('checkin_date', Q.between(now, thirtyDaysFromNow)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    for (const checkin of checkins) {
+      const date = new Date(checkin.checkinDate);
+      // Set to 8 AM local time on the check-in day
+      date.setHours(8, 0, 0, 0);
+
+      if (date.getTime() <= now) {
+        // If it's already past 8 AM on the day or the day has passed, show immediately
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18n.t('notifications.types.nutritionCheckin.title'),
+            body: i18n.t('notifications.types.nutritionCheckin.body'),
+            data: { type: 'nutrition-checkin', checkinId: checkin.id },
+          },
+          trigger: null,
+        });
+      } else {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18n.t('notifications.types.nutritionCheckin.title'),
+            body: i18n.t('notifications.types.nutritionCheckin.body'),
+            data: { type: 'nutrition-checkin', checkinId: checkin.id },
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date,
+          },
+        });
+      }
+    }
+  }
 
   // Menstrual Cycle Notifications
   static async scheduleMenstrualCycleNotifications() {

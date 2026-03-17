@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
-  version: 1, // no need to change for now
+  version: 2,
   tables: [
     // 1. Master List of Exercises
     tableSchema({
@@ -378,6 +378,7 @@ export const schema = appSchema({
         { name: 'target_body_fat', type: 'number' },
         { name: 'target_bmi', type: 'number' },
         { name: 'target_ffmi', type: 'number' },
+        { name: 'completed', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

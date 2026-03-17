@@ -11,20 +11,32 @@ import { NutritionGoals, NutritionGoalsBody } from '../../components/NutritionGo
 import { Button } from '../../components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { EatingPhase } from '../../database/models';
-import { NutritionGoalService } from '../../database/services';
+import {
+  NutritionCheckinService,
+  NutritionGoalService,
+  UserMetricService,
+} from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
-import { NutritionPlan, planToInitialGoals } from '../../utils/nutritionCalculator';
+import {
+  calculateNutritionPlan,
+  generateWeeklyCheckins,
+  NutritionPlan,
+  planToInitialGoals,
+} from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();
+  const { units } = useSettings();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
-  const params = useLocalSearchParams<{ isAdjusting?: string }>();
+  const params = useLocalSearchParams<{ isAdjusting?: string; isCheckinAdjusting?: string; checkinId?: string }>();
   const isAdjusting = params.isAdjusting === 'true';
+  const isCheckinAdjusting = params.isCheckinAdjusting === 'true';
 
   // Load TEMP_NUTRITION_PLAN on mount so "Adjust Goals Manually" can pre-fill from the plan just viewed.
   // We prefer this over the DB goal in initialGoals when present.
@@ -81,7 +93,7 @@ export default function NutritionGoalsScreen() {
   const handleSave = useCallback(
     async (goals: NutritionGoals) => {
       try {
-        await NutritionGoalService.saveGoals({
+        const newGoal = await NutritionGoalService.saveGoals({
           totalCalories: goals.totalCalories,
           protein: goals.protein,
           carbs: goals.carbs,
@@ -95,11 +107,52 @@ export default function NutritionGoalsScreen() {
           targetDate: goals.targetDate ?? null,
         });
 
+        // If this is a check-in adjustment, mark the check-in as completed
+        if (isCheckinAdjusting && params.checkinId) {
+          await NutritionCheckinService.update(params.checkinId, { completed: true });
+        }
+
+        // Generate new check-ins for the new goal
+        const user = await UserMetricService.getLatestWeight();
+        const height = await UserMetricService.getLatestHeight();
+        const bodyFat = await UserMetricService.getLatestBodyFat();
+
+        if (user && height) {
+          const plan = calculateNutritionPlan({
+            gender: 'other', // fallback
+            weightKg: user.value,
+            heightCm: height.value,
+            age: 30, // fallback
+            activityLevel: 3, // fallback
+            weightGoal: goals.eatingPhase === 'cut' ? 'lose' : goals.eatingPhase === 'bulk' ? 'gain' : 'maintain',
+            fitnessGoal: 'general',
+            liftingExperience: 'intermediate',
+            bodyFatPercent: bodyFat?.value,
+          });
+
+          const checkins = generateWeeklyCheckins(
+            plan,
+            Date.now(),
+            goals.targetDate ?? Date.now() + 90 * 24 * 60 * 60 * 1000,
+            height.value / 100,
+            bodyFat?.value ?? null
+          );
+
+          if (checkins.length > 0) {
+            await NutritionCheckinService.createBatch(newGoal.id, checkins);
+          }
+        }
+
         // If the user arrived here from the results screen to adjust the AI plan,
         // then after saving we should continue the onboarding flow to personal-info.
         if (isAdjusting) {
           router.push('/onboarding/personal-info');
           return;
+        }
+
+        if (isCheckinAdjusting) {
+            router.replace('/progress');
+            return;
         }
 
         router.push({
@@ -111,7 +164,7 @@ export default function NutritionGoalsScreen() {
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [isAdjusting, router, t]
+    [isAdjusting, isCheckinAdjusting, params.checkinId, router, t]
   );
 
   if (isLoading) {

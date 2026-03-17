@@ -48,6 +48,10 @@
         "title": "Daily Nutrition Overview",
         "body": "Check how your nutrition aligned with your goals today!"
       },
+      "nutritionCheckin": {
+        "title": "Weekly Progress Check-in",
+        "body": "It's time for your weekly nutrition check-in! Let's see how you've done."
+      },
       "periodPrediction": {
         "title": "Period Prediction",
         "body": "Your period is predicted to start in 2 days. Get ready!"

@@ -16,6 +16,7 @@ export default class NutritionCheckin extends Model {
   @field('target_body_fat') targetBodyFat!: number;
   @field('target_bmi') targetBmi!: number;
   @field('target_ffmi') targetFfmi!: number;
+  @field('completed') completed!: boolean;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

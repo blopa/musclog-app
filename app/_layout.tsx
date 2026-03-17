@@ -103,6 +103,7 @@ function RootLayout() {
         NotificationService.scheduleWorkoutReminders();
         NotificationService.scheduleNutritionOverview();
         NotificationService.scheduleMenstrualCycleNotifications();
+        NotificationService.scheduleCheckinNotifications();
 
         // Dismiss any orphaned workout notification from a previous killed session
         const activeWorkoutLogId = await getActiveWorkoutLogId();

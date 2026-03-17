@@ -796,42 +796,45 @@ export interface WeeklyCheckinData {
 }
 
 /**
- * Generate weekly check-in data for a nutrition plan.
- * Creates intermediate targets for each week between startDate and endDate.
+ * Generate check-in data for a nutrition plan.
+ * Creates intermediate targets for each interval between startDate and endDate.
  *
  * @param plan - The calculated nutrition plan with projection data
  * @param startDate - Start timestamp (typically Date.now())
  * @param endDate - End timestamp (the goal target date)
  * @param heightM - User's height in meters (for BMI/FFMI calculations)
  * @param currentBodyFatPercent - Current body fat percentage (null if unknown)
- * @returns Array of weekly check-in data, one per week (excluding final week which is the goal itself)
+ * @param frequencyDays - How often to check in (default 7 days)
+ * @returns Array of check-in data, one per interval (excluding final week which is the goal itself)
  */
 export function generateWeeklyCheckins(
   plan: NutritionPlan,
   startDate: number,
   endDate: number,
   heightM: number,
-  currentBodyFatPercent: number | null
+  currentBodyFatPercent: number | null,
+  frequencyDays: number = 7
 ): WeeklyCheckinData[] {
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const msPerInterval = frequencyDays * 24 * 60 * 60 * 1000;
   const totalDuration = endDate - startDate;
 
-  if (totalDuration <= msPerWeek) {
+  if (totalDuration <= msPerInterval) {
     return [];
   }
 
-  const totalWeeks = Math.floor(totalDuration / msPerWeek);
+  const totalIntervals = Math.floor(totalDuration / msPerInterval);
   const checkins: WeeklyCheckinData[] = [];
 
   const currentWeightKg = plan.currentWeightKg;
-  const weeklyWeightChangeKg = plan.weeklyWeightChangeKg;
+  const dailyWeightChangeKg = plan.weeklyWeightChangeKg / 7;
   const isCutting = plan.targetCalories < plan.tdee;
   const isBulking = plan.targetCalories > plan.tdee;
 
-  for (let week = 1; week < totalWeeks; week++) {
-    const checkinDate = startDate + week * msPerWeek;
+  for (let interval = 1; interval < totalIntervals; interval++) {
+    const checkinDate = startDate + interval * msPerInterval;
+    const daysElapsed = interval * frequencyDays;
     const intermediateWeight = parseFloat(
-      (currentWeightKg + weeklyWeightChangeKg * week).toFixed(1)
+      (currentWeightKg + dailyWeightChangeKg * daysElapsed).toFixed(1)
     );
 
     let intermediateBodyFat = 0;
@@ -846,7 +849,6 @@ export function generateWeeklyCheckins(
         const weightGained = intermediateWeight - currentWeightKg;
         if (weightGained > 0) {
           const currentFatKg = currentWeightKg * (currentBodyFatPercent / 100);
-          // PHYSIOLOGY FIX: Use accurate fat fraction based on experience instead of hardcoded 0.5
           const fatFraction = getGainFatFraction(plan.liftingExperience);
           const fatGainedKg = weightGained * fatFraction;
 

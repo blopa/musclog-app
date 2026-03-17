@@ -2,7 +2,14 @@ import { addColumns, createTable, schemaMigrations } from '@nozbe/watermelondb/S
 
 export const migrations = schemaMigrations({
   migrations: [
-    // Version 1: Initial schema
-    // No migration needed as this is the initial version
+    {
+      toVersion: 2,
+      steps: [
+        addColumns({
+          table: 'nutrition_checkins',
+          columns: [{ name: 'completed', type: 'boolean', isOptional: true }],
+        }),
+      ],
+    },
   ],
 });

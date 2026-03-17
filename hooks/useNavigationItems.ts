@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Q } from '@nozbe/watermelondb';
 
 import type { NavItemKey } from '../constants/settings';
+import { database } from '../database';
+import type NutritionCheckin from '../database/models/NutritionCheckin';
 import { SettingsService } from '../database/services/SettingsService';
 import { useMenstrualCycle } from './useMenstrualCycle';
 import { useSettings } from './useSettings';
@@ -11,6 +14,7 @@ export type UseNavigationItemsResult = {
   rawSlots: Record<SlotNumber, NavItemKey>;
   isAiFeaturesEnabled: boolean;
   isCycleActive: boolean;
+  hasPendingCheckin: boolean;
   setNavSlot: (slot: SlotNumber, item: NavItemKey) => Promise<void>;
 };
 
@@ -29,13 +33,18 @@ const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
 function isItemAvailable(
   item: NavItemKey,
   isAiFeaturesEnabled: boolean,
-  isCycleActive: boolean
+  isCycleActive: boolean,
+  hasPendingCheckin: boolean
 ): boolean {
   if (item === 'coach' && !isAiFeaturesEnabled) {
     return false;
   }
 
   if (item === 'cycle' && !isCycleActive) {
+    return false;
+  }
+
+  if (item === 'checkin' && !hasPendingCheckin) {
     return false;
   }
 
@@ -50,7 +59,8 @@ function isItemAvailable(
 function ensureValidSlots(
   slots: Record<SlotNumber, NavItemKey>,
   isAiFeaturesEnabled: boolean,
-  isCycleActive: boolean
+  isCycleActive: boolean,
+  hasPendingCheckin: boolean
 ): Record<SlotNumber, NavItemKey> {
   const result: Record<SlotNumber, NavItemKey> = { ...slots };
   const usedItems = new Set<NavItemKey>();
@@ -58,7 +68,7 @@ function ensureValidSlots(
   // First pass: mark all valid items as used
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+    if (isItemAvailable(item, isAiFeaturesEnabled, isCycleActive, hasPendingCheckin)) {
       usedItems.add(item);
     }
   });
@@ -66,7 +76,7 @@ function ensureValidSlots(
   // Second pass: replace unavailable items with fallback items
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (!isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+    if (!isItemAvailable(item, isAiFeaturesEnabled, isCycleActive, hasPendingCheckin)) {
       // Find the first available fallback item that's not already used
       const fallback = ALWAYS_AVAILABLE_ITEMS.find((fallbackItem) => !usedItems.has(fallbackItem));
       if (fallback) {
@@ -85,6 +95,23 @@ function ensureValidSlots(
 export function useNavigationItems(): UseNavigationItemsResult {
   const { isAiFeaturesEnabled, navSlot1, navSlot2, navSlot3 } = useSettings();
   const { isActive: isCycleActive } = useMenstrualCycle();
+  const [hasPendingCheckin, setHasPendingCheckin] = useState(false);
+
+  useEffect(() => {
+    const subscription = database
+      .get<NutritionCheckin>('nutrition_checkins')
+      .query(
+        Q.where('completed', Q.notEq(true)),
+        Q.where('checkin_date', Q.lte(Date.now())),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .observe()
+      .subscribe((checkins) => {
+        setHasPendingCheckin(checkins.length > 0);
+      });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const rawSlots = useMemo(
     () => ({ 1: navSlot1, 2: navSlot2, 3: navSlot3 }),
@@ -93,8 +120,8 @@ export function useNavigationItems(): UseNavigationItemsResult {
 
   // Ensure all slots have valid, renderable items
   const validSlots = useMemo(
-    () => ensureValidSlots(rawSlots, isAiFeaturesEnabled, isCycleActive),
-    [rawSlots, isAiFeaturesEnabled, isCycleActive]
+    () => ensureValidSlots(rawSlots, isAiFeaturesEnabled, isCycleActive, hasPendingCheckin),
+    [rawSlots, isAiFeaturesEnabled, isCycleActive, hasPendingCheckin]
   );
 
   // Keep a ref synced to the latest slot values so that async swap operations
@@ -124,6 +151,7 @@ export function useNavigationItems(): UseNavigationItemsResult {
     rawSlots: validSlots,
     isAiFeaturesEnabled,
     isCycleActive,
+    hasPendingCheckin,
     setNavSlot,
   };
 }

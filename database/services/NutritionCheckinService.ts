@@ -9,6 +9,7 @@ export interface NutritionCheckinInput {
   targetBodyFat: number;
   targetBmi: number;
   targetFfmi: number;
+  completed?: boolean;
 }
 
 export class NutritionCheckinService {
@@ -72,6 +73,7 @@ export class NutritionCheckinService {
         r.targetBodyFat = data.targetBodyFat;
         r.targetBmi = data.targetBmi;
         r.targetFfmi = data.targetFfmi;
+        r.completed = data.completed ?? false;
         r.createdAt = now;
         r.updatedAt = now;
       });
@@ -101,6 +103,7 @@ export class NutritionCheckinService {
           r.targetBodyFat = data.targetBodyFat;
           r.targetBmi = data.targetBmi;
           r.targetFfmi = data.targetFfmi;
+          r.completed = data.completed ?? false;
           r.createdAt = now;
           r.updatedAt = now;
         })
@@ -140,6 +143,9 @@ export class NutritionCheckinService {
         }
         if (updates.targetFfmi !== undefined) {
           record.targetFfmi = updates.targetFfmi;
+        }
+        if (updates.completed !== undefined) {
+          record.completed = updates.completed;
         }
         record.updatedAt = Date.now();
       });
