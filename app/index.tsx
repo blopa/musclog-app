@@ -42,6 +42,7 @@ import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
+import { captureException } from '../utils/sentry';
 import { showSnackbar } from '../utils/snackbarService';
 
 // Set by +native-intent.tsx on cold start to defer widget action until navigator is ready
@@ -180,6 +181,13 @@ export default function HomeScreen() {
         setIsCreateCustomFoodVisible(false);
       } catch (error) {
         console.error('Failed to create custom food:', error);
+
+        captureException(error, {
+          data: {
+            context: 'index.handleSaveCustomFood',
+          },
+        });
+
         showSnackbar('error', t('food.foodDetails.errorMessage'));
       }
     },

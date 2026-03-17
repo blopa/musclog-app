@@ -964,6 +964,18 @@ export function FoodMealDetailsModal({
           });
         } catch (err) {
           console.error('Error logging meal:', err);
+
+          captureException(err, {
+            data: {
+              context: 'FoodMealDetailsModal.handleAddFood',
+              foodName: getFoodMealName(),
+              servingSize,
+              mealType: selectedMeal,
+              date: selectedDate.toISOString(),
+              mode,
+            },
+          });
+
           showSnackbar('error', t('food.foodDetails.errorMessage'), {
             action: t('snackbar.ok'),
           });
@@ -1007,6 +1019,18 @@ export function FoodMealDetailsModal({
           });
         } catch (err) {
           console.error('Error updating food log:', err);
+
+          captureException(err, {
+            data: {
+              context: 'FoodMealDetailsModal.handleAddFood',
+              foodName: getFoodMealName(),
+              servingSize,
+              mealType: selectedMeal,
+              date: selectedDate.toISOString(),
+              mode,
+            },
+          });
+
           showSnackbar('error', t('food.foodDetails.errorMessage'), {
             action: t('snackbar.ok'),
           });
@@ -1212,8 +1236,8 @@ export function FoodMealDetailsModal({
     foodLog,
     food,
     localFood,
-    productFromSearch,
     productDetails,
+    productFromSearch,
     editedOverrides,
     nutritionalData.calories,
     nutritionalData.protein,
@@ -1235,6 +1259,8 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    getFoodMealName,
+    mode,
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
