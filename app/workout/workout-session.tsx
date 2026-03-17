@@ -52,6 +52,7 @@ import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
+import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { NotificationService } from '../../services/NotificationService';
@@ -170,6 +171,8 @@ export default function WorkoutSessionScreen() {
     setCurrentExercise,
     refresh,
   } = useActiveWorkout(workoutLogId);
+
+  const { status: fuelingStatus } = useWorkoutFueling(workoutLog?.startedAt);
 
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
@@ -935,26 +938,83 @@ export default function WorkoutSessionScreen() {
           />
 
           {/* Physiological Insight Card */}
-          {isCycleTrackingActive ? (
-            <View className="mx-6 mt-32 rounded-2xl border-2 border-accent-primary/20 bg-accent-primary/10 p-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
-                  <Flame size={20} color={theme.colors.text.black} />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
-                    {t('workoutSession.hormonalInsight')}
-                  </Text>
-                  <Text className="font-medium text-text-primary">
-                    {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
-                  </Text>
+          <View className="mx-6 mt-32 gap-3">
+            {isCycleTrackingActive ? (
+              <View className="rounded-2xl border-2 border-accent-primary/20 bg-accent-primary/10 p-4">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
+                    <Flame size={20} color={theme.colors.text.black} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
+                      {t('workoutSession.hormonalInsight')}
+                    </Text>
+                    <Text className="font-medium text-text-primary">
+                      {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          ) : null}
+            ) : null}
+
+            {fuelingStatus !== 'loading' ? (
+              <View
+                className="rounded-2xl border-2 p-4"
+                style={{
+                  borderColor:
+                    fuelingStatus === 'low'
+                      ? `${theme.colors.status.warning}33`
+                      : `${theme.colors.status.success}33`,
+                  backgroundColor:
+                    fuelingStatus === 'low'
+                      ? `${theme.colors.status.warning}1A`
+                      : `${theme.colors.status.success}1A`,
+                }}
+              >
+                <View className="flex-row items-center gap-3">
+                  <View
+                    className="h-10 w-10 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor:
+                        fuelingStatus === 'low'
+                          ? theme.colors.status.warning
+                          : theme.colors.status.success,
+                    }}
+                  >
+                    <Flame
+                      size={20}
+                      color={
+                        fuelingStatus === 'low'
+                          ? theme.colors.text.white
+                          : theme.colors.text.black
+                      }
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className="text-sm font-bold uppercase tracking-wider"
+                      style={{
+                        color:
+                          fuelingStatus === 'low'
+                            ? theme.colors.status.warning
+                            : theme.colors.status.success,
+                      }}
+                    >
+                      {t('workoutSession.fuelingInsight')}
+                    </Text>
+                    <Text className="font-medium text-text-primary">
+                      {fuelingStatus === 'low'
+                        ? t('workoutSession.lowFuelingMessage')
+                        : t('workoutSession.fullyFueledMessage')}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ) : null}
+          </View>
 
           {/* Exercise Info */}
-          <View className={isCycleTrackingActive ? 'mt-4 px-6' : 'mt-48 px-6'}>
+          <View className="mt-4 px-6">
             <Text className="mb-3 text-5xl font-bold text-text-primary">
               {currentSetData.exercise.name ?? ''}
             </Text>
