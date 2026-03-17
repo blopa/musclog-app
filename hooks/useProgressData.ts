@@ -10,7 +10,10 @@ export interface UseProgressDataParams {
 
 export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams = {}) {
   const [preset, setPreset] = useState<DateRangePreset>(initialPreset);
-  const [customRange, setCustomRange] = useState<{ startDate: Date; endDate: Date } | null>(null);
+  const [appliedCustomRange, setAppliedCustomRange] = useState<{
+    startDate: Date;
+    endDate: Date;
+  } | null>(null);
   const [useWeeklyAverages, setUseWeeklyAverages] = useState(false);
   const [data, setData] = useState<ProgressData | null>(null);
   const [allAggregationData, setAllAggregationData] = useState<{
@@ -28,9 +31,9 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
       let start: number;
       let end: number = new Date().getTime();
 
-      if (preset === 'custom' && customRange) {
-        start = customRange.startDate.getTime();
-        end = customRange.endDate.getTime();
+      if (preset === 'custom' && appliedCustomRange) {
+        start = appliedCustomRange.startDate.getTime();
+        end = appliedCustomRange.endDate.getTime();
       } else {
         const now = new Date();
         now.setUTCHours(23, 59, 59, 999);
@@ -80,35 +83,21 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     } finally {
       setIsLoading(false);
     }
-  }, [preset, customRange, useWeeklyAverages]);
+  }, [preset, appliedCustomRange, useWeeklyAverages]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const changePreset = (newPreset: DateRangePreset) => {
-    if (newPreset === 'custom') {
-      if (!customRange) {
-        const end = new Date();
-        end.setUTCHours(23, 59, 59, 999);
-        const start = new Date();
-        start.setUTCHours(0, 0, 0, 0);
-        start.setDate(start.getDate() - 30);
-        setCustomRange({ startDate: start, endDate: end });
-      }
-      // Never set preset to custom here. User must click Apply (or use setCustomDates).
-    } else {
+    if (newPreset !== 'custom') {
       setPreset(newPreset);
     }
   };
 
-  const setCustomDates = (start: Date, end: Date) => {
-    setCustomRange({ startDate: start, endDate: end });
-  };
-
-  const applyCustomRange = () => {
+  const applyCustomRange = (start: Date, end: Date) => {
+    setAppliedCustomRange({ startDate: start, endDate: end });
     setPreset('custom');
-    fetchData();
   };
 
   // Helper function to check if any aggregation has data for charts with aggregation options
@@ -133,8 +122,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     error,
     preset,
     changePreset,
-    customRange,
-    setCustomDates,
+    appliedCustomRange,
     applyCustomRange,
     useWeeklyAverages,
     setUseWeeklyAverages,

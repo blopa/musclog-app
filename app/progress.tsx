@@ -40,8 +40,7 @@ export default function ProgressScreen() {
     isLoading,
     preset,
     changePreset,
-    customRange,
-    setCustomDates,
+    appliedCustomRange,
     applyCustomRange,
     useWeeklyAverages,
     setUseWeeklyAverages,
@@ -60,7 +59,12 @@ export default function ProgressScreen() {
   const [chartPhase, setChartPhase] = useState(0);
   const phaseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  const prevIsLoadingRef = useRef(isLoading);
+
   useEffect(() => {
+    if (prevIsLoadingRef.current === isLoading) return;
+    prevIsLoadingRef.current = isLoading;
+
     phaseTimersRef.current.forEach(clearTimeout);
     phaseTimersRef.current = [];
 
@@ -174,8 +178,7 @@ export default function ProgressScreen() {
           menuItems={menuItems}
           preset={preset}
           changePreset={changePreset}
-          customRange={customRange}
-          onCustomRangeChange={setCustomDates}
+          appliedCustomRange={appliedCustomRange}
           onApplyCustomRange={applyCustomRange}
           setUseWeeklyAverages={setUseWeeklyAverages}
           showMenu={showMenu}
@@ -200,8 +203,7 @@ function ProgressScreenContent({
   menuItems,
   preset,
   changePreset,
-  customRange,
-  onCustomRangeChange,
+  appliedCustomRange,
   onApplyCustomRange,
   setUseWeeklyAverages,
   showMenu,
@@ -218,8 +220,7 @@ function ProgressScreenContent({
       <ProgressDateFilter
         activePreset={preset}
         onPresetChange={changePreset}
-        customRange={customRange}
-        onCustomRangeChange={onCustomRangeChange}
+        appliedRange={appliedCustomRange}
         onApplyCustomRange={onApplyCustomRange}
         useWeeklyAverages={useWeeklyAverages}
         onToggleWeeklyAverages={setUseWeeklyAverages}
