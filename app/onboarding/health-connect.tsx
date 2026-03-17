@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
 import { useState } from 'react';
@@ -56,6 +57,7 @@ export default function HealthConnectScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
+      <View style={{ flex: 1 }}>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -254,6 +256,18 @@ export default function HealthConnectScreen() {
           </Text>
         </View>
       </ScrollView>
+      <LinearGradient
+        colors={['transparent', theme.colors.overlay.backdrop90]}
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 80,
+          pointerEvents: 'none',
+        }}
+      />
+      </View>
     </MasterLayout>
   );
 }
