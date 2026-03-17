@@ -13,6 +13,7 @@ import {
   Repeat,
   SkipForward,
   WifiOff,
+  X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -54,6 +55,7 @@ import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
+import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
@@ -171,6 +173,12 @@ export default function WorkoutSessionScreen() {
     refresh,
   } = useActiveWorkout(workoutLogId);
 
+  const {
+    status: fuelingStatus,
+    totalCarbs: fuelingTotalCarbs,
+    windowHours: fuelingWindowHours,
+  } = useWorkoutFueling(workoutLog?.startedAt);
+
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
 
@@ -228,6 +236,7 @@ export default function WorkoutSessionScreen() {
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
     useState(false);
+  const [isAddExerciseButtonLoading, setIsAddExerciseButtonLoading] = useState(false);
   const [isFreeSessionCompleteModalVisible, setIsFreeSessionCompleteModalVisible] = useState(false);
   const [completedExerciseForModal, setCompletedExerciseForModal] = useState<{
     exerciseId: string;
@@ -238,6 +247,9 @@ export default function WorkoutSessionScreen() {
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+  const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
+  const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
+  const [isFuelingInsightExpanded, setIsFuelingInsightExpanded] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -624,7 +636,12 @@ export default function WorkoutSessionScreen() {
                 size="md"
                 width="full"
                 variant="gradientCta"
-                onPress={() => setIsAddExerciseToSessionModalVisible(true)}
+                loading={isAddExerciseButtonLoading}
+                onPress={async () => {
+                  setIsAddExerciseButtonLoading(true);
+                  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                  setIsAddExerciseToSessionModalVisible(true);
+                }}
               />
               <Text
                 className="mt-4 text-center text-sm text-text-secondary"
@@ -688,7 +705,11 @@ export default function WorkoutSessionScreen() {
 
         <AddExerciseToSessionModal
           visible={isAddExerciseToSessionModalVisible}
-          onClose={() => setIsAddExerciseToSessionModalVisible(false)}
+          onClose={() => {
+            setIsAddExerciseToSessionModalVisible(false);
+            setIsAddExerciseButtonLoading(false);
+          }}
+          onShow={() => setIsAddExerciseButtonLoading(false)}
           workoutLogId={workoutLog.id}
           onAdded={() => refresh()}
         />
@@ -935,27 +956,110 @@ export default function WorkoutSessionScreen() {
           />
 
           {/* Physiological Insight Card */}
-          {isCycleTrackingActive ? (
-            <View className="mx-6 mt-32 rounded-2xl border-2 border-accent-primary/20 bg-accent-primary/10 p-4">
-              <View className="flex-row items-center gap-3">
-                <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
-                  <Flame size={20} color={theme.colors.text.black} />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
-                    {t('workoutSession.hormonalInsight')}
-                  </Text>
-                  <Text className="font-medium text-text-primary">
-                    {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
-                  </Text>
+          <View className="mx-6 mt-32 gap-3">
+            {isCycleTrackingActive && !isHormonalInsightDismissed ? (
+              <View className="rounded-2xl border-2 border-accent-primary/40 bg-accent-primary/20 p-4">
+                <View className="flex-row items-start gap-3">
+                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
+                    <Flame size={20} color={theme.colors.text.black} />
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
+                        {t('workoutSession.hormonalInsight')}
+                      </Text>
+                      <Pressable onPress={() => setIsHormonalInsightDismissed(true)}>
+                        <X size={16} color={theme.colors.accent.primary} />
+                      </Pressable>
+                    </View>
+                    <Text className="mt-0.5 font-medium text-text-primary">
+                      {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          ) : null}
+            ) : null}
+
+            {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
+              <Pressable
+                onPress={() => setIsFuelingInsightExpanded(!isFuelingInsightExpanded)}
+                className="rounded-2xl border-2 p-4"
+                style={{
+                  borderColor:
+                    fuelingStatus === 'low'
+                      ? `${theme.colors.status.warning}66`
+                      : `${theme.colors.status.success}66`,
+                  backgroundColor: `${theme.colors.background.card}95`,
+                }}
+              >
+                <View className="flex-row items-start gap-3">
+                  <View
+                    className="h-10 w-10 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor:
+                        fuelingStatus === 'low'
+                          ? theme.colors.status.warning
+                          : theme.colors.status.success,
+                    }}
+                  >
+                    <Flame
+                      size={20}
+                      color={
+                        fuelingStatus === 'low' ? theme.colors.text.white : theme.colors.text.black
+                      }
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center justify-between">
+                      <Text
+                        className="text-sm font-bold uppercase tracking-wider"
+                        style={{
+                          color:
+                            fuelingStatus === 'low'
+                              ? theme.colors.status.warning
+                              : theme.colors.status.success,
+                        }}
+                      >
+                        {t('workoutSession.fuelingInsight')}
+                      </Text>
+                      <Pressable onPress={() => setIsFuelingInsightDismissed(true)}>
+                        <X
+                          size={16}
+                          color={
+                            fuelingStatus === 'low'
+                              ? theme.colors.status.warning
+                              : theme.colors.status.success
+                          }
+                        />
+                      </Pressable>
+                    </View>
+                    <Text
+                      className="mt-0.5 font-medium text-text-primary"
+                      numberOfLines={isFuelingInsightExpanded ? undefined : 1}
+                      ellipsizeMode="tail"
+                    >
+                      {fuelingStatus === 'low'
+                        ? t('workoutSession.lowFuelingMessage', {
+                            carbs: Math.round(fuelingTotalCarbs),
+                            hours: Math.round(fuelingWindowHours),
+                          })
+                        : t('workoutSession.fullyFueledMessage', {
+                            carbs: Math.round(fuelingTotalCarbs),
+                            hours: Math.round(fuelingWindowHours),
+                          })}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            ) : null}
+          </View>
 
           {/* Exercise Info */}
-          <View className={isCycleTrackingActive ? 'mt-4 px-6' : 'mt-48 px-6'}>
-            <Text className="mb-3 text-5xl font-bold text-text-primary">
+          <View className="mt-4 px-6">
+            <Text
+              className="mb-3 font-bold text-text-primary"
+              style={{ fontSize: theme.typography.fontSize['40'] }}
+            >
               {currentSetData.exercise.name ?? ''}
             </Text>
             <View className="mb-2 flex-row flex-wrap items-center gap-3">

@@ -15,17 +15,17 @@ export function WorkoutStatCard({ title, value, unit, onPress }: WorkoutStatCard
 
   return (
     <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
-      <View className="items-center p-6">
-        <Text className="mb-2 text-sm font-medium text-text-secondary">{title}</Text>
+      <View className="items-center p-3">
+        <Text className="mb-1 text-xs font-medium text-text-secondary">{title}</Text>
         {typeof value === 'string' && value === '-' ? (
-          <Text className="text-5xl font-bold text-text-tertiary">-</Text>
+          <Text className="text-3xl font-bold text-text-tertiary">-</Text>
         ) : typeof value === 'string' || typeof value === 'number' ? (
-          <Text className="text-5xl font-bold text-text-primary">{value}</Text>
+          <Text className="text-3xl font-bold text-text-primary">{value}</Text>
         ) : (
           // React element (ActivityIndicator)
-          <View className="h-16 items-center justify-center">{value}</View>
+          <View className="h-10 items-center justify-center">{value}</View>
         )}
-        {unit ? <Text className="mt-1 text-lg text-text-secondary">{unit}</Text> : null}
+        {unit ? <Text className="mt-0.5 text-sm text-text-secondary">{unit}</Text> : null}
       </View>
     </GenericCard>
   );

@@ -28,6 +28,9 @@
     "hormonalInsight": "Hormonal Insight",
     "ovulationInsight": "During ovulation, you may experience increased strength and performance.",
     "menstrualInsight": "During menstruation, you may need to reduce intensity and focus on recovery.",
-    "phaseInsight": "Current phase: {{phase}}. Intensity multiplier: {{multiplier}}x"
+    "phaseInsight": "Current phase: {{phase}}. Intensity multiplier: {{multiplier}}x",
+    "fuelingInsight": "Fueling Insight",
+    "lowFuelingMessage": "You've consumed only {{carbs}}g of carbs in the last {{hours}} hours. Glycogen stores might be low. For future sessions, aim for more carbs pre-workout. A quick snack now might still help your performance.",
+    "fullyFueledMessage": "You've consumed {{carbs}}g of carbs in the last {{hours}} hours. You are fully fueled and ready to crush it!"
   }
 }
