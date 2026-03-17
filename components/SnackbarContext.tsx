@@ -97,6 +97,8 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         style={{
           pointerEvents: 'box-none',
           paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
+          zIndex: 999999,
+          elevation: 999,
           ...webContainerStyle,
         }}
       >

@@ -51,6 +51,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { BottomPopUp } from '../BottomPopUp';
@@ -1188,6 +1189,17 @@ export function FoodMealDetailsModal({
       });
     } catch (error) {
       console.error('Error tracking food:', error);
+
+      captureException(error, {
+        data: {
+          context: 'FoodMealDetailsModal.handleAddFood',
+          foodName: getFoodMealName(),
+          servingSize,
+          mealType: selectedMeal,
+          date: selectedDate.toISOString(),
+          mode,
+        },
+      });
 
       showSnackbar('error', t('food.foodDetails.errorMessage'), {
         action: t('snackbar.ok'),
