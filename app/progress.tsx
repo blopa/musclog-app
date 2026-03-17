@@ -62,7 +62,9 @@ export default function ProgressScreen() {
   const prevIsLoadingRef = useRef(isLoading);
 
   useEffect(() => {
-    if (prevIsLoadingRef.current === isLoading) return;
+    if (prevIsLoadingRef.current === isLoading) {
+      return;
+    }
     prevIsLoadingRef.current = isLoading;
 
     phaseTimersRef.current.forEach(clearTimeout);

@@ -85,7 +85,7 @@ export function ProgressDateFilter({
         scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
       />
 
-      {showCustomUI && (
+      {showCustomUI ? (
         <View className="mb-4">
           <View className="mb-3 flex-row items-center gap-3">
             <Pressable
@@ -121,12 +121,12 @@ export function ProgressDateFilter({
           <Button
             label={t('progress.apply')}
             onPress={handleApply}
-            size="sm"
+            size="xs"
             variant="gradientCta"
             width="full"
           />
         </View>
-      )}
+      ) : null}
 
       <ToggleInput
         items={[
