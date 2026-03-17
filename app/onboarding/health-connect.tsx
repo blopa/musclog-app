@@ -40,6 +40,7 @@ export default function HealthConnectScreen() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
   // Health Connect initialization and permissions
   const {
@@ -62,6 +63,11 @@ export default function HealthConnectScreen() {
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
+        onScroll={({ nativeEvent }) => {
+          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+          setIsAtBottom(contentOffset.y + layoutMeasurement.height >= contentSize.height - 8);
+        }}
+        scrollEventThrottle={16}
       >
         {/* Main Content */}
         <View className="flex-col items-center px-6 pt-4">
@@ -256,17 +262,19 @@ export default function HealthConnectScreen() {
           </Text>
         </View>
       </ScrollView>
-      <LinearGradient
-        colors={['transparent', theme.colors.overlay.backdrop90]}
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 80,
-          pointerEvents: 'none',
-        }}
-      />
+      {!isAtBottom && (
+        <LinearGradient
+          colors={['transparent', theme.colors.overlay.backdrop90]}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 80,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
       </View>
     </MasterLayout>
   );
