@@ -67,7 +67,7 @@ export function ProgressDateFilter({
         scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
       />
 
-      {activePreset === 'custom' && (
+      {activePreset === 'custom' ? (
         <View className="mb-4 flex-row items-center gap-3">
           <Pressable
             onPress={() => setShowStartDatePicker(true)}
@@ -99,7 +99,7 @@ export function ProgressDateFilter({
             <Calendar size={16} color={theme.colors.text.tertiary} />
           </Pressable>
         </View>
-      )}
+      ) : null}
 
       <ToggleInput
         items={[
