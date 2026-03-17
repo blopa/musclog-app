@@ -206,21 +206,21 @@ export default function CheckinScreen() {
         </Text>
 
         {/* Status Section */}
-        <GenericCard variant="elevated" containerStyle={{ marginBottom: theme.spacing.margin.lg, padding: theme.spacing.padding.xl, alignItems: 'center' }}>
+        <GenericCard variant="highlighted" containerStyle={{ marginBottom: theme.spacing.margin.lg, padding: theme.spacing.padding.xl, alignItems: 'center' }}>
           <View
             className="mb-4 h-24 w-24 items-center justify-center rounded-full"
-            style={{ backgroundColor: status === 'onTrack' ? theme.colors.status.emerald + '22' : status === 'ahead' ? theme.colors.status.blue + '22' : status === 'behind' ? theme.colors.status.orange + '22' : undefined }}
+            style={{ backgroundColor: status === 'onTrack' ? theme.colors.status.emerald + '22' : status === 'ahead' ? theme.colors.status.info + '22' : status === 'behind' ? theme.colors.status.warning + '22' : undefined }}
           >
             <MaterialIcons
               name={status === 'onTrack' ? 'check-circle' : status === 'ahead' ? 'trending-up' : 'error-outline'}
               size={48}
-              color={status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.blue : status === 'behind' ? theme.colors.status.orange : undefined}
+              color={status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : status === 'behind' ? theme.colors.status.warning : undefined}
             />
           </View>
           <Text className="text-sm font-bold uppercase tracking-widest" style={{ color: theme.colors.text.tertiary }}>
             {t('nutrition.checkin.status')}
           </Text>
-          <Text className="text-2xl font-black" style={{ color: status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.blue : status === 'behind' ? theme.colors.status.orange : undefined }}>
+          <Text className="text-2xl font-black" style={{ color: status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : status === 'behind' ? theme.colors.status.warning : undefined }}>
             {status ? t(`nutrition.checkin.${status}`) : '---'}
           </Text>
         </GenericCard>
@@ -239,7 +239,7 @@ export default function CheckinScreen() {
               })}
             </Text>
 
-            <View className="flex-row items-center justify-between border-t pt-4" style={{ borderTopColor: theme.colors.border.primary + '22' }}>
+            <View className="flex-row items-center justify-between border-t pt-4" style={{ borderTopColor: theme.colors.border.default + '22' }}>
               <View>
                 <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
                   {t('nutrition.checkin.weightComparison', {
@@ -251,7 +251,7 @@ export default function CheckinScreen() {
               </View>
               {isDataInsufficient && (
                 <View className="rounded-full bg-orange-500/10 px-2 py-1 flex-row items-center gap-1">
-                  <Info size={12} color={theme.colors.status.orange} />
+                  <Info size={12} color={theme.colors.status.warning} />
                   <Text className="text-[10px] font-bold text-orange-500">
                     LOW DATA
                   </Text>
@@ -262,9 +262,9 @@ export default function CheckinScreen() {
         </View>
 
         {isDataInsufficient && (
-          <View className="mb-6 flex-row gap-3 rounded-2xl p-4" style={{ backgroundColor: theme.colors.status.orange + '15' }}>
-            <Info color={theme.colors.status.orange} size={20} />
-            <Text className="flex-1 text-xs font-medium leading-relaxed" style={{ color: theme.colors.status.orange }}>
+          <View className="mb-6 flex-row gap-3 rounded-2xl p-4" style={{ backgroundColor: theme.colors.status.warning + '15' }}>
+            <Info color={theme.colors.status.warning} size={20} />
+            <Text className="flex-1 text-xs font-medium leading-relaxed" style={{ color: theme.colors.status.warning }}>
               {t('nutrition.checkin.insufficientData')}
             </Text>
           </View>

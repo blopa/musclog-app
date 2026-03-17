@@ -113,29 +113,34 @@ export default function NutritionGoalsScreen() {
         }
 
         // Generate new check-ins for the new goal
-        const user = await UserMetricService.getLatestWeight();
-        const height = await UserMetricService.getLatestHeight();
-        const bodyFat = await UserMetricService.getLatestBodyFat();
+        const userMetric = await UserMetricService.getLatest('weight');
+        const heightMetric = await UserMetricService.getLatest('height');
+        const bodyFatMetric = await UserMetricService.getLatest('body_fat');
 
-        if (user && height) {
+        if (userMetric && heightMetric) {
+          const userDecrypted = await userMetric.getDecrypted();
+          const heightDecrypted = await heightMetric.getDecrypted();
+          const bodyFatDecrypted = bodyFatMetric ? await bodyFatMetric.getDecrypted() : null;
+
           const plan = calculateNutritionPlan({
             gender: 'other', // fallback
-            weightKg: user.value,
-            heightCm: height.value,
+            weightKg: userDecrypted.value,
+            heightCm: heightDecrypted.value,
             age: 30, // fallback
             activityLevel: 3, // fallback
-            weightGoal: goals.eatingPhase === 'cut' ? 'lose' : goals.eatingPhase === 'bulk' ? 'gain' : 'maintain',
+            weightGoal:
+              goals.eatingPhase === 'cut' ? 'lose' : goals.eatingPhase === 'bulk' ? 'gain' : 'maintain',
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
-            bodyFatPercent: bodyFat?.value,
+            bodyFatPercent: bodyFatDecrypted?.value,
           });
 
           const checkins = generateWeeklyCheckins(
             plan,
             Date.now(),
             goals.targetDate ?? Date.now() + 90 * 24 * 60 * 60 * 1000,
-            height.value / 100,
-            bodyFat?.value ?? null
+            heightDecrypted.value / 100,
+            bodyFatDecrypted?.value ?? null
           );
 
           if (checkins.length > 0) {

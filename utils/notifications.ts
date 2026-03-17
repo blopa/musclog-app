@@ -2,6 +2,16 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
+export function addNotificationResponseReceivedListener(
+  listener: (event: Notifications.NotificationResponse) => void
+) {
+  return Notifications.addNotificationResponseReceivedListener(listener);
+}
+
+export async function getLastNotificationResponseAsync() {
+  return Notifications.getLastNotificationResponseAsync();
+}
+
 /**
  * Handles notification clicks/interactions for the entire app.
  */
@@ -29,7 +39,7 @@ export async function handleNotificationResponse(response: Notifications.Notific
     case 'nutrition-checkin':
       router.push({
         pathname: '/nutrition/checkin',
-        params: { checkinId: data.checkinId },
+        params: { checkinId: data.checkinId as string },
       });
       break;
 
@@ -67,6 +77,8 @@ export function setupNotificationConfig() {
         shouldShowAlert: !isWorkoutUpdate,
         shouldPlaySound: !isWorkoutUpdate,
         shouldSetBadge: false,
+        shouldShowBanner: !isWorkoutUpdate,
+        shouldShowList: true,
       };
     },
   });

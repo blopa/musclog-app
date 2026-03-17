@@ -136,7 +136,7 @@ function RootLayout() {
           handleNotificationResponse(response);
         }
       })
-      .catch((err) => console.warn('[NotificationService] Cold-start response error:', err));
+      .catch((err: any) => console.warn('[NotificationService] Cold-start response error:', err));
 
     const subscription = addNotificationResponseReceivedListener(handleNotificationResponse);
 
