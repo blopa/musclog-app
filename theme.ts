@@ -565,6 +565,7 @@ export const theme = {
       base: 16,
       lg: 18,
       xl: 20,
+      '40': 40,
       '2xl': 24,
       '3xl': 30,
       '4xl': 36,

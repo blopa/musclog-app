@@ -75,7 +75,7 @@ export function useExercises({
     // Wait for the next animation frame so React commits the loading state to screen
     // before the heavy DB work starts (React 18 automatic batching would otherwise
     // coalesce setIsLoading(true) + setIsLoading(false) into a single no-op render)
-    await new Promise<void>((resolve) => requestAnimationFrame(resolve));
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     try {
       let exercisesList: Exercise[];

@@ -159,7 +159,7 @@ export function AddExerciseToSessionModal({
     }
     try {
       setIsSubmitting(true);
-      await new Promise<void>((resolve) => requestAnimationFrame(resolve));
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       let suggestedWeightKg: number | undefined;
       let suggestedReps: number | undefined;
       try {
