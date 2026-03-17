@@ -205,7 +205,7 @@ export function ConnectGoogleAccountBody({
           label={t('connectGoogleAccount.billingInfoLabel')}
           message={t('connectGoogleAccount.billingInfo')}
           inlineLabel
-          size="sm"
+          size="xs"
         />
         <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
       </View>

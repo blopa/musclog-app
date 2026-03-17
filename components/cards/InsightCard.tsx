@@ -6,9 +6,10 @@ import { theme } from '../../theme';
 
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
-export type InsightCardSize = 'sm' | 'md';
+export type InsightCardSize = 'xs' | 'sm' | 'md';
 
 const sizeStyles: Record<InsightCardSize, { iconSize: number; textClassName: string; labelClassName: string }> = {
+  xs: { iconSize: 10, labelClassName: 'text-xs font-bold uppercase tracking-wider', textClassName: 'font-medium text-xs text-text-primary' },
   sm: { iconSize: 12, labelClassName: 'text-xs font-bold uppercase tracking-wider', textClassName: 'font-medium text-xs text-text-primary' },
   md: { iconSize: 16, labelClassName: 'text-sm font-bold uppercase tracking-wider', textClassName: 'font-medium text-text-primary' },
 };
