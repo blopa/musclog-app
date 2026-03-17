@@ -968,11 +968,7 @@ export function FoodMealDetailsModal({
           captureException(err, {
             data: {
               context: 'FoodMealDetailsModal.handleAddFood',
-              foodName: getFoodMealName(),
-              servingSize,
-              mealType: selectedMeal,
-              date: selectedDate.toISOString(),
-              mode,
+              // TODO: add meal barcode
             },
           });
 
@@ -1023,11 +1019,7 @@ export function FoodMealDetailsModal({
           captureException(err, {
             data: {
               context: 'FoodMealDetailsModal.handleAddFood',
-              foodName: getFoodMealName(),
-              servingSize,
-              mealType: selectedMeal,
-              date: selectedDate.toISOString(),
-              mode,
+              // TODO: add meal barcod
             },
           });
 
@@ -1217,11 +1209,7 @@ export function FoodMealDetailsModal({
       captureException(error, {
         data: {
           context: 'FoodMealDetailsModal.handleAddFood 2',
-          foodName: getFoodMealName(),
-          servingSize,
-          mealType: selectedMeal,
-          date: selectedDate.toISOString(),
-          mode,
+          // TODO: add meal barcode
         },
       });
 
