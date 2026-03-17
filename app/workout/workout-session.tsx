@@ -1056,7 +1056,10 @@ export default function WorkoutSessionScreen() {
 
           {/* Exercise Info */}
           <View className="mt-4 px-6">
-            <Text className="mb-3 font-bold text-text-primary" style={{ fontSize: theme.typography.fontSize['40'] }}>
+            <Text
+              className="mb-3 font-bold text-text-primary"
+              style={{ fontSize: theme.typography.fontSize['40'] }}
+            >
               {currentSetData.exercise.name ?? ''}
             </Text>
             <View className="mb-2 flex-row flex-wrap items-center gap-3">
