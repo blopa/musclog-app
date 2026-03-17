@@ -236,6 +236,7 @@ export default function WorkoutSessionScreen() {
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
     useState(false);
+  const [isAddExerciseButtonLoading, setIsAddExerciseButtonLoading] = useState(false);
   const [isFreeSessionCompleteModalVisible, setIsFreeSessionCompleteModalVisible] = useState(false);
   const [completedExerciseForModal, setCompletedExerciseForModal] = useState<{
     exerciseId: string;
@@ -634,7 +635,12 @@ export default function WorkoutSessionScreen() {
                 size="md"
                 width="full"
                 variant="gradientCta"
-                onPress={() => setIsAddExerciseToSessionModalVisible(true)}
+                loading={isAddExerciseButtonLoading}
+                onPress={async () => {
+                  setIsAddExerciseButtonLoading(true);
+                  await new Promise<void>((resolve) => requestAnimationFrame(resolve));
+                  setIsAddExerciseToSessionModalVisible(true);
+                }}
               />
               <Text
                 className="mt-4 text-center text-sm text-text-secondary"
@@ -698,7 +704,11 @@ export default function WorkoutSessionScreen() {
 
         <AddExerciseToSessionModal
           visible={isAddExerciseToSessionModalVisible}
-          onClose={() => setIsAddExerciseToSessionModalVisible(false)}
+          onClose={() => {
+            setIsAddExerciseToSessionModalVisible(false);
+            setIsAddExerciseButtonLoading(false);
+          }}
+          onShow={() => setIsAddExerciseButtonLoading(false)}
           workoutLogId={workoutLog.id}
           onAdded={() => refresh()}
         />
