@@ -1,9 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ChevronDown, Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
-import { useRef, useState } from 'react';
+import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text,TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { GradientText } from '../../components/GradientText';
@@ -12,6 +11,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
+import { useScrollFade } from '../../hooks/useScrollFade';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
 import { theme } from '../../theme';
 
@@ -40,8 +40,7 @@ export default function HealthConnectScreen() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
-  const [isAtBottom, setIsAtBottom] = useState(false);
-  const scrollRef = useRef<ScrollView>(null);
+  const { scrollProps, FadeIndicator } = useScrollFade();
 
   // Health Connect initialization and permissions
   const {
@@ -61,15 +60,10 @@ export default function HealthConnectScreen() {
     <MasterLayout showNavigationMenu={false}>
       <View style={{ flex: 1 }}>
       <ScrollView
-        ref={scrollRef}
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
-        onScroll={({ nativeEvent }) => {
-          const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
-          setIsAtBottom(contentOffset.y + layoutMeasurement.height >= contentSize.height - 8);
-        }}
-        scrollEventThrottle={16}
+        {...scrollProps}
       >
         {/* Main Content */}
         <View className="flex-col items-center px-6 pt-4">
@@ -264,38 +258,7 @@ export default function HealthConnectScreen() {
           </Text>
         </View>
       </ScrollView>
-      {!isAtBottom ? <>
-          <LinearGradient
-            colors={['transparent', theme.colors.overlay.backdrop90]}
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 80,
-              pointerEvents: 'none',
-            }}
-          />
-          <TouchableOpacity
-            onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
-            style={{
-              position: 'absolute',
-              bottom: 12,
-              alignSelf: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: theme.colors.background.white10,
-              borderWidth: 1,
-              borderColor: theme.colors.background.white10,
-              opacity: 0.6,
-            }}
-          >
-            <ChevronDown size={22} color={theme.colors.text.white} strokeWidth={2} />
-          </TouchableOpacity>
-        </> : null}
+      {FadeIndicator}
       </View>
     </MasterLayout>
   );
