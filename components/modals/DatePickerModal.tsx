@@ -32,7 +32,7 @@ type DatePickerModalProps = {
   visible: boolean;
   onClose: () => void;
   selectedDate: Date;
-  onDateSelect: (date: Date) => void;
+  onDateSelect: (date: Date) => void | Promise<void>;
   minYear?: number;
   maxYear?: number;
 };
@@ -50,6 +50,7 @@ export function DatePickerModal({
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
   const [tempSelectedDate, setTempSelectedDate] = useState(selectedDate);
   const [isMonthYearPickerVisible, setIsMonthYearPickerVisible] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState(getYear(currentMonth));
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
 
@@ -75,8 +76,15 @@ export function DatePickerModal({
   };
 
   const handleConfirm = () => {
-    onDateSelect(tempSelectedDate);
-    onClose();
+    setIsConfirmLoading(true);
+    setTimeout(async () => {
+      try {
+        await onDateSelect(tempSelectedDate);
+      } finally {
+        setIsConfirmLoading(false);
+        onClose();
+      }
+    }, 0);
   };
 
   const handleQuickDate = (
@@ -323,6 +331,8 @@ export function DatePickerModal({
               variant="gradientCta"
               size="sm"
               width="flex-1"
+              loading={isConfirmLoading}
+              disabled={isConfirmLoading}
               onPress={handleConfirm}
             />
           </View>

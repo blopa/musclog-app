@@ -14,8 +14,7 @@ import { Text, View } from 'react-native';
 import type { NavItemKey } from '../../constants/settings';
 import { useNavigationItems } from '../../hooks/useNavigationItems';
 import { useTheme } from '../../hooks/useTheme';
-import { BottomPopUp } from '../BottomPopUp';
-import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
+import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { PickerButton } from '../theme/PickerButton';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -85,24 +84,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     return '';
   };
 
-  const selectorOptions: SelectorOption<NavItemKey>[] = allNavItems
-    .filter(isItemAvailable)
-    .map((item) => ({
-      id: item,
-      label: getItemLabel(item),
-      description: getItemDescription(item),
-      icon: NAV_ITEM_ICON[item],
-      iconBgColor: theme.colors.background.iconDark,
-      iconColor: theme.colors.accent.primary,
-    }));
-
-  const handleSelectItem = async (item: NavItemKey) => {
-    if (activeSlot === null) {
-      return;
-    }
-    await setNavSlot(activeSlot, item);
-    setActiveSlot(null);
-  };
+  const menuItems =
+    activeSlot !== null
+      ? allNavItems.filter(isItemAvailable).map((item) => ({
+          icon: NAV_ITEM_ICON[item],
+          iconColor: theme.colors.accent.primary,
+          iconBgColor: theme.colors.background.iconDark,
+          title: getItemLabel(item),
+          description: getItemDescription(item),
+          onPress: () => {
+            setNavSlot(activeSlot, item);
+          },
+        }))
+      : [];
 
   const renderPickerButton = (slot: SlotNumber) => {
     const currentItem = currentSlots[slot];
@@ -152,21 +146,13 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         </View>
       </FullScreenModal>
 
-      <BottomPopUp
+      <BottomPopUpMenu
         visible={activeSlot !== null}
         onClose={() => setActiveSlot(null)}
         title={activeSlot !== null ? slotLabels[activeSlot] : ''}
         subtitle={t('settings.visualSettings.selectItem')}
-      >
-        <View className="p-6">
-          <OptionsSelector
-            title=""
-            options={selectorOptions}
-            selectedId={activeSlot !== null ? currentSlots[activeSlot] : undefined}
-            onSelect={handleSelectItem}
-          />
-        </View>
-      </BottomPopUp>
+        items={menuItems}
+      />
     </>
   );
 }
