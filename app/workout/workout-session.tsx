@@ -13,7 +13,6 @@ import {
   Repeat,
   SkipForward,
   WifiOff,
-  X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +25,7 @@ import {
   View,
 } from 'react-native';
 
-import { FuelingInsightCard } from '../../components/cards/FuelingInsightCard';
+import { InsightCard } from '../../components/cards/InsightCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
@@ -958,33 +957,31 @@ export default function WorkoutSessionScreen() {
           {/* Physiological Insight Card */}
           <View className="mx-6 mt-32 gap-3">
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
-              <View className="rounded-2xl border-2 border-accent-primary/40 bg-accent-primary/20 p-4">
-                <View className="flex-row items-start gap-3">
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
-                    <Flame size={20} color={theme.colors.text.black} />
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
-                        {t('workoutSession.hormonalInsight')}
-                      </Text>
-                      <Pressable onPress={() => setIsHormonalInsightDismissed(true)}>
-                        <X size={16} color={theme.colors.accent.primary} />
-                      </Pressable>
-                    </View>
-                    <Text className="mt-0.5 font-medium text-text-primary">
-                      {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              <InsightCard
+                variant="accent"
+                icon={Flame}
+                label={t('workoutSession.hormonalInsight')}
+                message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
+                onDismiss={() => setIsHormonalInsightDismissed(true)}
+              />
             ) : null}
 
             {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
-              <FuelingInsightCard
-                status={fuelingStatus}
-                totalCarbs={fuelingTotalCarbs}
-                windowHours={fuelingWindowHours}
+              <InsightCard
+                variant={fuelingStatus === 'low' ? 'warning' : 'success'}
+                icon={Flame}
+                label={t('workoutSession.fuelingInsight')}
+                message={
+                  fuelingStatus === 'low'
+                    ? t('workoutSession.lowFuelingMessage', {
+                        carbs: Math.round(fuelingTotalCarbs),
+                        hours: Math.round(fuelingWindowHours),
+                      })
+                    : t('workoutSession.fullyFueledMessage', {
+                        carbs: Math.round(fuelingTotalCarbs),
+                        hours: Math.round(fuelingWindowHours),
+                      })
+                }
                 onDismiss={() => setIsFuelingInsightDismissed(true)}
               />
             ) : null}

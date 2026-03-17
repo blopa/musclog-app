@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CheckCircle2, LucideChartSpline, Sparkles } from 'lucide-react-native';
+import { CheckCircle2, Info, LucideChartSpline, Sparkles } from 'lucide-react-native';
+
+import { InsightCard } from './cards/InsightCard';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -243,6 +245,15 @@ export function ConnectGoogleAccountBody({
           )}
         </View>
         <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
+
+        {/* Billing Info */}
+        <InsightCard
+          variant="accent"
+          icon={Info}
+          label={t('connectGoogleAccount.billingInfoLabel')}
+          message={t('connectGoogleAccount.billingInfo')}
+        />
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
       </View>
     </ScrollView>
   );
