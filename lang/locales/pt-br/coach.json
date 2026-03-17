@@ -38,8 +38,10 @@
       "progressInsightFailed": "Não foi possível analisar o progresso. Tente novamente mais tarde.",
       "nutritionInsightFailed": "Não foi possível verificar a nutrição. Tente novamente mais tarde.",
       "trackMealFailed": "Não consegui estimar os macros para essa refeição. Você poderia descrevê-la com mais detalhes?",
-      "filePickFailed": "Falha ao selecionar arquivo. Por favor, tente novamente."
+      "filePickFailed": "Falha ao selecionar arquivo. Por favor, tente novamente.",
+      "creditsExhausted": "Parece que seus créditos de IA acabaram. Por favor, verifique sua chave de API ou cobrança em Configurações."
     },
+    "goToSettings": "Ir para Configurações",
     "success": {
       "workoutPlanGenerated": "Criei {{count}} treinos para você! 💪 {{description}}",
       "trackMealSuccess": "Registrei {{count}} ingredientes para sua refeição: {{ingredients}}. Total: {{calories}} kcal.",

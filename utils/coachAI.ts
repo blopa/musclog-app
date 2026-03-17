@@ -29,6 +29,41 @@ import {
   getWorkoutVolumeInsightsPrompt,
 } from './prompts';
 
+export class AiCreditsError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AiCreditsError';
+  }
+}
+
+export function isAiCreditsError(error: any): boolean {
+  if (error instanceof AiCreditsError) {
+    return true;
+  }
+
+  const status = error?.status ?? error?.response?.status;
+  const code = error?.error?.code ?? error?.code;
+  const message = (error?.message ?? '').toLowerCase();
+  if (status === 429) {
+    return true;
+  }
+
+  if (code === 'insufficient_quota') {
+    return true;
+  }
+
+  if (
+    message.includes('quota') ||
+    message.includes('insufficient_quota') ||
+    message.includes('resource_exhausted') ||
+    message.includes('billing')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export type CoachAIProvider = 'gemini' | 'openai';
 
 export type CoachAIConfig = {
@@ -341,6 +376,9 @@ async function sendViaOpenAI(
     return parseCoachResponse(raw);
   } catch (error: any) {
     console.error('[coachAI] sendViaOpenAI error:', error);
+    if (isAiCreditsError(error)) {
+      throw new AiCreditsError(error?.message ?? 'OpenAI quota exceeded');
+    }
     // Return a friendly error message if the API call fails (e.g. invalid key, quota exceeded)
     const errorMsg = error?.message || 'Error communicating with OpenAI';
     return {

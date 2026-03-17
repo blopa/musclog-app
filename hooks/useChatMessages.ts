@@ -24,11 +24,13 @@ import ChatMessage, {
 import { ChatService, NutritionService } from '../database/services';
 import AiService from '../services/AiService';
 import {
+  AiCreditsError,
   type ChatHistoryEntry,
   type CoachResponse,
   generateWorkoutPlan,
   getNutritionInsights,
   getRecentWorkoutsInsights,
+  isAiCreditsError,
   sendCoachMessage,
   trackMeal,
   type TrackMealIngredient,
@@ -40,6 +42,7 @@ import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '
 export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
 
 export interface ExtendedIMessage extends IMessage {
+  showSettingsButton?: boolean;
   workout?: {
     title: string;
     duration: string;
@@ -157,6 +160,8 @@ export type UseChatMessagesResult = {
   clearFailedMessageText: () => void;
   /** Ephemeral coach error message (not persisted). Shown in UI until user sends again. */
   ephemeralErrorAsMessage: ExtendedIMessage | null;
+  /** True when the last error was due to insufficient AI credits/quota. */
+  isCreditsError: boolean;
   deleteMessage: (messageId: string | number) => Promise<void>;
   markMealAsTracked: (
     messageId: string,
@@ -180,6 +185,7 @@ export function useChatMessages(
   const [currentOffset, setCurrentOffset] = useState(0);
   const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
   const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
+  const [ephemeralCreditsError, setEphemeralCreditsError] = useState(false);
 
   // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
@@ -323,6 +329,7 @@ export function useChatMessages(
           setHasMore(false);
           setFailedMessageText(null);
           setEphemeralErrorMessage(null);
+          setEphemeralCreditsError(false);
           pendingCoachMessageRef.current = null;
           setPendingCoachMessage(null);
         }
@@ -341,6 +348,7 @@ export function useChatMessages(
       }
 
       setEphemeralErrorMessage(null); // Clear any previous error when user sends again
+      setEphemeralCreditsError(false);
       clearFailedMessageText(); // Clear input immediately when user sends; if request fails we set it again
       setIsSending(true);
       let userRecord: ChatMessage | null = null;
@@ -616,7 +624,12 @@ export function useChatMessages(
           rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
           setMessages((prev) => prev.filter((m) => m._id !== recordId));
           setFailedMessageText(text.trim());
-          setEphemeralErrorMessage(t('coach.errors.generalError'));
+          if (error instanceof AiCreditsError || isAiCreditsError(error)) {
+            setEphemeralCreditsError(true);
+            setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
+          } else {
+            setEphemeralErrorMessage(t('coach.errors.generalError'));
+          }
         }
       } finally {
         setIsSending(false);
@@ -692,8 +705,9 @@ export function useChatMessages(
       text: ephemeralErrorMessage,
       createdAt: new Date(),
       user: COACH_USER,
+      showSettingsButton: ephemeralCreditsError,
     };
-  }, [ephemeralErrorMessage]);
+  }, [ephemeralErrorMessage, ephemeralCreditsError]);
 
   return {
     messages,
@@ -710,6 +724,7 @@ export function useChatMessages(
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    isCreditsError: ephemeralCreditsError,
     deleteMessage,
     markMealAsTracked,
   };

@@ -3,6 +3,7 @@ import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
   Copy,
@@ -256,7 +257,9 @@ const renderBubble = (
   conversationContext: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
+  onGoToSettings?: () => void,
+  goToSettingsLabel?: string
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -310,6 +313,23 @@ const renderBubble = (
         {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
+        ) : null}
+        {currentMessage?.showSettingsButton && onGoToSettings ? (
+          <Pressable
+            onPress={onGoToSettings}
+            className="mt-2 rounded-full px-4 py-2 active:opacity-70"
+            style={{ backgroundColor: theme.colors.accent.primary, alignSelf: 'flex-start' }}
+          >
+            <Text
+              style={{
+                color: theme.colors.text.black,
+                fontSize: theme.typography.fontSize.sm,
+                fontWeight: '600',
+              }}
+            >
+              {goToSettingsLabel}
+            </Text>
+          </Pressable>
         ) : null}
         {currentMessage?.workoutCompleted || currentMessage?.workout || currentMessage?.meal
           ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails)
@@ -564,12 +584,11 @@ type CoachModalProps = {
   onClose: () => void;
 };
 
-// TODO: if the message fails to be sent to Gemini or Openai due to lack of credits, show a message in the chat
-// explaining it and with a button to open the setting screen.
 export function CoachModal({ visible, onClose }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
   const {
@@ -587,6 +606,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     failedMessageText,
     clearFailedMessageText,
     ephemeralErrorAsMessage,
+    isCreditsError,
     markMealAsTracked,
   } = useChatMessages(conversationContext);
 
@@ -822,6 +842,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     },
     []
   );
+
+  const handleGoToSettings = useCallback(() => {
+    onClose();
+    router.push('/settings');
+  }, [onClose, router]);
 
   const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -1123,7 +1148,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         conversationContext,
         handleViewWorkoutDetails,
         handleMessageLongPress,
-        handleViewMealDetails
+        handleViewMealDetails,
+        isCreditsError ? handleGoToSettings : undefined,
+        isCreditsError ? t('coach.goToSettings') : undefined
       ),
     [
       theme,
@@ -1131,6 +1158,9 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       handleViewWorkoutDetails,
       handleMessageLongPress,
       handleViewMealDetails,
+      isCreditsError,
+      handleGoToSettings,
+      t,
     ]
   );
   const gcRenderAvatar = useCallback(
