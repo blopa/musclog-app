@@ -10,6 +10,7 @@ import { BottomButtonWrapper } from '../BottomButtonWrapper';
 type FullScreenModalProps = {
   visible: boolean;
   onClose: () => void;
+  onShow?: () => void;
   title: string;
   subtitle?: string;
   headerRight?: ReactNode;
@@ -24,6 +25,7 @@ type FullScreenModalProps = {
 export function FullScreenModal({
   visible,
   onClose,
+  onShow,
   title,
   subtitle,
   headerRight,
@@ -67,6 +69,7 @@ export function FullScreenModal({
       transparent={false}
       animationType="slide"
       onRequestClose={onClose}
+      onShow={onShow}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       <View

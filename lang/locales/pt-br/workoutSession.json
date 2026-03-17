@@ -28,6 +28,9 @@
     "hormonalInsight": "Insight Hormonal",
     "ovulationInsight": "Durante a ovulação, você pode experimentar aumento de força e desempenho.",
     "menstrualInsight": "Durante a menstruação, você pode precisar reduzir a intensidade e focar na recuperação.",
-    "phaseInsight": "Fase atual: {{phase}}. Multiplicador de intensidade: {{multiplier}}x"
+    "phaseInsight": "Fase atual: {{phase}}. Multiplicador de intensidade: {{multiplier}}x",
+    "fuelingInsight": "Insight de Energia",
+    "lowFuelingMessage": "Você consumiu apenas {{carbs}}g de carboidratos nas últimas {{hours}} horas. Estoques de glicogênio podem estar baixos. Em sessões futuras, tente consumir mais carboidratos antes do treino. Um lanche rápido agora ainda pode ajudar no seu desempenho.",
+    "fullyFueledMessage": "Você consumiu {{carbs}}g de carboidratos nas últimas {{hours}} horas. Você está totalmente abastecido e pronto para o treino!"
   }
 }

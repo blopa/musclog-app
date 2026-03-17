@@ -54,6 +54,7 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
 type AddExerciseToSessionModalProps = {
   visible: boolean;
   onClose: () => void;
+  onShow?: () => void;
   workoutLogId: string;
   onAdded?: () => void;
 };
@@ -61,6 +62,7 @@ type AddExerciseToSessionModalProps = {
 export function AddExerciseToSessionModal({
   visible,
   onClose,
+  onShow,
   workoutLogId,
   onAdded,
 }: AddExerciseToSessionModalProps) {
@@ -157,6 +159,7 @@ export function AddExerciseToSessionModal({
     }
     try {
       setIsSubmitting(true);
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       let suggestedWeightKg: number | undefined;
       let suggestedReps: number | undefined;
       try {
@@ -199,6 +202,7 @@ export function AddExerciseToSessionModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      onShow={onShow}
       title={t('freeTraining.addExercise.title')}
       scrollable={true}
       footer={
@@ -210,7 +214,7 @@ export function AddExerciseToSessionModal({
           icon={PlusCircle}
           onPress={handleAddToWorkout}
           disabled={!selectedExerciseId || isLoading || isSubmitting}
-          loading={isSubmitting}
+          loading={isLoading || isSubmitting}
         />
       }
     >
