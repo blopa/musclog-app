@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, View } from 'react-native';
+import { Modal, Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../hooks/useTheme';
@@ -76,34 +76,54 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
     };
   }, [showSnackbar]);
 
-  // Web-specific styles for proper viewport positioning
-  const webContainerStyle =
-    Platform.OS === 'web'
-      ? ({
-          position: 'fixed' as const,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: '100vw',
-        } as any)
-      : {};
+  const paddingBottom = Math.max(insets.bottom, theme.spacing.padding.base);
+
+  // On native, z-index is useless against React Native's Modal (which creates its own
+  // native window layer). The only reliable fix is to render snackbars inside their own
+  // transparent Modal so they always sit above every other modal on both iOS and Android.
+  const snackbarList = snackbars.map((snackbar) => (
+    <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
+  ));
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar, dismissSnackbar }}>
       {children}
-      {/* Snackbar Container - renders at the bottom of the screen */}
-      <View
-        className="absolute bottom-0 left-0 right-0"
-        style={{
-          pointerEvents: 'box-none',
-          paddingBottom: Math.max(insets.bottom, theme.spacing.padding.base),
-          ...webContainerStyle,
-        }}
-      >
-        {snackbars.map((snackbar) => (
-          <Snackbar key={snackbar.id} snackbar={snackbar} onDismiss={dismissSnackbar} />
-        ))}
-      </View>
+
+      {Platform.OS === 'web' ? (
+        /* Web: fixed positioning + high z-index is sufficient */
+        <View
+          style={{
+            position: 'fixed' as any,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100vw' as any,
+            zIndex: 999999,
+            pointerEvents: 'box-none',
+            paddingBottom,
+          }}
+        >
+          {snackbarList}
+        </View>
+      ) : (
+        /* Native: wrap in a transparent Modal so snackbars appear above ALL other modals */
+        <Modal visible={snackbars.length > 0} transparent animationType="none" statusBarTranslucent>
+          <View style={{ flex: 1, pointerEvents: 'box-none' }}>
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingBottom,
+                pointerEvents: 'box-none',
+              }}
+            >
+              {snackbarList}
+            </View>
+          </View>
+        </Modal>
+      )}
     </SnackbarContext.Provider>
   );
 }

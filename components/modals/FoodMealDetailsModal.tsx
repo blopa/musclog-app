@@ -51,6 +51,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { BottomPopUp } from '../BottomPopUp';
@@ -963,6 +964,14 @@ export function FoodMealDetailsModal({
           });
         } catch (err) {
           console.error('Error logging meal:', err);
+
+          captureException(err, {
+            data: {
+              context: 'FoodMealDetailsModal.handleAddFood',
+              // TODO: add meal barcode
+            },
+          });
+
           showSnackbar('error', t('food.foodDetails.errorMessage'), {
             action: t('snackbar.ok'),
           });
@@ -1006,6 +1015,14 @@ export function FoodMealDetailsModal({
           });
         } catch (err) {
           console.error('Error updating food log:', err);
+
+          captureException(err, {
+            data: {
+              context: 'FoodMealDetailsModal.handleAddFood',
+              // TODO: add meal barcod
+            },
+          });
+
           showSnackbar('error', t('food.foodDetails.errorMessage'), {
             action: t('snackbar.ok'),
           });
@@ -1189,6 +1206,13 @@ export function FoodMealDetailsModal({
     } catch (error) {
       console.error('Error tracking food:', error);
 
+      captureException(error, {
+        data: {
+          context: 'FoodMealDetailsModal.handleAddFood 2',
+          // TODO: add meal barcode
+        },
+      });
+
       showSnackbar('error', t('food.foodDetails.errorMessage'), {
         action: t('snackbar.ok'),
       });
@@ -1200,8 +1224,8 @@ export function FoodMealDetailsModal({
     foodLog,
     food,
     localFood,
-    productFromSearch,
     productDetails,
+    productFromSearch,
     editedOverrides,
     nutritionalData.calories,
     nutritionalData.protein,
@@ -1223,6 +1247,8 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    getFoodMealName,
+    mode,
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
