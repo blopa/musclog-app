@@ -87,10 +87,15 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
   }, [fetchData]);
 
   const changePreset = (newPreset: DateRangePreset) => {
-    setPreset(newPreset);
-    if (newPreset !== 'custom') {
-      setCustomRange(null);
+    if (newPreset === 'custom' && !customRange) {
+      const end = new Date();
+      end.setUTCHours(23, 59, 59, 999);
+      const start = new Date();
+      start.setUTCHours(0, 0, 0, 0);
+      start.setDate(start.getDate() - 30);
+      setCustomRange({ startDate: start, endDate: end });
     }
+    setPreset(newPreset);
   };
 
   const setCustomDates = (start: Date, end: Date) => {
