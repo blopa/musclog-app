@@ -1,9 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
-import { useState } from 'react';
+import { ChevronDown, Heart, Moon, RefreshCw, Scale, UtensilsCrossed } from 'lucide-react-native';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text,TouchableOpacity, View } from 'react-native';
 
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
 import { GradientText } from '../../components/GradientText';
@@ -41,6 +41,7 @@ export default function HealthConnectScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [permissionsRequested, setPermissionsRequested] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
 
   // Health Connect initialization and permissions
   const {
@@ -60,6 +61,7 @@ export default function HealthConnectScreen() {
     <MasterLayout showNavigationMenu={false}>
       <View style={{ flex: 1 }}>
       <ScrollView
+        ref={scrollRef}
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -262,19 +264,38 @@ export default function HealthConnectScreen() {
           </Text>
         </View>
       </ScrollView>
-      {!isAtBottom && (
-        <LinearGradient
-          colors={['transparent', theme.colors.overlay.backdrop90]}
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 80,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+      {!isAtBottom ? <>
+          <LinearGradient
+            colors={['transparent', theme.colors.overlay.backdrop90]}
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 80,
+              pointerEvents: 'none',
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
+            style={{
+              position: 'absolute',
+              bottom: 12,
+              alignSelf: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: theme.colors.background.white10,
+              borderWidth: 1,
+              borderColor: theme.colors.background.white10,
+              opacity: 0.6,
+            }}
+          >
+            <ChevronDown size={22} color={theme.colors.text.white} strokeWidth={2} />
+          </TouchableOpacity>
+        </> : null}
       </View>
     </MasterLayout>
   );
