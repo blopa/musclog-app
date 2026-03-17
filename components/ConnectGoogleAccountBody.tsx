@@ -16,7 +16,7 @@ import {
   handleGoogleSignIn,
 } from '../utils/googleAuth';
 import { setSentryUser } from '../utils/sentry';
-import { InsightCard } from './cards/InsightCard';
+import { InfoCard } from './cards/InfoCard';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -199,7 +199,7 @@ export function ConnectGoogleAccountBody({
         <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
 
         {/* Billing Info */}
-        <InsightCard
+        <InfoCard
           variant="neutral"
           icon={Info}
           label={t('connectGoogleAccount.billingInfoLabel')}

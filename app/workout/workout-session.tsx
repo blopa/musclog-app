@@ -25,7 +25,7 @@ import {
   View,
 } from 'react-native';
 
-import { InsightCard } from '../../components/cards/InsightCard';
+import { InfoCard } from '../../components/cards/InfoCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
@@ -957,7 +957,7 @@ export default function WorkoutSessionScreen() {
           {/* Physiological Insight Card */}
           <View className="mx-6 mt-32 gap-3">
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
-              <InsightCard
+              <InfoCard
                 variant="accent"
                 icon={Flame}
                 label={t('workoutSession.hormonalInsight')}
@@ -967,7 +967,7 @@ export default function WorkoutSessionScreen() {
             ) : null}
 
             {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
-              <InsightCard
+              <InfoCard
                 variant={fuelingStatus === 'low' ? 'warning' : 'success'}
                 icon={Flame}
                 label={t('workoutSession.fuelingInsight')}

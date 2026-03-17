@@ -55,7 +55,7 @@ const variantStyles: Record<
   },
 };
 
-export function InsightCard({
+export function InfoCard({
   variant,
   icon: Icon,
   label,
