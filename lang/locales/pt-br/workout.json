@@ -41,6 +41,41 @@
       "unableToLoad": "Não foi possível carregar",
       "feedbackReceived": "Feedback do treino enviado com sucesso.",
       "failedToGetFeedback": "Não foi possível obter feedback. Por favor, tente novamente."
+    },
+    "muscleGroups": {
+      "chest": "Peito",
+      "back": "Costas",
+      "legs": "Pernas",
+      "shoulders": "Ombros",
+      "arms": "Braços",
+      "core": "Core",
+      "abdomen": "Abdômen",
+      "glutes": "Glúteos",
+      "fullBody": "Corpo Inteiro",
+      "biceps": "Bíceps",
+      "triceps": "Tríceps",
+      "forearms": "Antebraços",
+      "abs": "Abdômen",
+      "quads": "Quadríceps",
+      "hamstrings": "Isquiotibiais",
+      "calves": "Panturrilhas",
+      "full_body": "Corpo Inteiro",
+      "cardio": "Cardio",
+      "other": "Outro"
+    },
+    "exerciseTypes": {
+      "compound": "Composto",
+      "isolation": "Isolamento",
+      "bodyweight": "Peso Corporal",
+      "machine": "Máquina",
+      "dumbbell": "Haltere",
+      "barbell": "Barra",
+      "cable": "Cabo",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Faixa de Resistência",
+      "medicine_ball": "Bola de Medicina",
+      "smith_machine": "Máquina Smith",
+      "other": "Outro"
     }
   }
 }

@@ -84,6 +84,39 @@ const getExerciseType = (
   return 'isolation' as MechanicType;
 };
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
+// Helper function to get translation key for exercise type
+const getExerciseTypeTranslationKey = (exerciseType: MechanicType | EquipmentType): string => {
+  return `workout.exerciseTypes.${exerciseType}`;
+};
+
 // Helper function to get icon for exercise type
 const getExerciseIcon = (type: string) => {
   if (type === 'bodyweight') {
@@ -139,10 +172,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       );
       const Icon = getExerciseIcon(exerciseType);
 
+      const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup ?? '');
+      const exerciseTypeI18nKey = getExerciseTypeTranslationKey(exerciseType);
+
       const exerciseOption: ExerciseOption = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -174,6 +210,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     theme.colors.accent.primary10,
     theme.colors.background.white5,
     theme.colors.text.secondary,
+    t,
   ]);
 
   // Memoize muscleTabs to avoid recreating array and translation calls on every render

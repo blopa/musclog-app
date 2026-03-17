@@ -546,6 +546,39 @@ export default function WorkoutSessionScreen() {
     }
   };
 
+  // Helper function to get translation key for muscle group
+  const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+    const normalized = muscleGroup?.toLowerCase() || '';
+
+    // Map normalized values to translation keys
+    if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+    if (normalized.includes('back') || normalized.includes('lat'))
+      return 'workout.muscleGroups.back';
+    if (
+      normalized.includes('leg') ||
+      normalized.includes('quad') ||
+      normalized.includes('hamstring') ||
+      normalized.includes('calf') ||
+      normalized.includes('glute')
+    )
+      return 'workout.muscleGroups.legs';
+    if (
+      normalized.includes('arm') ||
+      normalized.includes('bicep') ||
+      normalized.includes('tricep') ||
+      normalized.includes('shoulder') ||
+      normalized.includes('deltoid')
+    )
+      return 'workout.muscleGroups.arms';
+
+    return 'workout.muscleGroups.other';
+  };
+
+  // Helper function to get translation key for exercise type/equipment
+  const getExerciseTypeTranslationKey = (exerciseType: string): string => {
+    return `workout.exerciseTypes.${exerciseType}`;
+  };
+
   // Get exercise category string
   const getExerciseCategory = () => {
     if (!currentSetData) {
@@ -555,11 +588,11 @@ export default function WorkoutSessionScreen() {
     const exercise = currentSetData.exercise;
     const parts = [];
     if (exercise.muscleGroup) {
-      parts.push(t(exercise.muscleGroup));
+      parts.push(t(getMuscleGroupTranslationKey(exercise.muscleGroup)));
     }
 
     if (exercise.equipmentType) {
-      parts.push(exercise.equipmentType);
+      parts.push(t(getExerciseTypeTranslationKey(exercise.equipmentType)));
     }
 
     return parts.join(' • ') || t('exercises.manageExerciseData.unknownExercise');
@@ -958,8 +991,8 @@ export default function WorkoutSessionScreen() {
           <View className="mx-6 mt-32 gap-3">
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
               <InfoCard
-                variant="accent"
-                icon={Flame}
+                variant="success"
+                icon={Flame} // TODO: find a better icon for menstruation cycle info
                 label={t('workoutSession.hormonalInsight')}
                 message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
                 onDismiss={() => setIsHormonalInsightDismissed(true)}

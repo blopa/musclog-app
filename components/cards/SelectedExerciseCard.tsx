@@ -12,6 +12,39 @@ type SelectedExerciseCardProps = {
   onChange?: () => void;
 };
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
+// Helper function to get translation key for exercise type
+const getExerciseTypeTranslationKey = (exerciseType: string): string => {
+  return `workout.exerciseTypes.${exerciseType}`;
+};
+
 /**
  * SelectedExerciseCard - Displays the currently selected exercise
  * with an option to change it.
@@ -24,7 +57,13 @@ export function SelectedExerciseCard({
 }: SelectedExerciseCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const detailsText = [exerciseCategory, exerciseType].filter(Boolean).join(' • ');
+
+  // Translate muscle group and exercise type
+  const translatedCategory = exerciseCategory
+    ? t(getMuscleGroupTranslationKey(exerciseCategory))
+    : '';
+  const translatedType = exerciseType ? t(getExerciseTypeTranslationKey(exerciseType)) : '';
+  const detailsText = [translatedCategory, translatedType].filter(Boolean).join(' • ');
 
   return (
     <GenericCard backgroundVariant="gradient" variant="default">

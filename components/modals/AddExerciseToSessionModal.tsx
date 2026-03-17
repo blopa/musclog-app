@@ -51,6 +51,39 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
   return null;
 }
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
+// Helper function to get translation key for exercise type
+const getExerciseTypeTranslationKey = (exerciseType: string): string => {
+  return `workout.exerciseTypes.${exerciseType}`;
+};
+
 type AddExerciseToSessionModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -108,10 +141,13 @@ export function AddExerciseToSessionModal({
         exerciseType = 'machine';
       }
 
+      const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup ?? '');
+      const exerciseTypeI18nKey = getExerciseTypeTranslationKey(exerciseType);
+
       const option: SelectorOption<string> = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
         icon: exerciseType === 'bodyweight' ? User : Dumbbell,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -130,7 +166,7 @@ export function AddExerciseToSessionModal({
       grouped[k].sort((a, b) => a.label.localeCompare(b.label));
     });
     return grouped;
-  }, [allExercises, theme]);
+  }, [allExercises, theme, t]);
 
   const filteredExercises = useMemo(
     () =>
