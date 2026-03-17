@@ -9,6 +9,18 @@ export const migrations = schemaMigrations({
           table: 'nutrition_checkins',
           columns: [{ name: 'completed', type: 'boolean', isOptional: true }],
         }),
+        createTable({
+          name: 'ai_custom_prompts',
+          columns: [
+            { name: 'name', type: 'string' },
+            { name: 'content', type: 'string' },
+            { name: 'context', type: 'string' },
+            { name: 'is_active', type: 'boolean' },
+            { name: 'created_at', type: 'number' },
+            { name: 'updated_at', type: 'number' },
+            { name: 'deleted_at', type: 'number', isOptional: true },
+          ],
+        }),
       ],
     },
   ],
