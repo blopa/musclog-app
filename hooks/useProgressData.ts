@@ -87,20 +87,28 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
   }, [fetchData]);
 
   const changePreset = (newPreset: DateRangePreset) => {
-    if (newPreset === 'custom' && !customRange) {
-      const end = new Date();
-      end.setUTCHours(23, 59, 59, 999);
-      const start = new Date();
-      start.setUTCHours(0, 0, 0, 0);
-      start.setDate(start.getDate() - 30);
-      setCustomRange({ startDate: start, endDate: end });
+    if (newPreset === 'custom') {
+      if (!customRange) {
+        const end = new Date();
+        end.setUTCHours(23, 59, 59, 999);
+        const start = new Date();
+        start.setUTCHours(0, 0, 0, 0);
+        start.setDate(start.getDate() - 30);
+        setCustomRange({ startDate: start, endDate: end });
+      }
+      // Never set preset to custom here. User must click Apply (or use setCustomDates).
+    } else {
+      setPreset(newPreset);
     }
-    setPreset(newPreset);
   };
 
   const setCustomDates = (start: Date, end: Date) => {
     setCustomRange({ startDate: start, endDate: end });
+  };
+
+  const applyCustomRange = () => {
     setPreset('custom');
+    fetchData();
   };
 
   // Helper function to check if any aggregation has data for charts with aggregation options
@@ -127,6 +135,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     changePreset,
     customRange,
     setCustomDates,
+    applyCustomRange,
     useWeeklyAverages,
     setUseWeeklyAverages,
     refresh: fetchData,

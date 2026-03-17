@@ -42,6 +42,7 @@ export default function ProgressScreen() {
     changePreset,
     customRange,
     setCustomDates,
+    applyCustomRange,
     useWeeklyAverages,
     setUseWeeklyAverages,
     refresh,
@@ -175,6 +176,7 @@ export default function ProgressScreen() {
           changePreset={changePreset}
           customRange={customRange}
           onCustomRangeChange={setCustomDates}
+          onApplyCustomRange={applyCustomRange}
           setUseWeeklyAverages={setUseWeeklyAverages}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
@@ -200,6 +202,7 @@ function ProgressScreenContent({
   changePreset,
   customRange,
   onCustomRangeChange,
+  onApplyCustomRange,
   setUseWeeklyAverages,
   showMenu,
   setShowMenu,
@@ -217,6 +220,7 @@ function ProgressScreenContent({
         onPresetChange={changePreset}
         customRange={customRange}
         onCustomRangeChange={onCustomRangeChange}
+        onApplyCustomRange={onApplyCustomRange}
         useWeeklyAverages={useWeeklyAverages}
         onToggleWeeklyAverages={setUseWeeklyAverages}
       />
