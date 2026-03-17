@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, ImageBackground, Platform, Text, View } from 'react-native';
+import { Dimensions, ImageBackground, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GradientText } from '../../components/GradientText';
@@ -29,7 +29,11 @@ type OnboardingBodyProps = {
 
 function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+    <ScrollView
+      className="w-full max-w-md self-center"
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Illustration Section */}
       <View
         className="relative mb-6 flex w-full items-center justify-center"
@@ -77,18 +81,23 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
           {description}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 function OnboardingStepThree({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+    <ScrollView
+      className="w-full max-w-md self-center"
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Illustration Section */}
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
+          maxHeight: Dimensions.get('window').height * 0.42,
         }}
       >
         {/* Ambient Background Glow */}
@@ -121,9 +130,9 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -200,18 +209,23 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
           {description}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+    <ScrollView
+      className="w-full max-w-md self-center"
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Illustration Section */}
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
+          maxHeight: Dimensions.get('window').height * 0.42,
         }}
       >
         {/* Ambient Background Glow */}
@@ -244,9 +258,9 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -323,18 +337,23 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
           {description}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
+    <ScrollView
+      className="w-full max-w-md self-center"
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Illustration Section */}
       <View
         className="relative mb-6 flex w-full items-center justify-center"
         style={{
           aspectRatio: 1,
+          maxHeight: Dimensions.get('window').height * 0.42,
         }}
       >
         {/* Ambient Background Glow */}
@@ -367,9 +386,9 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -446,7 +465,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
           {description}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
