@@ -159,6 +159,10 @@ export function DatePickerModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
       <View className="flex-1">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 8 }}
+        >
         {/* Title Section */}
         <View className="px-4 pb-6 pt-2">
           <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
@@ -173,7 +177,7 @@ export function DatePickerModal({
         </View>
 
         {/* Calendar */}
-        <View className="flex-1 px-4">
+        <View className="px-4">
           <View
             className="rounded-2xl border bg-bg-cardDark p-5"
             style={{ borderColor: theme.colors.background.white5 }}
@@ -296,6 +300,7 @@ export function DatePickerModal({
             />
           </ScrollView>
         </View>
+        </ScrollView>
 
         {/* Footer */}
         <View className="p-6 pt-4" pointerEvents="auto">
