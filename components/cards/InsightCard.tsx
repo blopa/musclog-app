@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { theme } from '../../theme';
 
-export type InsightCardVariant = 'accent' | 'warning' | 'success';
+export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
 interface InsightCardProps {
   variant: InsightCardVariant;
@@ -13,6 +13,7 @@ interface InsightCardProps {
   message: string;
   onDismiss?: () => void;
   expandable?: boolean;
+  inlineLabel?: boolean;
 }
 
 const variantStyles: Record<
@@ -22,6 +23,12 @@ const variantStyles: Record<
   accent: {
     borderColor: `${theme.colors.accent.primary}66`,
     backgroundColor: `${theme.colors.accent.primary}33`,
+    accentColor: theme.colors.accent.primary,
+    iconTextColor: theme.colors.text.black,
+  },
+  neutral: {
+    borderColor: `${theme.colors.accent.tertiary}10`,
+    backgroundColor: `${theme.colors.background.secondaryDark}60`,
     accentColor: theme.colors.accent.primary,
     iconTextColor: theme.colors.text.black,
   },
@@ -46,6 +53,7 @@ export function InsightCard({
   message,
   onDismiss,
   expandable = true,
+  inlineLabel = false,
 }: InsightCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { borderColor, backgroundColor, accentColor, iconTextColor } = variantStyles[variant];
@@ -64,26 +72,41 @@ export function InsightCard({
           <Icon size={16} color={iconTextColor} />
         </View>
         <View className="flex-1">
-          <View className="flex-row items-center justify-between">
+          {inlineLabel ? (
             <Text
-              className="text-sm font-bold uppercase tracking-wider"
-              style={{ color: accentColor }}
+              className="font-medium text-text-primary"
+              numberOfLines={expandable && !isExpanded ? 2 : undefined}
+              ellipsizeMode="tail"
             >
-              {label}
+              <Text className="font-bold" style={{ color: accentColor }}>
+                {label}{' '}
+              </Text>
+              {message}
             </Text>
-            {onDismiss ? (
-              <Pressable onPress={onDismiss} hitSlop={8}>
-                <X size={16} color={accentColor} />
-              </Pressable>
-            ) : null}
-          </View>
-          <Text
-            className="mt-0.5 font-medium text-text-primary"
-            numberOfLines={expandable && !isExpanded ? 1 : undefined}
-            ellipsizeMode="tail"
-          >
-            {message}
-          </Text>
+          ) : (
+            <>
+              <View className="flex-row items-center justify-between">
+                <Text
+                  className="text-sm font-bold uppercase tracking-wider"
+                  style={{ color: accentColor }}
+                >
+                  {label}
+                </Text>
+                {onDismiss ? (
+                  <Pressable onPress={onDismiss} hitSlop={8}>
+                    <X size={16} color={accentColor} />
+                  </Pressable>
+                ) : null}
+              </View>
+              <Text
+                className="mt-0.5 font-medium text-text-primary"
+                numberOfLines={expandable && !isExpanded ? 1 : undefined}
+                ellipsizeMode="tail"
+              >
+                {message}
+              </Text>
+            </>
+          )}
         </View>
       </View>
     </Pressable>

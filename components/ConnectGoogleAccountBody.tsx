@@ -248,10 +248,11 @@ export function ConnectGoogleAccountBody({
 
         {/* Billing Info */}
         <InsightCard
-          variant="accent"
+          variant="neutral"
           icon={Info}
           label={t('connectGoogleAccount.billingInfoLabel')}
           message={t('connectGoogleAccount.billingInfo')}
+          inlineLabel
         />
         <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
       </View>
