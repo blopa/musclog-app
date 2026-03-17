@@ -3,6 +3,12 @@
  */
 
 // Mock these BEFORE any imports
+import { renderHook, waitFor } from '@testing-library/react';
+
+import { NutritionService } from '../../database/services/NutritionService';
+import { UserMetricService } from '../../database/services/UserMetricService';
+import { useWorkoutFueling } from '../useWorkoutFueling';
+
 jest.mock('react-native-health-connect', () => ({
   RecordingMethod: {
     RECORDING_METHOD_MANUAL_ENTRY: 1,
@@ -26,12 +32,6 @@ jest.mock('../../database/services/UserMetricService', () => ({
     getLatest: jest.fn(),
   },
 }));
-
-import { renderHook, waitFor } from '@testing-library/react';
-
-import { NutritionService } from '../../database/services/NutritionService';
-import { UserMetricService } from '../../database/services/UserMetricService';
-import { useWorkoutFueling } from '../useWorkoutFueling';
 
 describe('useWorkoutFueling', () => {
   const mockUserWeight = 70;
@@ -103,7 +103,7 @@ describe('useWorkoutFueling', () => {
     (NutritionService.getNutritionLogsForDate as jest.Mock).mockImplementation((date) => {
       const d = new Date(date);
       const today = new Date();
-      today.setHours(0,0,0,0);
+      today.setHours(0, 0, 0, 0);
 
       if (d.getTime() < today.getTime()) {
         // Yesterday's dinner
@@ -136,7 +136,7 @@ describe('useWorkoutFueling', () => {
     (NutritionService.getNutritionLogsForDate as jest.Mock).mockImplementation((date) => {
       const d = new Date(date);
       const today = new Date();
-      today.setHours(0,0,0,0);
+      today.setHours(0, 0, 0, 0);
 
       if (d.getTime() < today.getTime()) {
         // Yesterday's dinner

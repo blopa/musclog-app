@@ -52,9 +52,9 @@ import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
-import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
+import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
@@ -988,9 +988,7 @@ export default function WorkoutSessionScreen() {
                     <Flame
                       size={20}
                       color={
-                        fuelingStatus === 'low'
-                          ? theme.colors.text.white
-                          : theme.colors.text.black
+                        fuelingStatus === 'low' ? theme.colors.text.white : theme.colors.text.black
                       }
                     />
                   </View>

@@ -51,7 +51,9 @@ export function useWorkoutFueling(workoutStartTime?: number) {
           // Morning workout (< 11 AM):
           // Look at Yesterday's Dinner + Today's Breakfast/Snacks to see if stores are topped off.
           const yesterdayDinner = logsYesterday.filter((l) => l.type === 'dinner');
-          const todayMorning = logsToday.filter((l) => l.type === 'breakfast' || l.type === 'snack');
+          const todayMorning = logsToday.filter(
+            (l) => l.type === 'breakfast' || l.type === 'snack'
+          );
 
           for (const log of [...yesterdayDinner, ...todayMorning]) {
             const nutrients = await log.getNutrients();
