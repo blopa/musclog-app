@@ -172,7 +172,11 @@ export default function WorkoutSessionScreen() {
     refresh,
   } = useActiveWorkout(workoutLogId);
 
-  const { status: fuelingStatus } = useWorkoutFueling(workoutLog?.startedAt);
+  const {
+    status: fuelingStatus,
+    totalCarbs: fuelingTotalCarbs,
+    windowHours: fuelingWindowHours,
+  } = useWorkoutFueling(workoutLog?.startedAt);
 
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
@@ -1005,7 +1009,10 @@ export default function WorkoutSessionScreen() {
                     <Text className="font-medium text-text-primary">
                       {fuelingStatus === 'low'
                         ? t('workoutSession.lowFuelingMessage')
-                        : t('workoutSession.fullyFueledMessage')}
+                        : t('workoutSession.fullyFueledMessage', {
+                            carbs: Math.round(fuelingTotalCarbs),
+                            hours: Math.round(fuelingWindowHours),
+                          })}
                     </Text>
                   </View>
                 </View>

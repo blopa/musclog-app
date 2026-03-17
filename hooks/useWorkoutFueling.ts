@@ -12,6 +12,8 @@ export type FuelingStatus = 'low' | 'optimal' | 'loading';
  */
 export function useWorkoutFueling(workoutStartTime?: number) {
   const [status, setStatus] = useState<FuelingStatus>('loading');
+  const [totalCarbs, setTotalCarbs] = useState(0);
+  const [windowHours, setWindowHours] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +43,8 @@ export function useWorkoutFueling(workoutStartTime?: number) {
         const logsToday = await NutritionService.getNutritionLogsForDate(today);
         const logsYesterday = await NutritionService.getNutritionLogsForDate(yesterday);
 
-        let totalCarbs = 0;
+        let calculatedCarbs = 0;
+        let window = 0;
 
         // 4. Implement Time Range Logic
         if (hour < 11) {
@@ -52,21 +55,26 @@ export function useWorkoutFueling(workoutStartTime?: number) {
 
           for (const log of [...yesterdayDinner, ...todayMorning]) {
             const nutrients = await log.getNutrients();
-            totalCarbs += nutrients.carbs;
+            calculatedCarbs += nutrients.carbs;
           }
+          window = 14; // Approx 12-16 hour window covering dinner to morning
         } else {
           // Afternoon/Evening workout (>= 11 AM):
           // Look primarily at the acute fueling window (Today's logs so far).
           for (const log of logsToday) {
             const nutrients = await log.getNutrients();
-            totalCarbs += nutrients.carbs;
+            calculatedCarbs += nutrients.carbs;
           }
+          window = hour; // Carbs since midnight
         }
 
-        // 5. Threshold evaluation (using lower bound of 1g/kg as "Too Low" threshold)
-        const threshold = weightKg * 1.0;
+        setTotalCarbs(calculatedCarbs);
+        setWindowHours(window);
 
-        if (totalCarbs < threshold) {
+        // 5. Threshold evaluation (using lower bound of 1g/kg as "Too Low" threshold)
+        const threshold = weightKg;
+
+        if (calculatedCarbs < threshold) {
           setStatus('low');
         } else {
           setStatus('optimal');
@@ -83,5 +91,5 @@ export function useWorkoutFueling(workoutStartTime?: number) {
     checkFueling();
   }, [workoutStartTime]);
 
-  return { status, isLoading };
+  return { status, totalCarbs, windowHours, isLoading };
 }

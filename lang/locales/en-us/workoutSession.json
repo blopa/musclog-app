@@ -30,7 +30,7 @@
     "menstrualInsight": "During menstruation, you may need to reduce intensity and focus on recovery.",
     "phaseInsight": "Current phase: {{phase}}. Intensity multiplier: {{multiplier}}x",
     "fuelingInsight": "Fueling Insight",
-    "lowFuelingMessage": "Your glycogen stores might be low. Consider a carb-rich snack to fuel high-intensity performance.",
-    "fullyFueledMessage": "You are fully fueled and ready to crush it!"
+    "lowFuelingMessage": "Glycogen stores might be low. For future sessions, aim for more carbs pre-workout. A quick snack now might still help your performance.",
+    "fullyFueledMessage": "You've consumed {{carbs}}g of carbs in the last {{hours}} hours. You are fully fueled and ready to crush it!"
   }
 }

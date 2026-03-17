@@ -33,10 +33,6 @@ import { NutritionService } from '../../database/services/NutritionService';
 import { UserMetricService } from '../../database/services/UserMetricService';
 import { useWorkoutFueling } from '../useWorkoutFueling';
 
-// Mock the services
-jest.mock('../../database/services/NutritionService');
-jest.mock('../../database/services/UserMetricService');
-
 describe('useWorkoutFueling', () => {
   const mockUserWeight = 70;
   const mockWeightMetric = {
@@ -74,6 +70,8 @@ describe('useWorkoutFueling', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.status).toBe('low');
+    expect(result.current.totalCarbs).toBe(30);
+    expect(result.current.windowHours).toBe(14);
   });
 
   it('should return optimal status when carbs are above 1g/kg (Afternoon)', async () => {
@@ -93,6 +91,8 @@ describe('useWorkoutFueling', () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.status).toBe('optimal');
+    expect(result.current.totalCarbs).toBe(80);
+    expect(result.current.windowHours).toBe(14);
   });
 
   it('should return low status when carbs are below 1g/kg (Morning)', async () => {
@@ -124,6 +124,8 @@ describe('useWorkoutFueling', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     // Total fueling carbs = 20 (dinner) + 10 (breakfast) = 30 < 70
     expect(result.current.status).toBe('low');
+    expect(result.current.totalCarbs).toBe(30);
+    expect(result.current.windowHours).toBe(14);
   });
 
   it('should return optimal status when carbs are above 1g/kg (Morning)', async () => {
@@ -154,5 +156,7 @@ describe('useWorkoutFueling', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     // Total fueling carbs = 50 (dinner) + 30 (breakfast) = 80 > 70
     expect(result.current.status).toBe('optimal');
+    expect(result.current.totalCarbs).toBe(80);
+    expect(result.current.windowHours).toBe(14);
   });
 });
