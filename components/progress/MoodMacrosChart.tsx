@@ -4,8 +4,8 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodMacrosPoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
-import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
-import { MultipleLinesChart } from '../charts/MultipleLinesChart';
+import { getXAxisLabels } from '../../utils/chartUtils';
+import { StackedBarLineChart } from '../charts/StackedBarLineChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MoodMacrosChartProps {
@@ -16,6 +16,8 @@ const formatDate = (timestamp: number): string => {
   const d = new Date(timestamp);
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
+
+const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
 
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
   const { t } = useTranslation();
@@ -54,64 +56,44 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
     );
   }
 
-  const maxMacro = Math.max(...data.map((d) => Math.max(d.protein, d.carbs, d.fat)), 1);
-  const maxY = maxMacro * 1.15;
+  const maxTotal = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1);
 
-  const chartData = data.map((d) => ({
-    x: d.date,
-    mood: d.mood * (maxY / 4), // scale mood (0-4) to the macro range for visual overlay
-    protein: d.protein,
-    carbs: d.carbs,
-    fat: d.fat,
+  const chartData = data.map((d, i) => ({
+    x: i,
+    segments: [d.protein, d.carbs, d.fat] as [number, number, number],
+    lineValue: d.mood,
   }));
-
-  const series = [
-    {
-      key: 'mood',
-      label: t('progress.mood.moodScore'),
-      color: theme.colors.status.indigo,
-      dashed: true,
-    },
-    {
-      key: 'protein',
-      label: t('nutrition.protein'),
-      color: theme.colors.macros.protein.bg,
-    },
-    {
-      key: 'carbs',
-      label: t('nutrition.carbs'),
-      color: theme.colors.macros.carbs.bg,
-    },
-    {
-      key: 'fat',
-      label: t('nutrition.fat'),
-      color: theme.colors.macros.fat.bg,
-    },
-  ];
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
     formatDate
   );
 
-  const yAxisLabels = getYAxisLabels(0, maxY, 4, (v) => `${Math.round(v)}g`);
-
   return (
     <ProgressChartSection title={t('progress.correlationView.moodMacros')}>
       {aggregationToggle}
-      <MultipleLinesChart
+      <StackedBarLineChart
         data={chartData}
-        series={series}
-        height={220}
-        yDomain={[0, maxY]}
-        xDomain={[data[0].date, data[data.length - 1].date]}
+        height={250}
+        barSeriesLabel={`${t('nutrition.protein')} + ${t('nutrition.carbs')} + ${t('nutrition.fat')}`}
+        lineSeriesLabel={t('progress.mood.moodScore')}
+        stackedDomain={[0, maxTotal * 1.1]}
+        lineDomain={[0, 4]}
+        stackColors={[
+          theme.colors.macros.protein.bg,
+          theme.colors.macros.carbs.bg,
+          theme.colors.macros.fat.bg,
+        ]}
+        lineColor={theme.colors.status.indigo}
+        leftAxisLabels={['0', `${Math.round(maxTotal / 2)}`, `${Math.round(maxTotal)}`]}
+        rightAxisLabels={[
+          t('progress.mood.poor'),
+          t('progress.mood.okay'),
+          t('progress.mood.great'),
+        ]}
         xAxisLabels={xAxisLabels}
-        yAxisLabels={yAxisLabels}
-        interactive
-        tooltipFormatter={(p) =>
-          // TODO: have one translation i18n that will cover this whole sentence
-          `${t('progress.mood.moodScore')}: ${(((p.mood as number) / maxY) * 4).toFixed(1)}\n${t('nutrition.protein')}: ${Math.round(p.protein as number)}g\n${t('nutrition.carbs')}: ${Math.round(p.carbs as number)}g\n${t('nutrition.fat')}: ${Math.round(p.fat as number)}g`
-        }
+        totalFormatter={(total) => `${Math.round(total)}g`}
+        lineFormatter={(v) => MOOD_LABELS[Math.round(v)] ?? v.toFixed(1)}
       />
     </ProgressChartSection>
   );
