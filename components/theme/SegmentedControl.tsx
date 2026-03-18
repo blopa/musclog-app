@@ -85,7 +85,9 @@ export function SegmentedControl({
             ) : (
               <View
                 className="flex-row items-center justify-center gap-1.5"
-                style={variant === 'gradient' ? { paddingVertical: theme.spacing.padding.sm } : undefined}
+                style={
+                  variant === 'gradient' ? { paddingVertical: theme.spacing.padding.sm } : undefined
+                }
               >
                 {option.icon}
                 <Text

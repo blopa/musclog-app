@@ -30,7 +30,20 @@
       "proteinBodyComp": "Protein/BodyComp",
       "menstrualPerformance": "Cycle/Performance",
       "recoveryTraining": "Recovery/Load",
-      "macroMuscle": "Macros/Muscle"
+      "macroMuscle": "Macros/Muscle",
+      "moodHistory": "Mood Over Time",
+      "moodCalories": "Mood/Calories",
+      "moodVolume": "Mood/Workout Volume",
+      "moodMacros": "Mood/Macros"
+    },
+    "mood": {
+      "poor": "Poor",
+      "low": "Low",
+      "okay": "Okay",
+      "good": "Good",
+      "great": "Great",
+      "avgMood": "Avg Mood",
+      "moodScore": "Mood Score"
     },
     "correlations": "Correlations & Insights",
     "weeklyVolume": "Weekly Volume",

@@ -23,7 +23,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 // UI-facing metric keys
 type UiMetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
-type TimePeriod = '30D' | '3M' | '1Y';
+type TimePeriod = '30D' | '3M' | '1Y'; // TODO: add 6M
 
 type HistoryEntry = {
   id: string;

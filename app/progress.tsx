@@ -13,6 +13,10 @@ import { BodyCompProteinChart } from '../components/progress/BodyCompProteinChar
 import { BodyMetricsCharts } from '../components/progress/BodyMetricsCharts';
 import { MacroMuscleChart } from '../components/progress/MacroMuscleChart';
 import { MenstrualPerformanceChart } from '../components/progress/MenstrualPerformanceChart';
+import { MoodCaloriesChart } from '../components/progress/MoodCaloriesChart';
+import { MoodHistoryChart } from '../components/progress/MoodHistoryChart';
+import { MoodMacrosChart } from '../components/progress/MoodMacrosChart';
+import { MoodVolumeChart } from '../components/progress/MoodVolumeChart';
 import { NutritionCharts } from '../components/progress/NutritionCharts';
 import { ProgressChartSection } from '../components/progress/ProgressChartSection';
 import { ProgressDateFilter } from '../components/progress/ProgressDateFilter';
@@ -324,6 +328,44 @@ function ProgressScreenContent({
                       monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
                     }}
                     units={units}
+                  />
+                ) : null}
+
+                {hasAnyAggregationData((d: any) => d.moodHistory) ? (
+                  <MoodHistoryChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodCaloriesHistory) ? (
+                  <MoodCaloriesChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodCaloriesHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodCaloriesHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodCaloriesHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodVolumeHistory) ? (
+                  <MoodVolumeChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodVolumeHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodVolumeHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodVolumeHistory ?? [],
+                    }}
+                    units={units}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodMacrosHistory) ? (
+                  <MoodMacrosChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodMacrosHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodMacrosHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodMacrosHistory ?? [],
+                    }}
                   />
                 ) : null}
 
