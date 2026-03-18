@@ -79,7 +79,7 @@ export function FullScreenModal({
           webModalStyle,
           {
             paddingTop: Platform.OS !== 'web' ? insets.top : 0,
-            paddingBottom: Platform.OS !== 'web' ? insets.bottom : 0,
+            paddingBottom: insets.bottom,
           },
         ]}
       >

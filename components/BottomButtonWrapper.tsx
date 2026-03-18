@@ -1,7 +1,8 @@
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../hooks/useTheme';
 import { addOpacityToHex } from '../theme';
@@ -13,12 +14,13 @@ type BottomButtonWrapperProps = {
 
 export function BottomButtonWrapper({ effect = 'gradient', children }: BottomButtonWrapperProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const renderContent = () => (
     <View
       className="px-6 pb-6 pt-6"
       style={{
-        paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : 0,
+        paddingBottom: insets.bottom || theme.spacing.padding.lg,
       }}
     >
       {children}
