@@ -187,7 +187,6 @@ describe('UserService', () => {
       activityLevel: 3,
       liftingExperience: 'beginner' as const,
       email: 'newuser@example.com',
-
     };
 
     it('should create new user successfully', async () => {

@@ -79,7 +79,11 @@ export function BottomPopUp({
           right: 0,
           bottom: 0,
           width: '100vw',
-          height: '100vh',
+          // 100dvh (dynamic viewport height) always matches the *current* visible
+          // height. 100vh is the *large* viewport (address bar hidden), so when
+          // Chrome's address bar is visible the backdrop is taller than the screen
+          // and justify-end pushes the sheet below the fold.
+          height: '100dvh',
         } as any)
       : {};
 

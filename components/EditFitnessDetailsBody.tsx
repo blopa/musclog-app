@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { type Gender, FitnessGoal, LiftingExperience, WeightGoal } from '../database/models';
+import { FitnessGoal, type Gender, LiftingExperience, WeightGoal } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -296,7 +296,6 @@ export function EditFitnessDetailsBody({
             onValueChange={(val) => setUnits(val as 'imperial' | 'metric')}
           />
         </View>
-
 
         {/* Gender Section */}
         <View className="gap-2">

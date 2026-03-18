@@ -11,7 +11,10 @@ export const GoogleGeminiIllustration = () => {
     <View className="mb-6 mt-2">
       <View
         className="relative w-full"
-        style={{ aspectRatio: theme.aspectRatio.landscape, maxHeight: Dimensions.get('window').height * 0.3 }}
+        style={{
+          aspectRatio: theme.aspectRatio.landscape,
+          maxHeight: Dimensions.get('window').height * 0.3,
+        }}
       >
         {/* Glow effect wrapper - gradient blur */}
         <View
