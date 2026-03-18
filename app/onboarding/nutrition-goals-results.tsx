@@ -764,7 +764,7 @@ export default function NutritionGoalsResults() {
           </View>
 
           {/* Macro Sources Note */}
-          {aiGenerated && (
+          {aiGenerated ? (
             <View className="mb-6 w-full px-2">
               <Text
                 className="text-center text-[10px] font-normal italic"
@@ -778,7 +778,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.macroSourcesNote')}
               </Text>
             </View>
-          )}
+          ) : null}
 
           {/* Manual plan: macro split bar + tips (when aiGenerated is false) */}
           {!aiGenerated && displayData ? (

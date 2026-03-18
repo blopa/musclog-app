@@ -101,7 +101,9 @@ export default function FitnessInfo() {
   const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
     undefined
   );
-  const defaultDob = formatDateToDob(new Date(new Date().getFullYear() - 25, new Date().getMonth(), new Date().getDate()));
+  const defaultDob = formatDateToDob(
+    new Date(new Date().getFullYear() - 25, new Date().getMonth(), new Date().getDate())
+  );
   const [dob, setDob] = useState(defaultDob);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 

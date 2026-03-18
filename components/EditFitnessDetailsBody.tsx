@@ -361,7 +361,10 @@ export function EditFitnessDetailsBody({
               </Text>
               {fatPercentage === null ? (
                 <Pressable onPress={() => setFatPercentage(15)} className="active:opacity-70">
-                  <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
