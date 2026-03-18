@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Zap } from 'lucide-react-native';
-import { Image, View } from 'react-native';
+import { Dimensions, Image, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 import { GoogleLogoSvg } from './icons/GoogleLogoSvg';
@@ -9,7 +9,10 @@ export const GoogleGeminiIllustration = () => {
   const theme = useTheme();
   return (
     <View className="mb-6 mt-2">
-      <View className="relative w-full" style={{ aspectRatio: theme.aspectRatio.landscape }}>
+      <View
+        className="relative w-full"
+        style={{ aspectRatio: theme.aspectRatio.landscape, maxHeight: Dimensions.get('window').height * 0.3 }}
+      >
         {/* Glow effect wrapper - gradient blur */}
         <View
           className="absolute"
