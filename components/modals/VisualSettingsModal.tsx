@@ -34,6 +34,7 @@ const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
   cycle: Calendar,
   settings: Settings,
   progress: BarChart3,
+  // TODO: instead, have a link to the new checkin list screen - independent of pending checkin
   checkin: ClipboardCheck,
 };
 
@@ -73,6 +74,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       return false;
     }
 
+    // TODO: no need for this check
     if (item === 'checkin' && !hasPendingCheckin) {
       return false;
     }

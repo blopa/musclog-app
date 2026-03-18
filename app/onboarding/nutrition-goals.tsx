@@ -130,9 +130,10 @@ export default function NutritionGoalsScreen() {
             gender: 'other', // fallback
             weightKg: userDecrypted.value,
             heightCm: heightDecrypted.value,
-            age: 30, // fallback
+            age: 25, // fallback
             activityLevel: 3, // fallback
             weightGoal:
+              // TODO: move this to a helper function to avoid nested ternary
               goals.eatingPhase === 'cut'
                 ? 'lose'
                 : goals.eatingPhase === 'bulk'
@@ -164,6 +165,7 @@ export default function NutritionGoalsScreen() {
         }
 
         if (isCheckinAdjusting) {
+          // TODO: navigate to the new checkin list screen
           router.replace('/progress');
           return;
         }

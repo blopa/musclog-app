@@ -44,6 +44,7 @@ function isItemAvailable(
     return false;
   }
 
+  // TODO: no need for this check
   if (item === 'checkin' && !hasPendingCheckin) {
     return false;
   }
