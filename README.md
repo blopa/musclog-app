@@ -99,13 +99,13 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 ### 🔗 Health Integration
 
 - Sync with Google Health Connect (Android) for weight, nutrition, and exercise data
-- 7-day lookback on health data import
+- Historical health data import
 
 ### 🔄 Import & Export
 
 - Export your full database as an encrypted JSON file
 - Import data across devices or as a backup
-- Support for JSON and CSV formats
+- Support for JSON format
 
 ### 🔒 Privacy & Security
 
