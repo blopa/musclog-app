@@ -14,7 +14,15 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Dimensions, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
@@ -42,8 +50,7 @@ import { FoodSearchModal } from './FoodSearchModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CAMERA_MAX_HEIGHT = SCREEN_HEIGHT * 0.6;
+const SMALL_SCREEN_HEIGHT = 700;
 
 export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
@@ -81,6 +88,9 @@ export default function SmartCameraModal({
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { height: screenHeight } = useWindowDimensions();
+  const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
+  const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
   const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
@@ -720,7 +730,7 @@ export default function SmartCameraModal({
               className="relative w-full rounded-2xl"
               style={{
                 aspectRatio: theme.aspectRatio.portrait,
-                maxHeight: CAMERA_MAX_HEIGHT,
+                maxHeight: cameraMaxHeight,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white20,
                 overflow: 'visible',
@@ -757,18 +767,23 @@ export default function SmartCameraModal({
 
             {/* Instruction Text */}
             <Text
-              className="mt-6 text-center text-sm font-medium drop-shadow-md"
-              style={{ color: theme.colors.overlay.white90 }}
+              className="text-center text-sm font-medium drop-shadow-md"
+              style={{ color: theme.colors.overlay.white90, marginTop: isSmallScreen ? 8 : 24 }}
             >
               {getCameraInstructionText(cameraMode, t)}
             </Text>
           </View>
 
           {/* Bottom Controls */}
-          <View className="relative z-20 px-4 pb-10 pt-4">
+          <View
+            className="relative z-20 px-4 pt-4"
+            style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
+          >
             {/* Mode Selector — only show when more than one mode is available */}
             {!hideCameraModePicker && isAiEnabled ? (
-              <View className="mb-6 w-full items-center">
+              <View
+                className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}
+              >
                 <View
                   className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
                   style={{
@@ -780,9 +795,9 @@ export default function SmartCameraModal({
                   {/* Barcode Scan */}
                   <Pressable
                     onPress={() => handleModeChange('barcode-scan')}
-                    className="flex-1 rounded-xl px-2 py-2.5"
+                    className="flex-1 rounded-xl px-2"
                     style={[
-                      { overflow: 'hidden' },
+                      { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
                       cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
                     ]}
                   >
@@ -807,18 +822,20 @@ export default function SmartCameraModal({
                             : theme.colors.text.secondary
                         }
                       />
-                      <Text
-                        className="font-bold uppercase tracking-wide"
-                        style={{
-                          fontSize: theme.typography.fontSize.xs,
-                          color:
-                            cameraMode === 'barcode-scan'
-                              ? theme.colors.text.white
-                              : theme.colors.text.secondary,
-                        }}
-                      >
-                        {t('food.aiCamera.modes.barcodeScan')}
-                      </Text>
+                      {!isSmallScreen ? (
+                        <Text
+                          className="font-bold uppercase tracking-wide"
+                          style={{
+                            fontSize: theme.typography.fontSize.xs,
+                            color:
+                              cameraMode === 'barcode-scan'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary,
+                          }}
+                        >
+                          {t('food.aiCamera.modes.barcodeScan')}
+                        </Text>
+                      ) : null}
                     </View>
                   </Pressable>
 
@@ -826,9 +843,9 @@ export default function SmartCameraModal({
                   {isAiEnabled ? (
                     <Pressable
                       onPress={() => handleModeChange('ai-label-scan')}
-                      className="flex-1 rounded-xl px-2 py-2.5"
+                      className="flex-1 rounded-xl px-2"
                       style={[
-                        { overflow: 'hidden' },
+                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
                         cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
                       ]}
                     >
@@ -853,18 +870,20 @@ export default function SmartCameraModal({
                               : theme.colors.text.secondary
                           }
                         />
-                        <Text
-                          className="font-bold uppercase tracking-wide"
-                          style={{
-                            fontSize: theme.typography.fontSize.xs,
-                            color:
-                              cameraMode === 'ai-label-scan'
-                                ? theme.colors.text.white
-                                : theme.colors.text.secondary,
-                          }}
-                        >
-                          {t('food.aiCamera.modes.labelScan')}
-                        </Text>
+                        {!isSmallScreen ? (
+                          <Text
+                            className="font-bold uppercase tracking-wide"
+                            style={{
+                              fontSize: theme.typography.fontSize.xs,
+                              color:
+                                cameraMode === 'ai-label-scan'
+                                  ? theme.colors.text.white
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {t('food.aiCamera.modes.labelScan')}
+                          </Text>
+                        ) : null}
                       </View>
                     </Pressable>
                   ) : null}
@@ -873,9 +892,9 @@ export default function SmartCameraModal({
                   {isAiEnabled ? (
                     <Pressable
                       onPress={() => handleModeChange('ai-meal-photo')}
-                      className="flex-1 rounded-xl px-2 py-2.5"
+                      className="flex-1 rounded-xl px-2"
                       style={[
-                        { overflow: 'hidden' },
+                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
                         cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
                       ]}
                     >
@@ -900,18 +919,20 @@ export default function SmartCameraModal({
                               : theme.colors.text.secondary
                           }
                         />
-                        <Text
-                          className="font-bold uppercase tracking-wide"
-                          style={{
-                            fontSize: theme.typography.fontSize.xs,
-                            color:
-                              cameraMode === 'ai-meal-photo'
-                                ? theme.colors.text.white
-                                : theme.colors.text.secondary,
-                          }}
-                        >
-                          {t('food.aiCamera.modes.mealPhoto')}
-                        </Text>
+                        {!isSmallScreen ? (
+                          <Text
+                            className="font-bold uppercase tracking-wide"
+                            style={{
+                              fontSize: theme.typography.fontSize.xs,
+                              color:
+                                cameraMode === 'ai-meal-photo'
+                                  ? theme.colors.text.white
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {t('food.aiCamera.modes.mealPhoto')}
+                          </Text>
+                        ) : null}
                       </View>
                     </Pressable>
                   ) : null}
