@@ -2,6 +2,8 @@
   "common": {
     "saveError": "Failed to save changes",
     "saveErrorSubtitle": "Please try again",
+    "error_description": "An unexpected error occurred. Please try again.",
+    "back": "Back",
     "select": "Select...",
     "today": "Today",
     "none": "None",
