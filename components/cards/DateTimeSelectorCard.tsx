@@ -1,5 +1,4 @@
 import { Calendar, Clock, LucideIcon } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -16,36 +15,25 @@ type DateTimeSelectorCardProps = {
 
 export function DateTimeSelectorCard({
   type,
-  value,
   onEdit,
   label,
   formattedValue,
   noCard = false,
 }: DateTimeSelectorCardProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
   const Icon: LucideIcon = type === 'date' ? Calendar : Clock;
-  const iconBg = type === 'date' ? theme.colors.status.indigo10 : theme.colors.accent.primary10;
-  const iconColor = type === 'date' ? theme.colors.status.indigo : theme.colors.accent.primary;
 
   const content = (
-    <View className="flex-row items-center justify-between p-4">
-      <View className="flex-row items-center gap-3">
-        <View
-          className="h-10 w-10 items-center justify-center rounded-lg"
-          style={{ backgroundColor: iconBg }}
-        >
-          <Icon size={theme.iconSize.xl} color={iconColor} />
+    <View className="flex-col gap-2">
+      <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+      <Pressable
+        className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+        onPress={onEdit}
+      >
+        <View className="ml-3 flex-1">
+          <Text className="text-base text-text-primary">{formattedValue}</Text>
         </View>
-        <View>
-          <Text className="mb-1 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-            {label}
-          </Text>
-          <Text className="text-sm font-semibold text-text-primary">{formattedValue}</Text>
-        </View>
-      </View>
-      <Pressable onPress={onEdit}>
-        <Text className="text-sm font-bold text-accent-primary">{t('common.edit')}</Text>
+        <Icon size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
       </Pressable>
     </View>
   );
