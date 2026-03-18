@@ -13,6 +13,10 @@ import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExerci
 import { ExerciseService, WorkoutAnalytics } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
@@ -37,39 +41,6 @@ export type ViewExerciseModalProps = {
   onExerciseDeleted?: () => void;
   onExerciseUpdated?: () => void;
   onExerciseDuplicated?: () => void;
-};
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
-};
-
-// Helper function to get translation key for exercise type/equipment
-const getExerciseTypeTranslationKey = (exerciseType: string): string => {
-  return `workout.exerciseTypes.${exerciseType.toLowerCase()}`;
 };
 
 export default function ViewExerciseModal({
@@ -385,7 +356,9 @@ export default function ViewExerciseModal({
   const primaryMuscle =
     exercise?.muscleGroup != null ? t(getMuscleGroupTranslationKey(exercise.muscleGroup)) : '—';
   const equipment =
-    exercise?.equipmentType != null ? t(getExerciseTypeTranslationKey(exercise.equipmentType)) : '—';
+    exercise?.equipmentType != null
+      ? t(getExerciseTypeTranslationKey(exercise.equipmentType))
+      : '—';
   const mechanic =
     exercise?.mechanicType != null ? t(getExerciseTypeTranslationKey(exercise.mechanicType)) : '—';
 

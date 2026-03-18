@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
 import { getXAxisLabels } from '../../utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { BarChart } from '../charts/BarChart';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -12,34 +13,6 @@ interface WorkoutChartsProps {
   workoutVolumeHistory: WorkoutVolumePoint[];
   muscleGroupSets: MuscleGroupSets[];
 }
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
-};
 
 export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
   const { t } = useTranslation();

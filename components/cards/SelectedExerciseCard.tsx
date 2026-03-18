@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { GenericCard } from './GenericCard';
 
 type SelectedExerciseCardProps = {
@@ -10,39 +14,6 @@ type SelectedExerciseCardProps = {
   exerciseCategory?: string;
   exerciseType?: string;
   onChange?: () => void;
-};
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
-};
-
-// Helper function to get translation key for exercise type
-const getExerciseTypeTranslationKey = (exerciseType: string): string => {
-  return `workout.exerciseTypes.${exerciseType}`;
 };
 
 /**

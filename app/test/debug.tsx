@@ -21,37 +21,10 @@ import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
+import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 import { formatDuration } from '../../utils/workout';
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
-};
 
 // All app screens for navigation
 const APP_SCREENS = [

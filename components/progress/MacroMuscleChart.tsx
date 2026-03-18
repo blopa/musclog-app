@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -16,34 +17,6 @@ interface MacroMuscleChartProps {
 const formatDate = (timestamp: number): string => {
   const d = new Date(timestamp);
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
-};
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
 };
 
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {

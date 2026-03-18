@@ -8,7 +8,10 @@ export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
 export type InsightCardSize = 'xs' | 'sm' | 'md';
 
-const sizeStyles: Record<InsightCardSize, { iconSize: number; fontSize: number; iconContainerSize: number }> = {
+const sizeStyles: Record<
+  InsightCardSize,
+  { iconSize: number; fontSize: number; iconContainerSize: number }
+> = {
   xs: { iconSize: 10, fontSize: theme.typography.fontSize.xxs, iconContainerSize: theme.size['5'] },
   sm: { iconSize: 12, fontSize: theme.typography.fontSize.xs, iconContainerSize: theme.size['6'] },
   md: { iconSize: 16, fontSize: theme.typography.fontSize.sm, iconContainerSize: theme.size['8'] },
@@ -78,7 +81,11 @@ export function InfoCard({
       <View className="flex-row items-start gap-3">
         <View
           className="items-center justify-center rounded-full"
-          style={{ backgroundColor: accentColor, width: iconContainerSize, height: iconContainerSize }}
+          style={{
+            backgroundColor: accentColor,
+            width: iconContainerSize,
+            height: iconContainerSize,
+          }}
         >
           <Icon size={iconSize} color={iconTextColor} />
         </View>

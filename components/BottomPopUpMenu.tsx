@@ -113,19 +113,19 @@ export function BottomPopUpMenu({
                     : undefined
                 }
               >
-              <OptionItem
-                icon={item.icon}
-                iconColor={item.iconColor}
-                iconBgColor={item.iconBgColor}
-                title={item.title}
-                description={item.description}
-                titleColor={item.titleColor}
-                descriptionColor={item.descriptionColor}
-                onPress={() => {
-                  item.onPress();
-                  onClose?.();
-                }}
-              />
+                <OptionItem
+                  icon={item.icon}
+                  iconColor={item.iconColor}
+                  iconBgColor={item.iconBgColor}
+                  title={item.title}
+                  description={item.description}
+                  titleColor={item.titleColor}
+                  descriptionColor={item.descriptionColor}
+                  onPress={() => {
+                    item.onPress();
+                    onClose?.();
+                  }}
+                />
               </View>
             ))}
           </View>

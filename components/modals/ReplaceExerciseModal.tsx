@@ -14,6 +14,10 @@ import Exercise from '../../database/models/Exercise';
 import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import {
+  getMechanicTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
@@ -44,39 +48,6 @@ function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
     image: exercise.imageUrl?.trim() ? { uri: exercise.imageUrl } : FALLBACK_EXERCISE_IMAGE,
   };
 }
-
-// Helper function to get translation key for muscle group
-const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-  const normalized = muscleGroup?.toLowerCase() || '';
-
-  // Map normalized values to translation keys
-  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-  if (normalized.includes('back') || normalized.includes('lat'))
-    return 'workout.muscleGroups.back';
-  if (
-    normalized.includes('leg') ||
-    normalized.includes('quad') ||
-    normalized.includes('hamstring') ||
-    normalized.includes('calf') ||
-    normalized.includes('glute')
-  )
-    return 'workout.muscleGroups.legs';
-  if (
-    normalized.includes('arm') ||
-    normalized.includes('bicep') ||
-    normalized.includes('tricep') ||
-    normalized.includes('shoulder') ||
-    normalized.includes('deltoid')
-  )
-    return 'workout.muscleGroups.arms';
-
-  return 'workout.muscleGroups.other';
-};
-
-// Helper function to get translation key for mechanic type
-const getMechanicTypeTranslationKey = (mechanicType: string): string => {
-  return `workout.exerciseTypes.${mechanicType.toLowerCase()}`;
-};
 
 export function ReplaceExerciseModal({
   visible,

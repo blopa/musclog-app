@@ -171,143 +171,143 @@ export function DatePickerModal({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 8 }}
         >
-        {/* Title Section */}
-        <View className="px-4 pb-6 pt-2">
-          <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
-            {t('datePicker.selectDate')}
-          </Text>
-          <Text
-            className="font-bold leading-tight tracking-tight text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['4xl'] }}
-          >
-            {formatSelectedDate(tempSelectedDate)}
-          </Text>
-        </View>
+          {/* Title Section */}
+          <View className="px-4 pb-6 pt-2">
+            <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
+              {t('datePicker.selectDate')}
+            </Text>
+            <Text
+              className="font-bold leading-tight tracking-tight text-text-primary"
+              style={{ fontSize: theme.typography.fontSize['4xl'] }}
+            >
+              {formatSelectedDate(tempSelectedDate)}
+            </Text>
+          </View>
 
-        {/* Calendar */}
-        <View className="px-4">
-          <View
-            className="rounded-2xl border bg-bg-cardDark p-5"
-            style={{ borderColor: theme.colors.background.white5 }}
-          >
-            {/* Month Navigation */}
-            <View className="mb-6 flex-row items-center justify-between px-1">
-              <Pressable
-                className="flex-row items-center gap-1 rounded-lg px-2 py-1"
-                onPress={handleMonthYearPickerOpen}
-              >
-                <Text className="text-base font-semibold text-text-primary">
-                  {format(currentMonth, 'MMMM yyyy')}
-                </Text>
-                <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              </Pressable>
-              <View className="flex-row items-center gap-1">
-                <Pressable className="rounded-full p-1" onPress={handlePreviousMonth}>
-                  <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.secondary} />
+          {/* Calendar */}
+          <View className="px-4">
+            <View
+              className="rounded-2xl border bg-bg-cardDark p-5"
+              style={{ borderColor: theme.colors.background.white5 }}
+            >
+              {/* Month Navigation */}
+              <View className="mb-6 flex-row items-center justify-between px-1">
+                <Pressable
+                  className="flex-row items-center gap-1 rounded-lg px-2 py-1"
+                  onPress={handleMonthYearPickerOpen}
+                >
+                  <Text className="text-base font-semibold text-text-primary">
+                    {format(currentMonth, 'MMMM yyyy')}
+                  </Text>
+                  <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
-                <Pressable className="rounded-full p-1" onPress={handleNextMonth}>
-                  <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </Pressable>
+                <View className="flex-row items-center gap-1">
+                  <Pressable className="rounded-full p-1" onPress={handlePreviousMonth}>
+                    <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  </Pressable>
+                  <Pressable className="rounded-full p-1" onPress={handleNextMonth}>
+                    <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Week Days Header */}
+              <View className="mb-4 flex-row">
+                {weekDays.map((day, index) => (
+                  <View key={index} className="flex-1">
+                    <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                      {day}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Calendar Grid */}
+              <View className="flex-row flex-wrap">
+                {days.map((day, index) => {
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+                  const isToday = isSameDay(day, today);
+                  const isSelected = isSameDay(day, tempSelectedDate);
+                  const isOtherMonth = !isCurrentMonth;
+
+                  return (
+                    <Pressable
+                      key={index}
+                      className="h-10 items-center justify-center"
+                      style={{ width: '14.28%' }}
+                      onPress={() => handleDateSelect(day)}
+                    >
+                      {isSelected ? (
+                        <View className="relative h-10 w-10 items-center justify-center">
+                          <View
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              backgroundColor: theme.colors.accent.primary,
+                              shadowColor: theme.colors.accent.primary,
+                              shadowOffset: theme.shadowOffset.lg,
+                              shadowOpacity: theme.shadowOpacity.medium,
+                              shadowRadius: theme.shadowRadius.md,
+                              elevation: theme.elevation.xl,
+                            }}
+                          />
+                          <Text
+                            className="relative z-10 text-sm font-bold"
+                            style={{ color: theme.colors.text.black }}
+                          >
+                            {format(day, 'd')}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View
+                          className={`h-10 w-10 items-center justify-center rounded-full ${
+                            isToday ? 'border border-accent-primary' : ''
+                          }`}
+                        >
+                          <Text
+                            className={`text-sm font-medium ${
+                              isOtherMonth ? 'text-text-secondary' : 'text-text-primary'
+                            }`}
+                          >
+                            {format(day, 'd')}
+                          </Text>
+                        </View>
+                      )}
+                    </Pressable>
+                  );
+                })}
               </View>
             </View>
 
-            {/* Week Days Header */}
-            <View className="mb-4 flex-row">
-              {weekDays.map((day, index) => (
-                <View key={index} className="flex-1">
-                  <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                    {day}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Calendar Grid */}
-            <View className="flex-row flex-wrap">
-              {days.map((day, index) => {
-                const isCurrentMonth = isSameMonth(day, currentMonth);
-                const isToday = isSameDay(day, today);
-                const isSelected = isSameDay(day, tempSelectedDate);
-                const isOtherMonth = !isCurrentMonth;
-
-                return (
-                  <Pressable
-                    key={index}
-                    className="h-10 items-center justify-center"
-                    style={{ width: '14.28%' }}
-                    onPress={() => handleDateSelect(day)}
-                  >
-                    {isSelected ? (
-                      <View className="relative h-10 w-10 items-center justify-center">
-                        <View
-                          className="absolute inset-0 rounded-full"
-                          style={{
-                            backgroundColor: theme.colors.accent.primary,
-                            shadowColor: theme.colors.accent.primary,
-                            shadowOffset: theme.shadowOffset.lg,
-                            shadowOpacity: theme.shadowOpacity.medium,
-                            shadowRadius: theme.shadowRadius.md,
-                            elevation: theme.elevation.xl,
-                          }}
-                        />
-                        <Text
-                          className="relative z-10 text-sm font-bold"
-                          style={{ color: theme.colors.text.black }}
-                        >
-                          {format(day, 'd')}
-                        </Text>
-                      </View>
-                    ) : (
-                      <View
-                        className={`h-10 w-10 items-center justify-center rounded-full ${
-                          isToday ? 'border border-accent-primary' : ''
-                        }`}
-                      >
-                        <Text
-                          className={`text-sm font-medium ${
-                            isOtherMonth ? 'text-text-secondary' : 'text-text-primary'
-                          }`}
-                        >
-                          {format(day, 'd')}
-                        </Text>
-                      </View>
-                    )}
-                  </Pressable>
-                );
-              })}
-            </View>
+            {/* Quick Date Buttons */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mt-6 pb-2"
+              contentContainerStyle={{ gap: theme.spacing.gap.md }}
+            >
+              <Button
+                label={t('datePicker.yesterday')}
+                variant="secondary"
+                size="sm"
+                width="auto"
+                onPress={() => handleQuickDate('yesterday')}
+              />
+              <Button
+                label={t('datePicker.today')}
+                variant="secondary"
+                size="sm"
+                width="auto"
+                onPress={() => handleQuickDate('today')}
+              />
+              <Button
+                label={t('datePicker.tomorrow')}
+                variant="secondary"
+                size="sm"
+                width="auto"
+                onPress={() => handleQuickDate('tomorrow')}
+              />
+            </ScrollView>
           </View>
-
-          {/* Quick Date Buttons */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mt-6 pb-2"
-            contentContainerStyle={{ gap: theme.spacing.gap.md }}
-          >
-            <Button
-              label={t('datePicker.yesterday')}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              onPress={() => handleQuickDate('yesterday')}
-            />
-            <Button
-              label={t('datePicker.today')}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              onPress={() => handleQuickDate('today')}
-            />
-            <Button
-              label={t('datePicker.tomorrow')}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              onPress={() => handleQuickDate('tomorrow')}
-            />
-          </ScrollView>
-        </View>
         </ScrollView>
 
         {/* Footer */}

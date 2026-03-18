@@ -29,7 +29,15 @@ type OnboardingBodyProps = {
 
 function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', paddingHorizontal: 24, paddingBottom: 40 }}>
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
       {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
         style={{
@@ -87,7 +95,15 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
 
 function OnboardingStepThree({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', paddingHorizontal: 24, paddingBottom: 40 }}>
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
       {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
         style={{
@@ -213,7 +229,15 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', paddingHorizontal: 24, paddingBottom: 40 }}>
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
       {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
         style={{
@@ -339,7 +363,15 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', paddingHorizontal: 24, paddingBottom: 40 }}>
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
       {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
         style={{

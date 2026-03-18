@@ -6,6 +6,7 @@ import {
   CheckCircle,
   ChevronLeft,
   Clock,
+  Droplets,
   Dumbbell,
   Edit,
   Flame,
@@ -59,6 +60,10 @@ import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
@@ -546,39 +551,6 @@ export default function WorkoutSessionScreen() {
     }
   };
 
-  // Helper function to get translation key for muscle group
-  const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
-    const normalized = muscleGroup?.toLowerCase() || '';
-
-    // Map normalized values to translation keys
-    if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
-    if (normalized.includes('back') || normalized.includes('lat'))
-      return 'workout.muscleGroups.back';
-    if (
-      normalized.includes('leg') ||
-      normalized.includes('quad') ||
-      normalized.includes('hamstring') ||
-      normalized.includes('calf') ||
-      normalized.includes('glute')
-    )
-      return 'workout.muscleGroups.legs';
-    if (
-      normalized.includes('arm') ||
-      normalized.includes('bicep') ||
-      normalized.includes('tricep') ||
-      normalized.includes('shoulder') ||
-      normalized.includes('deltoid')
-    )
-      return 'workout.muscleGroups.arms';
-
-    return 'workout.muscleGroups.other';
-  };
-
-  // Helper function to get translation key for exercise type/equipment
-  const getExerciseTypeTranslationKey = (exerciseType: string): string => {
-    return `workout.exerciseTypes.${exerciseType}`;
-  };
-
   // Get exercise category string
   const getExerciseCategory = () => {
     if (!currentSetData) {
@@ -992,7 +964,7 @@ export default function WorkoutSessionScreen() {
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
               <InfoCard
                 variant="success"
-                icon={Flame} // TODO: find a better icon for menstruation cycle info
+                icon={Droplets}
                 label={t('workoutSession.hormonalInsight')}
                 message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
                 onDismiss={() => setIsHormonalInsightDismissed(true)}
