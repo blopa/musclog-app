@@ -7,8 +7,8 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { GenericCard } from '../../components/cards/GenericCard';
-import { MasterLayout } from '../../components/MasterLayout';
 import { BarChart } from '../../components/charts/BarChart';
+import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { database } from '../../database';
 import type NutritionCheckin from '../../database/models/NutritionCheckin';
@@ -53,7 +53,7 @@ export default function CheckinScreen() {
         if (checkinId) {
           currentCheckin = await NutritionCheckinService.getById(checkinId);
         } else {
-          // Find the most recent pending check-in that is due (date <= now)
+          // TODO: receive checkin from props
           const pending = await database
             .get<NutritionCheckin>('nutrition_checkins')
             .query(
@@ -265,9 +265,12 @@ export default function CheckinScreen() {
   if (!checkin) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1 items-center justify-center p-6 bg-[#0F172A]">
+        <View
+          className="flex-1 items-center justify-center p-6"
+          style={{ backgroundColor: theme.colors.background.primary }}
+        >
           <View
-            className="h-32 w-32 items-center justify-center rounded-full mb-6"
+            className="mb-6 h-32 w-32 items-center justify-center rounded-full"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Info size={48} color={theme.colors.text.tertiary} />
@@ -279,7 +282,7 @@ export default function CheckinScreen() {
             {t('nutrition.checkin.noCheckinFound')}
           </Text>
           <Text
-            className="mt-4 text-center text-base font-medium opacity-60 px-8"
+            className="mt-4 px-8 text-center text-base font-medium opacity-60"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('nutrition.checkin.noCheckinFoundDesc')}
@@ -289,7 +292,11 @@ export default function CheckinScreen() {
             variant="outline"
             width="full"
             size="md"
-            style={{ marginTop: 48, backgroundColor: theme.colors.background.card, borderColor: 'transparent' }}
+            style={{
+              marginTop: 48,
+              backgroundColor: theme.colors.background.card,
+              borderColor: 'transparent',
+            }}
             onPress={() => router.back()}
           />
         </View>
@@ -304,7 +311,7 @@ export default function CheckinScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="flex-1 bg-[#0F172A]">
+      <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-4">
           <ChevronLeft color={theme.colors.text.primary} onPress={() => router.back()} />
@@ -360,8 +367,8 @@ export default function CheckinScreen() {
             containerStyle={{
               padding: 20,
               marginBottom: 32,
-              backgroundColor: '#1E293B44',
-              borderColor: '#1E293B',
+              backgroundColor: theme.colors.background.darkGray,
+              borderColor: theme.colors.border.accent,
             }}
           >
             <View className="flex-row justify-between">
@@ -419,8 +426,14 @@ export default function CheckinScreen() {
             <Text className="text-2xl font-black text-white">
               {t('nutrition.checkin.weeklyBreakdown')}
             </Text>
-            <View className="rounded-full bg-[#1E293B] px-3 py-1">
-              <Text className="text-[10px] font-bold uppercase text-[#6366F1]">
+            <View
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: theme.colors.background.card }}
+            >
+              <Text
+                className="text-[10px] font-bold uppercase"
+                style={{ color: theme.colors.accent.primary }}
+              >
                 {t('nutrition.checkin.weekProgress', {
                   current: weekInfo.current,
                   total: weekInfo.total,
@@ -434,8 +447,8 @@ export default function CheckinScreen() {
             containerStyle={{
               padding: 20,
               marginBottom: 24,
-              backgroundColor: '#1E293B44',
-              borderColor: '#1E293B',
+              backgroundColor: theme.colors.background.darkGray,
+              borderColor: theme.colors.border.accent,
             }}
           >
             <Text className="text-base font-medium leading-relaxed text-gray-300">
@@ -453,7 +466,14 @@ export default function CheckinScreen() {
             </Text>
 
             <View className="mt-8 flex-row gap-4">
-              <View className="flex-1 rounded-2xl border border-[#1E293B] bg-[#0F172A] p-4">
+              <View
+                className="flex-1 rounded-2xl p-4"
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.colors.border.accent,
+                  backgroundColor: theme.colors.background.primary,
+                }}
+              >
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.avgIntake')}
                 </Text>
@@ -462,7 +482,14 @@ export default function CheckinScreen() {
                   <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text>
                 </Text>
               </View>
-              <View className="flex-1 rounded-2xl border border-[#1E293B] bg-[#0F172A] p-4">
+              <View
+                className="flex-1 rounded-2xl p-4"
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.colors.border.accent,
+                  backgroundColor: theme.colors.background.primary,
+                }}
+              >
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.consistency')}
                 </Text>
@@ -476,7 +503,14 @@ export default function CheckinScreen() {
             </View>
 
             <View className="mt-4 flex-row gap-4">
-              <View className="flex-1 rounded-2xl border border-[#1E293B] bg-[#0F172A] p-4">
+              <View
+                className="flex-1 rounded-2xl p-4"
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.colors.border.accent,
+                  backgroundColor: theme.colors.background.primary,
+                }}
+              >
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.avgBodyFat')}
                 </Text>
@@ -487,7 +521,14 @@ export default function CheckinScreen() {
                   {t('nutrition.checkin.targetShort', { value: checkin.targetBodyFat.toFixed(1) })}
                 </Text>
               </View>
-              <View className="flex-1 rounded-2xl border border-[#1E293B] bg-[#0F172A] p-4">
+              <View
+                className="flex-1 rounded-2xl p-4"
+                style={{
+                  borderWidth: 1,
+                  borderColor: theme.colors.border.accent,
+                  backgroundColor: theme.colors.background.primary,
+                }}
+              >
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.activeMinutes')}
                 </Text>
@@ -511,7 +552,7 @@ export default function CheckinScreen() {
               </View>
             </View>
           </GenericCard>
-
+          <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
         </ScrollView>
 
         <BottomButtonWrapper>
@@ -529,7 +570,7 @@ export default function CheckinScreen() {
             width="full"
             size="md"
             onPress={handleKeepMacros}
-            style={{ backgroundColor: '#1E293B', borderColor: 'transparent' }}
+            style={{ backgroundColor: theme.colors.background.card, borderColor: 'transparent' }}
           />
         </BottomButtonWrapper>
       </View>

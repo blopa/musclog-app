@@ -34,7 +34,11 @@ export default function NutritionGoalsScreen() {
   const { units } = useSettings();
   const [currentGoals, setCurrentGoals] = useState<NutritionGoals | null>(null);
   const [storedPlanGoals, setStoredPlanGoals] = useState<Partial<NutritionGoals> | null>(null);
-  const params = useLocalSearchParams<{ isAdjusting?: string; isCheckinAdjusting?: string; checkinId?: string }>();
+  const params = useLocalSearchParams<{
+    isAdjusting?: string;
+    isCheckinAdjusting?: string;
+    checkinId?: string;
+  }>();
   const isAdjusting = params.isAdjusting === 'true';
   const isCheckinAdjusting = params.isCheckinAdjusting === 'true';
 
@@ -129,7 +133,11 @@ export default function NutritionGoalsScreen() {
             age: 30, // fallback
             activityLevel: 3, // fallback
             weightGoal:
-              goals.eatingPhase === 'cut' ? 'lose' : goals.eatingPhase === 'bulk' ? 'gain' : 'maintain',
+              goals.eatingPhase === 'cut'
+                ? 'lose'
+                : goals.eatingPhase === 'bulk'
+                  ? 'gain'
+                  : 'maintain',
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
             bodyFatPercent: bodyFatDecrypted?.value,
@@ -156,8 +164,8 @@ export default function NutritionGoalsScreen() {
         }
 
         if (isCheckinAdjusting) {
-            router.replace('/progress');
-            return;
+          router.replace('/progress');
+          return;
         }
 
         router.push({

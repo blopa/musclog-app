@@ -2267,7 +2267,10 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
     const goals = await database.get('nutrition_goals').query().fetch();
     const goal = goals[0];
     if (goal) {
-      const existingCheckins = await database.get('nutrition_checkins').query(Q.where('nutrition_goal_id', goal.id)).fetch();
+      const existingCheckins = await database
+        .get('nutrition_checkins')
+        .query(Q.where('nutrition_goal_id', goal.id))
+        .fetch();
       if (existingCheckins.length === 0) {
         await database.get('nutrition_checkins').create((c: any) => {
           c.nutritionGoalId = goal.id;

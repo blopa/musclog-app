@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Q } from '@nozbe/watermelondb';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { NavItemKey } from '../constants/settings';
 import { database } from '../database';
