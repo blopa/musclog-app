@@ -439,7 +439,7 @@ export default function FitnessInfo() {
         selectedDate={dob ? parseDobToDate(dob) : new Date(new Date().getFullYear() - 25, 0, 1)}
         onDateSelect={(date) => setDob(formatDateToDob(date))}
         minYear={1900}
-        maxYear={new Date().getFullYear() - 10}
+        maxYear={new Date().getFullYear() - 1}
       />
     </MasterLayout>
   );
