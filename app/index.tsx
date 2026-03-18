@@ -178,6 +178,7 @@ export default function HomeScreen() {
           data.brand
         );
         setIsCreateCustomFoodVisible(false);
+        showSnackbar('success', t('nutrition.index.handleSaveCustomFood'));
       } catch (error) {
         console.error('Failed to create custom food:', error);
         showSnackbar('error', t('food.foodDetails.errorMessage'));
