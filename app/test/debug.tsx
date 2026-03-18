@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { MasterLayout } from '../../components/MasterLayout';
@@ -23,6 +24,34 @@ import { theme } from '../../theme';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 import { formatDuration } from '../../utils/workout';
+
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
 
 // All app screens for navigation
 const APP_SCREENS = [
@@ -58,6 +87,7 @@ const APP_SCREENS = [
 
 export default function DebugTestScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [name, setName] = useState('');
   const [muscleGroup, setMuscleGroup] = useState('');
@@ -987,7 +1017,9 @@ export default function DebugTestScreen() {
                 >
                   <View>
                     <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
-                    <Text className="text-sm text-text-secondary">{exercise.muscleGroup}</Text>
+                    <Text className="text-sm text-text-secondary">
+                      {t(getMuscleGroupTranslationKey(exercise.muscleGroup ?? ''))}
+                    </Text>
                   </View>
                   <Pressable onPress={() => deleteExercise(exercise)}>
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />

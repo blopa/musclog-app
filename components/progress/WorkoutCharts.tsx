@@ -13,6 +13,34 @@ interface WorkoutChartsProps {
   muscleGroupSets: MuscleGroupSets[];
 }
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
 export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
   const { t } = useTranslation();
 
@@ -53,9 +81,14 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
             barColor="#ec4899"
             xAxisLabels={getXAxisLabels(
               muscleGroupSets.map((m, i) => ({ x: i })),
-              (x) => muscleGroupSets[x].muscleGroup
+              (x) => t(getMuscleGroupTranslationKey(muscleGroupSets[x].muscleGroup))
             )}
-            tooltipFormatter={(p) => `${muscleGroupSets[p.x].muscleGroup}: ${p.y} sets`}
+            tooltipFormatter={(p) => {
+              const translatedMuscleGroup = t(
+                getMuscleGroupTranslationKey(muscleGroupSets[p.x].muscleGroup)
+              );
+              return `${translatedMuscleGroup}: ${p.y}`;
+            }}
           />
         </ProgressChartSection>
       ) : null}

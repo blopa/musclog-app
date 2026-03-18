@@ -45,6 +45,39 @@ function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
   };
 }
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
+// Helper function to get translation key for mechanic type
+const getMechanicTypeTranslationKey = (mechanicType: string): string => {
+  return `workout.exerciseTypes.${mechanicType.toLowerCase()}`;
+};
+
 export function ReplaceExerciseModal({
   visible,
   onClose,
@@ -218,10 +251,13 @@ export function ReplaceExerciseModal({
                       ? (exercise.image as { uri: string }).uri
                       : undefined;
 
+                  const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup);
+                  const mechanicTypeI18nKey = getMechanicTypeTranslationKey(exercise.mechanicType);
+
                   const option: SelectorOption<string> = {
                     id: exercise.id,
                     label: exercise.name,
-                    description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
+                    description: `${t(muscleGroupI18nKey)} • ${t(mechanicTypeI18nKey)}`,
                     icon: Dumbbell,
                     iconBgColor: theme.colors.background.iconDark,
                     iconColor: theme.colors.text.primary,

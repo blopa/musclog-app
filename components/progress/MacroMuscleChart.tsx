@@ -18,6 +18,34 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
+// Helper function to get translation key for muscle group
+const getMuscleGroupTranslationKey = (muscleGroup: string): string => {
+  const normalized = muscleGroup?.toLowerCase() || '';
+
+  // Map normalized values to translation keys
+  if (normalized.includes('chest')) return 'workout.muscleGroups.chest';
+  if (normalized.includes('back') || normalized.includes('lat'))
+    return 'workout.muscleGroups.back';
+  if (
+    normalized.includes('leg') ||
+    normalized.includes('quad') ||
+    normalized.includes('hamstring') ||
+    normalized.includes('calf') ||
+    normalized.includes('glute')
+  )
+    return 'workout.muscleGroups.legs';
+  if (
+    normalized.includes('arm') ||
+    normalized.includes('bicep') ||
+    normalized.includes('tricep') ||
+    normalized.includes('shoulder') ||
+    normalized.includes('deltoid')
+  )
+    return 'workout.muscleGroups.arms';
+
+  return 'workout.muscleGroups.other';
+};
+
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -124,7 +152,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
                     }}
                   />
                   <Text className="text-[10px] text-text-secondary">
-                    {mg}: {Math.round(maxVol)} {weightLabel}
+                    {t(getMuscleGroupTranslationKey(mg))}: {Math.round(maxVol)} {weightLabel}
                   </Text>
                 </View>
               );
