@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 import { LineChart } from '../components/charts/LineChart';
 import { MasterLayout } from '../components/MasterLayout';
+import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
 import { BodyCompProteinChart } from '../components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '../components/progress/BodyMetricsCharts';
 import { MacroMuscleChart } from '../components/progress/MacroMuscleChart';
@@ -50,6 +51,7 @@ export default function ProgressScreen() {
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
 
   // Fix #5: Render charts progressively so the screen becomes interactive fast.
   // Phase 0 → nothing (reset when isLoading changes)
@@ -101,20 +103,21 @@ export default function ProgressScreen() {
   };
 
   const menuItems: BottomPopUpMenuItem[] = [
-    ...(aiEnabled
-      ? [
-          {
-            title: t('progress.getAiInsights'),
-            description: t('progress.getAiInsightsDescription'),
-            icon: Sparkles,
-            onPress: () => {
-              router.push('/chat?context=progression');
-            },
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.background.iconDarker,
-          },
-        ]
-      : []),
+    // ...(aiEnabled
+    //   ? [
+    //       {
+    //         title: t('progress.getAiInsights'),
+    //         description: t('progress.getAiInsightsDescription'),
+    //         icon: Sparkles,
+    //         onPress: () => {
+    //           // TODO: call a function that will add a message to the chat, and then
+    //           // open the CoachModal
+    //         },
+    //         iconColor: theme.colors.accent.primary,
+    //         iconBgColor: theme.colors.background.iconDarker,
+    //       },
+    //     ]
+    //   : []),
     {
       title: t('progress.manageMetrics'),
       description: t('progress.manageMetricsDescription'),
@@ -130,7 +133,8 @@ export default function ProgressScreen() {
       description: t('progress.manageNutritionDescription'),
       icon: Utensils,
       onPress: () => {
-        router.push('/nutrition/manage');
+        setShowMenu(false);
+        setAdvancedSettingsVisible(true);
       },
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
@@ -177,12 +181,14 @@ export default function ProgressScreen() {
           hasAnyAggregationData={hasAnyAggregationData}
           insets={insets}
           isLoading={isLoading}
+          isAdvancedSettingsVisible={isAdvancedSettingsVisible}
           menuItems={menuItems}
           preset={preset}
           changePreset={changePreset}
           appliedCustomRange={appliedCustomRange}
           onApplyCustomRange={applyCustomRange}
           setUseWeeklyAverages={setUseWeeklyAverages}
+          setAdvancedSettingsVisible={setAdvancedSettingsVisible}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
           t={t}
@@ -202,12 +208,14 @@ function ProgressScreenContent({
   hasAnyAggregationData,
   insets,
   isLoading,
+  isAdvancedSettingsVisible,
   menuItems,
   preset,
   changePreset,
   appliedCustomRange,
   onApplyCustomRange,
   setUseWeeklyAverages,
+  setAdvancedSettingsVisible,
   showMenu,
   setShowMenu,
   t,
@@ -349,6 +357,10 @@ function ProgressScreenContent({
         onClose={() => setShowMenu(false)}
         title={t('progress.quickActions')}
         items={menuItems}
+      />
+      <AdvancedSettingsModal
+        visible={isAdvancedSettingsVisible}
+        onClose={() => setAdvancedSettingsVisible(false)}
       />
     </View>
   );
