@@ -12,6 +12,7 @@
     "currentWeight": "Peso Atual",
     "height": "Altura",
     "fatPercentage": "Percentual de Gordura Corporal",
+    "fatPercentageNotSet": "Não definido — toque para inserir",
     "goalsStrategy": "Metas e Estratégia",
     "fitnessGoal": "Meta de Fitness",
     "eatingPhase": "Fase de Alimentação",

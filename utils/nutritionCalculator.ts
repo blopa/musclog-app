@@ -330,7 +330,53 @@ const WEIGHT_GOAL_LABELS: Record<WeightGoal, string> = {
 
 /**
  * Macro percentage splits per fitness goal: [carbsPct, proteinPct, fatsPct].
- * Based on standard sports-nutrition recommendations.
+ *
+ * These splits are derived from the following evidence-based sources:
+ *
+ * 1. **Institute of Medicine (IOM) Acceptable Macronutrient Distribution Ranges (AMDR)**:
+ *    - Carbohydrates: 45–65% of total energy (DRI 2005)
+ *    - Protein: 10–35% of total energy
+ *    - Fat: 20–35% of total energy
+ *    Source: Institute of Medicine. Dietary Reference Intakes for Energy, Carbohydrate, Fiber, Fat, Fatty Acids, Cholesterol, Protein, and Amino Acids. National Academies Press, 2005.
+ *    https://doi.org/10.17226/10490
+ *
+ * 2. **International Society of Sports Nutrition (ISSN) Position Stand**: Protein and Exercise (2017)
+ *    - Protein needs: 1.4–2.0 g/kg/day for most exercisers; higher during energy restriction
+ *    - Higher protein intakes (≥2.3 g/kg FFM) maximize muscle retention during cuts
+ *    Source: Jäger et al., J Int Soc Sports Nutr. 2017;14:20.
+ *    https://pubmed.ncbi.nlm.nih.gov/28642676/
+ *
+ * 3. **ACSM/ADA/DC Joint Position Stand**: Nutrition and Athletic Performance (2016)
+ *    - Endurance athletes: 6–10 g/kg/day carbohydrate for training
+ *    - Resistance athletes: lower carbohydrate, moderate protein emphasis
+ *    Source: Thomas et al., Med Sci Sports Exerc. 2016;48(3):543-568.
+ *    https://pubmed.ncbi.nlm.nih.gov/26891166/
+ *
+ * 4. **Helms et al. (2014)**: Evidence-based recommendations for bodybuilders
+ *    - During caloric restriction: 2.3–3.1 g/kg FFM protein recommended
+ *    - Fat intake: 15–30% of calories to maintain hormonal function
+ *    Source: Helms et al., J Sports Sci. 2014;32(18):1701-1711.
+ *    https://pubmed.ncbi.nlm.nih.gov/25000063/
+ *
+ * Goal-specific reasoning:
+ * - **weight_loss (40C/30P/30F)**: Higher protein (30%) aligns with ISSN/Helms
+ *   recommendations for muscle preservation during caloric deficit. Moderate fat
+ *   (30%) maintains hormonal function. Carbs adjusted to support deficit.
+ * - **endurance (55C/20P/25F)**: Higher carbs (55%) approach the lower bound of
+ *   ACSM recommendations (6–10 g/kg) for glycogen-demanding training. Lower
+ *   protein sufficient for non-hypertrophy goals.
+ * - **hypertrophy (45C/30P/25F)**: Balanced approach with protein at 30% to support
+ *   muscle protein synthesis (1.6–2.2 g/kg for average body weights). Moderate
+ *   carbs support training volume without excessive fat.
+ * - **strength (50C/30P/20F)**: Emphasizes carbs (50%) for glycolytic demands of
+ *   heavy compound lifting. Protein at 30% supports recovery. Fat at minimum IOM
+ *   threshold (20%) to allow higher carb/protein priority.
+ * - **general (45C/25P/30F)**: Centered within IOM AMDR. Protein at 25% provides
+ *   ~1.2–1.6 g/kg for average adults, appropriate for general fitness.
+ *
+ * Important caveat: Percentage-based targets are less precise than absolute g/kg
+ * recommendations. These splits assume typical body compositions; athletes with
+ * outlier body weights may need gram-based adjustments (see ISSN position stand).
  */
 const MACRO_SPLITS: Record<FitnessGoal, { carbsPct: number; proteinPct: number; fatsPct: number }> =
   {

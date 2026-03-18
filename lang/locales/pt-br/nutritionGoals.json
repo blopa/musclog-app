@@ -71,6 +71,7 @@
       "projectionLean": "Magra: {{value}} {{unit}}",
       "leanMassClarification": "Massa magra inclui água, glicogênio e outros tecidos não-gordurosos—não apenas músculo.",
       "formulasBasedOn": "Baseado no modelo de composição corporal Hall/Forbes e energia metabolizável (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Metas de macro baseadas em IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016) e Helms et al. (2014).",
       "goalLabels": {
         "weight_loss": "Perda de Peso",
         "muscle_gain": "Ganho de Músculo",

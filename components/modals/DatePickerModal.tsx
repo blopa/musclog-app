@@ -154,7 +154,7 @@ export function DatePickerModal({
   const defaultMaxYear = currentYear + 10;
   const minYearToUse = minYear ?? defaultMinYear;
   const maxYearToUse = maxYear ?? defaultMaxYear;
-  const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => minYearToUse + i);
+  const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => maxYearToUse - i);
 
   // Generate month names using date-fns format with locale support
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;

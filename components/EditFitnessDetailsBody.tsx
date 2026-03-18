@@ -12,11 +12,12 @@ import {
   Target,
   Timer,
   Trophy,
+  X,
   Zap,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { FitnessGoal, type Gender, LiftingExperience, WeightGoal } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
@@ -45,7 +46,7 @@ export type FitnessDetails = {
   units: 'imperial' | 'metric';
   weight: string;
   height: string;
-  fatPercentage: number;
+  fatPercentage?: number;
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
@@ -77,7 +78,9 @@ export function EditFitnessDetailsBody({
   const [experience, setExperience] = useState<LiftingExperience>(
     initialData?.experience ?? 'intermediate'
   );
-  const [fatPercentage, setFatPercentage] = useState(initialData?.fatPercentage ?? 15);
+  const [fatPercentage, setFatPercentage] = useState<number | null>(
+    initialData?.fatPercentage ?? null
+  );
 
   // Call onFormChange whenever form data changes
   useEffect(() => {
@@ -86,7 +89,7 @@ export function EditFitnessDetailsBody({
         units,
         weight,
         height,
-        fatPercentage,
+        fatPercentage: fatPercentage ?? undefined,
         weightGoal,
         fitnessGoal,
         activityLevel,
@@ -114,7 +117,7 @@ export function EditFitnessDetailsBody({
       units,
       weight,
       height,
-      fatPercentage,
+      fatPercentage: fatPercentage ?? undefined,
       weightGoal,
       fitnessGoal,
       activityLevel,
@@ -356,19 +359,37 @@ export function EditFitnessDetailsBody({
               <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
-              <Text className="text-sm font-medium text-text-primary">
-                {fatPercentage.toFixed(1)}%
-              </Text>
+              {fatPercentage === null ? (
+                <Pressable onPress={() => setFatPercentage(15)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('editFitnessDetails.fatPercentageNotSet')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-sm font-medium text-text-primary">
+                    {fatPercentage.toFixed(1)}%
+                  </Text>
+                  <Pressable onPress={() => setFatPercentage(null)} className="active:opacity-70">
+                    <X size={14} color={theme.colors.text.tertiary} />
+                  </Pressable>
+                </View>
+              )}
             </View>
-            <Slider
-              value={fatPercentage}
-              min={5}
-              max={50}
-              step={0.5}
-              onChange={setFatPercentage}
-              variant="gradient"
-              useGradient={true}
-            />
+            {fatPercentage !== null ? (
+              <Slider
+                value={fatPercentage}
+                min={5}
+                max={50}
+                step={0.5}
+                onChange={setFatPercentage}
+                variant="gradient"
+                useGradient={true}
+              />
+            ) : null}
           </View>
         </View>
 

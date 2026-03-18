@@ -71,6 +71,7 @@
       "projectionLean": "Lean: {{value}} {{unit}}",
       "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue—not just muscle.",
       "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
+      "macroSourcesNote": "Macro targets based on IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), and Helms et al. (2014).",
       "goalLabels": {
         "weight_loss": "Weight Loss",
         "muscle_gain": "Muscle Gain",

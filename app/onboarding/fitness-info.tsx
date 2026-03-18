@@ -1,14 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { Calendar } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
+import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
@@ -26,7 +28,40 @@ import {
 
 const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
-const DEFAULT_FAT_PERCENTAGE = 15;
+
+function formatTimestampToDob(timestamp: number): string {
+  const date = new Date(timestamp);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+function parseDobToTimestamp(dob: string): number {
+  const parts = dob.split('/');
+  const month = parseInt(parts[0], 10) - 1;
+  const day = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
+  return new Date(year, month, day).getTime();
+}
+
+function parseDobToDate(dob: string): Date {
+  if (!dob) {
+    return new Date();
+  }
+  const parts = dob.split('/');
+  if (parts.length !== 3) {
+    return new Date();
+  }
+  return new Date(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10));
+}
+
+function formatDateToDob(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
 
 /** Merge initial data with current form state; use defaults for any missing fields so we always have a complete FitnessDetails. */
 function getMergedFitnessData(
@@ -46,7 +81,7 @@ function getMergedFitnessData(
     units: current?.units ?? initial?.units ?? 'metric',
     weight: typeof weight === 'string' ? weight : String(weight),
     height: typeof height === 'string' ? height : String(height),
-    fatPercentage: current?.fatPercentage ?? initial?.fatPercentage ?? DEFAULT_FAT_PERCENTAGE,
+    fatPercentage: current?.fatPercentage ?? initial?.fatPercentage,
     weightGoal: current?.weightGoal ?? initial?.weightGoal ?? 'maintain',
     fitnessGoal: current?.fitnessGoal ?? initial?.fitnessGoal ?? 'general',
     activityLevel: current?.activityLevel ?? initial?.activityLevel ?? 3,
@@ -66,6 +101,11 @@ export default function FitnessInfo() {
   const [currentFormData, setCurrentFormData] = useState<Partial<FitnessDetails> | undefined>(
     undefined
   );
+  const defaultDob = formatDateToDob(
+    new Date(new Date().getFullYear() - 25, new Date().getMonth(), new Date().getDate())
+  );
+  const [dob, setDob] = useState(defaultDob);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   // Load user data and metrics on mount (units come from useSettings)
   useEffect(() => {
@@ -95,11 +135,15 @@ export default function FitnessInfo() {
             : cmToDisplay(defaultHeightCm, units);
 
         if (user) {
+          // Only pre-fill DOB if the user has a real date (age > 0 means it's not a default timestamp)
+          if (user.getAge() > 0) {
+            setDob(formatTimestampToDob(user.dateOfBirth));
+          }
           setInitialData({
             units,
             weight: String(weightDisplay),
             height: String(heightDisplay),
-            fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
+            fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
@@ -111,7 +155,7 @@ export default function FitnessInfo() {
             units,
             weight: String(weightDisplay),
             height: String(heightDisplay),
-            fatPercentage: bodyFatDec ? bodyFatDec.value : DEFAULT_FAT_PERCENTAGE,
+            fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
@@ -125,7 +169,6 @@ export default function FitnessInfo() {
           units: 'metric',
           weight: DEFAULT_WEIGHT_KG,
           height: DEFAULT_HEIGHT_CM,
-          fatPercentage: DEFAULT_FAT_PERCENTAGE,
           weightGoal: 'maintain',
           fitnessGoal: 'general',
           activityLevel: 3,
@@ -150,6 +193,8 @@ export default function FitnessInfo() {
       const result: { weightMetricId?: string; heightMetricId?: string } = {};
       setIsSaving(true);
       try {
+        const dateOfBirth = dob ? parseDobToTimestamp(dob) : new Date().getTime();
+
         // Get or ensure user exists
         let user = await UserService.getCurrentUser();
         if (!user) {
@@ -171,7 +216,7 @@ export default function FitnessInfo() {
 
           user = await UserService.initializeUser({
             fullName,
-            dateOfBirth: new Date().getTime(),
+            dateOfBirth,
             gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
@@ -179,8 +224,9 @@ export default function FitnessInfo() {
             liftingExperience: data.experience,
           });
         } else {
-          // Update user fitness info
+          // Update user fitness info and DOB
           await user.updateProfile({
+            dateOfBirth,
             gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
@@ -291,7 +337,7 @@ export default function FitnessInfo() {
         setIsSaving(false);
       }
     },
-    [router, showSnackbar, t]
+    [dob, router, showSnackbar, t]
   );
 
   const handleSkip = useCallback(async () => {
@@ -339,6 +385,27 @@ export default function FitnessInfo() {
               {t('onboarding.fitnessInfo.title')}
             </Text>
           </View>
+
+          {/* Date of Birth */}
+          <View className="px-4 pb-2 pt-4">
+            <View className="gap-2">
+              <Text className="ml-1 text-sm font-semibold text-text-tertiary">
+                {t('editPersonalInfo.dateOfBirth')}
+              </Text>
+              <Pressable
+                className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+                onPress={() => setIsDatePickerVisible(true)}
+              >
+                <View className="ml-3 flex-1">
+                  <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
+                    {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
+                  </Text>
+                </View>
+                <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              </Pressable>
+            </View>
+          </View>
+
           <EditFitnessDetailsBody
             onClose={() => {}}
             onSave={handleSave}
@@ -367,6 +434,15 @@ export default function FitnessInfo() {
           </View>
         </BottomButtonWrapper>
       </View>
+
+      <DatePickerModal
+        visible={isDatePickerVisible}
+        onClose={() => setIsDatePickerVisible(false)}
+        selectedDate={dob ? parseDobToDate(dob) : new Date(new Date().getFullYear() - 25, 0, 1)}
+        onDateSelect={(date) => setDob(formatDateToDob(date))}
+        minYear={1900}
+        maxYear={new Date().getFullYear() - 1}
+      />
     </MasterLayout>
   );
 }

@@ -22,6 +22,7 @@ type EditPersonalInfoBodyProps = {
   hideSaveButton?: boolean;
   showEmailInput?: boolean;
   hideGender?: boolean;
+  hideDob?: boolean;
 };
 
 export type PersonalInfo = {
@@ -55,6 +56,7 @@ export function EditPersonalInfoBody({
   hideSaveButton = false,
   showEmailInput = false,
   hideGender = false,
+  hideDob = false,
 }: EditPersonalInfoBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -162,27 +164,29 @@ export function EditPersonalInfoBody({
           />
         ) : null}
 
-        <View className="flex-col gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">
-            <View className="flex-row items-center gap-1">
-              <Text className="text-lg font-bold text-text-primary">
-                {t('editPersonalInfo.dateOfBirth')}
-              </Text>
-              <Text style={{ color: theme.colors.status.error }}>*</Text>
-            </View>
-          </Text>
-          <Pressable
-            className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
-            onPress={() => setIsDatePickerVisible(true)}
-          >
-            <View className="ml-3 flex-1">
-              <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
-                {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
-              </Text>
-            </View>
-            <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-          </Pressable>
-        </View>
+        {!hideDob ? (
+          <View className="flex-col gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              <View className="flex-row items-center gap-1">
+                <Text className="text-lg font-bold text-text-primary">
+                  {t('editPersonalInfo.dateOfBirth')}
+                </Text>
+                <Text style={{ color: theme.colors.status.error }}>*</Text>
+              </View>
+            </Text>
+            <Pressable
+              className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+              onPress={() => setIsDatePickerVisible(true)}
+            >
+              <View className="ml-3 flex-1">
+                <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
+                  {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
+                </Text>
+              </View>
+              <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+            </Pressable>
+          </View>
+        ) : null}
 
         {!hideGender ? (
           <View className="gap-2">

@@ -763,6 +763,23 @@ export default function NutritionGoalsResults() {
             </GenericCard>
           </View>
 
+          {/* Macro Sources Note */}
+          {aiGenerated ? (
+            <View className="mb-6 w-full px-2">
+              <Text
+                className="text-center text-[10px] font-normal italic"
+                style={{
+                  color: theme.colors.text.tertiary,
+                  fontSize: theme.typography.fontSize.xxs,
+                  fontWeight: theme.typography.fontWeight.normal,
+                  lineHeight: 14,
+                }}
+              >
+                {t('nutritionGoals.results.macroSourcesNote')}
+              </Text>
+            </View>
+          ) : null}
+
           {/* Manual plan: macro split bar + tips (when aiGenerated is false) */}
           {!aiGenerated && displayData ? (
             <>
