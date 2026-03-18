@@ -102,6 +102,7 @@ export default function FitnessInfo() {
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
+            gender: user.gender,
             experience: user.liftingExperience ?? 'intermediate',
           });
         } else {
@@ -113,6 +114,7 @@ export default function FitnessInfo() {
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
+            gender: 'other',
             experience: 'intermediate',
           });
         }
@@ -169,7 +171,7 @@ export default function FitnessInfo() {
           user = await UserService.initializeUser({
             fullName,
             dateOfBirth: new Date().getTime(),
-            gender: 'other',
+            gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
             activityLevel: data.activityLevel,
@@ -178,6 +180,7 @@ export default function FitnessInfo() {
         } else {
           // Update user fitness info
           await user.updateProfile({
+            gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
             activityLevel: data.activityLevel,
