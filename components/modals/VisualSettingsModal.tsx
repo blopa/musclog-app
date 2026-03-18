@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Calendar,
+  ClipboardCheck,
   Dumbbell,
   MessageSquare,
   Settings,
@@ -33,12 +34,15 @@ const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
   cycle: Calendar,
   settings: Settings,
   progress: BarChart3,
+  // TODO: instead, have a link to the new checkin list screen - independent of pending checkin
+  checkin: ClipboardCheck,
 };
 
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { rawSlots, isAiFeaturesEnabled, isCycleActive, setNavSlot } = useNavigationItems();
+  const { rawSlots, isAiFeaturesEnabled, isCycleActive, hasPendingCheckin, setNavSlot } =
+    useNavigationItems();
 
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
 
@@ -58,6 +62,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     'cycle',
     'settings',
     'progress',
+    'checkin',
   ];
 
   const isItemAvailable = (item: NavItemKey): boolean => {
@@ -66,6 +71,11 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     }
 
     if (item === 'cycle' && !isCycleActive) {
+      return false;
+    }
+
+    // TODO: no need for this check
+    if (item === 'checkin' && !hasPendingCheckin) {
       return false;
     }
 

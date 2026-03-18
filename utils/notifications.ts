@@ -1,42 +1,85 @@
-import type { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
-import { NotificationResponse } from 'expo-notifications/src/Notifications.types';
 import { router } from 'expo-router';
-
-import { getActiveWorkoutLogId } from './activeWorkoutStorage';
-
-export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
-  return Notifications.getLastNotificationResponseAsync();
-}
+import { Platform } from 'react-native';
 
 export function addNotificationResponseReceivedListener(
-  listener: (event: NotificationResponse) => void
-): EventSubscription {
+  listener: (event: Notifications.NotificationResponse) => void
+) {
   return Notifications.addNotificationResponseReceivedListener(listener);
 }
 
-export const handleNotificationResponse = async (response: Notifications.NotificationResponse) => {
-  const { identifier, content } = response.notification.request;
-  const data = content.data as Record<string, any>;
+export async function getLastNotificationResponseAsync() {
+  return Notifications.getLastNotificationResponseAsync();
+}
 
-  if (identifier === 'active-workout-notification' || data?.type === 'active-workout') {
-    const workoutLogId = data?.workoutLogId || (await getActiveWorkoutLogId());
-    if (workoutLogId) {
-      router.push(`/workout/workout-session?workoutLogId=${workoutLogId}`);
-    }
+/**
+ * Handles notification clicks/interactions for the entire app.
+ */
+export async function handleNotificationResponse(response: Notifications.NotificationResponse) {
+  const data = response.notification.request.content.data;
+  const { type } = data;
 
+  if (!type) {
     return;
   }
 
-  switch (data?.type) {
+  switch (type) {
     case 'workout-reminder':
-      router.push('/workout/workouts');
+      if (data.templateId) {
+        router.push(`/workouts/start?templateId=${data.templateId}`);
+      } else {
+        router.push('/workouts');
+      }
       break;
+
     case 'nutrition-overview':
-      router.push('/nutrition/food');
+      router.push('/food');
       break;
+
+    case 'nutrition-checkin':
+      router.push({
+        pathname: '/nutrition/checkin',
+        params: { checkinId: data.checkinId as string },
+      });
+      break;
+
+    case 'active-workout':
+      // Notification persists while workout is active, tapping it should return to the session
+      router.push('/workouts/session');
+      break;
+
+    case 'rest-timer-alert':
+      router.push('/workouts/session');
+      break;
+
     case 'menstrual-cycle':
       router.push('/cycle');
       break;
+
+    default:
+      console.log('Unhandled notification type:', type);
   }
-};
+}
+
+/**
+ * Configures global notification behavior for the platform.
+ */
+export function setupNotificationConfig() {
+  if (Platform.OS === 'web') {
+    return;
+  }
+
+  Notifications.setNotificationHandler({
+    handleNotification: async (notification) => {
+      // Don't show an alert for persistent active-workout updates, as it would be noisy
+      const isWorkoutUpdate = notification.request.identifier === 'active-workout-notification';
+      return {
+        shouldShowAlert: !isWorkoutUpdate,
+        shouldPlaySound: !isWorkoutUpdate,
+        shouldSetBadge: false,
+        shouldShowBanner: !isWorkoutUpdate,
+        shouldShowList: true,
+      };
+    },
+  });
+}

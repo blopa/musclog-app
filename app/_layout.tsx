@@ -105,6 +105,7 @@ function RootLayout() {
         NotificationService.scheduleWorkoutReminders();
         NotificationService.scheduleNutritionOverview();
         NotificationService.scheduleMenstrualCycleNotifications();
+        NotificationService.scheduleCheckinNotifications();
 
         // Dismiss any orphaned workout notification from a previous killed session
         const activeWorkoutLogId = await getActiveWorkoutLogId();
@@ -137,7 +138,7 @@ function RootLayout() {
           handleNotificationResponse(response);
         }
       })
-      .catch((err) => console.warn('[NotificationService] Cold-start response error:', err));
+      .catch((err: any) => console.warn('[NotificationService] Cold-start response error:', err));
 
     const subscription = addNotificationResponseReceivedListener(handleNotificationResponse);
 

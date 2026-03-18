@@ -36,6 +36,46 @@
     "tryAICamera": "Try AI Camera",
     "tryAICameraDesc": "Scan your meal for instant identification",
     "supportedFormats": "Supported formats",
+    "checkin": {
+      "title": "Weekly Check-in",
+      "noCheckinFound": "No pending check-ins found.",
+      "status": "Current Status",
+      "onTrack": "On Track",
+      "ahead": "Ahead",
+      "behind": "Behind",
+      "noCheckinFoundDesc": "You don't have any check-ins scheduled for today. Come back on your next scheduled check-in day!",
+      "headline": {
+        "onTrack": "Looking Great!",
+        "ahead": "Speeding Up!",
+        "behind": "Room to Grow"
+      },
+      "subtext": {
+        "onTrack": "You've maintained a consistent pace this week. Keep pushing toward your goals.",
+        "ahead": "You are ahead of your weight targets! Great job on the consistency.",
+        "behind": "You had some fluctuations this week, but consistency is key. Let's get back on track!"
+      },
+      "weightTrend": "Weight Trend",
+      "target": "Target",
+      "targetShort": "Target: {{value}}%",
+      "weeklyBreakdown": "Weekly Breakdown",
+      "weekProgress": "Week {{current}} of {{total}}",
+      "summaryIntro": "You aimed for {{target}} kcal/day, but averaged",
+      "summaryOutro": "Despite the result, you completed",
+      "workoutsCount": "workouts",
+      "withHighIntensity": "with high intensity.",
+      "avgIntake": "Avg. Intake",
+      "consistency": "Consistency",
+      "rate": "rate",
+      "avgBodyFat": "Avg Body Fat",
+      "activeMinutes": "Active Minutes",
+      "vsLastWeek": "{{prefix}}{{value}}% vs last week",
+      "adherence": "Weekly Adherence",
+      "summary": "You aimed for {{targetKcal}} kcal/day, but averaged {{actualKcal}} kcal/day. You completed {{workouts}} workouts.",
+      "weightComparison": "Weight: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "You have logged weight less than 4 times this week. Averages may be less accurate.",
+      "keepMacros": "Keep my current macros",
+      "readjust": "Readjust my plan"
+    },
     "common": {
       "kcal": "kcal"
     },
@@ -58,6 +98,9 @@
       "identifiedItems": "Identified Items",
       "addItem": "Add Item",
       "confirmAndLog": "Confirm & Log Meal"
+    },
+    "index": {
+      "handleSaveCustomFood": "Custom food saved successfully."
     },
     "manageFoodData": {
       "title": "Nutrition Log",

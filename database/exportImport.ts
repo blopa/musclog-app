@@ -37,7 +37,7 @@ const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   TEMP_NUTRITION_PLAN,
 ]);
 
-const EXPORT_VERSION = 1;
+const EXPORT_VERSION = 2;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [
@@ -328,6 +328,10 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         }
 
         const created = await collection.create((rec: any) => {
+          if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
+            rec.completed = false;
+          }
+
           for (const key of Object.keys(raw)) {
             if (key === 'id' || key === '_decrypted') {
               continue;
