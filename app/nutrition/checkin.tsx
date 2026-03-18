@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Check, ChevronRight, Info, RefreshCw } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -13,22 +13,20 @@ import { Button } from '../../components/theme/Button';
 import { database } from '../../database';
 import type NutritionCheckin from '../../database/models/NutritionCheckin';
 import type NutritionGoal from '../../database/models/NutritionGoal';
-import type NutritionLog from '../../database/models/NutritionLog';
-import type UserMetric from '../../database/models/UserMetric';
 import type WorkoutLog from '../../database/models/WorkoutLog';
 import {
   NutritionCheckinService,
-  NutritionGoalService,
   NutritionService,
   UserMetricService,
 } from '../../database/services';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
-import { useSettings } from '../../hooks/useSettings';
 
 export default function CheckinScreen() {
   const theme = useTheme();
+  const [activeMinutesTrend, setActiveMinutesTrend] = useState<number | null>(null);
   const { t } = useTranslation();
   const router = useRouter();
   const { checkinId } = useLocalSearchParams<{ checkinId: string }>();
@@ -39,9 +37,13 @@ export default function CheckinScreen() {
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [goal, setGoal] = useState<NutritionGoal | null>(null);
   const [weeklyWeight, setWeeklyWeight] = useState<number | null>(null);
-  const [weightLogsCount, setWeightLogsCount] = useState(0);
   const [avgCalories, setAvgCalories] = useState<number | null>(null);
   const [workoutsCount, setWorkoutsCount] = useState(0);
+  const [dailyWeights, setDailyWeights] = useState<(number | null)[]>([]);
+  const [activeMinutes, setActiveMinutes] = useState(0);
+  const [consistency, setConsistency] = useState(0);
+  const [avgBodyFat, setAvgBodyFat] = useState<number | null>(null);
+  const [weekInfo, setWeekInfo] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     async function loadData() {
@@ -77,39 +79,69 @@ export default function CheckinScreen() {
         // Fetch data for the last 7 days
         const endDate = new Date();
         const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 7);
+        startDate.setDate(endDate.getDate() - 6);
+        startDate.setHours(0, 0, 0, 0);
 
-        // Weight average
+        // Weight data
         const weightMetrics = await UserMetricService.getMetricsHistory('weight', {
           startDate: startDate.getTime(),
           endDate: endDate.getTime(),
         });
 
-        if (weightMetrics.length > 0) {
-          const weights = await Promise.all(
-            weightMetrics.map(async (m) => (await m.getDecrypted()).value)
-          );
-          const avg = weights.reduce((a, b) => a + b, 0) / weights.length;
-          setWeeklyWeight(avg);
-          setWeightLogsCount(weights.length);
-        }
+        const weights: (number | null)[] = new Array(7).fill(null);
+        let weightSum = 0;
+        let weightCount = 0;
 
-        // Calorie average
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(startDate);
+          d.setDate(d.getDate() + i);
+          const metric = weightMetrics.find((m) => {
+            const mDate = new Date(m.date);
+            return (
+              mDate.getFullYear() === d.getFullYear() &&
+              mDate.getMonth() === d.getMonth() &&
+              mDate.getDate() === d.getDate()
+            );
+          });
+          if (metric) {
+            const val = (await metric.getDecrypted()).value;
+            weights[i] = val;
+            weightSum += val;
+            weightCount++;
+          }
+        }
+        setDailyWeights(weights);
+        setWeeklyWeight(weightCount > 0 ? weightSum / weightCount : null);
+
+        // Body fat data
+        const fatMetrics = await UserMetricService.getMetricsHistory('body_fat', {
+          startDate: startDate.getTime(),
+          endDate: endDate.getTime(),
+        });
+        let fatSum = 0;
+        let fatCount = 0;
+        for (const m of fatMetrics) {
+          const val = (await m.getDecrypted()).value;
+          fatSum += val;
+          fatCount++;
+        }
+        setAvgBodyFat(fatCount > 0 ? fatSum / fatCount : null);
+
+        // Calorie and consistency
         const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
           startDate,
           endDate
         );
-        if (nutritionLogs.length > 0) {
-          let totalCals = 0;
-          for (const log of nutritionLogs) {
-            totalCals += (await log.getNutrients()).calories;
-          }
-          setAvgCalories(Math.round(totalCals / 7));
-        } else {
-          setAvgCalories(0);
+        let totalCals = 0;
+        const loggedDays = new Set<string>();
+        for (const log of nutritionLogs) {
+          totalCals += (await log.getNutrients()).calories;
+          loggedDays.add(new Date(log.date).toDateString());
         }
+        setAvgCalories(Math.round(totalCals / 7));
+        setConsistency(Math.round((loggedDays.size / 7) * 100));
 
-        // Workout count
+        // Workouts and active minutes (Current Week)
         const workouts = await database
           .get<WorkoutLog>('workout_logs')
           .query(
@@ -118,6 +150,48 @@ export default function CheckinScreen() {
           )
           .fetch();
         setWorkoutsCount(workouts.length);
+        let mins = 0;
+        for (const w of workouts) {
+          if (w.completedAt && w.startedAt) {
+            mins += (w.completedAt - w.startedAt) / 60000;
+          }
+        }
+        setActiveMinutes(Math.round(mins));
+
+        // Active Minutes (Previous Week) for trend
+        const prevEndDate = new Date(startDate);
+        prevEndDate.setMilliseconds(prevEndDate.getMilliseconds() - 1);
+        const prevStartDate = new Date(prevEndDate);
+        prevStartDate.setDate(prevStartDate.getDate() - 6);
+        prevStartDate.setHours(0, 0, 0, 0);
+
+        const prevWorkouts = await database
+          .get<WorkoutLog>('workout_logs')
+          .query(
+            Q.where('completed_at', Q.between(prevStartDate.getTime(), prevEndDate.getTime())),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+        let prevMins = 0;
+        for (const w of prevWorkouts) {
+          if (w.completedAt && w.startedAt) {
+            prevMins += (w.completedAt - w.startedAt) / 60000;
+          }
+        }
+        if (prevMins > 0) {
+          setActiveMinutesTrend(Math.round(((mins - prevMins) / prevMins) * 100));
+        } else {
+          setActiveMinutesTrend(null);
+        }
+
+        // Week info
+        if (currentGoal) {
+          const start = currentGoal.createdAt;
+          const end = currentGoal.targetDate || Date.now() + 90 * 24 * 60 * 60 * 1000;
+          const totalWeeks = Math.ceil((end - start) / (7 * 24 * 60 * 60 * 1000));
+          const currentWeek = Math.ceil((Date.now() - start) / (7 * 24 * 60 * 60 * 1000));
+          setWeekInfo({ current: Math.min(currentWeek, totalWeeks), total: totalWeeks });
+        }
       } catch (error) {
         console.error('Error loading check-in data:', error);
       } finally {
@@ -129,14 +203,18 @@ export default function CheckinScreen() {
   }, [checkinId]);
 
   const status = useMemo(() => {
-    if (!checkin || weeklyWeight === null) return null;
+    if (!checkin || weeklyWeight === null) {
+      return null;
+    }
 
     const target = checkin.targetWeight;
     const actual = weeklyWeight;
     const diffPercent = Math.abs(actual - target) / target;
 
     // Threshold: 0.5% deviation
-    if (diffPercent <= 0.005) return 'onTrack';
+    if (diffPercent <= 0.005) {
+      return 'onTrack';
+    }
 
     const goalType = goal?.eatingPhase; // 'cut', 'maintain', 'bulk'
 
@@ -150,8 +228,18 @@ export default function CheckinScreen() {
     }
   }, [checkin, weeklyWeight, goal]);
 
+  const trend = useMemo(() => {
+    const validWeights = dailyWeights.filter((w): w is number => w !== null);
+    if (validWeights.length < 2) {
+      return 0;
+    }
+    return validWeights[validWeights.length - 1] - validWeights[0];
+  }, [dailyWeights]);
+
   const handleKeepMacros = async () => {
-    if (!checkin) return;
+    if (!checkin) {
+      return;
+    }
     await NutritionCheckinService.update(checkin.id, { completed: true });
     router.replace('/progress');
   };
@@ -193,105 +281,179 @@ export default function CheckinScreen() {
     );
   }
 
-  const isDataInsufficient = weightLogsCount < 4;
-
   const displayActualWeight = weeklyWeight !== null ? kgToDisplay(weeklyWeight, units) : 0;
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
+  const displayTrend = kgToDisplay(Math.abs(trend), units);
+  const trendColor = trend <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
 
   return (
-    <MasterLayout>
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: theme.spacing.padding.lg }}>
-        <Text className="mb-6 text-3xl font-black tracking-tight" style={{ color: theme.colors.text.primary }}>
-          {t('nutrition.checkin.title')}
-        </Text>
-
-        {/* Status Section */}
-        <GenericCard variant="highlighted" containerStyle={{ marginBottom: theme.spacing.margin.lg, padding: theme.spacing.padding.xl, alignItems: 'center' }}>
-          <View
-            className="mb-4 h-24 w-24 items-center justify-center rounded-full"
-            style={{ backgroundColor: status === 'onTrack' ? theme.colors.status.emerald + '22' : status === 'ahead' ? theme.colors.status.info + '22' : status === 'behind' ? theme.colors.status.warning + '22' : undefined }}
-          >
-            <MaterialIcons
-              name={status === 'onTrack' ? 'check-circle' : status === 'ahead' ? 'trending-up' : 'error-outline'}
-              size={48}
-              color={status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : status === 'behind' ? theme.colors.status.warning : undefined}
-            />
-          </View>
-          <Text className="text-sm font-bold uppercase tracking-widest" style={{ color: theme.colors.text.tertiary }}>
-            {t('nutrition.checkin.status')}
-          </Text>
-          <Text className="text-2xl font-black" style={{ color: status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : status === 'behind' ? theme.colors.status.warning : undefined }}>
-            {status ? t(`nutrition.checkin.${status}`) : '---'}
-          </Text>
-        </GenericCard>
-
-        {/* Breakdown Section */}
-        <View className="mb-6">
-          <Text className="mb-3 ml-1 text-sm font-bold uppercase tracking-wider" style={{ color: theme.colors.text.tertiary }}>
-            {t('nutrition.checkin.adherence')}
-          </Text>
-          <GenericCard variant="default" containerStyle={{ padding: theme.spacing.padding.lg }}>
-            <Text className="mb-4 text-base leading-relaxed" style={{ color: theme.colors.text.primary }}>
-              {t('nutrition.checkin.summary', {
-                targetKcal: goal?.totalCalories ?? 0,
-                actualKcal: avgCalories ?? 0,
-                workouts: workoutsCount
-              })}
-            </Text>
-
-            <View className="flex-row items-center justify-between border-t pt-4" style={{ borderTopColor: theme.colors.border.default + '22' }}>
-              <View>
-                <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
-                  {t('nutrition.checkin.weightComparison', {
-                    actual: displayActualWeight.toFixed(1),
-                    target: displayTargetWeight.toFixed(1),
-                    unit: t(weightUnitKey)
-                  })}
-                </Text>
-              </View>
-              {isDataInsufficient && (
-                <View className="rounded-full bg-orange-500/10 px-2 py-1 flex-row items-center gap-1">
-                  <Info size={12} color={theme.colors.status.warning} />
-                  <Text className="text-[10px] font-bold text-orange-500">
-                    LOW DATA
-                  </Text>
-                </View>
-              )}
-            </View>
-          </GenericCard>
+    <MasterLayout showNavigationMenu={false}>
+      <View className="flex-1 bg-[#0F172A]">
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-6 pt-4">
+          <ChevronLeft color={theme.colors.text.primary} onPress={() => router.back()} />
+          <Text className="text-lg font-bold text-white">{t('nutrition.checkin.title')}</Text>
+          <View style={{ width: 24 }} />
         </View>
 
-        {isDataInsufficient && (
-          <View className="mb-6 flex-row gap-3 rounded-2xl p-4" style={{ backgroundColor: theme.colors.status.warning + '15' }}>
-            <Info color={theme.colors.status.warning} size={20} />
-            <Text className="flex-1 text-xs font-medium leading-relaxed" style={{ color: theme.colors.status.warning }}>
-              {t('nutrition.checkin.insufficientData')}
+        <ScrollView className="flex-1" contentContainerStyle={{ padding: 24 }}>
+          {/* Status Ring */}
+          <View className="mb-12 items-center">
+            <View
+              className="h-48 w-48 items-center justify-center rounded-full border-[10px]"
+              style={{
+                borderColor: status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : theme.colors.status.warning,
+                shadowColor: status === 'onTrack' ? theme.colors.status.emerald : status === 'ahead' ? theme.colors.status.info : theme.colors.status.warning,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.3,
+                shadowRadius: 15,
+                elevation: 10,
+              }}
+            >
+              <Text
+                className="text-center text-2xl font-black uppercase leading-7 tracking-tighter text-white"
+                style={{ fontSize: 28 }}
+              >
+                {status ? t(`nutrition.checkin.${status}`) : '---'}
+              </Text>
+            </View>
+            <Text className="mt-8 text-3xl font-black text-white">
+              {t(`nutrition.checkin.headline.${status || 'onTrack'}`)}
+            </Text>
+            <Text className="mt-2 text-center text-base font-medium opacity-60 px-4" style={{ color: theme.colors.text.secondary }}>
+              {t(`nutrition.checkin.subtext.${status || 'onTrack'}`)}
             </Text>
           </View>
-        )}
 
-        <View style={{ height: 100 }} />
-      </ScrollView>
+          {/* Weight Trend Card */}
+          <GenericCard variant="card" containerStyle={{ padding: 20, marginBottom: 32, backgroundColor: '#1E293B44', borderColor: '#1E293B' }}>
+            <View className="flex-row justify-between">
+              <View>
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  {t('nutrition.checkin.weightTrend')}
+                </Text>
+                <View className="mt-1 flex-row items-baseline">
+                  <Text className="text-3xl font-black text-white">{displayActualWeight.toFixed(1)}</Text>
+                  <Text className="ml-1 text-base font-bold text-gray-400">{t(weightUnitKey)}</Text>
+                  <View className="ml-3 rounded-md px-2 py-0.5" style={{ backgroundColor: trendColor + '22' }}>
+                    <Text className="text-xs font-bold" style={{ color: trendColor }}>
+                      {trend > 0 ? '+' : '-'}{displayTrend.toFixed(1)}{t(weightUnitKey)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View className="items-end">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  {t('nutrition.checkin.target')}
+                </Text>
+                <Text className="mt-1 text-xl font-bold text-white">
+                  {displayTargetWeight.toFixed(1)}
+                  <Text className="text-sm font-medium text-gray-400"> {t(weightUnitKey)}</Text>
+                </Text>
+              </View>
+            </View>
 
-      <BottomButtonWrapper>
-        <Button
-          label={t('nutrition.checkin.keepMacros')}
-          variant="outline"
-          width="full"
-          size="md"
-          icon={Check}
-          onPress={handleKeepMacros}
-          style={{ marginBottom: theme.spacing.margin.md }}
-        />
-        <Button
-          label={t('nutrition.checkin.readjust')}
-          variant="gradientCta"
-          width="full"
-          size="md"
-          icon={RefreshCw}
-          onPress={handleReadjust}
-        />
-      </BottomButtonWrapper>
+            {/* Simple Bar Chart */}
+            <View className="mt-8 h-24 flex-row items-end justify-between px-2">
+              {dailyWeights.map((w, i) => {
+                const weights = dailyWeights.filter((x): x is number => x !== null);
+                const minW = weights.length > 0 ? Math.min(...weights) : 0;
+                const maxW = weights.length > 0 ? Math.max(...weights) : 1;
+                const range = maxW - minW || 1;
+                // Normalize height between 20% and 80% of container
+                const height = w ? 20 + ((w - minW) / range) * 60 : 10;
+                const isToday = i === 6;
+                return (
+                  <View key={i} className="items-center">
+                    <View
+                      className="w-8 rounded-t-lg"
+                      style={{
+                        height: `${height}%`,
+                        backgroundColor: isToday ? theme.colors.status.emerald : (i >= 5 ? '#6366F1' : '#1E293B')
+                      }}
+                    />
+                    <Text
+                      className="mt-2 text-[10px] font-bold uppercase"
+                      style={{ color: isToday ? theme.colors.status.emerald : theme.colors.text.tertiary }}
+                    >
+                      {isToday ? t('common.today') : ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][(new Date(Date.now() - (6-i)*24*60*60*1000)).getDay()]}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </GenericCard>
+
+          {/* Weekly Breakdown */}
+          <View className="mb-4 flex-row items-center justify-between">
+            <Text className="text-2xl font-black text-white">{t('nutrition.checkin.weeklyBreakdown')}</Text>
+            <View className="rounded-full bg-[#1E293B] px-3 py-1">
+              <Text className="text-[10px] font-bold text-[#6366F1] uppercase">
+                {t('nutrition.checkin.weekProgress', { current: weekInfo.current, total: weekInfo.total })}
+              </Text>
+            </View>
+          </View>
+
+          <GenericCard variant="card" containerStyle={{ padding: 20, marginBottom: 24, backgroundColor: '#1E293B44', borderColor: '#1E293B' }}>
+            <Text className="text-base font-medium leading-relaxed text-gray-300">
+              {t('nutrition.checkin.summaryIntro', { target: goal?.totalCalories ?? 0 })}
+              <Text style={{ color: theme.colors.status.warning }}> {avgCalories} {t('common.kcal')}/day</Text>.
+              {t('nutrition.checkin.summaryOutro')}
+              <Text style={{ color: theme.colors.status.emerald }}> {workoutsCount} {t('nutrition.checkin.workoutsCount')}</Text> {t('nutrition.checkin.withHighIntensity')}
+            </Text>
+
+            <View className="mt-8 flex-row gap-4">
+              <View className="flex-1 rounded-2xl bg-[#0F172A] p-4 border border-[#1E293B]">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('nutrition.checkin.avgIntake')}</Text>
+                <Text className="mt-1 text-xl font-black text-white">{avgCalories} <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text></Text>
+              </View>
+              <View className="flex-1 rounded-2xl bg-[#0F172A] p-4 border border-[#1E293B]">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('nutrition.checkin.consistency')}</Text>
+                <Text className="mt-1 text-xl font-black text-white">{consistency}% <Text className="text-xs font-medium text-gray-500">{t('nutrition.checkin.rate')}</Text></Text>
+              </View>
+            </View>
+
+            <View className="mt-4 flex-row gap-4">
+              <View className="flex-1 rounded-2xl bg-[#0F172A] p-4 border border-[#1E293B]">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('nutrition.checkin.avgBodyFat')}</Text>
+                <Text className="mt-1 text-xl font-black text-white">{avgBodyFat?.toFixed(1) ?? '--'}%</Text>
+                <Text className="mt-1 text-[10px] font-medium text-gray-500">{t('nutrition.checkin.targetShort', { value: checkin.targetBodyFat.toFixed(1) })}</Text>
+              </View>
+              <View className="flex-1 rounded-2xl bg-[#0F172A] p-4 border border-[#1E293B]">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('nutrition.checkin.activeMinutes')}</Text>
+                <Text className="mt-1 text-xl font-black text-white">{activeMinutes}</Text>
+                {activeMinutesTrend !== null ? (
+                  <Text className="mt-1 text-[10px] font-medium" style={{ color: activeMinutesTrend >= 0 ? theme.colors.status.emerald : theme.colors.status.warning }}>
+                    {t('nutrition.checkin.vsLastWeek', { prefix: activeMinutesTrend >= 0 ? '+' : '', value: activeMinutesTrend })}
+                  </Text>
+                ) : null}
+              </View>
+            </View>
+          </GenericCard>
+
+          <View className="h-32" />
+        </ScrollView>
+
+        <BottomButtonWrapper>
+          <Button
+            label={t('nutrition.checkin.readjust')}
+            variant="gradientCta"
+            width="full"
+            size="md"
+            onPress={handleReadjust}
+            style={{ marginBottom: 12 }}
+          />
+          <Button
+            label={t('nutrition.checkin.keepMacros')}
+            variant="outline"
+            width="full"
+            size="md"
+            onPress={handleKeepMacros}
+            style={{ backgroundColor: '#1E293B', borderColor: 'transparent' }}
+            textStyle={{ color: 'white' }}
+          />
+        </BottomButtonWrapper>
+      </View>
     </MasterLayout>
   );
 }
