@@ -384,7 +384,7 @@ export default function BodyMetricsHistoryModal({
               options={metricOptions}
               value={selectedMetric}
               onValueChange={(value) => setSelectedMetric(value as UiMetricType)}
-              variant="gradient"
+              variant="elevated"
             />
           </View>
 
