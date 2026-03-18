@@ -50,6 +50,7 @@ function getMergedFitnessData(
     weightGoal: current?.weightGoal ?? initial?.weightGoal ?? 'maintain',
     fitnessGoal: current?.fitnessGoal ?? initial?.fitnessGoal ?? 'general',
     activityLevel: current?.activityLevel ?? initial?.activityLevel ?? 3,
+    gender: current?.gender ?? initial?.gender ?? 'other',
     experience: current?.experience ?? initial?.experience ?? 'intermediate',
   };
 }
