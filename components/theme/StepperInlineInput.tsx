@@ -2,6 +2,7 @@ import { LucideIcon, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { useRepeatPress } from '../../hooks/useRepeatPress';
 import { useTheme } from '../../hooks/useTheme';
 
 type TestStepperProps = {
@@ -31,6 +32,9 @@ export function StepperInlineInput({
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toFixed(1));
   const inputRef = useRef<TextInput>(null);
+
+  const incrementHandlers = useRepeatPress({ onPress: onIncrement });
+  const decrementHandlers = useRepeatPress({ onPress: onDecrement });
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
@@ -101,7 +105,7 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onDecrement}
+          {...decrementHandlers}
         >
           <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
@@ -154,7 +158,7 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onIncrement}
+          {...incrementHandlers}
         >
           <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>

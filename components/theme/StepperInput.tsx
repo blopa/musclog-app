@@ -3,6 +3,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { useRepeatPress } from '../../hooks/useRepeatPress';
 import { useTheme } from '../../hooks/useTheme';
 
 interface StepperInputProps {
@@ -76,6 +77,22 @@ export const StepperInput: FC<StepperInputProps> = ({
     inputRef.current?.blur();
   };
 
+  const incrementHandlers = useRepeatPress({
+    onPress: () => {
+      const newVal = internalValue + 1;
+      handleChange(newVal);
+      onIncrement();
+    },
+  });
+
+  const decrementHandlers = useRepeatPress({
+    onPress: () => {
+      const newVal = internalValue - 1;
+      handleChange(newVal);
+      onDecrement();
+    },
+  });
+
   return (
     <View className="flex flex-col gap-2">
       <Text
@@ -88,11 +105,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         <Pressable
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
-          onPress={() => {
-            const newVal = internalValue - 1;
-            handleChange(newVal);
-            onDecrement();
-          }}
+          {...decrementHandlers}
           accessibilityLabel={t('common.decreaseValue')}
         >
           <Minus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
@@ -143,11 +156,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         <Pressable
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
-          onPress={() => {
-            const newVal = internalValue + 1;
-            handleChange(newVal);
-            onIncrement();
-          }}
+          {...incrementHandlers}
           accessibilityLabel={t('common.increaseValue')}
         >
           <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />

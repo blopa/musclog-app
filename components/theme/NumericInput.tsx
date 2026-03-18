@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
+import { useRepeatPress } from '../../hooks/useRepeatPress';
 import { useTheme } from '../../hooks/useTheme';
 
 type TestNumericInputProps = {
@@ -29,6 +30,14 @@ export function NumericInput({
   const unitColorFinal = unitColor || theme.colors.accent.primary;
   const inputRef = useRef<RNTextInput | null>(null);
 
+  const incrementHandlers = useRepeatPress({
+    onPress: onIncrement || (() => {}),
+  });
+
+  const decrementHandlers = useRepeatPress({
+    onPress: onDecrement || (() => {}),
+  });
+
   const handleFocus = () => {
     // iOS supports selectTextOnFocus; on Android explicitly set selection
     if (inputRef.current && typeof inputRef.current.setNativeProps === 'function') {
@@ -51,7 +60,7 @@ export function NumericInput({
       {onIncrement ? (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
-          onPress={onIncrement}
+          {...incrementHandlers}
         >
           <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
@@ -72,7 +81,7 @@ export function NumericInput({
       {onDecrement ? (
         <Pressable
           className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
-          onPress={onDecrement}
+          {...decrementHandlers}
         >
           <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.black} />
         </Pressable>
