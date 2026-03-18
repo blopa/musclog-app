@@ -101,20 +101,21 @@ export default function ProgressScreen() {
   };
 
   const menuItems: BottomPopUpMenuItem[] = [
-    ...(aiEnabled
-      ? [
-          {
-            title: t('progress.getAiInsights'),
-            description: t('progress.getAiInsightsDescription'),
-            icon: Sparkles,
-            onPress: () => {
-              router.push('/chat?context=progression');
-            },
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.background.iconDarker,
-          },
-        ]
-      : []),
+    // ...(aiEnabled
+    //   ? [
+    //       {
+    //         title: t('progress.getAiInsights'),
+    //         description: t('progress.getAiInsightsDescription'),
+    //         icon: Sparkles,
+    //         onPress: () => {
+    //           // TODO: call a function that will add a message to the chat, and then
+    //           // open the CoachModal
+    //         },
+    //         iconColor: theme.colors.accent.primary,
+    //         iconBgColor: theme.colors.background.iconDarker,
+    //       },
+    //     ]
+    //   : []),
     {
       title: t('progress.manageMetrics'),
       description: t('progress.manageMetricsDescription'),
@@ -130,7 +131,7 @@ export default function ProgressScreen() {
       description: t('progress.manageNutritionDescription'),
       icon: Utensils,
       onPress: () => {
-        router.push('/nutrition/manage');
+        // TODO: open AdvancedSettingsModal
       },
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,

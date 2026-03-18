@@ -1,4 +1,12 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import type { BirthControlType, MenstrualCycleUpdate } from '../database/models';
 import { MenstrualCycleRepository } from '../database/repositories/MenstrualCycleRepository';
@@ -67,22 +75,27 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
   const updateCycle = useCallback(
     async (data: MenstrualCycleUpdate): Promise<void> => {
-      if (!cycle) return;
+      if (!cycle) {
+        return;
+      }
       await cycle.updateCycle(data);
     },
     [cycle]
   );
 
-  const createNewCycle = useCallback(async (data: {
-    avgCycleLength?: number;
-    avgPeriodDuration?: number;
-    useHormonalBirthControl?: boolean;
-    birthControlType?: BirthControlType;
-    lastPeriodStartDate?: number;
-  }): Promise<void> => {
-    await MenstrualCycleRepository.deactivateAll();
-    await MenstrualCycleRepository.createNewCycle(data);
-  }, []);
+  const createNewCycle = useCallback(
+    async (data: {
+      avgCycleLength?: number;
+      avgPeriodDuration?: number;
+      useHormonalBirthControl?: boolean;
+      birthControlType?: BirthControlType;
+      lastPeriodStartDate?: number;
+    }): Promise<void> => {
+      await MenstrualCycleRepository.deactivateAll();
+      await MenstrualCycleRepository.createNewCycle(data);
+    },
+    []
+  );
 
   const deactivateTracking = useCallback(async (): Promise<void> => {
     if (cycle) {

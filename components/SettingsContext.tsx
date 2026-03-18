@@ -5,18 +5,21 @@ import { AppState, Platform } from 'react-native';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
+  type ChartTooltipPosition,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
+  type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
+  type NavItemKey,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -29,16 +32,13 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   THEME_SETTING_TYPE,
-  UNITS_SETTING_TYPE,
-  USE_OCR_BEFORE_AI_SETTING_TYPE,
-  WORKOUT_INSIGHTS_SETTING_TYPE,
-  WRITE_HEALTH_DATA_SETTING_TYPE,
-  type ChartTooltipPosition,
-  type FoodSearchSource,
-  type NavItemKey,
   type ThemeOption,
   type Units,
+  UNITS_SETTING_TYPE,
+  USE_OCR_BEFORE_AI_SETTING_TYPE,
   type UseSettingsResult,
+  WORKOUT_INSIGHTS_SETTING_TYPE,
+  WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '../constants/settings';
 import { database } from '../database';
 import Setting from '../database/models/Setting';
@@ -134,7 +134,9 @@ function getString(map: Map<string, string>, type: string, defaultVal = ''): str
 
 function getBoolean(map: Map<string, string>, type: string, defaultVal = false): boolean {
   const v = map.get(type);
-  if (v === undefined) return defaultVal;
+  if (v === undefined) {
+    return defaultVal;
+  }
   return v === 'true';
 }
 
@@ -182,7 +184,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     navSlot2: (rawNavSlot2 as NavItemKey) || 'food',
     navSlot3: (rawNavSlot3 as NavItemKey) || 'profile',
     foodSearchSource: (rawFoodSearchSource as FoodSearchSource) || 'both',
-    conversationContext: (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
+    conversationContext:
+      (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     isLoading: false,
   };
@@ -237,7 +240,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     checkGoogleAuth();
 
     const subscription = AppState.addEventListener('change', (appState) => {
-      if (appState === 'active') checkGoogleAuth();
+      if (appState === 'active') {
+        checkGoogleAuth();
+      }
     });
 
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
@@ -271,13 +276,21 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isAiFeaturesEnabled = useMemo(() => {
-    if (__DEV__) return true;
+    if (__DEV__) {
+      return true;
+    }
     return (
       isGoogleConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
       (state.enableOpenAi && state.openAiApiKey.trim() !== '')
     );
-  }, [isGoogleConnected, state.enableGoogleGemini, state.googleGeminiApiKey, state.enableOpenAi, state.openAiApiKey]);
+  }, [
+    isGoogleConnected,
+    state.enableGoogleGemini,
+    state.googleGeminiApiKey,
+    state.enableOpenAi,
+    state.openAiApiKey,
+  ]);
 
   const value = useMemo(
     () => ({

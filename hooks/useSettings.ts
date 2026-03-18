@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useSettingsContext, type SettingsContextType } from '../components/SettingsContext';
+import { type SettingsContextType, useSettingsContext } from '../components/SettingsContext';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 
 export function useSettings(): SettingsContextType {
