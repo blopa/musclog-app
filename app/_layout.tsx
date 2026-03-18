@@ -16,6 +16,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CoachProvider } from '../components/CoachContext';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { LanguageInitializer } from '../components/LanguageInitializer';
+import { MenstrualCycleProvider } from '../components/MenstrualCycleContext';
+import { SettingsProvider } from '../components/SettingsContext';
 import { SmartCameraProvider } from '../components/SmartCameraContext';
 import { SnackbarProvider } from '../components/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
@@ -179,18 +181,22 @@ function RootLayout() {
               />
             )}
           >
-            <ThemeProvider>
-              <LanguageInitializer />
-              <UnreadChatProvider>
-                <SnackbarProvider>
-                  <SmartCameraProvider>
-                    <CoachProvider>
-                      <AppContent />
-                    </CoachProvider>
-                  </SmartCameraProvider>
-                </SnackbarProvider>
-              </UnreadChatProvider>
-            </ThemeProvider>
+            <SettingsProvider>
+              <MenstrualCycleProvider>
+                <ThemeProvider>
+                  <LanguageInitializer />
+                  <UnreadChatProvider>
+                    <SnackbarProvider>
+                      <SmartCameraProvider>
+                        <CoachProvider>
+                          <AppContent />
+                        </CoachProvider>
+                      </SmartCameraProvider>
+                    </SnackbarProvider>
+                  </UnreadChatProvider>
+                </ThemeProvider>
+              </MenstrualCycleProvider>
+            </SettingsProvider>
           </Sentry.ErrorBoundary>
         </SafeAreaProvider>
       </QueryClientProvider>

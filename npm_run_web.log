@@ -1,0 +1,489 @@
+
+> musclog@2.4.2 web
+> expo start --web
+
+Starting project at /app
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 28.0% (17/91)
+λ node_modules/expo-router/node/render.js ▓░░░░░░░░░░░░░░░ 10.4% ( 88/273)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 28.0% (101/210)
+λ node_modules/expo-router/node/render.js ▓▓▓░░░░░░░░░░░░░ 24.3% (255/703)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (210/376)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 25.7% ( 495/1089)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (210/376)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 25.7% ( 657/2845)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (340/687)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 25.7% ( 793/2927)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (374/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 25.7% (1061/3380)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (374/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓░░░░░░░░░░░░ 25.7% (1719/3634)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (374/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓░░░░░░░░░ 48.4% (2527/3634)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (374/793)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.0% (2850/4063)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% ( 559/1170)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.0% (2929/4112)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% ( 752/2955)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.0% (2960/4141)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% ( 787/2967)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.0% (3393/4696)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% ( 787/2967)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 64.9% (4079/5075)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (1654/3707)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.2% (4105/5084)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.5% (2892/3850)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.9% (4141/5101)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.5% (2964/3978)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.7% (4785/5231)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.5% (3148/4230)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.4% (5090/5577)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 61.3% (3917/5002)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.4% (5129/5603)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.0% (4148/5107)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 88.3% (5383/5728)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 79.3% (4668/5241)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.5% (5572/5865)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 84.7% (5130/5629)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.9% (5609/5882)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.7% (5408/5932)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.9% (5851/6105)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.7% (5594/6074)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.3% (6036/6277)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.1% (6069/6395)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.6% (6242/6352)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.7% (6532/6643)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.7% (6393/6492)
+λ Bundled 90175ms node_modules/expo-router/node/render.js (6529 modules)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6869/6869)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6869/6869)
+🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6869/6869)
+Web Bundled 107847ms index.web.js (6869 modules)
+Error: Premature close
+    at onclose (node:internal/streams/end-of-stream:171:30)
+    at processTicksAndRejections (node:internal/process/task_queues:84:11)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 971ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 4207ms index.web.js (1 module)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% (154/397)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% (281/737)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 382/1039)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 452/2763)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 591/2858)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 638/2878)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 694/3064)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 769/3184)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 995/3355)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% (1460/3649)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 38.5% (2265/3649)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.8% (2737/3954)
+λ Bundled 409ms node_modules/expo-router/node/render.js (1 module)
+Web Bundled 2897ms index.web.js (1 module)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.9% (2874/3991)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+[🍉] [Loki] Initializing IndexedDB
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 52.0% (2878/3991)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 55.0% (3098/4237)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 56.8% (3448/4635)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.4% (3885/4826)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 71.2% (4344/5148)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 79.8% (4708/5283)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 82.1% (4827/5326)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.0% (4963/5446)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.5% (5255/5683)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 87.2% (5457/5849)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 87.2% (5884/6389)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 93.7% (6462/6676)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 92698ms index.web.js (6871 modules)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6871/6871)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 43095ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 171ms node_modules/expo-asset/build/index.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 363ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 3681ms index.web.js (1 module)
+Web Bundled 333ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 86ms node_modules/expo-asset/build/index.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 364ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 6184ms index.web.js (1 module)
+Web Bundled 1514ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 108ms node_modules/expo-asset/build/index.js (1 module)
