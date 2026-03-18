@@ -48,7 +48,12 @@ export function FullScreenModal({
           right: 0,
           bottom: 0,
           width: '100vw',
-          height: '100vh',
+          // dvh (dynamic viewport height) always equals the *current* visible
+          // height — it shrinks when Chrome's address bar is visible, unlike
+          // 100vh which is the *large* (address-bar-hidden) viewport height.
+          // Using 100vh causes the modal to be taller than the screen when the
+          // address bar is shown, pushing the bottom button below the fold.
+          height: '100dvh',
           // Prevent browser swipe-to-go-back gesture
           touchAction: 'pan-y',
         } as any)
