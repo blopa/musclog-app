@@ -3,10 +3,10 @@ import { ReactNode, useCallback } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useSmartCamera } from '../context/SmartCameraContext';
 import { useTheme } from '../hooks/useTheme';
 import { useCoach } from './CoachContext';
 import { NavigationMenu } from './NavigationMenu';
-import { useSmartCamera } from './SmartCameraContext';
 
 type MasterLayoutProps = {
   children: ReactNode;

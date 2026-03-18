@@ -35,6 +35,7 @@ import {
   View,
 } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { type MealType } from '../../database/models';
 import Meal from '../../database/models/Meal';
 import { FoodPortionService, NutritionService } from '../../database/services';
@@ -47,7 +48,6 @@ import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUni
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';

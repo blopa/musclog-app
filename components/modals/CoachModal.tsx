@@ -51,6 +51,8 @@ import {
   NUTRITION_CHECK,
   TRACK_MEAL,
 } from '../../constants/chat';
+import { useSnackbar } from '../../context/SnackbarContext';
+import { useUnreadChat } from '../../context/UnreadChatContext';
 import { ChatService } from '../../database/services';
 import {
   AI_COACH_AVATAR,
@@ -67,10 +69,8 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
-import { useSnackbar } from '../SnackbarContext';
 import { MenuButton } from '../theme/MenuButton';
 import { SegmentedControl } from '../theme/SegmentedControl';
-import { useUnreadChat } from '../UnreadChatContext';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';

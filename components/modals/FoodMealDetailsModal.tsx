@@ -26,6 +26,7 @@ import {
 } from 'react-native';
 
 import type { Units } from '../../constants/settings';
+import { useSnackbar } from '../../context/SnackbarContext';
 import type { DecryptedNutritionLogSnapshot, MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import FoodPortion from '../../database/models/FoodPortion';
@@ -59,7 +60,6 @@ import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { FilterTabs } from '../FilterTabs';
 import { MacroInput } from '../MacroInput';
 import { ServingSizeSelector } from '../ServingSizeSelector';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';

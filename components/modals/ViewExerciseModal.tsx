@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, Share, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import type ExerciseModel from '../../database/models/Exercise';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
@@ -20,7 +21,6 @@ import {
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { ConfirmationModal } from './ConfirmationModal';

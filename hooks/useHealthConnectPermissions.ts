@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
-import { useSnackbar } from '../components/SnackbarContext';
+import { useSnackbar } from '../context/SnackbarContext';
 import { healthConnectService, HealthConnectStatus } from '../services/healthConnect';
 import { HealthConnectError } from '../services/healthConnectErrors';
 

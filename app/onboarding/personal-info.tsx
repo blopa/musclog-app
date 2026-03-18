@@ -10,9 +10,9 @@ import {
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
 import { MasterLayout } from '../../components/MasterLayout';
-import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';

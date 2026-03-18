@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSnackbar } from '../components/SnackbarContext';
+import { useSnackbar } from '../context/SnackbarContext';
 import { HealthConnectError } from '../services/healthConnectErrors';
 import { healthDataSyncService, SyncResult, SyncStatus } from '../services/healthDataSync';
 

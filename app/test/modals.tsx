@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { MealEstimationModal } from '../../components/MealEstimationModal';
 import { AddExerciseModal } from '../../components/modals/AddExerciseModal';
 import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
 import { AddFoodItemToMealModal } from '../../components/modals/AddFoodItemToMealModal';
@@ -60,6 +59,7 @@ import { ImportNutritionModal } from '../../components/modals/ImportNutritionMod
 import { ImportWorkoutsModal } from '../../components/modals/ImportWorkoutsModal';
 import { LogMealModal } from '../../components/modals/LogMealModal';
 import { LogSetPerformanceModal } from '../../components/modals/LogSetPerformanceModal';
+import { MealEstimationModal } from '../../components/modals/MealEstimationModal';
 import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
 import { NotificationsModal } from '../../components/modals/NotificationsModal';

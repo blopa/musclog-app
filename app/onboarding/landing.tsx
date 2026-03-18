@@ -9,7 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '../../components/MasterLayout';
 import { CenteredModal } from '../../components/modals/CenteredModal';
-import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TextInput } from '../../components/theme/TextInput';
 import {
@@ -17,6 +16,7 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '../../constants/misc';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';

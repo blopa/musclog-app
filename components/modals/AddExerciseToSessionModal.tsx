@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { WorkoutTemplateService } from '../../database/services';
@@ -15,7 +16,6 @@ import {
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { TextInput } from '../theme/TextInput';

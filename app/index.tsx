@@ -24,12 +24,12 @@ import PastWorkoutDetailModal from '../components/modals/PastWorkoutDetailModal'
 import PastWorkoutsHistoryModal from '../components/modals/PastWorkoutsHistoryModal';
 import { UserMenuModal } from '../components/modals/UserMenuModal';
 import ShowMoreButton from '../components/ShowMoreButton';
-import { useSmartCamera } from '../components/SmartCameraContext';
 import DashedButton from '../components/theme/DashedButton';
 import { MenuButton } from '../components/theme/MenuButton';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '../components/WorkoutFoodEmptyState';
 import { TEMP_GOOGLE_AUTH_CODE } from '../constants/misc';
+import { useSmartCamera } from '../context/SmartCameraContext';
 import { type MealType } from '../database/models';
 import { FoodService, NutritionGoalService } from '../database/services';
 import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';

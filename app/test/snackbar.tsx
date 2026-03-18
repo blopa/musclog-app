@@ -4,7 +4,7 @@ import { AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useSnackbar } from '../../components/SnackbarContext';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { theme } from '../../theme';
 
 export default function SnackbarTestScreen() {

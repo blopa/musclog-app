@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { PhysiologicalInsightsCard } from '../components/cards/PhysiologicalInsightsCard';
 import { DateNavigator } from '../components/DateNavigator';
 import { MasterLayout } from '../components/MasterLayout';
 import { CycleLogModal } from '../components/modals/CycleLogModal';
 import { CycleSettingsModal } from '../components/modals/CycleSettingsModal';
 import { PhaseWheel } from '../components/PhaseWheel';
-import { PhysiologicalInsightsCard } from '../components/PhysiologicalInsightsCard';
 import { UserMetricService } from '../database/services';
 import { MenstrualService } from '../database/services/MenstrualService';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
