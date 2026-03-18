@@ -378,7 +378,7 @@ export default function AddUserMetricEntryModal({
         />
 
         {/* Date and Time Sections */}
-        <View className="space-y-3">
+        <View className="space-y-3 pb-4">
           <DateTimeSelectorCard
             type="date"
             value={selectedDate}
@@ -397,7 +397,7 @@ export default function AddUserMetricEntryModal({
           />
 
           {/* Note Section */}
-          <View>
+          <View className="mt-3">
             <TextInput
               label={t('bodyMetrics.addEntry.note')}
               value={note}
@@ -462,7 +462,7 @@ export default function AddUserMetricEntryModal({
                 </View>
                 <PagerView
                   ref={pagerRef}
-                  style={{ height: pagerHeight || theme.size['400'] }}
+                  style={{ height: pagerHeight || theme.size['480'] }}
                   initialPage={metricToPageIndex[selectedMetric]}
                   onPageSelected={(e) => {
                     const pageIndex = e.nativeEvent.position;

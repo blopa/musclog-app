@@ -18,6 +18,9 @@ export function BottomButtonWrapper({ effect = 'gradient', children }: BottomBut
     <View
       className="px-6 pb-6 pt-6"
       style={{
+        // On web the outer FullScreenModal container already applies paddingBottom: insets.bottom
+        // (via viewport-fit=cover + useSafeAreaInsets), so only add extra visual breathing room here.
+        // On native the outer container also applies insets.bottom, so no extra padding needed.
         paddingBottom: Platform.OS === 'web' ? theme.spacing.padding.lg : 0,
       }}
     >

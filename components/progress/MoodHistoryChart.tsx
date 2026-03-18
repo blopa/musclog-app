@@ -1,0 +1,106 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Text, TouchableOpacity, View } from 'react-native';
+
+import { MoodPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useTheme } from '../../hooks/useTheme';
+import { getXAxisLabels } from '../../utils/chartUtils';
+import { LineChart } from '../charts/LineChart';
+import { ProgressChartSection } from './ProgressChartSection';
+
+interface MoodHistoryChartProps {
+  allData: Record<TimeAggregation, MoodPoint[]>;
+}
+
+// TODO: use i18n here? or is it not user facing?
+const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
+
+const formatDate = (timestamp: number): string => {
+  const d = new Date(timestamp);
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const data = (allData && allData[aggregation]) || [];
+
+  const emptyState = (
+    <ProgressChartSection title={t('progress.correlationView.moodHistory')}>
+      <View className="mb-4 flex-row items-center gap-2">
+        {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+          <TouchableOpacity
+            key={agg}
+            onPress={() => setAggregation(agg)}
+            className={`rounded-full px-3 py-1.5 ${
+              aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+            }`}
+          >
+            <Text
+              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            >
+              {t(`common.time.${agg}`)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View className="items-center justify-center py-10">
+        <Text className="text-sm text-text-tertiary">{t('progress.noDataAvailable')}</Text>
+      </View>
+    </ProgressChartSection>
+  );
+
+  if (!data || data.length === 0) {
+    return emptyState;
+  }
+
+  const chartData = data.map((d) => ({ x: d.date, y: d.mood }));
+  const xAxisLabels = getXAxisLabels(
+    data.map((d) => ({ x: d.date })),
+    formatDate
+  );
+
+  const yAxisLabels = [
+    { label: t('progress.mood.great'), yDomainValue: 4 },
+    { label: t('progress.mood.okay'), yDomainValue: 2 },
+    { label: t('progress.mood.poor'), yDomainValue: 0 },
+  ];
+
+  return (
+    <ProgressChartSection
+      title={t('progress.correlationView.moodHistory')}
+      subtitle={t('progress.mood.avgMood')}
+    >
+      <View className="mb-4 flex-row items-center gap-2">
+        {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
+          <TouchableOpacity
+            key={agg}
+            onPress={() => setAggregation(agg)}
+            className={`rounded-full px-3 py-1.5 ${
+              aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
+            }`}
+          >
+            <Text
+              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            >
+              {t(`common.time.${agg}`)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <LineChart
+        data={chartData}
+        height={200}
+        yDomain={[0, 4]}
+        xDomain={[data[0].date, data[data.length - 1].date]}
+        lineColor={theme.colors.status.indigo}
+        areaColor={theme.colors.status.indigo10}
+        xAxisLabels={xAxisLabels}
+        yAxisLabels={yAxisLabels}
+        interactive
+        tooltipFormatter={(p) => MOOD_LABELS[Math.round(p.y)] ?? `${p.y.toFixed(1)}`}
+      />
+    </ProgressChartSection>
+  );
+}
