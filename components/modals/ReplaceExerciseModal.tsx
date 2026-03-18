@@ -14,6 +14,10 @@ import Exercise from '../../database/models/Exercise';
 import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import {
+  getMechanicTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
@@ -218,10 +222,13 @@ export function ReplaceExerciseModal({
                       ? (exercise.image as { uri: string }).uri
                       : undefined;
 
+                  const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup);
+                  const mechanicTypeI18nKey = getMechanicTypeTranslationKey(exercise.mechanicType);
+
                   const option: SelectorOption<string> = {
                     id: exercise.id,
                     label: exercise.name,
-                    description: `${exercise.muscleGroup} • ${exercise.mechanicType}`,
+                    description: `${t(muscleGroupI18nKey)} • ${t(mechanicTypeI18nKey)}`,
                     icon: Dumbbell,
                     iconBgColor: theme.colors.background.iconDark,
                     iconColor: theme.colors.text.primary,

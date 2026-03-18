@@ -22,15 +22,23 @@ import { ChatWorkoutCompletedCard } from '../../components/cards/ChatWorkoutComp
 import { CurrentGoalsCard } from '../../components/cards/CurrentGoalsCard';
 import { DailySummaryCard } from '../../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../../components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { DateTimeSelectorCard } from '../../components/cards/DateTimeSelectorCard';
 import { DetailedItemCard } from '../../components/cards/DetailedItemCard';
 import { FoodInfoCard } from '../../components/cards/FoodInfoCard';
 import { FoodItemCard } from '../../components/cards/FoodItemCard';
+import { FoodSearchItemCard } from '../../components/cards/FoodSearchItemCard';
+import { GenericCard } from '../../components/cards/GenericCard';
 import { GoalHistoryCard } from '../../components/cards/GoalHistoryCard';
 import { HealthCategoryCard } from '../../components/cards/HealthCategoryCard';
+import { HistoryBodyMetricCard } from '../../components/cards/HistoryBodyMetricCard';
+import { InfoCard } from '../../components/cards/InfoCard';
+import { LegalLinksCard } from '../../components/cards/LegalLinksCard';
 import { MacroCard } from '../../components/cards/MacroCard';
 import { MealItemCard } from '../../components/cards/MealItemCard';
+import { MoodSelectorCard } from '../../components/cards/MoodSelectorCard';
 import { NewWorkoutCard } from '../../components/cards/NewWorkoutCard';
 import { NotificationCard } from '../../components/cards/NotificationCard';
+import { SameAsYesterdayCard } from '../../components/cards/SameAsYesterdayCard';
 import { SelectedExerciseCard } from '../../components/cards/SelectedExerciseCard';
 import { SettingsCard } from '../../components/cards/SettingsCard';
 import { StatCard } from '../../components/cards/StatCard';
@@ -510,6 +518,180 @@ export default function CardsTestScreen() {
 
         <TestSection title="TDEE Card" subtitle="Total Daily Energy Expenditure display">
           <TdeeCard />
+        </TestSection>
+
+        <TestSection title="Info Card" subtitle="Information and insight cards">
+          <InfoCard
+            variant="accent"
+            icon={Sparkles}
+            label="AI Insight"
+            message="Based on your recent workouts, consider increasing protein intake by 10g for better recovery."
+            onDismiss={() => console.log('Dismiss card')}
+          />
+          <View className="mt-4">
+            <InfoCard
+              variant="warning"
+              icon={Bell}
+              label="Reminder"
+              message="Don't forget to log your workout today!"
+              size="sm"
+            />
+          </View>
+          <View className="mt-4">
+            <InfoCard
+              variant="success"
+              icon={Trophy}
+              label="Achievement"
+              message="You've completed 5 workouts this week! Keep it up!"
+              size="xs"
+              inlineLabel={true}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Date/Time Selector" subtitle="Date and time input cards">
+          <DateTimeSelectorCard
+            type="date"
+            value={new Date()}
+            onEdit={() => console.log('Edit date')}
+            label="Workout Date"
+            formattedValue="January 15, 2026"
+          />
+          <View className="mt-4">
+            <DateTimeSelectorCard
+              type="time"
+              value={new Date()}
+              onEdit={() => console.log('Edit time')}
+              label="Workout Time"
+              formattedValue="6:00 PM"
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Food Search Item" subtitle="Search results for food items">
+          <FoodSearchItemCard
+            food={{
+              id: '1',
+              source: 'local',
+              name: 'Grilled Chicken Breast',
+              description: 'Lean protein source',
+              calories: 165,
+              protein: 31,
+              carbs: 0,
+              fat: 3.6,
+              grade: 'A',
+              gradeColor: theme.colors.status.success,
+              iconComponent: UtensilsCrossed,
+              iconColor: theme.colors.accent.primary,
+            }}
+            onAddPress={() => console.log('Add food')}
+          />
+          <View className="mt-4">
+            <FoodSearchItemCard
+              food={{
+                id: '2',
+                source: 'local',
+                name: 'Brown Rice',
+                description: 'Whole grain carbohydrate',
+                calories: 216,
+                protein: 5,
+                carbs: 45,
+                fat: 1.8,
+                icon: '🍚',
+              }}
+              onAddPress={() => console.log('Add food')}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Generic Card" subtitle="Flexible card wrapper component">
+          <GenericCard variant="default" size="default">
+            <View className="p-4">
+              <Text className="text-lg font-bold text-text-primary">Default Card</Text>
+              <Text className="mt-2 text-sm text-text-secondary">
+                This is a default generic card with custom content.
+              </Text>
+            </View>
+          </GenericCard>
+          <View className="mt-4">
+            <GenericCard variant="card" size="sm">
+              <View className="p-3">
+                <Text className="text-base font-bold text-text-primary">Small Card</Text>
+                <Text className="mt-1 text-xs text-text-secondary">A smaller card variant.</Text>
+              </View>
+            </GenericCard>
+          </View>
+          <View className="mt-4">
+            <GenericCard
+              variant="highlighted"
+              size="default"
+              isPressable
+              onPress={() => console.log('Pressed')}
+            >
+              <View className="p-4">
+                <Text className="text-lg font-bold text-text-primary">Pressable Card</Text>
+                <Text className="mt-2 text-sm text-text-secondary">This card can be pressed.</Text>
+              </View>
+            </GenericCard>
+          </View>
+        </TestSection>
+
+        <TestSection title="History Body Metric" subtitle="Historical body metric entries">
+          <HistoryBodyMetricCard
+            entry={{
+              id: '1',
+              date: 'Jan 15, 2026',
+              value: '75.2 kg',
+              change: '-0.8 kg',
+              changeType: 'down',
+              note: 'Morning weight',
+              icon: Scale,
+              iconColor: theme.colors.status.info,
+              iconBg: theme.colors.status.info10,
+            }}
+          />
+          <View className="mt-4">
+            <HistoryBodyMetricCard
+              entry={{
+                id: '2',
+                date: 'Jan 14, 2026',
+                value: '15.2%',
+                change: '+0.3%',
+                changeType: 'up',
+                note: 'Body fat percentage',
+                icon: Activity,
+                iconColor: theme.colors.status.warning,
+                iconBg: theme.colors.status.warning10,
+              }}
+            />
+          </View>
+        </TestSection>
+
+        <TestSection title="Legal Links" subtitle="Legal information and links">
+          <LegalLinksCard />
+        </TestSection>
+
+        <TestSection title="Mood Selector" subtitle="Mood tracking interface">
+          <MoodSelectorCard value={3} onChange={(value) => console.log('Mood changed:', value)} />
+        </TestSection>
+
+        <TestSection title="Same As Yesterday" subtitle="Quick meal copying from yesterday">
+          <SameAsYesterdayCard
+            yesterdayMealData={{
+              logs: [],
+              totalCalories: 450,
+              totalProtein: 35,
+              totalCarbs: 42,
+              totalFat: 15,
+              items: [
+                { name: 'Grilled Chicken', calories: 180 },
+                { name: 'Brown Rice', calories: 150 },
+                { name: 'Broccoli', calories: 120 },
+              ],
+            }}
+            mealLabel="Lunch"
+            onAddAllPress={() => console.log('Add all items')}
+          />
         </TestSection>
 
         <View className="h-8" />

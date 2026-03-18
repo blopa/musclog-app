@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
+import SmartCameraModal, { type CameraMode } from '../components/modals/SmartCameraModal';
 import { useSettings } from '../hooks/useSettings';
-import SmartCameraModal, { type CameraMode } from './modals/SmartCameraModal';
 
 export type { CameraMode };
 

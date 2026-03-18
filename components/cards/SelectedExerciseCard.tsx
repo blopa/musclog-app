@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { GenericCard } from './GenericCard';
 
 type SelectedExerciseCardProps = {
@@ -24,7 +28,13 @@ export function SelectedExerciseCard({
 }: SelectedExerciseCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const detailsText = [exerciseCategory, exerciseType].filter(Boolean).join(' • ');
+
+  // Translate muscle group and exercise type
+  const translatedCategory = exerciseCategory
+    ? t(getMuscleGroupTranslationKey(exerciseCategory))
+    : '';
+  const translatedType = exerciseType ? t(getExerciseTypeTranslationKey(exerciseType)) : '';
+  const detailsText = [translatedCategory, translatedType].filter(Boolean).join(' • ');
 
   return (
     <GenericCard backgroundVariant="gradient" variant="default">

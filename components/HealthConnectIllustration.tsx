@@ -4,7 +4,7 @@ import { Dimensions, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const ILLUSTRATION_SIZE = SCREEN_WIDTH * 0.4; // 40% of screen width
 
 export function HealthConnectIllustration() {
@@ -15,6 +15,7 @@ export function HealthConnectIllustration() {
       style={{
         aspectRatio: theme.aspectRatio.square,
         minHeight: ILLUSTRATION_SIZE,
+        maxHeight: SCREEN_HEIGHT * 0.3,
       }}
     >
       {/* Ambient Background Glows */}

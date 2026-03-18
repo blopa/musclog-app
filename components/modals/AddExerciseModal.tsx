@@ -8,6 +8,10 @@ import { useExercises } from '../../hooks/useExercises';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type AddExerciseData } from '../../hooks/useWorkoutForm';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
@@ -139,10 +143,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       );
       const Icon = getExerciseIcon(exerciseType);
 
+      const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup ?? '');
+      const exerciseTypeI18nKey = getExerciseTypeTranslationKey(exerciseType);
+
       const exerciseOption: ExerciseOption = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -174,6 +181,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     theme.colors.accent.primary10,
     theme.colors.background.white5,
     theme.colors.text.secondary,
+    t,
   ]);
 
   // Memoize muscleTabs to avoid recreating array and translation calls on every render

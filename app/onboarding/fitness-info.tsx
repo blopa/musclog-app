@@ -9,9 +9,9 @@ import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
 import { EditFitnessDetailsBody, FitnessDetails } from '../../components/EditFitnessDetailsBody';
 import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
-import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { SettingsService, UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
@@ -50,6 +50,7 @@ function getMergedFitnessData(
     weightGoal: current?.weightGoal ?? initial?.weightGoal ?? 'maintain',
     fitnessGoal: current?.fitnessGoal ?? initial?.fitnessGoal ?? 'general',
     activityLevel: current?.activityLevel ?? initial?.activityLevel ?? 3,
+    gender: current?.gender ?? initial?.gender ?? 'other',
     experience: current?.experience ?? initial?.experience ?? 'intermediate',
   };
 }
@@ -102,6 +103,7 @@ export default function FitnessInfo() {
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
+            gender: user.gender,
             experience: user.liftingExperience ?? 'intermediate',
           });
         } else {
@@ -113,6 +115,7 @@ export default function FitnessInfo() {
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
+            gender: 'other',
             experience: 'intermediate',
           });
         }
@@ -169,7 +172,7 @@ export default function FitnessInfo() {
           user = await UserService.initializeUser({
             fullName,
             dateOfBirth: new Date().getTime(),
-            gender: 'other',
+            gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
             activityLevel: data.activityLevel,
@@ -178,6 +181,7 @@ export default function FitnessInfo() {
         } else {
           // Update user fitness info
           await user.updateProfile({
+            gender: data.gender,
             fitnessGoal: data.fitnessGoal,
             weightGoal: data.weightGoal,
             activityLevel: data.activityLevel,

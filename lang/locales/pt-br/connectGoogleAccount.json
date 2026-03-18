@@ -12,9 +12,19 @@
       "geminiPowered": {
         "title": "Powered by Gemini",
         "description": "Inteligência fitness avançada com LLM"
+      },
+      "smartGoals": {
+        "title": "Metas Inteligentes",
+        "description": "Rastreamento e sugestões de metas com IA"
+      },
+      "aiCoach": {
+        "title": "Coach de IA",
+        "description": "Seu coach fitness pessoal com IA"
       }
     },
     "connectWithGoogle": "Conectar com Google",
-    "maybeLater": "Talvez depois"
+    "maybeLater": "Talvez depois",
+    "billingInfoLabel": "Informações de Cobrança:",
+    "billingInfo": "Esta integração usa por padrão o Nível Gratuito do Google. Você não será cobrado a menos que tenha habilitado explicitamente o 'Pay-as-you-go' no seu Google Cloud Console. O uso simplesmente será interrompido se a cota gratuita for atingida."
   }
 }

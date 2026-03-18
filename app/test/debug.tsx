@@ -3,15 +3,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { MasterLayout } from '../../components/MasterLayout';
 import { MigrationSection } from '../../components/MigrationSection';
 import { Button } from '../../components/theme/Button';
-import { useUnreadChat } from '../../components/UnreadChatContext';
 import { ENCRYPTION_KEY } from '../../constants/database';
 import { GOOGLE_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN_EXPIRATION_DATE } from '../../constants/misc';
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
+import { useUnreadChat } from '../../context/UnreadChatContext';
 import { database, Exercise, Setting, User, UserMetric } from '../../database';
 import type { MuscleGroup } from '../../database/models';
 import { GoogleAuthService, MigrationService, UserService } from '../../database/services';
@@ -20,6 +21,7 @@ import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
+import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
 import { formatDuration } from '../../utils/workout';
@@ -58,6 +60,7 @@ const APP_SCREENS = [
 
 export default function DebugTestScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [name, setName] = useState('');
   const [muscleGroup, setMuscleGroup] = useState('');
@@ -987,7 +990,9 @@ export default function DebugTestScreen() {
                 >
                   <View>
                     <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
-                    <Text className="text-sm text-text-secondary">{exercise.muscleGroup}</Text>
+                    <Text className="text-sm text-text-secondary">
+                      {t(getMuscleGroupTranslationKey(exercise.muscleGroup ?? ''))}
+                    </Text>
                   </View>
                   <Pressable onPress={() => deleteExercise(exercise)}>
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />

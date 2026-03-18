@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useSnackbar } from '../components/SnackbarContext';
 import type { SelectorOption } from '../components/theme/OptionsMultiSelector/utils';
 import type { WorkoutType } from '../constants/workoutTypes';
 import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
+import { useSnackbar } from '../context/SnackbarContext';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
 import { WorkoutTemplateService } from '../database/services';

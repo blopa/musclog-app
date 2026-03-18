@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
@@ -14,7 +15,6 @@ import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
@@ -378,7 +378,7 @@ export default function AddUserMetricEntryModal({
         />
 
         {/* Date and Time Sections */}
-        <View className="space-y-3">
+        <View className="space-y-3 pb-4">
           <DateTimeSelectorCard
             type="date"
             value={selectedDate}
@@ -397,7 +397,7 @@ export default function AddUserMetricEntryModal({
           />
 
           {/* Note Section */}
-          <View>
+          <View className="mt-3">
             <TextInput
               label={t('bodyMetrics.addEntry.note')}
               value={note}
@@ -462,7 +462,7 @@ export default function AddUserMetricEntryModal({
                 </View>
                 <PagerView
                   ref={pagerRef}
-                  style={{ height: pagerHeight || theme.size['400'] }}
+                  style={{ height: pagerHeight || theme.size['480'] }}
                   initialPage={metricToPageIndex[selectedMetric]}
                   onPageSelected={(e) => {
                     const pageIndex = e.nativeEvent.position;

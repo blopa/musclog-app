@@ -104,6 +104,31 @@ export interface MacroMusclePoint {
   muscleGroupVolume: Record<string, number>;
 }
 
+export interface MoodPoint {
+  date: number;
+  mood: number; // average 0-4
+}
+
+export interface MoodCaloriesPoint {
+  date: number;
+  mood: number;
+  calories: number;
+}
+
+export interface MoodVolumePoint {
+  date: number;
+  mood: number;
+  volume: number;
+}
+
+export interface MoodMacrosPoint {
+  date: number;
+  mood: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
 export type TimeAggregation = 'daily' | 'weekly' | 'monthly';
 
 export interface ProgressData {
@@ -120,6 +145,10 @@ export interface ProgressData {
   menstrualPhaseHistory: MenstrualPhasePoint[];
   recoveryTrainingHistory: RecoveryTrainingPoint[];
   macroMuscleHistory: MacroMusclePoint[];
+  moodHistory: MoodPoint[];
+  moodCaloriesHistory: MoodCaloriesPoint[];
+  moodVolumeHistory: MoodVolumePoint[];
+  moodMacrosHistory: MoodMacrosPoint[];
 }
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -196,7 +225,11 @@ export class ProgressService {
       }
     }
 
-    // 5. Calculate FFMI
+    // 5. Fetch Mood Metrics
+    const moodMetrics = await UserMetricService.getMetricsHistory('mood', dateRange);
+    const moodPoints = await this.decryptMetricPoints(moodMetrics, false);
+
+    // 5b. Calculate FFMI
     const ffmiHistory = this.calculateFFMIHistory(weightPoints, fatPoints, heightCm, isImperial);
 
     // 6. Handle Weekly Averages if requested
@@ -256,6 +289,23 @@ export class ProgressService {
       aggregation
     );
 
+    const moodHistory = this.calculateMoodHistory(moodPoints, aggregation);
+    const moodCaloriesHistory = this.calculateMoodCaloriesHistory(
+      moodPoints,
+      nutritionDaily,
+      aggregation
+    );
+    const moodVolumeHistory = this.calculateMoodVolumeHistory(
+      moodPoints,
+      workoutVolumeHistory,
+      aggregation
+    );
+    const moodMacrosHistory = this.calculateMoodMacrosHistory(
+      moodPoints,
+      nutritionDaily,
+      aggregation
+    );
+
     return {
       weightHistory: finalWeightPoints,
       fatHistory: finalFatPoints,
@@ -270,6 +320,10 @@ export class ProgressService {
       menstrualPhaseHistory,
       recoveryTrainingHistory,
       macroMuscleHistory,
+      moodHistory,
+      moodCaloriesHistory,
+      moodVolumeHistory,
+      moodMacrosHistory,
     };
   }
 
@@ -942,5 +996,152 @@ export class ProgressService {
     }
 
     return history.sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateMoodHistory(
+    moodPoints: MetricPoint[],
+    aggregation: TimeAggregation
+  ): MoodPoint[] {
+    const grouped = new Map<number, { sum: number; count: number }>();
+    for (const mp of moodPoints) {
+      const start = this.getStartOfAggregation(mp.date, aggregation);
+      const existing = grouped.get(start) || { sum: 0, count: 0 };
+      existing.sum += mp.value;
+      existing.count += 1;
+      grouped.set(start, existing);
+    }
+    return Array.from(grouped.entries())
+      .map(([date, data]) => ({ date, mood: data.sum / data.count }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateMoodCaloriesHistory(
+    moodPoints: MetricPoint[],
+    nutritionDaily: DailyNutrition[],
+    aggregation: TimeAggregation
+  ): MoodCaloriesPoint[] {
+    const grouped = new Map<
+      number,
+      { moodSum: number; moodCount: number; calories: number; calCount: number }
+    >();
+
+    for (const mp of moodPoints) {
+      const start = this.getStartOfAggregation(mp.date, aggregation);
+      const existing = grouped.get(start) || {
+        moodSum: 0,
+        moodCount: 0,
+        calories: 0,
+        calCount: 0,
+      };
+      existing.moodSum += mp.value;
+      existing.moodCount += 1;
+      grouped.set(start, existing);
+    }
+
+    for (const n of nutritionDaily) {
+      const start = this.getStartOfAggregation(n.date, aggregation);
+      const existing = grouped.get(start);
+      if (existing) {
+        existing.calories += n.calories;
+        existing.calCount += 1;
+      }
+    }
+
+    return Array.from(grouped.entries())
+      .filter(([, data]) => data.moodCount > 0 && data.calCount > 0)
+      .map(([date, data]) => ({
+        date,
+        mood: data.moodSum / data.moodCount,
+        calories: data.calories / data.calCount,
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateMoodVolumeHistory(
+    moodPoints: MetricPoint[],
+    workoutVolumeHistory: WorkoutVolumePoint[],
+    aggregation: TimeAggregation
+  ): MoodVolumePoint[] {
+    const grouped = new Map<number, { moodSum: number; moodCount: number; volume: number }>();
+
+    for (const mp of moodPoints) {
+      const start = this.getStartOfAggregation(mp.date, aggregation);
+      const existing = grouped.get(start) || { moodSum: 0, moodCount: 0, volume: 0 };
+      existing.moodSum += mp.value;
+      existing.moodCount += 1;
+      grouped.set(start, existing);
+    }
+
+    for (const v of workoutVolumeHistory) {
+      const start = this.getStartOfAggregation(v.date, aggregation);
+      const existing = grouped.get(start);
+      if (existing) {
+        existing.volume += v.volume;
+      }
+    }
+
+    return Array.from(grouped.entries())
+      .filter(([, data]) => data.moodCount > 0 && data.volume > 0)
+      .map(([date, data]) => ({
+        date,
+        mood: data.moodSum / data.moodCount,
+        volume: data.volume,
+      }))
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private static calculateMoodMacrosHistory(
+    moodPoints: MetricPoint[],
+    nutritionDaily: DailyNutrition[],
+    aggregation: TimeAggregation
+  ): MoodMacrosPoint[] {
+    const grouped = new Map<
+      number,
+      {
+        moodSum: number;
+        moodCount: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        nutCount: number;
+      }
+    >();
+
+    for (const mp of moodPoints) {
+      const start = this.getStartOfAggregation(mp.date, aggregation);
+      const existing = grouped.get(start) || {
+        moodSum: 0,
+        moodCount: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        nutCount: 0,
+      };
+      existing.moodSum += mp.value;
+      existing.moodCount += 1;
+      grouped.set(start, existing);
+    }
+
+    for (const n of nutritionDaily) {
+      const start = this.getStartOfAggregation(n.date, aggregation);
+      const existing = grouped.get(start);
+      if (existing) {
+        existing.protein += n.protein;
+        existing.carbs += n.carbs;
+        existing.fat += n.fat;
+        existing.nutCount += 1;
+      }
+    }
+
+    return Array.from(grouped.entries())
+      .filter(([, data]) => data.moodCount > 0 && data.nutCount > 0)
+      .map(([date, data]) => ({
+        date,
+        mood: data.moodSum / data.moodCount,
+        protein: data.protein / data.nutCount,
+        carbs: data.carbs / data.nutCount,
+        fat: data.fat / data.nutCount,
+      }))
+      .sort((a, b) => a.date - b.date);
   }
 }

@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { FitnessGoal, LiftingExperience, WeightGoal } from '../database/models';
+import { FitnessGoal, type Gender, LiftingExperience, WeightGoal } from '../database/models';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { BottomPopUpMenu } from './BottomPopUpMenu';
@@ -49,6 +49,7 @@ export type FitnessDetails = {
   weightGoal: WeightGoal;
   fitnessGoal: FitnessGoal;
   activityLevel: number;
+  gender: Gender;
   experience: LiftingExperience;
 };
 
@@ -72,6 +73,7 @@ export function EditFitnessDetailsBody({
     initialData?.fitnessGoal ?? 'general'
   );
   const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel ?? 3);
+  const [gender, setGender] = useState<Gender>(initialData?.gender ?? 'other');
   const [experience, setExperience] = useState<LiftingExperience>(
     initialData?.experience ?? 'intermediate'
   );
@@ -88,6 +90,7 @@ export function EditFitnessDetailsBody({
         weightGoal,
         fitnessGoal,
         activityLevel,
+        gender,
         experience,
       });
     }
@@ -99,6 +102,7 @@ export function EditFitnessDetailsBody({
     weightGoal,
     fitnessGoal,
     activityLevel,
+    gender,
     experience,
     onFormChange,
   ]);
@@ -114,6 +118,7 @@ export function EditFitnessDetailsBody({
       weightGoal,
       fitnessGoal,
       activityLevel,
+      gender,
       experience,
     });
     onClose();
@@ -289,6 +294,22 @@ export function EditFitnessDetailsBody({
             ]}
             value={units}
             onValueChange={(val) => setUnits(val as 'imperial' | 'metric')}
+          />
+        </View>
+
+        {/* Gender Section */}
+        <View className="gap-2">
+          <Text className="ml-1 text-sm font-semibold text-text-tertiary">
+            {t('editFitnessDetails.gender')}
+          </Text>
+          <SegmentedControl
+            options={[
+              { label: t('editFitnessDetails.male'), value: 'male' },
+              { label: t('editFitnessDetails.female'), value: 'female' },
+              { label: t('editFitnessDetails.other'), value: 'other' },
+            ]}
+            value={gender}
+            onValueChange={(val) => setGender(val as Gender)}
           />
         </View>
 

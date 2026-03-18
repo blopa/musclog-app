@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import {
   ChatService,
@@ -37,7 +38,6 @@ import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { SkeletonLoader } from '../theme/SkeletonLoader';

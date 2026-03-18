@@ -6,6 +6,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountBody';
 import { MasterLayout } from '../../components/MasterLayout';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
+import { useScrollFade } from '../../hooks/useScrollFade';
 import { theme } from '../../theme';
 import { setCurrentOnboardingStep } from '../../utils/onboardingService';
 import { showSnackbar } from '../../utils/snackbarService';
@@ -15,6 +16,7 @@ export default function ConnectWithGoogle() {
   const router = useRouter();
   const { isSigningIn, promptAsync } = useGoogleAuth();
   const params = useLocalSearchParams<{ loading?: string }>();
+  const { scrollProps, FadeIndicator } = useScrollFade();
 
   const handleConnect = useCallback(async () => {
     try {
@@ -34,25 +36,28 @@ export default function ConnectWithGoogle() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ScrollView>
-        <View className="px-6 pb-2 pt-4">
-          <Text
-            className="text-2xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.white }}
-          >
-            {t('onboarding.connectGoogle.title')}
-          </Text>
-        </View>
-        <ConnectGoogleAccountBody
-          onMaybeLater={() => {
-            router.push('/onboarding/fitness-info');
-          }}
-          onConnect={handleConnect}
-          onContinue={() => router.push('/onboarding/fitness-info')}
-          onClose={() => {}}
-          isSigningIn={isSigningIn || params?.loading === 'true'}
-        />
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        <ScrollView showsVerticalScrollIndicator={false} {...scrollProps}>
+          <View className="px-6 pb-2 pt-4">
+            <Text
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: theme.colors.text.white }}
+            >
+              {t('onboarding.connectGoogle.title')}
+            </Text>
+          </View>
+          <ConnectGoogleAccountBody
+            onMaybeLater={() => {
+              router.push('/onboarding/fitness-info');
+            }}
+            onConnect={handleConnect}
+            onContinue={() => router.push('/onboarding/fitness-info')}
+            onClose={() => {}}
+            isSigningIn={isSigningIn || params?.loading === 'true'}
+          />
+        </ScrollView>
+        {FadeIndicator}
+      </View>
     </MasterLayout>
   );
 }

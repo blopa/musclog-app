@@ -60,10 +60,8 @@ export default function CycleSetup() {
         <Text className="mb-8 text-lg text-text-secondary">
           {t('onboarding.cycleSetup.length.description')}
         </Text>
-
         <EditCycleSetupData onFormChange={setCurrentFormData} />
-
-        <View className="h-6" />
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
       </ScrollView>
 
       <BottomButtonWrapper>

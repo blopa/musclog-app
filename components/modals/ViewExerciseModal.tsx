@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, Share, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import type ExerciseModel from '../../database/models/Exercise';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
@@ -13,10 +14,13 @@ import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExerci
 import { ExerciseService, WorkoutAnalytics } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -350,19 +354,13 @@ export default function ViewExerciseModal({
 
   const displayName = exercise?.name ?? t('exercises.manageExerciseData.unknownExercise');
   const primaryMuscle =
-    exercise?.muscleGroup != null
-      ? String(exercise.muscleGroup).charAt(0).toUpperCase() + String(exercise.muscleGroup).slice(1)
-      : '—';
+    exercise?.muscleGroup != null ? t(getMuscleGroupTranslationKey(exercise.muscleGroup)) : '—';
   const equipment =
     exercise?.equipmentType != null
-      ? String(exercise.equipmentType).charAt(0).toUpperCase() +
-        String(exercise.equipmentType).slice(1).replace('_', ' ')
+      ? t(getExerciseTypeTranslationKey(exercise.equipmentType))
       : '—';
   const mechanic =
-    exercise?.mechanicType != null
-      ? String(exercise.mechanicType).charAt(0).toUpperCase() +
-        String(exercise.mechanicType).slice(1)
-      : '—';
+    exercise?.mechanicType != null ? t(getExerciseTypeTranslationKey(exercise.mechanicType)) : '—';
 
   const workoutsWithTheme = workouts.map((w) => ({
     ...w,

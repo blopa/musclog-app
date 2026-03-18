@@ -9,11 +9,11 @@ import {
   Dumbbell,
   Edit,
   Flame,
+  Moon,
   Plus,
   Repeat,
   SkipForward,
   WifiOff,
-  X,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import {
   View,
 } from 'react-native';
 
+import { InfoCard } from '../../components/cards/InfoCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { MasterLayout } from '../../components/MasterLayout';
 import { AddExerciseToSessionModal } from '../../components/modals/AddExerciseToSessionModal';
@@ -59,6 +60,10 @@ import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
@@ -249,7 +254,6 @@ export default function WorkoutSessionScreen() {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
-  const [isFuelingInsightExpanded, setIsFuelingInsightExpanded] = useState(false);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -556,11 +560,11 @@ export default function WorkoutSessionScreen() {
     const exercise = currentSetData.exercise;
     const parts = [];
     if (exercise.muscleGroup) {
-      parts.push(t(exercise.muscleGroup));
+      parts.push(t(getMuscleGroupTranslationKey(exercise.muscleGroup)));
     }
 
     if (exercise.equipmentType) {
-      parts.push(exercise.equipmentType);
+      parts.push(t(getExerciseTypeTranslationKey(exercise.equipmentType)));
     }
 
     return parts.join(' • ') || t('exercises.manageExerciseData.unknownExercise');
@@ -958,99 +962,33 @@ export default function WorkoutSessionScreen() {
           {/* Physiological Insight Card */}
           <View className="mx-6 mt-32 gap-3">
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
-              <View className="rounded-2xl border-2 border-accent-primary/40 bg-accent-primary/20 p-4">
-                <View className="flex-row items-start gap-3">
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary">
-                    <Flame size={20} color={theme.colors.text.black} />
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-sm font-bold uppercase tracking-wider text-accent-primary">
-                        {t('workoutSession.hormonalInsight')}
-                      </Text>
-                      <Pressable onPress={() => setIsHormonalInsightDismissed(true)}>
-                        <X size={16} color={theme.colors.accent.primary} />
-                      </Pressable>
-                    </View>
-                    <Text className="mt-0.5 font-medium text-text-primary">
-                      {getHormonalInsightText(currentPhase, intensityMultiplier, t)}
-                    </Text>
-                  </View>
-                </View>
-              </View>
+              <InfoCard
+                variant="success"
+                icon={Moon}
+                label={t('workoutSession.hormonalInsight')}
+                message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
+                onDismiss={() => setIsHormonalInsightDismissed(true)}
+              />
             ) : null}
 
             {fuelingStatus !== 'loading' && !isFuelingInsightDismissed ? (
-              <Pressable
-                onPress={() => setIsFuelingInsightExpanded(!isFuelingInsightExpanded)}
-                className="rounded-2xl border-2 p-4"
-                style={{
-                  borderColor:
-                    fuelingStatus === 'low'
-                      ? `${theme.colors.status.warning}66`
-                      : `${theme.colors.status.success}66`,
-                  backgroundColor: `${theme.colors.background.card}95`,
-                }}
-              >
-                <View className="flex-row items-start gap-3">
-                  <View
-                    className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor:
-                        fuelingStatus === 'low'
-                          ? theme.colors.status.warning
-                          : theme.colors.status.success,
-                    }}
-                  >
-                    <Flame
-                      size={20}
-                      color={
-                        fuelingStatus === 'low' ? theme.colors.text.white : theme.colors.text.black
-                      }
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text
-                        className="text-sm font-bold uppercase tracking-wider"
-                        style={{
-                          color:
-                            fuelingStatus === 'low'
-                              ? theme.colors.status.warning
-                              : theme.colors.status.success,
-                        }}
-                      >
-                        {t('workoutSession.fuelingInsight')}
-                      </Text>
-                      <Pressable onPress={() => setIsFuelingInsightDismissed(true)}>
-                        <X
-                          size={16}
-                          color={
-                            fuelingStatus === 'low'
-                              ? theme.colors.status.warning
-                              : theme.colors.status.success
-                          }
-                        />
-                      </Pressable>
-                    </View>
-                    <Text
-                      className="mt-0.5 font-medium text-text-primary"
-                      numberOfLines={isFuelingInsightExpanded ? undefined : 1}
-                      ellipsizeMode="tail"
-                    >
-                      {fuelingStatus === 'low'
-                        ? t('workoutSession.lowFuelingMessage', {
-                            carbs: Math.round(fuelingTotalCarbs),
-                            hours: Math.round(fuelingWindowHours),
-                          })
-                        : t('workoutSession.fullyFueledMessage', {
-                            carbs: Math.round(fuelingTotalCarbs),
-                            hours: Math.round(fuelingWindowHours),
-                          })}
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              <InfoCard
+                variant={fuelingStatus === 'low' ? 'warning' : 'success'}
+                icon={Flame}
+                label={t('workoutSession.fuelingInsight')}
+                message={
+                  fuelingStatus === 'low'
+                    ? t('workoutSession.lowFuelingMessage', {
+                        carbs: Math.round(fuelingTotalCarbs),
+                        hours: Math.round(fuelingWindowHours),
+                      })
+                    : t('workoutSession.fullyFueledMessage', {
+                        carbs: Math.round(fuelingTotalCarbs),
+                        hours: Math.round(fuelingWindowHours),
+                      })
+                }
+                onDismiss={() => setIsFuelingInsightDismissed(true)}
+              />
             ) : null}
           </View>
 

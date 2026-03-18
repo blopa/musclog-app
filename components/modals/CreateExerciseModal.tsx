@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { type MuscleGroup } from '../../database/models';
 import { ExerciseService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { saveExerciseImage } from '../../utils/file';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';

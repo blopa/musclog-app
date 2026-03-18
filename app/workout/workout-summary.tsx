@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Share, View } from 'react-native';
 
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
-import { useUnreadChat } from '../../components/UnreadChatContext';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
+import { useUnreadChat } from '../../context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
 import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';

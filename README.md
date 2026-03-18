@@ -99,13 +99,13 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 ### 🔗 Health Integration
 
 - Sync with Google Health Connect (Android) for weight, nutrition, and exercise data
-- 7-day lookback on health data import
+- Historical health data import
 
 ### 🔄 Import & Export
 
 - Export your full database as an encrypted JSON file
 - Import data across devices or as a backup
-- Support for JSON and CSV formats
+- Support for JSON format
 
 ### 🔒 Privacy & Security
 
@@ -187,7 +187,7 @@ musclog/
 
 ```bash
 # 1. Clone the repository
-git clone <repo-url>
+git clone git@github.com:blopa/musclog-app.git
 cd musclog
 
 # 2. Install dependencies
@@ -215,7 +215,7 @@ AI features are optional. To enable them, add your keys to `.env`:
 
 ```env
 # USDA api key
-EXPO_PUBLIC_USDA_API_KEY=your_gemini_key
+EXPO_PUBLIC_USDA_API_KEY=your_usda_key
 
 # Sentry error tracking (optional)
 EXPO_PUBLIC_SENTRY_DSN=your_sentry_dsn
@@ -233,11 +233,11 @@ npm test
 ### Other Scripts
 
 ```bash
-npm run lint              # Lint code
-npm run format            # Format with Prettier
-npm run typecheck         # TypeScript type checking
-npm run check-translations # Validate i18n keys
-npm run start-clear       # Start with cleared cache
+npm run lint                # Lint code
+npm run format              # Format with Prettier
+npm run typecheck           # TypeScript type checking
+npm run check-translations  # Validate i18n keys
+npm run start-clear         # Start with cleared cache
 ```
 
 ---

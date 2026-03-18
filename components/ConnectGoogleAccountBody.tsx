@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CheckCircle2, LucideChartSpline, Sparkles } from 'lucide-react-native';
+import { Bot, Info, LucideChartSpline, Sparkles, Target } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
@@ -16,6 +16,7 @@ import {
   handleGoogleSignIn,
 } from '../utils/googleAuth';
 import { setSentryUser } from '../utils/sentry';
+import { InfoCard } from './cards/InfoCard';
 import { GoogleGeminiIllustration } from './GoogleGeminiIllustration';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { MaybeLaterButton } from './MaybeLaterButton';
@@ -139,81 +140,34 @@ export function ConnectGoogleAccountBody({
           </Text>
         </View>
 
-        {/* Feature Cards */}
-        <View className="mb-8 gap-3">
-          {/* Deep Analysis */}
-          <View className="relative">
-            {/* Glow effect */}
-            <View
-              className="absolute"
-              style={{
-                top: theme.offset.glowSmall,
-                left: theme.offset.glowSmall,
-                right: theme.offset.glowSmall,
-                bottom: theme.offset.glowSmall,
-                borderRadius: theme.borderRadius.xl,
-                backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.subtle,
-                shadowColor: theme.colors.accent.primary,
-                shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.subtle,
-                shadowRadius: theme.shadows.radius8.shadowRadius,
-              }}
-            />
-            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
-              <View
-                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary10 }}
-              >
-                <LucideChartSpline size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">
-                  {t('connectGoogleAccount.features.deepAnalysis.title')}
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {t('connectGoogleAccount.features.deepAnalysis.description')}
-                </Text>
-              </View>
-              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+        {/* Feature Pills */}
+        <View className="mb-8 gap-2">
+          <View className="flex-row gap-2">
+            <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-white/5 bg-bg-cardDark px-3 py-2">
+              <LucideChartSpline size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+              <Text className="flex-1 text-xs font-semibold text-text-primary">
+                {t('connectGoogleAccount.features.deepAnalysis.title')}
+              </Text>
+            </View>
+            <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-white/5 bg-bg-cardDark px-3 py-2">
+              <Sparkles size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+              <Text className="flex-1 text-xs font-semibold text-text-primary">
+                {t('connectGoogleAccount.features.geminiPowered.title')}
+              </Text>
             </View>
           </View>
-
-          {/* Gemini Powered */}
-          <View className="relative">
-            {/* Glow effect */}
-            <View
-              className="absolute"
-              style={{
-                top: theme.offset.glowSmall,
-                left: theme.offset.glowSmall,
-                right: theme.offset.glowSmall,
-                bottom: theme.offset.glowSmall,
-                borderRadius: theme.borderRadius.xl,
-                backgroundColor: theme.colors.accent.primary,
-                opacity: theme.colors.opacity.subtle,
-                shadowColor: theme.colors.accent.primary,
-                shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.subtle,
-                shadowRadius: theme.shadows.radius8.shadowRadius,
-              }}
-            />
-            <View className="relative flex-row items-center gap-4 rounded-xl border border-white/5 bg-bg-cardDark p-4">
-              <View
-                className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary10 }}
-              >
-                <Sparkles size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">
-                  {t('connectGoogleAccount.features.geminiPowered.title')}
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {t('connectGoogleAccount.features.geminiPowered.description')}
-                </Text>
-              </View>
-              <CheckCircle2 size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+          <View className="flex-row gap-2">
+            <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-white/5 bg-bg-cardDark px-3 py-2">
+              <Target size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+              <Text className="flex-1 text-xs font-semibold text-text-primary">
+                {t('connectGoogleAccount.features.smartGoals.title')}
+              </Text>
+            </View>
+            <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-white/5 bg-bg-cardDark px-3 py-2">
+              <Bot size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+              <Text className="flex-1 text-xs font-semibold text-text-primary">
+                {t('connectGoogleAccount.features.aiCoach.title')}
+              </Text>
             </View>
           </View>
         </View>
@@ -243,6 +197,17 @@ export function ConnectGoogleAccountBody({
           )}
         </View>
         <MaybeLaterButton onPress={handleMaybeLater} text={t('connectGoogleAccount.maybeLater')} />
+
+        {/* Billing Info */}
+        <InfoCard
+          variant="neutral"
+          icon={Info}
+          label={t('connectGoogleAccount.billingInfoLabel')}
+          message={t('connectGoogleAccount.billingInfo')}
+          inlineLabel
+          size="xs"
+        />
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
       </View>
     </ScrollView>
   );

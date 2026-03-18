@@ -21,12 +21,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Platform, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { exportDatabase, importDatabase } from '../../utils/file';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { SettingsCard } from '../cards/SettingsCard';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';

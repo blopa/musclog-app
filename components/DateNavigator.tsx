@@ -10,7 +10,7 @@ import { DatePickerModal } from './modals/DatePickerModal';
 
 type DateNavigatorProps = {
   selectedDate: Date;
-  onDateChange: (date: Date) => void;
+  onDateChange: (date: Date) => void | Promise<void>;
 };
 
 export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps) {

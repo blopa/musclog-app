@@ -12,9 +12,19 @@
       "geminiPowered": {
         "title": "Gemini Powered",
         "description": "Advanced LLM fitness intelligence"
+      },
+      "smartGoals": {
+        "title": "Smart Goals",
+        "description": "AI-driven goal tracking and suggestions"
+      },
+      "aiCoach": {
+        "title": "AI Coach",
+        "description": "Your personal AI-powered fitness coach"
       }
     },
     "connectWithGoogle": "Connect with Google",
-    "maybeLater": "Maybe later"
+    "maybeLater": "Maybe later",
+    "billingInfoLabel": "Billing Info:",
+    "billingInfo": "This integration defaults to the Google Free Tier. You will not be charged unless you have explicitly enabled 'Pay-as-you-go' in your Google Cloud Console. Usage will simply stop if the free quota is reached."
   }
 }

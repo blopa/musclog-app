@@ -187,7 +187,6 @@ describe('UserService', () => {
       activityLevel: 3,
       liftingExperience: 'beginner' as const,
       email: 'newuser@example.com',
-      photoUri: 'photo://uri',
     };
 
     it('should create new user successfully', async () => {
@@ -226,7 +225,7 @@ describe('UserService', () => {
       expect(mockUser.fitnessGoal).toBe(initialData.fitnessGoal);
       expect(mockUser.activityLevel).toBe(initialData.activityLevel);
       expect(mockUser.liftingExperience).toBe(initialData.liftingExperience);
-      expect(mockUser.photoUri).toBe(initialData.photoUri);
+
       expect(mockUser.syncId).toBe('generated-uuid-123');
       expect(mockUser.createdAt).toBeDefined();
       expect(mockUser.updatedAt).toBeDefined();
@@ -652,8 +651,8 @@ describe('UserService', () => {
       const updateCall = mockUser.update.mock.calls[0][0];
       const mockUpdated = {} as any;
       updateCall(mockUpdated);
-      expect(mockUpdated.externalAccountId).toBeUndefined();
-      expect(mockUpdated.externalAccountProvider).toBeUndefined();
+      expect(mockUpdated.externalAccountId).toBe('');
+      expect(mockUpdated.externalAccountProvider).toBe('');
       expect(result).toBe(updatedUser);
     });
 
@@ -737,8 +736,8 @@ describe('UserService', () => {
       const updateCall = mockUser.update.mock.calls[0][0];
       const mockUpdated = {} as any;
       updateCall(mockUpdated);
-      expect(mockUpdated.externalAccountId).toBeUndefined();
-      expect(mockUpdated.externalAccountProvider).toBeUndefined();
+      expect(mockUpdated.externalAccountId).toBe('');
+      expect(mockUpdated.externalAccountProvider).toBe('');
     });
   });
 

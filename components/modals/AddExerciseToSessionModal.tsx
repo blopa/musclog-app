@@ -3,15 +3,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { WorkoutTemplateService } from '../../database/services';
 import { useExercises } from '../../hooks/useExercises';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getExerciseTypeTranslationKey,
+  getMuscleGroupTranslationKey,
+} from '../../utils/exerciseTranslation';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { StepperInlineInput } from '../theme/StepperInlineInput';
 import { TextInput } from '../theme/TextInput';
@@ -108,10 +112,13 @@ export function AddExerciseToSessionModal({
         exerciseType = 'machine';
       }
 
+      const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup ?? '');
+      const exerciseTypeI18nKey = getExerciseTypeTranslationKey(exerciseType);
+
       const option: SelectorOption<string> = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${exercise.muscleGroup ?? ''} • ${exerciseType.charAt(0).toUpperCase() + exerciseType.slice(1)}`,
+        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
         icon: exerciseType === 'bodyweight' ? User : Dumbbell,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -130,7 +137,7 @@ export function AddExerciseToSessionModal({
       grouped[k].sort((a, b) => a.label.localeCompare(b.label));
     });
     return grouped;
-  }, [allExercises, theme]);
+  }, [allExercises, theme, t]);
 
   const filteredExercises = useMemo(
     () =>

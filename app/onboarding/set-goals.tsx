@@ -7,7 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from 'hooks/useTheme';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient as SvgLinearGradient, Path, Stop } from 'react-native-svg';
 
 import { BottomButtonWrapper } from '../../components/BottomButtonWrapper';
@@ -65,7 +65,8 @@ function OrbitalIllustration() {
 
   return (
     <View
-      className="relative mb-2 mt-2 aspect-square w-full items-center justify-center"
+      className="relative mb-2 mt-2 w-full items-center justify-center"
+      style={{ height: Dimensions.get('window').height * 0.3 }}
       onLayout={onLayout}
     >
       {/* Background blurs (blur-[100px] equivalent) */}
@@ -569,6 +570,7 @@ export default function SetGoals() {
             </View>
           </View>
         </View>
+        <View pointerEvents="none" style={{ height: theme.spacing.margin['8xl'] }} />
       </ScrollView>
 
       {/* Bottom Actions */}

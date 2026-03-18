@@ -16,10 +16,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CoachProvider } from '../components/CoachContext';
 import { ErrorFallbackScreen } from '../components/ErrorFallbackScreen';
 import { LanguageInitializer } from '../components/LanguageInitializer';
-import { SmartCameraProvider } from '../components/SmartCameraContext';
-import { SnackbarProvider } from '../components/SnackbarContext';
-import { ThemeProvider, useThemeContext } from '../components/ThemeContext';
-import { UnreadChatProvider } from '../components/UnreadChatContext';
+import { MenstrualCycleProvider } from '../components/MenstrualCycleContext';
+import { SettingsProvider } from '../context/SettingsContext';
+import { SmartCameraProvider } from '../context/SmartCameraContext';
+import { SnackbarProvider } from '../context/SnackbarContext';
+import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
+import { UnreadChatProvider } from '../context/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
 import { getActiveWorkoutLogId } from '../utils/activeWorkoutStorage';
@@ -180,18 +182,22 @@ function RootLayout() {
               />
             )}
           >
-            <ThemeProvider>
-              <LanguageInitializer />
-              <UnreadChatProvider>
-                <SnackbarProvider>
-                  <SmartCameraProvider>
-                    <CoachProvider>
-                      <AppContent />
-                    </CoachProvider>
-                  </SmartCameraProvider>
-                </SnackbarProvider>
-              </UnreadChatProvider>
-            </ThemeProvider>
+            <SettingsProvider>
+              <MenstrualCycleProvider>
+                <ThemeProvider>
+                  <LanguageInitializer />
+                  <UnreadChatProvider>
+                    <SnackbarProvider>
+                      <SmartCameraProvider>
+                        <CoachProvider>
+                          <AppContent />
+                        </CoachProvider>
+                      </SmartCameraProvider>
+                    </SnackbarProvider>
+                  </UnreadChatProvider>
+                </ThemeProvider>
+              </MenstrualCycleProvider>
+            </SettingsProvider>
           </Sentry.ErrorBoundary>
         </SafeAreaProvider>
       </QueryClientProvider>

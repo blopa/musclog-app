@@ -83,7 +83,12 @@ export function SegmentedControl({
                 </View>
               </LinearGradient>
             ) : (
-              <View className="flex-row items-center justify-center gap-1.5">
+              <View
+                className="flex-row items-center justify-center gap-1.5"
+                style={
+                  variant === 'gradient' ? { paddingVertical: theme.spacing.padding.sm } : undefined
+                }
+              >
                 {option.icon}
                 <Text
                   className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${

@@ -8,10 +8,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../components/BottomPopUpMenu';
 import { LineChart } from '../components/charts/LineChart';
 import { MasterLayout } from '../components/MasterLayout';
+import { AdvancedSettingsModal } from '../components/modals/AdvancedSettingsModal';
 import { BodyCompProteinChart } from '../components/progress/BodyCompProteinChart';
 import { BodyMetricsCharts } from '../components/progress/BodyMetricsCharts';
 import { MacroMuscleChart } from '../components/progress/MacroMuscleChart';
 import { MenstrualPerformanceChart } from '../components/progress/MenstrualPerformanceChart';
+import { MoodCaloriesChart } from '../components/progress/MoodCaloriesChart';
+import { MoodHistoryChart } from '../components/progress/MoodHistoryChart';
+import { MoodMacrosChart } from '../components/progress/MoodMacrosChart';
+import { MoodVolumeChart } from '../components/progress/MoodVolumeChart';
 import { NutritionCharts } from '../components/progress/NutritionCharts';
 import { ProgressChartSection } from '../components/progress/ProgressChartSection';
 import { ProgressDateFilter } from '../components/progress/ProgressDateFilter';
@@ -50,6 +55,7 @@ export default function ProgressScreen() {
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
 
   // Fix #5: Render charts progressively so the screen becomes interactive fast.
   // Phase 0 → nothing (reset when isLoading changes)
@@ -101,20 +107,21 @@ export default function ProgressScreen() {
   };
 
   const menuItems: BottomPopUpMenuItem[] = [
-    ...(aiEnabled
-      ? [
-          {
-            title: t('progress.getAiInsights'),
-            description: t('progress.getAiInsightsDescription'),
-            icon: Sparkles,
-            onPress: () => {
-              router.push('/chat?context=progression');
-            },
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.background.iconDarker,
-          },
-        ]
-      : []),
+    // ...(aiEnabled
+    //   ? [
+    //       {
+    //         title: t('progress.getAiInsights'),
+    //         description: t('progress.getAiInsightsDescription'),
+    //         icon: Sparkles,
+    //         onPress: () => {
+    //           // TODO: call a function that will add a message to the chat, and then
+    //           // open the CoachModal
+    //         },
+    //         iconColor: theme.colors.accent.primary,
+    //         iconBgColor: theme.colors.background.iconDarker,
+    //       },
+    //     ]
+    //   : []),
     {
       title: t('progress.manageMetrics'),
       description: t('progress.manageMetricsDescription'),
@@ -130,7 +137,8 @@ export default function ProgressScreen() {
       description: t('progress.manageNutritionDescription'),
       icon: Utensils,
       onPress: () => {
-        router.push('/nutrition/manage');
+        setShowMenu(false);
+        setAdvancedSettingsVisible(true);
       },
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
@@ -177,12 +185,14 @@ export default function ProgressScreen() {
           hasAnyAggregationData={hasAnyAggregationData}
           insets={insets}
           isLoading={isLoading}
+          isAdvancedSettingsVisible={isAdvancedSettingsVisible}
           menuItems={menuItems}
           preset={preset}
           changePreset={changePreset}
           appliedCustomRange={appliedCustomRange}
           onApplyCustomRange={applyCustomRange}
           setUseWeeklyAverages={setUseWeeklyAverages}
+          setAdvancedSettingsVisible={setAdvancedSettingsVisible}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
           t={t}
@@ -202,12 +212,14 @@ function ProgressScreenContent({
   hasAnyAggregationData,
   insets,
   isLoading,
+  isAdvancedSettingsVisible,
   menuItems,
   preset,
   changePreset,
   appliedCustomRange,
   onApplyCustomRange,
   setUseWeeklyAverages,
+  setAdvancedSettingsVisible,
   showMenu,
   setShowMenu,
   t,
@@ -319,6 +331,44 @@ function ProgressScreenContent({
                   />
                 ) : null}
 
+                {hasAnyAggregationData((d: any) => d.moodHistory) ? (
+                  <MoodHistoryChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodCaloriesHistory) ? (
+                  <MoodCaloriesChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodCaloriesHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodCaloriesHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodCaloriesHistory ?? [],
+                    }}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodVolumeHistory) ? (
+                  <MoodVolumeChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodVolumeHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodVolumeHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodVolumeHistory ?? [],
+                    }}
+                    units={units}
+                  />
+                ) : null}
+                {hasAnyAggregationData((d: any) => d.moodMacrosHistory) ? (
+                  <MoodMacrosChart
+                    allData={{
+                      daily: allAggregationData.daily?.moodMacrosHistory ?? [],
+                      weekly: allAggregationData.weekly?.moodMacrosHistory ?? [],
+                      monthly: allAggregationData.monthly?.moodMacrosHistory ?? [],
+                    }}
+                  />
+                ) : null}
+
                 {data.measurementsHistory
                   ? Object.entries(data.measurementsHistory).map(
                       ([type, history]: [string, any]) => (
@@ -349,6 +399,10 @@ function ProgressScreenContent({
         onClose={() => setShowMenu(false)}
         title={t('progress.quickActions')}
         items={menuItems}
+      />
+      <AdvancedSettingsModal
+        visible={isAdvancedSettingsVisible}
+        onClose={() => setAdvancedSettingsVisible(false)}
       />
     </View>
   );

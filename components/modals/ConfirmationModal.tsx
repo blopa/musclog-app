@@ -67,7 +67,7 @@ export function ConfirmationModal({
           right: 0,
           bottom: 0,
           width: '100vw',
-          height: '100vh',
+          height: '100dvh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

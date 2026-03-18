@@ -88,6 +88,8 @@ export function BottomPopUpMenu({
   headerIcon,
   scrollable = true,
 }: BottomPopUpMenuProps) {
+  const theme = useTheme();
+
   return (
     <BottomPopUp
       visible={visible}
@@ -101,22 +103,30 @@ export function BottomPopUpMenu({
     >
       {children ||
         (items && (
-          <View className="gap-3 p-6">
+          <View className="p-6">
             {items.map((item, index) => (
-              <OptionItem
+              <View
                 key={index}
-                icon={item.icon}
-                iconColor={item.iconColor}
-                iconBgColor={item.iconBgColor}
-                title={item.title}
-                description={item.description}
-                titleColor={item.titleColor}
-                descriptionColor={item.descriptionColor}
-                onPress={() => {
-                  item.onPress();
-                  onClose?.();
-                }}
-              />
+                style={
+                  index < items.length - 1
+                    ? { borderBottomWidth: 1, borderBottomColor: theme.colors.background.white10 }
+                    : undefined
+                }
+              >
+                <OptionItem
+                  icon={item.icon}
+                  iconColor={item.iconColor}
+                  iconBgColor={item.iconBgColor}
+                  title={item.title}
+                  description={item.description}
+                  titleColor={item.titleColor}
+                  descriptionColor={item.descriptionColor}
+                  onPress={() => {
+                    item.onPress();
+                    onClose?.();
+                  }}
+                />
+              </View>
             ))}
           </View>
         ))}

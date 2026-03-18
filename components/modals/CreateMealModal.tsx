@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Switch, Text, TextInput, View } from 'react-native';
 
+import { useSnackbar } from '../../context/SnackbarContext';
 import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
@@ -25,7 +26,6 @@ import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
-import { useSnackbar } from '../SnackbarContext';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';

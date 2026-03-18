@@ -29,13 +29,25 @@ type OnboardingBodyProps = {
 
 function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
-      {/* Illustration Section */}
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
+      {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
-        className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: theme.aspectRatio.portrait,
-          maxHeight: Dimensions.get('window').height * 0.45,
+          flex: 1,
+          minHeight: 0,
+          maxHeight: Dimensions.get('window').height * 0.5,
+          width: '100%',
+          marginBottom: 24,
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* Ambient Background Glow */}
@@ -53,8 +65,8 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
         <PreRegistrationIntro />
       </View>
 
-      {/* Typography Block */}
-      <View className="z-20 w-full gap-4 text-center">
+      {/* Typography Block — never shrinks */}
+      <View style={{ width: '100%', gap: 16, flexShrink: 0 }}>
         <GradientText
           colors={[
             theme.colors.text.white,
@@ -83,12 +95,23 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
 
 function OnboardingStepThree({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
-      {/* Illustration Section */}
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
+      {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
-        className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 1,
+          flex: 1,
+          minHeight: 0,
+          maxHeight: Dimensions.get('window').height * 0.5,
+          width: '100%',
+          marginBottom: 24,
         }}
       >
         {/* Ambient Background Glow */}
@@ -121,9 +144,9 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -176,8 +199,8 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
         </View>
       </View>
 
-      {/* Typography Block */}
-      <View className="z-20 w-full gap-4 text-center">
+      {/* Typography Block — never shrinks */}
+      <View style={{ width: '100%', gap: 16, flexShrink: 0 }}>
         <GradientText
           colors={[
             theme.colors.text.white,
@@ -206,12 +229,23 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
-      {/* Illustration Section */}
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
+      {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
-        className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 1,
+          flex: 1,
+          minHeight: 0,
+          maxHeight: Dimensions.get('window').height * 0.5,
+          width: '100%',
+          marginBottom: 24,
         }}
       >
         {/* Ambient Background Glow */}
@@ -244,9 +278,9 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -299,8 +333,8 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
         </View>
       </View>
 
-      {/* Typography Block */}
-      <View className="z-20 w-full gap-4 text-center">
+      {/* Typography Block — never shrinks */}
+      <View style={{ width: '100%', gap: 16, flexShrink: 0 }}>
         <GradientText
           colors={[
             theme.colors.text.white,
@@ -329,12 +363,23 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
   return (
-    <View className="relative w-full max-w-md flex-1 flex-col items-center justify-center self-center px-6 pb-10">
-      {/* Illustration Section */}
+    <View
+      style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingBottom: 40,
+      }}
+    >
+      {/* Illustration Section — grows/shrinks to fill leftover space */}
       <View
-        className="relative mb-6 flex w-full items-center justify-center"
         style={{
-          aspectRatio: 1,
+          flex: 1,
+          minHeight: 0,
+          maxHeight: Dimensions.get('window').height * 0.5,
+          width: '100%',
+          marginBottom: 24,
         }}
       >
         {/* Ambient Background Glow */}
@@ -367,9 +412,9 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            resizeMode="contain"
+            resizeMode="cover"
             imageStyle={{
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           >
             {/* Gradient Overlay */}
@@ -422,8 +467,8 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
         </View>
       </View>
 
-      {/* Typography Block */}
-      <View className="z-20 w-full gap-4 text-center">
+      {/* Typography Block — never shrinks */}
+      <View style={{ width: '100%', gap: 16, flexShrink: 0 }}>
         <GradientText
           colors={[
             theme.colors.text.white,
@@ -516,7 +561,7 @@ export default function OnboardingScreen() {
           overdrag={false}
         >
           {/* Step 1 */}
-          <View key="step1">
+          <View key="step1" style={{ flex: 1 }}>
             <OnboardingStepOne
               title={t('onboarding.steps.step1.title')}
               description={t('onboarding.steps.step1.description')}
@@ -524,7 +569,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 2 */}
-          <View key="step2">
+          <View key="step2" style={{ flex: 1 }}>
             <OnboardingStepTwo
               title={t('onboarding.steps.step2.title')}
               description={t('onboarding.steps.step2.description')}
@@ -532,7 +577,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 3 */}
-          <View key="step3">
+          <View key="step3" style={{ flex: 1 }}>
             <OnboardingStepThree
               title={t('onboarding.steps.step3.title')}
               description={t('onboarding.steps.step3.description')}
@@ -540,7 +585,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Step 4 */}
-          <View key="step4">
+          <View key="step4" style={{ flex: 1 }}>
             <OnboardingStepFour
               title={t('onboarding.steps.step4.title')}
               description={t('onboarding.steps.step4.description')}

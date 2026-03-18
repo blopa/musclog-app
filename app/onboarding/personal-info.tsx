@@ -10,9 +10,9 @@ import {
   PersonalInfo as PersonalInfoType,
 } from '../../components/EditPersonalInfoBody';
 import { MasterLayout } from '../../components/MasterLayout';
-import { useSnackbar } from '../../components/SnackbarContext';
 import { Button } from '../../components/theme/Button';
 import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
+import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { theme } from '../../theme';
@@ -142,12 +142,11 @@ export default function PersonalInfo() {
       return false;
     }
 
-    // Required fields: fullName, dob, gender
+    // Required fields: fullName, dob
     const hasFullName = currentFormData.fullName.trim().length > 0;
     const hasDob = currentFormData.dob.trim().length > 0;
-    const hasGender = !!currentFormData.gender;
 
-    return Boolean(hasFullName && hasDob && hasGender);
+    return Boolean(hasFullName && hasDob);
   };
 
   if (isLoading) {
@@ -184,6 +183,7 @@ export default function PersonalInfo() {
             initialData={initialData}
             isLoading={isSaving}
             hideSaveButton
+            hideGender
           />
           <View className="h-4" />
         </ScrollView>

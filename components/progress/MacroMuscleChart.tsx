@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
+import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { AreaChart } from '../charts/AreaChart';
 import { ProgressChartSection } from './ProgressChartSection';
 
@@ -124,7 +125,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
                     }}
                   />
                   <Text className="text-[10px] text-text-secondary">
-                    {mg}: {Math.round(maxVol)} {weightLabel}
+                    {t(getMuscleGroupTranslationKey(mg))}: {Math.round(maxVol)} {weightLabel}
                   </Text>
                 </View>
               );

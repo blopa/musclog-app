@@ -41,6 +41,41 @@
       "unableToLoad": "Unable to load",
       "feedbackReceived": "Workout feedback submitted successfully.",
       "failedToGetFeedback": "Could not get feedback. Please try again."
+    },
+    "muscleGroups": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "abdomen": "Abdomen",
+      "glutes": "Glutes",
+      "fullBody": "Full Body",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Forearms",
+      "abs": "Abs",
+      "quads": "Quads",
+      "hamstrings": "Hamstrings",
+      "calves": "Calves",
+      "full_body": "Full Body",
+      "cardio": "Cardio",
+      "other": "Other"
+    },
+    "exerciseTypes": {
+      "compound": "Compound",
+      "isolation": "Isolation",
+      "bodyweight": "Bodyweight",
+      "machine": "Machine",
+      "dumbbell": "Dumbbell",
+      "barbell": "Barbell",
+      "cable": "Cable",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Resistance Band",
+      "medicine_ball": "Medicine Ball",
+      "smith_machine": "Smith Machine",
+      "other": "Other"
     }
   }
 }
