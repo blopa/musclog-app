@@ -26,21 +26,6 @@ import {
 
 const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
-const DEFAULT_FAT_PERCENTAGE_MALE = 15;
-const DEFAULT_FAT_PERCENTAGE_FEMALE = 25;
-const DEFAULT_FAT_PERCENTAGE_OTHER = 20;
-
-function getDefaultFatPercentage(gender?: string): number {
-  if (gender === 'female') {
-    return DEFAULT_FAT_PERCENTAGE_FEMALE;
-  }
-
-  if (gender === 'male') {
-    return DEFAULT_FAT_PERCENTAGE_MALE;
-  }
-
-  return DEFAULT_FAT_PERCENTAGE_OTHER;
-}
 
 /** Merge initial data with current form state; use defaults for any missing fields so we always have a complete FitnessDetails. */
 function getMergedFitnessData(
@@ -60,10 +45,7 @@ function getMergedFitnessData(
     units: current?.units ?? initial?.units ?? 'metric',
     weight: typeof weight === 'string' ? weight : String(weight),
     height: typeof height === 'string' ? height : String(height),
-    fatPercentage:
-      current?.fatPercentage ??
-      initial?.fatPercentage ??
-      getDefaultFatPercentage(current?.gender ?? initial?.gender),
+    fatPercentage: current?.fatPercentage ?? initial?.fatPercentage,
     weightGoal: current?.weightGoal ?? initial?.weightGoal ?? 'maintain',
     fitnessGoal: current?.fitnessGoal ?? initial?.fitnessGoal ?? 'general',
     activityLevel: current?.activityLevel ?? initial?.activityLevel ?? 3,
@@ -116,7 +98,7 @@ export default function FitnessInfo() {
             units,
             weight: String(weightDisplay),
             height: String(heightDisplay),
-            fatPercentage: bodyFatDec ? bodyFatDec.value : getDefaultFatPercentage(user.gender),
+            fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
             weightGoal: user.weightGoal ?? 'maintain',
             fitnessGoal: user.fitnessGoal,
             activityLevel: user.activityLevel ?? 3,
@@ -128,7 +110,7 @@ export default function FitnessInfo() {
             units,
             weight: String(weightDisplay),
             height: String(heightDisplay),
-            fatPercentage: bodyFatDec ? bodyFatDec.value : getDefaultFatPercentage('other'),
+            fatPercentage: bodyFatDec ? bodyFatDec.value : undefined,
             weightGoal: 'maintain',
             fitnessGoal: 'general',
             activityLevel: 3,
@@ -142,7 +124,6 @@ export default function FitnessInfo() {
           units: 'metric',
           weight: DEFAULT_WEIGHT_KG,
           height: DEFAULT_HEIGHT_CM,
-          fatPercentage: getDefaultFatPercentage('other'),
           weightGoal: 'maintain',
           fitnessGoal: 'general',
           activityLevel: 3,

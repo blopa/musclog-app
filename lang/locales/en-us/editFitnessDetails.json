@@ -12,6 +12,7 @@
     "currentWeight": "Current Weight",
     "height": "Height",
     "fatPercentage": "Body Fat Percentage",
+    "fatPercentageNotSet": "Not set — tap to enter",
     "goalsStrategy": "Goals & Strategy",
     "fitnessGoal": "Fitness Goal",
     "eatingPhase": "Eating Phase",
