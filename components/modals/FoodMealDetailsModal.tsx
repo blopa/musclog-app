@@ -332,11 +332,22 @@ export function FoodMealDetailsModal({
   );
 
   const getDefaultServingSize = useCallback(async () => {
+    // USDA data uses camelCase `servingSize`, while OpenFoodFacts uses snake_case `serving_size`
+    const usdaServingSizeStr =
+      productFromSearch?.servingSize != null
+        ? `${productFromSearch.servingSize}${productFromSearch.servingSizeUnit || 'g'}`
+        : null;
+
+    const productDetailsServingStr = isSuccessFoodDetailProductState(productDetails)
+      ? (productDetails.product.serving_size ??
+        ((productDetails as any).source === 'usda' &&
+        (productDetails.product as any).servingSize != null
+          ? `${(productDetails.product as any).servingSize}${(productDetails.product as any).servingSizeUnit || 'g'}`
+          : null))
+      : null;
+
     const servingStr =
-      productFromSearch?.serving_size ??
-      (isSuccessFoodDetailProductState(productDetails)
-        ? productDetails.product.serving_size
-        : null);
+      productFromSearch?.serving_size ?? usdaServingSizeStr ?? productDetailsServingStr;
 
     let servingSizeGrams = 100; // Default
 
@@ -574,24 +585,41 @@ export function FoodMealDetailsModal({
 
       if ((productDetails as any).source === 'usda') {
         const nutrients = (product as any).foodNutrients as any[];
+        // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g
+        // so that the modal's scaleFactor (servingSize / 100) produces correct values.
+        const rawServingSize = (product as any).servingSize;
+        const isBranded = (product as any).dataType === 'Branded';
+        const normFactor =
+          isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
         return {
           calories:
-            mapUSDANutritient(nutrients, '1008') ??
-            mapUSDANutritient(nutrients, '208') ??
-            mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
-            0,
-          protein: mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0,
-          carbs: mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0,
-          fat: mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0,
-          fiber: mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0,
+            (mapUSDANutritient(nutrients, '1008') ??
+              mapUSDANutritient(nutrients, '208') ??
+              mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
+              0) * normFactor,
+          protein:
+            (mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0) *
+            normFactor,
+          carbs:
+            (mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0) *
+            normFactor,
+          fat:
+            (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
+            normFactor,
+          fiber:
+            (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
+            normFactor,
           sugar:
-            mapUSDANutritient(nutrients, '2000') ??
-            mapUSDANutritient(nutrients, '269') ??
-            mapUSDANutritient(nutrients, 'sugars') ??
-            0,
+            (mapUSDANutritient(nutrients, '2000') ??
+              mapUSDANutritient(nutrients, '269') ??
+              mapUSDANutritient(nutrients, 'sugars') ??
+              0) * normFactor,
           saturatedFat:
-            mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
-          sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
+            (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
+            normFactor,
+          sodium:
+            (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+            normFactor,
         };
       }
 
@@ -641,21 +669,30 @@ export function FoodMealDetailsModal({
     if (productFromSearch && productFromSearch.source === 'usda') {
       const mappedProduct = mapUSDAFoodToUnified(productFromSearch as any);
       const nutrients = (productFromSearch as any).foodNutrients as any[];
+      // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g
+      // so that the modal's scaleFactor (servingSize / 100) produces correct values.
+      const rawServingSize = (productFromSearch as any).servingSize;
+      const isBranded = (productFromSearch as any).dataType === 'Branded';
+      const normFactor =
+        isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
 
       return {
-        calories: mappedProduct.calories ?? 0,
-        protein: mappedProduct.protein ?? 0,
-        carbs: mappedProduct.carbs ?? 0,
-        fat: mappedProduct.fat ?? 0,
-        fiber: mappedProduct.fiber ?? 0,
+        calories: (mappedProduct.calories ?? 0) * normFactor,
+        protein: (mappedProduct.protein ?? 0) * normFactor,
+        carbs: (mappedProduct.carbs ?? 0) * normFactor,
+        fat: (mappedProduct.fat ?? 0) * normFactor,
+        fiber: (mappedProduct.fiber ?? 0) * normFactor,
         sugar:
-          mapUSDANutritient(nutrients, '2000') ??
-          mapUSDANutritient(nutrients, '269') ??
-          mapUSDANutritient(nutrients, 'sugars') ??
-          0,
+          (mapUSDANutritient(nutrients, '2000') ??
+            mapUSDANutritient(nutrients, '269') ??
+            mapUSDANutritient(nutrients, 'sugars') ??
+            0) * normFactor,
         saturatedFat:
-          mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0,
-        sodium: mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0,
+          (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
+          normFactor,
+        sodium:
+          (mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) *
+          normFactor,
       };
     }
 

@@ -21,6 +21,7 @@ type EditPersonalInfoBodyProps = {
   isLoading?: boolean;
   hideSaveButton?: boolean;
   showEmailInput?: boolean;
+  hideGender?: boolean;
 };
 
 export type PersonalInfo = {
@@ -53,6 +54,7 @@ export function EditPersonalInfoBody({
   isLoading,
   hideSaveButton = false,
   showEmailInput = false,
+  hideGender = false,
 }: EditPersonalInfoBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -182,23 +184,25 @@ export function EditPersonalInfoBody({
           </Pressable>
         </View>
 
-        <View className="gap-2">
-          <Text className="ml-1 text-sm font-medium text-text-secondary">
-            <View className="flex-row items-center gap-1">
-              <Text className="text-lg font-bold text-text-primary">
-                {t('editPersonalInfo.gender')}
-              </Text>
-              <Text style={{ color: theme.colors.status.error }}>*</Text>
-            </View>
-          </Text>
-          <SegmentedControl
-            options={genderOptions}
-            value={gender}
-            onValueChange={(val) => setGender(val as Gender)}
-          />
-        </View>
+        {!hideGender ? (
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              <View className="flex-row items-center gap-1">
+                <Text className="text-lg font-bold text-text-primary">
+                  {t('editPersonalInfo.gender')}
+                </Text>
+                <Text style={{ color: theme.colors.status.error }}>*</Text>
+              </View>
+            </Text>
+            <SegmentedControl
+              options={genderOptions}
+              value={gender}
+              onValueChange={(val) => setGender(val as Gender)}
+            />
+          </View>
+        ) : null}
 
-        {gender === 'female' || gender === 'other' ? (
+        {hideGender || gender === 'female' || gender === 'other' ? (
           <View className="mt-2 rounded-2xl border-2 border-white/5 bg-bg-card p-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">

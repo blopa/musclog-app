@@ -57,8 +57,8 @@
       "length": {
         "title": "Cycle Length",
         "description": "How long is your typical cycle and period duration?",
-        "cycleLength": "Avg. Cycle Length (Days)",
-        "periodDuration": "Avg. Period Duration (Days)"
+        "cycleLength": "Avg. Cycle Length",
+        "periodDuration": "Avg. Period Duration"
       },
       "goal": {
         "title": "Sync Goal",

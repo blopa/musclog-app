@@ -57,8 +57,8 @@
       "length": {
         "title": "Duração do Ciclo",
         "description": "Qual é a duração típica do seu ciclo e período?",
-        "cycleLength": "Duração Média do Ciclo (Dias)",
-        "periodDuration": "Duração Média do Período (Dias)"
+        "cycleLength": "Duração Média do Ciclo",
+        "periodDuration": "Duração Média do Período"
       },
       "goal": {
         "title": "Meta de Sincronização",
