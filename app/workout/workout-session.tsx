@@ -6,10 +6,10 @@ import {
   CheckCircle,
   ChevronLeft,
   Clock,
-  Droplets,
   Dumbbell,
   Edit,
   Flame,
+  Moon,
   Plus,
   Repeat,
   SkipForward,
@@ -964,7 +964,7 @@ export default function WorkoutSessionScreen() {
             {isCycleTrackingActive && !isHormonalInsightDismissed ? (
               <InfoCard
                 variant="success"
-                icon={Droplets}
+                icon={Moon}
                 label={t('workoutSession.hormonalInsight')}
                 message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
                 onDismiss={() => setIsHormonalInsightDismissed(true)}
