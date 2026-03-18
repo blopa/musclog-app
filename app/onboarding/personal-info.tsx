@@ -142,11 +142,7 @@ export default function PersonalInfo() {
       return false;
     }
 
-    // Required fields: fullName, dob
-    const hasFullName = currentFormData.fullName.trim().length > 0;
-    const hasDob = currentFormData.dob.trim().length > 0;
-
-    return Boolean(hasFullName && hasDob);
+    return currentFormData.fullName.trim().length > 0;
   };
 
   if (isLoading) {
@@ -184,6 +180,7 @@ export default function PersonalInfo() {
             isLoading={isSaving}
             hideSaveButton
             hideGender
+            hideDob
           />
           <View className="h-4" />
         </ScrollView>
