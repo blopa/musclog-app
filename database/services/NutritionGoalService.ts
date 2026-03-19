@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
+import { NutritionCheckinService } from './NutritionCheckinService';
 
 export interface NutritionGoalInput {
   totalCalories: number;
@@ -93,6 +94,19 @@ export class NutritionGoalService {
         r.createdAt = now;
         r.updatedAt = now;
       });
+
+      // Generate future check-ins (e.g., weekly for 12 weeks)
+      const checkins = [];
+      for (let i = 1; i <= 12; i++) {
+        checkins.push({
+          checkinDate: now + i * 7 * 24 * 60 * 60 * 1000,
+          targetWeight: data.targetWeight,
+          targetBodyFat: data.targetBodyFat,
+          targetBmi: data.targetBMI,
+          targetFfmi: data.targetFFMI,
+        });
+      }
+      await NutritionCheckinService.createBatch(newGoal.id, checkins);
 
       if (Platform.OS === 'android') {
         await requestNutritionWidgetUpdate();

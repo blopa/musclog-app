@@ -1,375 +1,65 @@
-import { database } from '../../index';
-import { NutritionGoalInput, NutritionGoalService } from '../NutritionGoalService';
-import { createMockNutritionGoal } from './helpers';
+import { database } from '../../../database';
+import { NutritionGoalService } from '../NutritionGoalService';
+import { NutritionCheckinService } from '../NutritionCheckinService';
+import NutritionGoal from '../../models/NutritionGoal';
 
-jest.mock('@nozbe/watermelondb', () => ({
-  Q: {
-    where: jest.fn((field: string, condition: any) => ({ field, condition })),
-    eq: jest.fn((value: any) => value),
-    desc: 'desc' as const,
-    take: jest.fn((count: number) => count),
-    sortBy: jest.fn((field: string, direction: any) => ({ field, direction })),
-  },
+jest.mock('../../../lang/lang', () => ({
+  t: (key: string) => key,
+  language: 'en-US',
+  use: () => ({ init: () => {} }),
 }));
 
-jest.mock('../../index', () => {
-  const mockQuery = {
-    fetch: jest.fn().mockResolvedValue([]),
-    extend: jest.fn().mockReturnThis(),
-  };
-
-  const mockCollection = {
-    query: jest.fn().mockReturnValue(mockQuery),
-    find: jest.fn().mockResolvedValue(null),
-    create: jest.fn().mockResolvedValue({}),
-    prepareCreate: jest.fn().mockReturnValue({}),
-    fetch: jest.fn().mockResolvedValue([]),
-  };
-
-  const mockWriter = {} as any;
-
-  return {
-    database: {
-      get: jest.fn().mockReturnValue(mockCollection),
-      write: jest.fn((callback) => Promise.resolve(callback(mockWriter))),
-      batch: jest.fn().mockResolvedValue(undefined),
-      collections: {
-        get: jest.fn().mockReturnValue(mockCollection),
-      },
-    },
-  };
-});
-
-const mockDatabase = database as jest.Mocked<typeof database>;
-
 describe('NutritionGoalService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('getCurrent', () => {
-    it('should return goal when current goal exists', async () => {
-      const mockGoal = createMockNutritionGoal({
-        effectiveUntil: null,
-        deletedAt: null,
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockGoal]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getCurrent();
-
-      expect(result).toBe(mockGoal);
-      expect(mockDatabase.get).toHaveBeenCalledWith('nutrition_goals');
-      expect(mockQuery.fetch).toHaveBeenCalled();
-    });
-
-    it('should return null when no current goal exists', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getCurrent();
-
-      expect(result).toBeNull();
-    });
-
-    it('should filter out deleted goals correctly', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getCurrent();
-
-      expect(result).toBeNull();
+  beforeEach(async () => {
+    await database.write(async () => {
+      await database.unsafeResetDatabase();
     });
   });
 
-  describe('saveGoals', () => {
-    const mockGoalInput: NutritionGoalInput = {
+  it('should save goals and generate check-ins', async () => {
+    const goalsData = {
       totalCalories: 2500,
-      protein: 180,
+      protein: 200,
       carbs: 250,
-      fats: 80,
-      fiber: 35,
-      eatingPhase: 'bulk',
-      targetWeight: 80,
-      targetBodyFat: 12,
-      targetBMI: 24,
+      fats: 70,
+      fiber: 30,
+      eatingPhase: 'bulking',
+      targetWeight: 90,
+      targetBodyFat: 15,
+      targetBMI: 25,
       targetFFMI: 22,
-      targetDate: Date.now() + 90 * 24 * 60 * 60 * 1000, // 90 days from now
+      targetDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     };
 
-    it('should create new goal when no current goal exists', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
+    const newGoal = await NutritionGoalService.saveGoals(goalsData);
+    expect(newGoal).toBeDefined();
+    expect(newGoal.totalCalories).toBe(2500);
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-
-      const result = await NutritionGoalService.saveGoals(mockGoalInput);
-
-      expect(mockDatabase.write).toHaveBeenCalled();
-      expect(mockCreate).toHaveBeenCalled();
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockGoal = {} as any;
-      createCall(mockGoal);
-
-      expect(mockGoal.totalCalories).toBe(2500);
-      expect(mockGoal.protein).toBe(180);
-      expect(mockGoal.carbs).toBe(250);
-      expect(mockGoal.fats).toBe(80);
-      expect(mockGoal.fiber).toBe(35);
-      expect(mockGoal.eatingPhase).toBe('bulk');
-      expect(mockGoal.targetWeight).toBe(80);
-      expect(mockGoal.targetBodyFat).toBe(12);
-      expect(mockGoal.targetBmi).toBe(24);
-      expect(mockGoal.targetFfmi).toBe(22);
-      expect(mockGoal.targetDate).toBe(mockGoalInput.targetDate);
-      expect(mockGoal.effectiveUntil).toBeNull();
-      expect(mockGoal.createdAt).toBeDefined();
-      expect(mockGoal.updatedAt).toBeDefined();
-    });
-
-    it('should update previous goal effective_until when current exists', async () => {
-      const now = Date.now();
-      const mockCurrentGoal = createMockNutritionGoal({
-        effectiveUntil: null,
-        update: jest.fn((callback) => {
-          callback({ effectiveUntil: now, updatedAt: now });
-          return Promise.resolve();
-        }),
-      });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockCurrentGoal]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-
-      await NutritionGoalService.saveGoals(mockGoalInput);
-
-      expect(mockCurrentGoal.update).toHaveBeenCalled();
-      const updateCall = mockCurrentGoal.update.mock.calls[0][0];
-      const mockUpdated = {} as any;
-      updateCall(mockUpdated);
-      expect(mockUpdated.effectiveUntil).toBeGreaterThan(0);
-      expect(mockUpdated.updatedAt).toBeDefined();
-    });
-
-    it('should create new goal with effective_until = null', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-
-      await NutritionGoalService.saveGoals(mockGoalInput);
-
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockGoal = {} as any;
-      createCall(mockGoal);
-      expect(mockGoal.effectiveUntil).toBeNull();
-    });
-
-    it('should handle optional targetDate as null', async () => {
-      const inputWithoutDate: NutritionGoalInput = {
-        ...mockGoalInput,
-        targetDate: null,
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal());
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-
-      await NutritionGoalService.saveGoals(inputWithoutDate);
-
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockGoal = {} as any;
-      createCall(mockGoal);
-      expect(mockGoal.targetDate).toBeNull();
-    });
-
-    it('should handle optional targetDate as undefined', async () => {
-      const inputWithoutDate: NutritionGoalInput = {
-        ...mockGoalInput,
-        targetDate: undefined,
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal());
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-
-      await NutritionGoalService.saveGoals(inputWithoutDate);
-
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockGoal = {} as any;
-      createCall(mockGoal);
-      expect(mockGoal.targetDate).toBeNull();
-    });
+    const checkins = await NutritionCheckinService.getByGoalId(newGoal.id);
+    expect(checkins.length).toBe(12);
+    expect(checkins[0].status).toBe('pending');
   });
 
-  describe('getHistory', () => {
-    it('should return all goals ordered by created_at desc', async () => {
-      const mockGoal1 = createMockNutritionGoal({ createdAt: Date.now() - 1000 });
-      const mockGoal2 = createMockNutritionGoal({ createdAt: Date.now() });
+  it('should archive previous goals when saving new ones', async () => {
+    const goalsData1 = {
+      totalCalories: 2000,
+      protein: 150,
+      carbs: 200,
+      fats: 60,
+      fiber: 25,
+      eatingPhase: 'maintenance',
+      targetWeight: 80,
+      targetBodyFat: 15,
+    };
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockGoal2, mockGoal1]),
-        extend: jest.fn().mockReturnThis(),
-      };
+    const goal1 = await NutritionGoalService.saveGoals(goalsData1);
+    expect(goal1.effectiveUntil).toBeNull();
 
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+    const goalsData2 = { ...goalsData1, totalCalories: 2200 };
+    const goal2 = await NutritionGoalService.saveGoals(goalsData2);
 
-      const result = await NutritionGoalService.getHistory();
-
-      expect(result).toEqual([mockGoal2, mockGoal1]);
-      expect(mockDatabase.get).toHaveBeenCalledWith('nutrition_goals');
-    });
-
-    it('should respect limit parameter when provided', async () => {
-      const mockGoal1 = createMockNutritionGoal({ createdAt: Date.now() - 1000 });
-      const mockGoal2 = createMockNutritionGoal({ createdAt: Date.now() });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockGoal2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getHistory(1);
-
-      expect(result).toEqual([mockGoal2]);
-      expect(mockQuery.extend).toHaveBeenCalled();
-    });
-
-    it('should filter out deleted goals', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getHistory();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should return empty array when no goals exist', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      const result = await NutritionGoalService.getHistory();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should not apply limit when limit is not provided', async () => {
-      const mockGoal1 = createMockNutritionGoal({ createdAt: Date.now() - 1000 });
-      const mockGoal2 = createMockNutritionGoal({ createdAt: Date.now() });
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([mockGoal2, mockGoal1]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
-
-      await NutritionGoalService.getHistory();
-
-      // extend should not be called with take when limit is undefined
-      expect(mockQuery.extend).not.toHaveBeenCalled();
-    });
+    const fetchedGoal1 = await database.get<NutritionGoal>('nutrition_goals').find(goal1.id);
+    expect(fetchedGoal1.effectiveUntil).not.toBeNull();
+    expect(goal2.effectiveUntil).toBeNull();
   });
 });

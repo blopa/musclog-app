@@ -1,69 +1,15 @@
 {
   "notifications": {
-    "header": {
-      "title": "Notifications",
-      "clearAll": "CLEAR ALL"
+    "title": "Notifications",
+    "enableReminders": "Enable Reminders",
+    "enableRemindersSubtitle": "Get notified for check-ins and workouts",
+    "nutritionCheckin": {
+      "title": "Weekly Progress Check-in",
+      "body": "It's time for your weekly check-in! Let's see how you're doing."
     },
-    "sections": {
-      "today": "TODAY",
-      "yesterday": "YESTERDAY",
-      "earlier": "EARLIER"
-    },
-    "channels": {
-      "default": "Default",
-      "activeWorkout": "Active Workout"
-    },
-    "startNow": "Start Now",
-    "types": {
-      "aiInsight": {
-        "title": "AI Insight",
-        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
-      },
-      "workoutReminder": {
-        "title": "Workout Reminder",
-        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
-      },
-      "workoutCompleted": {
-        "title": "Workout Completed!",
-        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
-      },
-      "kudosReceived": {
-        "title": "Kudos Received",
-        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
-      },
-      "weeklyReport": {
-        "title": "Weekly Report Ready",
-        "description": "Your progress report for last week is available. Check your stats."
-      },
-      "activeWorkout": {
-        "title": "Workout: {{workoutName}}",
-        "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
-      },
-      "workoutReminderMorning": {
-        "title": "Workout Reminder",
-        "body": "Ready to crush your {{workoutName}} workout today??"
-      },
-      "nutritionOverview": {
-        "title": "Daily Nutrition Overview",
-        "body": "Check how your nutrition aligned with your goals today!"
-      },
-      "periodPrediction": {
-        "title": "Period Prediction",
-        "body": "Your period is predicted to start in 2 days. Get ready!"
-      },
-      "fertileWindow": {
-        "title": "Fertile Window",
-        "body": "Your fertile window is starting! Useful for tracking your energy levels."
-      },
-      "restTimerAlert": {
-        "title": "Rest Over - Back to Work!",
-        "body": "Your rest period is up. Time to crush the next set!"
-      },
-      "workoutDurationWarning": {
-        "title": "Still Working Out?",
-        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
-      }
+    "workoutReminder": {
+      "title": "Workout Time",
+      "body": "Don't forget your scheduled workout for today!"
     }
   }
 }

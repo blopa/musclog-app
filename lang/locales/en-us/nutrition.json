@@ -1,77 +1,54 @@
 {
   "nutrition": {
-    "analyze": "Analyze",
-    "calories": "Calories",
-    "carbs": "Carbs",
-    "characters": "Characters",
-    "confirmAndSave": "Confirm & Save",
-    "createCustom": "Create Custom",
-    "createCustomDesc": "Manually add nutrition details",
-    "dailyTotals": "Daily Totals",
-    "dateLabel": "Date",
-    "emptyData": "Please paste or enter nutrition data.",
-    "emptyDescription": "Please enter a meal description.",
-    "entriesCount": "Entries",
-    "example": "Example",
-    "fat": "Fat",
-    "fiber": "Fiber",
-    "foodNotFound": "Food Not Found",
-    "import": "Import",
-    "importFormatInfo": "Paste or type your meal log (e.g. from a note or app). AI will parse it and suggest entries.",
-    "importInstructions": "Paste your nutrition data below. Supported: free text, bullet lists, or structured logs.",
-    "importNutrition": "Import Nutrition",
-    "logPastDay": "Log a Past Day",
-    "mealDescriptionPlaceholder": "e.g. Oatmeal with banana, 2 eggs, coffee with milk",
-    "pasteNutritionDataPlaceholder": "Paste nutrition data here...",
-    "processing": "Processing...",
-    "processingData": "Nutrition data imported successfully.",
-    "processingDescription": "Description processed successfully.",
-    "processingFailed": "Could not process the data. Please check the format and try again.",
-    "protein": "Protein",
-    "retrospectiveExample": "e.g. Breakfast: oatmeal and banana. Lunch: chicken salad. Dinner: pasta with vegetables.",
-    "retrospectiveInstructions": "Describe what you ate that day in your own words. AI will estimate portions and nutrients.",
-    "review": "Review",
-    "searchAgain": "Search Again",
-    "searchAgainDesc": "Try a different search term",
-    "tryAICamera": "Try AI Camera",
-    "tryAICameraDesc": "Scan your meal for instant identification",
-    "supportedFormats": "Supported formats",
-    "common": {
-      "kcal": "kcal"
-    },
-    "aiCamera": {
-      "estimated": "Estimated",
-      "modes": {
-        "mealPhoto": "AI Meal"
-      }
-    },
-    "createMeal": {
-      "estimated": "Estimated",
-      "totalNutrition": "Total Nutrition"
-    },
-    "macros": {
-      "protein": "Protein",
-      "carbs": "Carbs",
-      "fat": "Fat"
-    },
-    "mealEstimation": {
-      "identifiedItems": "Identified Items",
-      "addItem": "Add Item",
-      "confirmAndLog": "Confirm & Log Meal"
-    },
-    "manageFoodData": {
-      "title": "Nutrition Log",
-      "searchPlaceholder": "Search food logs...",
-      "noLogs": "No food logs yet",
-      "noLogsDesc": "Start tracking your meals to see them here",
-      "endOfHistory": "End of food log history",
-      "foodOptions": "Food Options",
-      "editFoodEntry": "Edit Food Entry",
-      "editFoodEntryDesc": "Modify the food details",
-      "duplicateEntry": "Duplicate Entry",
-      "duplicateEntryDesc": "Create a copy of this entry",
-      "deleteEntry": "Delete Entry",
-      "deleteEntryDesc": "Remove this food entry"
+    "checkin": {
+      "title": "Progress Check-in",
+      "nextMilestones": "Next Milestones",
+      "history": "History",
+      "weekTitle": "Week {{number}}",
+      "prepareNow": "Prepare Now",
+      "noMilestones": "No upcoming milestones. Your plan is complete!",
+      "noHistory": "No check-in history found.",
+      "selectYear": "Select Year",
+      "status": {
+        "pending": "Pending",
+        "ahead": "Ahead",
+        "onTrack": "On Track",
+        "behind": "Behind"
+      },
+      "ahead": "Ahead",
+      "onTrack": "On Track",
+      "behind": "Behind",
+      "headline": {
+        "ahead": "Ahead of Schedule",
+        "onTrack": "Perfectly on Track",
+        "behind": "Slightly Behind"
+      },
+      "subtext": {
+        "ahead": "You're making faster progress than expected. Keep up the great work!",
+        "onTrack": "Everything is going according to plan. Your consistency is paying off.",
+        "behind": "You're a bit off from the target, but don't worry. Small adjustments will get you back."
+      },
+      "weightTrend": "Weight Trend",
+      "target": "Target",
+      "weeklyBreakdown": "Weekly Breakdown",
+      "weekProgress": "Week {{current}} of {{total}}",
+      "summaryIntro": "You aimed for {{target}} kcal/day, but averaged",
+      "summaryOutro": "You completed",
+      "workoutsCount": "workouts",
+      "withHighIntensity": "with high intensity.",
+      "avgIntake": "Avg Daily Intake",
+      "consistency": "Consistency",
+      "rate": "Rate",
+      "avgBodyFat": "Avg Body Fat",
+      "targetShort": "Target: {{value}}%",
+      "activeMinutes": "Active Minutes",
+      "vsLastWeek": "{{prefix}}{{value}} vs last week",
+      "readjust": "Readjust my plan",
+      "readjustTitle": "Readjust Your Plan",
+      "keepMacros": "Keep my current macros",
+      "notEnoughDataWarning": "You have less than 4 weight logs this week. Averages may be less accurate.",
+      "notificationTitle": "Time for your Weekly Check-in!",
+      "notificationBody": "Tap here to review your progress for the past week and update your plan."
     }
   }
 }

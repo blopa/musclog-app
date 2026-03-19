@@ -3,6 +3,7 @@ import {
   BarChart3,
   Calendar,
   Camera,
+  ClipboardCheck,
   Dumbbell,
   Home,
   MessageSquare,
@@ -30,35 +31,20 @@ export const NavigationMenu = memo(function NavigationMenu({
   onCameraPress,
 }: NavigationMenuProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation();
   const { rawSlots, isAiFeaturesEnabled, isCycleActive } = useNavigationItems();
-  const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
-  const unreadChatMessages = useUnreadChatMessages();
+  const { count: unreadChatMessages } = useUnreadChatMessages();
 
-  const isPathActive = useCallback(
-    (path: string) => {
-      if (path === '/') {
-        return pathname === '/';
-      }
-      return pathname.startsWith(path);
-    },
-    [pathname]
-  );
-
-  const isFoodActive = useCallback(() => {
-    return (
-      (pathname.startsWith('/nutrition/food') || pathname.startsWith('/nutrition/meals')) &&
-      !pathname.startsWith('/nutrition/ai-camera')
-    );
-  }, [pathname]);
+  const isPathActive = useCallback((path: string) => pathname === path, [pathname]);
+  const isFoodActive = useCallback(() => pathname.startsWith('/nutrition/'), [pathname]);
 
   const renderNavSlot = useCallback(
-    (slotKey: NavItemKey) => {
-      switch (slotKey) {
+    (item: NavItemKey) => {
+      switch (item) {
         case 'workouts': {
-          const active = isPathActive('/workout');
+          const active = isPathActive('/workout/workouts');
           return (
             <Pressable
               key="workouts"
@@ -272,6 +258,36 @@ export const NavigationMenu = memo(function NavigationMenu({
           );
         }
 
+        case 'checkin': {
+          const active = isPathActive('/nutrition/checkin');
+          return (
+            <Pressable
+              key="checkin"
+              className="flex-1 items-center justify-center gap-1"
+              onPress={() => {
+                if (!active) {
+                  router.push('/nutrition/checkin');
+                }
+              }}
+            >
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+              >
+                <ClipboardCheck
+                  size={theme.iconSize.md}
+                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+                />
+              </View>
+              <Text
+                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+              >
+                {t('common.checkin')}
+              </Text>
+            </Pressable>
+          );
+        }
+
         default:
           return null;
       }
@@ -298,7 +314,6 @@ export const NavigationMenu = memo(function NavigationMenu({
     >
       <SafeAreaView edges={['bottom']}>
         <View className="relative flex-row items-stretch px-6 py-4">
-          {/* Home - always fixed */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
@@ -323,10 +338,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             </Text>
           </Pressable>
 
-          {/* Slot 1 - customizable */}
-          {renderNavSlot(navSlot1)}
+          {renderNavSlot(rawSlots[1])}
 
-          {/* Camera - always fixed */}
           <Pressable
             className="z-10 flex-1 items-center justify-center gap-1"
             onPress={onCameraPress}
@@ -354,11 +367,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             </View>
           </Pressable>
 
-          {/* Slot 2 - customizable */}
-          {renderNavSlot(navSlot2)}
-
-          {/* Slot 3 - customizable */}
-          {renderNavSlot(navSlot3)}
+          {renderNavSlot(rawSlots[2])}
+          {renderNavSlot(rawSlots[3])}
         </View>
       </SafeAreaView>
     </View>

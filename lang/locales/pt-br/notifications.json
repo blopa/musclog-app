@@ -14,6 +14,10 @@
       "activeWorkout": "Treino Ativo"
     },
     "startNow": "Iniciar Agora",
+    "nutritionCheckin": {
+      "title": "Check-in de Progresso Semanal",
+      "body": "É hora do seu check-in semanal! Vamos ver como você está indo."
+    },
     "types": {
       "aiInsight": {
         "title": "Insight de IA",

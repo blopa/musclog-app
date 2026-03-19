@@ -181,7 +181,8 @@
         "coach": "Coach",
         "cycle": "Cycle",
         "settings": "Settings",
-        "progress": "Progress"
+        "progress": "Progress",
+        "checkin": "Check-in"
       }
     },
     "notificationsSettings": {

@@ -1,0 +1,213 @@
+Starting project at /app
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓░░░░░░░░░░░░░░ 13.4% (213/636)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 35.0% ( 729/1233)
+Web ./index.web.js ▓▓▓▓░░░░░░░░░░░░ 30.1% ( 657/1197)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 42.9% ( 862/1593)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 36.1% (1185/2412)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 42.9% (1233/2428)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 36.1% (1185/2412)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓░░░░░░░░ 53.7% (2424/3394)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 43.2% (2062/3139)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓░░░░░░░░ 53.7% (2427/5070)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.7% (2455/5107)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓░░░░░░░░ 53.7% (3392/5566)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 84.8% (5234/5685)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.4% (5566/5854)
+λ Bundling failed 28390ms node_modules/expo-router/node/render.js (6514 modules)
+Web Bundling failed 28410ms index.web.js (6846 modules)
+
+Metro error: Unable to resolve module ../../components/modals/SelectModal from /app/app/nutrition/checkin.tsx:
+
+None of these files exist:
+  * components/modals/SelectModal(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * components/modals/SelectModal
+[0m [90m  7 |[39m
+ [90m  8 |[39m [36mimport[39m { [33mMasterLayout[39m } [36mfrom[39m [32m'../../components/MasterLayout'[39m[33m;[39m
+[31m[1m>[22m[39m[90m  9 |[39m [36mimport[39m { [33mSelectModal[39m } [36mfrom[39m [32m'../../components/modals/SelectModal'[39m[33m;[39m
+ [90m    |[39m                              [31m[1m^[22m[39m
+ [90m 10 |[39m [36mimport[39m { useNutritionCheckins } [36mfrom[39m [32m'../../hooks/useNutritionCheckins'[39m[33m;[39m
+ [90m 11 |[39m [36mimport[39m { useNutritionGoal } [36mfrom[39m [32m'../../hooks/useNutritionGoal'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../../hooks/useTheme'[39m[33m;[39m[0m
+
+Import stack:
+
+ app/nutrition/checkin.tsx
+ | import "../../components/modals/SelectModal"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin.tsx:0)
+Web Bundled 1211ms node_modules/expo-router/_error.js (398 modules)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.5% (1233/2456)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 41.2% (2427/5070)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.9% (5536/6018)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.4% (5723/6035)
+λ Bundling failed 8156ms node_modules/expo-router/node/render.js (6310 modules)
+Web Bundling failed 8177ms index.web.js (6865 modules)
+
+Metro error: Unable to resolve module ../../components/modals/SelectModal from /app/app/nutrition/checkin.tsx:
+
+None of these files exist:
+  * components/modals/SelectModal(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * components/modals/SelectModal
+[0m [90m  7 |[39m
+ [90m  8 |[39m [36mimport[39m { [33mMasterLayout[39m } [36mfrom[39m [32m'../../components/MasterLayout'[39m[33m;[39m
+[31m[1m>[22m[39m[90m  9 |[39m [36mimport[39m { [33mSelectModal[39m } [36mfrom[39m [32m'../../components/modals/SelectModal'[39m[33m;[39m
+ [90m    |[39m                              [31m[1m^[22m[39m
+ [90m 10 |[39m [36mimport[39m { useNutritionCheckins } [36mfrom[39m [32m'../../hooks/useNutritionCheckins'[39m[33m;[39m
+ [90m 11 |[39m [36mimport[39m { useNutritionGoal } [36mfrom[39m [32m'../../hooks/useNutritionGoal'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../../hooks/useTheme'[39m[33m;[39m[0m
+
+Import stack:
+
+ app/nutrition/checkin.tsx
+ | import "../../components/modals/SelectModal"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin.tsx:0)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.4% ( 704/1236)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 40.0% (1778/4242)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 51.1% (2455/5107)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.5% (5070/5567)
+λ Bundling failed 10433ms node_modules/expo-router/node/render.js (6514 modules)
+
+Metro error: Unable to resolve module ../../hooks/useNutritionGoal from /app/app/nutrition/checkin.tsx:
+
+None of these files exist:
+  * hooks/useNutritionGoal(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * hooks/useNutritionGoal
+[0m [90m  9 |[39m [36mimport[39m { [33mSelectModal[39m } [36mfrom[39m [32m'../../components/modals/SelectModal'[39m[33m;[39m
+ [90m 10 |[39m [36mimport[39m { useNutritionCheckins } [36mfrom[39m [32m'../../hooks/useNutritionCheckins'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m { useNutritionGoal } [36mfrom[39m [32m'../../hooks/useNutritionGoal'[39m[33m;[39m
+ [90m    |[39m                                   [31m[1m^[22m[39m
+ [90m 12 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../../hooks/useTheme'[39m[33m;[39m
+ [90m 13 |[39m
+ [90m 14 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mCheckinListScreen[39m() {[0m
+
+Import stack:
+
+ app/nutrition/checkin.tsx
+ | import "../../hooks/useNutritionGoal"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin.tsx:0)
+Web Bundling failed 10469ms index.web.js (6865 modules)
+Web Bundled 110ms node_modules/expo-router/_error.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.5% (1234/2456)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 41.7% (2427/5070)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 85.5% (5518/6012)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92.0% (5857/6105)
+λ Bundling failed 7857ms node_modules/expo-router/node/render.js (6514 modules)
+Web Bundling failed 7868ms index.web.js (6580 modules)
+
+Metro error: Unable to resolve module ../../hooks/useNutritionGoal from /app/app/nutrition/checkin.tsx:
+
+None of these files exist:
+  * hooks/useNutritionGoal(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * hooks/useNutritionGoal
+[0m [90m  9 |[39m [36mimport[39m { [33mSelectModal[39m } [36mfrom[39m [32m'../../components/modals/SelectModal'[39m[33m;[39m
+ [90m 10 |[39m [36mimport[39m { useNutritionCheckins } [36mfrom[39m [32m'../../hooks/useNutritionCheckins'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 11 |[39m [36mimport[39m { useNutritionGoal } [36mfrom[39m [32m'../../hooks/useNutritionGoal'[39m[33m;[39m
+ [90m    |[39m                                   [31m[1m^[22m[39m
+ [90m 12 |[39m [36mimport[39m { useTheme } [36mfrom[39m [32m'../../hooks/useTheme'[39m[33m;[39m
+ [90m 13 |[39m
+ [90m 14 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mCheckinListScreen[39m() {[0m
+
+Import stack:
+
+ app/nutrition/checkin.tsx
+ | import "../../hooks/useNutritionGoal"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin.tsx:0)
+Web Bundled 95ms node_modules/expo-router/_error.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓░░░░░░░░░░░░░ 23.6% ( 540/1111)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 36.0% (1228/2416)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 35.9% (1482/2473)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 42.5% (3004/5205)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.8% (5140/5638)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.5% (5572/5856)
+λ Bundling failed 13182ms node_modules/expo-router/node/render.js (6485 modules)
+
+Metro error: Unable to resolve module ../../components/GenericCard from /app/app/nutrition/checkin-review.tsx:
+
+None of these files exist:
+  * components/GenericCard(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * components/GenericCard
+[0m [90m  8 |[39m
+ [90m  9 |[39m [36mimport[39m { [33mBarChart[39m } [36mfrom[39m [32m'../../components/charts/BarChart'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mGenericCard[39m } [36mfrom[39m [32m'../../components/GenericCard'[39m[33m;[39m
+ [90m    |[39m                              [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mMasterLayout[39m } [36mfrom[39m [32m'../../components/MasterLayout'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mBottomButtonWrapper[39m } [36mfrom[39m [32m'../../components/theme/BottomButtonWrapper'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { [33mButton[39m } [36mfrom[39m [32m'../../components/theme/Button'[39m[33m;[39m[0m
+
+Import stack:
+
+ app/nutrition/checkin-review.tsx
+ | import "../../components/GenericCard"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin-review.tsx:0)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6865/6867)
+Web Bundling failed 13241ms index.web.js (6867 modules)
+Web Bundled 135ms node_modules/expo-router/_error.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web ./index.web.js ▓▓▓░░░░░░░░░░░░░ 22.8% ( 708/1484)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓░░░░░░░░░░ 38.8% (1481/2444)
+Web ./index.web.js ▓▓▓▓▓▓░░░░░░░░░░ 41.4% (2445/5129)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓░░░░░ 69.2% (4359/5239)
+λ Bundling failed 10213ms node_modules/expo-router/node/render.js (6516 modules)
+Web Bundling failed 10221ms index.web.js (6859 modules)
+
+Metro error: Unable to resolve module ../../components/GenericCard from /app/app/nutrition/checkin-review.tsx:
+
+None of these files exist:
+  * components/GenericCard(.web.ts|.ts|.web.tsx|.tsx|.web.js|.js|.web.jsx|.jsx|.web.json|.json|.web.cjs|.cjs|.web.mjs|.mjs|.web.scss|.scss|.web.sass|.sass|.web.css|.css|.web.css|.css)
+  * components/GenericCard
+[0m [90m  8 |[39m
+ [90m  9 |[39m [36mimport[39m { [33mBarChart[39m } [36mfrom[39m [32m'../../components/charts/BarChart'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mGenericCard[39m } [36mfrom[39m [32m'../../components/GenericCard'[39m[33m;[39m
+ [90m    |[39m                              [31m[1m^[22m[39m
+ [90m 11 |[39m [36mimport[39m { [33mMasterLayout[39m } [36mfrom[39m [32m'../../components/MasterLayout'[39m[33m;[39m
+ [90m 12 |[39m [36mimport[39m { [33mBottomButtonWrapper[39m } [36mfrom[39m [32m'../../components/theme/BottomButtonWrapper'[39m[33m;[39m
+ [90m 13 |[39m [36mimport[39m { [33mButton[39m } [36mfrom[39m [32m'../../components/theme/Button'[39m[33m;[39m[0m
+
+Import stack:
+
+ app/nutrition/checkin-review.tsx
+ | import "../../components/GenericCard"
+
+ app (require.context)
+
+
+Call Stack
+  <unknown> (app/nutrition/checkin-review.tsx:0)
+Web Bundled 125ms node_modules/expo-router/_error.js (1 module)
+ LOG  [web] Logs will appear in the browser console

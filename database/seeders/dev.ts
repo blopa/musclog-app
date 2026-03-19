@@ -2221,7 +2221,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
       // Longer delay to ensure IndexedDB connections are closed and database is ready.
       // On web, IndexedDB may log "blocked" warnings if connections are still open during
       // deletion. These warnings are harmless - the adapter handles them internally and
-      // the reset completes successfully. This delay minimizes the chance of seeing them.
+      // the reset privilege completes successfully. This delay minimizes the chance of seeing them.
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Verify database is ready by attempting a simple query
@@ -2261,6 +2261,33 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   const workoutData = await seedWorkoutTemplatesAndHistory();
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
+
+  // Seed a pending check-in for today
+  await database.write(async () => {
+    const goals = await database.get('nutrition_goals').query().fetch();
+    const goal = goals[0];
+    if (goal) {
+      const existingCheckins = await database
+        .get('nutrition_checkins')
+        .query(Q.where('nutrition_goal_id', goal.id))
+        .fetch();
+      if (existingCheckins.length === 0) {
+        await database.get('nutrition_checkins').create((c: any) => {
+          c.nutritionGoalId = goal.id;
+          c.checkinDate = Date.now();
+          c.targetWeight = 78.0; // Slightly below current weight to test "behind" status for maintain
+          c.targetBodyFat = 14.8;
+          c.targetBmi = 24.0;
+          c.targetFfmi = 19.4;
+          c.status = 'pending';
+          c.createdAt = Date.now();
+          c.updatedAt = Date.now();
+        });
+        console.log('Seeded pending check-in');
+      }
+    }
+  });
+
   const chatSeeded = await seedChatHistory();
 
   // Set default navigation bar slots with Coach as the last item
