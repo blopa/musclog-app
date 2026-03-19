@@ -163,10 +163,16 @@ export default function CheckinReviewScreen() {
           {!hasEnoughData ? (
             <View
               className="mb-8 flex-row items-center gap-3 rounded-2xl border p-4"
-              style={{ backgroundColor: theme.colors.status.amber10, borderColor: theme.colors.status.amber }}
+              style={{
+                backgroundColor: theme.colors.status.amber10,
+                borderColor: theme.colors.status.amber,
+              }}
             >
               <AlertCircle size={20} color={theme.colors.status.amber} />
-              <Text className="flex-1 text-sm font-medium" style={{ color: theme.colors.status.amber }}>
+              <Text
+                className="flex-1 text-sm font-medium"
+                style={{ color: theme.colors.status.amber }}
+              >
                 {t('nutrition.checkin.notEnoughDataWarning')}
               </Text>
             </View>

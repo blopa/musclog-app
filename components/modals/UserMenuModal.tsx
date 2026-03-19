@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import {
   BarChart3,
   Calendar,
+  ClipboardCheck,
   Dumbbell,
   MessageSquare,
   Settings,
@@ -233,6 +234,22 @@ export function UserMenuModal({
                   label={t('userMenu.food')}
                   onPress={() => {
                     router.push('/nutrition/food');
+                    onClose();
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('checkin') ? (
+                <MenuItem
+                  icon={
+                    <ClipboardCheck
+                      size={theme.iconSize.md}
+                      color={theme.colors.accent.secondary}
+                    />
+                  }
+                  label={t('userMenu.checkin')}
+                  onPress={() => {
+                    router.push('/nutrition/checkin-list');
                     onClose();
                   }}
                 />
