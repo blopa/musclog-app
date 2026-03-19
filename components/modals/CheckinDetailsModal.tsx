@@ -66,6 +66,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     onClose();
     // Navigate to onboarding-style goal setting with readjust=true
     router.push({
+      // TODO: do not navigate to nutrition goals, instead open NutritionGoalsModal with pre-filled values
       pathname: '/onboarding/nutrition-goals',
       params: { readjust: 'true' },
     });
