@@ -67,6 +67,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'conversationContext',
       'chartTooltipPosition',
       'language',
+      'maxAiMemories',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -226,6 +227,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'language',
     SettingsService.setLanguage
   );
+  const handleMaxAiMemoriesChange = createSettingHandler<number>(
+    'maxAiMemories',
+    SettingsService.setMaxAiMemories
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -310,6 +315,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'language':
             await SettingsService.setLanguage(value as string);
             break;
+          case 'maxAiMemories':
+            await SettingsService.setMaxAiMemories(value as number);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -372,6 +380,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     chartTooltipPosition:
       (localSettings.chartTooltipPosition as 'left' | 'right') ??
       actualSettings.chartTooltipPosition,
+    maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -403,6 +412,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleConversationContextChange,
     handleChartTooltipPositionChange,
     handleLanguageChange,
+    handleMaxAiMemoriesChange,
 
     // Utilities
     flushAllPendingChanges,

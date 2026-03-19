@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 
+import { GEMINI_MODELS } from '../constants/ai';
 import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
@@ -16,6 +17,7 @@ import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -76,6 +78,7 @@ type SettingsState = {
   conversationContext: 'general' | 'exercise' | 'nutrition';
   chartTooltipPosition: ChartTooltipPosition;
   language: string;
+  maxAiMemories: number;
   isLoading: boolean;
 };
 
@@ -88,7 +91,7 @@ const DEFAULT_STATE: SettingsState = {
   writeHealthData: false,
   anonymousBugReport: true,
   googleGeminiApiKey: '',
-  googleGeminiModel: 'gemini-2.0-flash',
+  googleGeminiModel: GEMINI_MODELS.GEMINI_2_5_FLASH.value,
   openAiApiKey: '',
   openAiModel: 'gpt-4o',
   enableGoogleGemini: true,
@@ -110,6 +113,7 @@ const DEFAULT_STATE: SettingsState = {
   foodSearchSource: 'both',
   conversationContext: 'general',
   chartTooltipPosition: 'right',
+  maxAiMemories: 50,
   isLoading: true,
 };
 
@@ -140,6 +144,15 @@ function getBoolean(map: Map<string, string>, type: string, defaultVal = false):
   return v === 'true';
 }
 
+function getNumber(map: Map<string, string>, type: string, defaultVal = 0): number {
+  const v = map.get(type);
+  if (v === undefined) {
+    return defaultVal;
+  }
+
+  return parseInt(v, 10) || defaultVal;
+}
+
 function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawTheme = getString(map, THEME_SETTING_TYPE);
   const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
@@ -154,6 +167,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
+  const maxAiMemories = getNumber(map, MAX_AI_MEMORIES_SETTING_TYPE, 50);
 
   return {
     language,
@@ -164,7 +178,11 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     writeHealthData: getBoolean(map, WRITE_HEALTH_DATA_SETTING_TYPE),
     anonymousBugReport: getBoolean(map, ANONYMOUS_BUG_REPORT_SETTING_TYPE, true),
     googleGeminiApiKey: getString(map, GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
-    googleGeminiModel: getString(map, GOOGLE_GEMINI_MODEL_SETTING_TYPE, 'gemini-2.0-flash'),
+    googleGeminiModel: getString(
+      map,
+      GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+      GEMINI_MODELS.GEMINI_2_5_FLASH.value
+    ),
     openAiApiKey: getString(map, OPENAI_API_KEY_SETTING_TYPE),
     openAiModel: getString(map, OPENAI_MODEL_SETTING_TYPE, 'gpt-4o'),
     enableGoogleGemini: getBoolean(map, ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true),
@@ -187,6 +205,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     conversationContext:
       (rawConversationContext as 'general' | 'exercise' | 'nutrition') || 'general',
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
+    maxAiMemories,
     isLoading: false,
   };
 }
@@ -222,6 +241,7 @@ export type SettingsContextType = UseSettingsResult & {
   conversationContext: 'general' | 'exercise' | 'nutrition';
   chartTooltipPosition: ChartTooltipPosition;
   language: string;
+  maxAiMemories: number;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

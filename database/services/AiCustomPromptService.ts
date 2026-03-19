@@ -25,22 +25,21 @@ export class AiCustomPromptService {
     context?: AiCustomPromptContext,
     type?: AiCustomPromptType
   ): Promise<AiCustomPrompt[]> {
-    const query = [Q.where('deleted_at', Q.eq(null)), Q.where('is_active', Q.eq(true))];
+    let query = database
+      .get<AiCustomPrompt>('ai_custom_prompts')
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('is_active', Q.eq(true)));
 
     if (context) {
-      query.push(Q.where('context', context));
+      query = query.extend(Q.where('context', Q.eq(context)));
     }
 
     if (type === 'system') {
-      query.push(Q.or(Q.where('type', 'system'), Q.where('type', Q.eq(null))));
+      query = query.extend(Q.or(Q.where('type', Q.eq('system')), Q.where('type', Q.eq(null))));
     } else if (type) {
-      query.push(Q.where('type', type));
+      query = query.extend(Q.where('type', Q.eq(type)));
     }
 
-    return await database
-      .get<AiCustomPrompt>('ai_custom_prompts')
-      .query(...query, Q.sortBy('created_at', Q.desc))
-      .fetch();
+    return await query.extend(Q.sortBy('created_at', Q.desc)).fetch();
   }
 
   /**

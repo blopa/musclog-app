@@ -165,6 +165,12 @@ export const FOOD_SEARCH_SOURCE_SETTING_TYPE = 'food_search_source';
  */
 export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
 
+/**
+ * Setting type for maximum AI memories (stored in WatermelonDB settings table).
+ * value: string (number as string, e.g., '50').
+ */
+export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'

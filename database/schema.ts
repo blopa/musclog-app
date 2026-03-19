@@ -1,7 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
-  version: 2,
+  version: 1, // no need to change for now
   tables: [
     // 1. Master List of Exercises
     tableSchema({

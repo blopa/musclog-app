@@ -36,6 +36,46 @@
     "tryAICamera": "Experimente a Câmera IA",
     "tryAICameraDesc": "Escaneie sua refeição para identificação instantânea",
     "supportedFormats": "Formatos suportados",
+    "checkin": {
+      "title": "Verificação Semanal",
+      "noCheckinFound": "Nenhuma verificação pendente encontrada.",
+      "status": "Status Atual",
+      "onTrack": "No Rumo Certo",
+      "ahead": "Acima",
+      "behind": "Abaixo",
+      "noCheckinFoundDesc": "Você não tem nenhuma verificação agendada para hoje. Volte no seu próximo dia de verificação agendado!",
+      "headline": {
+        "onTrack": "Está Ótimo!",
+        "ahead": "Acelerando!",
+        "behind": "Espaço para Crescer"
+      },
+      "subtext": {
+        "onTrack": "Você manteve um ritmo consistente esta semana. Continue se esforçando para seus objetivos.",
+        "ahead": "Você está acima dos seus objetivos de peso! Ótimo trabalho na consistência.",
+        "behind": "Você teve algumas flutuações esta semana, mas a consistência é fundamental. Vamos voltar ao rumo!"
+      },
+      "weightTrend": "Tendência de Peso",
+      "target": "Objetivo",
+      "targetShort": "Objetivo: {{value}}%",
+      "weeklyBreakdown": "Detalhamento Semanal",
+      "weekProgress": "Semana {{current}} de {{total}}",
+      "summaryIntro": "Você visou {{target}} kcal/dia, mas em média",
+      "summaryOutro": "Apesar do resultado, você completou",
+      "workoutsCount": "treinos",
+      "withHighIntensity": "com alta intensidade.",
+      "avgIntake": "Ingestão Média",
+      "consistency": "Consistência",
+      "rate": "taxa",
+      "avgBodyFat": "Gordura Corporal Média",
+      "activeMinutes": "Minutos Ativos",
+      "vsLastWeek": "{{prefix}}{{value}}% vs semana passada",
+      "adherence": "Aderência Semanal",
+      "summary": "Você visou {{targetKcal}} kcal/dia, mas em média {{actualKcal}} kcal/dia. Você completou {{workouts}} treinos.",
+      "weightComparison": "Peso: {{actual}} / {{target}} {{unit}}",
+      "insufficientData": "Você registrou peso menos de 4 vezes esta semana. As médias podem ser menos precisas.",
+      "keepMacros": "Manter meus macros atuais",
+      "readjust": "Reajustar meu plano"
+    },
     "common": {
       "kcal": "kcal"
     },
@@ -58,6 +98,9 @@
       "identifiedItems": "Itens Identificados",
       "addItem": "Adicionar Item",
       "confirmAndLog": "Confirmar e Registrar Refeição"
+    },
+    "index": {
+      "handleSaveCustomFood": "Alimento personalizado salvo com sucesso."
     },
     "manageFoodData": {
       "title": "Registro de Nutrição",

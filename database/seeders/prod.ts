@@ -381,6 +381,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setSendFoundationFoodsToLlm(true);
     console.log('Set default send foundation foods to LLM to true');
 
+    await SettingsService.setMaxAiMemories(50);
+    console.log('Set default max AI memories to 50');
+
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
     console.log('Production data seeding completed successfully');

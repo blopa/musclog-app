@@ -1,3 +1,4 @@
+import { GEMINI_MODELS } from '../constants/ai';
 import { GoogleAuthService, SettingsService } from '../database/services';
 import type { CoachAIConfig } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
@@ -20,7 +21,9 @@ export class AiService {
           return {
             provider: 'gemini',
             accessToken,
-            model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.0-flash',
+            model:
+              (await SettingsService.getGoogleGeminiModel()) ||
+              GEMINI_MODELS.GEMINI_2_5_FLASH.value,
             language: await SettingsService.getLanguage(),
           };
         }
@@ -33,7 +36,8 @@ export class AiService {
         return {
           provider: 'gemini',
           apiKey: geminiKey,
-          model: (await SettingsService.getGoogleGeminiModel()) || 'gemini-2.0-flash',
+          model:
+            (await SettingsService.getGoogleGeminiModel()) || GEMINI_MODELS.GEMINI_2_5_FLASH.value,
           language: await SettingsService.getLanguage(),
         };
       }

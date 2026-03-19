@@ -1,7 +1,5 @@
 import { database } from '../../index';
 import { AiCustomPromptService } from '../AiCustomPromptService';
-import { createMockDatabase, mockQ } from './helpers';
-import SettingsService from '../SettingsService';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -41,8 +39,8 @@ jest.mock('../../index', () => {
 });
 
 jest.mock('../SettingsService', () => ({
-    getMaxAiMemories: jest.fn().mockResolvedValue(50),
-    setMaxAiMemories: jest.fn().mockResolvedValue(undefined),
+  getMaxAiMemories: jest.fn().mockResolvedValue(50),
+  setMaxAiMemories: jest.fn().mockResolvedValue(undefined),
 }));
 
 const mockDatabase = database as jest.Mocked<typeof database>;
@@ -54,7 +52,12 @@ describe('AiCustomPromptService', () => {
 
   describe('createPrompt', () => {
     it('should create a system prompt by default', async () => {
-      const mockCreate = jest.fn().mockResolvedValue({ name: 'Test', content: 'Content', type: 'system', context: 'general' });
+      const mockCreate = jest.fn().mockResolvedValue({
+        name: 'Test',
+        content: 'Content',
+        type: 'system',
+        context: 'general',
+      });
       mockDatabase.get.mockReturnValue({ create: mockCreate } as any);
 
       await AiCustomPromptService.createPrompt('Test', 'Content');
@@ -70,8 +73,8 @@ describe('AiCustomPromptService', () => {
     it('should create a memory prompt when type is memory', async () => {
       const mockCreate = jest.fn().mockResolvedValue({});
       mockDatabase.get.mockReturnValue({
-          query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
-          create: mockCreate
+        query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
+        create: mockCreate,
       } as any);
 
       await AiCustomPromptService.createPrompt('Test', 'Content', true, 'nutrition', 'memory');

@@ -20,6 +20,7 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
+import NewNumericalInput from '../theme/NewNumericalInput';
 import { SecretInput } from '../theme/SecretInput';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
@@ -141,7 +142,9 @@ function AIIntegrationCard({
             {/* Save Button */}
             <View className="mb-2 mt-3">
               <Button
-                label={hasUnsavedChanges ? t('save') : t('saved')}
+                label={
+                  hasUnsavedChanges ? t('settings.aiSettings.save') : t('settings.aiSettings.saved')
+                }
                 onPress={onSaveApiKey}
                 disabled={!hasUnsavedChanges}
                 size="sm"
@@ -465,14 +468,13 @@ export function AISettingsModal({
               borderWidth: theme.borderWidth.thin,
             }}
           >
-            <TextInput
+            <NewNumericalInput
               label={t('settings.aiSettings.maxAiMemories')}
-              value={debouncedMaxAiMemories.toString()}
-              onChangeText={(v) => handleMaxAiMemoriesChange(parseInt(v, 10) || 0)}
-              keyboardType="numeric"
-              placeholder="50"
+              value={debouncedMaxAiMemories || 50}
+              onChange={handleMaxAiMemoriesChange}
+              min={1}
             />
-            <Text className="mt-2 text-xs text-text-secondary">
+            <Text className="mt-3 text-xs text-text-secondary">
               {t('settings.aiSettings.maxAiMemoriesSubtitle')}
             </Text>
           </View>
