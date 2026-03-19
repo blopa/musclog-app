@@ -21,7 +21,7 @@ import ChatMessage, {
   type TrackMealPayload,
   type WorkoutPlanPayload,
 } from '../database/models/ChatMessage';
-import { ChatService, NutritionService } from '../database/services';
+import { AiCustomPromptService, ChatService, NutritionService } from '../database/services';
 import AiService from '../services/AiService';
 import {
   AiCreditsError,
@@ -405,8 +405,6 @@ export function useChatMessages(
         const slicedHistory = contextFilteredHistory.slice(-maxHistoryLength);
         const historyWithoutCurrentMessage = slicedHistory.slice(0, -1);
 
-        const systemMessage = await getChatMessagePromptContent();
-
         // Workout-completed messages are shown as Loggy in the UI but sent to the LLM as user
         // messages with rich content. We always recompute from payload so old messages get the
         // full JSON/linguistic summary too.
@@ -436,10 +434,6 @@ export function useChatMessages(
         const historyEntries = await Promise.all(
           historyWithoutCurrentMessage.map(buildHistoryEntry)
         );
-        const history: ChatHistoryEntry[] = [
-          { role: 'user', content: systemMessage },
-          ...historyEntries,
-        ];
 
         // 5. Route based on pending intention or default to chat
         let reply: CoachResponse | null = null;
@@ -452,7 +446,11 @@ export function useChatMessages(
             { role: 'user' as const, content: text.trim() },
           ];
 
-          const workoutPlan = await generateWorkoutPlan(aiConfig, recentConversation);
+          const workoutPlan = await generateWorkoutPlan(
+            aiConfig,
+            recentConversation,
+            conversationContext
+          );
 
           if (workoutPlan) {
             // Process the workout plan and create templates in database
@@ -499,7 +497,8 @@ export function useChatMessages(
             startDate,
             endDate,
             text.trim(),
-            recentConversation
+            recentConversation,
+            conversationContext
           );
           if (!result?.trim()) {
             if (userRecord) {
@@ -527,7 +526,8 @@ export function useChatMessages(
             startDate,
             endDate,
             text.trim(),
-            recentConversation
+            recentConversation,
+            conversationContext
           );
           if (!result?.trim()) {
             if (userRecord) {
@@ -592,7 +592,12 @@ export function useChatMessages(
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
         } else {
           // Default: send regular chat message
-          reply = await sendCoachMessage(aiConfig, history.slice(1), text.trim()); // slice(1) to exclude system message from standard chat
+          reply = await sendCoachMessage(
+            aiConfig,
+            historyEntries,
+            text.trim(),
+            conversationContext
+          );
         }
 
         if (!reply) {
@@ -602,6 +607,17 @@ export function useChatMessages(
         // 5b. If the AI returned a summary of the user's message, persist it
         if (reply.sumUserMsg && userRecord) {
           await ChatService.updateMessageSummary(userRecord, reply.sumUserMsg);
+        }
+
+        // 5c. If the AI returned a memory about the user, persist it
+        if (reply.rememberMe?.trim()) {
+          await AiCustomPromptService.createPrompt(
+            `Memory from ${new Date().toLocaleDateString()}`,
+            reply.rememberMe.trim(),
+            true,
+            conversationContext,
+            'memory'
+          );
         }
 
         // 6. Persist coach reply and prepend to UI
