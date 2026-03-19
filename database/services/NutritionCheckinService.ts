@@ -330,4 +330,21 @@ export class NutritionCheckinService {
       await checkin.markAsDeleted();
     });
   }
+
+  /**
+   * Soft-delete all check-ins belonging to a given nutrition goal.
+   * Called when a goal is superseded so its check-ins don't linger as dead data.
+   */
+  static async deleteByGoalId(goalId: string): Promise<void> {
+    await database.write(async () => {
+      const checkins = await database
+        .get<NutritionCheckin>('nutrition_checkins')
+        .query(Q.where('nutrition_goal_id', goalId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const checkin of checkins) {
+        await checkin.markAsDeleted();
+      }
+    });
+  }
 }

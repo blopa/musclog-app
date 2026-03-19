@@ -134,7 +134,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           bodyFatPercent: bodyFatDecrypted?.value,
         });
 
-        // TODO: after generating new check-ins, we should mark the ones for the previous goal as deleted, right? Or not? Analyze code and decide it.
         const checkins = generateWeeklyCheckins(
           plan,
           Date.now(),
