@@ -21,6 +21,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import {
   calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
   NutritionPlan,
   planToInitialGoals,
@@ -111,11 +112,6 @@ export default function NutritionGoalsScreen() {
           targetDate: goals.targetDate ?? null,
         });
 
-        // If this is a check-in adjustment, mark the check-in as completed
-        if (isCheckinAdjusting && params.checkinId) {
-          await NutritionCheckinService.update(params.checkinId, { completed: true });
-        }
-
         // Generate new check-ins for the new goal
         const userMetric = await UserMetricService.getLatest('weight');
         const heightMetric = await UserMetricService.getLatest('height');
@@ -132,13 +128,7 @@ export default function NutritionGoalsScreen() {
             heightCm: heightDecrypted.value,
             age: 25, // fallback
             activityLevel: 3, // fallback
-            weightGoal:
-              // TODO: move this to a helper function to avoid nested ternary
-              goals.eatingPhase === 'cut'
-                ? 'lose'
-                : goals.eatingPhase === 'bulk'
-                  ? 'gain'
-                  : 'maintain',
+            weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
             bodyFatPercent: bodyFatDecrypted?.value,
@@ -165,8 +155,7 @@ export default function NutritionGoalsScreen() {
         }
 
         if (isCheckinAdjusting) {
-          // TODO: navigate to the new checkin list screen
-          router.replace('/progress');
+          router.replace('/nutrition/checkin-list');
           return;
         }
 
@@ -179,7 +168,7 @@ export default function NutritionGoalsScreen() {
         console.error('Error saving nutrition goals:', e);
       }
     },
-    [isAdjusting, isCheckinAdjusting, params.checkinId, router, t]
+    [isAdjusting, isCheckinAdjusting, router, t]
   );
 
   if (isLoading) {

@@ -2,6 +2,10 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '../index';
 import type NutritionCheckin from '../models/NutritionCheckin';
+import type { CheckinStatus } from '../models/NutritionCheckin';
+import type NutritionLog from '../models/NutritionLog';
+import type UserMetric from '../models/UserMetric';
+import type WorkoutLog from '../models/WorkoutLog';
 
 export interface NutritionCheckinInput {
   checkinDate: number;
@@ -9,7 +13,22 @@ export interface NutritionCheckinInput {
   targetBodyFat: number;
   targetBmi: number;
   targetFfmi: number;
-  completed?: boolean;
+  status?: CheckinStatus;
+}
+
+export interface CheckinMetrics {
+  avgWeight: number;
+  trend: number;
+  avgCalories: number;
+  consistency: number;
+  avgBodyFat: number | null;
+  activeMinutes: number;
+  activeMinutesTrend: number | null;
+  dailyWeights: number[];
+  workoutsCount: number;
+  weekInfo: { current: number; total: number };
+  status: 'ahead' | 'onTrack' | 'behind';
+  hasEnoughData: boolean;
 }
 
 export class NutritionCheckinService {
@@ -58,6 +77,154 @@ export class NutritionCheckinService {
   }
 
   /**
+   * Compute metrics for a check-in based on logs from the 7 days ending on checkinDate.
+   */
+  static async getCheckinMetrics(checkin: NutritionCheckin): Promise<CheckinMetrics> {
+    const periodEnd = checkin.checkinDate;
+    const periodStart = periodEnd - 7 * 24 * 60 * 60 * 1000;
+    const prevPeriodStart = periodStart - 7 * 24 * 60 * 60 * 1000;
+
+    // Fetch all check-ins for the same goal to compute weekInfo
+    const allCheckins = await NutritionCheckinService.getByGoalId(checkin.nutritionGoalId);
+    const currentIndex = allCheckins.findIndex((c) => c.id === checkin.id);
+    const weekInfo = {
+      current: currentIndex >= 0 ? currentIndex + 1 : allCheckins.length,
+      total: allCheckins.length,
+    };
+
+    // Fetch weight metrics for current period
+    const weightMetrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('date', Q.between(periodStart, periodEnd)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('date', Q.asc)
+      )
+      .fetch();
+
+    // Build daily weights array (7 slots, one per day)
+    const dailyWeights: number[] = Array(7).fill(0);
+    const decryptedWeights: number[] = [];
+    for (const metric of weightMetrics) {
+      const { value } = await metric.getDecrypted();
+      decryptedWeights.push(value);
+      const dayIndex = Math.floor((metric.date - periodStart) / (24 * 60 * 60 * 1000));
+      if (dayIndex >= 0 && dayIndex < 7) {
+        dailyWeights[dayIndex] = value;
+      }
+    }
+
+    const avgWeight =
+      decryptedWeights.length > 0
+        ? decryptedWeights.reduce((a, b) => a + b, 0) / decryptedWeights.length
+        : checkin.targetWeight;
+
+    const trend = avgWeight - checkin.targetWeight;
+
+    // Fetch body fat metrics for current period
+    const bodyFatMetrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('date', Q.between(periodStart, periodEnd)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    let avgBodyFat: number | null = null;
+    if (bodyFatMetrics.length > 0) {
+      const bodyFatValues = await Promise.all(
+        bodyFatMetrics.map(async (m) => (await m.getDecrypted()).value)
+      );
+      avgBodyFat = bodyFatValues.reduce((a: number, b: number) => a + b, 0) / bodyFatValues.length;
+    }
+
+    // Fetch nutrition logs for current period
+    const nutritionLogs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('date', Q.between(periodStart, periodEnd)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    // Group nutrition logs by day and sum calories per day
+    const caloriesByDay = new Map<number, number>();
+    for (const log of nutritionLogs) {
+      const snapshot = await log.getDecryptedSnapshot();
+      const dayKey = Math.floor(log.date / (24 * 60 * 60 * 1000));
+      caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
+    }
+
+    const daysWithLogs = caloriesByDay.size;
+    const totalCalories = Array.from(caloriesByDay.values()).reduce((a, b) => a + b, 0);
+    const avgCalories = daysWithLogs > 0 ? Math.round(totalCalories / daysWithLogs) : 0;
+    const consistency = Math.round((daysWithLogs / 7) * 100);
+
+    // Fetch workout logs for current period
+    const workoutLogs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('started_at', Q.between(periodStart, periodEnd)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    const workoutsCount = workoutLogs.length;
+    const activeMinutes = workoutLogs.reduce((sum, w) => {
+      if (w.completedAt && w.startedAt) {
+        return sum + Math.round((w.completedAt - w.startedAt) / 60000);
+      }
+      return sum;
+    }, 0);
+
+    // Fetch workout logs for prior period to compute trend
+    const prevWorkoutLogs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('started_at', Q.between(prevPeriodStart, periodStart)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    const prevActiveMinutes = prevWorkoutLogs.reduce((sum, w) => {
+      if (w.completedAt && w.startedAt) {
+        return sum + Math.round((w.completedAt - w.startedAt) / 60000);
+      }
+      return sum;
+    }, 0);
+
+    const activeMinutesTrend =
+      prevWorkoutLogs.length > 0 ? activeMinutes - prevActiveMinutes : null;
+
+    // Determine status using 0.5% weight deviation threshold
+    const threshold = checkin.targetWeight * 0.005;
+    let status: 'ahead' | 'onTrack' | 'behind';
+    if (Math.abs(trend) <= threshold) {
+      status = 'onTrack';
+    } else if (trend < 0) {
+      status = 'ahead';
+    } else {
+      status = 'behind';
+    }
+
+    const hasEnoughData = decryptedWeights.length >= 3 && daysWithLogs >= 3;
+
+    return {
+      avgWeight,
+      trend,
+      avgCalories,
+      consistency,
+      avgBodyFat,
+      activeMinutes,
+      activeMinutesTrend,
+      dailyWeights,
+      workoutsCount,
+      weekInfo,
+      status,
+      hasEnoughData,
+    };
+  }
+
+  /**
    * Create a new check-in for a nutrition goal.
    */
   static async create(
@@ -73,7 +240,7 @@ export class NutritionCheckinService {
         r.targetBodyFat = data.targetBodyFat;
         r.targetBmi = data.targetBmi;
         r.targetFfmi = data.targetFfmi;
-        r.completed = data.completed ?? false;
+        r.status = data.status ?? 'pending';
         r.createdAt = now;
         r.updatedAt = now;
       });
@@ -103,7 +270,7 @@ export class NutritionCheckinService {
           r.targetBodyFat = data.targetBodyFat;
           r.targetBmi = data.targetBmi;
           r.targetFfmi = data.targetFfmi;
-          r.completed = data.completed ?? false;
+          r.status = data.status ?? 'pending';
           r.createdAt = now;
           r.updatedAt = now;
         })
@@ -144,8 +311,8 @@ export class NutritionCheckinService {
         if (updates.targetFfmi !== undefined) {
           record.targetFfmi = updates.targetFfmi;
         }
-        if (updates.completed !== undefined) {
-          record.completed = updates.completed;
+        if (updates.status !== undefined) {
+          record.status = updates.status;
         }
         record.updatedAt = Date.now();
       });
@@ -161,6 +328,23 @@ export class NutritionCheckinService {
     await database.write(async () => {
       const checkin = await database.get<NutritionCheckin>('nutrition_checkins').find(id);
       await checkin.markAsDeleted();
+    });
+  }
+
+  /**
+   * Soft-delete all check-ins belonging to a given nutrition goal.
+   * Called when a goal is superseded so its check-ins don't linger as dead data.
+   */
+  static async deleteByGoalId(goalId: string): Promise<void> {
+    await database.write(async () => {
+      const checkins = await database
+        .get<NutritionCheckin>('nutrition_checkins')
+        .query(Q.where('nutrition_goal_id', goalId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      for (const checkin of checkins) {
+        await checkin.markAsDeleted();
+      }
     });
   }
 }

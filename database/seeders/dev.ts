@@ -28,13 +28,7 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import {
-  ChatService,
-  ExerciseService,
-  MealService,
-  SettingsService,
-  UserService,
-} from '../services';
+import { ExerciseService, MealService, SettingsService, UserService } from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -2262,30 +2256,66 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
 
-  // Seed a pending check-in for today
+  // Seed nutrition check-ins: past completed ones + upcoming pending ones
   await database.write(async () => {
     const goals = await database.get('nutrition_goals').query().fetch();
     const goal = goals[0];
-    if (goal) {
-      const existingCheckins = await database
-        .get('nutrition_checkins')
-        .query(Q.where('nutrition_goal_id', goal.id))
-        .fetch();
-      if (existingCheckins.length === 0) {
-        await database.get('nutrition_checkins').create((c: any) => {
-          c.nutritionGoalId = goal.id;
-          c.checkinDate = Date.now();
-          c.targetWeight = 78.0; // Slightly below current weight to test "behind" status for maintain
-          c.targetBodyFat = 14.8;
-          c.targetBmi = 24.0;
-          c.targetFfmi = 19.4;
-          c.completed = false;
-          c.createdAt = Date.now();
-          c.updatedAt = Date.now();
-        });
-        console.log('Seeded pending check-in');
-      }
+    if (!goal) {
+      return;
     }
+
+    const existingCheckins = await database
+      .get('nutrition_checkins')
+      .query(Q.where('nutrition_goal_id', goal.id))
+      .fetch();
+
+    if (existingCheckins.length > 0) {
+      return;
+    }
+
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const week = 7 * day;
+
+    // Helper: date offset from today in ms
+    const weeksAgo = (n: number) => now - n * week;
+    const weeksAhead = (n: number) => now + n * week;
+
+    const checkinData: { checkinDate: number; status: string; targetWeight: number }[] = [
+      // Past completed check-ins (history section)
+      { checkinDate: weeksAgo(10), status: 'onTrack', targetWeight: 80.5 },
+      { checkinDate: weeksAgo(9), status: 'ahead', targetWeight: 80.0 },
+      { checkinDate: weeksAgo(8), status: 'onTrack', targetWeight: 79.5 },
+      { checkinDate: weeksAgo(7), status: 'behind', targetWeight: 79.0 },
+      { checkinDate: weeksAgo(6), status: 'onTrack', targetWeight: 79.0 },
+      { checkinDate: weeksAgo(5), status: 'ahead', targetWeight: 78.5 },
+      { checkinDate: weeksAgo(4), status: 'onTrack', targetWeight: 78.5 },
+      { checkinDate: weeksAgo(3), status: 'behind', targetWeight: 78.0 },
+      { checkinDate: weeksAgo(2), status: 'onTrack', targetWeight: 78.0 },
+      { checkinDate: weeksAgo(1), status: 'ahead', targetWeight: 77.5 },
+      // Upcoming pending check-ins (next milestones section — only first shown)
+      { checkinDate: weeksAhead(1), status: 'pending', targetWeight: 77.5 },
+      { checkinDate: weeksAhead(2), status: 'pending', targetWeight: 77.0 },
+      { checkinDate: weeksAhead(3), status: 'pending', targetWeight: 76.5 },
+    ];
+
+    const collection = database.get('nutrition_checkins');
+    const records = checkinData.map((d) =>
+      (collection as any).prepareCreate((c: any) => {
+        c.nutritionGoalId = goal.id;
+        c.checkinDate = d.checkinDate;
+        c.targetWeight = d.targetWeight;
+        c.targetBodyFat = 14.5;
+        c.targetBmi = 23.8;
+        c.targetFfmi = 19.2;
+        c.status = d.status;
+        c.createdAt = now;
+        c.updatedAt = now;
+      })
+    );
+
+    await database.batch(...records);
+    console.log(`Seeded ${records.length} nutrition check-ins`);
   });
 
   const chatSeeded = await seedChatHistory();

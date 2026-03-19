@@ -39,7 +39,7 @@
     "checkin": {
       "title": "Verificação Semanal",
       "noCheckinFound": "Nenhuma verificação pendente encontrada.",
-      "status": "Status Atual",
+      "currentStatus": "Status Atual",
       "onTrack": "No Rumo Certo",
       "ahead": "Acima",
       "behind": "Abaixo",
@@ -74,7 +74,21 @@
       "weightComparison": "Peso: {{actual}} / {{target}} {{unit}}",
       "insufficientData": "Você registrou peso menos de 4 vezes esta semana. As médias podem ser menos precisas.",
       "keepMacros": "Manter meus macros atuais",
-      "readjust": "Reajustar meu plano"
+      "readjust": "Reajustar meu plano",
+      "nextMilestones": "Próxima Meta",
+      "history": "Histórico",
+      "weekTitle": "Revisão da Semana {{number}}",
+      "prepareNow": "Preparar Agora",
+      "noMilestones": "Nenhuma verificação futura. Conclua a configuração do seu objetivo nutricional para começar.",
+      "noHistory": "Nenhuma verificação concluída ainda.",
+      "selectYear": "Filtrar por Ano",
+      "notEnoughDataWarning": "Poucos dados registrados esta semana. Os resultados podem ser imprecisos.",
+      "status": {
+        "pending": "Pendente",
+        "ahead": "Acima",
+        "onTrack": "No Rumo Certo",
+        "behind": "Abaixo"
+      }
     },
     "common": {
       "kcal": "kcal"

@@ -375,7 +375,7 @@ export class NotificationService {
     const checkins = await database
       .get<NutritionCheckin>('nutrition_checkins')
       .query(
-        Q.where('completed', Q.notEq(true)),
+        Q.or(Q.where('status', Q.eq('pending')), Q.where('status', Q.eq(null))),
         Q.where('checkin_date', Q.between(now, thirtyDaysFromNow)),
         Q.where('deleted_at', Q.eq(null))
       )

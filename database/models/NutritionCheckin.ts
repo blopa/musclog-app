@@ -1,7 +1,9 @@
-import { Model, Query } from '@nozbe/watermelondb';
-import { children, field, relation } from '@nozbe/watermelondb/decorators';
+import { Model } from '@nozbe/watermelondb';
+import { field, relation } from '@nozbe/watermelondb/decorators';
 
 import NutritionGoal from './NutritionGoal';
+
+export type CheckinStatus = 'pending' | 'ahead' | 'onTrack' | 'behind';
 
 export default class NutritionCheckin extends Model {
   static table = 'nutrition_checkins';
@@ -16,7 +18,7 @@ export default class NutritionCheckin extends Model {
   @field('target_body_fat') targetBodyFat!: number;
   @field('target_bmi') targetBmi!: number;
   @field('target_ffmi') targetFfmi!: number;
-  @field('completed') completed!: boolean;
+  @field('status') status?: CheckinStatus;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;
   @field('deleted_at') deletedAt?: number;

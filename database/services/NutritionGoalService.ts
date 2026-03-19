@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
+import { NutritionCheckinService } from './NutritionCheckinService';
 
 export interface NutritionGoalInput {
   totalCalories: number;
@@ -62,22 +63,25 @@ export class NutritionGoalService {
   /**
    * Save a new snapshot of goals. Supersedes all current goals (sets effective_until = now on each).
    */
-  static async saveGoals(data: NutritionGoalInput): Promise<NutritionGoal> {
+  static async saveGoals(data: NutritionGoalInput, shouldDeleteCheckins = true): Promise<NutritionGoal> {
     const now = Date.now();
-    return await database.write(async () => {
+    const supersededGoalIds: string[] = [];
+
+    const newGoal = await database.write(async () => {
       const current = await database
         .get<NutritionGoal>('nutrition_goals')
         .query(Q.where('effective_until', Q.eq(null)), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       for (const row of current) {
+        supersededGoalIds.push(row.id);
         await row.update((r) => {
           r.effectiveUntil = now;
           r.updatedAt = now;
         });
       }
 
-      const newGoal = await database.get<NutritionGoal>('nutrition_goals').create((r) => {
+      const goal = await database.get<NutritionGoal>('nutrition_goals').create((r) => {
         r.totalCalories = data.totalCalories;
         r.protein = data.protein;
         r.carbs = data.carbs;
@@ -98,8 +102,18 @@ export class NutritionGoalService {
         await requestNutritionWidgetUpdate();
       }
 
-      return newGoal;
+      return goal;
     });
+
+    if (shouldDeleteCheckins) {
+      // Soft-delete check-ins that belonged to the superseded goals. Run outside the
+      // write block above to avoid nesting write transactions.
+      for (const goalId of supersededGoalIds) {
+        await NutritionCheckinService.deleteByGoalId(goalId);
+      }
+    }
+
+    return newGoal;
   }
 
   /**

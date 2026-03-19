@@ -3,6 +3,7 @@ import {
   BarChart3,
   Calendar,
   Camera,
+  ClipboardCheck,
   Dumbbell,
   Home,
   MessageSquare,
@@ -267,6 +268,36 @@ export const NavigationMenu = memo(function NavigationMenu({
                 className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
               >
                 {t('userMenu.progress')}
+              </Text>
+            </Pressable>
+          );
+        }
+
+        case 'checkin': {
+          const active = isPathActive('/nutrition/checkin-list');
+          return (
+            <Pressable
+              key="checkin"
+              className="flex-1 items-center justify-center gap-1"
+              onPress={() => {
+                if (!active) {
+                  router.push('/nutrition/checkin-list');
+                }
+              }}
+            >
+              <View
+                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+              >
+                <ClipboardCheck
+                  size={theme.iconSize.md}
+                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+                />
+              </View>
+              <Text
+                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+              >
+                {t('home.navigation.checkin')}
               </Text>
             </Pressable>
           );
