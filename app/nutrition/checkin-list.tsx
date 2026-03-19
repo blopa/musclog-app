@@ -1,11 +1,11 @@
 import { format, getWeek } from 'date-fns';
-import { useRouter } from 'expo-router';
 import { Calendar, ChevronRight, History } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { MasterLayout } from '../../components/MasterLayout';
+import { CheckinDetailsModal } from '../../components/modals/CheckinDetailsModal';
 import { SelectModal } from '../../components/modals/SelectModal';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useNutritionCheckins } from '../../hooks/useNutritionCheckins';
@@ -14,12 +14,12 @@ import { useTheme } from '../../hooks/useTheme';
 export default function CheckinListScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { checkins } = useNutritionCheckins({
     nutritionGoalId: currentGoal?.id,
   });
 
+  const [selectedCheckinId, setSelectedCheckinId] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [isYearModalVisible, setIsYearModalVisible] = useState(false);
 
@@ -100,9 +100,7 @@ export default function CheckinListScreen() {
             milestones.map((c) => (
               <Pressable
                 key={c.id}
-                onPress={() =>
-                  router.push({ pathname: '/nutrition/checkin', params: { id: c.id } })
-                }
+                onPress={() => setSelectedCheckinId(c.id)}
                 className="flex-row items-center justify-between rounded-2xl bg-bg-card p-4 shadow-sm"
               >
                 <View className="flex-1">
@@ -154,9 +152,7 @@ export default function CheckinListScreen() {
               history.map((c) => (
                 <Pressable
                   key={c.id}
-                  onPress={() =>
-                    router.push({ pathname: '/nutrition/checkin', params: { id: c.id } })
-                  }
+                  onPress={() => setSelectedCheckinId(c.id)}
                   className="flex-row items-center justify-between rounded-2xl bg-bg-card p-4"
                 >
                   <View>
@@ -183,6 +179,12 @@ export default function CheckinListScreen() {
 
         <View className="h-20" />
       </ScrollView>
+
+      <CheckinDetailsModal
+        checkinId={selectedCheckinId}
+        visible={!!selectedCheckinId}
+        onClose={() => setSelectedCheckinId(null)}
+      />
 
       <SelectModal
         visible={isYearModalVisible}

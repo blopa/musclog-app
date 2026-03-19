@@ -28,12 +28,7 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import {
-  ExerciseService,
-  MealService,
-  SettingsService,
-  UserService,
-} from '../services';
+import { ExerciseService, MealService, SettingsService, UserService } from '../services';
 
 /**
  * Seeds the exercises database if it's empty

@@ -274,7 +274,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'checkin': {
-          const active = isPathActive('/nutrition/checkin');
+          const active = isPathActive('/nutrition/checkin-list');
           return (
             <Pressable
               key="checkin"
