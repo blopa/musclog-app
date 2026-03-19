@@ -39,7 +39,7 @@
     "checkin": {
       "title": "Weekly Check-in",
       "noCheckinFound": "No pending check-ins found.",
-      "status": "Current Status",
+      "currentStatus": "Current Status",
       "onTrack": "On Track",
       "ahead": "Ahead",
       "behind": "Behind",
@@ -74,7 +74,21 @@
       "weightComparison": "Weight: {{actual}} / {{target}} {{unit}}",
       "insufficientData": "You have logged weight less than 4 times this week. Averages may be less accurate.",
       "keepMacros": "Keep my current macros",
-      "readjust": "Readjust my plan"
+      "readjust": "Readjust my plan",
+      "nextMilestones": "Next Milestone",
+      "history": "History",
+      "weekTitle": "Week {{number}} Review",
+      "prepareNow": "Prepare Now",
+      "noMilestones": "No upcoming check-ins. Complete your nutrition goal setup to get started.",
+      "noHistory": "No completed check-ins yet.",
+      "selectYear": "Filter by Year",
+      "notEnoughDataWarning": "Not enough data logged this week. Results may be inaccurate.",
+      "status": {
+        "pending": "Pending",
+        "ahead": "Ahead",
+        "onTrack": "On Track",
+        "behind": "Behind"
+      }
     },
     "common": {
       "kcal": "kcal"

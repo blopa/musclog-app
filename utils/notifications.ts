@@ -37,10 +37,7 @@ export async function handleNotificationResponse(response: Notifications.Notific
       break;
 
     case 'nutrition-checkin':
-      router.push({
-        pathname: '/nutrition/checkin',
-        params: { checkinId: data.checkinId as string },
-      });
+      router.push('/nutrition/checkin-list');
       break;
 
     case 'active-workout':
