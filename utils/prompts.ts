@@ -28,9 +28,11 @@ export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_S
 /**
  * Get active custom system prompts formatted for inclusion
  */
-export const getActiveCustomPrompts = async (): Promise<string> => {
+export const getActiveCustomPrompts = async (
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
   try {
-    const activePrompts = await AiCustomPromptService.getActivePrompts();
+    const activePrompts = await AiCustomPromptService.getActivePrompts(context, 'system');
     if (activePrompts.length === 0) {
       return '';
     }
@@ -42,10 +44,35 @@ export const getActiveCustomPrompts = async (): Promise<string> => {
 };
 
 /**
+ * Get active memories for the conversation context
+ */
+export const getActiveMemories = async (
+  context: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  try {
+    const memories = await AiCustomPromptService.getActivePrompts(context, 'memory');
+    if (memories.length === 0) {
+      return '';
+    }
+
+    const memoryList = memories.map((m) => `- ${m.content}`).join('\n');
+    return `This is your memory about the convo with this user:\n${memoryList}`;
+  } catch (error) {
+    console.error('[prompts] Error fetching active memories:', error);
+    return '';
+  }
+};
+
+/**
  * Base system prompt for Loggy persona
  */
-export const getBaseSystemPrompt = async (language: string = 'en-US'): Promise<string> => {
-  const customPrompts = await getActiveCustomPrompts();
+export const getBaseSystemPrompt = async (
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const customPrompts = await getActiveCustomPrompts(context);
+  const memories = context ? await getActiveMemories(context) : '';
+
   const basePrompt =
     `You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
 Your goal is to provide expert, motivating, and practical fitness advice.
@@ -55,9 +82,18 @@ STRICT GUIDELINES:
 2. LANGUAGE: You MUST respond in ${language}, even if the user speaks to you in another language.
 3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
-5. CONCISE: ${BE_CONCISE_PROMPT}`.trim();
+5. CONCISE: ${BE_CONCISE_PROMPT}
+6. MEMORY: If the user shares something personally significant, a specific preference, or an important milestone that should be remembered for future context, provide a brief note in the "remember_me" field.`.trim();
 
-  return customPrompts ? `${basePrompt}\n\n${customPrompts}` : basePrompt;
+  let finalPrompt = basePrompt;
+  if (customPrompts) {
+    finalPrompt += `\n\n${customPrompts}`;
+  }
+  if (memories) {
+    finalPrompt += `\n\n${memories}`;
+  }
+
+  return finalPrompt;
 };
 
 /**
@@ -232,7 +268,8 @@ async function buildWorkoutSummaryJson(workoutLogId: string, units?: Units): Pro
  */
 export const getChatMessagePromptContent = async (
   language: string = 'en-US',
-  eatingPhase?: string
+  eatingPhase?: string,
+  context: 'nutrition' | 'exercise' | 'general' = 'general'
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -256,7 +293,7 @@ export const getChatMessagePromptContent = async (
   }
 
   const sections = [
-    await getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language, context),
     `The current date is ${new Date().toLocaleDateString(language)}.`,
     `The current time is ${new Date().toLocaleTimeString(language)}.`,
     `Some details about the user: ${userDetails}`,
@@ -276,7 +313,8 @@ export const getChatMessagePromptContent = async (
  */
 export const createWorkoutPlanPrompt = async (
   language: string = 'en-US',
-  eatingPhase?: string
+  eatingPhase?: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -293,7 +331,7 @@ export const createWorkoutPlanPrompt = async (
   }
 
   return [
-    await getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language, context),
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
     'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
@@ -312,7 +350,8 @@ export const getNutritionInsightsPrompt = async (
   startDate: string,
   endDate: string,
   language: string = 'en-US',
-  eatingPhase?: string
+  eatingPhase?: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -406,7 +445,7 @@ export const getNutritionInsightsPrompt = async (
   );
 
   return [
-    await getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language, context),
     `Please provide insights about the user's nutrition in these ${diffInDays} days range, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -428,7 +467,8 @@ export const getRecentWorkoutsInsightsPrompt = async (
   startDate: string,
   endDate: string,
   language: string = 'en-US',
-  eatingPhase?: string
+  eatingPhase?: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -458,7 +498,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
   );
 
   return [
-    await getBaseSystemPrompt(language),
+    await getBaseSystemPrompt(language, context),
     `Please provide insights about the user's workouts in these ${diffInDays} days range, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
     BE_CONCISE_PROMPT,
     userDetails,
@@ -871,11 +911,10 @@ export const getSendChatMessageFunctions = ():
             description:
               "A brief 1-2 sentence summary of the user's message, capturing their intent (for history compression).",
           },
-          // TODO: uncomment memory and save it to the database
-          // memory: {
-          //   type: 'string',
-          //   description: 'A short sentence with something important to remember.',
-          // },
+          remember_me: {
+            type: 'string',
+            description: 'A short sentence with something important to remember about the user.',
+          },
         },
         required: ['msg4User', 'sumMsg', 'sumUserMsg'],
       },

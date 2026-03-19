@@ -7,6 +7,7 @@ import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
+  getBaseSystemPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,
@@ -83,6 +84,7 @@ export type CoachResponse = {
   msg4User: string;
   sumMsg: string;
   sumUserMsg?: string;
+  rememberMe?: string;
 };
 
 /**
@@ -197,21 +199,11 @@ export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_S
  * Merged System Prompt:
  * Combines Loggy's app integration with Chad's PhD personality and guardrails.
  */
-const getSystemPrompt = async (language: string = 'en-US') => {
-  const customPrompts = await getActiveCustomPrompts();
-  const basePrompt = `
-You are Loggy, a friendly and knowledgeable personal trainer with a PhD in Exercise Science and Nutrition, embedded in the Musclog app.
-Your goal is to provide expert, motivating, and practical fitness advice.
-
-STRICT GUIDELINES:
-1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally—don't sound like a robot.
-2. LANGUAGE: You MUST respond in ${language}, even if the user speaks to you in another language.
-3. SCOPE: If the user asks about topics unrelated to nutrition, health, or fitness, politely explain you are specialized only in those areas.
-4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
-5. CONCISE: ${BE_CONCISE_PROMPT}
-`.trim();
-
-  return customPrompts ? `${basePrompt}\n\n${customPrompts}` : basePrompt;
+const getSystemPrompt = async (
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+) => {
+  return await getBaseSystemPrompt(language, context);
 };
 
 const baseSchemaProperties = {
@@ -233,12 +225,26 @@ const sumUserMsgProperty = {
   },
 };
 
+const rememberMeProperty = {
+  remember_me: {
+    type: 'string',
+    description: 'A short sentence with something important to remember about the user.',
+  },
+};
+
 function buildResponseSchema(includeUserSummary: boolean) {
+  const properties = {
+    ...baseSchemaProperties,
+    ...rememberMeProperty,
+  };
+
+  if (includeUserSummary) {
+    Object.assign(properties, sumUserMsgProperty);
+  }
+
   return {
     type: 'object',
-    properties: includeUserSummary
-      ? { ...baseSchemaProperties, ...sumUserMsgProperty }
-      : baseSchemaProperties,
+    properties,
     required: includeUserSummary ? ['msg4User', 'sumMsg', 'sumUserMsg'] : ['msg4User', 'sumMsg'],
   };
 }
@@ -261,6 +267,7 @@ function parseCoachResponse(raw: string): CoachResponse {
       msg4User: parsed.msg4User ?? raw,
       sumMsg: parsed.sumMsg ?? raw,
       sumUserMsg: parsed.sumUserMsg ?? undefined,
+      rememberMe: parsed.remember_me ?? undefined,
     };
   } catch {
     return { msg4User: raw, sumMsg: raw };
@@ -313,9 +320,10 @@ function makeSchemaStrict(schema: any): any {
 async function sendViaGemini(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
-  userMessage: string
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
-  const systemPrompt = await getSystemPrompt(config.language);
+  const systemPrompt = await getSystemPrompt(config.language, context);
   const systemParts: Part[] = [{ text: systemPrompt }];
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
 
@@ -341,11 +349,12 @@ async function sendViaGemini(
 async function sendViaOpenAI(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
-  userMessage: string
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
   const client = new OpenAI({ apiKey: config.apiKey, dangerouslyAllowBrowser: true });
   const includeUserSummary = userMessage.length > WORDS_SOFT_LIMIT;
-  const systemPrompt = await getSystemPrompt(config.language);
+  const systemPrompt = await getSystemPrompt(config.language, context);
 
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
@@ -677,13 +686,14 @@ export async function trackMeal(
 export async function sendCoachMessage(
   config: CoachAIConfig,
   history: ChatHistoryEntry[],
-  userMessage: string
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<CoachResponse> {
   if (config.provider === 'gemini') {
-    return sendViaGemini(config, history, userMessage);
+    return sendViaGemini(config, history, userMessage, context);
   }
 
-  return sendViaOpenAI(config, history, userMessage);
+  return sendViaOpenAI(config, history, userMessage, context);
 }
 
 /**
@@ -701,11 +711,19 @@ export async function getNutritionInsights(
   startDate: string,
   endDate: string,
   userRemarks?: string,
-  recentConversation?: ChatHistoryEntry[]
+  recentConversation?: ChatHistoryEntry[],
+  context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang);
+    const systemPrompt = await getNutritionInsightsPrompt(
+      startDate,
+      endDate,
+      lang,
+      undefined,
+      context
+    );
+
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
@@ -733,11 +751,12 @@ export async function getNutritionInsights(
  */
 export async function generateWorkoutPlan(
   config: CoachAIConfig,
-  history: ChatHistoryEntry[]
+  history: ChatHistoryEntry[],
+  context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await createWorkoutPlanPrompt(lang);
+    const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);
     const instruction =
       history.length > 0
         ? i18n.t('coach.aiInstructions.generateWorkoutPlanWithHistory', { lng: lang })
@@ -843,11 +862,19 @@ export async function getRecentWorkoutsInsights(
   startDate: string,
   endDate: string,
   userRemarks?: string,
-  recentConversation?: ChatHistoryEntry[]
+  recentConversation?: ChatHistoryEntry[],
+  context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang);
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(
+      startDate,
+      endDate,
+      lang,
+      undefined,
+      context
+    );
+
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;

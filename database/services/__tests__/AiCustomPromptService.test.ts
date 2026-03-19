@@ -13,7 +13,9 @@ jest.mock('@nozbe/watermelondb', () => ({
 jest.mock('../../index', () => {
   const mockQuery = {
     fetch: jest.fn().mockResolvedValue([]),
-    extend: jest.fn().mockReturnThis(),
+    extend: jest.fn(function () {
+      return this;
+    }),
   };
 
   const mockCollection = {
