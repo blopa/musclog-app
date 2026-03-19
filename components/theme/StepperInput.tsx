@@ -78,19 +78,11 @@ export const StepperInput: FC<StepperInputProps> = ({
   };
 
   const incrementHandlers = useRepeatPress({
-    onPress: () => {
-      const newVal = internalValue + 1;
-      handleChange(newVal);
-      onIncrement();
-    },
+    onPress: onIncrement,
   });
 
   const decrementHandlers = useRepeatPress({
-    onPress: () => {
-      const newVal = internalValue - 1;
-      handleChange(newVal);
-      onDecrement();
-    },
+    onPress: onDecrement,
   });
 
   return (
