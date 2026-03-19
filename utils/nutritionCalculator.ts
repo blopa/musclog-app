@@ -125,6 +125,19 @@ export function getMinCalories(gender: Gender, bmr?: number): number {
   return Math.round(Math.max(genderFloor, bmrFloor));
 }
 
+/** Convert EatingPhase to WeightGoal for nutrition planning. */
+export function eatingPhaseToWeightGoal(eatingPhase: EatingPhase): WeightGoal {
+  switch (eatingPhase) {
+    case 'cut':
+      return 'lose';
+    case 'bulk':
+      return 'gain';
+    case 'maintain':
+    default:
+      return 'maintain';
+  }
+}
+
 /** Projection horizon in days */
 const PROJECTION_DAYS = 90;
 

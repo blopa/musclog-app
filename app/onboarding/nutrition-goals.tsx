@@ -21,6 +21,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { theme } from '../../theme';
 import {
   calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
   generateWeeklyCheckins,
   NutritionPlan,
   planToInitialGoals,
@@ -127,13 +128,7 @@ export default function NutritionGoalsScreen() {
             heightCm: heightDecrypted.value,
             age: 25, // fallback
             activityLevel: 3, // fallback
-            weightGoal:
-              // TODO: move this to a helper function to avoid nested ternary
-              goals.eatingPhase === 'cut'
-                ? 'lose'
-                : goals.eatingPhase === 'bulk'
-                  ? 'gain'
-                  : 'maintain',
+            weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
             fitnessGoal: 'general',
             liftingExperience: 'intermediate',
             bodyFatPercent: bodyFatDecrypted?.value,

@@ -14,7 +14,11 @@ import {
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
-import { calculateNutritionPlan, generateWeeklyCheckins } from '../../utils/nutritionCalculator';
+import {
+  calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
+  generateWeeklyCheckins,
+} from '../../utils/nutritionCalculator';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
@@ -122,13 +126,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           heightCm: heightDecrypted.value,
           age: 25,
           activityLevel: 3,
-          weightGoal:
-          // TODO: move this to a helper function to avoid nested ternary
-            goals.eatingPhase === 'cut'
-              ? 'lose'
-              : goals.eatingPhase === 'bulk'
-                ? 'gain'
-                : 'maintain',
+          weightGoal: eatingPhaseToWeightGoal(goals.eatingPhase),
           fitnessGoal: 'general',
           liftingExperience: 'intermediate',
           bodyFatPercent: bodyFatDecrypted?.value,
