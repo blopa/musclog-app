@@ -7,6 +7,7 @@ import { configureBasicGenAI } from './gemini';
 import {
   createWorkoutPlanPrompt,
   getActiveCustomPrompts,
+  getBaseSystemPrompt,
   getCalculateNextWorkoutVolumeFunctions,
   getCalculateNextWorkoutVolumePrompt,
   getEstimateMacrosFunctions,
@@ -715,7 +716,14 @@ export async function getNutritionInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang, undefined, context);
+    const systemPrompt = await getNutritionInsightsPrompt(
+      startDate,
+      endDate,
+      lang,
+      undefined,
+      context
+    );
+
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;
@@ -859,7 +867,14 @@ export async function getRecentWorkoutsInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? 'en-US';
-    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang, undefined, context);
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(
+      startDate,
+      endDate,
+      lang,
+      undefined,
+      context
+    );
+
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
       : INSIGHTS_USER_MESSAGE;

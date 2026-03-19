@@ -63,7 +63,10 @@ export class NutritionGoalService {
   /**
    * Save a new snapshot of goals. Supersedes all current goals (sets effective_until = now on each).
    */
-  static async saveGoals(data: NutritionGoalInput, shouldDeleteCheckins = true): Promise<NutritionGoal> {
+  static async saveGoals(
+    data: NutritionGoalInput,
+    shouldDeleteCheckins = true
+  ): Promise<NutritionGoal> {
     const now = Date.now();
     const supersededGoalIds: string[] = [];
 
