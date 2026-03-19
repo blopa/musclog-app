@@ -48,6 +48,10 @@
         "title": "Resumo Diário de Nutrição",
         "body": "Verifique como sua nutrição se alinhou com suas metas hoje!"
       },
+      "nutritionCheckin": {
+        "title": "Verificação de Progresso Semanal",
+        "body": "É hora da sua verificação de nutrição semanal! Vamos ver como você se saiu."
+      },
       "periodPrediction": {
         "title": "Previsão de Período",
         "body": "Seu período está previsto para começar em 2 dias. Prepare-se!"

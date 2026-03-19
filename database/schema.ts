@@ -408,6 +408,7 @@ export const schema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'content', type: 'string' },
         { name: 'context', type: 'string' }, // 'nutrition' | 'exercise' | 'general'
+        { name: 'type', type: 'string' }, // 'system' | 'memory'
         { name: 'is_active', type: 'boolean' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },

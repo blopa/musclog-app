@@ -115,6 +115,8 @@
     },
     "aiSettings": {
       "title": "AI Settings",
+      "save": "Save",
+      "saved": "Saved",
       "googleGeminiIntegration": "GOOGLE GEMINI INTEGRATION",
       "googleGeminiApiKey": "GOOGLE GEMINI API KEY",
       "apiKeyPlaceholder": "Paste your API key here",
@@ -162,7 +164,10 @@
       "promptContext": "Context",
       "promptContextGeneral": "General",
       "promptContextNutrition": "Nutrition",
-      "promptContextExercise": "Exercise"
+      "promptContextExercise": "Exercise",
+      "memorySettings": "MEMORY SETTINGS",
+      "maxAiMemories": "Max AI Memories",
+      "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations"
     },
     "visualSettings": {
       "title": "Interface",

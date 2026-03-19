@@ -201,24 +201,17 @@ function run() {
 
   // Final summary
   console.log('='.repeat(60));
-  console.log('📊 SUMMARY');
+  console.log('📊 MISSING KEYS');
   console.log('='.repeat(60));
 
   if (!hasErrors) {
     console.log('✅ All translation files are consistent across all locales!');
   } else {
-    const totalMissing = missingKeysReport.reduce((sum, item) => sum + item.keys.length, 0);
-    const totalExtra = extraKeysReport.reduce((sum, item) => sum + item.keys.length, 0);
-
-    console.log(`❌ Found inconsistencies:`);
-    console.log(
-      `   • Missing keys: ${totalMissing} across ${missingKeysReport.length} locale files`
-    );
-    console.log(`   • Extra keys: ${totalExtra} across ${extraKeysReport.length} locale files`);
-
-    console.log('\n💡 To fix:');
-    console.log('   1. Add missing keys to the locale files that are incomplete');
-    console.log('   2. Consider removing extra keys or adding them to other locales');
+    for (const { file, locale, keys } of missingKeysReport) {
+      for (const key of keys) {
+        console.log(`${key} (missing in: ${locale} @ ${file})`);
+      }
+    }
 
     process.exit(1);
   }

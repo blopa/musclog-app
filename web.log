@@ -1,5 +1,5 @@
 
-> musclog@2.4.2 web
+> musclog@2.4.3 web
 > expo start --web
 
 Starting project at /app
@@ -8,12 +8,53 @@ Waiting on http://localhost:8081
 Logs for your project will appear below.
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 34.1% ( 735/1258)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓░░░░░░░░ 50.8% (2429/3408)
-Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 37.4% (2460/5118)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 90.9% (5572/5843)
-λ Bundled 9890ms node_modules/expo-router/node/render.js (6490 modules)
-Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6867/6867)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 34.6% ( 81/185)
+λ node_modules/expo-router/node/render.js ▓▓░░░░░░░░░░░░░░ 13.4% ( 66/180)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 49.5% (185/263)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% (276/598)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 54.3% (263/357)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% ( 496/1109)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (276/427)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% ( 620/2850)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (341/479)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% ( 833/2967)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (406/776)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓░░░░░░░░░░░ 31.6% (1133/3710)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (406/776)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓░░░░░░░░░ 44.2% (2466/3710)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (478/857)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.0% (3001/4159)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (478/857)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 59.8% (3654/4727)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% ( 654/2889)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 59.9% (3703/4805)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% ( 812/2980)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 61.7% (3893/4958)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% ( 853/3016)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 79.6% (4584/5138)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (1205/3886)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.3% (4809/5290)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (2497/3900)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.3% (4809/5290)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 57.2% (2989/4185)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.6% (5046/5521)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.5% (3287/4296)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.6% (5291/5685)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 65.7% (4079/5032)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.6% (5291/5685)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 66.3% (4178/5147)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.5% (5643/5898)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 82.6% (4937/5432)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.5% (5690/6013)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.0% (5254/5719)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.2% (6010/6264)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 87.8% (5628/6084)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.2% (6010/6264)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 91.4% (6138/6419)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.9% (6341/6410)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 98.7% (6806/6852)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.5% (6517/6534)
+λ Bundled 81298ms node_modules/expo-router/node/render.js (6536 modules)
 [🍉] [Loki] Initializing IndexedDB
 Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
 
@@ -22,7 +63,9 @@ Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.t
 
 Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
 [expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
-Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6867/6867)
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+"shadow*" style props are deprecated. Use "boxShadow".
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6874/6874)
 🌐 i18next is made possible by our own product, Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
 i18next: languageChanged en-US
 i18next: initialized {
@@ -87,10 +130,31 @@ i18next: initialized {
 [🍉] [Loki] Database loaded
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
-Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6867/6867)
-Web Bundled 26532ms index.web.js (6867 modules)
-λ Bundled 292ms node_modules/expo-router/node/render.js (1 module)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6874/6874)
+Web Bundled 100998ms index.web.js (6874 modules)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% ( 93/431)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% (290/975)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% ( 434/2720)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% ( 628/3066)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% (1053/3601)
+Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 32.1% (1802/3654)
+Web ./index.web.js ▓▓▓▓▓▓▓░░░░░░░░░ 45.0% (2540/3923)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 52.4% (2914/4025)
+Web ./index.web.js ▓▓▓▓▓▓▓▓░░░░░░░░ 54.3% (3198/4338)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 58.7% (3572/4663)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓░░░░░░ 67.2% (4087/4984)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 77.9% (4610/5224)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 82.4% (4955/5457)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.0% (5374/5942)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 86.5% (5728/6159)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 87.7% (6070/6482)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.3% (6570/6766)
+Web Bundled 63152ms index.web.js (6876 modules)
+Web ./index.web.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.9% (6876/6876)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 154ms node_modules/expo-asset/build/index.js (1 module)
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 468ms node_modules/expo-router/node/render.js (1 module)
 [🍉] [Loki] Initializing IndexedDB
 Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
 
@@ -99,6 +163,8 @@ Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.t
 
 Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
 [expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 i18next: languageChanged en-US
 i18next: initialized {
   debug: true,
@@ -155,6 +221,79 @@ i18next: initialized {
   },
   ignoreJSONStructure: true
 }
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation food.meals.descriptions.snacks food.meals.descriptions.snacks
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+i18next::translator: missingKey en-US translation common.descriptions.none common.descriptions.none
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Flame Flame
+i18next::translator: missingKey en-US translation Flame Flame
+λ  LOG  i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.weight bodyMetrics.metrics.descriptions.weight
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.body_fat bodyMetrics.metrics.descriptions.body_fat
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.muscle_mass bodyMetrics.metrics.descriptions.muscle_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.lean_body_mass bodyMetrics.metrics.descriptions.lean_body_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.basal_metabolic_rate bodyMetrics.metrics.descriptions.basal_metabolic_rate
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.total_calories_burned bodyMetrics.metrics.descriptions.total_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.active_calories_burned bodyMetrics.metrics.descriptions.active_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.bmi bodyMetrics.metrics.descriptions.bmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.height bodyMetrics.metrics.descriptions.height
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.chest bodyMetrics.metrics.descriptions.chest
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.waist bodyMetrics.metrics.descriptions.waist
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.hips bodyMetrics.metrics.descriptions.hips
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.arms bodyMetrics.metrics.descriptions.arms
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.thighs bodyMetrics.metrics.descriptions.thighs
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.calves bodyMetrics.metrics.descriptions.calves
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.neck bodyMetrics.metrics.descriptions.neck
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.shoulders bodyMetrics.metrics.descriptions.shoulders
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.mood bodyMetrics.metrics.descriptions.mood
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.ffmi bodyMetrics.metrics.descriptions.ffmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.nutrition bodyMetrics.metrics.descriptions.nutrition
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.exercise bodyMetrics.metrics.descriptions.exercise
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.other bodyMetrics.metrics.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation common.value common.value
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.chest exercises.muscleGroups.descriptions.chest
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.back exercises.muscleGroups.descriptions.back
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.shoulders exercises.muscleGroups.descriptions.shoulders
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.biceps exercises.muscleGroups.descriptions.biceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.triceps exercises.muscleGroups.descriptions.triceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.forearms exercises.muscleGroups.descriptions.forearms
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.abs exercises.muscleGroups.descriptions.abs
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.quads exercises.muscleGroups.descriptions.quads
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.hamstrings exercises.muscleGroups.descriptions.hamstrings
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.glutes exercises.muscleGroups.descriptions.glutes
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.calves exercises.muscleGroups.descriptions.calves
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.full_body exercises.muscleGroups.descriptions.full_body
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.cardio exercises.muscleGroups.descriptions.cardio
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.other exercises.muscleGroups.descriptions.other
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.dumbbell exercises.equipmentTypes.descriptions.dumbbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.barbell exercises.equipmentTypes.descriptions.barbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.bodyweight exercises.equipmentTypes.descriptions.bodyweight
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.machine exercises.equipmentTypes.descriptions.machine
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.cable exercises.equipmentTypes.descriptions.cable
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.kettlebell exercises.equipmentTypes.descriptions.kettlebell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.resistance_band exercises.equipmentTypes.descriptions.resistance_band
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.other exercises.equipmentTypes.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation Message Message
+i18next::translator: missingKey en-US translation Type your message... Type your message...
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
 [🍉] [Loki] Database is now reset
@@ -163,13 +302,11 @@ i18next: initialized {
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 2496ms index.web.js (1 module)
-Web ./index.web.js ▓▓▓▓▓░░░░░░░░░░░ 37.3% (2462/5119)
-Web Bundled 6198ms index.web.js (6869 modules)
+Web Bundled 4674ms index.web.js (1 module)
+Web Bundled 729ms index.web.js (1 module)
  LOG  [web] Logs will appear in the browser console
-Web Bundled 88ms node_modules/expo-asset/build/index.js (1 module)
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 239ms node_modules/expo-router/node/render.js (1 module)
+λ Bundled 493ms node_modules/expo-router/node/render.js (1 module)
 [🍉] [Loki] Initializing IndexedDB
 Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
 
@@ -178,6 +315,8 @@ Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.t
 
 Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
 [expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+"shadow*" style props are deprecated. Use "boxShadow".
 i18next: languageChanged en-US
 i18next: initialized {
   debug: true,
@@ -242,11 +381,12 @@ i18next: initialized {
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 2325ms index.web.js (1 module)
-Web Bundled 1411ms index.web.js (1 module)
+Web Bundled 3039ms index.web.js (1 module)
+Web Bundled 351ms index.web.js (1 module)
  LOG  [web] Logs will appear in the browser console
+Web Bundled 70ms node_modules/expo-asset/build/index.js (1 module)
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 1169ms node_modules/expo-router/node/render.js (1 module)
+λ Bundled 301ms node_modules/expo-router/node/render.js (1 module)
 [🍉] [Loki] Initializing IndexedDB
 Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
 
@@ -254,8 +394,8 @@ Require cycles are allowed, but can result in uninitialized values. Consider ref
 Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
 
 Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
-λ  WARN  [expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
-Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
 i18next: languageChanged en-US
 i18next: initialized {
   debug: true,
@@ -312,6 +452,79 @@ i18next: initialized {
   },
   ignoreJSONStructure: true
 }
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation food.meals.descriptions.snacks food.meals.descriptions.snacks
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+i18next::translator: missingKey en-US translation common.descriptions.none common.descriptions.none
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Flame Flame
+i18next::translator: missingKey en-US translation Flame Flame
+λ  LOG  i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.weight bodyMetrics.metrics.descriptions.weight
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.body_fat bodyMetrics.metrics.descriptions.body_fat
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.muscle_mass bodyMetrics.metrics.descriptions.muscle_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.lean_body_mass bodyMetrics.metrics.descriptions.lean_body_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.basal_metabolic_rate bodyMetrics.metrics.descriptions.basal_metabolic_rate
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.total_calories_burned bodyMetrics.metrics.descriptions.total_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.active_calories_burned bodyMetrics.metrics.descriptions.active_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.bmi bodyMetrics.metrics.descriptions.bmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.height bodyMetrics.metrics.descriptions.height
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.chest bodyMetrics.metrics.descriptions.chest
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.waist bodyMetrics.metrics.descriptions.waist
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.hips bodyMetrics.metrics.descriptions.hips
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.arms bodyMetrics.metrics.descriptions.arms
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.thighs bodyMetrics.metrics.descriptions.thighs
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.calves bodyMetrics.metrics.descriptions.calves
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.neck bodyMetrics.metrics.descriptions.neck
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.shoulders bodyMetrics.metrics.descriptions.shoulders
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.mood bodyMetrics.metrics.descriptions.mood
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.ffmi bodyMetrics.metrics.descriptions.ffmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.nutrition bodyMetrics.metrics.descriptions.nutrition
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.exercise bodyMetrics.metrics.descriptions.exercise
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.other bodyMetrics.metrics.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation common.value common.value
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.chest exercises.muscleGroups.descriptions.chest
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.back exercises.muscleGroups.descriptions.back
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.shoulders exercises.muscleGroups.descriptions.shoulders
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.biceps exercises.muscleGroups.descriptions.biceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.triceps exercises.muscleGroups.descriptions.triceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.forearms exercises.muscleGroups.descriptions.forearms
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.abs exercises.muscleGroups.descriptions.abs
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.quads exercises.muscleGroups.descriptions.quads
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.hamstrings exercises.muscleGroups.descriptions.hamstrings
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.glutes exercises.muscleGroups.descriptions.glutes
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.calves exercises.muscleGroups.descriptions.calves
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.full_body exercises.muscleGroups.descriptions.full_body
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.cardio exercises.muscleGroups.descriptions.cardio
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.other exercises.muscleGroups.descriptions.other
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.dumbbell exercises.equipmentTypes.descriptions.dumbbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.barbell exercises.equipmentTypes.descriptions.barbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.bodyweight exercises.equipmentTypes.descriptions.bodyweight
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.machine exercises.equipmentTypes.descriptions.machine
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.cable exercises.equipmentTypes.descriptions.cable
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.kettlebell exercises.equipmentTypes.descriptions.kettlebell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.resistance_band exercises.equipmentTypes.descriptions.resistance_band
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.other exercises.equipmentTypes.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation Message Message
+i18next::translator: missingKey en-US translation Type your message... Type your message...
 [🍉] [Loki] Database loaded
 [🍉] [Loki] Empty database, setting up
 [🍉] [Loki] Database is now reset
@@ -320,12 +533,11 @@ i18next: initialized {
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 4837ms index.web.js (1 module)
-Web Bundled 481ms index.web.js (1 module)
+Web Bundled 3008ms index.web.js (1 module)
+Web Bundled 304ms index.web.js (1 module)
  LOG  [web] Logs will appear in the browser console
-Web Bundled 96ms node_modules/expo-asset/build/index.js (1 module)
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ Bundled 397ms node_modules/expo-router/node/render.js (1 module)
+λ Bundled 617ms node_modules/expo-router/node/render.js (1 module)
 [🍉] [Loki] Initializing IndexedDB
 Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
 
@@ -333,7 +545,9 @@ Require cycles are allowed, but can result in uninitialized values. Consider ref
 Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
 
 Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
-λ  WARN  [expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+"shadow*" style props are deprecated. Use "boxShadow".
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 i18next: languageChanged en-US
 i18next: initialized {
@@ -399,6 +613,551 @@ i18next: initialized {
 λ  LOG  [🍉] [Loki] Setting up schema
 [🍉] [Loki] Database collections set up
 Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-Web Bundled 4091ms index.web.js (1 module)
-Web Bundled 1950ms index.web.js (1 module)
+Web Bundled 4210ms index.web.js (1 module)
+Web Bundled 634ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 89ms node_modules/expo-asset/build/index.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 424ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation food.meals.descriptions.snacks food.meals.descriptions.snacks
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+i18next::translator: missingKey en-US translation common.descriptions.none common.descriptions.none
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Flame Flame
+i18next::translator: missingKey en-US translation Flame Flame
+λ  LOG  i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.weight bodyMetrics.metrics.descriptions.weight
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.body_fat bodyMetrics.metrics.descriptions.body_fat
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.muscle_mass bodyMetrics.metrics.descriptions.muscle_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.lean_body_mass bodyMetrics.metrics.descriptions.lean_body_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.basal_metabolic_rate bodyMetrics.metrics.descriptions.basal_metabolic_rate
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.total_calories_burned bodyMetrics.metrics.descriptions.total_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.active_calories_burned bodyMetrics.metrics.descriptions.active_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.bmi bodyMetrics.metrics.descriptions.bmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.height bodyMetrics.metrics.descriptions.height
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.chest bodyMetrics.metrics.descriptions.chest
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.waist bodyMetrics.metrics.descriptions.waist
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.hips bodyMetrics.metrics.descriptions.hips
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.arms bodyMetrics.metrics.descriptions.arms
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.thighs bodyMetrics.metrics.descriptions.thighs
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.calves bodyMetrics.metrics.descriptions.calves
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.neck bodyMetrics.metrics.descriptions.neck
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.shoulders bodyMetrics.metrics.descriptions.shoulders
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.mood bodyMetrics.metrics.descriptions.mood
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.ffmi bodyMetrics.metrics.descriptions.ffmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.nutrition bodyMetrics.metrics.descriptions.nutrition
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.exercise bodyMetrics.metrics.descriptions.exercise
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.other bodyMetrics.metrics.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation common.value common.value
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.chest exercises.muscleGroups.descriptions.chest
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.back exercises.muscleGroups.descriptions.back
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.shoulders exercises.muscleGroups.descriptions.shoulders
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.biceps exercises.muscleGroups.descriptions.biceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.triceps exercises.muscleGroups.descriptions.triceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.forearms exercises.muscleGroups.descriptions.forearms
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.abs exercises.muscleGroups.descriptions.abs
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.quads exercises.muscleGroups.descriptions.quads
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.hamstrings exercises.muscleGroups.descriptions.hamstrings
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.glutes exercises.muscleGroups.descriptions.glutes
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.calves exercises.muscleGroups.descriptions.calves
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.full_body exercises.muscleGroups.descriptions.full_body
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.cardio exercises.muscleGroups.descriptions.cardio
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.other exercises.muscleGroups.descriptions.other
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.dumbbell exercises.equipmentTypes.descriptions.dumbbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.barbell exercises.equipmentTypes.descriptions.barbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.bodyweight exercises.equipmentTypes.descriptions.bodyweight
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.machine exercises.equipmentTypes.descriptions.machine
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.cable exercises.equipmentTypes.descriptions.cable
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.kettlebell exercises.equipmentTypes.descriptions.kettlebell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.resistance_band exercises.equipmentTypes.descriptions.resistance_band
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.other exercises.equipmentTypes.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation Message Message
+i18next::translator: missingKey en-US translation Type your message... Type your message...
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 3019ms index.web.js (1 module)
+Web Bundled 323ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 472ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+"shadow*" style props are deprecated. Use "boxShadow".
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2859ms index.web.js (1 module)
+Web Bundled 301ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 77ms node_modules/expo-asset/build/index.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 325ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation food.meals.descriptions.snacks food.meals.descriptions.snacks
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+λ  LOG  i18next::translator: missingKey en-US translation common.name common.name
+i18next::translator: missingKey en-US translation common.name common.name
+λ  LOG  i18next::translator: missingKey en-US translation common.icon common.icon
+i18next::translator: missingKey en-US translation common.descriptions.none common.descriptions.none
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Dumbbell Dumbbell
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Target Target
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Zap Zap
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Trophy Trophy
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Activity Activity
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Heart Heart
+i18next::translator: missingKey en-US translation Flame Flame
+i18next::translator: missingKey en-US translation Flame Flame
+λ  LOG  i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation common.archived common.archived
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.weight bodyMetrics.metrics.descriptions.weight
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.body_fat bodyMetrics.metrics.descriptions.body_fat
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.muscle_mass bodyMetrics.metrics.descriptions.muscle_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.lean_body_mass bodyMetrics.metrics.descriptions.lean_body_mass
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.basal_metabolic_rate bodyMetrics.metrics.descriptions.basal_metabolic_rate
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.total_calories_burned bodyMetrics.metrics.descriptions.total_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.active_calories_burned bodyMetrics.metrics.descriptions.active_calories_burned
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.bmi bodyMetrics.metrics.descriptions.bmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.height bodyMetrics.metrics.descriptions.height
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.chest bodyMetrics.metrics.descriptions.chest
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.waist bodyMetrics.metrics.descriptions.waist
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.hips bodyMetrics.metrics.descriptions.hips
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.arms bodyMetrics.metrics.descriptions.arms
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.thighs bodyMetrics.metrics.descriptions.thighs
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.calves bodyMetrics.metrics.descriptions.calves
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.neck bodyMetrics.metrics.descriptions.neck
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.shoulders bodyMetrics.metrics.descriptions.shoulders
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.mood bodyMetrics.metrics.descriptions.mood
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.ffmi bodyMetrics.metrics.descriptions.ffmi
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.nutrition bodyMetrics.metrics.descriptions.nutrition
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.exercise bodyMetrics.metrics.descriptions.exercise
+i18next::translator: missingKey en-US translation bodyMetrics.metrics.descriptions.other bodyMetrics.metrics.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation common.value common.value
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.chest exercises.muscleGroups.descriptions.chest
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.back exercises.muscleGroups.descriptions.back
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.shoulders exercises.muscleGroups.descriptions.shoulders
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.biceps exercises.muscleGroups.descriptions.biceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.triceps exercises.muscleGroups.descriptions.triceps
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.forearms exercises.muscleGroups.descriptions.forearms
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.abs exercises.muscleGroups.descriptions.abs
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.quads exercises.muscleGroups.descriptions.quads
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.hamstrings exercises.muscleGroups.descriptions.hamstrings
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.glutes exercises.muscleGroups.descriptions.glutes
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.calves exercises.muscleGroups.descriptions.calves
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.full_body exercises.muscleGroups.descriptions.full_body
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.cardio exercises.muscleGroups.descriptions.cardio
+i18next::translator: missingKey en-US translation exercises.muscleGroups.descriptions.other exercises.muscleGroups.descriptions.other
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.dumbbell exercises.equipmentTypes.descriptions.dumbbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.barbell exercises.equipmentTypes.descriptions.barbell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.bodyweight exercises.equipmentTypes.descriptions.bodyweight
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.machine exercises.equipmentTypes.descriptions.machine
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.cable exercises.equipmentTypes.descriptions.cable
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.kettlebell exercises.equipmentTypes.descriptions.kettlebell
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.resistance_band exercises.equipmentTypes.descriptions.resistance_band
+i18next::translator: missingKey en-US translation exercises.equipmentTypes.descriptions.other exercises.equipmentTypes.descriptions.other
+λ  LOG  i18next::translator: missingKey en-US translation Message Message
+i18next::translator: missingKey en-US translation Type your message... Type your message...
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 2913ms index.web.js (1 module)
+Web Bundled 289ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 315ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+"shadow*" style props are deprecated. Use "boxShadow".
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 3949ms index.web.js (1 module)
+Web Bundled 442ms index.web.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 105ms node_modules/expo-asset/build/index.js (1 module)
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ Bundled 583ms node_modules/expo-router/node/render.js (1 module)
+[🍉] [Loki] Initializing IndexedDB
+Require cycle: database/services/index.ts -> database/services/NutritionService.ts -> widgets/widget-update-helpers.ts -> database/services/index.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+Require cycle: utils/file.web.ts -> database/exportImport.ts -> utils/file.web.ts
+
+Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cycle.
+[expo-notifications] Listening to push token changes is not yet fully supported on web. Adding a listener will have no effect.
+λ  WARN  props.pointerEvents is deprecated. Use style.pointerEvents
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+i18next: languageChanged en-US
+i18next: initialized {
+  debug: true,
+  initAsync: true,
+  ns: [ 'translation' ],
+  defaultNS: [ 'translation' ],
+  fallbackLng: [ 'en-US' ],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: [Function: overloadTranslationOptionHandler],
+  interpolation: {
+    escapeValue: false,
+    format: [Function: bound format],
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true,
+  lng: 'en-US',
+  resources: {
+    'en-US': { translation: [Object] },
+    'pt-BR': { translation: [Object] }
+  },
+  ignoreJSONStructure: true
+}
+λ  LOG  i18next::translator: missingKey en-US translation settings.aiSettings.memorySettings settings.aiSettings.memorySettings
+λ  LOG  i18next::translator: missingKey en-US translation settings.aiSettings.maxAiMemories settings.aiSettings.maxAiMemories
+[🍉] [Loki] Database loaded
+[🍉] [Loki] Empty database, setting up
+[🍉] [Loki] Database is now reset
+[🍉] [Loki] Initializing IndexedDB
+[🍉] [Loki] Database loaded
+λ  LOG  [🍉] [Loki] Setting up schema
+[🍉] [Loki] Database collections set up
+Web ./index.web.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundled 3508ms index.web.js (1 module)
+Web Bundled 362ms index.web.js (1 module)
  LOG  [web] Logs will appear in the browser console

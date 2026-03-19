@@ -13,6 +13,7 @@ import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
+  MAX_AI_MEMORIES_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -414,6 +415,22 @@ export class SettingsService {
    */
   static async setChartTooltipPosition(position: 'left' | 'right') {
     await SettingsService.setStringSetting(CHART_TOOLTIP_POSITION_SETTING_TYPE, position);
+  }
+
+  /**
+   * Upsert the max AI memories setting
+   */
+  static async setMaxAiMemories(value: number) {
+    await SettingsService.setStringSetting(MAX_AI_MEMORIES_SETTING_TYPE, value.toString());
+  }
+
+  /**
+   * Get the max AI memories setting.
+   * Defaults to 50 if not set.
+   */
+  static async getMaxAiMemories(): Promise<number> {
+    const value = await SettingsService.getStringSetting(MAX_AI_MEMORIES_SETTING_TYPE, '50');
+    return parseInt(value, 10) || 50;
   }
 
   /**

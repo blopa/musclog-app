@@ -2,6 +2,8 @@
   "common": {
     "saveError": "Falha ao salvar alterações",
     "saveErrorSubtitle": "Por favor, tente novamente",
+    "error_description": "Um erro inesperado ocorreu. Por favor, tente novamente.",
+    "back": "Voltar",
     "select": "Selecionar...",
     "today": "Hoje",
     "none": "Nenhum",

@@ -115,6 +115,8 @@
     },
     "aiSettings": {
       "title": "Configurações de IA",
+      "save": "Salvar",
+      "saved": "Salvo",
       "googleGeminiIntegration": "INTEGRAÇÃO GOOGLE GEMINI",
       "googleGeminiApiKey": "CHAVE DE API DO GOOGLE GEMINI",
       "apiKeyPlaceholder": "Cole sua chave de API aqui",
@@ -162,7 +164,10 @@
       "promptContext": "Contexto",
       "promptContextGeneral": "Geral",
       "promptContextNutrition": "Nutrição",
-      "promptContextExercise": "Exercício"
+      "promptContextExercise": "Exercício",
+      "memorySettings": "CONFIGURAÇÕES DE MEMÓRIA",
+      "maxAiMemories": "Máximo de Memórias de IA",
+      "maxAiMemoriesSubtitle": "Número de mensagens anteriores a lembrar nas conversas"
     },
     "visualSettings": {
       "title": "Interface",
@@ -181,7 +186,8 @@
         "coach": "Treinador",
         "cycle": "Ciclo",
         "settings": "Configurações",
-        "progress": "Progresso"
+        "progress": "Progresso",
+        "checkin": "Verificação"
       }
     },
     "notificationsSettings": {

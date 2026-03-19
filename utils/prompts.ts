@@ -871,6 +871,11 @@ export const getSendChatMessageFunctions = ():
             description:
               "A brief 1-2 sentence summary of the user's message, capturing their intent (for history compression).",
           },
+          // TODO: uncomment memory and save it to the database
+          // memory: {
+          //   type: 'string',
+          //   description: 'A short sentence with something important to remember.',
+          // },
         },
         required: ['msg4User', 'sumMsg', 'sumUserMsg'],
       },

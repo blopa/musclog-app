@@ -20,7 +20,9 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
 import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
+import NewNumericalInput from '../theme/NewNumericalInput';
 import { SecretInput } from '../theme/SecretInput';
+import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -140,7 +142,9 @@ function AIIntegrationCard({
             {/* Save Button */}
             <View className="mb-2 mt-3">
               <Button
-                label={hasUnsavedChanges ? t('save') : t('saved')}
+                label={
+                  hasUnsavedChanges ? t('settings.aiSettings.save') : t('settings.aiSettings.saved')
+                }
                 onPress={onSaveApiKey}
                 disabled={!hasUnsavedChanges}
                 size="sm"
@@ -228,6 +232,8 @@ export function AISettingsModal({
     handleWorkoutInsightsChange,
     handleUseOcrBeforeAiChange,
     handleSendFoundationFoodsToLlmChange,
+    maxAiMemories: debouncedMaxAiMemories,
+    handleMaxAiMemoriesChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -445,6 +451,33 @@ export function AISettingsModal({
             {t('settings.aiSettings.insightsAlerts')}
           </Text>
           <ToggleInput items={insightsItems} />
+        </View>
+
+        {/* Memory Settings Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('settings.aiSettings.memorySettings')}
+          </Text>
+          <View
+            className="rounded-lg border bg-bg-card p-4"
+            style={{
+              borderColor: theme.colors.border.light,
+              borderWidth: theme.borderWidth.thin,
+            }}
+          >
+            <NewNumericalInput
+              label={t('settings.aiSettings.maxAiMemories')}
+              value={debouncedMaxAiMemories || 50}
+              onChange={handleMaxAiMemoriesChange}
+              min={1}
+            />
+            <Text className="mt-3 text-xs text-text-secondary">
+              {t('settings.aiSettings.maxAiMemoriesSubtitle')}
+            </Text>
+          </View>
         </View>
 
         {/* Image Processing Section */}
