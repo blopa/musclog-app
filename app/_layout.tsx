@@ -76,13 +76,11 @@ function AppContent() {
 
   return (
     <>
-      {Platform.OS === 'android' ? (
-        <StatusBar
-          barStyle={isDark ? 'light-content' : 'dark-content'}
-          backgroundColor="transparent"
-          translucent
-        />
-      ) : null}
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent
+      />
       <Stack
         screenOptions={{
           headerShown: false,

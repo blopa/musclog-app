@@ -110,6 +110,13 @@
       "buildNumber": "168"
     },
     "android": {
+      "statusBar": {
+        "translucent": true,
+        "backgroundColor": "#00000000"
+      },
+      "navigationBar": {
+        "backgroundColor": "#00000000"
+      },
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
       "versionCode": 168,
