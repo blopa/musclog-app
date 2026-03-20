@@ -21,10 +21,23 @@ export function useRepeatPress({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const repeatTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isActiveRef = useRef(false);
-  const onPressRef = useRef(onPress);
 
-  // Keep onPressRef up to date to avoid stale closures
-  onPressRef.current = onPress;
+  // Use refs for all props to ensure the returned handlers are COMPLETELY stable.
+  // This is CRITICAL to prevent "Maximum update depth exceeded" errors on standard RN buttons.
+  const propsRef = useRef({
+    onPress,
+    initialDelay,
+    initialInterval,
+    acceleratedInterval
+  });
+
+  // Always sync props to the ref
+  propsRef.current = {
+    onPress,
+    initialDelay,
+    initialInterval,
+    acceleratedInterval
+  };
 
   const stopRepeating = useCallback(() => {
     isActiveRef.current = false;
@@ -41,12 +54,13 @@ export function useRepeatPress({
   const startRepeating = useCallback(() => {
     if (Platform.OS === 'web') return;
 
-    // Guard against multiple concurrent start calls
-    if (isActiveRef.current) return;
+    // Safety cleanup
+    stopRepeating();
+
     isActiveRef.current = true;
 
     // Trigger initial press immediately
-    onPressRef.current();
+    propsRef.current.onPress();
 
     // Start delay timer for repeating
     timerRef.current = setTimeout(() => {
@@ -55,15 +69,15 @@ export function useRepeatPress({
       // Haptic feedback when repeating starts
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-      let currentInterval = initialInterval;
+      let currentInterval = propsRef.current.initialInterval;
       let count = 0;
 
       const runRepeat = () => {
         if (!isActiveRef.current) return;
 
-        onPressRef.current();
+        propsRef.current.onPress();
 
-        // Throttled haptics for performance
+        // Throttled haptics
         count++;
         if (currentInterval >= 100 || count % 2 === 0) {
            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -72,22 +86,26 @@ export function useRepeatPress({
         const scheduledInterval = currentInterval;
 
         // Acceleration logic
-        if (currentInterval === initialInterval) {
-          currentInterval = acceleratedInterval;
+        if (currentInterval === propsRef.current.initialInterval) {
+          currentInterval = propsRef.current.acceleratedInterval;
         }
 
         repeatTimerRef.current = setTimeout(runRepeat, scheduledInterval);
       };
 
       runRepeat();
-    }, initialDelay);
-  }, [initialDelay, initialInterval, acceleratedInterval]);
+    }, propsRef.current.initialDelay);
+  }, [stopRepeating]);
 
-  // Memoize the return object to prevent unnecessary re-renders of the component using this hook.
-  // Using a stable function for web as well.
+  // RETURNED HANDLERS ARE NOW COMPLETELY STABLE.
+  // The only dependency is start/stopRepeating which are also stable.
   return useMemo(() => {
     if (Platform.OS === 'web') {
-      return { onPress: () => onPressRef.current() };
+      return {
+        onPress: () => {
+          propsRef.current.onPress();
+        }
+      };
     }
 
     return {

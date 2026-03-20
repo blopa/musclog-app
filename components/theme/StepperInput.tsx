@@ -25,14 +25,9 @@ export const StepperInput: FC<StepperInputProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [internalValue, setInternalValue] = useState<number>(value);
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value.toFixed(1));
   const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
@@ -40,11 +35,6 @@ export const StepperInput: FC<StepperInputProps> = ({
       setInputValue(value.toFixed(1));
     }
   }, [value, editing]);
-
-  const handleChange = (newValue: number) => {
-    setInternalValue(newValue);
-    onChangeValue?.(newValue);
-  };
 
   const handleValuePress = () => {
     setEditing(true);
@@ -66,7 +56,6 @@ export const StepperInput: FC<StepperInputProps> = ({
     const num = parseFloat(inputValue);
     if (!isNaN(num) && onChangeValue) {
       onChangeValue(num);
-      setInternalValue(num);
     } else {
       // Reset to current value if invalid
       setInputValue(value.toFixed(1));
@@ -140,7 +129,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {internalValue.toFixed(1)}{' '}
+              {value.toFixed(1)}{' '}
               {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
             </Text>
           </Pressable>
