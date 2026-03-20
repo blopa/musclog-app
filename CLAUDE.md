@@ -10,8 +10,13 @@
 - `npm run ios`: Run on iOS simulator/device
 - `npm run prebuild`: Run Expo prebuild (clean)
 - `npm run lint:all`: Run full linting, formatting, and typecheck suite
+- `npm run lint:eslint`: Run ESLint check
 - `npm run format`: Format code with Prettier and Tailwind plugin
+- `npm run typecheck`: Run TypeScript type checking
+- `npm run check-translations`: Validate i18n keys and locale consistency
 - `npm run reset-project`: Reset project to initial state via script
+- `npm run build-android`: Production build for Android via EAS
+- `npm run playwright`: Run Playwright E2E tests (Web)
 
 ## Testing Commands
 
@@ -68,3 +73,7 @@
 - **Android**: Use namespace imports for image manipulation: `import * as ImageManipulator from 'expo-image-manipulator'`.
 - **Web**: Target a mobile viewport (390x844) for correct layout rendering. Web-specific overrides use `.web.tsx` file extensions.
 - **Widgets**: Android/iOS home screen widgets live in `widgets/` (e.g., `NutritionWidget`, `SmartCameraWidget`).
+
+### Feature Highlights
+
+- **Weekly Progress Check-ins**: Managed via `NutritionCheckinService`. Periodic targets are generated upon goal setting. Trends are analyzed based on 7-day rolling data (weight, calories, activity).

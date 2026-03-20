@@ -73,6 +73,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - **AI Macro Estimation**: Use AI vision to estimate nutrition from food photos or nutrition label images
 - **Retrospective Logging**: Log meals for past dates
 - **Empirical TDEE**: Calorie needs estimated from actual activity logs
+- **Weekly Progress Check-ins**: Automated weekly check-ins that analyze weight trends, caloric adherence, and activity levels. Get status updates (On Track, Ahead, Behind) and readjust goals based on real-world progress.
 
 ### 🌙 Menstrual Cycle Tracking
 
