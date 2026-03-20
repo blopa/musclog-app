@@ -6,9 +6,10 @@ const withAndroidBarcodeScannerFix = (config) => {
 
     // Find if the activity already exists to avoid duplicates
     const activities = mainApplication.activity || [];
-    const activityName = 'com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity';
+    const activityName =
+      'com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity';
 
-    const exists = activities.some(activity => activity.$['android:name'] === activityName);
+    const exists = activities.some((activity) => activity.$['android:name'] === activityName);
 
     if (!exists) {
       if (!mainApplication.activity) {

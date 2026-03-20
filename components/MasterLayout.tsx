@@ -29,12 +29,12 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
     >
       <StatusBar style="light" />
       <View className="relative flex-1 overflow-hidden">{children}</View>
-      {showNavigationMenu && (
+      {showNavigationMenu ? (
         <>
           <NavigationMenu onCoachPress={openCoach} onCameraPress={handleCameraPress} />
           <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
         </>
-      )}
+      ) : null}
     </SafeAreaView>
   );
 }
