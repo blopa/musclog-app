@@ -7,6 +7,7 @@ import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-
 import * as Device from 'expo-device';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
+import { SystemBars } from 'react-native-edge-to-edge';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
@@ -76,11 +77,7 @@ function AppContent() {
 
   return (
     <>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor="transparent"
-        translucent
-      />
+      <SystemBars style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
           headerShown: false,
