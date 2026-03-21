@@ -59,6 +59,7 @@ type MacroCardProps = {
   color: string;
   onChange: (value: number) => void;
   step?: number;
+  useSlider?: boolean;
 };
 
 function MacroCard({
@@ -69,7 +70,8 @@ function MacroCard({
   max,
   color,
   onChange,
-  step = 5,
+  step = 1,
+  useSlider = false,
 }: MacroCardProps) {
   const theme = useTheme();
   const handleDecrement = () => {
@@ -126,10 +128,11 @@ function MacroCard({
           </Pressable>
         </View>
       </View>
-      {/* Slider */}
-      <View style={webSliderContainerStyle}>
-        <Slider value={value} min={min} max={max} onChange={onChange} />
-      </View>
+      {useSlider ? (
+        <View style={webSliderContainerStyle}>
+          <Slider value={value} min={min} max={max} onChange={onChange} />
+        </View>
+      ) : null}
     </View>
   );
 }
