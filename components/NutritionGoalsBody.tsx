@@ -294,7 +294,7 @@ export function NutritionGoalsBody({
         fats,
         fiber,
         eatingPhase,
-        targetWeight,
+        targetWeight: displayToKg(targetWeight, units),
         targetBodyFat,
         targetBMI,
         targetFFMI,
@@ -316,6 +316,7 @@ export function NutritionGoalsBody({
     targetDate,
     goalStartDate,
     onFormChange,
+    units,
   ]);
 
   const handleSave = useCallback(() => {

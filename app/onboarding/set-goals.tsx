@@ -375,8 +375,8 @@ export default function SetGoals() {
         return null;
       }
 
-      weightKg = units === 'imperial' ? lbsToKg(rawWeight) : rawWeight;
-      heightCm = units === 'imperial' ? inchesToCm(rawHeight) : rawHeight;
+      weightKg = rawWeight;
+      heightCm = rawHeight;
     }
 
     const latestBodyFat = await UserMetricService.getLatest('body_fat');
