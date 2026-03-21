@@ -77,7 +77,7 @@ function AppContent() {
 
   return (
     <>
-      <SystemBars style={isDark ? 'light' : 'dark'} />
+      {Platform.OS !== 'web' && <SystemBars style={isDark ? 'light' : 'dark'} />}
       <Stack
         screenOptions={{
           headerShown: false,
