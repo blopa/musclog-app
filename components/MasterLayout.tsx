@@ -32,7 +32,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       {showNavigationMenu ? (
         <>
           <NavigationMenu onCoachPress={openCoach} onCameraPress={handleCameraPress} />
-          <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
+          <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
         </>
       ) : null}
     </SafeAreaView>

@@ -33,7 +33,7 @@
       "fiber": "2 kcal/g"
     },
     "sublabels": {
-      "targetWeight": "kg/lbs",
+      "targetWeight": "Target weight in {{unit}}",
       "targetBodyFat": "% percentage",
       "targetBMI": "Body Mass Index",
       "targetFFMI": "Fat-Free Mass Index"

@@ -34,7 +34,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
-  const { rawSlots, isAiFeaturesEnabled, isCycleActive } = useNavigationItems();
+  const { rawSlots, isCycleActive } = useNavigationItems();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const unreadChatMessages = useUnreadChatMessages();
 
@@ -49,10 +49,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const isFoodActive = useCallback(() => {
-    return (
-      (pathname.startsWith('/nutrition/food') || pathname.startsWith('/nutrition/meals')) &&
-      !pathname.startsWith('/nutrition/ai-camera')
-    );
+    return pathname.startsWith('/nutrition/');
   }, [pathname]);
 
   const renderNavSlot = useCallback(
@@ -145,9 +142,6 @@ export const NavigationMenu = memo(function NavigationMenu({
         }
 
         case 'coach': {
-          if (!isAiFeaturesEnabled) {
-            return null;
-          }
           return (
             <Pressable
               key="coach"
@@ -307,17 +301,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           return null;
       }
     },
-    [
-      isPathActive,
-      isFoodActive,
-      isAiFeaturesEnabled,
-      isCycleActive,
-      unreadChatMessages,
-      onCoachPress,
-      router,
-      t,
-      theme,
-    ]
+    [isPathActive, isFoodActive, isCycleActive, unreadChatMessages, onCoachPress, router, t, theme]
   );
 
   const homeActive = isPathActive('/');

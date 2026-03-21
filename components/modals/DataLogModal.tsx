@@ -558,7 +558,7 @@ export function DataLogModal({
 }: DataLogModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { isAiFeaturesEnabled, units } = useSettings();
+  const { isAiConfigured, units } = useSettings();
   const { showSnackbar } = useSnackbar();
   const [selectedItem, setSelectedItem] = useState<DataLogDisplayItem | null>(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -1458,7 +1458,7 @@ export function DataLogModal({
             refresh();
             setCreateFoodModalVisible(false);
           }}
-          isAiEnabled={isAiFeaturesEnabled}
+          isAiEnabled={isAiConfigured}
         />
       ) : null}
 

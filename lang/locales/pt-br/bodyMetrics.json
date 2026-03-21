@@ -42,6 +42,23 @@
         "noChange": "Sem alteração",
         "decreased": "Diminuiu",
         "increased": "Aumentou"
+      },
+      "filters": {
+        "title": "Filtrar Histórico",
+        "sortOrder": {
+          "title": "ORDENAR POR",
+          "newestFirst": "Mais Recente",
+          "oldestFirst": "Mais Antigo"
+        },
+        "trend": {
+          "title": "TENDÊNCIA",
+          "all": "Todos",
+          "increased": "Aumentou",
+          "decreased": "Diminuiu",
+          "noChange": "Sem Alteração"
+        },
+        "reset": "Redefinir",
+        "apply": "Aplicar Filtros"
       }
     },
     "dateFormats": {

@@ -6,6 +6,7 @@ import { IMessage } from 'react-native-gifted-chat';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
+  GENERATE_MEAL_PLAN,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
@@ -16,17 +17,28 @@ import ChatMessage, {
   type ImagePayload,
   isImagePayload,
   isLegacyTrackMealPayload,
+  isMealPlanPayload,
   isTrackMealPayload,
   isWorkoutCompletedPayload,
+  isWorkoutPlanPayload,
+  type MealPlanPayload,
   type TrackMealPayload,
   type WorkoutPlanPayload,
 } from '../database/models/ChatMessage';
-import { AiCustomPromptService, ChatService, NutritionService } from '../database/services';
+import {
+  AiCustomPromptService,
+  ChatService,
+  NutritionGoalService,
+  NutritionService,
+  UserMetricService,
+  UserService,
+} from '../database/services';
 import AiService from '../services/AiService';
 import {
   AiCreditsError,
   type ChatHistoryEntry,
   type CoachResponse,
+  generateMealPlan,
   generateWorkoutPlan,
   getNutritionInsights,
   getRecentWorkoutsInsights,
@@ -35,6 +47,8 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '../utils/coachAI';
+import { processMealPlanResponse } from '../utils/nutritionAI';
+import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '../utils/nutritionCalculator';
 import { getChatMessagePromptContent } from '../utils/prompts';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
@@ -49,6 +63,22 @@ export interface ExtendedIMessage extends IMessage {
     level: string;
     exerciseCount: number;
     calories: number;
+  };
+  workoutPlan?: {
+    templateIds: string[];
+    count: number;
+  };
+  mealPlan?: {
+    mealIds: string[];
+    count: number;
+    meals?: {
+      id: string;
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+    }[];
   };
   workoutCompleted?: {
     workoutLogId: string;
@@ -95,6 +125,17 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
           volume: payload.volume,
           duration: payload.duration,
           personalRecords: payload.personalRecords,
+        };
+      } else if (isWorkoutPlanPayload(payload)) {
+        msg.workoutPlan = {
+          templateIds: payload.templateIds,
+          count: payload.count,
+        };
+      } else if (isMealPlanPayload(payload)) {
+        msg.mealPlan = {
+          mealIds: payload.mealIds,
+          count: payload.count,
+          meals: payload.meals,
         };
       } else if (isImagePayload(payload)) {
         msg.image = payload.image.startsWith('data:')
@@ -146,6 +187,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 export type UseChatMessagesResult = {
   messages: ExtendedIMessage[];
   pendingCoachMessage: ExtendedIMessage | null;
+  pendingIntention: string | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   isSending: boolean;
@@ -170,6 +212,8 @@ export type UseChatMessagesResult = {
     date: Date,
     logMealType: MealType
   ) => Promise<void>;
+  clearIntention: () => Promise<void>;
+  setPendingIntention: (intention: string | null) => void;
 };
 
 export function useChatMessages(
@@ -186,6 +230,7 @@ export function useChatMessages(
   const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
   const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
   const [ephemeralCreditsError, setEphemeralCreditsError] = useState(false);
+  const [pendingIntention, setPendingIntention] = useState<string | null>(null);
 
   // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
@@ -201,6 +246,12 @@ export function useChatMessages(
       setCurrentOffset(0);
       setHasMore(false);
       rawMessagesRef.current = [];
+
+      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
+      if (!cancelled) {
+        setPendingIntention(intention);
+      }
+
       try {
         const records = await ChatService.getMessagesByContext(
           conversationContext,
@@ -333,12 +384,17 @@ export function useChatMessages(
           pendingCoachMessageRef.current = null;
           setPendingCoachMessage(null);
         }
+
+        if (pendingIntention) {
+          await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
+        }
       } catch (err) {
         console.error('[useChatMessages] clearHistory error:', err);
         throw err;
       }
     },
-    [conversationContext]
+    [conversationContext, pendingIntention]
   );
 
   const sendMessage = useCallback(
@@ -439,7 +495,99 @@ export function useChatMessages(
         let reply: CoachResponse | null = null;
         let payloadJson: string | undefined = undefined;
 
-        if (pendingIntention === GENERATE_MY_WORKOUTS) {
+        if (pendingIntention === GENERATE_MEAL_PLAN) {
+          // Pass last 6 conversation entries + current message so the model has context
+          const recentConversation = [
+            ...historyEntries.slice(-6),
+            { role: 'user' as const, content: text.trim() },
+          ];
+
+          // Fetch nutrition goal or calculate one
+          let macroTargets;
+          const currentGoal = await NutritionGoalService.getCurrent();
+          if (currentGoal) {
+            macroTargets = {
+              calories: currentGoal.totalCalories,
+              protein: currentGoal.protein,
+              carbs: currentGoal.carbs,
+              fat: currentGoal.fats,
+              fiber: currentGoal.fiber,
+            };
+          } else {
+            // Calculate one on the spot
+            const user = await UserService.getCurrentUser();
+            const [latestWeight, latestHeight] = await Promise.all([
+              UserMetricService.getLatest('weight'),
+              UserMetricService.getLatest('height'),
+            ]);
+            if (user && latestWeight) {
+              const { value: weightKg } = await latestWeight.getDecrypted();
+              let heightCm = 170;
+              if (latestHeight) {
+                const heightData = await latestHeight.getDecrypted();
+                heightCm = heightData.value;
+              }
+
+              const plan = calculateNutritionPlan({
+                gender: user.gender,
+                weightKg,
+                heightCm,
+                age: user.getAge(),
+                activityLevel: (user.activityLevel as any) || 3,
+                weightGoal: user.weightGoal || eatingPhaseToWeightGoal(user.fitnessGoal as any),
+                fitnessGoal: user.fitnessGoal,
+                liftingExperience: user.liftingExperience,
+              });
+              macroTargets = {
+                calories: plan.targetCalories,
+                protein: plan.protein,
+                carbs: plan.carbs,
+                fat: plan.fats,
+                fiber: Math.round((plan.targetCalories / 1000) * 14),
+              };
+            }
+          }
+
+          const mealPlan = await generateMealPlan(
+            aiConfig,
+            recentConversation,
+            macroTargets,
+            conversationContext
+          );
+
+          if (mealPlan) {
+            const processResult = await processMealPlanResponse(mealPlan);
+
+            reply = {
+              msg4User: t('coach.success.mealPlanGenerated', {
+                count: processResult.mealIds.length,
+                description: processResult.description,
+              }),
+              sumMsg: 'Generated meal plan',
+            };
+
+            const mealPlanPayload: MealPlanPayload = {
+              type: 'mealPlan',
+              mealIds: processResult.mealIds,
+              count: processResult.mealIds.length,
+              meals: processResult.meals,
+            };
+            payloadJson = JSON.stringify(mealPlanPayload);
+
+            await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+            setPendingIntention(null);
+          } else {
+            if (userRecord) {
+              const recordId = userRecord.id;
+              await ChatService.deleteMessage(recordId);
+              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
+              setMessages((prev) => prev.filter((m) => m._id !== recordId));
+            }
+            setFailedMessageText(text.trim());
+            setEphemeralErrorMessage(t('coach.errors.mealPlanGenerationFailed'));
+            return;
+          }
+        } else if (pendingIntention === GENERATE_MY_WORKOUTS) {
           // Pass last 6 conversation entries + current message so the model has context and sees recent back-and-forth (same idea as Analyze Progress / Nutrition Check)
           const recentConversation = [
             ...historyEntries.slice(-6),
@@ -473,6 +621,7 @@ export function useChatMessages(
             payloadJson = JSON.stringify(workoutPlanPayload);
 
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
+            setPendingIntention(null);
           } else {
             // Revert user message and restore text to input so user can retry
             if (userRecord) {
@@ -514,6 +663,7 @@ export function useChatMessages(
 
           reply = { msg4User: result, sumMsg: result.substring(0, 200) };
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else if (pendingIntention === NUTRITION_CHECK) {
           const end = new Date();
           const start = new Date();
@@ -544,6 +694,7 @@ export function useChatMessages(
 
           reply = { msg4User: result, sumMsg: result.substring(0, 200) };
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else if (pendingIntention === TRACK_MEAL) {
           const result = await trackMeal(aiConfig, text.trim(), base64Image);
           if (!result || result.meals.length === 0) {
@@ -590,6 +741,7 @@ export function useChatMessages(
           payloadJson = JSON.stringify(trackMealPayload);
 
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else {
           // Default: send regular chat message
           reply = await sendCoachMessage(
@@ -743,5 +895,13 @@ export function useChatMessages(
     isCreditsError: ephemeralCreditsError,
     deleteMessage,
     markMealAsTracked,
+    pendingIntention,
+    clearIntention: async () => {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+    },
+    setPendingIntention: (intention: string | null) => {
+      setPendingIntention(intention);
+    },
   };
 }

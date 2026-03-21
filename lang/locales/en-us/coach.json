@@ -18,9 +18,11 @@
       "analyzeProgress": "Analyze Progress",
       "nutritionCheck": "Nutrition Check",
       "trackMeal": "Track Meal",
-      "workoutGen": "Workout Gen."
+      "workoutGen": "Workout Gen.",
+      "mealPlan": "Meal Plan"
     },
     "workoutGenerationPrompt": "I can help you create a personalized workout plan! Tell me about your goals, available equipment, and how many days per week you'd like to train.",
+    "mealPlanPrompt": "I can help you create a personalized meal plan for 3 days! Tell me about your preferences, allergies, or any specific foods you'd like to include.",
     "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
     "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
     "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
@@ -34,6 +36,7 @@
     "errors": {
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings.",
       "workoutGenerationFailed": "Sorry, I couldn't generate a workout plan. Please try again.",
+      "mealPlanGenerationFailed": "Sorry, I couldn't generate a meal plan. Please try again.",
       "generalError": "Sorry, something went wrong. Please try again.",
       "progressInsightFailed": "Could not analyze progress. Try again later.",
       "nutritionInsightFailed": "Could not check nutrition. Try again later.",
@@ -44,6 +47,7 @@
     "goToSettings": "Go to Settings",
     "success": {
       "workoutPlanGenerated": "I've created {{count}} workouts for you! 💪 {{description}}",
+      "mealPlanGenerated": "I've created a 3-day meal plan with {{count}} meals for you! 🥗 {{description}}",
       "trackMealSuccess": "I've tracked {{count}} ingredients for your meal: {{ingredients}}. Total: {{calories}} kcal.",
       "trackMealReady": "I've analyzed {{count}} meal(s): {{meals}} ({{calories}} kcal total). Tap a meal to review and log it!",
       "historyCleared": "Chat history cleared."

@@ -176,10 +176,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       fats: nutritionGoals.fats,
       fiber: nutritionGoals.fiber,
       eatingPhase: nutritionGoals.eatingPhase,
-      targetWeight: nutritionGoals.targetWeight,
-      targetBodyFat: nutritionGoals.targetBodyFat,
-      targetBMI: nutritionGoals.targetBMI,
-      targetFFMI: nutritionGoals.targetFFMI,
+      targetWeight: nutritionGoals.targetWeight ?? undefined,
+      targetBodyFat: nutritionGoals.targetBodyFat ?? undefined,
+      targetBMI: nutritionGoals.targetBMI ?? undefined,
+      targetFFMI: nutritionGoals.targetFFMI ?? undefined,
       targetDate: nutritionGoals.targetDate ?? null,
     };
 

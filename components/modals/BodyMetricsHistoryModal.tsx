@@ -1,17 +1,18 @@
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { UserMetricService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
 import { getXAxisLabels } from '../../utils/chartUtils';
-import { kgToDisplay, storedWeightToKg } from '../../utils/unitConversion';
+import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { LineChart } from '../charts/LineChart';
@@ -19,11 +20,13 @@ import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import AddUserMetricEntryModal from './AddUserMetricEntryModal';
+import type { BodyMetricsHistoryFilters } from './BodyMetricsHistoryFilterMenu';
+import { BodyMetricsHistoryFilterMenu, DEFAULT_FILTERS } from './BodyMetricsHistoryFilterMenu';
 import { FullScreenModal } from './FullScreenModal';
 
 // UI-facing metric keys
 type UiMetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
-type TimePeriod = '30D' | '3M' | '1Y'; // TODO: add 6M
+type TimePeriod = '30D' | '3M' | '6M' | '1Y';
 
 type HistoryEntry = {
   id: string;
@@ -76,7 +79,13 @@ export default function BodyMetricsHistoryModal({
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
   const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
+  const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<BodyMetricsHistoryFilters>(DEFAULT_FILTERS);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const isFilterActive =
+    activeFilters.sortOrder !== DEFAULT_FILTERS.sortOrder ||
+    activeFilters.trend !== DEFAULT_FILTERS.trend;
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -85,17 +94,49 @@ export default function BodyMetricsHistoryModal({
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
 
-  // Map UI metric keys to canonical AppMetricType values (or undefined when not applicable)
-  const mapUiMetricToAppMetric = (m: UiMetricType): AppMetricType | undefined => {
+  // BMI and FFMI are derived from weight history + latest height (+ body fat for FFMI)
+  const [latestHeightCm, setLatestHeightCm] = useState<number | null>(null);
+  const [latestBodyFatPct, setLatestBodyFatPct] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (selectedMetric !== 'bmi' && selectedMetric !== 'ffmi') {
+      return;
+    }
+
+    UserMetricService.getLatest('height').then(async (m) => {
+      if (!m) {
+        setLatestHeightCm(null);
+        return;
+      }
+
+      const dec = await m.getDecrypted();
+      setLatestHeightCm(storedHeightToCm(dec.value, dec.unit));
+    });
+
+    if (selectedMetric === 'ffmi') {
+      UserMetricService.getLatest('body_fat').then(async (m) => {
+        if (!m) {
+          setLatestBodyFatPct(null);
+          return;
+        }
+
+        const dec = await m.getDecrypted();
+        setLatestBodyFatPct(dec.value);
+      });
+    }
+  }, [selectedMetric]);
+
+  // Map UI metric keys to the DB type to fetch.
+  // BMI and FFMI are computed from weight entries using the latest height (and body fat for FFMI).
+  const mapUiMetricToAppMetric = (m: UiMetricType): AppMetricType => {
     switch (m) {
       case 'weight':
         return AppMetricType.WEIGHT;
       case 'bodyFat':
         return AppMetricType.BODY_FAT;
-      // BMI and FFMI are derived metrics, not stored directly as a MetricType in HealthDataTransformer
       case 'bmi':
       case 'ffmi':
-        return undefined;
+        return AppMetricType.WEIGHT;
     }
   };
 
@@ -107,6 +148,8 @@ export default function BodyMetricsHistoryModal({
       startDate = now - 30 * 24 * 60 * 60 * 1000;
     } else if (selectedPeriod === '3M') {
       startDate = now - 90 * 24 * 60 * 60 * 1000;
+    } else if (selectedPeriod === '6M') {
+      startDate = now - 180 * 24 * 60 * 60 * 1000;
     } else if (selectedPeriod === '1Y') {
       startDate = now - 365 * 24 * 60 * 60 * 1000;
     }
@@ -166,41 +209,65 @@ export default function BodyMetricsHistoryModal({
     [t]
   );
 
-  // Helper to get display value for weight/height (normalize stored to kg/cm then to display unit)
+  // Helper to get display value. Returns null when a derived metric cannot be computed
+  // (BMI: no height data; FFMI: no height or no body fat data).
   const getDisplayValue = useCallback(
-    (value: number, storedUnit?: string | null): number => {
+    (value: number, storedUnit?: string | null): number | null => {
       if (selectedMetric === 'weight') {
         return kgToDisplay(storedWeightToKg(value, storedUnit), units);
       }
+
+      if (selectedMetric === 'bmi' || selectedMetric === 'ffmi') {
+        if (!latestHeightCm || latestHeightCm <= 0) {
+          return null;
+        }
+
+        const weightKg = storedWeightToKg(value, storedUnit);
+        const heightM = latestHeightCm / 100;
+
+        if (selectedMetric === 'bmi') {
+          return weightKg / (heightM * heightM);
+        }
+
+        // FFMI requires body fat — can't compute without it
+        if (latestBodyFatPct === null) {
+          return null;
+        }
+
+        const fatFreeMassKg = weightKg * (1 - latestBodyFatPct / 100);
+        return fatFreeMassKg / (heightM * heightM);
+      }
       return value;
     },
-    [selectedMetric, units]
+    [selectedMetric, units, latestHeightCm, latestBodyFatPct]
   );
 
   // Helper to process metrics into history entries
   const processMetricsToEntries = useCallback(
     (metrics: UserMetricWithDecrypted[], unit: string): HistoryEntry[] => {
-      return metrics.map((item, index) => {
+      const entries: HistoryEntry[] = [];
+      metrics.forEach((item, index) => {
         const metric = item.metric;
         const d = item.decrypted;
+        const displayValue = getDisplayValue(d.value, d.unit);
+        if (displayValue === null) {
+          return;
+        }
+
         const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
-        const displayValue =
-          selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
         let change: string | null = null;
         let changeType: 'up' | 'down' | null = null;
 
         if (previous) {
-          const prevDisplay =
-            selectedMetric === 'weight'
-              ? getDisplayValue(previous.decrypted.value, previous.decrypted.unit)
-              : (previous.decrypted.value as number);
-
-          const diff = displayValue - prevDisplay;
-          const absDiff = Math.abs(diff);
-          if (absDiff > 0.01) {
-            changeType = diff > 0 ? 'up' : 'down';
-            const sign = diff > 0 ? '+' : '';
-            change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+          const prevDisplay = getDisplayValue(previous.decrypted.value, previous.decrypted.unit);
+          if (prevDisplay !== null) {
+            const diff = displayValue - prevDisplay;
+            const absDiff = Math.abs(diff);
+            if (absDiff > 0.01) {
+              changeType = diff > 0 ? 'up' : 'down';
+              const sign = diff > 0 ? '+' : '';
+              change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+            }
           }
         }
 
@@ -218,7 +285,7 @@ export default function BodyMetricsHistoryModal({
               : t('bodyMetrics.history.notes.increased');
         }
 
-        return {
+        entries.push({
           id: metric.id,
           date: formatRelativeDate(d.date, t),
           value: valueStr,
@@ -229,8 +296,10 @@ export default function BodyMetricsHistoryModal({
           iconColor: index === 0 ? theme.colors.text.primary : theme.colors.text.secondary,
           iconBg: index === 0 ? theme.colors.status.indigo600 : theme.colors.border.light,
           opacity: index === metrics.length - 1 ? 0.7 : 1,
-        };
+        });
       });
+
+      return entries;
     },
     [
       selectedMetric,
@@ -249,8 +318,29 @@ export default function BodyMetricsHistoryModal({
       return [];
     }
     const unit = getMetricUnit(selectedMetric);
-    return processMetricsToEntries(paginatedMetrics, unit);
-  }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries]);
+    const entries = processMetricsToEntries(paginatedMetrics, unit);
+
+    // Apply trend filter
+    const trendFiltered =
+      activeFilters.trend === 'all'
+        ? entries
+        : entries.filter((e) => {
+            if (activeFilters.trend === 'increased') {
+              return e.changeType === 'up';
+            }
+            if (activeFilters.trend === 'decreased') {
+              return e.changeType === 'down';
+            }
+            // noChange
+            return e.changeType === null;
+          });
+
+    // Apply sort order
+    if (activeFilters.sortOrder === 'oldestFirst') {
+      return [...trendFiltered].reverse();
+    }
+    return trendFiltered;
+  }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries, activeFilters]);
 
   // Get current metric data from latest entry (weight in display unit)
   const currentMetric = useMemo<MetricData | null>(() => {
@@ -259,8 +349,11 @@ export default function BodyMetricsHistoryModal({
     }
     const latest = paginatedMetrics[0];
     const d = latest.decrypted;
-    const displayVal =
-      selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
+    const displayVal = getDisplayValue(d.value, d.unit);
+    if (displayVal === null) {
+      return null;
+    }
+
     const unit = getMetricUnit(selectedMetric);
 
     return {
@@ -318,6 +411,10 @@ export default function BodyMetricsHistoryModal({
     const maxMetric = allMetricsForChart.find((m) => m.decrypted.value === maxStored);
     const minDisplay = getDisplayValue(minStored, minMetric?.decrypted.unit);
     const maxDisplay = getDisplayValue(maxStored, maxMetric?.decrypted.unit);
+    if (minDisplay === null || maxDisplay === null) {
+      return [];
+    }
+
     const midDisplay = (minDisplay + maxDisplay) / 2;
 
     const unit = getMetricUnit(selectedMetric);
@@ -492,6 +589,25 @@ export default function BodyMetricsHistoryModal({
                         </Text>
                       </Pressable>
                       <Pressable
+                        onPress={() => setSelectedPeriod('6M')}
+                        className={`rounded-md px-3 py-1 ${selectedPeriod === '6M' ? '' : ''}`}
+                        style={
+                          selectedPeriod === '6M'
+                            ? {
+                                backgroundColor: theme.colors.accent.primary10,
+                              }
+                            : {}
+                        }
+                      >
+                        <Text
+                          className={`text-[10px] font-bold ${
+                            selectedPeriod === '6M' ? 'text-accent-primary' : 'text-text-tertiary'
+                          }`}
+                        >
+                          6M
+                        </Text>
+                      </Pressable>
+                      <Pressable
                         onPress={() => setSelectedPeriod('1Y')}
                         className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
                         style={
@@ -544,11 +660,30 @@ export default function BodyMetricsHistoryModal({
               <Text className="text-lg font-bold text-text-primary">
                 {t('bodyMetrics.history.title')}
               </Text>
-              <Pressable className="flex-row items-center gap-1">
-                <SlidersHorizontal size={theme.iconSize.sm} color={theme.colors.text.muted} />
-                <Text className="text-xs font-semibold text-text-tertiary">
+              <Pressable
+                className="flex-row items-center gap-1"
+                onPress={() => setIsFilterMenuVisible(true)}
+              >
+                <SlidersHorizontal
+                  size={theme.iconSize.sm}
+                  color={isFilterActive ? theme.colors.accent.primary : theme.colors.text.muted}
+                />
+                <Text
+                  className="text-xs font-semibold"
+                  style={{
+                    color: isFilterActive
+                      ? theme.colors.accent.primary
+                      : theme.colors.text.tertiary,
+                  }}
+                >
                   {t('bodyMetrics.history.filter')}
                 </Text>
+                {isFilterActive ? (
+                  <View
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: theme.colors.accent.primary }}
+                  />
+                ) : null}
               </Pressable>
             </View>
 
@@ -622,6 +757,13 @@ export default function BodyMetricsHistoryModal({
       <AddUserMetricEntryModal
         visible={isAddMetricVisible}
         onClose={() => setIsAddMetricVisible(false)}
+      />
+      <BodyMetricsHistoryFilterMenu
+        visible={isFilterMenuVisible}
+        onClose={() => setIsFilterMenuVisible(false)}
+        onApplyFilters={setActiveFilters}
+        onClearFilters={() => setActiveFilters(DEFAULT_FILTERS)}
+        initialFilters={activeFilters}
       />
     </FullScreenModal>
   );

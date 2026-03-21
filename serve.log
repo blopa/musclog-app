@@ -1,8 +1,0 @@
-npm warn exec The following package was not found and will be installed: serve@14.2.6
- INFO  Accepting connections at http://localhost:8081
- HTTP  3/18/2026 5:18:05 PM ::1 GET /musclog-app
- HTTP  3/18/2026 5:18:05 PM ::1 Returned 404 in 281 ms
- HTTP  3/18/2026 5:18:28 PM ::1 GET /
- HTTP  3/18/2026 5:18:28 PM ::1 Returned 404 in 2 ms
-
- INFO  Gracefully shutting down. Please wait...

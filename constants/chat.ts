@@ -34,3 +34,8 @@ export const NUTRITION_CHECK = 'NUTRITION_CHECK';
  * User wants to track a meal (intention set; tracking runs on next send)
  */
 export const TRACK_MEAL = 'TRACK_MEAL';
+
+/**
+ * User wants to generate a custom meal plan
+ */
+export const GENERATE_MEAL_PLAN = 'GENERATE_MEAL_PLAN';

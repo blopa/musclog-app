@@ -59,6 +59,7 @@
         <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
       </intent-filter>
     </activity>
+    <activity android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity" android:screenOrientation="unspecified" tools:replace="android:screenOrientation" tools:node="merge"/>
     <receiver android:name=".widget.SmartCamera" android:exported="false" android:label="Smart Camera">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>

@@ -18,9 +18,11 @@
       "analyzeProgress": "Analisar Progresso",
       "nutritionCheck": "Verificar Nutrição",
       "trackMeal": "Registrar Refeição",
-      "workoutGen": "Gerar Treino"
+      "workoutGen": "Gerar Treino",
+      "mealPlan": "Plano alimentar"
     },
     "workoutGenerationPrompt": "Posso ajudar você a criar um plano de treino personalizado! Me conte sobre seus objetivos, equipamentos disponíveis e quantos dias por semana você gostaria de treinar.",
+    "mealPlanPrompt": "Posso ajudar você a criar um plano alimentar personalizado para 3 dias! Me conte suas preferências, alergias ou alimentos específicos que você queira incluir.",
     "analyzeProgressPrompt": "Vou analisar seus treinos recentes. Tem alguma observação que gostaria de me contar antes de eu fazer isso?",
     "nutritionCheckPrompt": "Vou revisar sua nutrição dos últimos 7 dias. Tem alguma observação que gostaria de adicionar antes de eu fazer isso?",
     "trackMealPrompt": "Me diga o que você comeu (você pode até enviar uma foto!), e eu vou estimar os macros e registrar para você.",
@@ -34,6 +36,7 @@
     "errors": {
       "aiNotConfigured": "Os recursos de IA não estão configurados. Por favor, adicione uma chave de API do Gemini ou OpenAI em Configurações.",
       "workoutGenerationFailed": "Desculpe, não consegui gerar um plano de treino. Por favor, tente novamente.",
+      "mealPlanGenerationFailed": "Desculpe, não consegui gerar um plano alimentar. Por favor, tente novamente.",
       "generalError": "Desculpe, algo deu errado. Por favor, tente novamente.",
       "progressInsightFailed": "Não foi possível analisar o progresso. Tente novamente mais tarde.",
       "nutritionInsightFailed": "Não foi possível verificar a nutrição. Tente novamente mais tarde.",
@@ -44,6 +47,7 @@
     "goToSettings": "Ir para Configurações",
     "success": {
       "workoutPlanGenerated": "Criei {{count}} treinos para você! 💪 {{description}}",
+      "mealPlanGenerated": "Criei um plano alimentar de 3 dias com {{count}} refeições para você! 🥗 {{description}}",
       "trackMealSuccess": "Registrei {{count}} ingredientes para sua refeição: {{ingredients}}. Total: {{calories}} kcal.",
       "trackMealReady": "Analisei {{count}} refeição(ões): {{meals}} ({{calories}} kcal no total). Toque em uma refeição para revisar e registrá-la!",
       "historyCleared": "Histórico do chat limpo."

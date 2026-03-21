@@ -244,14 +244,15 @@ export class MealService {
       amount: number;
       portionId?: string;
     }[],
-    description?: string
+    description?: string,
+    isAiGenerated = false
   ): Promise<Meal> {
     const now = Date.now();
     const mealCollection = database.get<Meal>('meals');
     const mealFoodCollection = database.get<MealFood>('meal_foods');
 
     const meal = mealCollection.prepareCreate((mealRecord) => {
-      mealRecord.isAiGenerated = false;
+      mealRecord.isAiGenerated = isAiGenerated;
       mealRecord.name = name;
       mealRecord.description = description ?? '';
       mealRecord.isFavorite = false;

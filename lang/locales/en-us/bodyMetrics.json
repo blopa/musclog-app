@@ -42,6 +42,23 @@
         "noChange": "No change",
         "decreased": "Decreased",
         "increased": "Increased"
+      },
+      "filters": {
+        "title": "Filter History",
+        "sortOrder": {
+          "title": "SORT ORDER",
+          "newestFirst": "Newest First",
+          "oldestFirst": "Oldest First"
+        },
+        "trend": {
+          "title": "TREND",
+          "all": "All",
+          "increased": "Increased",
+          "decreased": "Decreased",
+          "noChange": "No Change"
+        },
+        "reset": "Reset",
+        "apply": "Apply Filters"
       }
     },
     "dateFormats": {

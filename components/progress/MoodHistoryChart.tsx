@@ -12,8 +12,13 @@ interface MoodHistoryChartProps {
   allData: Record<TimeAggregation, MoodPoint[]>;
 }
 
-// TODO: use i18n here? or is it not user facing?
-const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
+const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
+  'poor',
+  'low',
+  'okay',
+  'good',
+  'great',
+];
 
 const formatDate = (timestamp: number): string => {
   const d = new Date(timestamp);
@@ -99,7 +104,10 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
         xAxisLabels={xAxisLabels}
         yAxisLabels={yAxisLabels}
         interactive
-        tooltipFormatter={(p) => MOOD_LABELS[Math.round(p.y)] ?? `${p.y.toFixed(1)}`}
+        tooltipFormatter={(p) => {
+          const key = MOOD_KEYS[Math.round(p.y)];
+          return key ? t(`progress.mood.${key}`) : `${p.y.toFixed(1)}`;
+        }}
       />
     </ProgressChartSection>
   );

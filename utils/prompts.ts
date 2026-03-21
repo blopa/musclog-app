@@ -803,6 +803,35 @@ export const getFoundationFoodsPrompt = async (): Promise<string> => {
 /**
  * System prompt for meal tracking (text or photo)
  */
+/**
+ * System prompt for meal plan generation
+ */
+export const getGenerateMealPlanPrompt = async (
+  language: string = 'en-US',
+  macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
+  eatingPhase?: string,
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const user = await UserService.getCurrentUser();
+  const eatingPhaseResolved =
+    eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
+  const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
+
+  const macroContext = macroTargets
+    ? `The user's daily nutrition targets are: ${macroTargets.calories} kcal, ${macroTargets.protein}g protein, ${macroTargets.carbs}g carbs, ${macroTargets.fat}g fat, ${macroTargets.fiber}g fiber.`
+    : '';
+
+  return [
+    await getBaseSystemPrompt(language, context),
+    'Generate a custom 3-day meal plan with 4 meals per day (breakfast, lunch, dinner, and snack).',
+    "Each meal should be balanced and align with the user's nutritional goals and fitness level.",
+    'For each meal, provide a name, a brief description, and a list of ingredients with their macronutrients.',
+    macroContext,
+    userDetails,
+    `Your response must be in ${language}.`,
+  ].join('\n');
+};
+
 export const getTrackMealPrompt = async (
   language: string = 'en-US',
   includeFoundationFoods: boolean = false
@@ -1270,6 +1299,63 @@ export const getParseRetrospectiveNutritionFunctions = ():
 /**
  * Function schema for meal tracking with multiple ingredients
  */
+/**
+ * Function schema for meal plan generation
+ */
+export const getGenerateMealPlanFunctions = ():
+  | FunctionDeclaration[]
+  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  return [
+    {
+      name: 'generateMealPlan',
+      description: 'Generates a 3-day meal plan with 4 meals per day',
+      parameters: {
+        type: 'object',
+        properties: {
+          description: {
+            type: 'string',
+            description: 'A brief encouraging description of the meal plan',
+          },
+          meals: {
+            type: 'array',
+            description: 'List of meals for the 3-day plan',
+            items: {
+              type: 'object',
+              properties: {
+                day: { type: 'number', description: 'Day number (1, 2, or 3)' },
+                mealType: {
+                  type: 'string',
+                  enum: ['breakfast', 'lunch', 'dinner', 'snack'],
+                },
+                name: { type: 'string', description: 'Name of the meal' },
+                description: { type: 'string', description: 'Brief description of the meal' },
+                ingredients: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      kcal: { type: 'number' },
+                      carbs: { type: 'number' },
+                      fat: { type: 'number' },
+                      protein: { type: 'number' },
+                      fiber: { type: 'number' },
+                      grams: { type: 'number' },
+                    },
+                    required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
+                  },
+                },
+              },
+              required: ['day', 'mealType', 'name', 'description', 'ingredients'],
+            },
+          },
+        },
+        required: ['meals', 'description'],
+      },
+    },
+  ];
+};
+
 export const getTrackMealFunctions = (
   includeFoundationFoods: boolean = false
 ): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
