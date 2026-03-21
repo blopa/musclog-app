@@ -34,10 +34,10 @@ export type NutritionGoals = {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
-  targetWeight: number;
-  targetBodyFat: number;
-  targetBMI: number;
-  targetFFMI: number;
+  targetWeight: number | null;
+  targetBodyFat: number | null;
+  targetBMI: number | null;
+  targetFFMI: number | null;
   targetDate?: number | null;
   goalStartDate?: number | null;
 };
@@ -235,14 +235,14 @@ export function NutritionGoalsBody({
   const [eatingPhase, setEatingPhase] = useState<EatingPhase>(
     initialGoals?.eatingPhase ?? 'maintain'
   );
-  const [targetWeight, setTargetWeight] = useState(
-    initialGoals?.targetWeight != null
-      ? kgToDisplay(initialGoals.targetWeight, units)
-      : kgToDisplay(defaultTargetWeightKg, units)
+  const [targetWeight, setTargetWeight] = useState<number | null>(
+    initialGoals?.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
   );
-  const [targetBodyFat, setTargetBodyFat] = useState(initialGoals?.targetBodyFat ?? 12);
-  const [targetBMI, setTargetBMI] = useState(initialGoals?.targetBMI ?? 23.5);
-  const [targetFFMI, setTargetFFMI] = useState(initialGoals?.targetFFMI ?? 21.0);
+  const [targetBodyFat, setTargetBodyFat] = useState<number | null>(
+    initialGoals?.targetBodyFat ?? null
+  );
+  const [targetBMI, setTargetBMI] = useState<number | null>(initialGoals?.targetBMI ?? null);
+  const [targetFFMI, setTargetFFMI] = useState<number | null>(initialGoals?.targetFFMI ?? null);
   const [targetDate, setTargetDate] = useState<number | null>(initialGoals?.targetDate ?? null);
   const [goalStartDate, setGoalStartDate] = useState<number | null>(
     initialGoals?.goalStartDate ?? null
@@ -305,7 +305,7 @@ export function NutritionGoalsBody({
         fats,
         fiber,
         eatingPhase,
-        targetWeight: displayToKg(targetWeight, units),
+        targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
         targetBodyFat,
         targetBMI,
         targetFFMI,
@@ -338,7 +338,7 @@ export function NutritionGoalsBody({
       fats,
       fiber,
       eatingPhase,
-      targetWeight: displayToKg(targetWeight, units),
+      targetWeight: targetWeight != null ? displayToKg(targetWeight, units) : null,
       targetBodyFat,
       targetBMI,
       targetFFMI,
@@ -562,58 +562,181 @@ export function NutritionGoalsBody({
           {t('nutritionGoals.targetBodyMetrics')}
         </Text>
         <View className="gap-4">
-          <StepperInlineInput
-            label={t('nutritionGoals.targetWeight')}
-            subtitle={t('nutritionGoals.sublabels.targetWeight')}
-            value={targetWeight}
-            unit={units === 'metric' ? 'kg' : 'lbs'}
-            icon={showIcons ? Scale : undefined}
-            iconSize="sm"
-            onIncrement={() =>
-              setTargetWeight(
-                Math.min(kgToDisplay(200, units), Math.round((targetWeight + 1) * 10) / 10)
-              )
-            }
-            onDecrement={() =>
-              setTargetWeight(
-                Math.max(kgToDisplay(30, units), Math.round((targetWeight - 1) * 10) / 10)
-              )
-            }
-            onChangeValue={setTargetWeight}
-          />
-          <StepperInlineInput
-            label={t('nutritionGoals.targetBodyFat')}
-            subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
-            value={targetBodyFat}
-            unit="%"
-            icon={showIcons ? Percent : undefined}
-            iconSize="sm"
-            onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
-            onDecrement={() => setTargetBodyFat(Math.max(5, targetBodyFat - 1))}
-            onChangeValue={setTargetBodyFat}
-          />
-          <StepperInlineInput
-            label={t('nutritionGoals.targetBMI')}
-            subtitle={t('nutritionGoals.sublabels.targetBMI')}
-            value={targetBMI}
-            unit="index"
-            icon={showIcons ? TrendingUp : undefined}
-            iconSize="sm"
-            onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
-            onDecrement={() => setTargetBMI(Math.max(15, targetBMI - 0.1))}
-            onChangeValue={setTargetBMI}
-          />
-          <StepperInlineInput
-            label={t('nutritionGoals.targetFFMI')}
-            subtitle={t('nutritionGoals.sublabels.targetFFMI')}
-            value={targetFFMI}
-            unit="index"
-            icon={showIcons ? Activity : undefined}
-            iconSize="sm"
-            onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
-            onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
-            onChangeValue={setTargetFFMI}
-          />
+          {/* Target Weight */}
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('nutritionGoals.targetWeight')}
+              </Text>
+              {targetWeight === null ? (
+                <Pressable
+                  onPress={() => setTargetWeight(kgToDisplay(defaultTargetWeightKg, units))}
+                  className="active:opacity-70"
+                >
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('editFitnessDetails.fatPercentageNotSet')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => setTargetWeight(null)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('common.clear')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {targetWeight !== null ? (
+              <StepperInlineInput
+                label={t('nutritionGoals.targetWeight')}
+                subtitle={t('nutritionGoals.sublabels.targetWeight', { unit: units === 'metric' ? 'kg' : 'lbs' })}
+                value={targetWeight}
+                unit={units === 'metric' ? 'kg' : 'lbs'}
+                icon={showIcons ? Scale : undefined}
+                iconSize="sm"
+                onIncrement={() =>
+                  setTargetWeight(
+                    Math.min(kgToDisplay(200, units), Math.round((targetWeight + 1) * 10) / 10)
+                  )
+                }
+                onDecrement={() =>
+                  setTargetWeight(
+                    Math.max(kgToDisplay(30, units), Math.round((targetWeight - 1) * 10) / 10)
+                  )
+                }
+                onChangeValue={setTargetWeight}
+              />
+            ) : null}
+          </View>
+
+          {/* Target Body Fat */}
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('nutritionGoals.targetBodyFat')}
+              </Text>
+              {targetBodyFat === null ? (
+                <Pressable onPress={() => setTargetBodyFat(15)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('editFitnessDetails.fatPercentageNotSet')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => setTargetBodyFat(null)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('common.clear')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {targetBodyFat !== null ? (
+              <StepperInlineInput
+                label={t('nutritionGoals.targetBodyFat')}
+                subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
+                value={targetBodyFat}
+                unit="%"
+                icon={showIcons ? Percent : undefined}
+                iconSize="sm"
+                onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
+                onDecrement={() => setTargetBodyFat(Math.max(5, targetBodyFat - 1))}
+                onChangeValue={setTargetBodyFat}
+              />
+            ) : null}
+          </View>
+
+          {/* Target BMI */}
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('nutritionGoals.targetBMI')}
+              </Text>
+              {targetBMI === null ? (
+                <Pressable onPress={() => setTargetBMI(23.5)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('editFitnessDetails.fatPercentageNotSet')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => setTargetBMI(null)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('common.clear')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {targetBMI !== null ? (
+              <StepperInlineInput
+                label={t('nutritionGoals.targetBMI')}
+                subtitle={t('nutritionGoals.sublabels.targetBMI')}
+                value={targetBMI}
+                unit="index"
+                icon={showIcons ? TrendingUp : undefined}
+                iconSize="sm"
+                onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
+                onDecrement={() => setTargetBMI(Math.max(15, targetBMI - 0.1))}
+                onChangeValue={setTargetBMI}
+              />
+            ) : null}
+          </View>
+
+          {/* Target FFMI */}
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-text-secondary">
+                {t('nutritionGoals.targetFFMI')}
+              </Text>
+              {targetFFMI === null ? (
+                <Pressable onPress={() => setTargetFFMI(21.0)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('editFitnessDetails.fatPercentageNotSet')}
+                  </Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => setTargetFFMI(null)} className="active:opacity-70">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('common.clear')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            {targetFFMI !== null ? (
+              <StepperInlineInput
+                label={t('nutritionGoals.targetFFMI')}
+                subtitle={t('nutritionGoals.sublabels.targetFFMI')}
+                value={targetFFMI}
+                unit="index"
+                icon={showIcons ? Activity : undefined}
+                iconSize="sm"
+                onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}
+                onDecrement={() => setTargetFFMI(Math.max(15, targetFFMI - 0.1))}
+                onChangeValue={setTargetFFMI}
+              />
+            ) : null}
+          </View>
+
           {/* Target date for body metrics */}
           <Pressable
             onPress={() => setIsTargetDatePickerVisible(true)}

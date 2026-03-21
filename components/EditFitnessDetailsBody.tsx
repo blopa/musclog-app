@@ -12,7 +12,6 @@ import {
   Target,
   Timer,
   Trophy,
-  X,
   Zap,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -28,7 +27,7 @@ import { OptionsSelector } from './OptionsSelector';
 import { Button } from './theme/Button';
 import { PickerButton } from './theme/PickerButton';
 import { SegmentedControl } from './theme/SegmentedControl';
-import { Slider } from './theme/Slider';
+import { StepperInlineInput } from './theme/StepperInlineInput';
 import { TextInput } from './theme/TextInput';
 
 type EditFitnessDetailsBodyProps = {
@@ -353,14 +352,14 @@ export function EditFitnessDetailsBody({
               />
             </View>
           </View>
-          {/* Fat Percentage Slider */}
+          {/* Fat Percentage Stepper */}
           <View className="mt-4">
             <View className="flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
               {fatPercentage === null ? (
-                <Pressable onPress={() => setFatPercentage(15)} className="active:opacity-70">
+                <Pressable onPress={() => setFatPercentage(20)} className="active:opacity-70">
                   <Text
                     className="text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
@@ -370,25 +369,28 @@ export function EditFitnessDetailsBody({
                 </Pressable>
               ) : (
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-medium text-text-primary">
-                    {fatPercentage.toFixed(1)}%
-                  </Text>
                   <Pressable onPress={() => setFatPercentage(null)} className="active:opacity-70">
-                    <X size={14} color={theme.colors.text.tertiary} />
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: theme.colors.text.tertiary }}
+                    >
+                      {t('common.clear')}
+                    </Text>
                   </Pressable>
                 </View>
               )}
             </View>
             {fatPercentage !== null ? (
-              <Slider
-                value={fatPercentage}
-                min={5}
-                max={50}
-                step={0.5}
-                onChange={setFatPercentage}
-                variant="gradient"
-                useGradient={true}
-              />
+              <View className="mt-3">
+                <StepperInlineInput
+                  label={t('editFitnessDetails.fatPercentage')}
+                  value={fatPercentage}
+                  onIncrement={() => setFatPercentage((prev) => Math.min(50, (prev ?? 20) + 0.5))}
+                  onDecrement={() => setFatPercentage((prev) => Math.max(5, (prev ?? 20) - 0.5))}
+                  onChangeValue={(value) => setFatPercentage(Math.min(50, Math.max(5, value)))}
+                  unit="%"
+                />
+              </View>
             ) : null}
           </View>
         </View>
