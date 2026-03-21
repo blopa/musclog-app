@@ -6,9 +6,8 @@ import { names, uniqueNamesGenerator } from 'unique-names-generator';
 
 import { FitnessDetails } from '../components/EditFitnessDetailsBody';
 import { TEMP_GOOGLE_USER_NAME } from '../constants/misc';
-import { SettingsService, UserMetricService, UserService } from '../database/services';
 import { useSnackbar } from '../context/SnackbarContext';
-import { useSettings } from './useSettings';
+import { SettingsService, UserMetricService, UserService } from '../database/services';
 import {
   cmToDisplay,
   displayToCm,
@@ -17,6 +16,7 @@ import {
   storedHeightToCm,
   storedWeightToKg,
 } from '../utils/unitConversion';
+import { useSettings } from './useSettings';
 
 const DEFAULT_WEIGHT_KG = '70.0';
 const DEFAULT_HEIGHT_CM = '170';
@@ -136,9 +136,7 @@ export function useOnboardingFitnessData() {
   }, [units, isSettingsLoading]);
 
   const saveFitnessData = useCallback(
-    async (
-      data: FitnessDetails
-    ): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {
+    async (data: FitnessDetails): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {
       const result: { weightMetricId?: string; heightMetricId?: string } = {};
       setIsSaving(true);
       try {
