@@ -296,9 +296,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const isAiConfigured = useMemo(() => {
-    if (__DEV__) {
-      return true;
-    }
     return (
       isGoogleConnected ||
       (state.enableGoogleGemini && state.googleGeminiApiKey.trim() !== '') ||
