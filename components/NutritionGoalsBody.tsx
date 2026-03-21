@@ -590,6 +590,7 @@ export function NutritionGoalsBody({
           {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
+          {/*TODO: use StepperInlineInput here instead*/}
           <MacroCard
             label={t('nutritionGoals.protein')}
             kcalPerGram={t('nutritionGoals.kcalPerGram.protein')}
@@ -599,6 +600,7 @@ export function NutritionGoalsBody({
             color={theme.colors.macros.protein.bg}
             onChange={setProtein}
           />
+          {/*TODO: use StepperInlineInput here instead*/}
           <MacroCard
             label={t('nutritionGoals.carbohydrates')}
             kcalPerGram={t('nutritionGoals.kcalPerGram.carbs')}
@@ -608,6 +610,7 @@ export function NutritionGoalsBody({
             color={theme.colors.macros.carbs.bg}
             onChange={setCarbs}
           />
+          {/*TODO: use StepperInlineInput here instead*/}
           <MacroCard
             label={t('nutritionGoals.fats')}
             kcalPerGram={t('nutritionGoals.kcalPerGram.fats')}
@@ -617,6 +620,7 @@ export function NutritionGoalsBody({
             color={theme.colors.macros.fat.bg}
             onChange={setFats}
           />
+          {/*TODO: use StepperInlineInput here instead*/}
           <MacroCard
             label={t('food.macros.fiber')}
             kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
@@ -644,6 +648,7 @@ export function NutritionGoalsBody({
             label={t('nutritionGoals.targetWeight')}
             subtitle={t('nutritionGoals.sublabels.targetWeight')}
             value={targetWeight}
+            // TODO: check the config if user uses metric or imperial
             unit="kg"
             icon={showIcons ? Scale : undefined}
             iconSize="sm"
