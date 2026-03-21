@@ -129,6 +129,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       intensityMultiplier,
       cycleDay,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cycle, updateTick]);
 
   const value = useMemo(

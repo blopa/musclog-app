@@ -133,7 +133,7 @@ export function useOnboardingFitnessData() {
     if (!isSettingsLoading) {
       loadFitnessData();
     }
-  }, [units, isSettingsLoading]);
+  }, [units, isSettingsLoading, defaultDob]);
 
   const saveFitnessData = useCallback(
     async (data: FitnessDetails): Promise<{ weightMetricId?: string; heightMetricId?: string }> => {

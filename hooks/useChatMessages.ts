@@ -394,7 +394,7 @@ export function useChatMessages(
         throw err;
       }
     },
-    [conversationContext]
+    [conversationContext, pendingIntention]
   );
 
   const sendMessage = useCallback(

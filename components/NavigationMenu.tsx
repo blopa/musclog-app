@@ -34,7 +34,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
-  const { rawSlots, isAiConfigured, isCycleActive } = useNavigationItems();
+  const { rawSlots, isCycleActive } = useNavigationItems();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const unreadChatMessages = useUnreadChatMessages();
 
@@ -301,17 +301,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           return null;
       }
     },
-    [
-      isPathActive,
-      isFoodActive,
-      isAiConfigured,
-      isCycleActive,
-      unreadChatMessages,
-      onCoachPress,
-      router,
-      t,
-      theme,
-    ]
+    [isPathActive, isFoodActive, isCycleActive, unreadChatMessages, onCoachPress, router, t, theme]
   );
 
   const homeActive = isPathActive('/');
