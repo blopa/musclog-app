@@ -312,9 +312,9 @@ export function NutritionGoalsBody({
     });
   }, [targetWeight, userHeightM, units]);
 
-  // Auto-recalculate FFMI when target weight or body fat changes (only while FFMI is active)
+  // Auto-recalculate FFMI when target weight or body fat changes (only while FFMI is active and body fat is set)
   useEffect(() => {
-    if (userHeightM === null || targetWeight === null || targetBodyFat === null) {return;}
+    if (userHeightM === null || targetWeight === null || !targetBodyFat) {return;}
     setTargetFFMI((prev) => {
       if (prev === null) {return prev;}
       const weightKg = displayToKg(targetWeight, units);
@@ -751,7 +751,7 @@ export function NutritionGoalsBody({
               {targetFFMI === null ? (
                 <Pressable
                   onPress={() => {
-                    if (userHeightM !== null && targetWeight !== null && targetBodyFat !== null) {
+                    if (userHeightM !== null && targetWeight !== null && targetBodyFat) {
                       const weightKg = displayToKg(targetWeight, units);
                       setTargetFFMI(ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat));
                     } else {
