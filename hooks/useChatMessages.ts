@@ -71,6 +71,14 @@ export interface ExtendedIMessage extends IMessage {
   mealPlan?: {
     mealIds: string[];
     count: number;
+    meals?: {
+      id: string;
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+    }[];
   };
   workoutCompleted?: {
     workoutLogId: string;
@@ -127,6 +135,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
         msg.mealPlan = {
           mealIds: payload.mealIds,
           count: payload.count,
+          meals: payload.meals,
         };
       } else if (isImagePayload(payload)) {
         msg.image = payload.image.startsWith('data:')
@@ -561,6 +570,7 @@ export function useChatMessages(
               type: 'mealPlan',
               mealIds: processResult.mealIds,
               count: processResult.mealIds.length,
+              meals: processResult.meals,
             };
             payloadJson = JSON.stringify(mealPlanPayload);
 

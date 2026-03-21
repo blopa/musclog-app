@@ -208,14 +208,35 @@ export function calculateNutritionTotals(entries: NutritionEntry[]) {
  * Process generated meal plan response from AI
  * Creates new meal templates in the database
  */
-export async function processMealPlanResponse(
-  response: GenerateMealPlanResponse
-): Promise<{ mealIds: string[]; description: string }> {
+export async function processMealPlanResponse(response: GenerateMealPlanResponse): Promise<{
+  mealIds: string[];
+  description: string;
+  meals: {
+    id: string;
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  }[];
+}> {
   try {
     const createdMealIds: string[] = [];
+    const mealsData: {
+      id: string;
+      name: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+    }[] = [];
 
     for (const aiMeal of response.meals) {
       const foodItems = [];
+      let totalCalories = 0;
+      let totalProtein = 0;
+      let totalCarbs = 0;
+      let totalFats = 0;
 
       for (const ingredient of aiMeal.ingredients) {
         // Create or find food for each ingredient
@@ -231,22 +252,38 @@ export async function processMealPlanResponse(
           foodId: food.id,
           amount: ingredient.grams,
         });
+
+        totalCalories += ingredient.kcal;
+        totalProtein += ingredient.protein;
+        totalCarbs += ingredient.carbs;
+        totalFats += ingredient.fat;
       }
+
+      const mealName = `${aiMeal.name} (Day ${aiMeal.day})`;
 
       // Create the meal template
       const meal = await MealService.createMealFromFoods(
-        `${aiMeal.name} (Day ${aiMeal.day})`,
+        mealName,
         foodItems,
         aiMeal.description,
         true
       );
 
       createdMealIds.push(meal.id);
+      mealsData.push({
+        id: meal.id,
+        name: mealName,
+        calories: Math.round(totalCalories),
+        protein: Math.round(totalProtein),
+        carbs: Math.round(totalCarbs),
+        fats: Math.round(totalFats),
+      });
     }
 
     return {
       mealIds: createdMealIds,
       description: response.description,
+      meals: mealsData,
     };
   } catch (error) {
     console.error('[nutritionAI] Error processing meal plan:', error);

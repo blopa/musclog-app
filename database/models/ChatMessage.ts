@@ -49,6 +49,14 @@ export type MealPlanPayload = {
   type: 'mealPlan';
   mealIds: string[]; // Array of meal IDs created
   count: number; // Number of meals generated
+  meals?: {
+    id: string;
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  }[];
 };
 
 // Legacy track meal payload - flat shape written before multi-meal support was added

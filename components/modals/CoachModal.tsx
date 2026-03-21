@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
+  ClipboardList,
   Copy,
   Dumbbell,
   Images,
@@ -67,6 +68,7 @@ import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
+import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
@@ -205,7 +207,8 @@ type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
+  onSeeAllMeals?: () => void
 ) => {
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
@@ -251,6 +254,19 @@ const renderCustomView = (
     );
   }
 
+  if (currentMessage?.mealPlan?.meals) {
+    return (
+      <ChatMealPlanCarousel
+        meals={currentMessage.mealPlan.meals}
+        onSeeAll={onSeeAllMeals}
+        onViewMeal={(mealId) => {
+          // TODO: Implement viewing specific meal details if needed
+          onSeeAllMeals?.();
+        }}
+      />
+    );
+  }
+
   return null;
 };
 
@@ -262,7 +278,8 @@ const renderBubble = (
   onLongPress?: (message: ExtendedIMessage) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
   onGoToSettings?: () => void,
-  goToSettingsLabel?: string
+  goToSettingsLabel?: string,
+  onSeeAllMeals?: () => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -334,8 +351,11 @@ const renderBubble = (
             </Text>
           </Pressable>
         ) : null}
-        {currentMessage?.workoutCompleted || currentMessage?.workout || currentMessage?.meal
-          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails)
+        {currentMessage?.workoutCompleted ||
+        currentMessage?.workout ||
+        currentMessage?.meal ||
+        currentMessage?.mealPlan
+          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails, onSeeAllMeals)
           : null}
       </Pressable>
     );
@@ -1054,7 +1074,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
                 : theme.colors.background.card,
           }}
         >
-          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.success} />
+          <ClipboardList size={theme.iconSize.md} color={theme.colors.status.success} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.mealPlan')}
           </Text>
@@ -1164,7 +1184,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         handleMessageLongPress,
         handleViewMealDetails,
         isCreditsError ? handleGoToSettings : undefined,
-        isCreditsError ? t('coach.goToSettings') : undefined
+        isCreditsError ? t('coach.goToSettings') : undefined,
+        () => {
+          onClose();
+          router.push('/nutrition/meals');
+        }
       ),
     [
       theme,
@@ -1175,6 +1199,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       isCreditsError,
       handleGoToSettings,
       t,
+      onClose,
+      router,
     ]
   );
   const gcRenderAvatar = useCallback(
@@ -1184,8 +1210,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderCustomView = useCallback(
     (props: Parameters<typeof renderCustomView>[0]) =>
-      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails),
-    [handleViewWorkoutDetails, handleViewMealDetails]
+      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, () => {
+        onClose();
+        router.push('/nutrition/meals');
+      }),
+    [handleViewWorkoutDetails, handleViewMealDetails, onClose, router]
   );
 
   const gcRenderInputToolbar = useCallback(

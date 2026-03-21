@@ -93,6 +93,7 @@ describe('AiCustomPromptService', () => {
     it('should filter by type and context', async () => {
       const mockQuery = {
         fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
       };
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
@@ -102,6 +103,7 @@ describe('AiCustomPromptService', () => {
       await AiCustomPromptService.getActivePrompts('nutrition', 'memory');
 
       expect(mockCollection.query).toHaveBeenCalled();
+      expect(mockQuery.extend).toHaveBeenCalled();
     });
   });
 });
