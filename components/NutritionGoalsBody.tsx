@@ -1,6 +1,17 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Activity, Calendar, ChevronRight, Percent, Scale, TrendingUp } from 'lucide-react-native';
+import {
+  Activity,
+  Beef,
+  Calendar,
+  ChevronRight,
+  Droplet,
+  Leaf,
+  Percent,
+  Scale,
+  TrendingUp,
+  Wheat,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -494,42 +505,46 @@ export function NutritionGoalsBody({
           {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
-          {/*TODO: add an icon for protein*/}
           <StepperInlineInput
             label={t('nutritionGoals.protein')}
             subtitle={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             unit="g"
+            icon={showIcons ? Beef : undefined}
+            iconSize="sm"
             onIncrement={() => setProtein(Math.min(macroMax.protein, protein + 1))}
             onDecrement={() => setProtein(Math.max(0, protein - 1))}
             onChangeValue={setProtein}
           />
-          {/*TODO: add an icon for carbs*/}
           <StepperInlineInput
             label={t('nutritionGoals.carbohydrates')}
             subtitle={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             unit="g"
+            icon={showIcons ? Wheat : undefined}
+            iconSize="sm"
             onIncrement={() => setCarbs(Math.min(macroMax.carbs, carbs + 1))}
             onDecrement={() => setCarbs(Math.max(0, carbs - 1))}
             onChangeValue={setCarbs}
           />
-          {/*TODO: add an icon for fats*/}
           <StepperInlineInput
             label={t('nutritionGoals.fats')}
             subtitle={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             unit="g"
+            icon={showIcons ? Droplet : undefined}
+            iconSize="sm"
             onIncrement={() => setFats(Math.min(macroMax.fats, fats + 1))}
             onDecrement={() => setFats(Math.max(0, fats - 1))}
             onChangeValue={setFats}
           />
-          {/*TODO: add an icon for fiber*/}
           <StepperInlineInput
             label={t('food.macros.fiber')}
             subtitle={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             unit="g"
+            icon={showIcons ? Leaf : undefined}
+            iconSize="sm"
             onIncrement={() => setFiber(Math.min(macroMax.fiber, fiber + 1))}
             onDecrement={() => setFiber(Math.max(0, fiber - 1))}
             onChangeValue={setFiber}
