@@ -1,15 +1,6 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  Activity,
-  Calendar,
-  ChevronRight,
-  Minus,
-  Percent,
-  Plus,
-  Scale,
-  TrendingUp,
-} from 'lucide-react-native';
+import { Activity, Calendar, ChevronRight, Percent, Scale, TrendingUp } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -23,7 +14,6 @@ import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
-import { Slider } from './theme/Slider';
 import { StepperInlineInput } from './theme/StepperInlineInput';
 
 export type NutritionGoals = {
@@ -49,93 +39,6 @@ type NutritionGoalsModalBodyProps = {
   showSubtitle?: boolean;
   showGoalStartDate?: boolean;
 };
-
-type MacroCardProps = {
-  label: string;
-  kcalPerGram: string;
-  value: number;
-  min: number;
-  max: number;
-  color: string;
-  onChange: (value: number) => void;
-  step?: number;
-  useSlider?: boolean;
-};
-
-function MacroCard({
-  label,
-  kcalPerGram,
-  value,
-  min,
-  max,
-  color,
-  onChange,
-  step = 1,
-  useSlider = false,
-}: MacroCardProps) {
-  const theme = useTheme();
-  const handleDecrement = () => {
-    onChange(Math.max(min, value - step));
-  };
-
-  const handleIncrement = () => {
-    onChange(Math.min(max, value + step));
-  };
-
-  // Web-specific styles to allow horizontal gestures on slider area
-  const webSliderContainerStyle =
-    Platform.OS === 'web'
-      ? ({
-          // Allow horizontal panning for slider, preventing browser swipe gesture
-          touchAction: 'pan-x pan-y',
-        } as any)
-      : {};
-
-  return (
-    <View
-      className="rounded-xl border bg-bg-card p-5"
-      style={{ borderColor: theme.colors.border.emerald }}
-    >
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-row items-center gap-3">
-          <View className="h-8 w-0.5 rounded-full" style={{ backgroundColor: color }} />
-          <View>
-            <Text className="font-semibold text-text-primary">{label}</Text>
-            <Text className="text-xs text-text-secondary">{kcalPerGram}</Text>
-          </View>
-        </View>
-        <View className="flex-row items-center gap-3">
-          <Pressable
-            className="h-10 w-10 items-center justify-center rounded-full border"
-            style={{
-              backgroundColor: theme.colors.accent.primary10,
-              borderColor: theme.colors.accent.primary20,
-            }}
-            onPress={handleDecrement}
-          >
-            <Minus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </Pressable>
-          <Text className="w-12 text-center text-xl font-bold text-text-primary">{value}g</Text>
-          <Pressable
-            className="h-10 w-10 items-center justify-center rounded-full border"
-            style={{
-              backgroundColor: theme.colors.accent.primary10,
-              borderColor: theme.colors.accent.primary20,
-            }}
-            onPress={handleIncrement}
-          >
-            <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </Pressable>
-        </View>
-      </View>
-      {useSlider ? (
-        <View style={webSliderContainerStyle}>
-          <Slider value={value} min={min} max={max} onChange={onChange} />
-        </View>
-      ) : null}
-    </View>
-  );
-}
 
 function getMacroInsight(
   proteinPercentage: number,
@@ -590,46 +493,45 @@ export function NutritionGoalsBody({
           {t('nutritionGoals.dailyMacroTargets')}
         </Text>
         <View className="gap-4">
-          {/*TODO: use StepperInlineInput here instead*/}
-          <MacroCard
+          {/*TODO: add an icon for protein*/}
+          <StepperInlineInput
             label={t('nutritionGoals.protein')}
-            kcalPerGram={t('nutritionGoals.kcalPerGram.protein')}
+            subtitle={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
-            min={0}
-            max={macroMax.protein}
-            color={theme.colors.macros.protein.bg}
-            onChange={setProtein}
+            unit="g"
+            onIncrement={() => setProtein(Math.min(macroMax.protein, protein + 1))}
+            onDecrement={() => setProtein(Math.max(0, protein - 1))}
+            onChangeValue={setProtein}
           />
-          {/*TODO: use StepperInlineInput here instead*/}
-          <MacroCard
+          {/*TODO: add an icon for carbs*/}
+          <StepperInlineInput
             label={t('nutritionGoals.carbohydrates')}
-            kcalPerGram={t('nutritionGoals.kcalPerGram.carbs')}
+            subtitle={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
-            min={0}
-            max={macroMax.carbs}
-            color={theme.colors.macros.carbs.bg}
-            onChange={setCarbs}
+            unit="g"
+            onIncrement={() => setCarbs(Math.min(macroMax.carbs, carbs + 1))}
+            onDecrement={() => setCarbs(Math.max(0, carbs - 1))}
+            onChangeValue={setCarbs}
           />
-          {/*TODO: use StepperInlineInput here instead*/}
-          <MacroCard
+          {/*TODO: add an icon for fats*/}
+          <StepperInlineInput
             label={t('nutritionGoals.fats')}
-            kcalPerGram={t('nutritionGoals.kcalPerGram.fats')}
+            subtitle={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
-            min={0}
-            max={macroMax.fats}
-            color={theme.colors.macros.fat.bg}
-            onChange={setFats}
+            unit="g"
+            onIncrement={() => setFats(Math.min(macroMax.fats, fats + 1))}
+            onDecrement={() => setFats(Math.max(0, fats - 1))}
+            onChangeValue={setFats}
           />
-          {/*TODO: use StepperInlineInput here instead*/}
-          <MacroCard
+          {/*TODO: add an icon for fiber*/}
+          <StepperInlineInput
             label={t('food.macros.fiber')}
-            kcalPerGram={t('nutritionGoals.kcalPerGram.fiber')}
+            subtitle={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
-            min={0}
-            max={macroMax.fiber}
-            color={theme.colors.macros.fiber.bg}
-            onChange={setFiber}
-            step={1}
+            unit="g"
+            onIncrement={() => setFiber(Math.min(macroMax.fiber, fiber + 1))}
+            onDecrement={() => setFiber(Math.max(0, fiber - 1))}
+            onChangeValue={setFiber}
           />
         </View>
 
@@ -648,8 +550,7 @@ export function NutritionGoalsBody({
             label={t('nutritionGoals.targetWeight')}
             subtitle={t('nutritionGoals.sublabels.targetWeight')}
             value={targetWeight}
-            // TODO: check the config if user uses metric or imperial
-            unit="kg"
+            unit={units === 'metric' ? 'kg' : 'lbs'}
             icon={showIcons ? Scale : undefined}
             iconSize="sm"
             onIncrement={() =>
