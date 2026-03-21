@@ -61,26 +61,20 @@
       [
         "rn-mlkit-ocr",
         {
-          "ocrModels": [
-            "latin"
-          ],
+          "ocrModels": ["latin"],
           "ocrUseBundled": true
         }
       ],
       [
         "expo-asset",
         {
-          "assets": [
-            "./assets/exercises"
-          ]
+          "assets": ["./assets/exercises"]
         }
       ],
       [
         "react-native-android-widget",
         {
-          "fonts": [
-            "./assets/fonts/material.ttf"
-          ],
+          "fonts": ["./assets/fonts/material.ttf"],
           "widgets": [
             {
               "name": "SmartCamera",
@@ -111,9 +105,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a1f1a"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
