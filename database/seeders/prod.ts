@@ -368,11 +368,11 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setCoachConversationContext('general');
     console.log('Set default coach conversation context to general');
 
-    // Set default navigation bar slots
+    // Set default navigation bar slots (last slot opens Coach as a modal)
     await SettingsService.setNavSlot(1, 'workouts');
     await SettingsService.setNavSlot(2, 'food');
-    await SettingsService.setNavSlot(3, 'profile');
-    console.log('Set default navigation bar slots: workouts, food, profile');
+    await SettingsService.setNavSlot(3, 'coach');
+    console.log('Set default navigation bar slots: workouts, food, coach');
 
     // Set default food search source to both (Open Food Facts + USDA)
     await SettingsService.setFoodSearchSource('both');
@@ -383,6 +383,10 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     await SettingsService.setMaxAiMemories(50);
     console.log('Set default max AI memories to 50');
+
+    await SettingsService.setEnableGoogleGemini(false);
+    await SettingsService.setEnableOpenAi(false);
+    console.log('Set default Gemini and OpenAI enabled to false');
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
