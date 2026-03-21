@@ -2252,7 +2252,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   const nutritionSeeded = await seedNutritionLogsAndGoal();
   const mealsSeeded = await seedMeals();
 
-  const workoutData = await seedWorkoutTemplatesAndHistory();
+  const workoutData = await seedWorkoutTemplatesAndHistory(true);
   const userMetricsSeeded = await seedUserMetrics();
   await seedMenstrualCycle();
 
