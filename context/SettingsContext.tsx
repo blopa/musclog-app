@@ -109,7 +109,7 @@ const DEFAULT_STATE: SettingsState = {
   sendFoundationFoodsToLlm: true,
   navSlot1: 'workouts',
   navSlot2: 'food',
-  navSlot3: 'profile',
+  navSlot3: 'coach',
   foodSearchSource: 'both',
   conversationContext: 'general',
   chartTooltipPosition: 'right',
@@ -233,7 +233,7 @@ export type SettingsContextType = UseSettingsResult & {
   notificationsWorkoutDuration: boolean;
   useOcrBeforeAi: boolean;
   sendFoundationFoodsToLlm: boolean;
-  isAiFeaturesEnabled: boolean;
+  isAiConfigured: boolean;
   isSignedInWithGoogle: boolean;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
@@ -295,7 +295,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const isAiFeaturesEnabled = useMemo(() => {
+  const isAiConfigured = useMemo(() => {
     if (__DEV__) {
       return true;
     }
@@ -315,12 +315,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       ...state,
-      isAiFeaturesEnabled,
+      isAiConfigured,
       isSignedInWithGoogle: isGoogleConnected,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     }),
-    [state, isAiFeaturesEnabled, isGoogleConnected]
+    [state, isAiConfigured, isGoogleConnected]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

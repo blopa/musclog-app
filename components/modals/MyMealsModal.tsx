@@ -86,7 +86,7 @@ type MyMealsModalProps = {
 export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiConfigured } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -411,7 +411,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             onCreateMeal={handleCreateMeal}
             onGenerateMealAI={handleGenerateMealAI}
             onManageCategories={handleManageCategories}
-            isAiEnabled={isAiFeaturesEnabled}
+            isAiEnabled={isAiConfigured}
           />
         ) : null}
         {/* CreateMealModal (create or edit) */}
@@ -473,7 +473,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               setSelectedMealForLogging(null);
             }}
             onLogMeal={handleLogMeal}
-            isAiEnabled={isAiFeaturesEnabled}
+            isAiEnabled={isAiConfigured}
           />
         ) : null}
         {/* Delete Confirmation Modal */}
