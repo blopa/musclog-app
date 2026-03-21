@@ -20,6 +20,8 @@ import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
 import AddUserMetricEntryModal from './AddUserMetricEntryModal';
+import type { BodyMetricsHistoryFilters } from './BodyMetricsHistoryFilterMenu';
+import { BodyMetricsHistoryFilterMenu, DEFAULT_FILTERS } from './BodyMetricsHistoryFilterMenu';
 import { FullScreenModal } from './FullScreenModal';
 
 // UI-facing metric keys
@@ -77,7 +79,13 @@ export default function BodyMetricsHistoryModal({
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
   const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
+  const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<BodyMetricsHistoryFilters>(DEFAULT_FILTERS);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const isFilterActive =
+    activeFilters.sortOrder !== DEFAULT_FILTERS.sortOrder ||
+    activeFilters.trend !== DEFAULT_FILTERS.trend;
 
   const metricOptions = [
     { label: t('bodyMetrics.metrics.weight'), value: 'weight' },
@@ -199,28 +207,32 @@ export default function BodyMetricsHistoryModal({
     [t]
   );
 
-  // Helper to get display value. For weight: converts to display unit. For BMI/FFMI: computes
-  // the derived value from the stored weight entry using the latest height (and body fat for FFMI).
+  // Helper to get display value. Returns null when a derived metric cannot be computed
+  // (BMI: no height data; FFMI: no height or no body fat data).
   const getDisplayValue = useCallback(
-    (value: number, storedUnit?: string | null): number => {
+    (value: number, storedUnit?: string | null): number | null => {
       if (selectedMetric === 'weight') {
         return kgToDisplay(storedWeightToKg(value, storedUnit), units);
       }
 
       if (selectedMetric === 'bmi' || selectedMetric === 'ffmi') {
-        const weightKg = storedWeightToKg(value, storedUnit);
         if (!latestHeightCm || latestHeightCm <= 0) {
-          return 0;
+          return null;
         }
 
+        const weightKg = storedWeightToKg(value, storedUnit);
         const heightM = latestHeightCm / 100;
+
         if (selectedMetric === 'bmi') {
           return weightKg / (heightM * heightM);
         }
 
-        // FFMI = fat-free mass (kg) / height (m)²
-        const bodyFatFraction = (latestBodyFatPct ?? 0) / 100;
-        const fatFreeMassKg = weightKg * (1 - bodyFatFraction);
+        // FFMI requires body fat — can't compute without it
+        if (latestBodyFatPct === null) {
+          return null;
+        }
+
+        const fatFreeMassKg = weightKg * (1 - latestBodyFatPct / 100);
         return fatFreeMassKg / (heightM * heightM);
       }
       return value;
@@ -231,23 +243,29 @@ export default function BodyMetricsHistoryModal({
   // Helper to process metrics into history entries
   const processMetricsToEntries = useCallback(
     (metrics: UserMetricWithDecrypted[], unit: string): HistoryEntry[] => {
-      return metrics.map((item, index) => {
+      const entries: HistoryEntry[] = [];
+      metrics.forEach((item, index) => {
         const metric = item.metric;
         const d = item.decrypted;
-        const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
         const displayValue = getDisplayValue(d.value, d.unit);
+        if (displayValue === null) {
+          return;
+        }
+
+        const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
         let change: string | null = null;
         let changeType: 'up' | 'down' | null = null;
 
         if (previous) {
           const prevDisplay = getDisplayValue(previous.decrypted.value, previous.decrypted.unit);
-
-          const diff = displayValue - prevDisplay;
-          const absDiff = Math.abs(diff);
-          if (absDiff > 0.01) {
-            changeType = diff > 0 ? 'up' : 'down';
-            const sign = diff > 0 ? '+' : '';
-            change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+          if (prevDisplay !== null) {
+            const diff = displayValue - prevDisplay;
+            const absDiff = Math.abs(diff);
+            if (absDiff > 0.01) {
+              changeType = diff > 0 ? 'up' : 'down';
+              const sign = diff > 0 ? '+' : '';
+              change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+            }
           }
         }
 
@@ -265,7 +283,7 @@ export default function BodyMetricsHistoryModal({
               : t('bodyMetrics.history.notes.increased');
         }
 
-        return {
+        entries.push({
           id: metric.id,
           date: formatRelativeDate(d.date, t),
           value: valueStr,
@@ -276,8 +294,10 @@ export default function BodyMetricsHistoryModal({
           iconColor: index === 0 ? theme.colors.text.primary : theme.colors.text.secondary,
           iconBg: index === 0 ? theme.colors.status.indigo600 : theme.colors.border.light,
           opacity: index === metrics.length - 1 ? 0.7 : 1,
-        };
+        });
       });
+
+      return entries;
     },
     [
       selectedMetric,
@@ -296,8 +316,29 @@ export default function BodyMetricsHistoryModal({
       return [];
     }
     const unit = getMetricUnit(selectedMetric);
-    return processMetricsToEntries(paginatedMetrics, unit);
-  }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries]);
+    const entries = processMetricsToEntries(paginatedMetrics, unit);
+
+    // Apply trend filter
+    const trendFiltered =
+      activeFilters.trend === 'all'
+        ? entries
+        : entries.filter((e) => {
+            if (activeFilters.trend === 'increased') {
+              return e.changeType === 'up';
+            }
+            if (activeFilters.trend === 'decreased') {
+              return e.changeType === 'down';
+            }
+            // noChange
+            return e.changeType === null;
+          });
+
+    // Apply sort order
+    if (activeFilters.sortOrder === 'oldestFirst') {
+      return [...trendFiltered].reverse();
+    }
+    return trendFiltered;
+  }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries, activeFilters]);
 
   // Get current metric data from latest entry (weight in display unit)
   const currentMetric = useMemo<MetricData | null>(() => {
@@ -307,6 +348,10 @@ export default function BodyMetricsHistoryModal({
     const latest = paginatedMetrics[0];
     const d = latest.decrypted;
     const displayVal = getDisplayValue(d.value, d.unit);
+    if (displayVal === null) {
+      return null;
+    }
+
     const unit = getMetricUnit(selectedMetric);
 
     return {
@@ -364,6 +409,10 @@ export default function BodyMetricsHistoryModal({
     const maxMetric = allMetricsForChart.find((m) => m.decrypted.value === maxStored);
     const minDisplay = getDisplayValue(minStored, minMetric?.decrypted.unit);
     const maxDisplay = getDisplayValue(maxStored, maxMetric?.decrypted.unit);
+    if (minDisplay === null || maxDisplay === null) {
+      return [];
+    }
+
     const midDisplay = (minDisplay + maxDisplay) / 2;
 
     const unit = getMetricUnit(selectedMetric);
@@ -590,11 +639,30 @@ export default function BodyMetricsHistoryModal({
               <Text className="text-lg font-bold text-text-primary">
                 {t('bodyMetrics.history.title')}
               </Text>
-              <Pressable className="flex-row items-center gap-1">
-                <SlidersHorizontal size={theme.iconSize.sm} color={theme.colors.text.muted} />
-                <Text className="text-xs font-semibold text-text-tertiary">
+              <Pressable
+                className="flex-row items-center gap-1"
+                onPress={() => setIsFilterMenuVisible(true)}
+              >
+                <SlidersHorizontal
+                  size={theme.iconSize.sm}
+                  color={isFilterActive ? theme.colors.accent.primary : theme.colors.text.muted}
+                />
+                <Text
+                  className="text-xs font-semibold"
+                  style={{
+                    color: isFilterActive
+                      ? theme.colors.accent.primary
+                      : theme.colors.text.tertiary,
+                  }}
+                >
                   {t('bodyMetrics.history.filter')}
                 </Text>
+                {isFilterActive ? (
+                  <View
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: theme.colors.accent.primary }}
+                  />
+                ) : null}
               </Pressable>
             </View>
 
@@ -668,6 +736,13 @@ export default function BodyMetricsHistoryModal({
       <AddUserMetricEntryModal
         visible={isAddMetricVisible}
         onClose={() => setIsAddMetricVisible(false)}
+      />
+      <BodyMetricsHistoryFilterMenu
+        visible={isFilterMenuVisible}
+        onClose={() => setIsFilterMenuVisible(false)}
+        onApplyFilters={setActiveFilters}
+        onClearFilters={() => setActiveFilters(DEFAULT_FILTERS)}
+        initialFilters={activeFilters}
       />
     </FullScreenModal>
   );
