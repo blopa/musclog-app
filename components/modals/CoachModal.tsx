@@ -731,7 +731,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
 
   const handleGenerateWorkouts = useCallback(async () => {
     if (pendingIntention === GENERATE_MY_WORKOUTS) {
@@ -748,7 +748,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
 
   const handleTrackMeal = useCallback(async () => {
     if (pendingIntention === TRACK_MEAL) {
@@ -765,7 +765,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
 
   const handleAnalyzeProgress = useCallback(async () => {
     if (pendingIntention === ANALYZE_PROGRESS) {
@@ -782,7 +782,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
 
   const handleNutritionCheck = useCallback(async () => {
     if (pendingIntention === NUTRITION_CHECK) {
@@ -799,7 +799,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
 
   const handleClearIntention = useCallback(async () => {
     await clearIntention();
@@ -1147,6 +1147,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     );
   }, [
     handleAnalyzeProgress,
+    handleGenerateMealPlan,
     handleGenerateWorkouts,
     handleNutritionCheck,
     handleTrackMeal,
@@ -1157,6 +1158,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     theme.colors.background.card,
     theme.colors.border.light,
     theme.colors.status.info,
+    theme.colors.status.success,
     theme.colors.status.warning,
     theme.iconSize.md,
     theme.spacing.gap.sm,

@@ -23,9 +23,12 @@
       }
     },
     "fitnessInfo": {
-      "title": "Set Fitness Details",
+      "physicalTitle": "Body Stats",
+      "goalsTitle": "Fitness Goals",
       "maybeLater": "Maybe later",
       "save": "Save",
+      "next": "Next",
+      "continue": "Continue",
       "errorSaving": "Error Saving"
     },
     "personalInfo": {

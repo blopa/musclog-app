@@ -23,9 +23,12 @@
       }
     },
     "fitnessInfo": {
-      "title": "Definir Detalhes de Fitness",
+      "physicalTitle": "Estatísticas Corporais",
+      "goalsTitle": "Objetivos de Fitness",
       "maybeLater": "Talvez depois",
       "save": "Salvar",
+      "next": "Próximo",
+      "continue": "Continuar",
       "errorSaving": "Erro ao Salvar"
     },
     "personalInfo": {

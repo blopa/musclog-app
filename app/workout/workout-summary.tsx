@@ -151,7 +151,7 @@ export default function WorkoutSummaryScreen() {
     };
 
     loadWorkoutData();
-  }, [setUnreadCount, t, units, workoutLogId]);
+  }, [i18n.language, setUnreadCount, t, units, workoutLogId]);
 
   const handleGoHome = () => {
     router.replace('/');

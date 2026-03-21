@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -10,9 +10,11 @@ import { Button } from '../../components/theme/Button';
 import { useOnboardingFitnessData } from '../../hooks/useOnboardingFitnessData';
 import { theme } from '../../theme';
 
-export default function FitnessInfo() {
+export default function FitnessBasis() {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useLocalSearchParams<{ weightMetricId?: string; heightMetricId?: string }>();
+
   const {
     isLoading,
     isSaving,
@@ -27,11 +29,11 @@ export default function FitnessInfo() {
     const result = await saveFitnessData(data);
 
     router.push({
-      pathname: '/onboarding/fitness-basis',
-      params:
-        result.weightMetricId && result.heightMetricId
-          ? { weightMetricId: result.weightMetricId, heightMetricId: result.heightMetricId }
-          : undefined,
+      pathname: '/onboarding/set-goals',
+      params: {
+        weightMetricId: result.weightMetricId || params.weightMetricId,
+        heightMetricId: result.heightMetricId || params.heightMetricId,
+      },
     });
   };
 
@@ -40,11 +42,11 @@ export default function FitnessInfo() {
     const result = await saveFitnessData(data);
 
     router.push({
-      pathname: '/onboarding/fitness-basis',
-      params:
-        result.weightMetricId && result.heightMetricId
-          ? { weightMetricId: result.weightMetricId, heightMetricId: result.heightMetricId }
-          : undefined,
+      pathname: '/onboarding/set-goals',
+      params: {
+        weightMetricId: result.weightMetricId || params.weightMetricId,
+        heightMetricId: result.heightMetricId || params.heightMetricId,
+      },
     });
   };
 
@@ -72,7 +74,7 @@ export default function FitnessInfo() {
               className="text-2xl font-bold tracking-tight"
               style={{ color: theme.colors.text.white }}
             >
-              {t('onboarding.fitnessInfo.physicalTitle')}
+              {t('onboarding.fitnessInfo.goalsTitle')}
             </Text>
           </View>
 
@@ -87,7 +89,7 @@ export default function FitnessInfo() {
             onMaybeLater={handleSkip}
             hideSaveButton
             hideMaybeLaterButton
-            mode="physical"
+            mode="goals"
           />
         </ScrollView>
 
@@ -95,7 +97,7 @@ export default function FitnessInfo() {
         <BottomButtonWrapper>
           <View className="gap-3">
             <Button
-              label={t('onboarding.fitnessInfo.next')}
+              label={t('onboarding.fitnessInfo.continue')}
               onPress={handleSave}
               variant="accent"
               size="md"
