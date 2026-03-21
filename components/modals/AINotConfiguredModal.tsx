@@ -55,8 +55,9 @@ export function AINotConfiguredModal({
       scrollable={false}
       footer={footer}
     >
-      <View className="flex-1 justify-center px-5 pb-4">
-        <View className="mb-8 items-center">
+      <View className="flex-1 justify-start px-5 pb-4 pt-3">
+        <View pointerEvents="none" style={{ height: theme.spacing.padding['3xl'] }} />
+        <View className="mb-6 items-center">
           <View className="relative">
             <LinearGradient
               colors={[theme.colors.status.purple40, theme.colors.accent.secondary10]}
@@ -117,9 +118,7 @@ export function AINotConfiguredModal({
               <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipApiKey')}
               </Text>
-              <Text className="mt-0.5 text-sm text-text-tertiary">
-                OpenAI or Google Gemini
-              </Text>
+              <Text className="mt-0.5 text-sm text-text-tertiary">OpenAI or Google Gemini</Text>
             </View>
           </View>
 

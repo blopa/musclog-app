@@ -64,7 +64,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   ];
 
   const isItemAvailable = (item: NavItemKey): boolean => {
-
     if (item === 'cycle' && !isCycleActive) {
       return false;
     }
