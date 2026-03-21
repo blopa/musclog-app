@@ -47,6 +47,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
+  GENERATE_MEAL_PLAN,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
@@ -80,6 +81,8 @@ const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction):
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
       return t('coach.actions.workoutGen');
+    case GENERATE_MEAL_PLAN:
+      return t('coach.actions.mealPlan');
     case ANALYZE_PROGRESS:
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:
@@ -594,6 +597,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const {
     messages,
     pendingCoachMessage,
+    pendingIntention: hookPendingIntention,
     isSending,
     isLoadingMore,
     hasMore,
@@ -608,12 +612,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     ephemeralErrorAsMessage,
     isCreditsError,
     markMealAsTracked,
+    clearIntention,
+    setPendingIntention: setHookPendingIntention,
   } = useChatMessages(conversationContext);
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
   const [isOnline, setIsOnline] = useState(false);
-  const [pendingIntention, setPendingIntention] = useState<string | null>(null);
+  const pendingIntention = hookPendingIntention;
+  const setPendingIntention = setHookPendingIntention;
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
     messageId: string;
@@ -645,35 +652,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     }
   }, [visible, clearUnreadCount]);
 
-  // Load pending intention from AsyncStorage when modal opens
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    const loadIntention = async () => {
-      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
-      setPendingIntention(intention);
-    };
-    loadIntention();
-  }, [visible]);
-
-  // When messages change and a pending intention is set, sync with AsyncStorage so we turn off
-  // the pill as soon as the LLM response is saved (useChatMessages clears the key)
-  useEffect(() => {
-    if (!visible || !pendingIntention) {
-      return;
-    }
-
-    const syncIntention = async () => {
-      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
-      if (!intention) {
-        setPendingIntention(null);
-        clearPendingCoachMessage();
-      }
-    };
-
-    syncIntention();
-  }, [visible, pendingIntention, messages, clearPendingCoachMessage]);
 
   // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
@@ -718,6 +696,23 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     },
     [sendMessage, attachedImage]
   );
+
+  const handleGenerateMealPlan = useCallback(async () => {
+    if (pendingIntention === GENERATE_MEAL_PLAN) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MEAL_PLAN);
+      setPendingIntention(GENERATE_MEAL_PLAN);
+      addPendingCoachMessage({
+        _id: `pending-meal-plan-gen-${Date.now()}`,
+        text: t('coach.mealPlanPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
   const handleGenerateWorkouts = useCallback(async () => {
     if (pendingIntention === GENERATE_MY_WORKOUTS) {
@@ -788,11 +783,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
   const handleClearIntention = useCallback(async () => {
-    await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-    setPendingIntention(null);
+    await clearIntention();
     setAttachedImage(null);
     clearPendingCoachMessage();
-  }, [clearPendingCoachMessage]);
+  }, [clearIntention, clearPendingCoachMessage]);
 
   const handleAttachFile = useCallback(async () => {
     try {
@@ -1043,6 +1037,26 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
           <Text className="text-sm font-medium text-text-primary">
             {t('coach.actions.createWorkout')}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={handleGenerateMealPlan}
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+          style={{
+            borderColor:
+              pendingIntention === GENERATE_MEAL_PLAN
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === GENERATE_MEAL_PLAN ? 2 : 1,
+            backgroundColor:
+              pendingIntention === GENERATE_MEAL_PLAN
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
+          }}
+        >
+          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.success} />
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.mealPlan')}
           </Text>
         </Pressable>
         <Pressable
