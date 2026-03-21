@@ -14,10 +14,10 @@ export interface NutritionGoalInput {
   fats: number;
   fiber: number;
   eatingPhase: EatingPhase;
-  targetWeight: number;
-  targetBodyFat: number;
-  targetBMI: number;
-  targetFFMI: number;
+  targetWeight?: number;
+  targetBodyFat?: number;
+  targetBMI?: number;
+  targetFFMI?: number;
   targetDate?: number | null;
 }
 
@@ -91,10 +91,10 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight;
-        r.targetBodyFat = data.targetBodyFat;
-        r.targetBmi = data.targetBMI;
-        r.targetFfmi = data.targetFFMI;
+        r.targetWeight = data.targetWeight ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? 0;
+        r.targetBmi = data.targetBMI ?? 0;
+        r.targetFfmi = data.targetFFMI ?? 0;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = null;
         r.createdAt = now;
@@ -253,10 +253,10 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.targetWeight = data.targetWeight;
-        r.targetBodyFat = data.targetBodyFat;
-        r.targetBmi = data.targetBMI;
-        r.targetFfmi = data.targetFFMI;
+        r.targetWeight = data.targetWeight ?? 0;
+        r.targetBodyFat = data.targetBodyFat ?? 0;
+        r.targetBmi = data.targetBMI ?? 0;
+        r.targetFfmi = data.targetFFMI ?? 0;
         r.targetDate = data.targetDate ?? null;
         r.effectiveUntil = newEffectiveUntil;
         r.createdAt = startDate;

@@ -22,7 +22,10 @@ import { UserMetricService } from '../database/services';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
-import { bmiFromWeightAndHeightM, ffmiFromWeightHeightAndBodyFat } from '../utils/nutritionCalculator';
+import {
+  bmiFromWeightAndHeightM,
+  ffmiFromWeightHeightAndBodyFat,
+} from '../utils/nutritionCalculator';
 import { displayToKg, kgToDisplay, storedHeightToCm } from '../utils/unitConversion';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
@@ -293,9 +296,13 @@ export function NutritionGoalsBody({
   // Load user's height once on mount so we can derive BMI and FFMI
   useEffect(() => {
     UserMetricService.getLatest('height').then((metric) => {
-      if (!metric) {return;}
+      if (!metric) {
+        return;
+      }
       metric.getDecrypted().then((dec) => {
-        if (dec == null) {return;}
+        if (dec == null) {
+          return;
+        }
         const cm = storedHeightToCm(dec.value, dec.unit);
         setUserHeightM(convert(cm, 'cm').to('m') as number);
       });
@@ -304,9 +311,13 @@ export function NutritionGoalsBody({
 
   // Auto-recalculate BMI when target weight changes (only while BMI is active)
   useEffect(() => {
-    if (userHeightM === null || targetWeight === null) {return;}
+    if (userHeightM === null || targetWeight === null) {
+      return;
+    }
     setTargetBMI((prev) => {
-      if (prev === null) {return prev;}
+      if (prev === null) {
+        return prev;
+      }
       const weightKg = displayToKg(targetWeight, units);
       return bmiFromWeightAndHeightM(weightKg, userHeightM);
     });
@@ -314,9 +325,13 @@ export function NutritionGoalsBody({
 
   // Auto-recalculate FFMI when target weight or body fat changes (only while FFMI is active and body fat is set)
   useEffect(() => {
-    if (userHeightM === null || targetWeight === null || !targetBodyFat) {return;}
+    if (userHeightM === null || targetWeight === null || !targetBodyFat) {
+      return;
+    }
     setTargetFFMI((prev) => {
-      if (prev === null) {return prev;}
+      if (prev === null) {
+        return prev;
+      }
       const weightKg = displayToKg(targetWeight, units);
       return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
     });
@@ -630,7 +645,9 @@ export function NutritionGoalsBody({
             {targetWeight !== null ? (
               <StepperInlineInput
                 label={t('nutritionGoals.targetWeight')}
-                subtitle={t('nutritionGoals.sublabels.targetWeight', { unit: units === 'metric' ? 'kg' : 'lbs' })}
+                subtitle={t('nutritionGoals.sublabels.targetWeight', {
+                  unit: units === 'metric' ? 'kg' : 'lbs',
+                })}
                 value={targetWeight}
                 unit={units === 'metric' ? 'kg' : 'lbs'}
                 icon={showIcons ? Scale : undefined}
@@ -753,7 +770,9 @@ export function NutritionGoalsBody({
                   onPress={() => {
                     if (userHeightM !== null && targetWeight !== null && targetBodyFat) {
                       const weightKg = displayToKg(targetWeight, units);
-                      setTargetFFMI(ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat));
+                      setTargetFFMI(
+                        ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat)
+                      );
                     } else {
                       setTargetFFMI(21.0);
                     }

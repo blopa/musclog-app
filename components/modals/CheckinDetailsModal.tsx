@@ -103,10 +103,10 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         fats: goals.fats,
         fiber: goals.fiber,
         eatingPhase: goals.eatingPhase,
-        targetWeight: goals.targetWeight,
-        targetBodyFat: goals.targetBodyFat,
-        targetBMI: goals.targetBMI,
-        targetFFMI: goals.targetFFMI,
+        targetWeight: goals.targetWeight ?? undefined,
+        targetBodyFat: goals.targetBodyFat ?? undefined,
+        targetBMI: goals.targetBMI ?? undefined,
+        targetFFMI: goals.targetFFMI ?? undefined,
         targetDate: goals.targetDate ?? null,
       });
 
