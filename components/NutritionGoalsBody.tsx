@@ -1,3 +1,4 @@
+import convert from 'convert';
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -17,10 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { type EatingPhase } from '../database/models';
+import { UserMetricService } from '../database/services';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
-import { displayToKg, kgToDisplay } from '../utils/unitConversion';
+import { bmiFromWeightAndHeightM, ffmiFromWeightHeightAndBodyFat } from '../utils/nutritionCalculator';
+import { displayToKg, kgToDisplay, storedHeightToCm } from '../utils/unitConversion';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
@@ -249,6 +252,7 @@ export function NutritionGoalsBody({
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
+  const [userHeightM, setUserHeightM] = useState<number | null>(null);
   const isInitialMount = useRef(true);
 
   // Dynamically compute sensible max values for macros depending on eating phase
@@ -285,6 +289,38 @@ export function NutritionGoalsBody({
       setTargetWeight(kgToDisplay(initialGoals.targetWeight, units));
     }
   }, [initialGoals?.targetWeight, units]);
+
+  // Load user's height once on mount so we can derive BMI and FFMI
+  useEffect(() => {
+    UserMetricService.getLatest('height').then((metric) => {
+      if (!metric) {return;}
+      metric.getDecrypted().then((dec) => {
+        if (dec == null) {return;}
+        const cm = storedHeightToCm(dec.value, dec.unit);
+        setUserHeightM(convert(cm, 'cm').to('m') as number);
+      });
+    });
+  }, []);
+
+  // Auto-recalculate BMI when target weight changes (only while BMI is active)
+  useEffect(() => {
+    if (userHeightM === null || targetWeight === null) {return;}
+    setTargetBMI((prev) => {
+      if (prev === null) {return prev;}
+      const weightKg = displayToKg(targetWeight, units);
+      return bmiFromWeightAndHeightM(weightKg, userHeightM);
+    });
+  }, [targetWeight, userHeightM, units]);
+
+  // Auto-recalculate FFMI when target weight or body fat changes (only while FFMI is active)
+  useEffect(() => {
+    if (userHeightM === null || targetWeight === null || targetBodyFat === null) {return;}
+    setTargetFFMI((prev) => {
+      if (prev === null) {return prev;}
+      const weightKg = displayToKg(targetWeight, units);
+      return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
+    });
+  }, [targetWeight, targetBodyFat, userHeightM, units]);
 
   // If the eating phase changes to a lower-max (e.g. bulk -> cut), clamp current macro values
   // so they never exceed the allowed maximum for the selected phase.
@@ -662,7 +698,17 @@ export function NutritionGoalsBody({
                 {t('nutritionGoals.targetBMI')}
               </Text>
               {targetBMI === null ? (
-                <Pressable onPress={() => setTargetBMI(23.5)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => {
+                    if (userHeightM !== null && targetWeight !== null) {
+                      const weightKg = displayToKg(targetWeight, units);
+                      setTargetBMI(bmiFromWeightAndHeightM(weightKg, userHeightM));
+                    } else {
+                      setTargetBMI(23.5);
+                    }
+                  }}
+                  className="active:opacity-70"
+                >
                   <Text
                     className="text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
@@ -703,7 +749,17 @@ export function NutritionGoalsBody({
                 {t('nutritionGoals.targetFFMI')}
               </Text>
               {targetFFMI === null ? (
-                <Pressable onPress={() => setTargetFFMI(21.0)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => {
+                    if (userHeightM !== null && targetWeight !== null && targetBodyFat !== null) {
+                      const weightKg = displayToKg(targetWeight, units);
+                      setTargetFFMI(ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat));
+                    } else {
+                      setTargetFFMI(21.0);
+                    }
+                  }}
+                  className="active:opacity-70"
+                >
                   <Text
                     className="text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
