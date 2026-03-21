@@ -18,6 +18,7 @@ type EditFitnessDetailsBodyProps = {
   onMaybeLater?: () => void;
   hideSaveButton?: boolean;
   hideMaybeLaterButton?: boolean;
+  mode?: 'physical' | 'goals' | 'both';
 };
 
 export type FitnessDetails = {
@@ -42,8 +43,11 @@ export function EditFitnessDetailsBody({
   onMaybeLater,
   hideSaveButton = false,
   hideMaybeLaterButton = false,
+  mode = 'both',
 }: EditFitnessDetailsBodyProps) {
   const { t } = useTranslation();
+  const showPhysical = mode === 'physical' || mode === 'both';
+  const showGoals = mode === 'goals' || mode === 'both';
 
   // Units state in the wrapper so changes in form 2 update the unit labels in form 1
   const [units, setUnits] = useState<'imperial' | 'metric'>(initialData?.units ?? 'metric');
@@ -116,12 +120,16 @@ export function EditFitnessDetailsBody({
 
   return (
     <>
-      <EditPhysicalStatsBody
-        initialData={physicalInitial}
-        units={units}
-        onFormChange={handlePhysicalStatsChange}
-      />
-      <EditFitnessGoalsBody initialData={goalsInitial} onFormChange={handleFitnessGoalsChange} />
+      {showPhysical ? (
+        <EditPhysicalStatsBody
+          initialData={physicalInitial}
+          units={units}
+          onFormChange={handlePhysicalStatsChange}
+        />
+      ) : null}
+      {showGoals ? (
+        <EditFitnessGoalsBody initialData={goalsInitial} onFormChange={handleFitnessGoalsChange} />
+      ) : null}
       {!hideSaveButton ? (
         <View className="px-4 pb-8 pt-4">
           <Button
