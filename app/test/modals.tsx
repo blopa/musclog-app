@@ -1890,7 +1890,11 @@ export default function ModalsTestScreen() {
         <Text>Centered modal content goes here.</Text>
       </CenteredModal>
 
-      <CoachModal visible={isCoachModalVisible} onClose={() => setIsCoachModalVisible(false)} />
+      <CoachModal
+        visible={isCoachModalVisible}
+        onClose={() => setIsCoachModalVisible(false)}
+        onOpenMyMeals={() => setIsMyMealsVisible(true)}
+      />
 
       <FullScreenModal
         visible={isFullScreenModalVisible}

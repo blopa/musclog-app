@@ -603,9 +603,11 @@ const renderInputToolbar = (
 type CoachModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Invoked after the coach closes when the user opens “My meals” from a meal plan (e.g. carousel). */
+  onOpenMyMeals: () => void;
 };
 
-export function CoachModal({ visible, onClose }: CoachModalProps) {
+export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -858,6 +860,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     onClose();
     router.push('/settings');
   }, [onClose, router]);
+
+  const handleSeeAllMeals = useCallback(() => {
+    onClose();
+    onOpenMyMeals();
+  }, [onClose, onOpenMyMeals]);
 
   const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -1182,11 +1189,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         handleViewMealDetails,
         isCreditsError ? handleGoToSettings : undefined,
         isCreditsError ? t('coach.goToSettings') : undefined,
-        () => {
-          onClose();
-          // TODO: this route does not exist, open the MyMealsModal instead
-          router.push('/nutrition/meals');
-        }
+        handleSeeAllMeals
       ),
     [
       theme,
@@ -1196,9 +1199,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       handleViewMealDetails,
       isCreditsError,
       handleGoToSettings,
+      handleSeeAllMeals,
       t,
-      onClose,
-      router,
     ]
   );
   const gcRenderAvatar = useCallback(
@@ -1208,12 +1210,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderCustomView = useCallback(
     (props: Parameters<typeof renderCustomView>[0]) =>
-      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, () => {
-        onClose();
-        // TODO: this route does not exist, open the MyMealsModal instead
-        router.push('/nutrition/meals');
-      }),
-    [handleViewWorkoutDetails, handleViewMealDetails, onClose, router]
+      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals),
+    [handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals]
   );
 
   const gcRenderInputToolbar = useCallback(
