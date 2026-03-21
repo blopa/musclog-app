@@ -17,8 +17,13 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
-// TODO: use i18n here? or is it not user facing?
-const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
+const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
+  'poor',
+  'low',
+  'okay',
+  'good',
+  'great',
+];
 
 export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
   const { t } = useTranslation();
@@ -85,7 +90,10 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
           t('progress.mood.great'),
         ]}
         stepsFormatter={(v) => `${Math.round(v)} ${t('progress.kcal')}`}
-        heartRateFormatter={(v) => MOOD_LABELS[Math.round(v)] ?? v.toFixed(1)}
+        heartRateFormatter={(v) => {
+          const key = MOOD_KEYS[Math.round(v)];
+          return key ? t(`progress.mood.${key}`) : v.toFixed(1);
+        }}
         lineColor={theme.colors.status.indigo}
         xAxisLabels={xAxisLabels}
       />
