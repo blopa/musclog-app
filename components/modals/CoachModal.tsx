@@ -375,6 +375,11 @@ const renderAvatar = (props: any, theme: Theme) => {
     return <View style={{ width: theme.size['8'] }} />;
   }
 
+  // Avatar is rendered inside ChatMealPlanCarousel for meal plan messages
+  if (props.currentMessage?.mealPlan) {
+    return null;
+  }
+
   return (
     <View style={[styles.avatar, { overflow: 'hidden' }]}>
       <Image

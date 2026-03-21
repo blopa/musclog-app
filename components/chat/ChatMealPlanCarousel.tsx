@@ -1,7 +1,8 @@
 import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import { AI_COACH_AVATAR } from '../../hooks/useChatMessages';
 import { useTheme } from '../../hooks/useTheme';
 
 type ChatMealPlanCarouselProps = {
@@ -17,6 +18,8 @@ type ChatMealPlanCarouselProps = {
   onViewMeal?: (mealId: string) => void;
 };
 
+const MAX_VISIBLE_MEALS = 4;
+
 export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -26,22 +29,44 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
     return null;
   }
 
-  // 16 (list padding) + 32 (avatar) + 8 (avatar margin) = 56
-  // This offset allows the carousel to take the full width of the screen while keeping the cards aligned with the text bubble.
-  const leftOffset = theme.spacing.padding.base + theme.size['8'] + theme.spacing.padding.sm;
+  const visibleMeals = meals.slice(0, MAX_VISIBLE_MEALS);
+  const hasMoreMeals = meals.length > MAX_VISIBLE_MEALS;
 
   return (
-    <View className="mt-2" style={{ width: screenWidth, marginLeft: -leftOffset }}>
+    <View className="mt-2" style={{ width: screenWidth, marginLeft: -theme.spacing.padding.base }}>
+      {/* Avatar at the top */}
+      <View className="mb-2 flex-row items-center gap-2 px-4">
+        <View
+          className="rounded-full"
+          style={{
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderWidth: theme.borderWidth.medium,
+            borderColor: theme.colors.accent.primary40,
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            source={AI_COACH_AVATAR}
+            style={{ width: theme.size['8'], height: theme.size['8'] }}
+            resizeMode="cover"
+          />
+        </View>
+        <Text className="text-xs font-medium" style={{ color: theme.colors.text.secondary }}>
+          {t('coach.name')}
+        </Text>
+      </View>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
-          paddingLeft: leftOffset,
+          paddingLeft: theme.spacing.padding.base,
           paddingRight: theme.spacing.padding.base,
           gap: theme.spacing.gap.md,
         }}
       >
-        {meals.map((meal) => (
+        {visibleMeals.map((meal) => (
           <Pressable
             key={meal.id}
             onPress={() => onViewMeal?.(meal.id)}
@@ -106,7 +131,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
           </Pressable>
         ))}
 
-        {onSeeAll && (
+        {onSeeAll && hasMoreMeals && (
           <Pressable
             onPress={onSeeAll}
             className="items-center justify-center rounded-2xl border active:opacity-70"
