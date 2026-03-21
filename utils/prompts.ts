@@ -823,9 +823,9 @@ export const getGenerateMealPlanPrompt = async (
 
   return [
     await getBaseSystemPrompt(language, context),
-    "Generate a custom 3-day meal plan with 4 meals per day (breakfast, lunch, dinner, and snack).",
+    'Generate a custom 3-day meal plan with 4 meals per day (breakfast, lunch, dinner, and snack).',
     "Each meal should be balanced and align with the user's nutritional goals and fitness level.",
-    "For each meal, provide a name, a brief description, and a list of ingredients with their macronutrients.",
+    'For each meal, provide a name, a brief description, and a list of ingredients with their macronutrients.',
     macroContext,
     userDetails,
     `Your response must be in ${language}.`,

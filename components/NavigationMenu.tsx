@@ -49,10 +49,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const isFoodActive = useCallback(() => {
-    return (
-      (pathname.startsWith('/nutrition/food') || pathname.startsWith('/nutrition/meals')) &&
-      !pathname.startsWith('/nutrition/ai-camera')
-    );
+    return pathname.startsWith('/nutrition/');
   }, [pathname]);
 
   const renderNavSlot = useCallback(

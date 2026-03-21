@@ -68,10 +68,10 @@ import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
-import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
+import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
 import { MenuButton } from '../theme/MenuButton';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -257,16 +257,7 @@ const renderCustomView = (
   }
 
   if (currentMessage?.mealPlan?.meals) {
-    return (
-      <ChatMealPlanCarousel
-        meals={currentMessage.mealPlan.meals}
-        onSeeAll={onSeeAllMeals}
-        onViewMeal={(mealId) => {
-          // TODO: Implement viewing specific meal details if needed
-          onSeeAllMeals?.();
-        }}
-      />
-    );
+    return <ChatMealPlanCarousel meals={currentMessage.mealPlan.meals} onSeeAll={onSeeAllMeals} />;
   }
 
   return null;
@@ -678,7 +669,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       clearUnreadCount();
     }
   }, [visible, clearUnreadCount]);
-
 
   // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
@@ -1194,6 +1184,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         isCreditsError ? t('coach.goToSettings') : undefined,
         () => {
           onClose();
+          // TODO: this route does not exist, open the MyMealsModal instead
           router.push('/nutrition/meals');
         }
       ),
@@ -1219,6 +1210,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     (props: Parameters<typeof renderCustomView>[0]) =>
       renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, () => {
         onClose();
+        // TODO: this route does not exist, open the MyMealsModal instead
         router.push('/nutrition/meals');
       }),
     [handleViewWorkoutDetails, handleViewMealDetails, onClose, router]

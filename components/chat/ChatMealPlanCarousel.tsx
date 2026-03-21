@@ -15,7 +15,6 @@ type ChatMealPlanCarouselProps = {
     fats: number;
   }[];
   onSeeAll?: () => void;
-  onViewMeal?: (mealId: string) => void;
 };
 
 const MAX_VISIBLE_MEALS = 4;
@@ -24,7 +23,7 @@ const MAX_VISIBLE_MEALS = 4;
 const MEAL_CARD_WIDTH = 156;
 const SEE_ALL_CARD_WIDTH = 88;
 
-export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPlanCarouselProps) {
+export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
@@ -72,11 +71,9 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
         }}
       >
         {visibleMeals.map((meal) => (
-          <Pressable
-            // TODO: dont allow to press on meal, only on view all
+          <View
             key={meal.id}
-            onPress={() => onViewMeal?.(meal.id)}
-            className="rounded-xl border px-2 py-2 active:opacity-70"
+            className="rounded-xl border px-2 py-2"
             style={{
               backgroundColor: theme.colors.background.card,
               borderColor: theme.colors.border.light,
@@ -151,10 +148,10 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
                 </View>
               </View>
             </View>
-          </Pressable>
+          </View>
         ))}
 
-        {onSeeAll && hasMoreMeals && (
+        {onSeeAll && hasMoreMeals ? (
           <Pressable
             onPress={onSeeAll}
             className="items-center justify-center rounded-xl border px-1.5 py-2 active:opacity-70"
@@ -177,7 +174,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
               {t('common.seeAll')}
             </Text>
           </Pressable>
-        )}
+        ) : null}
       </ScrollView>
     </View>
   );
