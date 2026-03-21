@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Bot, KeyRound, Sparkles } from 'lucide-react-native';
+import { Bot, KeyRound, Sparkles, Wand2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -32,6 +32,7 @@ export function AINotConfiguredModal({
           onOpenAISettings();
           onClose();
         }}
+        icon={KeyRound}
       />
       <Button
         label={t('ai.notConfiguredModal.notNow')}
@@ -56,52 +57,68 @@ export function AINotConfiguredModal({
     >
       <View className="flex-1 justify-center px-5 pb-4">
         <View className="mb-8 items-center">
-          <LinearGradient
-            colors={[theme.colors.status.purple40, theme.colors.accent.secondary10]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 48,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.border.light,
-            }}
-          >
-            <Bot
-              size={theme.iconSize['2xl']}
-              color={theme.colors.text.primary}
-              strokeWidth={1.75}
-            />
-          </LinearGradient>
+          <View className="relative">
+            <LinearGradient
+              colors={[theme.colors.status.purple40, theme.colors.accent.secondary10]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{
+                width: 110,
+                height: 110,
+                borderRadius: 55,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.border.light,
+              }}
+            >
+              <Bot
+                size={theme.iconSize['3xl']}
+                color={theme.colors.text.primary}
+                strokeWidth={1.5}
+              />
+            </LinearGradient>
+            <View
+              className="absolute -bottom-1 -right-1 h-10 w-10 items-center justify-center rounded-full border-2 bg-bg-card shadow-sm"
+              style={{ borderColor: theme.colors.background.primary }}
+            >
+              <Wand2 size={20} color={theme.colors.status.purple} />
+            </View>
+          </View>
         </View>
 
         <View
           style={{
             backgroundColor: theme.colors.background.card,
-            borderRadius: theme.borderRadius['2xl'],
+            borderRadius: theme.borderRadius['3xl'],
             borderWidth: theme.borderWidth.thin,
             borderColor: theme.colors.border.light,
-            padding: theme.spacing.padding.lg,
-            gap: theme.spacing.gap.md,
+            padding: theme.spacing.padding.xl,
+            gap: theme.spacing.gap.lg,
+            shadowColor: theme.colors.status.purple,
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.1,
+            shadowRadius: 20,
+            elevation: 5,
           }}
         >
-          <View className="flex-row gap-3">
+          <View className="flex-row gap-4">
             <View
-              className="items-center justify-center rounded-xl"
+              className="items-center justify-center rounded-2xl"
               style={{
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 backgroundColor: theme.colors.accent.primary10,
               }}
             >
               <KeyRound size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-base font-semibold leading-snug text-text-primary">
+              <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipApiKey')}
+              </Text>
+              <Text className="mt-0.5 text-sm text-text-tertiary">
+                OpenAI or Google Gemini
               </Text>
             </View>
           </View>
@@ -110,22 +127,23 @@ export function AINotConfiguredModal({
             style={{
               height: theme.borderWidth.thin,
               backgroundColor: theme.colors.border.light,
+              marginHorizontal: -theme.spacing.padding.xl,
             }}
           />
 
-          <View className="flex-row gap-3">
+          <View className="flex-row gap-4">
             <View
-              className="items-center justify-center rounded-xl"
+              className="items-center justify-center rounded-2xl"
               style={{
-                width: 44,
-                height: 44,
+                width: 48,
+                height: 48,
                 backgroundColor: theme.colors.status.purple13,
               }}
             >
               <Sparkles size={theme.iconSize.md} color={theme.colors.status.purple} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-base font-semibold leading-snug text-text-primary">
+              <Text className="text-lg font-bold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipFeatures')}
               </Text>
               <Text className="mt-1 text-sm leading-relaxed text-text-secondary">
