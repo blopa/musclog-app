@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
+  ClipboardList,
   Copy,
   Dumbbell,
   Images,
@@ -47,6 +48,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
+  GENERATE_MEAL_PLAN,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
   TRACK_MEAL,
@@ -69,6 +71,7 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '../cards/ChatWorkoutCompletedCard';
+import { ChatMealPlanCarousel } from '../chat/ChatMealPlanCarousel';
 import { MenuButton } from '../theme/MenuButton';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -80,6 +83,8 @@ const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction):
   switch (pendingIntention) {
     case GENERATE_MY_WORKOUTS:
       return t('coach.actions.workoutGen');
+    case GENERATE_MEAL_PLAN:
+      return t('coach.actions.mealPlan');
     case ANALYZE_PROGRESS:
       return t('coach.actions.analyzeProgress');
     case NUTRITION_CHECK:
@@ -202,25 +207,28 @@ type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
+  onSeeAllMeals?: () => void
 ) => {
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
     return (
-      <ChatWorkoutCompletedCard
-        {...currentMessage.workoutCompleted}
-        onViewDetails={
-          onViewWorkoutDetails
-            ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
-            : undefined
-        }
-      />
+      <View className="mt-2 w-full pr-4">
+        <ChatWorkoutCompletedCard
+          {...currentMessage.workoutCompleted}
+          onViewDetails={
+            onViewWorkoutDetails
+              ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
+              : undefined
+          }
+        />
+      </View>
     );
   }
 
   if (currentMessage?.workout) {
     return (
-      <View className="mt-2 w-full max-w-sm">
+      <View className="mt-2 w-full pr-4">
         <ChatWorkoutCard
           title={currentMessage.workout.title}
           duration={currentMessage.workout.duration}
@@ -239,13 +247,17 @@ const renderCustomView = (
 
   if (currentMessage?.meal) {
     return (
-      <View className="mt-2 w-full max-w-sm">
+      <View className="mt-2 w-full pr-4">
         <ChatMealCard
           meals={currentMessage.meal.meals}
           onViewDetails={(mealType) => onViewMealDetails?.(currentMessage.meal!, mealType)}
         />
       </View>
     );
+  }
+
+  if (currentMessage?.mealPlan?.meals) {
+    return <ChatMealPlanCarousel meals={currentMessage.mealPlan.meals} onSeeAll={onSeeAllMeals} />;
   }
 
   return null;
@@ -259,7 +271,8 @@ const renderBubble = (
   onLongPress?: (message: ExtendedIMessage) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
   onGoToSettings?: () => void,
-  goToSettingsLabel?: string
+  goToSettingsLabel?: string,
+  onSeeAllMeals?: () => void
 ) => {
   const { currentMessage, user } = props;
   const isUser = user && currentMessage?.user._id === user._id;
@@ -331,8 +344,11 @@ const renderBubble = (
             </Text>
           </Pressable>
         ) : null}
-        {currentMessage?.workoutCompleted || currentMessage?.workout || currentMessage?.meal
-          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails)
+        {currentMessage?.workoutCompleted ||
+        currentMessage?.workout ||
+        currentMessage?.meal ||
+        currentMessage?.mealPlan
+          ? renderCustomView(props, onViewWorkoutDetails, onViewMealDetails, onSeeAllMeals)
           : null}
       </Pressable>
     );
@@ -348,6 +364,11 @@ const renderAvatar = (props: any, theme: Theme) => {
 
   if (!props.currentMessage?.text && props.currentMessage?.workout) {
     return <View style={{ width: theme.size['8'] }} />;
+  }
+
+  // Avatar is rendered inside ChatMealPlanCarousel for meal plan messages
+  if (props.currentMessage?.mealPlan) {
+    return null;
   }
 
   return (
@@ -582,9 +603,11 @@ const renderInputToolbar = (
 type CoachModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Invoked after the coach closes when the user opens “My meals” from a meal plan (e.g. carousel). */
+  onOpenMyMeals: () => void;
 };
 
-export function CoachModal({ visible, onClose }: CoachModalProps) {
+export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -594,6 +617,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   const {
     messages,
     pendingCoachMessage,
+    pendingIntention: hookPendingIntention,
     isSending,
     isLoadingMore,
     hasMore,
@@ -608,12 +632,15 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     ephemeralErrorAsMessage,
     isCreditsError,
     markMealAsTracked,
+    clearIntention,
+    setPendingIntention: setHookPendingIntention,
   } = useChatMessages(conversationContext);
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
   const [isOnline, setIsOnline] = useState(false);
-  const [pendingIntention, setPendingIntention] = useState<string | null>(null);
+  const pendingIntention = hookPendingIntention;
+  const setPendingIntention = setHookPendingIntention;
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
     messageId: string;
@@ -644,36 +671,6 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       clearUnreadCount();
     }
   }, [visible, clearUnreadCount]);
-
-  // Load pending intention from AsyncStorage when modal opens
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    const loadIntention = async () => {
-      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
-      setPendingIntention(intention);
-    };
-    loadIntention();
-  }, [visible]);
-
-  // When messages change and a pending intention is set, sync with AsyncStorage so we turn off
-  // the pill as soon as the LLM response is saved (useChatMessages clears the key)
-  useEffect(() => {
-    if (!visible || !pendingIntention) {
-      return;
-    }
-
-    const syncIntention = async () => {
-      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
-      if (!intention) {
-        setPendingIntention(null);
-        clearPendingCoachMessage();
-      }
-    };
-
-    syncIntention();
-  }, [visible, pendingIntention, messages, clearPendingCoachMessage]);
 
   // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
@@ -718,6 +715,23 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     },
     [sendMessage, attachedImage]
   );
+
+  const handleGenerateMealPlan = useCallback(async () => {
+    if (pendingIntention === GENERATE_MEAL_PLAN) {
+      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+      setPendingIntention(null);
+      clearPendingCoachMessage();
+    } else {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MEAL_PLAN);
+      setPendingIntention(GENERATE_MEAL_PLAN);
+      addPendingCoachMessage({
+        _id: `pending-meal-plan-gen-${Date.now()}`,
+        text: t('coach.mealPlanPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    }
+  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
   const handleGenerateWorkouts = useCallback(async () => {
     if (pendingIntention === GENERATE_MY_WORKOUTS) {
@@ -788,11 +802,10 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
   }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, t]);
 
   const handleClearIntention = useCallback(async () => {
-    await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-    setPendingIntention(null);
+    await clearIntention();
     setAttachedImage(null);
     clearPendingCoachMessage();
-  }, [clearPendingCoachMessage]);
+  }, [clearIntention, clearPendingCoachMessage]);
 
   const handleAttachFile = useCallback(async () => {
     try {
@@ -847,6 +860,11 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
     onClose();
     router.push('/settings');
   }, [onClose, router]);
+
+  const handleSeeAllMeals = useCallback(() => {
+    onClose();
+    onOpenMyMeals();
+  }, [onClose, onOpenMyMeals]);
 
   const handleMessageLongPress = useCallback((message: ExtendedIMessage) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -1046,6 +1064,26 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
           </Text>
         </Pressable>
         <Pressable
+          onPress={handleGenerateMealPlan}
+          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+          style={{
+            borderColor:
+              pendingIntention === GENERATE_MEAL_PLAN
+                ? theme.colors.accent.primary
+                : theme.colors.border.light,
+            borderWidth: pendingIntention === GENERATE_MEAL_PLAN ? 2 : 1,
+            backgroundColor:
+              pendingIntention === GENERATE_MEAL_PLAN
+                ? theme.colors.accent.primary10
+                : theme.colors.background.card,
+          }}
+        >
+          <ClipboardList size={theme.iconSize.md} color={theme.colors.status.success} />
+          <Text className="text-sm font-medium text-text-primary">
+            {t('coach.actions.mealPlan')}
+          </Text>
+        </Pressable>
+        <Pressable
           onPress={handleAnalyzeProgress}
           className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
           style={{
@@ -1150,7 +1188,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
         handleMessageLongPress,
         handleViewMealDetails,
         isCreditsError ? handleGoToSettings : undefined,
-        isCreditsError ? t('coach.goToSettings') : undefined
+        isCreditsError ? t('coach.goToSettings') : undefined,
+        handleSeeAllMeals
       ),
     [
       theme,
@@ -1160,6 +1199,7 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
       handleViewMealDetails,
       isCreditsError,
       handleGoToSettings,
+      handleSeeAllMeals,
       t,
     ]
   );
@@ -1170,8 +1210,8 @@ export function CoachModal({ visible, onClose }: CoachModalProps) {
 
   const gcRenderCustomView = useCallback(
     (props: Parameters<typeof renderCustomView>[0]) =>
-      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails),
-    [handleViewWorkoutDetails, handleViewMealDetails]
+      renderCustomView(props, handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals),
+    [handleViewWorkoutDetails, handleViewMealDetails, handleSeeAllMeals]
   );
 
   const gcRenderInputToolbar = useCallback(
@@ -1492,7 +1532,7 @@ const getStyles = (theme: Theme) =>
       borderBottomRightRadius: theme.spacing.padding.xs,
     },
     aiBubbleContainer: {
-      maxWidth: '85%',
+      maxWidth: '100%',
       marginLeft: theme.spacing.margin.zero,
       marginRight: 'auto',
       alignItems: 'flex-start',
@@ -1503,6 +1543,7 @@ const getStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.padding.md,
       borderRadius: theme.borderRadius.xl,
       borderBottomLeftRadius: theme.spacing.padding.xs,
+      maxWidth: '85%',
     },
     avatar: {
       width: theme.size['8'],

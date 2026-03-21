@@ -14,6 +14,8 @@ import {
   getEstimateNutritionFromPhotoPrompt,
   getExtractMacrosFromLabelPrompt,
   getExtractMacrosFromLabelTextPrompt,
+  getGenerateMealPlanFunctions,
+  getGenerateMealPlanPrompt,
   getGenerateWorkoutPlanFunctions,
   getNutritionInsightsPrompt,
   getParsePastNutritionFunctions,
@@ -178,6 +180,17 @@ export type TrackedMeal = {
 
 export type TrackMealResponse = {
   meals: TrackedMeal[];
+};
+
+export type GenerateMealPlanResponse = {
+  meals: {
+    day: number;
+    mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+    name: string;
+    description: string;
+    ingredients: TrackMealIngredient[];
+  }[];
+  description: string;
 };
 
 export type NutritionEntry = {
@@ -742,6 +755,42 @@ export async function getNutritionInsights(
     return text || null;
   } catch (error) {
     console.error('[coachAI] getNutritionInsights error:', error);
+    return null;
+  }
+}
+
+/**
+ * Generate a workout plan from conversation history
+ */
+/**
+ * Generate a meal plan from conversation history
+ */
+export async function generateMealPlan(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
+  context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
+): Promise<GenerateMealPlanResponse | null> {
+  try {
+    const lang = config.language ?? 'en-US';
+    const systemPrompt = await getGenerateMealPlanPrompt(lang, macroTargets, undefined, context);
+
+    const userMessage =
+      history.map((e) => `${e.role === 'user' ? 'User' : 'Coach'}: ${e.content}`).join('\n\n') +
+      '\n\nGenerate the meal plan.';
+
+    const fns = getGenerateMealPlanFunctions();
+    const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
+    const parsed = await generateStructured<GenerateMealPlanResponse>(
+      config,
+      systemPrompt,
+      userMessage,
+      schema,
+      'generateMealPlan'
+    );
+    return parsed ?? null;
+  } catch (error) {
+    console.error('[coachAI] generateMealPlan error:', error);
     return null;
   }
 }

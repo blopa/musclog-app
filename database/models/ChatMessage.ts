@@ -44,6 +44,21 @@ export type TrackMealPayload = {
   meals: (TrackedMeal & { was_tracked?: boolean })[]; // Array of meals analyzed (can be multiple meals from one message)
 };
 
+// Meal plan payload - when AI generates a meal plan
+export type MealPlanPayload = {
+  type: 'mealPlan';
+  mealIds: string[]; // Array of meal IDs created
+  count: number; // Number of meals generated
+  meals?: {
+    id: string;
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+  }[];
+};
+
 // Legacy track meal payload - flat shape written before multi-meal support was added
 export type LegacyTrackMealPayload = {
   type: 'trackMeal';
@@ -58,6 +73,7 @@ export type ChatMessagePayload =
   | WorkoutCompletedPayload
   | WorkoutPlanPayload
   | TrackMealPayload
+  | MealPlanPayload
   | LegacyTrackMealPayload;
 
 // Helper type guard functions for type narrowing
@@ -73,6 +89,10 @@ export function isWorkoutCompletedPayload(
 
 export function isWorkoutPlanPayload(payload: ChatMessagePayload): payload is WorkoutPlanPayload {
   return payload.type === 'workoutPlan';
+}
+
+export function isMealPlanPayload(payload: ChatMessagePayload): payload is MealPlanPayload {
+  return payload.type === 'mealPlan';
 }
 
 export function isTrackMealPayload(payload: ChatMessagePayload): payload is TrackMealPayload {
