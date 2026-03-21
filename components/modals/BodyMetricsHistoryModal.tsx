@@ -26,7 +26,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 // UI-facing metric keys
 type UiMetricType = 'weight' | 'bodyFat' | 'bmi' | 'ffmi';
-type TimePeriod = '30D' | '3M' | '1Y'; // TODO: add 6M
+type TimePeriod = '30D' | '3M' | '6M' | '1Y';
 
 type HistoryEntry = {
   id: string;
@@ -148,6 +148,8 @@ export default function BodyMetricsHistoryModal({
       startDate = now - 30 * 24 * 60 * 60 * 1000;
     } else if (selectedPeriod === '3M') {
       startDate = now - 90 * 24 * 60 * 60 * 1000;
+    } else if (selectedPeriod === '6M') {
+      startDate = now - 180 * 24 * 60 * 60 * 1000;
     } else if (selectedPeriod === '1Y') {
       startDate = now - 365 * 24 * 60 * 60 * 1000;
     }
@@ -584,6 +586,25 @@ export default function BodyMetricsHistoryModal({
                           }`}
                         >
                           3M
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => setSelectedPeriod('6M')}
+                        className={`rounded-md px-3 py-1 ${selectedPeriod === '6M' ? '' : ''}`}
+                        style={
+                          selectedPeriod === '6M'
+                            ? {
+                                backgroundColor: theme.colors.accent.primary10,
+                              }
+                            : {}
+                        }
+                      >
+                        <Text
+                          className={`text-[10px] font-bold ${
+                            selectedPeriod === '6M' ? 'text-accent-primary' : 'text-text-tertiary'
+                          }`}
+                        >
+                          6M
                         </Text>
                       </Pressable>
                       <Pressable
