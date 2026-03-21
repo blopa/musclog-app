@@ -30,7 +30,7 @@ export default function CreateWorkoutModal({
 }: CreateWorkoutModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiConfigured } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
 
@@ -64,7 +64,7 @@ export default function CreateWorkoutModal({
   const volumeOptions = [
     { label: t('createWorkout.volumeCalculation.none'), value: 'none' },
     { label: t('createWorkout.volumeCalculation.algorithm'), value: 'algorithm' },
-    ...(isAiFeaturesEnabled
+    ...(isAiConfigured
       ? [
           {
             label: t('createWorkout.volumeCalculation.ai'),

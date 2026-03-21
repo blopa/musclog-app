@@ -9,7 +9,7 @@ type SlotNumber = 1 | 2 | 3;
 
 export type UseNavigationItemsResult = {
   rawSlots: Record<SlotNumber, NavItemKey>;
-  isAiFeaturesEnabled: boolean;
+  isAiConfigured: boolean;
   isCycleActive: boolean;
   hasPendingCheckin: boolean;
   setNavSlot: (slot: SlotNumber, item: NavItemKey) => Promise<void>;
@@ -23,6 +23,7 @@ const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
   'settings',
   'progress',
   'checkin',
+  'coach',
 ];
 
 /**
@@ -30,11 +31,11 @@ const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
  */
 function isItemAvailable(
   item: NavItemKey,
-  isAiFeaturesEnabled: boolean,
+  isAiConfigured: boolean,
   isCycleActive: boolean
 ): boolean {
-  if (item === 'coach' && !isAiFeaturesEnabled) {
-    return false;
+  if (item === 'coach') {
+    return true;
   }
 
   if (item === 'cycle' && !isCycleActive) {
@@ -51,7 +52,7 @@ function isItemAvailable(
  */
 function ensureValidSlots(
   slots: Record<SlotNumber, NavItemKey>,
-  isAiFeaturesEnabled: boolean,
+  isAiConfigured: boolean,
   isCycleActive: boolean
 ): Record<SlotNumber, NavItemKey> {
   const result: Record<SlotNumber, NavItemKey> = { ...slots };
@@ -60,7 +61,7 @@ function ensureValidSlots(
   // First pass: mark all valid items as used
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+    if (isItemAvailable(item, isAiConfigured, isCycleActive)) {
       usedItems.add(item);
     }
   });
@@ -68,7 +69,7 @@ function ensureValidSlots(
   // Second pass: replace unavailable items with fallback items
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (!isItemAvailable(item, isAiFeaturesEnabled, isCycleActive)) {
+    if (!isItemAvailable(item, isAiConfigured, isCycleActive)) {
       // Find the first available fallback item that's not already used
       const fallback = ALWAYS_AVAILABLE_ITEMS.find((fallbackItem) => !usedItems.has(fallbackItem));
       if (fallback) {
@@ -85,7 +86,7 @@ function ensureValidSlots(
 }
 
 export function useNavigationItems(): UseNavigationItemsResult {
-  const { isAiFeaturesEnabled, navSlot1, navSlot2, navSlot3 } = useSettings();
+  const { isAiConfigured, navSlot1, navSlot2, navSlot3 } = useSettings();
   const { isActive: isCycleActive } = useMenstrualCycle();
 
   const rawSlots = useMemo(
@@ -95,8 +96,8 @@ export function useNavigationItems(): UseNavigationItemsResult {
 
   // Ensure all slots have valid, renderable items
   const validSlots = useMemo(
-    () => ensureValidSlots(rawSlots, isAiFeaturesEnabled, isCycleActive),
-    [rawSlots, isAiFeaturesEnabled, isCycleActive]
+    () => ensureValidSlots(rawSlots, isAiConfigured, isCycleActive),
+    [rawSlots, isAiConfigured, isCycleActive]
   );
 
   // Keep a ref synced to the latest slot values so that async swap operations
@@ -124,7 +125,7 @@ export function useNavigationItems(): UseNavigationItemsResult {
 
   return {
     rawSlots: validSlots,
-    isAiFeaturesEnabled,
+    isAiConfigured,
     isCycleActive,
     hasPendingCheckin: false,
     setNavSlot,

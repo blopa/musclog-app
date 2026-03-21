@@ -1,5 +1,8 @@
+import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
+import { useSettings } from '../hooks/useSettings';
+import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
 import { CoachModal } from './modals/CoachModal';
 import MyMealsModal from './modals/MyMealsModal';
 
@@ -10,10 +13,19 @@ type CoachContextType = {
 const CoachContext = createContext<CoachContextType | undefined>(undefined);
 
 export function CoachProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const { isAiConfigured } = useSettings();
   const [isVisible, setIsVisible] = useState(false);
+  const [isNotConfiguredVisible, setIsNotConfiguredVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
 
-  const openCoach = useCallback(() => setIsVisible(true), []);
+  const openCoach = useCallback(() => {
+    if (isAiConfigured) {
+      setIsVisible(true);
+    } else {
+      setIsNotConfiguredVisible(true);
+    }
+  }, [isAiConfigured]);
 
   const openMyMealsFromCoach = useCallback(() => {
     setIsMyMealsVisible(true);
@@ -31,6 +43,14 @@ export function CoachProvider({ children }: { children: ReactNode }) {
           onOpenMyMeals={openMyMealsFromCoach}
         />
       ) : null}
+      <AINotConfiguredModal
+        visible={isNotConfiguredVisible}
+        onClose={() => setIsNotConfiguredVisible(false)}
+        onOpenAISettings={() => {
+          setIsNotConfiguredVisible(false);
+          router.push('/settings');
+        }}
+      />
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />
     </CoachContext.Provider>
   );

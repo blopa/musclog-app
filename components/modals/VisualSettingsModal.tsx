@@ -40,7 +40,7 @@ const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { rawSlots, isAiFeaturesEnabled, isCycleActive, setNavSlot } = useNavigationItems();
+  const { rawSlots, isAiConfigured, isCycleActive, setNavSlot } = useNavigationItems();
 
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
 
@@ -64,10 +64,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   ];
 
   const isItemAvailable = (item: NavItemKey): boolean => {
-    if (item === 'coach' && !isAiFeaturesEnabled) {
-      return false;
-    }
-
     if (item === 'cycle' && !isCycleActive) {
       return false;
     }

@@ -58,7 +58,7 @@ const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
 
 export default function FoodScreen() {
   const { t } = useTranslation();
-  const { units, isAiFeaturesEnabled } = useSettings();
+  const { units, isAiConfigured } = useSettings();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const { openCamera, setCurrentDate } = useSmartCamera();
@@ -610,7 +610,7 @@ export default function FoodScreen() {
                         });
                       }}
                     />
-                    {isAiFeaturesEnabled ? (
+                    {isAiConfigured ? (
                       <Button
                         label={t('food.actions.aiCamera')}
                         icon={Sparkles}
@@ -835,7 +835,7 @@ export default function FoodScreen() {
 
       {/* Add Food Modal */}
       <AddFoodModal
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
         visible={isAddFoodModalVisible}
         onClose={() => setIsAddFoodModalVisible(false)}
         onMealTypeSelect={(mealType) => {
@@ -909,7 +909,7 @@ export default function FoodScreen() {
         visible={isCreateCustomFoodVisible}
         trackFoodAfterSave={true}
         onClose={() => setIsCreateCustomFoodVisible(false)}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
 
       {/* Food Search Modal */}
@@ -928,7 +928,7 @@ export default function FoodScreen() {
           setIsFoodSearchModalVisible(false);
           openCamera({ mode: 'barcode-scan', hideCameraModePicker: true, logDate: selectedDate });
         }}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
 
       {/* Delete Confirmation Modal */}
@@ -1046,7 +1046,7 @@ export default function FoodScreen() {
             router.replace('/nutrition/food');
           }
         }}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
     </MasterLayout>
   );

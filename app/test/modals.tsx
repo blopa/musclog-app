@@ -11,6 +11,7 @@ import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryM
 import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsModal';
 import { AiCustomPromptEditModal } from '../../components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '../../components/modals/AiCustomPromptsModal';
+import { AINotConfiguredModal } from '../../components/modals/AINotConfiguredModal';
 import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
@@ -119,6 +120,7 @@ export default function ModalsTestScreen() {
   const [isAdvancedSettingsVisible, setIsAdvancedSettingsVisible] = useState(false);
   // AI Settings Modal
   const [isAiSettingsVisible, setIsAiSettingsVisible] = useState(false);
+  const [isAiNotConfiguredVisible, setIsAiNotConfiguredVisible] = useState(false);
   // Filter Workouts Modal
   const [isFilterWorkoutsVisible, setIsFilterWorkoutsVisible] = useState(false);
 
@@ -406,6 +408,13 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsAiSettingsVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open AI Not Configured Modal"
+              variant="outline"
+              width="full"
+              onPress={() => setIsAiNotConfiguredVisible(true)}
             />
           </View>
 
@@ -1858,6 +1867,12 @@ export default function ModalsTestScreen() {
         onConnectGoogleAccount={() => console.log('Connect Google pressed')}
         onGetOpenAiKeyPress={() => console.log('Get OpenAI Key pressed')}
         onOpenAiModelPress={() => console.log('OpenAI model pressed')}
+      />
+
+      <AINotConfiguredModal
+        visible={isAiNotConfiguredVisible}
+        onClose={() => setIsAiNotConfiguredVisible(false)}
+        onOpenAISettings={() => setIsAiSettingsVisible(true)}
       />
 
       <FilterWorkoutsModal
