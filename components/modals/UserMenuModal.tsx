@@ -73,7 +73,7 @@ export function UserMenuModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { rawSlots, isAiFeaturesEnabled, isCycleActive } = useNavigationItems();
+  const { rawSlots, isAiConfigured, isCycleActive } = useNavigationItems();
 
   const isInNav = (item: string) =>
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
@@ -255,7 +255,7 @@ export function UserMenuModal({
                 />
               ) : null}
 
-              {!isInNav('coach') && isAiFeaturesEnabled && onCoachPress ? (
+              {!isInNav('coach') && onCoachPress ? (
                 <MenuItem
                   icon={
                     <MessageSquare size={theme.iconSize.md} color={theme.colors.text.secondary} />

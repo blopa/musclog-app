@@ -58,7 +58,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiConfigured } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const params = useLocalSearchParams<{ code?: string; action?: string }>();
@@ -629,7 +629,7 @@ export default function HomeScreen() {
         onSearchFoodPress={handleSearchFoodPress}
         onCreateCustomFoodPress={handleCreateCustomFoodPress}
         onTrackCustomMealPress={handleTrackCustomMealPress}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
 
       {/* Nutrition Goals Modal */}
@@ -646,7 +646,7 @@ export default function HomeScreen() {
         mealType={selectedMealType}
         onCreatePress={handleFoodSearchCreatePress}
         onBarcodeScanPress={handleFoodSearchBarcodePress}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
 
       {/* My Meals Modal */}
@@ -663,7 +663,7 @@ export default function HomeScreen() {
         visible={isCreateCustomFoodVisible}
         onClose={handleCloseCreateCustomFood}
         onSave={handleSaveCustomFood}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
       />
     </MasterLayout>
   );

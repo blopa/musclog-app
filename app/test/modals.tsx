@@ -11,8 +11,8 @@ import AddUserMetricEntryModal from '../../components/modals/AddUserMetricEntryM
 import { AdvancedSettingsModal } from '../../components/modals/AdvancedSettingsModal';
 import { AiCustomPromptEditModal } from '../../components/modals/AiCustomPromptEditModal';
 import { AiCustomPromptsModal } from '../../components/modals/AiCustomPromptsModal';
-import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 import { AINotConfiguredModal } from '../../components/modals/AINotConfiguredModal';
+import { AINutritionTrackingContextModal } from '../../components/modals/AINutritionTrackingContextModal';
 import { AISettingsModal } from '../../components/modals/AISettingsModal';
 import { BarcodeCameraModal } from '../../components/modals/BarcodeCameraModal';
 import { BasicSettingsModal } from '../../components/modals/BasicSettingsModal';

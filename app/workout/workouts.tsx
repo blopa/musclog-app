@@ -36,7 +36,7 @@ export default function WorkoutsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
-  const { isAiFeaturesEnabled } = useSettings();
+  const { isAiConfigured } = useSettings();
 
   // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
   useEffect(() => {
@@ -558,7 +558,7 @@ export default function WorkoutsScreen() {
       <CreateWorkoutOptionsModal
         visible={isCreateOptionsVisible}
         onClose={() => setIsCreateOptionsVisible(false)}
-        isAiEnabled={isAiFeaturesEnabled}
+        isAiEnabled={isAiConfigured}
         onStartFreeTraining={async () => {
           try {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
