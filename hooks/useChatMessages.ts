@@ -565,6 +565,7 @@ export function useChatMessages(
             payloadJson = JSON.stringify(mealPlanPayload);
 
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+            setPendingIntention(null);
           } else {
             if (userRecord) {
               const recordId = userRecord.id;
@@ -610,6 +611,7 @@ export function useChatMessages(
             payloadJson = JSON.stringify(workoutPlanPayload);
 
             await AsyncStorage.removeItem(CHAT_INTENTION_KEY); // Clear the intention
+            setPendingIntention(null);
           } else {
             // Revert user message and restore text to input so user can retry
             if (userRecord) {
@@ -651,6 +653,7 @@ export function useChatMessages(
 
           reply = { msg4User: result, sumMsg: result.substring(0, 200) };
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else if (pendingIntention === NUTRITION_CHECK) {
           const end = new Date();
           const start = new Date();
@@ -681,6 +684,7 @@ export function useChatMessages(
 
           reply = { msg4User: result, sumMsg: result.substring(0, 200) };
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else if (pendingIntention === TRACK_MEAL) {
           const result = await trackMeal(aiConfig, text.trim(), base64Image);
           if (!result || result.meals.length === 0) {
@@ -727,6 +731,7 @@ export function useChatMessages(
           payloadJson = JSON.stringify(trackMealPayload);
 
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
+          setPendingIntention(null);
         } else {
           // Default: send regular chat message
           reply = await sendCoachMessage(
