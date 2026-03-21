@@ -26,7 +26,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
   }
 
   return (
-    <View className="mt-2 w-full">
+    <View className="mt-2 w-full -mr-10">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

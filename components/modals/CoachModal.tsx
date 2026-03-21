@@ -213,20 +213,22 @@ const renderCustomView = (
   const { currentMessage } = props;
   if (currentMessage?.workoutCompleted) {
     return (
-      <ChatWorkoutCompletedCard
-        {...currentMessage.workoutCompleted}
-        onViewDetails={
-          onViewWorkoutDetails
-            ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
-            : undefined
-        }
-      />
+      <View className="mt-2 w-full pr-4">
+        <ChatWorkoutCompletedCard
+          {...currentMessage.workoutCompleted}
+          onViewDetails={
+            onViewWorkoutDetails
+              ? () => onViewWorkoutDetails(currentMessage.workoutCompleted!.workoutLogId)
+              : undefined
+          }
+        />
+      </View>
     );
   }
 
   if (currentMessage?.workout) {
     return (
-      <View className="mt-2 w-full max-w-sm">
+      <View className="mt-2 w-full pr-4">
         <ChatWorkoutCard
           title={currentMessage.workout.title}
           duration={currentMessage.workout.duration}
@@ -245,7 +247,7 @@ const renderCustomView = (
 
   if (currentMessage?.meal) {
     return (
-      <View className="mt-2 w-full max-w-sm">
+      <View className="mt-2 w-full pr-4">
         <ChatMealCard
           meals={currentMessage.meal.meals}
           onViewDetails={(mealType) => onViewMealDetails?.(currentMessage.meal!, mealType)}
@@ -1535,7 +1537,7 @@ const getStyles = (theme: Theme) =>
       borderBottomRightRadius: theme.spacing.padding.xs,
     },
     aiBubbleContainer: {
-      maxWidth: '85%',
+      maxWidth: '100%',
       marginLeft: theme.spacing.margin.zero,
       marginRight: 'auto',
       alignItems: 'flex-start',
@@ -1546,6 +1548,7 @@ const getStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.padding.md,
       borderRadius: theme.borderRadius.xl,
       borderBottomLeftRadius: theme.spacing.padding.xs,
+      maxWidth: '85%',
     },
     avatar: {
       width: theme.size['8'],
