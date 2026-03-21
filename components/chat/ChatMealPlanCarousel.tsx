@@ -1,6 +1,6 @@
-import { ArrowRight, ChevronRight } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
@@ -20,17 +20,23 @@ type ChatMealPlanCarouselProps = {
 export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
 
   if (!meals || meals.length === 0) {
     return null;
   }
 
+  // 16 (list padding) + 32 (avatar) + 8 (avatar margin) = 56
+  // This offset allows the carousel to take the full width of the screen while keeping the cards aligned with the text bubble.
+  const leftOffset = theme.spacing.padding.base + theme.size['8'] + theme.spacing.padding.sm;
+
   return (
-    <View className="mt-2 w-full -mr-10">
+    <View className="mt-2" style={{ width: screenWidth, marginLeft: -leftOffset }}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
+          paddingLeft: leftOffset,
           paddingRight: theme.spacing.padding.base,
           gap: theme.spacing.gap.md,
         }}
@@ -43,7 +49,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll, onViewMeal }: ChatMealPl
             style={{
               backgroundColor: theme.colors.background.card,
               borderColor: theme.colors.border.light,
-              width: 200,
+              width: 280,
             }}
           >
             <Text
