@@ -1,17 +1,18 @@
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { UserMetricService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
 import { getXAxisLabels } from '../../utils/chartUtils';
-import { kgToDisplay, storedWeightToKg } from '../../utils/unitConversion';
+import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { HistoryBodyMetricCard } from '../cards/HistoryBodyMetricCard';
 import { LineChart } from '../charts/LineChart';
@@ -85,17 +86,49 @@ export default function BodyMetricsHistoryModal({
     { label: t('bodyMetrics.metrics.ffmi'), value: 'ffmi' },
   ];
 
-  // Map UI metric keys to canonical AppMetricType values (or undefined when not applicable)
-  const mapUiMetricToAppMetric = (m: UiMetricType): AppMetricType | undefined => {
+  // BMI and FFMI are derived from weight history + latest height (+ body fat for FFMI)
+  const [latestHeightCm, setLatestHeightCm] = useState<number | null>(null);
+  const [latestBodyFatPct, setLatestBodyFatPct] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (selectedMetric !== 'bmi' && selectedMetric !== 'ffmi') {
+      return;
+    }
+
+    UserMetricService.getLatest('height').then(async (m) => {
+      if (!m) {
+        setLatestHeightCm(null);
+        return;
+      }
+
+      const dec = await m.getDecrypted();
+      setLatestHeightCm(storedHeightToCm(dec.value, dec.unit));
+    });
+
+    if (selectedMetric === 'ffmi') {
+      UserMetricService.getLatest('body_fat').then(async (m) => {
+        if (!m) {
+          setLatestBodyFatPct(null);
+          return;
+        }
+
+        const dec = await m.getDecrypted();
+        setLatestBodyFatPct(dec.value);
+      });
+    }
+  }, [selectedMetric]);
+
+  // Map UI metric keys to the DB type to fetch.
+  // BMI and FFMI are computed from weight entries using the latest height (and body fat for FFMI).
+  const mapUiMetricToAppMetric = (m: UiMetricType): AppMetricType => {
     switch (m) {
       case 'weight':
         return AppMetricType.WEIGHT;
       case 'bodyFat':
         return AppMetricType.BODY_FAT;
-      // BMI and FFMI are derived metrics, not stored directly as a MetricType in HealthDataTransformer
       case 'bmi':
       case 'ffmi':
-        return undefined;
+        return AppMetricType.WEIGHT;
     }
   };
 
@@ -166,15 +199,33 @@ export default function BodyMetricsHistoryModal({
     [t]
   );
 
-  // Helper to get display value for weight/height (normalize stored to kg/cm then to display unit)
+  // Helper to get display value. For weight: converts to display unit. For BMI/FFMI: computes
+  // the derived value from the stored weight entry using the latest height (and body fat for FFMI).
   const getDisplayValue = useCallback(
     (value: number, storedUnit?: string | null): number => {
       if (selectedMetric === 'weight') {
         return kgToDisplay(storedWeightToKg(value, storedUnit), units);
       }
+
+      if (selectedMetric === 'bmi' || selectedMetric === 'ffmi') {
+        const weightKg = storedWeightToKg(value, storedUnit);
+        if (!latestHeightCm || latestHeightCm <= 0) {
+          return 0;
+        }
+
+        const heightM = latestHeightCm / 100;
+        if (selectedMetric === 'bmi') {
+          return weightKg / (heightM * heightM);
+        }
+
+        // FFMI = fat-free mass (kg) / height (m)²
+        const bodyFatFraction = (latestBodyFatPct ?? 0) / 100;
+        const fatFreeMassKg = weightKg * (1 - bodyFatFraction);
+        return fatFreeMassKg / (heightM * heightM);
+      }
       return value;
     },
-    [selectedMetric, units]
+    [selectedMetric, units, latestHeightCm, latestBodyFatPct]
   );
 
   // Helper to process metrics into history entries
@@ -184,16 +235,12 @@ export default function BodyMetricsHistoryModal({
         const metric = item.metric;
         const d = item.decrypted;
         const previous = index < metrics.length - 1 ? metrics[index + 1] : null;
-        const displayValue =
-          selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
+        const displayValue = getDisplayValue(d.value, d.unit);
         let change: string | null = null;
         let changeType: 'up' | 'down' | null = null;
 
         if (previous) {
-          const prevDisplay =
-            selectedMetric === 'weight'
-              ? getDisplayValue(previous.decrypted.value, previous.decrypted.unit)
-              : (previous.decrypted.value as number);
+          const prevDisplay = getDisplayValue(previous.decrypted.value, previous.decrypted.unit);
 
           const diff = displayValue - prevDisplay;
           const absDiff = Math.abs(diff);
@@ -259,8 +306,7 @@ export default function BodyMetricsHistoryModal({
     }
     const latest = paginatedMetrics[0];
     const d = latest.decrypted;
-    const displayVal =
-      selectedMetric === 'weight' ? getDisplayValue(d.value, d.unit) : (d.value as number);
+    const displayVal = getDisplayValue(d.value, d.unit);
     const unit = getMetricUnit(selectedMetric);
 
     return {
