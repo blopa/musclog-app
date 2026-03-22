@@ -1,3 +1,22 @@
-// Setup file for jsdom environment (hook tests)
-// This file is used instead of the default jest.setup.js to avoid React Native setup conflicts
-// No React Native setup is loaded here, preventing window property conflicts
+global.__DEV__ = true;
+jest.mock('react-native', () => {
+  return {
+    Platform: {
+      OS: 'ios',
+      select: jest.fn((objs) => objs.ios),
+    },
+    NativeModules: {},
+    StyleSheet: {
+      create: (s) => s,
+    },
+    // Add other necessary components as needed
+  };
+});
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+    Medium: 'medium',
+    Heavy: 'heavy',
+  },
+}));

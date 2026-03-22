@@ -2,6 +2,7 @@ import { Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { useRepeatPress } from '../../hooks/useRepeatPress';
 import { useTheme } from '../../hooks/useTheme';
 
 interface NewNumericalInputProps {
@@ -60,6 +61,9 @@ export default function NewNumericalInput({
     onChange(value + step);
   };
 
+  const incrementHandlers = useRepeatPress({ onPress: handleIncrement });
+  const decrementHandlers = useRepeatPress({ onPress: handleDecrement });
+
   return (
     <View className="w-full">
       <Text
@@ -73,7 +77,7 @@ export default function NewNumericalInput({
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
         <Pressable
-          onPress={handleDecrement}
+          {...decrementHandlers}
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -91,7 +95,7 @@ export default function NewNumericalInput({
           selectTextOnFocus={true}
         />
         <Pressable
-          onPress={handleIncrement}
+          {...incrementHandlers}
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
