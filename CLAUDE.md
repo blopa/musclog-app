@@ -32,10 +32,82 @@
 - **Charts**: Victory Native (Skia) for Native, Victory (SVG) for Web
 - **AI**: OpenAI & Google Gemini (Generative AI)
 - **Localization**: i18next with `expo-localization`
+- **Icons**: Lucide React Native
+- **Animations**: React Native Reanimated 4
 - **Health Data**: Health Connect (Android) via `react-native-health-connect`
 - **Error Tracking**: Sentry (`@sentry/react-native`)
 - **Food Scanning**: OCR (tesseract.js / rn-mlkit-ocr) and barcode scanning (quagga2 / react-zxing)
 - **Export**: xlsx + html-to-image for data export features
+
+## Repository Structure
+
+```
+musclog/
+├── app/                        # Expo Router screens
+│   ├── _layout.tsx             # Root layout
+│   ├── index.tsx               # Dashboard / home
+│   ├── onboarding/             # Onboarding flow
+│   ├── workout/                # Workout screens
+│   ├── nutrition/              # Nutrition/food screens
+│   ├── cycle.tsx               # Menstrual cycle tracking
+│   ├── progress.tsx            # Analytics & charts
+│   ├── profile.tsx             # User profile & metrics
+│   ├── settings.tsx            # App settings
+│   ├── chat.tsx                # AI coach chat
+│   └── aiSettings.tsx          # AI configuration
+├── components/                 # Reusable UI components
+│   ├── NavigationMenu.tsx      # Custom bottom nav bar
+│   ├── MasterLayout.tsx        # Root layout wrapper
+│   ├── CoachModal.tsx          # AI coach chat modal
+│   ├── SmartCameraModal.tsx    # AI photo analysis modal
+│   └── theme/                  # Themed base components
+├── context/                    # React contexts (e.g., ChartTooltipContext)
+├── database/                   # WatermelonDB models & services
+│   ├── models/                 # Database models
+│   ├── repositories/           # Complex query logic
+│   ├── services/               # Service layer (CRUD + business logic)
+│   ├── migrations/             # DB schema migrations
+│   ├── seeders/                # Initial data seeding
+│   ├── schema.ts               # DB schema definition
+│   ├── database-instance.ts    # Model registration
+│   └── encryptionHelpers.ts    # AES encrypt/decrypt helpers
+├── hooks/                      # Custom React hooks
+├── services/                   # Non-DB app services (AI, notifications, Health Connect)
+├── lang/locales/en-us/         # Localization strings (JSON per feature)
+├── constants/                  # App-wide constants (settings keys, enums)
+├── utils/                      # Utility functions (coachAI, prompts, etc.)
+├── assets/                     # Images, icons, exercise photos
+└── widgets/                    # Android/iOS home screen widgets
+```
+
+## Design System
+
+Full details in `DESIGN.md`. Key values for component development:
+
+### Colors
+
+- **Primary Background** (`#0a1f1a`): `swampGreen` — main app background
+- **Card Surface** (`#141a17`): `charcoalGreen` — default card/section background
+- **Elevated Surface** (`#1a2420`): `gunmetalGreen` — higher-priority cards
+- **Performance Gradient**: Indigo 600 (`#4f46e5`) → Emerald 400 (`#34d399`) — primary actions, progress
+- **Success** (`#22c55e`), **Warning** (`#f97316` / `#f59e0b`), **Error** (`#ef4444`)
+
+**Macro semantic colors** (use consistently — do not substitute):
+- Protein: Indigo (`#6366f1`)
+- Carbs: Emerald (`#10b981`)
+- Fat: Amber (`#f59e0b`)
+- Fiber: Pink (`#ec4899`)
+
+### Spacing & Layout
+
+- **Grid**: 4px base unit. Scale: 4 / 8 / 12 / 16 / 20 / 24 / 32px
+- **Border radius**: 12px (standard inputs/components), 16px (primary cards), 9999px (badges/avatars)
+- **Touch targets**: Minimum 48×48dp on all mobile interfaces
+
+### Typography
+
+- **Lexend**: Data displays and headings (numeric stats, hero values)
+- **Inter / Manrope**: Body text and labels
 
 ## Coding Guidelines
 
