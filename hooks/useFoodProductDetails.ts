@@ -160,8 +160,10 @@ export function useFoodProductDetails(
         return null;
       }
 
-      const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
-      const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
+      const includeOpenFood =
+        foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'openfood');
+      const includeUSDA =
+        foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'usda');
 
       if (includeOpenFood && includeUSDA) {
         // Both sources enabled: fire in parallel, resolve with whichever succeeds first
