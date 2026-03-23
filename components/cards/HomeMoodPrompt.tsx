@@ -10,17 +10,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { useSettings } from '../../hooks/useSettings';
-import { useTheme } from '../../hooks/useTheme';
-import { useTodayMood } from '../../hooks/useTodayMood';
 import { UserMetricService } from '../../database/services';
-import { MoodSelectorCard } from './MoodSelectorCard';
-import { Button } from '../theme/Button';
+import { useSettings } from '../../hooks/useSettings';
+import { useTodayMood } from '../../hooks/useTodayMood';
 import { showSnackbar } from '../../utils/snackbarService';
+import { Button } from '../theme/Button';
+import { MoodSelectorCard } from './MoodSelectorCard';
 
 export function HomeMoodPrompt() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { showDailyMoodPrompt } = useSettings();
   const { hasMoodToday, isLoading } = useTodayMood();
   const [mood, setMood] = useState<number | null>(null);
@@ -65,7 +63,9 @@ export function HomeMoodPrompt() {
   }
 
   const performSave = async () => {
-    if (mood === null) return;
+    if (mood === null) {
+      return;
+    }
 
     try {
       const now = new Date();
@@ -91,7 +91,9 @@ export function HomeMoodPrompt() {
   };
 
   const handleSave = () => {
-    if (mood === null) return;
+    if (mood === null) {
+      return;
+    }
     setIsSaving(true);
     setIsDismissed(true); // Trigger animation immediately
     // Use setTimeout hack to ensure loading state is rendered before blocking DB write
@@ -99,9 +101,9 @@ export function HomeMoodPrompt() {
   };
 
   return (
-    <Animated.View className="px-4" style={animatedStyle}>
+    <Animated.View style={animatedStyle}>
       <MoodSelectorCard value={mood ?? 2} onChange={(val) => setMood(val)} />
-      {mood !== null && (
+      {mood !== null ? (
         <View className="mt-3">
           <Button
             label={t('bodyMetrics.addEntry.saveEntry')}
@@ -115,7 +117,7 @@ export function HomeMoodPrompt() {
             disabled={isSaving}
           />
         </View>
-      )}
+      ) : null}
     </Animated.View>
   );
 }

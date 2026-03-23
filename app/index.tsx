@@ -415,7 +415,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Home Mood Prompt */}
-        <HomeMoodPrompt />
+        <View className="mx-4">
+          <HomeMoodPrompt />
+        </View>
 
         {/* Action Buttons */}
         <View className="mx-4 mb-8 flex-row gap-4">
