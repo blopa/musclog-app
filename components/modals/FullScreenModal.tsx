@@ -19,6 +19,7 @@ type FullScreenModalProps = {
   scrollable?: boolean;
   withGradient?: boolean;
   showHeader?: boolean;
+  closable?: boolean;
   scrollViewRef?: RefObject<ScrollView | null>;
 };
 
@@ -34,6 +35,7 @@ export function FullScreenModal({
   footer,
   withGradient = false,
   showHeader = true,
+  closable = true,
   scrollViewRef,
 }: FullScreenModalProps) {
   const theme = useTheme();
@@ -73,7 +75,7 @@ export function FullScreenModal({
       visible={visible}
       transparent={false}
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={closable ? onClose : undefined}
       onShow={onShow}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
@@ -101,9 +103,11 @@ export function FullScreenModal({
               end={{ x: 1, y: 0 }}
               className="flex-row items-center gap-4 px-4 py-4"
             >
-              <Pressable className="-ml-2 rounded-full p-2" onPress={onClose} hitSlop={10}>
-                <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-              </Pressable>
+              {closable ? (
+                <Pressable className="-ml-2 rounded-full p-2" onPress={onClose} hitSlop={10}>
+                  <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
+                </Pressable>
+              ) : null}
               <View className="flex-1">
                 <Text className="text-xl font-bold tracking-tight text-text-primary">{title}</Text>
                 {subtitle ? (

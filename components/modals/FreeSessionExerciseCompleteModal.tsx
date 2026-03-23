@@ -85,6 +85,7 @@ export function FreeSessionExerciseCompleteModal({
       onClose={onClose}
       title={t('freeTraining.workoutName')}
       scrollable={false}
+      closable={false}
     >
       <View className="flex-1 px-4">
         <View className="flex-row items-center justify-between pb-4 pt-2">
