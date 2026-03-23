@@ -869,7 +869,6 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
-    setShowMenu(false);
     setIsRegenerating(true);
 
     // Use setTimeout to ensure the UI has time to update the loading state
@@ -1102,6 +1101,7 @@ export function DataLogModal({
         title: t('goalsManagement.manageGoalData.regenerateCheckins'),
         description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
         onPress: handleRegenerateCheckins,
+        keepOpenOnPress: true,
       });
     }
 
@@ -1350,7 +1350,7 @@ export function DataLogModal({
 
           {/* Item List */}
           <View className="mt-6 flex flex-col gap-3">
-            {isLoading || isRegenerating ? (
+            {isLoading ? (
               <View className="flex flex-col gap-4">
                 <SkeletonLoader width={80} height={16} className="mb-2" />
                 {[1, 2, 3].map((i) => (
@@ -1444,6 +1444,8 @@ export function DataLogModal({
         onClose={() => setShowMenu(false)}
         title={translations.menuTitle}
         items={getMenuItems()}
+        isLoading={isRegenerating}
+        loadingTitle={t('common.processing')}
       />
 
       {/* Delete Confirmation Modal */}

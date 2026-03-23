@@ -31,6 +31,7 @@ interface GoalHistoryCardProps {
   onEdit?: () => void;
   onRegenerateCheckins?: () => void;
   onDelete?: () => void;
+  isRegenerating?: boolean;
 }
 
 export function GoalHistoryCard({
@@ -39,6 +40,7 @@ export function GoalHistoryCard({
   onEdit,
   onRegenerateCheckins,
   onDelete,
+  isRegenerating = false,
 }: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -71,6 +73,7 @@ export function GoalHistoryCard({
             title: t('goalsManagement.manageGoalData.regenerateCheckins'),
             description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
             onPress: onRegenerateCheckins,
+            keepOpenOnPress: true,
           },
         ]
       : []),
@@ -127,6 +130,8 @@ export function GoalHistoryCard({
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
             items={menuItems}
+            isLoading={isRegenerating}
+            loadingTitle={t('common.processing')}
           />
         ) : null}
 

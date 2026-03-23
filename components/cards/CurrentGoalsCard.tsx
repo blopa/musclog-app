@@ -40,6 +40,7 @@ interface CurrentGoalsCardProps {
   onEdit?: () => void;
   onRegenerateCheckins?: () => void;
   onDelete?: () => void;
+  isRegenerating?: boolean;
 }
 
 export function CurrentGoalsCard({
@@ -47,6 +48,7 @@ export function CurrentGoalsCard({
   onEdit,
   onRegenerateCheckins,
   onDelete,
+  isRegenerating = false,
 }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -80,6 +82,7 @@ export function CurrentGoalsCard({
             title: t('goalsManagement.manageGoalData.regenerateCheckins'),
             description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
             onPress: onRegenerateCheckins,
+            keepOpenOnPress: true,
           },
         ]
       : []),
@@ -284,6 +287,8 @@ export function CurrentGoalsCard({
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
             items={menuItems}
+            isLoading={isRegenerating}
+            loadingTitle={t('common.processing')}
           />
         ) : null}
       </View>

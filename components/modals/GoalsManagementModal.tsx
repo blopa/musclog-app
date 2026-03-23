@@ -240,12 +240,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         }
         scrollable={false}
       >
-        {isLoading || isRegenerating ? (
+        {isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            {isRegenerating && (
-              <Text className="mt-4 text-text-secondary">{t('common.processing')}</Text>
-            )}
           </View>
         ) : (
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -287,6 +284,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                       current ? () => handleRegenerateCheckins(current) : undefined
                     }
                     onDelete={current ? () => handleDeleteGoal(current) : undefined}
+                    isRegenerating={isRegenerating}
                   />
                 </View>
               ) : null}
@@ -312,6 +310,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                           onEdit={() => handleEditGoal(raw)}
                           onRegenerateCheckins={() => handleRegenerateCheckins(raw)}
                           onDelete={() => handleDeleteGoal(raw)}
+                          isRegenerating={isRegenerating}
                         />
                       );
                     })}

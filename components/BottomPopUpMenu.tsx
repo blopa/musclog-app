@@ -1,6 +1,6 @@
 import { ChevronRight } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
-import { Platform, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 import { BottomPopUp } from './BottomPopUp';
@@ -14,6 +14,8 @@ export type BottomPopUpMenuItem = {
   titleColor?: string;
   descriptionColor?: string;
   onPress: () => void;
+  /** When true, the menu will not automatically close when this item is pressed */
+  keepOpenOnPress?: boolean;
 };
 
 type BottomPopUpMenuProps = {
@@ -29,6 +31,8 @@ type BottomPopUpMenuProps = {
   fullWidthItems?: boolean;
   /** When false, content is not wrapped in ScrollView (e.g. for sticky header + scrollable list) */
   scrollable?: boolean;
+  isLoading?: boolean;
+  loadingTitle?: string;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -101,7 +105,17 @@ export function BottomPopUpMenu({
       footer={footer}
       scrollable={scrollable}
     >
-      {children ||
+      {isLoading ? (
+        <View className="items-center justify-center p-12">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          {loadingTitle ? (
+            <Text className="mt-4 text-center text-lg font-bold text-text-primary">
+              {loadingTitle}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        children ||
         (items && (
           <View className="p-6">
             {items.map((item, index) => (
@@ -123,13 +137,16 @@ export function BottomPopUpMenu({
                   descriptionColor={item.descriptionColor}
                   onPress={() => {
                     item.onPress();
-                    onClose?.();
+                    if (!item.keepOpenOnPress) {
+                      onClose?.();
+                    }
                   }}
                 />
               </View>
             ))}
           </View>
-        ))}
+        ))
+      )}
     </BottomPopUp>
   );
 }
