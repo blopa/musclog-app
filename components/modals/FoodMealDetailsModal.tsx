@@ -16,14 +16,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import { useSnackbar } from '../../context/SnackbarContext';
@@ -56,7 +49,7 @@ import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
 import { BottomPopUp } from '../BottomPopUp';
-import { FoodInfoCard } from '../cards/FoodInfoCard';
+import { FoodNutritionSectionCard } from '../cards/FoodNutritionSectionCard';
 import { FilterTabs } from '../FilterTabs';
 import { MacroInput } from '../MacroInput';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -1480,97 +1473,15 @@ export function FoodMealDetailsModal({
         }
       >
         <View className="flex-1 px-4 pb-6">
-          {/* TODO: move this to its own component file */}
-          <View className="mt-6">
-            <View className="relative">
-              <FoodInfoCard food={scaledFood} />
-              {canEdit && mode !== 'meal' ? (
-                <Pressable
-                  onPress={handleOpenEditPopUp}
-                  className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
-                  style={{
-                    elevation: 2,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 2,
-                  }}
-                >
-                  <Edit3 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                </Pressable>
-              ) : null}
-            </View>
-
-            {/* Additional Nutritional Info - only show for foods, not meals */}
-            {mode !== 'meal' &&
-            ((nutritionalData.fiber ?? 0) > 0 ||
-              (nutritionalData.sugar ?? 0) > 0 ||
-              (nutritionalData.saturatedFat ?? 0) > 0 ||
-              (nutritionalData.sodium ?? 0) > 0) ? (
-              <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-                <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
-                  {t('food.foodDetails.additionalNutrition')}
-                </Text>
-                <View className="gap-2">
-                  {nutritionalData.fiber > 0 ? (
-                    <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
-                      <Text className="text-sm font-medium text-text-primary">
-                        {Math.round(nutritionalData.fiber * (servingSize / 100) * 10) / 10}g
-                      </Text>
-                    </View>
-                  ) : null}
-                  {(nutritionalData.sugar ?? 0) > 0 ? (
-                    <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">
-                        {t('food.foodDetails.sugars')}
-                      </Text>
-                      <Text className="text-sm font-medium text-text-primary">
-                        {Math.round((nutritionalData.sugar ?? 0) * (servingSize / 100) * 10) / 10}g
-                      </Text>
-                    </View>
-                  ) : null}
-                  {nutritionalData.saturatedFat > 0 ? (
-                    <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">
-                        {t('food.foodDetails.saturatedFat')}
-                      </Text>
-                      <Text className="text-sm font-medium text-text-primary">
-                        {Math.round(nutritionalData.saturatedFat * (servingSize / 100) * 10) / 10}g
-                      </Text>
-                    </View>
-                  ) : null}
-                  {nutritionalData.sodium > 0 ? (
-                    <View className="flex-row justify-between">
-                      <Text className="text-sm text-text-secondary">
-                        {t('food.foodDetails.salt')}
-                      </Text>
-                      <Text className="text-sm font-medium text-text-primary">
-                        {Math.round(nutritionalData.sodium * (servingSize / 100) * 1000) / 1000}g
-                      </Text>
-                    </View>
-                  ) : null}
-                  {isLoadingDetails ? (
-                    <View className="mt-2 flex-row items-center justify-center gap-2">
-                      <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                      <Text className="text-xs text-text-secondary">
-                        {t('food.foodDetails.loadingMoreDetails', 'Loading more details...')}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-            ) : isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog' ? (
-              <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-                <View className="flex-row items-center justify-center gap-2">
-                  <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                  <Text className="text-xs text-text-secondary">
-                    {t('food.foodDetails.loadingDetails', 'Loading details...')}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-          </View>
+          <FoodNutritionSectionCard
+            food={scaledFood}
+            canEdit={canEdit}
+            mode={mode}
+            onEditPress={handleOpenEditPopUp}
+            nutritionalData={nutritionalData}
+            servingSize={servingSize}
+            isLoadingDetails={isLoadingDetails}
+          />
 
           {/* Form Sections */}
           <View className="gap-6">
