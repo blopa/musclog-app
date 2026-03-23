@@ -110,7 +110,11 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           }));
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
           return from(transformWorkoutToDetailData(log, enrichedSets, exercises, t, units)).pipe(
-            map((transformed) => ({ transformed, rawSets: enrichedSets, externalId: log.externalId ?? null })),
+            map((transformed) => ({
+              transformed,
+              rawSets: enrichedSets,
+              externalId: log.externalId ?? null,
+            })),
             catchError((err) => {
               console.error('Error transforming workout detail:', err);
               return of({ transformed: null, rawSets: null, externalId: null });

@@ -86,9 +86,7 @@ function RootLayout() {
   useEffect(() => {
     const isInsideWorkoutDomain = segments[0] === 'workout';
     if (!isInsideWorkoutDomain) {
-      pruneWorkoutInsights().catch((err) =>
-        console.warn('[WorkoutInsights] Pruning error:', err)
-      );
+      pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
   }, [segments]);
 

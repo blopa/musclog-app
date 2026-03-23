@@ -408,7 +408,11 @@ export default function PastWorkoutDetailModal({
 
     setIsSavingToHC(true);
     try {
-      const { workoutLog: log, sets, exercises } = await WorkoutService.getWorkoutWithDetails(workoutId);
+      const {
+        workoutLog: log,
+        sets,
+        exercises,
+      } = await WorkoutService.getWorkoutWithDetails(workoutId);
 
       const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
       const byExercise = new Map<string, (typeof sets)[number][]>();
@@ -566,7 +570,7 @@ export default function PastWorkoutDetailModal({
           try {
             const data = await WorkoutService.getWorkoutWithDetails(workoutId);
             setPreviewWorkoutData(data);
-            console.log('ON PREVIEW CLICKED', (data), 11, workoutId);
+            console.log('ON PREVIEW CLICKED', data, 11, workoutId);
             setIsPreviewModalVisible(true);
           } catch (error) {
             console.error('Error loading workout for preview:', error);

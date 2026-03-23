@@ -50,7 +50,6 @@ import { CreateMealModal } from './CreateMealModal';
 import CreateWorkoutModal from './CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from './CreateWorkoutOptionsModal';
 import { FullScreenModal } from './FullScreenModal';
-import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { GenericEditModal } from './GenericEditModal';
 import {
   createRecord,
@@ -59,6 +58,7 @@ import {
   getEditFields,
 } from './GenericEditModal/entityEditConfig';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
+import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 export type DataLogModalVariant =
   | 'meal'

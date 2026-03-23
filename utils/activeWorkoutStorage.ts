@@ -81,7 +81,10 @@ export async function setInsightDismissed(
   try {
     const current = await getDismissedInsights(workoutLogId);
     const updated = { ...current, [insightType]: true };
-    await AsyncStorage.setItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`, JSON.stringify(updated));
+    await AsyncStorage.setItem(
+      `${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`,
+      JSON.stringify(updated)
+    );
   } catch (error) {
     console.error('Error setting dismissed insight in storage:', error);
   }
