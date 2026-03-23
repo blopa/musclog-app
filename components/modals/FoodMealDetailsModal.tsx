@@ -167,6 +167,7 @@ export function FoodMealDetailsModal({
     fiber: number;
   } | null>(null);
 
+  // TODO: use this isLoadingMealNutrients variable, or remove it
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
@@ -1479,7 +1480,7 @@ export function FoodMealDetailsModal({
         }
       >
         <View className="flex-1 px-4 pb-6">
-          {/* Food Info Card */}
+          {/* TODO: move this to its own component file */}
           <View className="mt-6">
             <View className="relative">
               <FoodInfoCard food={scaledFood} />
