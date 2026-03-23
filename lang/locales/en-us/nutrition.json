@@ -62,6 +62,7 @@
       "summaryIntro": "You aimed for {{target}} kcal/day, but averaged",
       "summaryOutro": "Despite the result, you completed",
       "workoutsCount": "workouts",
+      "noWorkouts": "no workouts",
       "withHighIntensity": "with high intensity.",
       "avgIntake": "Avg. Intake",
       "consistency": "Consistency",

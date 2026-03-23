@@ -872,19 +872,23 @@ export function DataLogModal({
     setShowMenu(false);
     setIsRegenerating(true);
 
-    try {
-      await NutritionGoalService.regenerateCheckins(selectedItem.id);
-      showSnackbar('success', t('common.success'), {
-        action: t('common.ok'),
-      });
-    } catch (error) {
-      console.error('Regenerate check-ins failed:', error);
-      showSnackbar('error', t('common.error'), {
-        action: t('common.ok'),
-      });
-    } finally {
-      setIsRegenerating(false);
-    }
+    // Use setTimeout to ensure the UI has time to update the loading state
+    // and show the loading indicator before starting heavy DB operations
+    setTimeout(async () => {
+      try {
+        await NutritionGoalService.regenerateCheckins(selectedItem.id);
+        showSnackbar('success', t('common.success'), {
+          action: t('common.ok'),
+        });
+      } catch (error) {
+        console.error('Regenerate check-ins failed:', error);
+        showSnackbar('error', t('common.error'), {
+          action: t('common.ok'),
+        });
+      } finally {
+        setIsRegenerating(false);
+      }
+    }, 100);
   };
 
   const handleDuplicate = async () => {
@@ -1346,7 +1350,7 @@ export function DataLogModal({
 
           {/* Item List */}
           <View className="mt-6 flex flex-col gap-3">
-            {isLoading ? (
+            {isLoading || isRegenerating ? (
               <View className="flex flex-col gap-4">
                 <SkeletonLoader width={80} height={16} className="mb-2" />
                 {[1, 2, 3].map((i) => (

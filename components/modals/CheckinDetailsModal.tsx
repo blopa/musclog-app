@@ -388,9 +388,16 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 {avgCalories} {t('common.kcal')}/day
               </Text>
               . {t('nutrition.checkin.summaryOutro')}
-              <Text style={{ color: theme.colors.status.emerald }}>
+              <Text
+                style={{
+                  color:
+                    workoutsCount > 0 ? theme.colors.status.emerald : theme.colors.status.warning,
+                }}
+              >
                 {' '}
-                {workoutsCount} {t('nutrition.checkin.workoutsCount')}
+                {workoutsCount > 0
+                  ? `${workoutsCount} ${t('nutrition.checkin.workoutsCount')}`
+                  : t('nutrition.checkin.noWorkouts')}
               </Text>{' '}
               {t('nutrition.checkin.withHighIntensity')}
             </Text>

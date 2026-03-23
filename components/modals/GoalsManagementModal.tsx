@@ -155,13 +155,17 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
   const handleRegenerateCheckins = async (goal: NutritionGoal) => {
     setIsRegenerating(true);
-    try {
-      await NutritionGoalService.regenerateCheckins(goal.id);
-    } catch (error) {
-      console.error('Error regenerating check-ins:', error);
-    } finally {
-      setIsRegenerating(false);
-    }
+    // Use setTimeout to ensure the UI has time to update the loading state
+    // and show the loading indicator before starting the heavy DB operations
+    setTimeout(async () => {
+      try {
+        await NutritionGoalService.regenerateCheckins(goal.id);
+      } catch (error) {
+        console.error('Error regenerating check-ins:', error);
+      } finally {
+        setIsRegenerating(false);
+      }
+    }, 100);
   };
 
   const handleConfirmDelete = async () => {
@@ -236,9 +240,12 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         }
         scrollable={false}
       >
-        {isLoading ? (
+        {isLoading || isRegenerating ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            {isRegenerating && (
+              <Text className="mt-4 text-text-secondary">{t('common.processing')}</Text>
+            )}
           </View>
         ) : (
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
