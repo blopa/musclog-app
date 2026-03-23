@@ -1,6 +1,7 @@
 {
   "common": {
     "clear": "Limpar",
+    "value": "Valor",
     "saveError": "Falha ao salvar alterações",
     "saveErrorSubtitle": "Por favor, tente novamente",
     "error_description": "Um erro inesperado ocorreu. Por favor, tente novamente.",

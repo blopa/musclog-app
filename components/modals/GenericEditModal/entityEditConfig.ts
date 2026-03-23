@@ -198,7 +198,7 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         {
           type: 'select',
           key: 'type',
-          label: 'bodyMetrics.addEntry.enterWeight',
+          label: 'bodyMetrics.addEntry.enterType',
           required: true,
           options: USER_METRIC_TYPES.map((type) => ({
             value: type,

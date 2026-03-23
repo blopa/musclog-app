@@ -27,7 +27,31 @@
       "ffmi": "FFMI",
       "nutrition": "Nutrition",
       "exercise": "Exercise",
-      "other": "Other"
+      "other": "Other",
+      "descriptions": {
+        "weight": "Track your body weight over time",
+        "body_fat": "Percentage of body fat mass",
+        "muscle_mass": "Total skeletal muscle mass",
+        "lean_body_mass": "Body weight minus fat mass",
+        "basal_metabolic_rate": "Calories burned at complete rest",
+        "total_calories_burned": "Total daily energy expenditure",
+        "active_calories_burned": "Calories burned through activity",
+        "bmi": "Body mass index based on height and weight",
+        "height": "Your standing height",
+        "chest": "Chest circumference measurement",
+        "waist": "Waist circumference measurement",
+        "hips": "Hip circumference measurement",
+        "arms": "Upper arm circumference measurement",
+        "thighs": "Thigh circumference measurement",
+        "calves": "Calf circumference measurement",
+        "neck": "Neck circumference measurement",
+        "shoulders": "Shoulder circumference measurement",
+        "mood": "Your overall mood and wellbeing",
+        "ffmi": "Fat-free mass index",
+        "nutrition": "Daily nutrition intake log",
+        "exercise": "Physical activity and exercise log",
+        "other": "Other body metric measurements"
+      }
     },
     "current": {
       "label": "CURRENT"
@@ -83,6 +107,7 @@
     },
     "addEntry": {
       "title": "Add Entry",
+      "enterType": "Enter Type",
       "description": "Record a new body metric measurement",
       "enterWeight": "Enter Weight",
       "enterBodyFat": "Enter Body Fat",
