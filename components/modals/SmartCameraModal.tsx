@@ -14,14 +14,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
