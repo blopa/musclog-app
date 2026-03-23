@@ -542,6 +542,7 @@ export default function PastWorkoutDetailModal({
               if (!exerciseId || isSavingSets) {
                 return;
               }
+
               setEditingExerciseId(exerciseId);
               setIsEditModalVisible(true);
             }}
@@ -556,7 +557,7 @@ export default function PastWorkoutDetailModal({
         workoutName={workout.name}
         onEdit={onEdit}
         onShare={onShare}
-        onDelete={onDelete}
+        onDelete={onDelete ? onDelete : undefined}
         onPreview={async () => {
           if (!workoutId) {
             return;
@@ -641,7 +642,7 @@ export default function PastWorkoutDetailModal({
           workoutLog={previewWorkoutData.workoutLog}
           sets={previewWorkoutData.sets}
           exercises={previewWorkoutData.exercises}
-          isPreview={true}
+          shouldShowTimer={false}
         />
       ) : null}
     </>
