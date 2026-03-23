@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NotificationService } from '../services/NotificationService';
 
 const ACTIVE_WORKOUT_KEY = 'active_workout_log_id';
+const WORKOUT_INSIGHTS_PREFIX = 'workout_insights_';
 
 /**
  * Get the active workout log ID from AsyncStorage
@@ -34,6 +35,11 @@ export async function setActiveWorkoutLogId(workoutLogId: string): Promise<void>
  */
 export async function clearActiveWorkoutLogId(): Promise<void> {
   try {
+    const workoutLogId = await getActiveWorkoutLogId();
+    if (workoutLogId) {
+      await AsyncStorage.removeItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
+    }
+
     await AsyncStorage.removeItem(ACTIVE_WORKOUT_KEY);
     await NotificationService.dismissActiveWorkoutNotification();
   } catch (error) {
@@ -48,4 +54,35 @@ export async function clearActiveWorkoutLogId(): Promise<void> {
 export async function hasActiveWorkout(): Promise<boolean> {
   const workoutLogId = await getActiveWorkoutLogId();
   return workoutLogId !== null;
+}
+
+/**
+ * Get the dismissed insights for a specific workout
+ */
+export async function getDismissedInsights(
+  workoutLogId: string
+): Promise<{ hormonal?: boolean; fueling?: boolean }> {
+  try {
+    const data = await AsyncStorage.getItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
+    return data ? JSON.parse(data) : {};
+  } catch (error) {
+    console.error('Error getting dismissed insights from storage:', error);
+    return {};
+  }
+}
+
+/**
+ * Mark an insight as dismissed for a specific workout
+ */
+export async function setInsightDismissed(
+  workoutLogId: string,
+  insightType: 'hormonal' | 'fueling'
+): Promise<void> {
+  try {
+    const current = await getDismissedInsights(workoutLogId);
+    const updated = { ...current, [insightType]: true };
+    await AsyncStorage.setItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`, JSON.stringify(updated));
+  } catch (error) {
+    console.error('Error setting dismissed insight in storage:', error);
+  }
 }
