@@ -793,7 +793,7 @@ export function getCreateInitialValues(entityType: DataLogModalVariant): EditFor
       return { message: '', sender: 'user', context: 'general' };
 
     case 'userMetric':
-      return { type: 'weight', value: 0, date: Date.now() };
+      return { type: 'supplement', value: 1, date: Date.now() };
 
     case 'nutritionGoal':
       return {
