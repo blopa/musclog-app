@@ -37,6 +37,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
   const [rawSets, setRawSets] = useState<EnrichedWorkoutLogSet[] | null>(null);
+  const [externalId, setExternalId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .pipe(
         switchMap(([log, logExs, rawSetsArr, exercises]) => {
           if (!log || log.deletedAt) {
-            return of({ transformed: null, rawSets: null });
+            return of({ transformed: null, rawSets: null, externalId: null });
           }
           const leMap = logExs.map((le) => ({
             id: le.id,
@@ -109,24 +110,26 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           }));
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
           return from(transformWorkoutToDetailData(log, enrichedSets, exercises, t, units)).pipe(
-            map((transformed) => ({ transformed, rawSets: enrichedSets })),
+            map((transformed) => ({ transformed, rawSets: enrichedSets, externalId: log.externalId ?? null })),
             catchError((err) => {
               console.error('Error transforming workout detail:', err);
-              return of({ transformed: null, rawSets: null });
+              return of({ transformed: null, rawSets: null, externalId: null });
             })
           );
         })
       )
       .subscribe({
-        next: ({ transformed, rawSets: sets }) => {
+        next: ({ transformed, rawSets: sets, externalId: eid }) => {
           setWorkout(transformed);
           setRawSets(sets);
+          setExternalId(eid);
           setIsLoading(false);
         },
         error: (err) => {
           console.error('Past workout detail pipeline error:', err);
           setWorkout(null);
           setRawSets(null);
+          setExternalId(null);
           setIsLoading(false);
         },
       });
@@ -145,6 +148,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     WorkoutService.getWorkoutWithDetails(workoutId)
       .then(({ workoutLog: log, sets: s, exercises: ex }) => {
         setRawSets(s);
+        setExternalId(log.externalId ?? null);
         return transformWorkoutToDetailData(log, s, ex, t, units);
       })
       .then(setWorkout)
@@ -161,6 +165,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     isMenuVisible,
     setIsMenuVisible,
     rawSets,
+    externalId,
     reload,
   };
 }

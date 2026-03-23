@@ -17,6 +17,7 @@
     "setLabel": "Set {{index}}",
     "remove": "Remove",
     "rir": "RIR (Reps in Reserve)",
+    "syncToHealthConnect": "Sync to Health Connect",
     "inputs": {
       "weightKg": "Weight (kg)",
       "weightLbs": "Weight (lbs)",
