@@ -248,7 +248,8 @@
       "updateFood": "Atualizar Alimento",
       "sourceOpenFood": "Open Food Facts",
       "sourceUsda": "USDA",
-      "sourceAi": "IA"
+      "sourceAi": "IA",
+      "incompleteNutritionWarning": "Dados nutricionais ausentes para este produto. Toque no ícone de edição para adicioná-los manualmente."
     },
     "addFoodItemToMeal": {
       "title": "Adicionar Alimento",

@@ -1,4 +1,4 @@
-import { Edit3 } from 'lucide-react-native';
+import { AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
@@ -41,7 +41,6 @@ export function FoodNutritionSectionCard({
   nutritionalData,
   servingSize,
   isLoadingDetails,
-  // TODO: implement showIncompleteWarning
   showIncompleteWarning = false,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
@@ -79,6 +78,21 @@ export function FoodNutritionSectionCard({
           </Pressable>
         ) : null}
       </View>
+
+      {showIncompleteWarning ? (
+        <View
+          className="mt-3 flex-row items-center gap-2 rounded-xl border px-3 py-2"
+          style={{
+            borderColor: theme.colors.status.warning50,
+            backgroundColor: theme.colors.status.warning10,
+          }}
+        >
+          <AlertTriangle size={theme.iconSize.sm} color={theme.colors.status.warning} />
+          <Text className="flex-1 text-xs text-text-secondary">
+            {t('food.foodDetails.incompleteNutritionWarning')}
+          </Text>
+        </View>
+      ) : null}
 
       {showAdditionalNutrition ? (
         <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
