@@ -172,6 +172,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
     if (!goalToDelete) {
       return;
     }
+
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
       await refresh();

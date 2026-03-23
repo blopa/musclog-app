@@ -8,7 +8,7 @@ import {
   Scale,
   Trash2,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -57,6 +57,16 @@ export function CurrentGoalsCard({
   const targetWeightDisplay =
     goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
   const [menuVisible, setMenuVisible] = useState(false);
+  const wasRegenerating = useRef(false);
+
+  useEffect(() => {
+    if (isRegenerating) {
+      wasRegenerating.current = true;
+    } else if (wasRegenerating.current) {
+      wasRegenerating.current = false;
+      setMenuVisible(false);
+    }
+  }, [isRegenerating]);
 
   const hasMenu = onEdit != null || onDelete != null;
 

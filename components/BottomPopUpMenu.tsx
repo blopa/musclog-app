@@ -91,6 +91,8 @@ export function BottomPopUpMenu({
   maxHeight,
   headerIcon,
   scrollable = true,
+  isLoading = false,
+  loadingTitle,
 }: BottomPopUpMenuProps) {
   const theme = useTheme();
 
