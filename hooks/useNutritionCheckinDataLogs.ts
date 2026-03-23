@@ -15,6 +15,7 @@ export type NutritionCheckinDisplayItem = {
   iconBgColor: string;
   checkinTargetWeight: number;
   checkinTargetBodyFat: number;
+  status: string;
 };
 
 export type NutritionCheckinDayGroup = {
@@ -54,6 +55,7 @@ function checkinToDisplayItem(
     iconBgColor: iconColors.bg,
     checkinTargetWeight: checkin.targetWeight,
     checkinTargetBodyFat: checkin.targetBodyFat,
+    status: checkin.status ?? 'pending',
   };
 }
 

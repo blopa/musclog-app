@@ -26,6 +26,8 @@
       "editGoalDesc": "Alterar calorias, macros e metas",
       "duplicateGoal": "Duplicar meta",
       "duplicateGoalDesc": "Criar uma cópia para usar como nova meta",
+      "regenerateCheckins": "Regenerar check-ins",
+      "regenerateCheckinsDesc": "Excluir e recriar check-ins para esta meta",
       "deleteGoal": "Excluir meta",
       "deleteGoalDesc": "Remover esta meta do histórico",
       "subtitleFormat": "{{calories}} kcal • {{phase}} • Meta {{targetWeight}} {{unit}}",

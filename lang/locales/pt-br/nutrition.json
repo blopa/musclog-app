@@ -62,6 +62,7 @@
       "summaryIntro": "Você visou {{target}} kcal/dia, mas em média",
       "summaryOutro": "Apesar do resultado, você completou",
       "workoutsCount": "treinos",
+      "noWorkouts": "nenhum treino",
       "withHighIntensity": "com alta intensidade.",
       "avgIntake": "Ingestão Média",
       "consistency": "Consistência",
