@@ -71,6 +71,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
     mode: 'history',
@@ -150,6 +151,17 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const handleDeleteGoal = (goal: NutritionGoal) => {
     setGoalToDelete(goal);
     setConfirmDeleteVisible(true);
+  };
+
+  const handleRegenerateCheckins = async (goal: NutritionGoal) => {
+    setIsRegenerating(true);
+    try {
+      await NutritionGoalService.regenerateCheckins(goal.id);
+    } catch (error) {
+      console.error('Error regenerating check-ins:', error);
+    } finally {
+      setIsRegenerating(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -264,6 +276,9 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                   <CurrentGoalsCard
                     goal={currentGoal}
                     onEdit={current ? () => handleEditGoal(current) : undefined}
+                    onRegenerateCheckins={
+                      current ? () => handleRegenerateCheckins(current) : undefined
+                    }
                     onDelete={current ? () => handleDeleteGoal(current) : undefined}
                   />
                 </View>
@@ -288,6 +303,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
                           goal={display}
                           isLast={isLast}
                           onEdit={() => handleEditGoal(raw)}
+                          onRegenerateCheckins={() => handleRegenerateCheckins(raw)}
                           onDelete={() => handleDeleteGoal(raw)}
                         />
                       );

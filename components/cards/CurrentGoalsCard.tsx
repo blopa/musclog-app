@@ -4,6 +4,7 @@ import {
   Calendar,
   Pencil,
   Percent,
+  RefreshCw,
   Scale,
   Trash2,
 } from 'lucide-react-native';
@@ -37,10 +38,16 @@ interface CurrentGoal {
 interface CurrentGoalsCardProps {
   goal: CurrentGoal;
   onEdit?: () => void;
+  onRegenerateCheckins?: () => void;
   onDelete?: () => void;
 }
 
-export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardProps) {
+export function CurrentGoalsCard({
+  goal,
+  onEdit,
+  onRegenerateCheckins,
+  onDelete,
+}: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -61,6 +68,18 @@ export function CurrentGoalsCard({ goal, onEdit, onDelete }: CurrentGoalsCardPro
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onRegenerateCheckins
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+            description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+            onPress: onRegenerateCheckins,
           },
         ]
       : []),

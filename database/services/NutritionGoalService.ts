@@ -215,57 +215,103 @@ export class NutritionGoalService {
     });
 
     if (shouldRecreateCheckins) {
-      await NutritionCheckinService.deleteByGoalId(id);
-
-      const heightMetric = await database
-        .get('user_metrics')
-        .query(Q.where('type', 'height'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
-        .fetch();
-
-      const bodyFatMetric = await database
-        .get('user_metrics')
-        .query(
-          Q.where('type', 'body_fat'),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('date', Q.desc)
-        )
-        .fetch();
-
-      if (heightMetric.length > 0) {
-        const { calculateNutritionPlan, eatingPhaseToWeightGoal, generateWeeklyCheckins } =
-          require('../../utils/nutritionCalculator');
-
-        const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
-        const bodyFatDecrypted =
-          bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
-
-        const plan = calculateNutritionPlan({
-          gender: 'other',
-          weightKg: updatedGoal.targetWeight, // Best estimate for intermediate targets
-          heightCm: heightDecrypted.value,
-          age: 25,
-          activityLevel: 3,
-          weightGoal: eatingPhaseToWeightGoal(updatedGoal.eatingPhase),
-          fitnessGoal: 'general',
-          liftingExperience: 'intermediate',
-          bodyFatPercent: bodyFatDecrypted?.value,
-        });
-
-        const checkins = generateWeeklyCheckins(
-          plan,
-          updatedGoal.createdAt,
-          updatedGoal.targetDate ?? updatedGoal.createdAt + 90 * 24 * 60 * 60 * 1000,
-          heightDecrypted.value / 100,
-          bodyFatDecrypted?.value ?? null
-        );
-
-        if (checkins.length > 0) {
-          await NutritionCheckinService.createBatch(id, checkins);
-        }
-      }
+      await NutritionGoalService.regenerateCheckins(id);
     }
 
     return updatedGoal;
+  }
+
+  /**
+   * Regenerate weekly check-ins for a specific goal.
+   * Deletes existing check-ins and generates new ones based on the goal's
+   * parameters and user metrics at the time the goal was created.
+   */
+  static async regenerateCheckins(goalId: string): Promise<void> {
+    const goal = await database.get<NutritionGoal>('nutrition_goals').find(goalId);
+
+    if (goal.deletedAt) {
+      throw new Error('Cannot regenerate check-ins for a deleted goal');
+    }
+
+    const { UserService } = require('./UserService');
+    const user = await UserService.getCurrentUser();
+
+    if (!user) {
+      throw new Error('User profile not found. Please initialize your profile first.');
+    }
+
+    await NutritionCheckinService.deleteByGoalId(goalId);
+
+    // Fetch metrics active at the time the goal was created
+    const heightMetric = await database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'height'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(goal.createdAt)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+
+    const weightMetric = await database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'weight'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(goal.createdAt)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+
+    const bodyFatMetric = await database
+      .get('user_metrics')
+      .query(
+        Q.where('type', 'body_fat'),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(goal.createdAt)),
+        Q.sortBy('date', Q.desc),
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+
+    if (heightMetric.length > 0 && weightMetric.length > 0) {
+      const { calculateNutritionPlan, eatingPhaseToWeightGoal, generateWeeklyCheckins } =
+        require('../../utils/nutritionCalculator');
+
+      const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
+      const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
+      const bodyFatDecrypted =
+        bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
+
+      const plan = calculateNutritionPlan({
+        gender: user.gender,
+        weightKg: weightDecrypted.value,
+        heightCm: heightDecrypted.value,
+        age: user.getAge(),
+        activityLevel: user.activityLevel as any,
+        weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
+        fitnessGoal: user.fitnessGoal,
+        liftingExperience: user.liftingExperience,
+        bodyFatPercent: bodyFatDecrypted?.value,
+      });
+
+      const checkins = generateWeeklyCheckins(
+        plan,
+        goal.createdAt,
+        goal.targetDate ?? goal.createdAt + 90 * 24 * 60 * 60 * 1000,
+        heightDecrypted.value / 100,
+        bodyFatDecrypted?.value ?? null
+      );
+
+      if (checkins.length > 0) {
+        await NutritionCheckinService.createBatch(goalId, checkins);
+      }
+    }
   }
 
   /**

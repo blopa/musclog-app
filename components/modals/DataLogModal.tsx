@@ -573,6 +573,7 @@ export function DataLogModal({
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
   const [dependencyWarning, setDependencyWarning] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Create modal states
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
@@ -864,6 +865,28 @@ export function DataLogModal({
     setEditModalVisible(true);
   };
 
+  const handleRegenerateCheckins = async () => {
+    if (!selectedItem) {
+      return;
+    }
+    setShowMenu(false);
+    setIsRegenerating(true);
+
+    try {
+      await NutritionGoalService.regenerateCheckins(selectedItem.id);
+      showSnackbar('success', t('common.success'), {
+        action: t('common.ok'),
+      });
+    } catch (error) {
+      console.error('Regenerate check-ins failed:', error);
+      showSnackbar('error', t('common.error'), {
+        action: t('common.ok'),
+      });
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
   const handleDuplicate = async () => {
     if (!selectedItem) {
       return;
@@ -1012,6 +1035,9 @@ export function DataLogModal({
     const DuplicateIcon = (props: { size: number; color: string }) => (
       <MaterialIcons name="content-copy" {...props} />
     );
+    const RegenerateIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="refresh" {...props} />
+    );
     const DeleteIcon = (props: { size: number; color: string }) => (
       <MaterialIcons name="delete" {...props} />
     );
@@ -1060,6 +1086,18 @@ export function DataLogModal({
         title: translations.editTitle,
         description: translations.editDesc,
         onPress: handleEdit,
+      });
+    }
+
+    // Add regenerate check-ins only for nutrition goals
+    if (variant === 'nutritionGoal') {
+      menuItems.push({
+        icon: RegenerateIcon,
+        iconColor: theme.colors.text.primary,
+        iconBgColor: theme.colors.background.iconDarker,
+        title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+        description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+        onPress: handleRegenerateCheckins,
       });
     }
 

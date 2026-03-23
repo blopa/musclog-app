@@ -1,4 +1,4 @@
-import { History, Pencil, Trash2 } from 'lucide-react-native';
+import { History, Pencil, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -29,10 +29,17 @@ interface GoalHistoryCardProps {
   goal: GoalHistoryItem;
   isLast?: boolean;
   onEdit?: () => void;
+  onRegenerateCheckins?: () => void;
   onDelete?: () => void;
 }
 
-export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: GoalHistoryCardProps) {
+export function GoalHistoryCard({
+  goal,
+  isLast = false,
+  onEdit,
+  onRegenerateCheckins,
+  onDelete,
+}: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
@@ -52,6 +59,18 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onRegenerateCheckins
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+            description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+            onPress: onRegenerateCheckins,
           },
         ]
       : []),
