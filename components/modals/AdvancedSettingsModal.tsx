@@ -5,6 +5,7 @@ import {
   Apple,
   Bug,
   CalendarCheck,
+  Check,
   ChevronRight,
   Coffee,
   Database,
@@ -78,10 +79,24 @@ export function AdvancedSettingsModal({
     handleShowDailyMoodPromptChange,
     showSupplementPrompt: debouncedShowSupplementPrompt,
     handleShowSupplementPromptChange,
-    supplementName: debouncedSupplementName,
+    supplementName: actualSupplementName,
     handleSupplementNameChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+
+  const [supplementNameInput, setSupplementNameInput] = useState(actualSupplementName);
+
+  // Sync input with actual supplement name when modal opens or it changes in DB
+  useEffect(() => {
+    if (visible) {
+      setSupplementNameInput(actualSupplementName);
+    }
+  }, [visible, actualSupplementName]);
+
+  const handleSaveSupplementName = () => {
+    handleSupplementNameChange(supplementNameInput);
+    showSnackbar('success', t('aiSettings.saved'));
+  };
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -310,12 +325,20 @@ export function AdvancedSettingsModal({
             <View className="mt-4" />
             <ToggleInput items={dailySupplementPromptItems} />
             {debouncedShowSupplementPrompt && (
-              <View className="mt-4 px-4">
+              <View className="mt-4 gap-3 px-4">
                 <TextInput
                   label={t('settings.advancedSettings.supplementNameLabel')}
-                  value={debouncedSupplementName}
-                  onChangeText={handleSupplementNameChange}
+                  value={supplementNameInput}
+                  onChangeText={setSupplementNameInput}
                   placeholder={t('settings.advancedSettings.supplementNamePlaceholder')}
+                />
+                <Button
+                  label={t('common.save')}
+                  icon={Check}
+                  size="sm"
+                  variant="outline"
+                  onPress={handleSaveSupplementName}
+                  disabled={supplementNameInput === actualSupplementName}
                 />
               </View>
             )}

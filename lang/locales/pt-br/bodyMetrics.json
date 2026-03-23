@@ -87,9 +87,11 @@
       "enterWeight": "Digite o Peso",
       "enterBodyFat": "Digite a Gordura Corporal",
       "enterHeight": "Digite a Altura",
+      "metricType": "Tipo de Métrica",
       "date": "Data",
       "time": "Hora",
       "moodQuestion": "Como você se sente hoje?",
+      "mood": "Humor",
       "moods": {
         "0": "Ruim",
         "1": "Baixo",
@@ -103,6 +105,9 @@
       "supplementQuestion": "Você tomou seus suplementos hoje?",
       "supplementQuestionWithName": "Você tomou seu {{name}} hoje?",
       "confirmTaken": "Sim, eu tomei",
+      "supplement": "Suplemento",
+      "taken": "Tomado",
+      "notTaken": "Não Tomado",
       "note": "Observação",
       "notePlaceholder": "Adicione uma observação..."
     }

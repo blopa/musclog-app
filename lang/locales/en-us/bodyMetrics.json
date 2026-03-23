@@ -87,9 +87,11 @@
       "enterWeight": "Enter Weight",
       "enterBodyFat": "Enter Body Fat",
       "enterHeight": "Enter Height",
+      "metricType": "Metric Type",
       "date": "Date",
       "time": "Time",
       "moodQuestion": "How do you feel today?",
+      "mood": "Mood",
       "moods": {
         "0": "Poor",
         "1": "Low",
@@ -103,6 +105,9 @@
       "supplementQuestion": "Did you take your supplements today?",
       "supplementQuestionWithName": "Did you take your {{name}} today?",
       "confirmTaken": "Yes, I took it",
+      "supplement": "Supplement",
+      "taken": "Taken",
+      "notTaken": "Not Taken",
       "note": "Note",
       "notePlaceholder": "Add a note..."
     }
