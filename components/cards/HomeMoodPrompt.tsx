@@ -6,6 +6,7 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -25,32 +26,37 @@ export function HomeMoodPrompt() {
   const [mood, setMood] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isActuallyVisible, setIsActuallyVisible] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const opacity = useSharedValue(0);
   const height = useSharedValue(0);
+  const marginBottom = useSharedValue(0);
 
-  const MAX_HEIGHT = 280; // Estimated height for MoodSelectorCard + Save button
+  const MAX_HEIGHT = 450; // Increased to ensure no clipping during animation
 
   useEffect(() => {
-    const shouldBeVisible = !isLoading && showDailyMoodPrompt && !hasMoodToday;
+    const shouldBeVisible = !isLoading && showDailyMoodPrompt && !hasMoodToday && !isDismissed;
 
     if (shouldBeVisible) {
       setIsActuallyVisible(true);
       opacity.value = withTiming(1, { duration: 400 });
-      height.value = withTiming(MAX_HEIGHT, { duration: 500 });
+      height.value = withSpring(MAX_HEIGHT, { damping: 20, stiffness: 90 });
+      marginBottom.value = withTiming(24, { duration: 400 }); // 24 is mb-6
     } else {
       opacity.value = withTiming(0, { duration: 300 });
-      height.value = withTiming(0, { duration: 400 }, (finished) => {
+      height.value = withTiming(0, { duration: 500 }, (finished) => {
         if (finished) {
           runOnJS(setIsActuallyVisible)(false);
         }
       });
+      marginBottom.value = withTiming(0, { duration: 500 });
     }
-  }, [isLoading, showDailyMoodPrompt, hasMoodToday, opacity, height]);
+  }, [isLoading, showDailyMoodPrompt, hasMoodToday, isDismissed, opacity, height, marginBottom]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     maxHeight: height.value,
+    marginBottom: marginBottom.value,
     overflow: 'hidden',
   }));
 
@@ -78,20 +84,22 @@ export function HomeMoodPrompt() {
     } catch (error) {
       console.error('Error saving mood from home screen:', error);
       showSnackbar('error', t('bodyMetrics.addEntry.errorSaving'));
-    } finally {
       setIsSaving(false);
+      setIsDismissed(false);
     }
+    // We don't set isSaving(false) on success because the component is unmounting anyway
   };
 
   const handleSave = () => {
     if (mood === null) return;
     setIsSaving(true);
+    setIsDismissed(true); // Trigger animation immediately
     // Use setTimeout hack to ensure loading state is rendered before blocking DB write
     setTimeout(performSave, 50);
   };
 
   return (
-    <Animated.View className="mb-6 px-4" style={animatedStyle}>
+    <Animated.View className="px-4" style={animatedStyle}>
       <MoodSelectorCard value={mood ?? 2} onChange={(val) => setMood(val)} />
       {mood !== null && (
         <View className="mt-3">
