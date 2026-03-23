@@ -69,6 +69,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       'language',
       'maxAiMemories',
       'showDailyMoodPrompt',
+      'showSupplementPrompt',
+      'supplementName',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -236,6 +238,14 @@ export function useDebouncedSettings(debounceMs = 200) {
     'showDailyMoodPrompt',
     SettingsService.setShowDailyMoodPrompt
   );
+  const handleShowSupplementPromptChange = createSettingHandler<boolean>(
+    'showSupplementPrompt',
+    SettingsService.setShowSupplementPrompt
+  );
+  const handleSupplementNameChange = createSettingHandler<string>(
+    'supplementName',
+    SettingsService.setSupplementName
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -326,6 +336,12 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'showDailyMoodPrompt':
             await SettingsService.setShowDailyMoodPrompt(value as boolean);
             break;
+          case 'showSupplementPrompt':
+            await SettingsService.setShowSupplementPrompt(value as boolean);
+            break;
+          case 'supplementName':
+            await SettingsService.setSupplementName(value as string);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -391,6 +407,9 @@ export function useDebouncedSettings(debounceMs = 200) {
     maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
     showDailyMoodPrompt:
       (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
+    showSupplementPrompt:
+      (localSettings.showSupplementPrompt as boolean) ?? actualSettings.showSupplementPrompt,
+    supplementName: (localSettings.supplementName as string) ?? actualSettings.supplementName,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -424,6 +443,8 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleLanguageChange,
     handleMaxAiMemoriesChange,
     handleShowDailyMoodPromptChange,
+    handleShowSupplementPromptChange,
+    handleSupplementNameChange,
 
     // Utilities
     flushAllPendingChanges,

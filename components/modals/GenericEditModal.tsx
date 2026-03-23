@@ -1,5 +1,5 @@
 import { Check, ChevronDown, Circle } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -115,6 +115,42 @@ export function GenericEditModal({
 
     const value = formValues[field.key];
     const label = t(field.label, field.label); // Try translation, fallback to raw label
+
+    // Special handling for User Metrics 'value' field based on its 'type'
+    if (field.key === 'value' && formValues.type !== undefined) {
+      if (formValues.type === 'supplement') {
+        return (
+          <View key={field.key} className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+            <SegmentedControl
+              options={[
+                { label: t('bodyMetrics.addEntry.taken'), value: '1' },
+                { label: t('bodyMetrics.addEntry.notTaken'), value: '0' },
+              ]}
+              value={String(value ?? '1')}
+              onValueChange={(val) => handleFieldChange(field.key, Number(val))}
+            />
+          </View>
+        );
+      }
+
+      if (formValues.type === 'mood') {
+        const moodOptions = [0, 1, 2, 3, 4].map((m) => ({
+          label: t(`bodyMetrics.addEntry.moods.${m}`),
+          value: String(m),
+        }));
+        return (
+          <View key={field.key} className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
+            <SegmentedControl
+              options={moodOptions}
+              value={String(value ?? '2')}
+              onValueChange={(val) => handleFieldChange(field.key, Number(val))}
+            />
+          </View>
+        );
+      }
+    }
 
     switch (field.type) {
       case 'text': {

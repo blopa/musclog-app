@@ -34,6 +34,8 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_SUPPLEMENT_PROMPT_SETTING_TYPE,
+  SUPPLEMENT_NAME_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
   type Units,
@@ -81,6 +83,8 @@ type SettingsState = {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showSupplementPrompt: boolean;
+  supplementName: string;
   isLoading: boolean;
 };
 
@@ -117,6 +121,8 @@ const DEFAULT_STATE: SettingsState = {
   chartTooltipPosition: 'right',
   maxAiMemories: 50,
   showDailyMoodPrompt: true,
+  showSupplementPrompt: false,
+  supplementName: '',
   isLoading: true,
 };
 
@@ -210,6 +216,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     chartTooltipPosition: (rawChartTooltipPosition as ChartTooltipPosition) || 'right',
     maxAiMemories,
     showDailyMoodPrompt: getBoolean(map, SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, true),
+    showSupplementPrompt: getBoolean(map, SHOW_SUPPLEMENT_PROMPT_SETTING_TYPE, false),
+    supplementName: getString(map, SUPPLEMENT_NAME_SETTING_TYPE, ''),
     isLoading: false,
   };
 }
@@ -247,6 +255,8 @@ export type SettingsContextType = UseSettingsResult & {
   language: string;
   maxAiMemories: number;
   showDailyMoodPrompt: boolean;
+  showSupplementPrompt: boolean;
+  supplementName: string;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

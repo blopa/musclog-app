@@ -30,6 +30,7 @@ export type UserMetricType =
   | 'neck'
   | 'shoulders'
   | 'mood'
+  | 'supplement'
   | 'ffmi'
   | 'nutrition'
   | 'exercise'

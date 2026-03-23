@@ -198,7 +198,7 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         {
           type: 'select',
           key: 'type',
-          label: 'bodyMetrics.addEntry.enterWeight',
+          label: 'bodyMetrics.addEntry.metricType',
           required: true,
           options: USER_METRIC_TYPES.map((type) => ({
             value: type,
@@ -793,7 +793,7 @@ export function getCreateInitialValues(entityType: DataLogModalVariant): EditFor
       return { message: '', sender: 'user', context: 'general' };
 
     case 'userMetric':
-      return { type: 'weight', value: 0, date: Date.now() };
+      return { type: 'supplement', value: 1, date: Date.now() };
 
     case 'nutritionGoal':
       return {

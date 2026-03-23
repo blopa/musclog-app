@@ -12,6 +12,7 @@ import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/Dai
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
+import { HomeSupplementPrompt } from '../components/cards/HomeSupplementPrompt';
 import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
@@ -417,6 +418,11 @@ export default function HomeScreen() {
         {/* Home Mood Prompt */}
         <View className="mx-4">
           <HomeMoodPrompt />
+        </View>
+
+        {/* Home Supplement Prompt */}
+        <View className="mx-4">
+          <HomeSupplementPrompt />
         </View>
 
         {/* Action Buttons */}

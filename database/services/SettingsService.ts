@@ -30,6 +30,8 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  SHOW_SUPPLEMENT_PROMPT_SETTING_TYPE,
+  SUPPLEMENT_NAME_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -53,6 +55,20 @@ export class SettingsService {
       return 'metric';
     }
     return settings[0].value === '1' ? 'imperial' : 'metric';
+  }
+
+  /**
+   * Upsert the show daily supplement prompt setting
+   */
+  static async setShowSupplementPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_SUPPLEMENT_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the supplement name setting
+   */
+  static async setSupplementName(value: string) {
+    await SettingsService.setStringSetting(SUPPLEMENT_NAME_SETTING_TYPE, value);
   }
 
   /**

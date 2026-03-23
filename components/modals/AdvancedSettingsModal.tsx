@@ -5,6 +5,7 @@ import {
   Apple,
   Bug,
   CalendarCheck,
+  Check,
   ChevronRight,
   Coffee,
   Database,
@@ -12,6 +13,7 @@ import {
   Dumbbell,
   Flag,
   MessageSquare,
+  Pill,
   Target,
   TrendingUp,
   Upload,
@@ -75,8 +77,26 @@ export function AdvancedSettingsModal({
     handleChartTooltipPositionChange,
     showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
     handleShowDailyMoodPromptChange,
+    showSupplementPrompt: debouncedShowSupplementPrompt,
+    handleShowSupplementPromptChange,
+    supplementName: actualSupplementName,
+    handleSupplementNameChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+
+  const [supplementNameInput, setSupplementNameInput] = useState(actualSupplementName);
+
+  // Sync input with actual supplement name when modal opens or it changes in DB
+  useEffect(() => {
+    if (visible) {
+      setSupplementNameInput(actualSupplementName);
+    }
+  }, [visible, actualSupplementName]);
+
+  const handleSaveSupplementName = () => {
+    handleSupplementNameChange(supplementNameInput);
+    showSnackbar('success', t('aiSettings.saved'));
+  };
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
@@ -194,6 +214,30 @@ export function AdvancedSettingsModal({
     },
   ];
 
+  const dailySupplementPromptItems = [
+    {
+      key: 'daily-supplement-prompt',
+      label: t('settings.advancedSettings.dailySupplementPrompt'),
+      subtitle: t('settings.advancedSettings.dailySupplementPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedShowSupplementPrompt,
+      onValueChange: handleShowSupplementPromptChange,
+    },
+  ];
+
   const chartTooltipPositionItems = [
     {
       key: 'chart-tooltip-left',
@@ -269,6 +313,37 @@ export function AdvancedSettingsModal({
             />
           </View>
 
+          {/* Reminders Section */}
+          <View>
+            <Text
+              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.text.secondary }}
+            >
+              {t('settings.advancedSettings.reminders')}
+            </Text>
+            <ToggleInput items={dailyMoodPromptItems} />
+            <View className="mt-4" />
+            <ToggleInput items={dailySupplementPromptItems} />
+            {debouncedShowSupplementPrompt && (
+              <View className="mt-4 gap-3 px-4">
+                <TextInput
+                  label={t('settings.advancedSettings.supplementNameLabel')}
+                  value={supplementNameInput}
+                  onChangeText={setSupplementNameInput}
+                  placeholder={t('settings.advancedSettings.supplementNamePlaceholder')}
+                />
+                <Button
+                  label={t('common.save')}
+                  icon={Check}
+                  size="sm"
+                  variant="outline"
+                  onPress={handleSaveSupplementName}
+                  disabled={supplementNameInput === actualSupplementName}
+                />
+              </View>
+            )}
+          </View>
+
           {/* Privacy & Diagnostics Section */}
           <View>
             <Text
@@ -278,8 +353,6 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.privacyDiagnostics')}
             </Text>
             <ToggleInput items={bugReportItems} />
-            <View className="mt-4" />
-            <ToggleInput items={dailyMoodPromptItems} />
           </View>
 
           {/* Charts Section */}

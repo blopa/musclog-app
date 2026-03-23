@@ -177,6 +177,18 @@ export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
  */
 export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
 
+/**
+ * Setting type for showing the daily supplement prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_supplement_prompt';
+
+/**
+ * Setting type for the name of the supplement to remind about.
+ * value: string.
+ */
+export const SUPPLEMENT_NAME_SETTING_TYPE = 'supplement_name';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
