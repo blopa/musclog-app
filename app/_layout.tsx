@@ -5,11 +5,10 @@ import '../global.css';
 import * as Sentry from '@sentry/react-native';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
-import * as NavigationBar from 'expo-navigation-bar';
 import { Stack } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
-import { AppState, AppStateStatus, Platform, StatusBar } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -45,15 +44,6 @@ const queryClient = new QueryClient({
 // Inner component that has access to theme context
 function AppContent() {
   const { theme, isDark } = useThemeContext();
-
-  useEffect(() => {
-    // Setup Android Navigation Bar with dynamic theme
-    if (Platform.OS === 'android') {
-      // In Android 15+ (edge-to-edge), manual background color is ignored/deprecated.
-      // We still set the button style (icons color) to match the theme.
-      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark').catch(() => {});
-    }
-  }, [isDark]);
 
   useEffect(() => {
     // Lock orientation to portrait on phones, allow all orientations on tablets

@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,8 +25,6 @@ export default function SnackbarTestScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
-      <StatusBar style="light" />
-
       {/* Header */}
       <View
         className="border-b bg-bg-primary"

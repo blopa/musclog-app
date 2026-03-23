@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { WifiOff } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -191,7 +190,6 @@ export default function NewExerciseTransitionScreen() {
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
@@ -202,7 +200,6 @@ export default function NewExerciseTransitionScreen() {
   if (error || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}
@@ -231,7 +228,6 @@ export default function NewExerciseTransitionScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <StatusBar style="light" />
       <ExerciseTransitionScreen
         totalTime={totalTimeFormatted}
         completedExercise={completedExerciseName}

@@ -3,7 +3,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image, Lightbulb, LightbulbOff, X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -149,7 +150,7 @@ export function BarcodeCameraModal({
       scrollable={false}
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <StatusBar barStyle="light-content" />
+        <SystemBars style="light" />
         <SafeAreaView className="flex-1" edges={['top']}>
           {/* Camera Background */}
           <View className="absolute inset-0">

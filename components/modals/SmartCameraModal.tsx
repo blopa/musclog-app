@@ -17,12 +17,12 @@ import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Pressable,
-  StatusBar,
   StyleSheet,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
@@ -640,7 +640,7 @@ export default function SmartCameraModal({
       showHeader={false}
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <StatusBar barStyle="light-content" />
+        <SystemBars style="light" />
         <SafeAreaView className="flex-1" edges={['top']}>
           {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
           <View className="absolute inset-0">

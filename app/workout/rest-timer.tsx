@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -281,7 +280,6 @@ export default function RestTimerScreen() {
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
@@ -292,7 +290,6 @@ export default function RestTimerScreen() {
   if (error || !completedSet || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-text-primary">{error || t('errors.failedToLoadData')}</Text>
         </View>
