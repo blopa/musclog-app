@@ -160,9 +160,10 @@ export class NutritionGoalService {
    */
   static async updateGoal(
     id: string,
-    updates: Partial<NutritionGoalInput>
+    updates: Partial<NutritionGoalInput>,
+    shouldRecreateCheckins = false
   ): Promise<NutritionGoal> {
-    return await database.write(async () => {
+    const updatedGoal = await database.write(async () => {
       const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
 
       if (goal.deletedAt) {
@@ -212,6 +213,59 @@ export class NutritionGoalService {
 
       return goal;
     });
+
+    if (shouldRecreateCheckins) {
+      await NutritionCheckinService.deleteByGoalId(id);
+
+      const heightMetric = await database
+        .get('user_metrics')
+        .query(Q.where('type', 'height'), Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
+        .fetch();
+
+      const bodyFatMetric = await database
+        .get('user_metrics')
+        .query(
+          Q.where('type', 'body_fat'),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('date', Q.desc)
+        )
+        .fetch();
+
+      if (heightMetric.length > 0) {
+        const { calculateNutritionPlan, eatingPhaseToWeightGoal, generateWeeklyCheckins } =
+          require('../../utils/nutritionCalculator');
+
+        const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
+        const bodyFatDecrypted =
+          bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
+
+        const plan = calculateNutritionPlan({
+          gender: 'other',
+          weightKg: updatedGoal.targetWeight, // Best estimate for intermediate targets
+          heightCm: heightDecrypted.value,
+          age: 25,
+          activityLevel: 3,
+          weightGoal: eatingPhaseToWeightGoal(updatedGoal.eatingPhase),
+          fitnessGoal: 'general',
+          liftingExperience: 'intermediate',
+          bodyFatPercent: bodyFatDecrypted?.value,
+        });
+
+        const checkins = generateWeeklyCheckins(
+          plan,
+          updatedGoal.createdAt,
+          updatedGoal.targetDate ?? updatedGoal.createdAt + 90 * 24 * 60 * 60 * 1000,
+          heightDecrypted.value / 100,
+          bodyFatDecrypted?.value ?? null
+        );
+
+        if (checkins.length > 0) {
+          await NutritionCheckinService.createBatch(id, checkins);
+        }
+      }
+    }
+
+    return updatedGoal;
   }
 
   /**

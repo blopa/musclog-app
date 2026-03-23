@@ -703,18 +703,22 @@ export async function saveRecord(
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
 
-      await NutritionGoalService.updateGoal(recordId, {
-        totalCalories: values.totalCalories as number | undefined,
-        protein: values.protein as number | undefined,
-        carbs: values.carbs as number | undefined,
-        fats: values.fats as number | undefined,
-        fiber: values.fiber as number | undefined,
-        eatingPhase: values.eatingPhase as any,
-        targetWeight: targetWeightKg,
-        targetBodyFat: values.targetBodyFat as number | undefined,
-        targetBMI: values.targetBMI as number | undefined,
-        targetFFMI: values.targetFFMI as number | undefined,
-      });
+      await NutritionGoalService.updateGoal(
+        recordId,
+        {
+          totalCalories: values.totalCalories as number | undefined,
+          protein: values.protein as number | undefined,
+          carbs: values.carbs as number | undefined,
+          fats: values.fats as number | undefined,
+          fiber: values.fiber as number | undefined,
+          eatingPhase: values.eatingPhase as any,
+          targetWeight: targetWeightKg,
+          targetBodyFat: values.targetBodyFat as number | undefined,
+          targetBMI: values.targetBMI as number | undefined,
+          targetFFMI: values.targetFFMI as number | undefined,
+        },
+        true
+      );
       break;
     }
 
