@@ -9,9 +9,9 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
-import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
+import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
 import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';

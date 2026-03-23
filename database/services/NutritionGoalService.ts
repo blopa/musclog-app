@@ -280,8 +280,11 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
-      const { calculateNutritionPlan, eatingPhaseToWeightGoal, generateWeeklyCheckins } =
-        require('../../utils/nutritionCalculator');
+      const {
+        calculateNutritionPlan,
+        eatingPhaseToWeightGoal,
+        generateWeeklyCheckins,
+      } = require('../../utils/nutritionCalculator');
 
       const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
       const weightDecrypted = await (weightMetric[0] as any).getDecrypted();

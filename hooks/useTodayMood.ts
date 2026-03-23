@@ -20,13 +20,15 @@ export function useTodayMood() {
     endOfDay.setUTCHours(23, 59, 59, 999);
     const endTimestamp = endOfDay.getTime();
 
-    const query = database.get<UserMetric>('user_metrics').query(
-      Q.where('type', 'mood'),
-      Q.where('date', Q.gte(startTimestamp)),
-      Q.where('date', Q.lte(endTimestamp)),
-      Q.where('deleted_at', Q.eq(null)),
-      Q.take(1)
-    );
+    const query = database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.where('type', 'mood'),
+        Q.where('date', Q.gte(startTimestamp)),
+        Q.where('date', Q.lte(endTimestamp)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.take(1)
+      );
 
     const subscription = query.observe().subscribe({
       next: (metrics) => {
