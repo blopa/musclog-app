@@ -59,7 +59,11 @@ import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
 import { theme } from '../../theme';
-import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import {
+  clearActiveWorkoutLogId,
+  getDismissedInsights,
+  setInsightDismissed,
+} from '../../utils/activeWorkoutStorage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -254,6 +258,16 @@ export default function WorkoutSessionScreen() {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
+
+  // Load dismissed insights from storage
+  useEffect(() => {
+    if (workoutLogId) {
+      getDismissedInsights(workoutLogId).then((dismissed) => {
+        setIsHormonalInsightDismissed(!!dismissed.hormonal);
+        setIsFuelingInsightDismissed(!!dismissed.fueling);
+      });
+    }
+  }, [workoutLogId]);
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
@@ -967,7 +981,12 @@ export default function WorkoutSessionScreen() {
                 icon={Moon}
                 label={t('workoutSession.hormonalInsight')}
                 message={getHormonalInsightText(currentPhase, intensityMultiplier, t)}
-                onDismiss={() => setIsHormonalInsightDismissed(true)}
+                onDismiss={async () => {
+                  setIsHormonalInsightDismissed(true);
+                  if (workoutLogId) {
+                    await setInsightDismissed(workoutLogId, 'hormonal');
+                  }
+                }}
               />
             ) : null}
 
@@ -987,7 +1006,12 @@ export default function WorkoutSessionScreen() {
                         hours: Math.round(fuelingWindowHours),
                       })
                 }
-                onDismiss={() => setIsFuelingInsightDismissed(true)}
+                onDismiss={async () => {
+                  setIsFuelingInsightDismissed(true);
+                  if (workoutLogId) {
+                    await setInsightDismissed(workoutLogId, 'fueling');
+                  }
+                }}
               />
             ) : null}
           </View>

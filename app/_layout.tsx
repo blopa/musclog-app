@@ -5,7 +5,7 @@ import '../global.css';
 import * as Sentry from '@sentry/react-native';
 import { focusManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Device from 'expo-device';
-import { Stack } from 'expo-router';
+import { Stack, useSegments } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
@@ -24,7 +24,7 @@ import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
-import { getActiveWorkoutLogId } from '../utils/activeWorkoutStorage';
+import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
 import { configureDailyTasks } from '../utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -79,6 +79,19 @@ function AppContent() {
 }
 
 function RootLayout() {
+  const segments = useSegments();
+
+  // Prune orphaned workout insights dismissal state when leaving the workout domain.
+  // This prevents accumulation of old keys if the app is killed or navigates away.
+  useEffect(() => {
+    const isInsideWorkoutDomain = segments[0] === 'workout';
+    if (!isInsideWorkoutDomain) {
+      pruneWorkoutInsights().catch((err) =>
+        console.warn('[WorkoutInsights] Pruning error:', err)
+      );
+    }
+  }, [segments]);
+
   // Boot-time tasks (Android only, all run in parallel)
   useEffect(() => {
     if (Platform.OS !== 'android') {
