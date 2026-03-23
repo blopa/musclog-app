@@ -379,15 +379,18 @@ export function getDataLogModalTranslations(
       deleteTitle: t('goalsManagement.manageCheckinData.deleteCheckin'),
       deleteDesc: t('goalsManagement.manageCheckinData.deleteCheckinDesc'),
       formatCaloriesMacros: () => '',
-      formatItemSubtitle: (item) =>
-        t('goalsManagement.manageCheckinData.subtitleFormat', {
+      formatItemSubtitle: (item) => {
+        const base = t('goalsManagement.manageCheckinData.subtitleFormat', {
           targetWeight:
             units != null && item.checkinTargetWeight != null
               ? Number(kgToDisplay(item.checkinTargetWeight, units).toFixed(1))
               : Number((item.checkinTargetWeight ?? 0).toFixed(1)),
           targetBodyFat: Number((item.checkinTargetBodyFat ?? 0).toFixed(1)),
           unit: unitLabel,
-        }),
+        });
+        const statusLabel = t(`nutrition.checkin.status.${item.status ?? 'pending'}`);
+        return `${base} • ${statusLabel}`;
+      },
     };
   }
 
@@ -523,6 +526,7 @@ export type DataLogDisplayItem = {
   goalTargetWeight?: number; // Optional - only nutrition goals have this
   checkinTargetWeight?: number; // Optional - only nutrition check-ins have this
   checkinTargetBodyFat?: number; // Optional - only nutrition check-ins have this
+  status?: string; // Optional - only nutrition check-ins have this
   chatMessageText?: string; // Optional - only chat messages have this
 };
 
