@@ -98,6 +98,7 @@
         "4": "Ótimo"
       },
       "saveEntry": "Salvar Entrada",
+      "saveSuccess": "Entrada salva com sucesso",
       "errorSaving": "Erro ao Salvar",
       "note": "Observação",
       "notePlaceholder": "Adicione uma observação..."

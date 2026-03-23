@@ -82,6 +82,8 @@
       "privacyDiagnostics": "PRIVACY & DIAGNOSTICS",
       "anonymousBugReport": "Anonymous Bug Report",
       "anonymousBugReportSubtitle": "Help improve Musclog by sending crash logs",
+      "dailyMoodPrompt": "Daily Mood Prompt",
+      "dailyMoodPromptSubtitle": "Show a mood selector on the home screen if not yet recorded for today",
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",

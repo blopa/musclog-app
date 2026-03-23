@@ -68,6 +68,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       'chartTooltipPosition',
       'language',
       'maxAiMemories',
+      'showDailyMoodPrompt',
     ];
 
     const initial: Record<string, SettingValue> = {};
@@ -231,6 +232,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'maxAiMemories',
     SettingsService.setMaxAiMemories
   );
+  const handleShowDailyMoodPromptChange = createSettingHandler<boolean>(
+    'showDailyMoodPrompt',
+    SettingsService.setShowDailyMoodPrompt
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -318,6 +323,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'maxAiMemories':
             await SettingsService.setMaxAiMemories(value as number);
             break;
+          case 'showDailyMoodPrompt':
+            await SettingsService.setShowDailyMoodPrompt(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -381,6 +389,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.chartTooltipPosition as 'left' | 'right') ??
       actualSettings.chartTooltipPosition,
     maxAiMemories: (localSettings.maxAiMemories as number) ?? actualSettings.maxAiMemories,
+    showDailyMoodPrompt:
+      (localSettings.showDailyMoodPrompt as boolean) ?? actualSettings.showDailyMoodPrompt,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -413,6 +423,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleChartTooltipPositionChange,
     handleLanguageChange,
     handleMaxAiMemoriesChange,
+    handleShowDailyMoodPromptChange,
 
     // Utilities
     flushAllPendingChanges,
