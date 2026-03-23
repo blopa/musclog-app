@@ -12,6 +12,7 @@ import {
   Dumbbell,
   Flag,
   MessageSquare,
+  Pill,
   Target,
   TrendingUp,
   Upload,
@@ -75,6 +76,10 @@ export function AdvancedSettingsModal({
     handleChartTooltipPositionChange,
     showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
     handleShowDailyMoodPromptChange,
+    showSupplementPrompt: debouncedShowSupplementPrompt,
+    handleShowSupplementPromptChange,
+    supplementName: debouncedSupplementName,
+    handleSupplementNameChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -194,6 +199,30 @@ export function AdvancedSettingsModal({
     },
   ];
 
+  const dailySupplementPromptItems = [
+    {
+      key: 'daily-supplement-prompt',
+      label: t('settings.advancedSettings.dailySupplementPrompt'),
+      subtitle: t('settings.advancedSettings.dailySupplementPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedShowSupplementPrompt,
+      onValueChange: handleShowSupplementPromptChange,
+    },
+  ];
+
   const chartTooltipPositionItems = [
     {
       key: 'chart-tooltip-left',
@@ -269,6 +298,29 @@ export function AdvancedSettingsModal({
             />
           </View>
 
+          {/* Reminders Section */}
+          <View>
+            <Text
+              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.text.secondary }}
+            >
+              {t('settings.advancedSettings.reminders')}
+            </Text>
+            <ToggleInput items={dailyMoodPromptItems} />
+            <View className="mt-4" />
+            <ToggleInput items={dailySupplementPromptItems} />
+            {debouncedShowSupplementPrompt && (
+              <View className="mt-4 px-4">
+                <TextInput
+                  label={t('settings.advancedSettings.supplementNameLabel')}
+                  value={debouncedSupplementName}
+                  onChangeText={handleSupplementNameChange}
+                  placeholder={t('settings.advancedSettings.supplementNamePlaceholder')}
+                />
+              </View>
+            )}
+          </View>
+
           {/* Privacy & Diagnostics Section */}
           <View>
             <Text
@@ -278,8 +330,6 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.privacyDiagnostics')}
             </Text>
             <ToggleInput items={bugReportItems} />
-            <View className="mt-4" />
-            <ToggleInput items={dailyMoodPromptItems} />
           </View>
 
           {/* Charts Section */}

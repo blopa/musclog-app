@@ -100,6 +100,9 @@
       "saveEntry": "Salvar Entrada",
       "saveSuccess": "Entrada salva com sucesso",
       "errorSaving": "Erro ao Salvar",
+      "supplementQuestion": "Você tomou seus suplementos hoje?",
+      "supplementQuestionWithName": "Você tomou seu {{name}} hoje?",
+      "confirmTaken": "Sim, eu tomei",
       "note": "Observação",
       "notePlaceholder": "Adicione uma observação..."
     }

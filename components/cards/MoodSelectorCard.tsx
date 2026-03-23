@@ -1,4 +1,4 @@
-import { Smile } from 'lucide-react-native';
+import { Smile, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -9,11 +9,12 @@ import { GenericCard } from './GenericCard';
 type MoodSelectorCardProps = {
   value: number; // 0-4: Poor, Low, Okay, Good, Great
   onChange: (value: number) => void;
+  onDismiss?: () => void;
 };
 
 const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
 
-export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
+export function MoodSelectorCard({ value, onChange, onDismiss }: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -27,13 +28,27 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
           </View>
-          <View
-            className="rounded px-2 py-0.5"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          >
-            <Text className="text-xs font-bold text-accent-primary">
-              {t(`bodyMetrics.addEntry.moods.${value}`)}
-            </Text>
+          <View className="flex-row items-center gap-2">
+            <View
+              className="rounded px-2 py-0.5"
+              style={{ backgroundColor: theme.colors.accent.primary10 }}
+            >
+              <Text className="text-xs font-bold text-accent-primary">
+                {t(`bodyMetrics.addEntry.moods.${value}`)}
+              </Text>
+            </View>
+            {onDismiss && (
+              <Pressable
+                onPress={onDismiss}
+                className="ml-1 rounded-full p-1"
+                hitSlop={8}
+                style={({ pressed }) => ({
+                  backgroundColor: pressed ? theme.colors.background.white10 : 'transparent',
+                })}
+              >
+                <X size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+              </Pressable>
+            )}
           </View>
         </View>
 

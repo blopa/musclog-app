@@ -1,7 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CheckCircle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { DeviceEventEmitter, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -25,6 +26,18 @@ export function HomeMoodPrompt() {
   const [isSaving, setIsSaving] = useState(false);
   const [isActuallyVisible, setIsActuallyVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [isLocallyDismissed, setIsLocallyDismissed] = useState(false);
+
+  useEffect(() => {
+    const checkDismissal = async () => {
+      const dismissedDate = await AsyncStorage.getItem('mood_prompt_dismissed_date');
+      const today = new Date().toISOString().split('T')[0];
+      if (dismissedDate === today) {
+        setIsLocallyDismissed(true);
+      }
+    };
+    checkDismissal();
+  }, []);
 
   const opacity = useSharedValue(0);
   const height = useSharedValue(0);
@@ -33,7 +46,8 @@ export function HomeMoodPrompt() {
   const MAX_HEIGHT = 450; // Increased to ensure no clipping during animation
 
   useEffect(() => {
-    const shouldBeVisible = !isLoading && showDailyMoodPrompt && !hasMoodToday && !isDismissed;
+    const shouldBeVisible =
+      !isLoading && showDailyMoodPrompt && !hasMoodToday && !isDismissed && !isLocallyDismissed;
 
     if (shouldBeVisible) {
       setIsActuallyVisible(true);
@@ -49,7 +63,16 @@ export function HomeMoodPrompt() {
       });
       marginBottom.value = withTiming(0, { duration: 500 });
     }
-  }, [isLoading, showDailyMoodPrompt, hasMoodToday, isDismissed, opacity, height, marginBottom]);
+  }, [
+    isLoading,
+    showDailyMoodPrompt,
+    hasMoodToday,
+    isDismissed,
+    isLocallyDismissed,
+    opacity,
+    height,
+    marginBottom,
+  ]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -58,7 +81,10 @@ export function HomeMoodPrompt() {
     overflow: 'hidden',
   }));
 
-  if (!isActuallyVisible && (isLoading || !showDailyMoodPrompt || hasMoodToday)) {
+  if (
+    !isActuallyVisible &&
+    (isLoading || !showDailyMoodPrompt || hasMoodToday || isLocallyDismissed)
+  ) {
     return null;
   }
 
@@ -100,9 +126,20 @@ export function HomeMoodPrompt() {
     setTimeout(performSave, 50);
   };
 
+  const handleDismiss = async () => {
+    setIsDismissed(true);
+    const today = new Date().toISOString().split('T')[0];
+    await AsyncStorage.setItem('mood_prompt_dismissed_date', today);
+    DeviceEventEmitter.emit('mood_dismissed');
+  };
+
   return (
     <Animated.View style={animatedStyle}>
-      <MoodSelectorCard value={mood ?? 2} onChange={(val) => setMood(val)} />
+      <MoodSelectorCard
+        value={mood ?? 2}
+        onChange={(val) => setMood(val)}
+        onDismiss={handleDismiss}
+      />
       {mood !== null ? (
         <View className="mt-3">
           <Button
