@@ -9,17 +9,17 @@ import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
-import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { XAxisLabel } from '../../utils/chartUtils';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
-import { Button } from '../theme/Button';
 import { LineChart, LineChartDataPoint } from '../charts/LineChart';
+import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -341,7 +341,6 @@ type ExercisesSectionProps = {
 };
 
 function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps) {
-  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -566,6 +565,7 @@ export default function PastWorkoutDetailModal({
           try {
             const data = await WorkoutService.getWorkoutWithDetails(workoutId);
             setPreviewWorkoutData(data);
+            console.log('ON PREVIEW CLICKED', (data), 11, workoutId);
             setIsPreviewModalVisible(true);
           } catch (error) {
             console.error('Error loading workout for preview:', error);

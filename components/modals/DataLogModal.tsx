@@ -50,6 +50,7 @@ import { CreateMealModal } from './CreateMealModal';
 import CreateWorkoutModal from './CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from './CreateWorkoutOptionsModal';
 import { FullScreenModal } from './FullScreenModal';
+import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { GenericEditModal } from './GenericEditModal';
 import {
   createRecord,
@@ -572,6 +573,8 @@ export function DataLogModal({
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
+  const [pastWorkoutDetailVisible, setPastWorkoutDetailVisible] = useState(false);
+  const [pastWorkoutDetailId, setPastWorkoutDetailId] = useState<string | null>(null);
   const [dependencyWarning, setDependencyWarning] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
@@ -861,6 +864,13 @@ export function DataLogModal({
     }
 
     setShowMenu(false);
+
+    if (variant === 'workoutLog') {
+      setPastWorkoutDetailId(selectedItem.id);
+      setPastWorkoutDetailVisible(true);
+      return;
+    }
+
     setEditRecordId(selectedItem.id);
     setEditModalVisible(true);
   };
@@ -1078,6 +1088,7 @@ export function DataLogModal({
       'nutritionGoal',
       'nutritionCheckin',
       'chatMessage',
+      'workoutLog',
     ];
 
     // Add Edit menu item only if supported
@@ -1112,7 +1123,6 @@ export function DataLogModal({
       'foodPortion',
       'exercise',
       'workoutTemplate',
-      'workoutLog',
       'nutrition_log',
     ];
 
@@ -1475,6 +1485,19 @@ export function DataLogModal({
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
       />
+
+      {/* Past Workout Detail Modal (workoutLog edit) */}
+      {pastWorkoutDetailId ? (
+        <PastWorkoutDetailModal
+          visible={pastWorkoutDetailVisible}
+          onClose={() => {
+            setPastWorkoutDetailVisible(false);
+            setPastWorkoutDetailId(null);
+            refresh();
+          }}
+          workoutId={pastWorkoutDetailId}
+        />
+      ) : null}
 
       {/* Create Menu */}
       {showCreateMenu ? (
