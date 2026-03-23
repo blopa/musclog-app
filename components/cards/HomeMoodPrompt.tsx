@@ -1,7 +1,13 @@
 import { CheckCircle } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -18,15 +24,43 @@ export function HomeMoodPrompt() {
   const { hasMoodToday, isLoading } = useTodayMood();
   const [mood, setMood] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isActuallyVisible, setIsActuallyVisible] = useState(false);
 
-  if (isLoading || !showDailyMoodPrompt || hasMoodToday) {
+  const opacity = useSharedValue(0);
+  const height = useSharedValue(0);
+
+  const MAX_HEIGHT = 280; // Estimated height for MoodSelectorCard + Save button
+
+  useEffect(() => {
+    const shouldBeVisible = !isLoading && showDailyMoodPrompt && !hasMoodToday;
+
+    if (shouldBeVisible) {
+      setIsActuallyVisible(true);
+      opacity.value = withTiming(1, { duration: 400 });
+      height.value = withTiming(MAX_HEIGHT, { duration: 500 });
+    } else {
+      opacity.value = withTiming(0, { duration: 300 });
+      height.value = withTiming(0, { duration: 400 }, (finished) => {
+        if (finished) {
+          runOnJS(setIsActuallyVisible)(false);
+        }
+      });
+    }
+  }, [isLoading, showDailyMoodPrompt, hasMoodToday, opacity, height]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    maxHeight: height.value,
+    overflow: 'hidden',
+  }));
+
+  if (!isActuallyVisible && (isLoading || !showDailyMoodPrompt || hasMoodToday)) {
     return null;
   }
 
-  const handleSave = async () => {
+  const performSave = async () => {
     if (mood === null) return;
 
-    setIsSaving(true);
     try {
       const now = new Date();
       now.setUTCHours(0, 0, 0, 0);
@@ -49,12 +83,16 @@ export function HomeMoodPrompt() {
     }
   };
 
+  const handleSave = () => {
+    if (mood === null) return;
+    setIsSaving(true);
+    // Use setTimeout hack to ensure loading state is rendered before blocking DB write
+    setTimeout(performSave, 50);
+  };
+
   return (
-    <View className="mb-6 px-4">
-      <MoodSelectorCard
-        value={mood ?? 2}
-        onChange={(val) => setMood(val)}
-      />
+    <Animated.View className="mb-6 px-4" style={animatedStyle}>
+      <MoodSelectorCard value={mood ?? 2} onChange={(val) => setMood(val)} />
       {mood !== null && (
         <View className="mt-3">
           <Button
@@ -70,6 +108,6 @@ export function HomeMoodPrompt() {
           />
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 }
