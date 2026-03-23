@@ -86,3 +86,27 @@ export async function setInsightDismissed(
     console.error('Error setting dismissed insight in storage:', error);
   }
 }
+
+/**
+ * Prune any orphaned workout insight dismissal states from AsyncStorage.
+ * Clears all insight keys except for the one belonging to the currently active workout.
+ */
+export async function pruneWorkoutInsights(): Promise<void> {
+  try {
+    const activeWorkoutLogId = await getActiveWorkoutLogId();
+    const allKeys = await AsyncStorage.getAllKeys();
+    const insightKeys = allKeys.filter((key) => key.startsWith(WORKOUT_INSIGHTS_PREFIX));
+
+    const activeInsightKey = activeWorkoutLogId
+      ? `${WORKOUT_INSIGHTS_PREFIX}${activeWorkoutLogId}`
+      : null;
+
+    const keysToRemove = insightKeys.filter((key) => key !== activeInsightKey);
+
+    if (keysToRemove.length > 0) {
+      await AsyncStorage.multiRemove(keysToRemove);
+    }
+  } catch (error) {
+    console.error('Error pruning workout insights from storage:', error);
+  }
+}
