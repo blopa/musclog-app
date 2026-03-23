@@ -284,6 +284,7 @@ export default function WorkoutSessionScreen() {
 
     if (!isWorkoutComplete()) {
       hasShownFreeSessionCompleteModalRef.current = false;
+      setCompletedExerciseForModal(null);
       return;
     }
 
@@ -410,7 +411,7 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      router.push(
+      router.replace(
         `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
       );
       // Defer closing modal so navigation can run first and we avoid a flash of the session screen
@@ -453,7 +454,7 @@ export default function WorkoutSessionScreen() {
           hasShownFreeSessionCompleteModalRef.current = true;
         }
       } else {
-        router.push(
+        router.replace(
           `/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
         );
       }
@@ -570,365 +571,169 @@ export default function WorkoutSessionScreen() {
     return parts.join(' • ') || t('exercises.manageExerciseData.unknownExercise');
   };
 
-  if (isLoading) {
-    return (
-      <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1 items-center justify-center px-6">
-          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-        </View>
-      </MasterLayout>
-    );
-  }
+  let content;
 
-  // Blank Workout UI: free session with no sets yet
-  if (workoutLog && !error && progress.totalSets === 0) {
-    return (
-      <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1 bg-bg-primary">
-          {/* Header: back + title */}
-          <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
-            <Pressable
-              className="h-12 w-12 items-center justify-center"
-              onPress={() => setIsEndWorkoutModalVisible(true)}
+  if (isLoading) {
+    content = (
+      <View className="flex-1 items-center justify-center px-6">
+        <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+      </View>
+    );
+  } else if (workoutLog && !error && progress.totalSets === 0) {
+    content = (
+      <View className="flex-1 bg-bg-primary">
+        {/* Header: back + title */}
+        <View className="flex-row items-center justify-between border-b border-border-default px-4 py-3">
+          <Pressable
+            className="h-12 w-12 items-center justify-center"
+            onPress={() => setIsEndWorkoutModalVisible(true)}
+          >
+            <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
+          </Pressable>
+          <Text
+            className="text-lg font-semibold text-text-primary"
+            style={{ fontSize: theme.typography.fontSize.lg }}
+          >
+            {t('freeTraining.blankWorkout')}
+          </Text>
+          <View className="h-12 w-12" />
+        </View>
+
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: theme.spacing.padding.xl,
+            paddingTop: theme.spacing.padding['2xl'],
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Icon + title + subtitle */}
+          <View className="items-center">
+            <View
+              className="mb-6 h-24 w-24 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.accent.primary20 }}
             >
-              <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
-            </Pressable>
+              <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
+            </View>
             <Text
-              className="text-lg font-semibold text-text-primary"
-              style={{ fontSize: theme.typography.fontSize.lg }}
+              className="mb-2 text-center text-3xl font-bold text-text-primary"
+              style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
-              {t('freeTraining.blankWorkout')}
+              {t('freeTraining.title')}{' '}
+              <Text style={{ color: theme.colors.accent.primary }}>
+                {t('freeTraining.titleSession')}
+              </Text>
             </Text>
-            <View className="h-12 w-12" />
+            <Text
+              className="mb-8 text-center text-base text-text-secondary"
+              style={{ fontSize: theme.typography.fontSize.base }}
+            >
+              {t('freeTraining.subtitle')}
+            </Text>
+            <Button
+              label={t('freeTraining.addFirstExercise')}
+              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              size="md"
+              width="full"
+              variant="gradientCta"
+              loading={isAddExerciseButtonLoading}
+              onPress={async () => {
+                setIsAddExerciseButtonLoading(true);
+                await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+                setIsAddExerciseToSessionModalVisible(true);
+              }}
+            />
+            <Text
+              className="mt-4 text-center text-sm text-text-secondary"
+              style={{ fontSize: theme.typography.fontSize.sm }}
+            >
+              {t('freeTraining.tip')}
+            </Text>
           </View>
 
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{
-              flexGrow: 1,
-              paddingHorizontal: theme.spacing.padding.xl,
-              paddingTop: theme.spacing.padding['2xl'],
-            }}
-            showsVerticalScrollIndicator={false}
-          >
-            {/* Icon + title + subtitle */}
-            <View className="items-center">
-              <View
-                className="mb-6 h-24 w-24 items-center justify-center rounded-full"
-                style={{ backgroundColor: theme.colors.accent.primary20 }}
-              >
-                <Dumbbell size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
-              </View>
-              <Text
-                className="mb-2 text-center text-3xl font-bold text-text-primary"
-                style={{ fontSize: theme.typography.fontSize['3xl'] }}
-              >
-                {t('freeTraining.title')}{' '}
-                <Text style={{ color: theme.colors.accent.primary }}>
-                  {t('freeTraining.titleSession')}
-                </Text>
-              </Text>
-              <Text
-                className="mb-8 text-center text-base text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.base }}
-              >
-                {t('freeTraining.subtitle')}
-              </Text>
-              <Button
-                label={t('freeTraining.addFirstExercise')}
-                icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
-                size="md"
-                width="full"
-                variant="gradientCta"
-                loading={isAddExerciseButtonLoading}
-                onPress={async () => {
-                  setIsAddExerciseButtonLoading(true);
-                  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-                  setIsAddExerciseToSessionModalVisible(true);
-                }}
-              />
-              <Text
-                className="mt-4 text-center text-sm text-text-secondary"
-                style={{ fontSize: theme.typography.fontSize.sm }}
-              >
-                {t('freeTraining.tip')}
-              </Text>
-            </View>
-
-            {/* Stats row */}
-            <BlankWorkoutStats startTime={workoutLog.startedAt} workoutLogId={workoutLogId} />
-          </ScrollView>
-        </View>
-
-        {/* End Workout Modal (reused from session) */}
-        {isEndWorkoutModalVisible ? (
-          <EndWorkoutModal
-            visible={isEndWorkoutModalVisible}
-            onClose={() => setIsEndWorkoutModalVisible(false)}
-            onFinishAndSave={async () => {
-              if (workoutLog) {
-                try {
-                  setIsSaving(true);
-                  await completeWorkout(workoutLog.id);
-                  setIsSessionFeedbackModalVisible(true);
-                  setIsEndWorkoutModalVisible(false);
-                } catch (err) {
-                  console.error('Error completing workout:', err);
-                } finally {
-                  setIsSaving(false);
-                }
-              }
-            }}
-            onFinishAndDiscard={async () => {
-              if (workoutLog) {
-                await clearActiveWorkoutLogId();
-              }
-              router.replace('/workout/workouts');
-            }}
-          />
-        ) : null}
-
-        {isSessionFeedbackModalVisible && workoutLog ? (
-          <SessionFeedbackModal
-            visible={isSessionFeedbackModalVisible}
-            onClose={() => {
-              setIsSessionFeedbackModalVisible(false);
-              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-            }}
-            onSubmit={async (data) => {
-              try {
-                await submitFeedback(workoutLog.id, data);
-              } catch (err) {
-                console.error('Error saving workout feedback:', err);
-              } finally {
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-              }
-            }}
-          />
-        ) : null}
-
-        <AddExerciseToSessionModal
-          visible={isAddExerciseToSessionModalVisible}
-          onClose={() => {
-            setIsAddExerciseToSessionModalVisible(false);
-            setIsAddExerciseButtonLoading(false);
-          }}
-          onShow={() => setIsAddExerciseButtonLoading(false)}
-          workoutLogId={workoutLog.id}
-          onAdded={() => refresh()}
-        />
-      </MasterLayout>
+          {/* Stats row */}
+          <BlankWorkoutStats startTime={workoutLog.startedAt} workoutLogId={workoutLogId} />
+        </ScrollView>
+      </View>
     );
-  }
-
-  // Free session with all sets done: show "add more or finish" modal (no currentSetData when all complete).
-  // Stay in this branch when Add Exercise modal or Session Feedback modal is open so those modals are rendered.
-  if (
-    workoutLog &&
-    !error &&
-    progress.totalSets > 0 &&
-    progress.isComplete &&
-    !workoutLog.templateId &&
-    (completedExerciseForModal ||
-      isAddExerciseToSessionModalVisible ||
-      isSessionFeedbackModalVisible)
+  } else if (
+    (isSessionFeedbackModalVisible && workoutLog) ||
+    (workoutLog &&
+      !error &&
+      progress.totalSets > 0 &&
+      progress.isComplete &&
+      !workoutLog.templateId &&
+      (completedExerciseForModal ||
+        isAddExerciseToSessionModalVisible ||
+        isSessionFeedbackModalVisible))
   ) {
-    return (
-      <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
-          <LinearGradient
-            colors={[...theme.colors.gradients.landingBackground]}
-            locations={[0, 0.5, 1]}
-            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-          />
-          {/* Decorative circles behind session feedback modal */}
-          <View
-            style={{
-              position: 'absolute',
-              top: '15%',
-              left: '-20%',
-              width: 280,
-              height: 280,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.6,
-            }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              top: '35%',
-              right: '-15%',
-              width: 200,
-              height: 200,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.35,
-            }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              bottom: '25%',
-              left: '10%',
-              width: 120,
-              height: 120,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.25,
-            }}
-          />
-        </View>
-        {completedExerciseForModal ? (
-          <FreeSessionExerciseCompleteModal
-            visible={isFreeSessionCompleteModalVisible}
-            onClose={() => {
-              setIsFreeSessionCompleteModalVisible(false);
-              setCompletedExerciseForModal(null);
-            }}
-            exerciseName={completedExerciseForModal.exerciseName}
-            sets={sets}
-            exerciseId={completedExerciseForModal.exerciseId}
-            units={units}
-            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
-            equipmentType={completedExerciseForModal.equipmentType}
-            onAddNextExercise={() => {
-              setIsFreeSessionCompleteModalVisible(false);
-              setIsAddExerciseToSessionModalVisible(true);
-            }}
-            onFinishWorkout={() => {
-              setIsFreeSessionCompleteModalVisible(false);
-              // Don't clear completedExerciseForModal here; handleFinishWorkout clears it after
-              // completeWorkout() so we stay in this branch until feedback modal is shown.
-              handleFinishWorkout();
-            }}
-            isFinishing={isSaving}
-          />
-        ) : null}
-        <AddExerciseToSessionModal
-          visible={isAddExerciseToSessionModalVisible}
-          onClose={() => {
-            setIsAddExerciseToSessionModalVisible(false);
-            setIsFreeSessionCompleteModalVisible(true);
-          }}
-          workoutLogId={workoutLog.id}
-          onAdded={() => refresh()}
+    content = (
+      <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+        <LinearGradient
+          colors={[...theme.colors.gradients.landingBackground]}
+          locations={[0, 0.5, 1]}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
         />
-        {isSessionFeedbackModalVisible ? (
-          <SessionFeedbackModal
-            visible={isSessionFeedbackModalVisible}
-            onClose={() => {
-              setIsSessionFeedbackModalVisible(false);
-              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-            }}
-            onSubmit={async (data) => {
-              try {
-                await submitFeedback(workoutLog.id, data);
-              } catch (err) {
-                console.error('Error saving workout feedback:', err);
-              } finally {
-                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-              }
-            }}
-          />
-        ) : null}
-      </MasterLayout>
-    );
-  }
-
-  // Template workout finished: show session feedback modal. When user taps "Finish and save"
-  // we set isSessionFeedbackModalVisible(true), but the next render can have currentSetData null
-  // (all sets done), which would otherwise hit the error branch below and never show the modal.
-  if (isSessionFeedbackModalVisible && workoutLog) {
-    return (
-      <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
-          <LinearGradient
-            colors={[...theme.colors.gradients.landingBackground]}
-            locations={[0, 0.5, 1]}
-            style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              top: '15%',
-              left: '-20%',
-              width: 280,
-              height: 280,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.6,
-            }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              top: '35%',
-              right: '-15%',
-              width: 200,
-              height: 200,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.35,
-            }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              bottom: '25%',
-              left: '10%',
-              width: 120,
-              height: 120,
-              borderRadius: theme.borderRadius.full,
-              backgroundColor: theme.colors.accent.primary20,
-              opacity: 0.25,
-            }}
-          />
-        </View>
-        <SessionFeedbackModal
-          visible={isSessionFeedbackModalVisible}
-          onClose={() => {
-            setIsSessionFeedbackModalVisible(false);
-            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-          }}
-          onSubmit={async (data) => {
-            try {
-              await submitFeedback(workoutLog.id, data);
-            } catch (err) {
-              console.error('Error saving workout feedback:', err);
-            } finally {
-              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-            }
+        {/* Decorative circles behind session feedback modal */}
+        <View
+          style={{
+            position: 'absolute',
+            top: '15%',
+            left: '-20%',
+            width: 280,
+            height: 280,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.6,
           }}
         />
-      </MasterLayout>
+        <View
+          style={{
+            position: 'absolute',
+            top: '35%',
+            right: '-15%',
+            width: 200,
+            height: 200,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.35,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: '25%',
+            left: '10%',
+            width: 120,
+            height: 120,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary20,
+            opacity: 0.25,
+          }}
+        />
+      </View>
     );
-  }
-
-  if (error || !currentSetData || !workoutLog) {
-    return (
-      <MasterLayout showNavigationMenu={false}>
-        <View className="flex-1 items-center justify-center px-6">
-          <ErrorStateCard
-            icon={WifiOff}
-            title={error ? error : t('workoutSession.notFoundTitle')}
-            description={t('workoutSession.notFoundDescription')}
-            buttonLabel={t('workoutSession.goBack')}
-            onButtonPress={() => router.replace('/workout/workouts')}
-          />
-        </View>
-      </MasterLayout>
+  } else if (error || !currentSetData || !workoutLog) {
+    content = (
+      <View className="flex-1 items-center justify-center px-6">
+        <ErrorStateCard
+          icon={WifiOff}
+          title={error ? error : t('workoutSession.notFoundTitle')}
+          description={t('workoutSession.notFoundDescription')}
+          buttonLabel={t('workoutSession.goBack')}
+          onButtonPress={() => router.replace('/workout/workouts')}
+        />
+      </View>
     );
-  }
+  } else {
+    const exerciseImage = currentSetData.exercise.imageUrl?.trim()
+      ? { uri: currentSetData.exercise.imageUrl }
+      : require('../../assets/exercises/fallback.png');
+    const exerciseCategory = getExerciseCategory();
+    const previousSet = currentSetData.previousSet;
 
-  const exerciseImage = currentSetData.exercise.imageUrl?.trim()
-    ? { uri: currentSetData.exercise.imageUrl }
-    : require('../../assets/exercises/fallback.png');
-  const exerciseCategory = getExerciseCategory();
-  const previousSet = currentSetData.previousSet;
-
-  return (
-    <MasterLayout showNavigationMenu={false}>
+    content = (
       <View className="flex-1">
         <ImageBackground
           source={exerciseImage}
@@ -1142,6 +947,12 @@ export default function WorkoutSessionScreen() {
           </View>
         </ScrollView>
       </View>
+    );
+  }
+
+  return (
+    <MasterLayout showNavigationMenu={false}>
+      {content}
 
       {/* Workout Options Modal */}
       {isOptionsModalVisible ? (
@@ -1185,12 +996,12 @@ export default function WorkoutSessionScreen() {
       ) : null}
 
       {/* Session Feedback Modal */}
-      {isSessionFeedbackModalVisible ? (
+      {isSessionFeedbackModalVisible && workoutLog ? (
         <SessionFeedbackModal
           visible={isSessionFeedbackModalVisible}
           onClose={() => {
             setIsSessionFeedbackModalVisible(false);
-            router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
+            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
           }}
           onSubmit={async (data) => {
             try {
@@ -1198,14 +1009,14 @@ export default function WorkoutSessionScreen() {
             } catch (err) {
               console.error('Error saving workout feedback:', err);
             } finally {
-              router.replace('/workout/workout-summary?workoutLogId=' + workoutLog.id);
+              router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
             }
           }}
         />
       ) : null}
 
       {/* Log Set Performance Modal */}
-      {isLogSetModalVisible ? (
+      {isLogSetModalVisible && currentSetData ? (
         <LogSetPerformanceModal
           visible={isLogSetModalVisible}
           onClose={() => setIsLogSetModalVisible(false)}
@@ -1233,7 +1044,7 @@ export default function WorkoutSessionScreen() {
       ) : null}
 
       {/* Edit Set Details Modal */}
-      {isEditSetModalVisible ? (
+      {isEditSetModalVisible && currentSetData ? (
         <EditSetDetailsModal
           visible={isEditSetModalVisible}
           onClose={() => setIsEditSetModalVisible(false)}
@@ -1264,7 +1075,7 @@ export default function WorkoutSessionScreen() {
       ) : null}
 
       {/* Replace Exercise Modal */}
-      {isReplaceExerciseModalVisible ? (
+      {isReplaceExerciseModalVisible && currentSetData ? (
         <ReplaceExerciseModal
           visible={isReplaceExerciseModalVisible}
           onClose={() => setIsReplaceExerciseModalVisible(false)}
@@ -1274,7 +1085,7 @@ export default function WorkoutSessionScreen() {
       ) : null}
 
       {/* Workout History Modal */}
-      {isHistoryModalVisible ? (
+      {isHistoryModalVisible && workoutLog ? (
         <WorkoutSessionHistoryModal
           visible={isHistoryModalVisible}
           onClose={() => setIsHistoryModalVisible(false)}
@@ -1286,7 +1097,7 @@ export default function WorkoutSessionScreen() {
       ) : null}
 
       {/* Workout Session Overview Modal */}
-      {isWorkoutOverviewModalVisible ? (
+      {isWorkoutOverviewModalVisible && workoutLog ? (
         <WorkoutSessionOverviewModal
           visible={isWorkoutOverviewModalVisible}
           onClose={() => setIsWorkoutOverviewModalVisible(false)}
@@ -1311,12 +1122,22 @@ export default function WorkoutSessionScreen() {
         />
       ) : null}
 
-      <AddExerciseToSessionModal
-        visible={isAddExerciseToSessionModalVisible}
-        onClose={() => setIsAddExerciseToSessionModalVisible(false)}
-        workoutLogId={workoutLog.id}
-        onAdded={() => refresh()}
-      />
+      {workoutLog ? (
+        <AddExerciseToSessionModal
+          visible={isAddExerciseToSessionModalVisible}
+          onClose={() => {
+            setIsAddExerciseToSessionModalVisible(false);
+            setIsAddExerciseButtonLoading(false);
+            // Re-show completion modal if we're still in that state and cancelled adding
+            if (completedExerciseForModal && isWorkoutComplete()) {
+              setIsFreeSessionCompleteModalVisible(true);
+            }
+          }}
+          onShow={() => setIsAddExerciseButtonLoading(false)}
+          workoutLogId={workoutLog.id}
+          onAdded={() => refresh()}
+        />
+      ) : null}
 
       {completedExerciseForModal ? (
         <FreeSessionExerciseCompleteModal
@@ -1333,7 +1154,7 @@ export default function WorkoutSessionScreen() {
           equipmentType={completedExerciseForModal.equipmentType}
           onAddNextExercise={() => {
             setIsFreeSessionCompleteModalVisible(false);
-            setCompletedExerciseForModal(null);
+            // Keep completedExerciseForModal so we can return to it if adding is cancelled
             setIsAddExerciseToSessionModalVisible(true);
           }}
           onFinishWorkout={() => {
