@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import { UserMetricService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
@@ -44,7 +44,7 @@ export function HomeMoodPrompt() {
       opacity.value = withTiming(0, { duration: 300 });
       height.value = withTiming(0, { duration: 500 }, (finished) => {
         if (finished) {
-          runOnJS(setIsActuallyVisible)(false);
+          scheduleOnRN(setIsActuallyVisible, false);
         }
       });
       marginBottom.value = withTiming(0, { duration: 500 });
