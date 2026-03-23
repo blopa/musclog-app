@@ -648,9 +648,16 @@ export function FoodMealDetailsModal({
       } as const;
       const getNum = (key: keyof typeof offKeys) =>
         (getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number;
-      const fiberRaw =
-        (getNutrimentValue(nutrients, 'carbohydrates-total') ?? 0) -
-        (getNutrimentValue(nutrients, 'carbohydrates') ?? 0);
+      const directFiber = getNutrimentValue(nutrients, 'fiber');
+      let fiber: number;
+      if (directFiber !== undefined && directFiber >= 0) {
+        fiber = directFiber;
+      } else {
+        const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+        const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+        fiber =
+          carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+      }
       const sodium =
         getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
 
@@ -659,7 +666,7 @@ export function FoodMealDetailsModal({
         protein: getNum('protein'),
         carbs: getNum('carbs'),
         fat: getNum('fat'),
-        fiber: (Number.isFinite(fiberRaw) ? fiberRaw : 0) || 0,
+        fiber,
         sugar: getNum('sugar'),
         saturatedFat: getNum('saturatedFat'),
         sodium: Number.isFinite(sodium) ? sodium : 0,
