@@ -96,7 +96,8 @@
             }
           ]
         }
-      ]
+      ],
+      "@sentry/react-native"
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",

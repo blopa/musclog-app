@@ -161,7 +161,8 @@ export function useFoodProductDetails(
       }
 
       const includeOpenFood =
-        foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'openfood');
+        foodSearchSource !== 'none' &&
+        (foodSearchSource === 'both' || foodSearchSource === 'openfood');
       const includeUSDA =
         foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'usda');
 

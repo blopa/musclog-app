@@ -70,7 +70,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				12DE36F8AD3E4FBABA0699EE /* Resources */,
+				9820BDADC27E4B558DA1EFC1 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -94,7 +94,7 @@
 			path = MusclogLiftLogRepeat/Supporting;
 			sourceTree = "<group>";
 		};
-		12DE36F8AD3E4FBABA0699EE /* Resources */ = {
+		9820BDADC27E4B558DA1EFC1 /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
 			);
@@ -115,7 +115,7 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				2159F61D19A24B90B551D819 /* Upload Debug Symbols to Sentry */,
+				EE01E9C961AD440EA00F3172 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -232,7 +232,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusclogLiftLogRepeat/Pods-MusclogLiftLogRepeat-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2159F61D19A24B90B551D819 /* Upload Debug Symbols to Sentry */ = {
+		EE01E9C961AD440EA00F3172 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
