@@ -171,6 +171,12 @@ export const CHART_TOOLTIP_POSITION_SETTING_TYPE = 'chart_tooltip_position';
  */
 export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 
+/**
+ * Setting type for showing the daily mood prompt on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'

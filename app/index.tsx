@@ -9,6 +9,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { ActionButton } from '../components/ActionButton';
 import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
 import { useCoach } from '../components/CoachContext';
@@ -411,6 +412,11 @@ export default function HomeScreen() {
           ) : (
             <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
           )}
+        </View>
+
+        {/* Home Mood Prompt */}
+        <View className="mx-4">
+          <HomeMoodPrompt />
         </View>
 
         {/* Action Buttons */}
