@@ -1190,13 +1190,19 @@ export function DataLogModal({
     </GenericCard>
   );
 
-  const renderHeaderRight = () => (
-    <MenuButton
-      onPress={() => {
-        setShowCreateMenu(true);
-      }}
-    />
-  );
+  const renderHeaderRight = () => {
+    if (getCreateMenuItems().length === 0) {
+      return undefined;
+    }
+
+    return (
+      <MenuButton
+        onPress={() => {
+          setShowCreateMenu(true);
+        }}
+      />
+    );
+  };
 
   const getCreateMenuItems = (): BottomPopUpMenuItem[] => {
     const CreateIcon = (props: { size: number; color: string }) => (
