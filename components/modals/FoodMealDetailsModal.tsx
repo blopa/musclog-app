@@ -14,7 +14,7 @@ import {
   RefreshCcwDot,
   ScanLine,
 } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 
@@ -274,6 +274,32 @@ export function FoodMealDetailsModal({
     barcodeForHook,
     usdaIdForHook
   );
+
+  const hasNoNutrition = useMemo(() => {
+    const isOpenfoodSource =
+      productFromSearch?.source === 'openfood' ||
+      (isSuccessFoodDetailProductState(productDetails) &&
+        (productDetails as any).source !== 'usda');
+
+    if (!isOpenfoodSource) {
+      return false;
+    }
+
+    const product = isSuccessFoodDetailProductState(productDetails)
+      ? productDetails.product
+      : productFromSearch;
+
+    if (!product) {
+      return false;
+    }
+
+    return (
+      product.no_nutrition_data === 'on' ||
+      product.no_nutrition_data === 1 ||
+      !product.nutriments ||
+      Object.keys(product.nutriments).length === 0
+    );
+  }, [productFromSearch, productDetails]);
 
   // Helper function to generate portion name based on serving size and units
   const generatePortionName = useCallback((servingSizeGrams: number, units: Units): string => {
@@ -1475,8 +1501,9 @@ export function FoodMealDetailsModal({
         <View className="flex-1 px-4 pb-6">
           <FoodNutritionSectionCard
             food={scaledFood}
-            canEdit={canEdit}
+            canEdit={canEdit || hasNoNutrition}
             mode={mode}
+            showIncompleteWarning={hasNoNutrition}
             onEditPress={handleOpenEditPopUp}
             nutritionalData={nutritionalData}
             servingSize={servingSize}

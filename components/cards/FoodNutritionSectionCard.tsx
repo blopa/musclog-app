@@ -25,6 +25,7 @@ type NutritionalData = {
 type FoodNutritionSectionProps = {
   food: FoodData;
   canEdit: boolean;
+  showIncompleteWarning?: boolean;
   mode: 'meal' | 'foodLog' | 'food' | 'barcode' | null;
   onEditPress: () => void;
   nutritionalData: NutritionalData;
@@ -40,6 +41,8 @@ export function FoodNutritionSectionCard({
   nutritionalData,
   servingSize,
   isLoadingDetails,
+  // TODO: implement showIncompleteWarning
+  showIncompleteWarning = false,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
