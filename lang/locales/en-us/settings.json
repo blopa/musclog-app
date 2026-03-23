@@ -28,7 +28,9 @@
       "foodSearchOpenFoodFacts": "Open Food Facts",
       "foodSearchOpenFoodFactsDescription": "Open source food database",
       "foodSearchUSDA": "USDA",
-      "foodSearchUSDADescription": "US Department of Agriculture database"
+      "foodSearchUSDADescription": "US Department of Agriculture database",
+      "foodSearchNone": "None",
+      "foodSearchNoneDescription": "Search only in your local database"
     },
     "migration": {
       "title": "Data Migration",
