@@ -57,7 +57,7 @@ export function ChatWorkoutCompletedCard({
             className="rounded-lg p-2"
             style={{ backgroundColor: theme.colors.status.indigo10 }}
           >
-            <ScrollText size={20} color="#6366f1" />
+            <ScrollText size={20} color={theme.colors.status.indigo} />
           </View>
         </View>
       </View>

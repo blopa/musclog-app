@@ -342,7 +342,7 @@ export function BarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                  boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
                 }}
               >
                 <Text
@@ -364,7 +364,7 @@ export function BarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  boxShadow: `0 2px 4px ${theme.colors.background.black20}`,
                 }}
               >
                 <Text

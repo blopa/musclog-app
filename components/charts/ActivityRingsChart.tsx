@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme';
 
 export type ActivityRingConfig = {
   /** Progress 0–1 (e.g. 0.8 for 80%) */
@@ -35,9 +36,10 @@ export type ActivityRingsChartProps = {
 };
 
 const DEFAULT_RINGS: ActivityRingConfig[] = [
-  { progress: 0.8, color: '#00FFA2', label: 'Move', value: '80%' },
-  { progress: 0.65, color: '#00E5FF', label: 'Steps', value: '65%' },
-  { progress: 0.45, color: '#BF5AF2', label: 'Rest', value: '45%' },
+  // TODO: use i18n for the labels
+  { progress: 0.8, color: appTheme.colors.status.emeraldLight, label: 'Move', value: '80%' },
+  { progress: 0.65, color: appTheme.colors.status.teal400, label: 'Steps', value: '65%' },
+  { progress: 0.45, color: appTheme.colors.status.purple, label: 'Rest', value: '45%' },
 ];
 
 const VIEWBOX_SIZE = 100;
@@ -55,7 +57,7 @@ export function ActivityRingsChart({
   className,
 }: ActivityRingsChartProps) {
   const theme = useTheme();
-  const track = trackColor ?? theme.colors.border.light ?? '#1C2623';
+  const track = trackColor ?? theme.colors.border.light;
   const displayRings = rings.slice(0, 3);
 
   return (

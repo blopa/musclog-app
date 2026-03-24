@@ -3,9 +3,10 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme';
 
-const DEFAULT_NEON = '#00FFA2';
-const DEFAULT_BORDER = '#1C2623';
+const DEFAULT_NEON = appTheme.colors.status.emeraldLight;
+const DEFAULT_BORDER = appTheme.colors.border.dark;
 
 /**
  * Cell intensity: 0 = empty (border color), 1–5 = neon at 20%, 40%, 60%, 80%, 100%.
@@ -81,8 +82,8 @@ export function TrainingConsistencyChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
   const borderColor = emptyColor ?? theme.colors?.border?.light ?? DEFAULT_BORDER;
-  const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
-  const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
+  const mutedColor = theme.colors.text.tertiary;
+  const textPrimary = theme.colors.text.primary;
 
   const totalCells = rowsPerColumn * columns;
   const cells = data.slice(0, totalCells);

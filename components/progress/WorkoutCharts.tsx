@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
+import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { BarChart } from '../charts/BarChart';
@@ -16,6 +17,7 @@ interface WorkoutChartsProps {
 
 export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <View>
@@ -27,8 +29,8 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <LineChart
             data={workoutVolumeHistory.map((p) => ({ x: p.date, y: p.volume }))}
             height={200}
-            lineColor="#8b5cf6"
-            areaColor="rgba(139, 92, 246, 0.1)"
+            lineColor={theme.colors.status.violet500}
+            areaColor={theme.colors.status.purple10}
             xDomain={[
               workoutVolumeHistory[0].date,
               workoutVolumeHistory[workoutVolumeHistory.length - 1].date,
@@ -51,7 +53,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <BarChart
             data={muscleGroupSets.map((m, i) => ({ x: i, y: m.sets }))}
             height={200}
-            barColor="#ec4899"
+            barColor={theme.colors.status.pink500}
             xAxisLabels={getXAxisLabels(
               muscleGroupSets.map((m, i) => ({ x: i })),
               (x) => t(getMuscleGroupTranslationKey(muscleGroupSets[x].muscleGroup))

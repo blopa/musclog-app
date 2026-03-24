@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { theme } from '../../theme';
+
 import { ActivityRingsChart } from '../../components/charts/ActivityRingsChart';
 import {
   AreaChart,
@@ -65,9 +67,9 @@ export default function GraphsTestScreen() {
 
   // Sample data for AreaChart (Metabolic Flow: fat, carb & protein burn over time)
   const areaChartSeries: AreaChartSeriesConfig[] = [
-    { key: 'protein', label: 'Protein', color: '#BF5AF2', value: '23%' },
-    { key: 'fats', label: 'Fats', color: '#00E5FF', value: '35%' },
-    { key: 'carbs', label: 'Carbs', color: '#00FFA2', value: '42%' },
+    { key: 'protein', label: 'Protein', color: theme.colors.status.purple, value: '23%' },
+    { key: 'fats', label: 'Fats', color: theme.colors.status.teal400, value: '35%' },
+    { key: 'carbs', label: 'Carbs', color: theme.colors.status.emeraldLight, value: '42%' },
   ];
   const [areaChartData, setAreaChartData] = useState<AreaChartDatum[]>([
     { x: 0, protein: 20, fats: 50, carbs: 70 },
@@ -79,8 +81,8 @@ export default function GraphsTestScreen() {
 
   // Sample data for MultipleLinesChart (Activity Comparison: Active vs Resting Energy)
   const multipleLinesSeries: MultipleLinesChartSeriesConfig[] = [
-    { key: 'active', label: 'Active', color: '#00FFA2', value: '2,450 kcal' },
-    { key: 'resting', label: 'Resting', color: '#00E5FF', value: '1,820 kcal', dashed: true },
+    { key: 'active', label: 'Active', color: theme.colors.status.emeraldLight, value: '2,450 kcal' },
+    { key: 'resting', label: 'Resting', color: theme.colors.status.teal400, value: '1,820 kcal', dashed: true },
   ];
   const [multipleLinesData, setMultipleLinesData] = useState<MultipleLinesChartDatum[]>([
     { x: 0, active: 65, resting: 50 },
@@ -342,7 +344,7 @@ export default function GraphsTestScreen() {
                 height={260}
                 stackedDomain={[0, 25]}
                 lineDomain={[60, 100]}
-                stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
+                stackColors={[theme.colors.status.info, theme.colors.status.error, theme.colors.status.yellow, theme.colors.accent.primary]}
                 leftAxisLabels={['0', '10', '20', '25']}
                 rightAxisLabels={['60', '80', '100']}
                 xAxisLabels={getXAxisLabels(
@@ -376,9 +378,9 @@ export default function GraphsTestScreen() {
                   title="Daily Goals"
                   subtitle="Activity Rings"
                   rings={[
-                    { progress: 0.8, color: '#00FFA2', label: 'Move', value: '80%' },
-                    { progress: 0.65, color: '#00E5FF', label: 'Steps', value: '65%' },
-                    { progress: 0.45, color: '#BF5AF2', label: 'Rest', value: '45%' },
+                    { progress: 0.8, color: theme.colors.status.emeraldLight, label: 'Move', value: '80%' },
+                    { progress: 0.65, color: theme.colors.status.teal400, label: 'Steps', value: '65%' },
+                    { progress: 0.45, color: theme.colors.status.purple, label: 'Rest', value: '45%' },
                   ]}
                   centerValue="82"
                   centerLabel="Score"
@@ -393,10 +395,10 @@ export default function GraphsTestScreen() {
                 phaseLabel="Follicular Phase • Day 12"
                 badge={{ title: 'Conception Chance', value: 'Peak Window' }}
                 segments={[
-                  { width: 0.2, color: '#BF5AF2', label: 'Menstrual', opacity: 0.6 },
-                  { width: 0.3, color: '#00FFA2', label: 'Follicular', opacity: 0.4 },
-                  { width: 0.15, color: '#FF9F21', label: 'Ovulatory', opacity: 0.7 },
-                  { width: 0.35, color: '#00E5FF', label: 'Luteal', opacity: 0.4 },
+                  { width: 0.2, color: theme.colors.status.purple, label: 'Menstrual', opacity: 0.6 },
+                  { width: 0.3, color: theme.colors.status.emeraldLight, label: 'Follicular', opacity: 0.4 },
+                  { width: 0.15, color: theme.colors.status.warning, label: 'Ovulatory', opacity: 0.7 },
+                  { width: 0.35, color: theme.colors.status.teal400, label: 'Luteal', opacity: 0.4 },
                 ]}
                 todayPosition={0.42}
               />
@@ -528,7 +530,7 @@ export default function GraphsTestScreen() {
                 data={stackedBarData}
                 height={200}
                 yDomain={[0, 25]}
-                stackColors={['#3b82f6', '#ef4444', '#eab308', '#22c55e']}
+                stackColors={[theme.colors.status.info, theme.colors.status.error, theme.colors.status.yellow, theme.colors.accent.primary]}
                 xAxisLabels={getXAxisLabels(
                   stackedBarData,
                   (x) => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][x]
@@ -654,7 +656,7 @@ export default function GraphsTestScreen() {
                 rowsPerColumn={7}
                 columns={12}
                 gridHeight={128}
-                accentColor="#00FFA2"
+                accentColor={theme.colors.status.emeraldLight}
               />
             </View>
           </View>
@@ -675,7 +677,7 @@ export default function GraphsTestScreen() {
                 centerScoreLabel="PTS"
                 primaryFocus="Power Output"
                 areaToImprove="Flexibility"
-                dataColor="#00FFA2"
+                dataColor={theme.colors.status.emeraldLight}
                 size={280}
               />
             </View>

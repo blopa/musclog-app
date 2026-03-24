@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme';
 
 export type CycleSegmentConfig = {
   /** Width ratio 0–1 (e.g. 0.2 for 20%) */
@@ -32,10 +33,11 @@ export type CycleTrackingChartProps = {
 };
 
 const DEFAULT_SEGMENTS: CycleSegmentConfig[] = [
-  { width: 0.2, color: '#BF5AF2', label: 'Menstrual', opacity: 0.6 },
-  { width: 0.3, color: '#00FFA2', label: 'Follicular', opacity: 0.4 },
-  { width: 0.15, color: '#FF9F21', label: 'Ovulatory', opacity: 0.7 },
-  { width: 0.35, color: '#00E5FF', label: 'Luteal', opacity: 0.4 },
+  // TODO: use i18n for the labels
+  { width: 0.2, color: appTheme.colors.status.purple, label: 'Menstrual', opacity: 0.6 },
+  { width: 0.3, color: appTheme.colors.status.emeraldLight, label: 'Follicular', opacity: 0.4 },
+  { width: 0.15, color: appTheme.colors.status.warning, label: 'Ovulatory', opacity: 0.7 },
+  { width: 0.35, color: appTheme.colors.status.teal400, label: 'Luteal', opacity: 0.4 },
 ];
 
 export function CycleTrackingChart({
@@ -70,7 +72,7 @@ export function CycleTrackingChart({
                     width: 8,
                     height: 8,
                     borderRadius: 4,
-                    backgroundColor: theme.colors.accent.primary ?? '#00FFA2',
+                    backgroundColor: theme.colors.accent.primary,
                     opacity: 0.9,
                   }}
                 />
@@ -79,7 +81,7 @@ export function CycleTrackingChart({
                 style={{
                   fontSize: theme.typography.fontSize.base,
                   fontWeight: '500',
-                  color: theme.colors.accent.primary ?? '#00FFA2',
+                  color: theme.colors.accent.primary,
                 }}
               >
                 {phaseLabel}

@@ -8,6 +8,7 @@ import NutritionCheckin from '../database/models/NutritionCheckin';
 import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
+import { theme } from '../theme';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -35,7 +36,7 @@ export class NotificationService {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+        lightColor: theme.colors.status.error,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {

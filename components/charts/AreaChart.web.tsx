@@ -103,7 +103,7 @@ export function AreaChart({
   const gapChartToLabels = 2;
   const chartHeight = height - gapChartToLabels - xAxisGap;
   const gridColor = gridLineColor ?? theme.colors.border.light;
-  const mutedColor = theme.colors.text.tertiary ?? '#7E8A87';
+  const mutedColor = theme.colors.text.tertiary;
 
   const peakSeries = peak ? series.find((s) => s.key === peak.seriesKey) : null;
   const peakDatum =
@@ -312,7 +312,7 @@ export function AreaChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.sm,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',
