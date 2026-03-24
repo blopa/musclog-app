@@ -182,6 +182,7 @@ export default function CreateWorkoutModal({
                 >
                   {t('createWorkout.workoutTitle')}
                 </Text>
+                {/*TODO: use TextInput from theme instead*/}
                 <TextInput
                   value={workoutTitle}
                   onChangeText={setWorkoutTitle}
@@ -230,6 +231,7 @@ export default function CreateWorkoutModal({
                 >
                   {t('createWorkout.description')}
                 </Text>
+                {/*TODO: use TextInput from theme instead*/}
                 <TextInput
                   value={description}
                   onChangeText={setDescription}
