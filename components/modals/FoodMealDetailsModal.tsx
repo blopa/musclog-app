@@ -1511,7 +1511,7 @@ export function FoodMealDetailsModal({
           />
 
           {/* Form Sections */}
-          <View className="gap-6">
+          <View className="gap-6 mt-6">
             {/* Same serving size input for both food and meal (editable, same UX) */}
             {mode !== 'meal' ? (
               <ServingSizeSelector value={servingSize} onChange={setServingSize} />

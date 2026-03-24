@@ -1,13 +1,15 @@
 import { Food } from 'database/models';
-import { Minus, Plus } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
+import { GenericCard } from './cards/GenericCard';
+import { FilterTabs } from './FilterTabs';
+import { StepperInput } from './theme/StepperInput';
 
 type ServingSizeSelectorProps = {
   value: number;
@@ -34,7 +36,7 @@ export function ServingSizeSelector({
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
 
-  const { portions, isLoading } = useFoodPortions({
+  const { portions } = useFoodPortions({
     mode: 'all',
     food,
   });
@@ -58,114 +60,39 @@ export function ServingSizeSelector({
 
   const effectiveQuickSizes = quickSizes || databaseQuickSizes;
 
-  const handleDecrease = () => {
-    onChange(Math.max(0, value - stepAmount));
-  };
+  const handleDecrease = () => onChange(Math.max(0, value - stepAmount));
+  const handleIncrease = () => onChange(value + stepAmount);
+  const handleChangeValue = (displayVal: number) => onChange(displayToGrams(displayVal, units));
 
-  const handleIncrease = () => {
-    onChange(value + stepAmount);
-  };
-
-  const handleTextChange = (text: string) => {
-    const parsed = parseFloat(text) || 0;
-    onChange(displayToGrams(parsed, units));
-  };
+  const quickSizeTabs = effectiveQuickSizes.map((size) => ({
+    id: String(size.value),
+    label: size.label,
+  }));
 
   return (
-    <View className="mt-6 w-full">
-      <View className="mb-2 flex-row items-center justify-between">
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-          {t('food.foodDetails.servingSize')}
-        </Text>
+    <GenericCard variant="default">
+      <View className="mt-6 w-full gap-3 pl-4 pr-4">
+        <StepperInput
+          label={t('food.foodDetails.servingSize')}
+          value={displayValue}
+          onIncrement={handleIncrease}
+          onDecrement={handleDecrease}
+          onChangeValue={handleChangeValue}
+          unit={massUnit}
+        />
+        {quickSizeTabs.length > 0 ? (
+          <FilterTabs
+            tabs={quickSizeTabs}
+            activeTab={String(value)}
+            onTabChange={(id) => onChange(Number(id))}
+            showContainer={false}
+            scrollViewContentContainerStyle={{
+              paddingHorizontal: theme.spacing.padding.sm,
+              paddingVertical: theme.spacing.padding.sm,
+            }}
+          />
+        ) : null}
       </View>
-      <View
-        className="rounded-xl border bg-bg-cardDark p-2"
-        style={{ borderColor: theme.colors.background.white10 }}
-      >
-        <View className="mb-4 flex-row items-center gap-3">
-          <Pressable
-            className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border bg-bg-overlay"
-            style={{ borderColor: theme.colors.background.white5 }}
-            onPress={handleDecrease}
-            disabled={isLoading}
-          >
-            <Minus size={theme.iconSize.md} color={theme.colors.text.secondary} />
-          </Pressable>
-          <View className="flex-1 items-center justify-center py-1" style={{ minWidth: 0 }}>
-            <View className="relative flex-row items-baseline justify-center">
-              <RNTextInput
-                className="bg-transparent p-0 text-center text-4xl font-black text-text-primary"
-                style={{
-                  color: theme.colors.text.primary,
-                  width: theme.size['30'],
-                  maxWidth: '100%',
-                }}
-                value={String(
-                  displayValue % 1 === 0 ? displayValue : Math.round(displayValue * 10) / 10
-                )}
-                onChangeText={handleTextChange}
-                keyboardType="numeric"
-                placeholder="0"
-                placeholderTextColor={theme.colors.text.primary20}
-                selectTextOnFocus={true}
-                editable={!isLoading}
-              />
-              <Text className="absolute -right-6 bottom-1.5 text-lg font-bold text-text-secondary">
-                {massUnit}
-              </Text>
-            </View>
-            <Text className="mt-1 text-xs text-text-secondary">
-              {massUnit === 'g' ? t('food.foodDetails.grams') : t('food.foodDetails.unitOz', 'oz')}
-            </Text>
-          </View>
-          <Pressable
-            className="h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-accent-primary/20 bg-accent-primary/10"
-            onPress={handleIncrease}
-            disabled={isLoading}
-          >
-            <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </Pressable>
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: theme.spacing.padding.sm,
-            paddingVertical: theme.spacing.padding.sm,
-          }}
-          className="flex-row gap-4 pb-2"
-        >
-          {effectiveQuickSizes.map((size) => (
-            <Pressable
-              key={size.label}
-              className={`rounded-full border px-4 ${
-                value === size.value
-                  ? 'border-accent-primary/20 bg-accent-primary/10'
-                  : 'bg-bg-overlay/50'
-              }`}
-              style={{
-                paddingVertical: theme.spacing.padding['1half'],
-                marginHorizontal: theme.spacing.margin.xs,
-                borderColor:
-                  value === size.value
-                    ? theme.colors.accent.primary20
-                    : theme.colors.background.white5,
-                opacity: isLoading ? 0.5 : 1,
-              }}
-              onPress={() => onChange(size.value)}
-              disabled={isLoading}
-            >
-              <Text
-                className={`text-xs font-medium ${
-                  value === size.value ? 'font-bold text-accent-primary' : 'text-text-secondary'
-                }`}
-              >
-                {size.label}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-    </View>
+    </GenericCard>
   );
 }

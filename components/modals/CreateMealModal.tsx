@@ -27,8 +27,8 @@ import type { Theme } from '../../theme';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
-import { TextInput } from '../theme/TextInput';
 import { MenuButton } from '../theme/MenuButton';
+import { TextInput } from '../theme/TextInput';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerModal } from './DatePickerModal';
@@ -729,50 +729,20 @@ export function CreateMealModal({
               ))
             )}
 
-            <Pressable
-              onPress={() => setIsAddFoodVisible(true)}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing.gap.sm,
-                paddingVertical: theme.spacing.padding.base,
-                marginTop: theme.spacing.padding.sm,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: theme.borderWidth.thin,
-                borderStyle: 'dashed',
-                borderColor: theme.colors.border.dashed,
-                backgroundColor: pressed ? theme.colors.accent.primary5 : 'transparent',
-              })}
-            >
-              <View
-                style={{
-                  width: theme.iconSize.xl,
-                  height: theme.iconSize.xl,
-                  borderRadius: theme.borderRadius.md,
-                  backgroundColor: theme.colors.background.secondaryDark,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Plus
-                  size={theme.iconSize.sm}
-                  color={theme.colors.text.secondary}
-                  strokeWidth={theme.strokeWidth.thick}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                }}
-              >
-                {isQuickTrack
+            <Button
+              variant="dashed"
+              size="sm"
+              width="full"
+              icon={Plus}
+              iconBgColor={theme.colors.background.secondaryDark}
+              label={
+                isQuickTrack
                   ? t('food.quickTrackMeal.addIngredient')
-                  : t('food.createMeal.addFoodItem')}
-              </Text>
-            </Pressable>
+                  : t('food.createMeal.addFoodItem')
+              }
+              onPress={() => setIsAddFoodVisible(true)}
+              style={{ marginTop: theme.spacing.padding.sm }}
+            />
           </View>
         </View>
 

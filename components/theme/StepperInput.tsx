@@ -119,7 +119,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               selectTextOnFocus
             />
             {unit ? (
-              <Text className="ml-1 flex-shrink-0 text-2xl font-normal text-text-tertiary">
+              <Text className="ml-1 flex-shrink-0 text-2xl font-normal text-text-tertiary mr-2">
                 {unit}
               </Text>
             ) : null}
