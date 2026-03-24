@@ -16,6 +16,7 @@ import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
 import Schedule from './models/Schedule';
 import Setting from './models/Setting';
+import Supplement from './models/Supplement';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
 import UserMetricsNote from './models/UserMetricsNote';
@@ -39,6 +40,7 @@ export const database = new Database({
     User,
     MenstrualCycle,
     Setting,
+    Supplement,
     WorkoutTemplate,
     WorkoutTemplateExercise,
     Schedule,

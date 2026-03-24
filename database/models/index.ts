@@ -13,6 +13,7 @@ export { default as NutritionGoal } from './NutritionGoal';
 export { default as NutritionLog } from './NutritionLog';
 export { default as Schedule } from './Schedule';
 export { default as Setting } from './Setting';
+export { default as Supplement } from './Supplement';
 export { default as User } from './User';
 export { default as UserMetric } from './UserMetric';
 export { default as UserMetricsNote } from './UserMetricsNote';

@@ -44,6 +44,7 @@ export default class UserMetric extends Model {
 
   @field('type') type!: UserMetricType;
   @field('external_id') externalId?: string;
+  @field('supplement_id') supplementId?: string;
   @field('value') valueRaw!: string;
   @field('unit') unitRaw?: string;
   @field('date') date!: number;
