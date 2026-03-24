@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
+import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -21,6 +22,7 @@ export function BodyMetricsCharts({
   units,
 }: BodyMetricsChartsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -34,8 +36,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={weightHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#3b82f6"
-            areaColor="rgba(59, 130, 246, 0.1)"
+            lineColor={theme.colors.status.info}
+            areaColor={theme.colors.status.info10}
             xDomain={[weightHistory[0].date, weightHistory[weightHistory.length - 1].date]}
             yDomain={[
               Math.min(...weightHistory.map((p) => p.value)) * 0.95,
@@ -61,8 +63,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={fatHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#ef4444"
-            areaColor="rgba(239, 68, 68, 0.1)"
+            lineColor={theme.colors.status.error}
+            areaColor={theme.colors.status.error10}
             xDomain={[fatHistory[0].date, fatHistory[fatHistory.length - 1].date]}
             yDomain={[
               Math.min(...fatHistory.map((p) => p.value)) * 0.9,
@@ -85,8 +87,8 @@ export function BodyMetricsCharts({
           <LineChart
             data={ffmiHistory.map((p) => ({ x: p.date, y: p.value }))}
             height={200}
-            lineColor="#10b981"
-            areaColor="rgba(16, 185, 129, 0.1)"
+            lineColor={theme.colors.accent.secondary}
+            areaColor={theme.colors.accent.secondary10}
             xDomain={[ffmiHistory[0].date, ffmiHistory[ffmiHistory.length - 1].date]}
             yDomain={[
               Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,

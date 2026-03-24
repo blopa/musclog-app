@@ -2,6 +2,7 @@ import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { showSnackbar } from '../utils/snackbarService';
 
 function sanitizeFilename(title: string): string {
@@ -30,7 +31,7 @@ export function useChartCapture() {
     try {
       const domNode = captureRef.current as unknown as HTMLElement;
       const dataUrl = await toPng(domNode, {
-        backgroundColor: '#0a1f1a',
+        backgroundColor: theme.colors.background.primary,
         pixelRatio: 2,
       });
 

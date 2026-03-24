@@ -127,7 +127,7 @@ export function FoodMealDetailsModal({
   };
 
   const [servingSize, setServingSize] = useState(100);
-  const [mealPortionMultiplier, setMealPortionMultiplier] = useState(1);
+
   /** Total weight of the meal in grams (sum of all ingredients). Used when tracking a saved meal. */
   const [totalMealGrams, setTotalMealGrams] = useState(0);
   /** Amount in grams to log (user-editable). Defaults to totalMealGrams so "1 full meal". */
@@ -160,7 +160,6 @@ export function FoodMealDetailsModal({
     fiber: number;
   } | null>(null);
 
-  // TODO: use this isLoadingMealNutrients variable, or remove it
   const [isLoadingMealNutrients, setIsLoadingMealNutrients] = useState(false);
   const [foodLogDecrypted, setFoodLogDecrypted] = useState<DecryptedNutritionLogSnapshot | null>(
     null
@@ -908,7 +907,7 @@ export function FoodMealDetailsModal({
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
   const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
   const mealScaleFactor =
-    meal && totalMealGrams > 0 ? effectiveMealAmountGrams / totalMealGrams : mealPortionMultiplier;
+    meal && totalMealGrams > 0 ? effectiveMealAmountGrams / totalMealGrams : 1;
 
   // Calculate nutritional values based on serving size (for foods) or use meal nutrients directly
   const getScaledNutrition = useCallback(() => {
@@ -1491,7 +1490,8 @@ export function FoodMealDetailsModal({
               disabled={
                 isAddingFood ||
                 (mode === 'meal' && mealAmountGrams < 1) ||
-                (isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog')
+                (isLoadingDetails && mode !== 'meal' && mode !== 'food' && mode !== 'foodLog') ||
+                (isLoadingMealNutrients && mode === 'meal')
               }
               loading={isAddingFood}
             />
@@ -1511,7 +1511,7 @@ export function FoodMealDetailsModal({
           />
 
           {/* Form Sections */}
-          <View className="gap-6">
+          <View className="mt-6 gap-6">
             {/* Same serving size input for both food and meal (editable, same UX) */}
             {mode !== 'meal' ? (
               <ServingSizeSelector value={servingSize} onChange={setServingSize} />

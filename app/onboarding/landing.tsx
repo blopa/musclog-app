@@ -11,16 +11,11 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { CenteredModal } from '../../components/modals/CenteredModal';
 import { Button } from '../../components/theme/Button';
 import { TextInput } from '../../components/theme/TextInput';
-import {
-  CURRENT_ONBOARDING_VERSION,
-  ONBOARDING_COMPLETED,
-  ONBOARDING_VERSION,
-} from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { importDatabase, shouldSeedDevData } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');

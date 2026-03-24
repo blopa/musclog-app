@@ -111,7 +111,7 @@ export function ScannedFoodDetailsModal({
     return (
       <View>
         <FoodInfoCard food={foodInfo} />
-
+        <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
         <ServingSizeSelector
           value={amount}
           onChange={setAmount}

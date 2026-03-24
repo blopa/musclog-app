@@ -20,7 +20,7 @@ import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';

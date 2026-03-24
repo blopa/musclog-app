@@ -1,4 +1,4 @@
-const { darkTheme } = require('./theme');
+const { darkTheme } = require('./theme'); // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 /**
  * Tailwind Configuration for NativeWind
@@ -56,6 +56,7 @@ module.exports = {
           accent: darkTheme.colors.text.accent,
           accentLight: darkTheme.colors.text.accentLight,
           black: darkTheme.colors.text.black,
+          'on-colorful': darkTheme.colors.text.onColorful,
         },
         // Accent colors
         accent: {

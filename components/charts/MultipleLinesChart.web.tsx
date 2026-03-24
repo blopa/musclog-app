@@ -265,7 +265,7 @@ export function MultipleLinesChart({
                 borderRadius: theme.borderRadius.xs,
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.sm,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
                 zIndex: 100,
                 alignItems: 'center',
                 justifyContent: 'center',

@@ -8,7 +8,7 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import {
   calculateDateRange,
   filterWorkoutsBySearch,

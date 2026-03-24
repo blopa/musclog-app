@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export type SpiderChartProps = {
   /** Chart title */
@@ -33,8 +34,8 @@ export type SpiderChartProps = {
   className?: string;
 };
 
-const DEFAULT_DATA_COLOR = '#00FFA2';
-const DEFAULT_GRID_COLOR = '#1C2623';
+const DEFAULT_DATA_COLOR = appTheme.colors.status.emeraldLight;
+const DEFAULT_GRID_COLOR = appTheme.colors.border.dark;
 
 /** Angle in degrees for vertex i (0 at top, then clockwise). */
 function vertexAngle(i: number, count: number): number {
@@ -87,8 +88,8 @@ export function SpiderChart({
   const maxRadius = size * 0.43; // ~130 for 300
 
   const gridColor = theme.colors?.border?.light ?? DEFAULT_GRID_COLOR;
-  const mutedColor = theme.colors?.text?.tertiary ?? '#7E8A87';
-  const textPrimary = theme.colors?.text?.primary ?? '#ffffff';
+  const mutedColor = theme.colors.text.tertiary;
+  const textPrimary = theme.colors.text.primary;
   const dataColorResolved = dataColor ?? theme.colors?.accent?.primary ?? DEFAULT_DATA_COLOR;
 
   // Concentric grid polygons (outer to inner)
@@ -219,7 +220,7 @@ export function SpiderChart({
                 width: 64,
                 height: 64,
                 borderRadius: 32,
-                backgroundColor: theme.colors?.background?.primary ?? 'rgba(11, 17, 16, 0.8)',
+                backgroundColor: theme.colors.background.primary,
                 borderWidth: 1,
                 borderColor: gridColor,
                 alignItems: 'center',

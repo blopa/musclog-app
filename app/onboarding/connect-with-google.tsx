@@ -7,7 +7,7 @@ import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountB
 import { MasterLayout } from '../../components/MasterLayout';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { useScrollFade } from '../../hooks/useScrollFade';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { setCurrentOnboardingStep } from '../../utils/onboardingService';
 import { showSnackbar } from '../../utils/snackbarService';
 

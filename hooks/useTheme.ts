@@ -1,6 +1,7 @@
 import { useColorScheme } from 'react-native';
 
 import type { ThemeOption } from '../constants/settings';
+// only place that it's ok to import from theme
 import { darkTheme, lightTheme, type Theme } from '../theme';
 import { useSettings } from './useSettings';
 

@@ -39,7 +39,8 @@ import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
-import { theme } from '../theme';
+import packageJson from '../package.json';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
@@ -375,18 +376,23 @@ export default function HomeScreen() {
               </>
             )}
           </Pressable>
-          {SHOW_NOTIFICATIONS ? (
-            <Pressable
-              className="relative rounded-full bg-bg-overlay p-3"
-              onPress={() => setIsNotificationsVisible(true)}
-            >
-              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-              <View
-                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: theme.colors.status.notificationBadge }}
-              />
-            </Pressable>
-          ) : null}
+          <View className="items-end gap-2">
+            <Text className="text-xs text-text-secondary opacity-40">
+              {`Musclog v${packageJson.version}`}
+            </Text>
+            {SHOW_NOTIFICATIONS ? (
+              <Pressable
+                className="relative rounded-full bg-bg-overlay p-3"
+                onPress={() => setIsNotificationsVisible(true)}
+              >
+                <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
+                <View
+                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: theme.colors.status.notificationBadge }}
+                />
+              </Pressable>
+            ) : null}
+          </View>
         </View>
 
         {/* Daily Summary Card */}

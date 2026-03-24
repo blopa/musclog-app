@@ -12,6 +12,7 @@ interface StepperInputProps {
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
   unit?: string;
+  step?: number;
 }
 
 export const StepperInput: FC<StepperInputProps> = ({
@@ -21,6 +22,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   onDecrement,
   onChangeValue,
   unit,
+  step = 1,
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -39,11 +41,6 @@ export const StepperInput: FC<StepperInputProps> = ({
       setInputValue(value.toFixed(1));
     }
   }, [value, editing]);
-
-  const handleChange = (newValue: number) => {
-    setInternalValue(newValue);
-    onChangeValue?.(newValue);
-  };
 
   const handleValuePress = () => {
     setEditing(true);
@@ -89,8 +86,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            const newVal = internalValue - 1;
-            handleChange(newVal);
+            setInternalValue((prev) => prev - step);
             onDecrement();
           }}
           accessibilityLabel={t('common.decreaseValue')}
@@ -119,7 +115,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               selectTextOnFocus
             />
             {unit ? (
-              <Text className="ml-1 flex-shrink-0 text-2xl font-normal text-text-tertiary">
+              <Text className="ml-1 mr-2 flex-shrink-0 text-2xl font-normal text-text-tertiary">
                 {unit}
               </Text>
             ) : null}
@@ -135,7 +131,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {internalValue.toFixed(1)}{' '}
+              {internalValue % 1 === 0 ? String(internalValue) : internalValue.toFixed(1)}{' '}
               {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
             </Text>
           </Pressable>
@@ -144,8 +140,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            const newVal = internalValue + 1;
-            handleChange(newVal);
+            setInternalValue((prev) => prev + step);
             onIncrement();
           }}
           accessibilityLabel={t('common.increaseValue')}

@@ -2,7 +2,7 @@ import { LucideIcon, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 

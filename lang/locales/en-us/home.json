@@ -12,6 +12,12 @@
       "recentFoods": "Recent Foods",
       "dailySummary": "Daily Summary"
     },
+    "activityRings": {
+      "move": "Move",
+      "steps": "Steps",
+      "rest": "Rest",
+      "score": "Score"
+    },
     "navigation": {
       "home": "Home",
       "profile": "Profile",

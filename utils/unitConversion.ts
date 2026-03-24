@@ -65,6 +65,7 @@ export function displayToGrams(value: number, units: Units): number {
   if (units === 'imperial') {
     return convert(value, 'oz').to('g') as number;
   }
+
   return value;
 }
 

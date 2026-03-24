@@ -92,6 +92,201 @@ const widthClasses = {
   auto: '',
 };
 
+const getGradientColors = (
+  theme: Theme,
+  isDisabled: boolean,
+  isGradientCtaVariant: boolean,
+  isRedVariant: boolean,
+  isSecondaryGradientVariant: boolean,
+  isSecondaryVariant: boolean
+): readonly [string, string, ...string[]] => {
+  if (isDisabled) {
+    return [theme.colors.background.white10, theme.colors.background.white10] as const;
+  }
+
+  if (isGradientCtaVariant) {
+    return theme.colors.gradients.cta;
+  }
+
+  if (isRedVariant) {
+    return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
+  }
+
+  if (isSecondaryGradientVariant) {
+    return theme.colors.gradients.button;
+  }
+
+  if (isSecondaryVariant) {
+    return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
+  }
+
+  return theme.colors.gradients.accent;
+};
+
+const getTextColor = (
+  theme: Theme,
+  isDisabled: boolean,
+  isOutlineVariant: boolean,
+  isDashedVariant: boolean,
+  isSecondaryVariant: boolean
+): string => {
+  if (isDisabled) {
+    return theme.colors.text.primary30;
+  }
+
+  if (isOutlineVariant) {
+    return theme.colors.text.gray300;
+  }
+
+  if (isDashedVariant) {
+    return theme.colors.text.secondary;
+  }
+
+  if (isSecondaryVariant) {
+    return theme.colors.text.primary;
+  }
+
+  return theme.colors.text.onColorful;
+};
+
+const getIconColor = (
+  theme: Theme,
+  isDisabled: boolean,
+  isOutlineVariant: boolean,
+  isDashedVariant: boolean,
+  isSecondaryVariant: boolean
+): string => {
+  if (isDisabled) {
+    return theme.colors.text.primary30;
+  }
+
+  if (isOutlineVariant) {
+    return theme.colors.text.gray300;
+  }
+
+  if (isDashedVariant) {
+    return theme.colors.text.secondary;
+  }
+
+  if (isSecondaryVariant) {
+    return theme.colors.accent.secondary;
+  }
+
+  return theme.colors.text.onColorful;
+};
+
+const getShadowStyle = (
+  theme: Theme,
+  configShadow: object,
+  isDisabled: boolean,
+  isOutlineVariant: boolean,
+  isSecondaryVariant: boolean,
+  isSecondaryGradientVariant: boolean,
+  isDashedVariant: boolean,
+  isGradientCtaVariant: boolean,
+  isRedVariant: boolean
+) => {
+  if (
+    isDisabled ||
+    isOutlineVariant ||
+    isSecondaryVariant ||
+    isSecondaryGradientVariant ||
+    isDashedVariant
+  ) {
+    return theme.shadows.none;
+  }
+
+  if (isGradientCtaVariant) {
+    return theme.shadows.none;
+  }
+
+  if (isRedVariant) {
+    return theme.shadows.roseGlow;
+  }
+
+  return configShadow;
+};
+
+const getButtonTextClassName = (
+  isDisabled: boolean,
+  isOutlineVariant: boolean,
+  isDashedVariant: boolean,
+  isSecondaryVariant: boolean
+): string => {
+  if (isDisabled) {
+    return 'text-white/30';
+  }
+
+  if (isOutlineVariant) {
+    return 'text-gray-300';
+  }
+
+  if (isDashedVariant) {
+    return 'text-text-secondary';
+  }
+
+  if (isSecondaryVariant) {
+    return 'text-text-primary';
+  }
+
+  return 'text-text-on-colorful';
+};
+
+const getOutlineBackgroundColor = (
+  theme: Theme,
+  isOutlineVariant: boolean,
+  isDisabled: boolean,
+  isPressed: boolean
+): string | undefined => {
+  if (isOutlineVariant && !isDisabled && isPressed) {
+    return theme.colors.background.white5;
+  }
+  if (isOutlineVariant && !isDisabled) {
+    return 'transparent';
+  }
+  return undefined;
+};
+
+const getBorderWidth = (
+  theme: Theme,
+  isOutlineVariant: boolean,
+  isSecondaryVariant: boolean,
+  isSecondaryGradientVariant: boolean,
+  isDashedVariant: boolean
+): number => {
+  if (isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant) {
+    return isOutlineVariant || isDashedVariant ? theme.borderWidth.medium : theme.borderWidth.thin;
+  }
+
+  return theme.borderWidth.none;
+};
+
+const getBorderColor = (
+  theme: Theme,
+  isOutlineVariant: boolean,
+  isDashedVariant: boolean,
+  isSecondaryGradientVariant: boolean,
+  isSecondaryVariant: boolean
+): string => {
+  if (isOutlineVariant) {
+    return theme.colors.background.white10;
+  }
+
+  if (isDashedVariant) {
+    return theme.colors.border.dashed;
+  }
+
+  if (isSecondaryGradientVariant) {
+    return theme.colors.border.emerald;
+  }
+
+  if (isSecondaryVariant) {
+    return theme.colors.border.default;
+  }
+
+  return 'transparent';
+};
+
 export function Button({
   label,
   onPress,
@@ -121,58 +316,42 @@ export function Button({
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
 
-  const gradientColors: readonly [string, string, ...string[]] = isDisabled
-    ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
-    : isGradientCtaVariant
-      ? theme.colors.gradients.cta
-      : isRedVariant
-        ? ([theme.colors.rose.brand, theme.colors.rose.brand] as const)
-        : isSecondaryGradientVariant
-          ? theme.colors.gradients.button
-          : isSecondaryVariant
-            ? ([theme.colors.background.overlay, theme.colors.background.overlay] as const)
-            : theme.colors.gradients.accent;
+  const gradientColors = getGradientColors(
+    theme,
+    isDisabled,
+    isGradientCtaVariant,
+    isRedVariant,
+    isSecondaryGradientVariant,
+    isSecondaryVariant
+  );
 
-  const textColor = isDisabled
-    ? theme.colors.text.primary30
-    : isOutlineVariant
-      ? theme.colors.text.gray300
-      : isDashedVariant
-        ? theme.colors.text.secondary
-        : isGradientCtaVariant
-          ? theme.colors.text.white
-          : isSecondaryVariant || isSecondaryGradientVariant
-            ? theme.colors.text.primary
-            : isRedVariant
-              ? theme.colors.text.white
-              : theme.colors.text.white;
+  const textColor = getTextColor(
+    theme,
+    isDisabled,
+    isOutlineVariant,
+    isDashedVariant,
+    isSecondaryVariant
+  );
 
-  const iconColor = isDisabled
-    ? theme.colors.text.primary30
-    : isOutlineVariant
-      ? theme.colors.text.gray300
-      : isDashedVariant
-        ? theme.colors.text.secondary
-        : isGradientCtaVariant
-          ? theme.colors.text.white
-          : isSecondaryVariant || isSecondaryGradientVariant
-            ? theme.colors.accent.secondary
-            : isRedVariant
-              ? theme.colors.text.white
-              : theme.colors.text.white;
+  const iconColor = getIconColor(
+    theme,
+    isDisabled,
+    isOutlineVariant,
+    isDashedVariant,
+    isSecondaryVariant
+  );
 
-  const shadow =
-    isDisabled ||
-    isOutlineVariant ||
-    isSecondaryVariant ||
-    isSecondaryGradientVariant ||
-    isDashedVariant
-      ? theme.shadows.none
-      : isGradientCtaVariant
-        ? theme.shadows.none
-        : isRedVariant
-          ? theme.shadows.roseGlow
-          : config.shadow;
+  const shadow = getShadowStyle(
+    theme,
+    config.shadow,
+    isDisabled,
+    isOutlineVariant,
+    isSecondaryVariant,
+    isSecondaryGradientVariant,
+    isDashedVariant,
+    isGradientCtaVariant,
+    isRedVariant
+  );
 
   const finalIconColor = customIconColor || iconColor;
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
@@ -249,21 +428,7 @@ export function Button({
 
   const textElement = (
     <Text
-      className={`tracking-wide ${
-        isDisabled
-          ? 'text-white/30'
-          : isOutlineVariant
-            ? 'text-gray-300'
-            : isDashedVariant
-              ? 'text-text-secondary'
-              : isGradientCtaVariant
-                ? 'text-white'
-                : isSecondaryVariant || isSecondaryGradientVariant
-                  ? 'text-text-primary'
-                  : isRedVariant
-                    ? 'text-white'
-                    : 'text-white'
-      }`}
+      className={`tracking-wide ${getButtonTextClassName(isDisabled, isOutlineVariant, isDashedVariant, isSecondaryVariant)}`}
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,
@@ -304,12 +469,12 @@ export function Button({
     </View>
   );
 
-  const outlineBackgroundColor =
-    isOutlineVariant && !isDisabled && isPressed
-      ? theme.colors.background.white5
-      : isOutlineVariant && !isDisabled
-        ? 'transparent'
-        : undefined;
+  const outlineBackgroundColor = getOutlineBackgroundColor(
+    theme,
+    isOutlineVariant,
+    isDisabled,
+    isPressed
+  );
 
   // Determine border style for dashed variant
   const borderStyle = isDashedVariant ? 'dashed' : 'solid';
@@ -323,22 +488,21 @@ export function Button({
     ...shadow,
     opacity: isDisabled ? theme.colors.opacity.full : undefined,
     backgroundColor: outlineBackgroundColor,
-    borderWidth:
-      isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
-        ? isOutlineVariant || isDashedVariant
-          ? theme.borderWidth.medium
-          : theme.borderWidth.thin
-        : theme.borderWidth.none,
+    borderWidth: getBorderWidth(
+      theme,
+      isOutlineVariant,
+      isSecondaryVariant,
+      isSecondaryGradientVariant,
+      isDashedVariant
+    ),
     borderStyle: borderStyle as 'solid' | 'dashed',
-    borderColor: isOutlineVariant
-      ? theme.colors.background.white10
-      : isDashedVariant
-        ? theme.colors.border.dashed
-        : isSecondaryGradientVariant
-          ? theme.colors.border.emerald
-          : isSecondaryVariant
-            ? theme.colors.border.default
-            : 'transparent',
+    borderColor: getBorderColor(
+      theme,
+      isOutlineVariant,
+      isDashedVariant,
+      isSecondaryGradientVariant,
+      isSecondaryVariant
+    ),
     overflow: 'hidden' as const,
     // Prevent stretching in flex containers
     alignSelf: 'flex-start' as const,

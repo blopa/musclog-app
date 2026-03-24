@@ -4,6 +4,7 @@ import { CartesianChart, Line, Scatter, StackedBar } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
@@ -57,7 +58,12 @@ export type StackedBarLineChartProps = {
 const TOOLTIP_HEIGHT = 32;
 const LABEL_BOX_WIDTH = 40;
 
-const DEFAULT_STACK_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
+const DEFAULT_STACK_COLORS = [
+  appTheme.colors.status.info,
+  appTheme.colors.status.error,
+  appTheme.colors.status.yellow,
+  appTheme.colors.accent.primary,
+];
 const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 

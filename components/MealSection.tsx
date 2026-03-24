@@ -3,7 +3,7 @@ import { memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import DashedButton from './theme/DashedButton';
 
 type MealSectionProps = {

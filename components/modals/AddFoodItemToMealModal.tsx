@@ -214,13 +214,12 @@ export function AddFoodItemToMealModal({
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
-  // Fetch foods from database
-  const { foods, isLoading } = useFoods({
+  const { foods, isLoading, isLoadingMore, hasMore, loadMore, totalCount } = useFoods({
     mode: searchQuery.trim() ? 'search' : 'list',
     searchTerm: searchQuery.trim(),
-    getAll: true,
+    initialLimit: 10,
     visible, // avoid loading while modal is hidden
-  }) as { foods: Food[]; isLoading: boolean };
+  });
 
   const selectedCount = Object.values(selectedItems).filter((i) => i.selected).length;
 
@@ -387,6 +386,23 @@ export function AddFoodItemToMealModal({
                 onAmountChange={(val) => updateAmount(food.id, val)}
               />
             ))}
+            {hasMore ? (
+              <View className="py-3">
+                <Button
+                  label={
+                    isLoadingMore
+                      ? t('food.addFoodItemToMeal.loadingMore')
+                      : t('food.addFoodItemToMeal.loadMore')
+                  }
+                  onPress={loadMore}
+                  size="sm"
+                  variant="outline"
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                  width="full"
+                />
+              </View>
+            ) : null}
             <View style={{ height: theme.size['100'] }} />
           </ScrollView>
         )}

@@ -12,7 +12,8 @@ import {
   UtensilsCrossed,
   Zap,
 } from 'lucide-react-native';
-import { ScrollView, Text, View } from 'react-native';
+import React from 'react';
+import { Animated, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CaloriesRemainingCard } from '../../components/cards/CaloriesRemainingCard';
@@ -46,11 +47,13 @@ import { TdeeCard } from '../../components/cards/TdeeCard';
 import { WorkoutCard } from '../../components/cards/WorkoutCard';
 import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
+import { RestTimer } from '../../components/RestTimer';
 import { UpNextLabel } from '../../components/UpNextLabel';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { TestSection } from './components/TestSection';
 
 export default function CardsTestScreen() {
+  const rotationAnim = React.useRef(new Animated.Value(0)).current;
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
@@ -76,6 +79,21 @@ export default function CardsTestScreen() {
         </View>
 
         <View className="h-8" />
+
+        <TestSection title="Rest Timer" subtitle="Testing circular progress logic">
+          <View className="items-center justify-center p-4">
+            <Text className="mb-2 text-text-primary">Progress: 1 (Full)</Text>
+            <RestTimer restTime={90} initialRestTime={90} rotationAnim={rotationAnim} />
+          </View>
+          <View className="items-center justify-center p-4">
+            <Text className="mb-2 text-text-primary">Progress: 0.5 (Half)</Text>
+            <RestTimer restTime={45} initialRestTime={90} rotationAnim={rotationAnim} />
+          </View>
+          <View className="items-center justify-center p-4">
+            <Text className="mb-2 text-text-primary">Progress: 0 (Empty)</Text>
+            <RestTimer restTime={0} initialRestTime={90} rotationAnim={rotationAnim} />
+          </View>
+        </TestSection>
 
         <TestSection title="Featured Workout" subtitle="Highlight your workouts">
           <WorkoutCard

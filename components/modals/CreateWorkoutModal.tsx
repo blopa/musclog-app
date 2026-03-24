@@ -1,7 +1,7 @@
 import { PlusSquare, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { WorkoutType } from '../../constants/workoutTypes';
 import { WORKOUT_TYPES } from '../../constants/workoutTypes';
@@ -13,6 +13,7 @@ import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUti
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '../theme/SegmentedControl';
+import { TextInput } from '../theme/TextInput';
 import { WeekdayPicker } from '../theme/WeekdayPicker';
 import { AddExerciseModal } from './AddExerciseModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -152,103 +153,26 @@ export default function CreateWorkoutModal({
 
           <View style={{ gap: theme.spacing.gap.base }}>
             {/* Title Input */}
-            <View
-              style={{
-                position: 'relative',
-                borderRadius: theme.borderRadius.lg,
-                overflow: 'hidden',
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor: theme.colors.background.card,
-                  borderRadius: theme.borderRadius.lg,
-                  padding: theme.spacing.padding.md,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor:
-                    focusedField === 'title'
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.light,
-                  ...(focusedField === 'title' ? theme.shadows.accentGlow : {}),
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.secondary,
-                    marginBottom: theme.spacing.margin.xs,
-                  }}
-                >
-                  {t('createWorkout.workoutTitle')}
-                </Text>
-                <TextInput
-                  value={workoutTitle}
-                  onChangeText={setWorkoutTitle}
-                  onFocus={() => setFocusedField('title')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder={t('createWorkout.workoutTitlePlaceholder')}
-                  placeholderTextColor={theme.colors.text.tertiary}
-                  style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.primary,
-                    padding: theme.spacing.padding.xs,
-                  }}
-                />
-              </View>
-            </View>
+            <TextInput
+              label={t('createWorkout.workoutTitle')}
+              value={workoutTitle}
+              onChangeText={setWorkoutTitle}
+              placeholder={t('createWorkout.workoutTitlePlaceholder')}
+              onFocus={() => setFocusedField('title')}
+              onBlur={() => setFocusedField(null)}
+            />
 
             {/* Description Input */}
-            <View
-              style={{
-                position: 'relative',
-                borderRadius: theme.borderRadius.lg,
-                overflow: 'hidden',
-              }}
-            >
-              <View
-                style={{
-                  backgroundColor: theme.colors.background.card,
-                  borderRadius: theme.borderRadius.lg,
-                  padding: theme.spacing.padding.md,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor:
-                    focusedField === 'description'
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.light,
-                  ...(focusedField === 'description' ? theme.shadows.accentGlow : {}),
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.secondary,
-                    marginBottom: theme.spacing.padding.xs,
-                  }}
-                >
-                  {t('createWorkout.description')}
-                </Text>
-                <TextInput
-                  value={description}
-                  onChangeText={setDescription}
-                  onFocus={() => setFocusedField('description')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder={t('createWorkout.descriptionPlaceholder')}
-                  placeholderTextColor={theme.colors.text.tertiary}
-                  multiline
-                  numberOfLines={3}
-                  style={{
-                    fontSize: theme.typography.fontSize.base,
-                    color: theme.colors.text.primary,
-                    padding: theme.spacing.padding.xs,
-                    minHeight: theme.size['5xl'],
-                    textAlignVertical: 'top',
-                  }}
-                />
-              </View>
-            </View>
+            <TextInput
+              label={t('createWorkout.description')}
+              value={description}
+              onChangeText={setDescription}
+              placeholder={t('createWorkout.descriptionPlaceholder')}
+              onFocus={() => setFocusedField('description')}
+              onBlur={() => setFocusedField(null)}
+              multiline
+              numberOfLines={3}
+            />
           </View>
 
           {/* Workout Type */}
@@ -276,7 +200,7 @@ export default function CreateWorkoutModal({
               {t('createWorkout.workoutType')}
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.gap.sm }}>
-              {WORKOUT_TYPES.map((type) => {
+              {WORKOUT_TYPES.filter((t) => t !== 'free').map((type) => {
                 const isSelected = workoutType === type;
                 return (
                   <Pressable

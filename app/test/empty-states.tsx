@@ -7,7 +7,7 @@ import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { ProgressIndicator } from '../../components/theme/ProgressIndicator';
 import { SkeletonLoader } from '../../components/theme/SkeletonLoader';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { TestSection } from './components/TestSection';
 
 export default function EmptyStatesTestScreen() {

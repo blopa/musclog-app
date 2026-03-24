@@ -3,121 +3,114 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
-// TODO: adjust the colors to make sure all screens look good and have good contrast
-const lightColors = {
-  // --- 💡 CORE READABILITY FIX ---
-  // If your app is built correctly, these two variables handle the bulk of your UI.
-  surfaceBlack: '#FFFFFF', // Mandatory: Was Black, now your pure white app background.
-  white: '#0F172A', // Mandatory: Was White, now Dark Slate for primary text readability.
+const kineticDepthLight = {
+  // --- Core Surfaces — Luminous Analyst palette ---
+  surfaceBlack: '#F7F9FB', // background Level 0: the airy, sophisticated base (not pure white)
+  white: '#191C1E', // on_surface: primary text — never pure black, maintains soft-light aesthetic
 
-  // --- Grays & Surface Layering (Inverted Neutral Scale) ---
-  // I have transformed this chaotic gray list into a layered light neutral scale using Slate tones.
-  gray900: '#F1F5F9', // Lightest neutral gray for secondary app backgrounds.
-  gray850: '#E2E8F0', // Standard card surface background.
-  gray800: '#CBD5E1', // Subtle border and divider color.
-  gray700: '#94A3B8', // Muted text or disabled states.
-  gray600: '#64748B', // Secondary text color.
-  gray500: '#475569', // Icons or tertiary text.
-  gray400: '#334155', // Occasional text or dark accents.
-  gray300: '#1E293B', // Almost dark slate text.
-  gray200: '#0F172A', // Re-mapping for deepest darks.
-  zinc400: '#71717A',
-  zinc500: '#A1A1AA',
-  warmGray: '#FAF7F5', // Very light warm off-white, excellent for "warning" cards.
+  // --- Surface Layering — tonal neutral scale (light backgrounds → dark text) ---
+  gray900: '#F2F4F6', // surface_container_low: section backgrounds
+  gray850: '#E8EEEB', // light neutral surface
+  gray800: '#BBCABF', // outline_variant: ghost borders (use at 30% opacity for accessibility)
+  gray700: '#6B8070', // muted/disabled text (green-tinted)
+  gray600: '#4D6058', // secondary text
+  gray500: '#3C4A42', // on_surface_variant: icons and tertiary text
+  gray400: '#2D3D35', // dark accents
+  gray300: '#1E2E28', // near-dark text
+  gray200: '#191C1E', // on_surface: deepest dark text (matches white token)
+  zinc400: '#71817A', // teal-tinted zinc
+  zinc500: '#9CABA4', // lighter teal-tinted zinc
+  warmGray: '#FAF9F7', // very light warm off-white for warning card backgrounds
 
-  // --- Primary Fitness Accents (Softenened Greens & Teals) ---
-  // The dark green cluster is now a layered mint/sage palette. Your high contrast concern is handled by making these energetic but not neon.
-  jade: '#34D399', // Clean mint green (primary action/success color).
-  green500: '#6EE7B7', // Slightly softer mint.
-  green600: '#10B981', // Saturated mint/emerald, perfect for a progress ring or success button.
-  green800: '#059669', // Deepest mint.
-  teal400: '#38BDF8', // Fresh Sky blue for hydration or rest tracking.
-  teal500: '#0EA5E9', // Main blue-teal.
-  teal600: '#0284C7', // Deeper cyan/blue.
-  emerald200: '#86EFAC',
+  // --- Primary Emerald Action Palette ---
+  jade: '#006C49', // primary action: deep authoritative emerald
+  green500: '#4EDEA3', // primary_fixed_dim: large background accents and illustrative shapes
+  green600: '#10B981', // primary_container: CTA gradient end (Emerald → Teal)
+  green800: '#006C49', // deepest primary (repeat of jade)
+  teal400: '#38BDF8', // sky blue: hydration or rest tracking
+  teal500: '#0EA5E9', // main blue-teal
+  teal600: '#0284C7', // deeper cyan/blue
+  emerald200: '#BAEED1', // secondary_fixed: "Data Pulse" chip background
 
-  // These former "dark background" names are now very soft background tint washes for cards.
-  emerald900: '#D1FAE5', // Soft light mint wash background.
-  swampGreen: '#F0FDF4', // Soft neutral green wash background.
-  darkMint: '#ECFDF5', // Very soft light mint wash background.
-  darkForest: '#FEF3C7', // Soft light amber wash background (for streaks).
-  deepGreen: '#FEFCE8', // Soft light yellow wash background (for warnings).
-  darkViridian: '#D1FAE5',
-  gunmetalGreen: '#E0F2FE',
-  darkSeaGreen: '#E0F2FE',
-  charcoalGreen: '#E2E8F0', // Re-mapped as card surface background.
+  // --- Soft Background Wash Colors (tonal layering, no borders) ---
+  emerald900: '#B7EBCE', // secondary_container: light green wash for hover states
+  swampGreen: '#F0FDF5', // soft neutral green wash background
+  darkMint: '#ECFDF5', // very soft mint wash background
+  darkForest: '#FEF3C7', // soft amber wash (streaks)
+  deepGreen: '#FEFCE8', // soft yellow wash (warnings)
+  darkViridian: '#B7EBCE', // secondary_container
+  gunmetalGreen: '#E0F2FE', // soft blue wash
+  darkSeaGreen: '#E0F2FE', // soft blue wash
+  charcoalGreen: '#F2F4F6', // surface_container_low: card surface background
 
-  // --- High Focus Accents (Sunrise/Citrus Tones) ---
-  // I've softened these to reduce the "crazy focus" issue. They are energetic but clear.
-  neonMint: '#A7F3D0', // Soft, calm Mint tint background (good for hydration goals).
-  tan: '#FED7AA', // Soft, warm Taupe for secondary accents.
-  sage: '#C6F6D5', // Soft green accent (good for recovery goals).
-  orange500: '#F97316', // Warm Orange (energetic accent).
-  amber400: '#FBBF24', // Bright amber/gold.
-  amber500: '#F59E0B', // Deep Amber (great for high focus but not red).
+  // --- Accent Colors ---
+  neonMint: '#BAEED1', // secondary_fixed: calm mint chip/tint background
+  tan: '#FED7AA', // soft warm taupe
+  sage: '#B7EBCE', // secondary_container soft green accent (recovery goals)
+  orange500: '#F97316',
+  amber400: '#FBBF24',
+  amber500: '#F59E0B',
   yellow500: '#FDE047',
 
   // --- Purples, Blues, Indigos (Rest & Recovery Tones) ---
-  // Layered soft-contrast purples for sleep and rest tracking.
-  indigo200: '#EEF2FF', // Very soft indigo background tint wash.
-  indigo400: '#A5B4FC', // Soft lavender.
-  indigo500: '#818CF8', // Medium purple-blue.
-  indigo600: '#6366F1', // Deeper indigo (good focus color).
+  indigo200: '#EEF2FF',
+  indigo400: '#A5B4FC',
+  indigo500: '#818CF8',
+  indigo600: '#6366F1',
   blue500: '#3B82F6',
   blue600: '#2563EB',
-  violet300: '#DDD6FE', // Softest violet.
+  violet300: '#DDD6FE',
   violet500: '#A78BFA',
   violet800: '#8B5CF6',
-  purple500: '#C084FC', // Saturated, clear purple.
-  darkPurpleBg: '#F3E8FF', // Soft light purple background wash.
+  purple500: '#C084FC',
+  darkPurpleBg: '#F3E8FF',
 
-  // --- Red/Danger Accents (Layered Reds & Roses) ---
-  // Softened to have clear meaning without being chaotic or harsh on light.
-  darkRedBg: '#FEE2E2', // Very soft light red wash (good for an error background).
-  red400: '#FCA5A5', // Soft coral red.
-  red500: '#F87171', // Rose red.
-  red900: '#B91C1C', // Rich, deeper red for destructive actions (buttons).
-  rose500: '#FB7185', // Soft pink red.
-  rose600: '#F43F5E', // Medium rose red.
-  rose900: '#E11D48', // Bright rose red.
+  // --- Red/Danger Accents ---
+  darkRedBg: '#FEE2E2', // very soft light red wash for error backgrounds
+  red400: '#FCA5A5', // soft coral red
+  red500: '#F87171', // rose red
+  red900: '#A43A3A', // tertiary editorial red: informs rather than screams
+  rose500: '#FB7185',
+  rose600: '#F43F5E',
+  rose900: '#E11D48',
   pink500: '#EC4899',
 };
 
-const baseColors = {
-  surfaceBlack: '#131314',
-  gray900: '#1f1f1f',
-  charcoalGreen: '#141a17',
-  emerald900: '#064e3b',
-  darkViridian: '#2a4d3f',
-  green800: '#125630',
-  deepGreen: '#1a3a2a',
-  darkForest: '#0d3520',
-  swampGreen: '#0a1f1a',
-  darkMint: '#0f2419',
-  gunmetalGreen: '#1a2420',
-  darkSeaGreen: '#0f2f27',
-  jade: '#10b981',
-  green500: '#22c55e',
-  teal500: '#14b8a6',
-  teal400: '#2dd4bf',
-  gray800: '#1f2937',
-  gray700: '#374151',
-  gray850: '#303030',
+const kineticDepth = {
+  surfaceBlack: '#0d1511', // Obsidian surface base
+  gray900: '#1a1f1c', // Darkest neutral surface (obsidian-tinted)
+  charcoalGreen: '#111a15', // Dark obsidian green surface
+  emerald900: '#064e3b', // Data Series 4: Forest Accent
+  darkViridian: '#1c3829', // Medium dark obsidian green
+  green800: '#0d4a2d', // Deep green surface
+  deepGreen: '#132a1e', // Dark green surface
+  darkForest: '#0a1c13', // Very dark forest surface
+  swampGreen: '#091310', // Darkest obsidian variant
+  darkMint: '#0c1a13', // Near-obsidian dark
+  gunmetalGreen: '#152020', // Dark neutral-green surface
+  darkSeaGreen: '#0c2419', // Dark teal surface
+  jade: '#10b981', // Primary Vibrant Emerald
+  green500: '#29a577', // Data Series 1: Bright Mint
+  teal500: '#0f766e', // Data Series 2: Deep Teal
+  teal400: '#99f6e4', // Data Series 3: Soft Sage
+  gray800: '#1c2620', // Dark surface with green tint
+  gray700: '#2c3a32', // Medium-dark green-gray
+  gray850: '#1e2922', // Medium dark green surface
   blue600: '#2563eb',
   indigo500: '#6366f1',
   blue500: '#3b82f6',
   indigo400: '#818cf8',
-  gray500: '#6b7280',
-  zinc500: '#747775',
+  gray500: '#587068', // Muted teal-gray
+  zinc500: '#6a7874', // Muted teal-zinc
   red900: '#7f1d1d',
   rose900: '#9f1239',
   violet500: '#8b5cf6',
   purple500: '#a855f7',
-  zinc400: '#8e918f',
-  gray400: '#9ca3af',
-  gray300: '#d1d5db',
-  gray200: '#e3e3e3',
-  white: '#ffffff',
+  zinc400: '#8e9e96', // Teal-tinted zinc
+  gray400: '#9cb0a8', // Teal-tinted gray
+  gray300: '#c0cfc6', // Light green-tinted gray
+  gray200: '#dce5de', // On-Surface off-white
+  white: '#dce5de', // On-Surface: high-readability off-white (not pure white)
   rose500: '#da2552',
   rose600: '#e11d48',
   yellow500: '#eab308',
@@ -125,18 +118,18 @@ const baseColors = {
   amber500: '#f59e0b',
   red500: '#ef4444',
   red400: '#f87171',
-  teal600: '#0d9488',
-  green600: '#16a34a',
-  neonMint: '#29e08e',
+  teal600: '#007068', // Gradient end: Emerald-to-Teal CTA
+  green600: '#10b981', // Repeat of primary emerald
+  neonMint: '#34d399', // Bright Mint (Data Series 1)
   darkRedBg: '#3d1515',
   darkPurpleBg: '#3d3162',
-  gray600: '#4b5563',
+  gray600: '#476058', // Muted teal-gray
   indigo600: '#4f46e5',
   violet800: '#5b21b6',
-  warmGray: '#8b7d6b',
-  sage: '#95c6b0',
+  warmGray: '#8a9690', // Teal-tinted warm gray
+  sage: '#99f6e4', // Data Series 3: Soft Sage
   violet300: '#a78bfa',
-  emerald200: '#a7f3d0',
+  emerald200: '#a7f3d0', // Supporting Accent: Subtle Lime
   indigo200: '#c7d2fe',
   tan: '#d4b5a0',
   pink500: '#ec4899',
@@ -144,81 +137,81 @@ const baseColors = {
 };
 
 const colors = {
-  ...baseColors,
-  surfaceBlackFade: addOpacityToHex(baseColors.surfaceBlack, 0.38),
-  gray900Fade: addOpacityToHex(baseColors.gray900, 0.12),
-  zinc400Fade: addOpacityToHex(baseColors.zinc400, 0.12),
-  whiteFade: addOpacityToHex(baseColors.surfaceBlack, 0.38),
-  blackAlpha10: addOpacityToHex(baseColors.surfaceBlack, 0.1),
-  blackAlpha15: addOpacityToHex(baseColors.surfaceBlack, 0.15),
-  blackAlpha20: addOpacityToHex(baseColors.surfaceBlack, 0.2),
-  blackAlpha30: addOpacityToHex(baseColors.surfaceBlack, 0.3),
-  blackAlpha40: addOpacityToHex(baseColors.surfaceBlack, 0.4),
-  blackAlpha60: addOpacityToHex(baseColors.surfaceBlack, 0.6),
-  overlayDark: addOpacityToHex(baseColors.surfaceBlack, 0.6),
-  blackAlpha80: addOpacityToHex(baseColors.surfaceBlack, 0.8),
-  blackAlpha90: addOpacityToHex(baseColors.surfaceBlack, 0.9),
-  overlayDarker: addOpacityToHex(baseColors.surfaceBlack, 0.9),
-  darkJungleAlpha20: addOpacityToHex(baseColors.swampGreen, 0.2),
-  darkJungleAlpha80: addOpacityToHex(baseColors.swampGreen, 0.8),
-  darkJungleAlpha90: addOpacityToHex(baseColors.swampGreen, 0.9),
-  gray500Alpha10: addOpacityToHex(baseColors.gray500, 0.1),
-  gray800Alpha50: addOpacityToHex(baseColors.gray800, 0.5),
-  gray700Alpha30: addOpacityToHex(baseColors.gray700, 0.3),
-  gray600Alpha40: addOpacityToHex(baseColors.gray600, 0.4),
-  gray600Alpha50: addOpacityToHex(baseColors.gray600, 0.5),
-  violetAlpha20: addOpacityToHex(baseColors.violet500, 0.2),
-  purpleAlpha10: addOpacityToHex(baseColors.purple500, 0.1),
-  purpleAlpha13: addOpacityToHex(baseColors.purple500, 0.13),
-  purpleAlpha20: addOpacityToHex(baseColors.purple500, 0.2),
-  purpleAlpha40: addOpacityToHex(baseColors.purple500, 0.4),
-  emeraldAlpha10: addOpacityToHex(baseColors.jade, 0.1),
-  emeraldAlpha20: addOpacityToHex(baseColors.jade, 0.2),
-  emeraldAlpha30: addOpacityToHex(baseColors.jade, 0.3),
-  greenAlpha05: addOpacityToHex(baseColors.green500, 0.05),
-  greenAlpha10: addOpacityToHex(baseColors.green500, 0.1),
-  greenAlpha20: addOpacityToHex(baseColors.green500, 0.2),
-  successHighlight20: addOpacityToHex(baseColors.green500, 0.2),
-  successBg20: addOpacityToHex(baseColors.green500, 0.2),
-  greenAlpha30: addOpacityToHex(baseColors.green500, 0.3),
-  greenAlpha40: addOpacityToHex(baseColors.green500, 0.4),
-  greenAlpha50: addOpacityToHex(baseColors.green500, 0.5),
-  jadeAlpha10: addOpacityToHex(baseColors.jade, 0.1),
-  jadeAlpha20: addOpacityToHex(baseColors.jade, 0.2),
-  jadeAlpha31: addOpacityToHex(baseColors.jade, 0.31),
-  tealAlpha20: addOpacityToHex(baseColors.teal500, 0.2),
-  roseAlpha20: addOpacityToHex(baseColors.rose600, 0.2),
-  pinkRedAlpha10: addOpacityToHex(baseColors.rose500, 0.1),
-  pinkAlpha20: addOpacityToHex(baseColors.pink500, 0.2),
-  yellowAlpha10: addOpacityToHex(baseColors.yellow500, 0.1),
-  yellowAlpha20: addOpacityToHex(baseColors.yellow500, 0.2),
-  amberAlpha10: addOpacityToHex(baseColors.amber400, 0.1),
-  orangeAlpha10: addOpacityToHex(baseColors.orange500, 0.1),
-  orangeAlpha20: addOpacityToHex(baseColors.orange500, 0.2),
-  orangeAlpha50: addOpacityToHex(baseColors.orange500, 0.5),
-  redAlpha08: addOpacityToHex(baseColors.red500, 0.08),
-  redAlpha10: addOpacityToHex(baseColors.red500, 0.1),
-  redAlpha12: addOpacityToHex(baseColors.red500, 0.125),
-  redAlpha20: addOpacityToHex(baseColors.red500, 0.2),
-  redAlpha50: addOpacityToHex(baseColors.red500, 0.5),
-  whiteAlpha02: addOpacityToHex(baseColors.white, 0.02),
-  whiteAlpha03: addOpacityToHex(baseColors.white, 0.03),
-  whiteAlpha05: addOpacityToHex(baseColors.white, 0.05),
-  surfaceHighlight05: addOpacityToHex(baseColors.white, 0.05),
-  whiteAlpha10: addOpacityToHex(baseColors.white, 0.1),
-  whiteAlpha12: addOpacityToHex(baseColors.white, 0.125),
-  surfaceHighlight12: addOpacityToHex(baseColors.white, 0.125),
-  whiteAlpha20: addOpacityToHex(baseColors.white, 0.2),
-  surfaceHighlight20: addOpacityToHex(baseColors.white, 0.2),
-  borderWhite20: addOpacityToHex(baseColors.white, 0.2),
-  whiteAlpha30: addOpacityToHex(baseColors.white, 0.3),
-  surfaceHighlight30: addOpacityToHex(baseColors.white, 0.3),
-  borderWhite30: addOpacityToHex(baseColors.white, 0.3),
-  whiteAlpha50: addOpacityToHex(baseColors.white, 0.5),
-  whiteAlpha60: addOpacityToHex(baseColors.white, 0.6),
-  whiteAlpha70: addOpacityToHex(baseColors.white, 0.7),
-  whiteAlpha80: addOpacityToHex(baseColors.white, 0.8),
-  whiteAlpha90: addOpacityToHex(baseColors.white, 0.9),
+  ...kineticDepth,
+  surfaceBlackFade: addOpacityToHex(kineticDepth.surfaceBlack, 0.38),
+  gray900Fade: addOpacityToHex(kineticDepth.gray900, 0.12),
+  zinc400Fade: addOpacityToHex(kineticDepth.zinc400, 0.12),
+  whiteFade: addOpacityToHex(kineticDepth.surfaceBlack, 0.38),
+  blackAlpha10: addOpacityToHex(kineticDepth.surfaceBlack, 0.1),
+  blackAlpha15: addOpacityToHex(kineticDepth.surfaceBlack, 0.15),
+  blackAlpha20: addOpacityToHex(kineticDepth.surfaceBlack, 0.2),
+  blackAlpha30: addOpacityToHex(kineticDepth.surfaceBlack, 0.3),
+  blackAlpha40: addOpacityToHex(kineticDepth.surfaceBlack, 0.4),
+  blackAlpha60: addOpacityToHex(kineticDepth.surfaceBlack, 0.6),
+  overlayDark: addOpacityToHex(kineticDepth.surfaceBlack, 0.6),
+  blackAlpha80: addOpacityToHex(kineticDepth.surfaceBlack, 0.8),
+  blackAlpha90: addOpacityToHex(kineticDepth.surfaceBlack, 0.9),
+  overlayDarker: addOpacityToHex(kineticDepth.surfaceBlack, 0.9),
+  darkJungleAlpha20: addOpacityToHex(kineticDepth.swampGreen, 0.2),
+  darkJungleAlpha80: addOpacityToHex(kineticDepth.swampGreen, 0.8),
+  darkJungleAlpha90: addOpacityToHex(kineticDepth.swampGreen, 0.9),
+  gray500Alpha10: addOpacityToHex(kineticDepth.gray500, 0.1),
+  gray800Alpha50: addOpacityToHex(kineticDepth.gray800, 0.5),
+  gray700Alpha30: addOpacityToHex(kineticDepth.gray700, 0.3),
+  gray600Alpha40: addOpacityToHex(kineticDepth.gray600, 0.4),
+  gray600Alpha50: addOpacityToHex(kineticDepth.gray600, 0.5),
+  violetAlpha20: addOpacityToHex(kineticDepth.violet500, 0.2),
+  purpleAlpha10: addOpacityToHex(kineticDepth.purple500, 0.1),
+  purpleAlpha13: addOpacityToHex(kineticDepth.purple500, 0.13),
+  purpleAlpha20: addOpacityToHex(kineticDepth.purple500, 0.2),
+  purpleAlpha40: addOpacityToHex(kineticDepth.purple500, 0.4),
+  emeraldAlpha10: addOpacityToHex(kineticDepth.jade, 0.1),
+  emeraldAlpha20: addOpacityToHex(kineticDepth.jade, 0.2),
+  emeraldAlpha30: addOpacityToHex(kineticDepth.jade, 0.3),
+  greenAlpha05: addOpacityToHex(kineticDepth.green500, 0.05),
+  greenAlpha10: addOpacityToHex(kineticDepth.green500, 0.1),
+  greenAlpha20: addOpacityToHex(kineticDepth.green500, 0.2),
+  successHighlight20: addOpacityToHex(kineticDepth.green500, 0.2),
+  successBg20: addOpacityToHex(kineticDepth.green500, 0.2),
+  greenAlpha30: addOpacityToHex(kineticDepth.green500, 0.3),
+  greenAlpha40: addOpacityToHex(kineticDepth.green500, 0.4),
+  greenAlpha50: addOpacityToHex(kineticDepth.green500, 0.5),
+  jadeAlpha10: addOpacityToHex(kineticDepth.jade, 0.1),
+  jadeAlpha20: addOpacityToHex(kineticDepth.jade, 0.2),
+  jadeAlpha31: addOpacityToHex(kineticDepth.jade, 0.31),
+  tealAlpha20: addOpacityToHex(kineticDepth.teal500, 0.2),
+  roseAlpha20: addOpacityToHex(kineticDepth.rose600, 0.2),
+  pinkRedAlpha10: addOpacityToHex(kineticDepth.rose500, 0.1),
+  pinkAlpha20: addOpacityToHex(kineticDepth.pink500, 0.2),
+  yellowAlpha10: addOpacityToHex(kineticDepth.yellow500, 0.1),
+  yellowAlpha20: addOpacityToHex(kineticDepth.yellow500, 0.2),
+  amberAlpha10: addOpacityToHex(kineticDepth.amber400, 0.1),
+  orangeAlpha10: addOpacityToHex(kineticDepth.orange500, 0.1),
+  orangeAlpha20: addOpacityToHex(kineticDepth.orange500, 0.2),
+  orangeAlpha50: addOpacityToHex(kineticDepth.orange500, 0.5),
+  redAlpha08: addOpacityToHex(kineticDepth.red500, 0.08),
+  redAlpha10: addOpacityToHex(kineticDepth.red500, 0.1),
+  redAlpha12: addOpacityToHex(kineticDepth.red500, 0.125),
+  redAlpha20: addOpacityToHex(kineticDepth.red500, 0.2),
+  redAlpha50: addOpacityToHex(kineticDepth.red500, 0.5),
+  whiteAlpha02: addOpacityToHex(kineticDepth.white, 0.02),
+  whiteAlpha03: addOpacityToHex(kineticDepth.white, 0.03),
+  whiteAlpha05: addOpacityToHex(kineticDepth.white, 0.05),
+  surfaceHighlight05: addOpacityToHex(kineticDepth.white, 0.05),
+  whiteAlpha10: addOpacityToHex(kineticDepth.white, 0.1),
+  whiteAlpha12: addOpacityToHex(kineticDepth.white, 0.125),
+  surfaceHighlight12: addOpacityToHex(kineticDepth.white, 0.125),
+  whiteAlpha20: addOpacityToHex(kineticDepth.white, 0.2),
+  surfaceHighlight20: addOpacityToHex(kineticDepth.white, 0.2),
+  borderWhite20: addOpacityToHex(kineticDepth.white, 0.2),
+  whiteAlpha30: addOpacityToHex(kineticDepth.white, 0.3),
+  surfaceHighlight30: addOpacityToHex(kineticDepth.white, 0.3),
+  borderWhite30: addOpacityToHex(kineticDepth.white, 0.3),
+  whiteAlpha50: addOpacityToHex(kineticDepth.white, 0.5),
+  whiteAlpha60: addOpacityToHex(kineticDepth.white, 0.6),
+  whiteAlpha70: addOpacityToHex(kineticDepth.white, 0.7),
+  whiteAlpha80: addOpacityToHex(kineticDepth.white, 0.8),
+  whiteAlpha90: addOpacityToHex(kineticDepth.white, 0.9),
   swampGreenAlpha50: addOpacityToHex('#111413', 0.5),
   darkGreenAlpha50: addOpacityToHex('#192b23', 0.5),
   deepTealAlpha90: addOpacityToHex('#1a2e2a', 0.9),
@@ -226,19 +219,19 @@ const colors = {
   blackGrayAlpha40: addOpacityToHex('#1e2321', 0.4),
   blackGrayAlpha50: addOpacityToHex('#1e2321', 0.5),
   blackGrayAlpha90: addOpacityToHex('#1e2321', 0.9),
-  neonMintAlpha10: addOpacityToHex(baseColors.neonMint, 0.1),
-  neonMintAlpha20: addOpacityToHex(baseColors.neonMint, 0.2),
+  neonMintAlpha10: addOpacityToHex(kineticDepth.neonMint, 0.1),
+  neonMintAlpha20: addOpacityToHex(kineticDepth.neonMint, 0.2),
   darkTaupeSolid: addOpacityToHex('#2a322e', 1),
-  blueAlpha10: addOpacityToHex(baseColors.blue500, 0.1),
-  blueAlpha20: addOpacityToHex(baseColors.blue500, 0.2),
-  infoBg20: addOpacityToHex(baseColors.blue500, 0.2),
-  blueAlpha40: addOpacityToHex(baseColors.blue500, 0.4),
-  blueAlpha50: addOpacityToHex(baseColors.blue500, 0.5),
-  emerald900Alpha30: addOpacityToHex(baseColors.emerald900, 0.3),
-  indigoAlpha30: addOpacityToHex(baseColors.indigo600, 0.3),
-  indigoLightAlpha10: addOpacityToHex(baseColors.indigo500, 0.1),
-  indigoLightAlpha20: addOpacityToHex(baseColors.indigo500, 0.2),
-  indigoLightAlpha20Alt: addOpacityToHex(baseColors.indigo500, 0.2),
+  blueAlpha10: addOpacityToHex(kineticDepth.blue500, 0.1),
+  blueAlpha20: addOpacityToHex(kineticDepth.blue500, 0.2),
+  infoBg20: addOpacityToHex(kineticDepth.blue500, 0.2),
+  blueAlpha40: addOpacityToHex(kineticDepth.blue500, 0.4),
+  blueAlpha50: addOpacityToHex(kineticDepth.blue500, 0.5),
+  emerald900Alpha30: addOpacityToHex(kineticDepth.emerald900, 0.3),
+  indigoAlpha30: addOpacityToHex(kineticDepth.indigo600, 0.3),
+  indigoLightAlpha10: addOpacityToHex(kineticDepth.indigo500, 0.1),
+  indigoLightAlpha20: addOpacityToHex(kineticDepth.indigo500, 0.2),
+  indigoLightAlpha20Alt: addOpacityToHex(kineticDepth.indigo500, 0.2),
 };
 
 const themeColors = {
@@ -315,6 +308,8 @@ const themeColors = {
     gray300: colors.gray300, // Gray-300
     gray500: colors.gray500, // Gray-500
     white: colors.white, // White
+    // Fixed-white token: always pure white regardless of theme, for text on colorful gradient surfaces
+    onColorful: '#ffffff',
     // Text colors with opacity
     primary12: colors.surfaceHighlight12, // Primary with 12.5% opacity
     primary20: colors.borderWhite20, // Primary with 20% opacity
@@ -504,6 +499,9 @@ const themeColors = {
     backdrop: colors.darkJungleAlpha80, // Background primary with 80% opacity (for modals)
     backdrop90: colors.darkJungleAlpha90, // Background primary with 90% opacity
     darkGreenOverlayGradient: colors.deepTealAlpha90, // Dark green overlay gradient
+    // Fixed-white tokens: always pure white regardless of theme, for text on colorful gradient surfaces
+    onColorful70: 'rgba(255, 255, 255, 0.7)',
+    onColorful90: 'rgba(255, 255, 255, 0.9)',
   },
 
   // Opacity values (for use in style objects)

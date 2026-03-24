@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -21,7 +23,7 @@ export type CycleTrackingChartProps = {
   /** Optional badge: { title: 'Conception Chance', value: 'Peak Window' } */
   badge?: { title: string; value: string };
   /** Segments left to right (e.g. Menstrual, Follicular, Ovulatory, Luteal) */
-  segments: CycleSegmentConfig[];
+  segments?: CycleSegmentConfig[];
   /** Position of TODAY marker, 0–1 (e.g. 0.42 for 42%) */
   todayPosition: number;
   /** Height of the bar in px (default: 24) */
@@ -31,24 +33,48 @@ export type CycleTrackingChartProps = {
   className?: string;
 };
 
-const DEFAULT_SEGMENTS: CycleSegmentConfig[] = [
-  { width: 0.2, color: '#BF5AF2', label: 'Menstrual', opacity: 0.6 },
-  { width: 0.3, color: '#00FFA2', label: 'Follicular', opacity: 0.4 },
-  { width: 0.15, color: '#FF9F21', label: 'Ovulatory', opacity: 0.7 },
-  { width: 0.35, color: '#00E5FF', label: 'Luteal', opacity: 0.4 },
-];
-
 export function CycleTrackingChart({
   title,
   phaseLabel,
   badge,
-  segments = DEFAULT_SEGMENTS,
+  segments,
   todayPosition = 0.42,
   barHeight = 24,
   showPhasePulse = true,
   className,
 }: CycleTrackingChartProps) {
   const theme = useTheme();
+  const { t } = useTranslation();
+  const defaultSegments = useMemo<CycleSegmentConfig[]>(
+    () => [
+      {
+        width: 0.2,
+        color: theme.colors.status.purple,
+        label: t('cycle.phase.menstrual'),
+        opacity: 0.6,
+      },
+      {
+        width: 0.3,
+        color: theme.colors.status.emeraldLight,
+        label: t('cycle.phase.follicular'),
+        opacity: 0.4,
+      },
+      {
+        width: 0.15,
+        color: theme.colors.status.warning,
+        label: t('cycle.phase.ovulatory'),
+        opacity: 0.7,
+      },
+      {
+        width: 0.35,
+        color: theme.colors.status.teal400,
+        label: t('cycle.phase.luteal'),
+        opacity: 0.4,
+      },
+    ],
+    [theme, t]
+  );
+  const resolvedSegments = segments ?? defaultSegments;
 
   return (
     <View className={className}>
@@ -70,7 +96,7 @@ export function CycleTrackingChart({
                     width: 8,
                     height: 8,
                     borderRadius: 4,
-                    backgroundColor: theme.colors.accent.primary ?? '#00FFA2',
+                    backgroundColor: theme.colors.accent.primary,
                     opacity: 0.9,
                   }}
                 />
@@ -79,7 +105,7 @@ export function CycleTrackingChart({
                 style={{
                   fontSize: theme.typography.fontSize.base,
                   fontWeight: '500',
-                  color: theme.colors.accent.primary ?? '#00FFA2',
+                  color: theme.colors.accent.primary,
                 }}
               >
                 {phaseLabel}
@@ -120,7 +146,7 @@ export function CycleTrackingChart({
         }}
       >
         <View className="h-full w-full flex-row overflow-hidden rounded-full">
-          {segments.map((seg, i) => (
+          {resolvedSegments.map((seg, i) => (
             <View
               key={seg.label}
               style={{
@@ -130,8 +156,8 @@ export function CycleTrackingChart({
                 opacity: seg.opacity ?? 1,
                 borderTopLeftRadius: i === 0 ? barHeight / 2 : 0,
                 borderBottomLeftRadius: i === 0 ? barHeight / 2 : 0,
-                borderTopRightRadius: i === segments.length - 1 ? barHeight / 2 : 0,
-                borderBottomRightRadius: i === segments.length - 1 ? barHeight / 2 : 0,
+                borderTopRightRadius: i === resolvedSegments.length - 1 ? barHeight / 2 : 0,
+                borderBottomRightRadius: i === resolvedSegments.length - 1 ? barHeight / 2 : 0,
               }}
             />
           ))}
@@ -183,7 +209,7 @@ export function CycleTrackingChart({
       </View>
 
       <View className="flex-row justify-between px-1">
-        {segments.map((seg) => (
+        {resolvedSegments.map((seg) => (
           <Text
             key={seg.label}
             style={{

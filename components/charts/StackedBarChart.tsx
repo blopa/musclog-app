@@ -4,6 +4,7 @@ import { CartesianChart, StackedBar } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { XAxisLabel } from '../../utils/chartUtils';
 
 /** One bar: x plus up to 4 segment values (e.g. [coffee, chocolate, soda, iceCream]) */
@@ -52,10 +53,10 @@ export type StackedBarChartProps = {
 };
 
 const DEFAULT_COLORS = [
-  '#3b82f6', // blue
-  '#ef4444', // red
-  '#eab308', // yellow
-  '#22c55e', // green
+  appTheme.colors.status.info,
+  appTheme.colors.status.error,
+  appTheme.colors.status.yellow,
+  appTheme.colors.accent.primary,
 ];
 
 const TOOLTIP_WIDTH = 90;

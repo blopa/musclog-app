@@ -17,7 +17,7 @@ import { WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';

@@ -6,6 +6,7 @@ import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
@@ -41,7 +42,12 @@ export type StackedBarChartProps = {
   tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
 
-const DEFAULT_COLORS = ['#3b82f6', '#ef4444', '#eab308', '#22c55e'];
+const DEFAULT_COLORS = [
+  appTheme.colors.status.info,
+  appTheme.colors.status.error,
+  appTheme.colors.status.yellow,
+  appTheme.colors.accent.primary,
+];
 
 const TOOLTIP_WIDTH = 90;
 const TOOLTIP_HEIGHT = 36;
@@ -232,7 +238,7 @@ export function StackedBarChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

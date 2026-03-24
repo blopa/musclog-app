@@ -2,6 +2,8 @@
   "common": {
     "clear": "Clear",
     "value": "Value",
+    "processing": "processing...",
+    "success": "Success",
     "saveError": "Failed to save changes",
     "saveErrorSubtitle": "Please try again",
     "error_description": "An unexpected error occurred. Please try again.",

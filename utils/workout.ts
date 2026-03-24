@@ -7,7 +7,7 @@ import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import i18n from '../lang/lang';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 

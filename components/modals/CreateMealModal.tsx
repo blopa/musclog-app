@@ -14,7 +14,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import type { MealType } from '../../database/models';
@@ -28,6 +28,7 @@ import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
+import { TextInput } from '../theme/TextInput';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerModal } from './DatePickerModal';
@@ -306,7 +307,6 @@ export function CreateMealModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
@@ -586,49 +586,13 @@ export function CreateMealModal({
       <View className="flex-1 px-4 py-6">
         {/* Meal Name Input Section (create/edit only) */}
         {!isQuickTrack ? (
-          <View className="mb-6 space-y-2">
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.xs,
-                fontWeight: theme.typography.fontWeight.bold,
-                color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
-                marginLeft: theme.spacing.margin.xs,
-              }}
-            >
-              {t('food.createMeal.mealName')}
-            </Text>
-            <View
-              style={{
-                height: theme.components.button.height.md,
-                backgroundColor: theme.colors.background.card,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
-                borderColor: isFocused ? theme.colors.accent.primary : theme.colors.border.light,
-                paddingHorizontal: theme.spacing.padding.base,
-                justifyContent: 'center',
-                shadowColor: isFocused ? theme.colors.accent.primary : 'transparent',
-                shadowOffset: theme.shadowOffset.zero,
-                shadowOpacity: theme.colors.opacity.subtle,
-                shadowRadius: theme.shadows.radius8.shadowRadius,
-                elevation: isFocused ? theme.elevation.sm : theme.elevation.none,
-              }}
-            >
-              <TextInput
-                value={mealName}
-                onChangeText={setMealName}
-                placeholder={t('food.createMeal.mealNamePlaceholder')}
-                placeholderTextColor={theme.colors.text.tertiary}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  color: theme.colors.text.primary,
-                  borderWidth: theme.borderWidth.none,
-                }}
-              />
-            </View>
+          <View className="mb-6">
+            <TextInput
+              label={t('food.createMeal.mealName')}
+              value={mealName}
+              onChangeText={setMealName}
+              placeholder={t('food.createMeal.mealNamePlaceholder')}
+            />
           </View>
         ) : null}
 
@@ -765,50 +729,20 @@ export function CreateMealModal({
               ))
             )}
 
-            <Pressable
-              onPress={() => setIsAddFoodVisible(true)}
-              style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing.gap.sm,
-                paddingVertical: theme.spacing.padding.base,
-                marginTop: theme.spacing.padding.sm,
-                borderRadius: theme.borderRadius.md,
-                borderWidth: theme.borderWidth.thin,
-                borderStyle: 'dashed',
-                borderColor: theme.colors.border.dashed,
-                backgroundColor: pressed ? theme.colors.accent.primary5 : 'transparent',
-              })}
-            >
-              <View
-                style={{
-                  width: theme.iconSize.xl,
-                  height: theme.iconSize.xl,
-                  borderRadius: theme.borderRadius.md,
-                  backgroundColor: theme.colors.background.secondaryDark,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Plus
-                  size={theme.iconSize.sm}
-                  color={theme.colors.text.secondary}
-                  strokeWidth={theme.strokeWidth.thick}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                }}
-              >
-                {isQuickTrack
+            <Button
+              variant="dashed"
+              size="sm"
+              width="full"
+              icon={Plus}
+              iconBgColor={theme.colors.background.secondaryDark}
+              label={
+                isQuickTrack
                   ? t('food.quickTrackMeal.addIngredient')
-                  : t('food.createMeal.addFoodItem')}
-              </Text>
-            </Pressable>
+                  : t('food.createMeal.addFoodItem')
+              }
+              onPress={() => setIsAddFoodVisible(true)}
+              style={{ marginTop: theme.spacing.padding.sm }}
+            />
           </View>
         </View>
 
@@ -927,46 +861,13 @@ export function CreateMealModal({
             </View>
 
             {saveToMyMeals ? (
-              <View className="mb-6 space-y-2">
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.text.secondary,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.extraWide,
-                    marginLeft: theme.spacing.margin.xs,
-                  }}
-                >
-                  {t('food.quickTrackMeal.mealName')}
-                </Text>
-                <View
-                  style={{
-                    height: theme.components.button.height.md,
-                    backgroundColor: theme.colors.background.card,
-                    borderRadius: theme.borderRadius.md,
-                    borderWidth: isFocused ? theme.borderWidth.medium : theme.borderWidth.thin,
-                    borderColor: isFocused
-                      ? theme.colors.accent.primary
-                      : theme.colors.border.light,
-                    paddingHorizontal: theme.spacing.padding.base,
-                    justifyContent: 'center',
-                  }}
-                >
-                  <TextInput
-                    value={mealName}
-                    onChangeText={setMealName}
-                    placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    style={{
-                      fontSize: theme.typography.fontSize.base,
-                      color: theme.colors.text.primary,
-                      borderWidth: theme.borderWidth.none,
-                    }}
-                  />
-                </View>
+              <View className="mb-6">
+                <TextInput
+                  label={t('food.quickTrackMeal.mealName')}
+                  value={mealName}
+                  onChangeText={setMealName}
+                  placeholder={t('food.quickTrackMeal.mealNamePlaceholder')}
+                />
               </View>
             ) : null}
           </>

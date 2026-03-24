@@ -16,7 +16,7 @@ import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { TextInput } from '../../components/theme/TextInput';
 import { ToggleInput } from '../../components/theme/ToggleInput';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { TestSection } from './components/TestSection';
 
 export default function InputsTestScreen() {

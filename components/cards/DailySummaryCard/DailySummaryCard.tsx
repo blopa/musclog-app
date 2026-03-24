@@ -56,7 +56,7 @@ export function DailySummaryCard({
         <View className="gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
-              <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+              <Text className="text-5xl font-extrabold tracking-tighter text-text-on-colorful">
                 {calories.consumed}
               </Text>
 
@@ -65,7 +65,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.sm,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                     marginTop: theme.spacing.margin.md,
                   }}
                 >
@@ -75,7 +75,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
                   {t('dailySummaryCard.kcal', 'Kcal')}
@@ -96,7 +96,10 @@ export function DailySummaryCard({
           {/* Progress bar */}
           <View className="gap-1.5">
             <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold" style={{ color: theme.colors.overlay.white90 }}>
+              <Text
+                className="text-xs font-bold"
+                style={{ color: theme.colors.overlay.onColorful90 }}
+              >
                 {calories.remaining >= 0
                   ? `${calories.remaining} ${t('dailySummaryCard.remaining', 'remaining')}`
                   : `${Math.abs(calories.remaining)} ${t('dailySummaryCard.over', 'over')}`}
@@ -122,11 +125,14 @@ export function DailySummaryCard({
                   width: `${Math.min(calorieProgress, 100)}%`,
                   backgroundColor: showColoredIndicators
                     ? getProgressBarColor(calorieStatus, theme)
-                    : theme.colors.text.primary,
+                    : theme.colors.text.onColorful,
                 }}
               />
             </View>
-            <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
+            <Text
+              className="text-left text-xs"
+              style={{ color: theme.colors.overlay.onColorful70 }}
+            >
               {Math.round(calorieProgress)}%
             </Text>
           </View>
@@ -142,7 +148,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
                   {t('dailySummaryCard.protein', 'Prot')}
@@ -159,7 +165,7 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(proteinStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
                     <Text style={{ fontWeight: '700' }}>{macros.protein.value}</Text>
@@ -177,11 +183,14 @@ export function DailySummaryCard({
                     width: `${Math.min(proteinProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(proteinStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(proteinProgress)}%
               </Text>
             </View>
@@ -193,7 +202,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
                   {t('dailySummaryCard.carbs', 'Carb')}
@@ -210,7 +219,7 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(carbsStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
                     <Text style={{ fontWeight: '700' }}>{macros.carbs.value}</Text>
@@ -228,11 +237,14 @@ export function DailySummaryCard({
                     width: `${Math.min(carbsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(carbsStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(carbsProgress)}%
               </Text>
             </View>
@@ -244,7 +256,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
                   {t('dailySummaryCard.fats', 'Fat')}
@@ -261,7 +273,7 @@ export function DailySummaryCard({
                     style={{
                       color: showColoredIndicators
                         ? getProgressBarColor(fatsStatus, theme)
-                        : theme.colors.text.primary,
+                        : theme.colors.text.onColorful,
                     }}
                   >
                     <Text style={{ fontWeight: '700' }}>{macros.fats.value}</Text>
@@ -279,11 +291,14 @@ export function DailySummaryCard({
                     width: `${Math.min(fatsProgress, 100)}%`,
                     backgroundColor: showColoredIndicators
                       ? getProgressBarColor(fatsStatus, theme)
-                      : theme.colors.overlay.white90,
+                      : theme.colors.overlay.onColorful90,
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.white70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(fatsProgress)}%
               </Text>
             </View>

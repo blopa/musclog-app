@@ -12,7 +12,7 @@ import { PhaseWheel } from '../components/PhaseWheel';
 import { UserMetricService } from '../database/services';
 import { MenstrualService } from '../database/services/MenstrualService';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export default function CycleScreen() {
   const { t } = useTranslation();

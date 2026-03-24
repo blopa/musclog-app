@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { addOpacityToHex } from '../../theme';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -346,7 +347,7 @@ function TimePickerModalWeb({
                         <Text
                           className="font-semibold"
                           style={{
-                            color: `rgba(255,255,255,${opacity})`,
+                            color: addOpacityToHex(theme.colors.text.white, opacity),
                             fontSize: isSelected ? 36 : 24,
                             fontWeight: isSelected ? '700' : '600',
                           }}
@@ -387,7 +388,7 @@ function TimePickerModalWeb({
                         <Text
                           className="font-semibold"
                           style={{
-                            color: `rgba(255,255,255,${opacity})`,
+                            color: addOpacityToHex(theme.colors.text.white, opacity),
                             fontSize: isSelected ? 36 : 24,
                             fontWeight: isSelected ? '700' : '600',
                           }}
