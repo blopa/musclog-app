@@ -14,7 +14,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Switch, Text, useWindowDimensions, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import type { MealType } from '../../database/models';
@@ -170,6 +170,7 @@ const MealMacrosSummary = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width: windowWidth } = useWindowDimensions();
 
   // Calculate progress percentages (simple estimation)
   const proteinProgress = Math.min((macros.protein / 100) * 100, 100);
@@ -270,19 +271,21 @@ const MealMacrosSummary = ({
 
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
-            label={t('food.macros.protein')}
+            label={
+              windowWidth < 380 ? t('food.macros.proteinShort', 'P') : t('food.macros.protein')
+            }
             value={`${Math.round(macros.protein)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
-            label={t('food.macros.carbs')}
+            label={windowWidth < 380 ? t('food.macros.carbsShort', 'C') : t('food.macros.carbs')}
             value={`${Math.round(macros.carbs)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
-            label={t('food.macros.fat')}
+            label={windowWidth < 380 ? t('food.macros.fatShort', 'F') : t('food.macros.fat')}
             value={`${Math.round(macros.fat)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}

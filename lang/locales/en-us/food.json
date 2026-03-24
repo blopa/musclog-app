@@ -70,8 +70,11 @@
     "calories": "Calories",
     "macros": {
       "protein": "Protein",
+      "proteinShort": "P",
       "carbs": "Carbs",
+      "carbsShort": "C",
       "fat": "Fat",
+      "fatShort": "F",
       "fiber": "Fiber",
       "proteinLegend": "Prot",
       "carbsLegend": "Carbs",
