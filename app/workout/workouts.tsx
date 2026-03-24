@@ -14,8 +14,8 @@ import {
 } from '../../components/modals/BrowseTemplatesModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
-import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
+import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import DashedButton from '../../components/theme/DashedButton';

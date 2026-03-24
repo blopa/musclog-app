@@ -4,9 +4,8 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
-import { useTheme } from '../../hooks/useTheme';
-
 import { useSnackbar } from '../../context/SnackbarContext';
+import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { type ChatHistoryEntry, generateWorkoutPlan } from '../../utils/coachAI';
 import { processWorkoutPlanResponse } from '../../utils/workoutAI';
@@ -83,7 +82,7 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
       footer={footer}
       scrollable
     >
-      <View className="items-center px-4 pt-8 pb-6">
+      <View className="items-center px-4 pb-6 pt-8">
         <LinearGradient
           colors={theme.colors.gradients.progress}
           start={{ x: 0, y: 0 }}

@@ -1,4 +1,9 @@
-import { ChatService, ExerciseService, WorkoutService } from '../database/services';
+import {
+  ChatService,
+  ExerciseService,
+  WorkoutAnalytics,
+  WorkoutService,
+} from '../database/services';
 import {
   type ExerciseInWorkout,
   WorkoutTemplateService,
@@ -97,6 +102,15 @@ export async function processWorkoutPlanResponse(
           continue;
         }
 
+        let weight = 0;
+        if (aiExercise.oneRepMaxPercentage > 0 && matchedExercise.equipmentType !== 'bodyweight') {
+          const dataPoints = await WorkoutAnalytics.getProgressiveOverloadData(exerciseId);
+          if (dataPoints.length > 0) {
+            const max1RM = Math.max(...dataPoints.map((dp) => dp.estimated1RM));
+            weight = Math.round((max1RM * aiExercise.oneRepMaxPercentage) / 100);
+          }
+        }
+
         exercises.push({
           id: matchedExercise.id,
           label: matchedExercise.name ?? '',
@@ -106,7 +120,7 @@ export async function processWorkoutPlanResponse(
           iconColor: '',
           sets: aiExercise.sets,
           reps: aiExercise.reps,
-          weight: 0, // Default weight estimate (user will adjust)
+          weight,
           isBodyweight: matchedExercise.equipmentType === 'bodyweight',
           restTimeAfter: 60, // Default rest time
           isDropSet: false,
