@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import packageJson from '../package.json';
 import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
@@ -375,18 +376,23 @@ export default function HomeScreen() {
               </>
             )}
           </Pressable>
-          {SHOW_NOTIFICATIONS ? (
-            <Pressable
-              className="relative rounded-full bg-bg-overlay p-3"
-              onPress={() => setIsNotificationsVisible(true)}
-            >
-              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-              <View
-                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: theme.colors.status.notificationBadge }}
-              />
-            </Pressable>
-          ) : null}
+          <View className="items-end gap-2">
+            <Text className="text-xs text-text-secondary opacity-40">
+              {`Musclog v${packageJson.version}`}
+            </Text>
+            {SHOW_NOTIFICATIONS ? (
+              <Pressable
+                className="relative rounded-full bg-bg-overlay p-3"
+                onPress={() => setIsNotificationsVisible(true)}
+              >
+                <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
+                <View
+                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: theme.colors.status.notificationBadge }}
+                />
+              </Pressable>
+            ) : null}
+          </View>
         </View>
 
         {/* Daily Summary Card */}
