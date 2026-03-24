@@ -18,6 +18,7 @@
     "remove": "Remove",
     "rir": "RIR (Reps in Reserve)",
     "syncToHealthConnect": "Sync to Health Connect",
+    "shareMessage": "I've just finished a workout with volume {{volume}} {{unit}} and burned {{calories}} calories",
     "inputs": {
       "weightKg": "Weight (kg)",
       "weightLbs": "Weight (lbs)",
