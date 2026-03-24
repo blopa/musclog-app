@@ -89,8 +89,8 @@ describe('hooks/useWorkoutForm', () => {
     label: 'Bench Press',
     description: '3 sets × 10 reps',
     icon: jest.fn(),
-    iconBgColor: '#fff',
-    iconColor: '#000',
+    iconBgColor: '#ffffff',
+    iconColor: '#131314',
     groupId: undefined,
   };
 

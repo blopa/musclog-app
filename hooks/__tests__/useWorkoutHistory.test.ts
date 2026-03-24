@@ -98,8 +98,8 @@ jest.mock('../../utils/workoutHistory', () => ({
       name: w.workoutName,
       date: new Date(w.startedAt).toLocaleDateString(),
       dateTimestamp: w.startedAt,
-      iconBgColor: '#000',
-      iconBgOpacity: '#000',
+      iconBgColor: '#131314',
+      iconBgOpacity: '#131314',
       icon: jest.fn(),
       prCount: null,
       stats: [],
@@ -172,7 +172,7 @@ jest.mock('../../theme', () => ({
   theme: {
     colors: {
       background: {
-        imageLight: '#ffffff',
+        imageLight: '#d4b5a0',
       },
     },
   },
