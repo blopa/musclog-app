@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { ReactNode, useCallback } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +26,6 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       className="flex-1 bg-bg-primary"
       edges={showNavigationMenu ? ['top'] : ['top', 'bottom']}
     >
-      <StatusBar style="light" />
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <>

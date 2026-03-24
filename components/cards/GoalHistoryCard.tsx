@@ -1,5 +1,5 @@
-import { History, Pencil, Trash2 } from 'lucide-react-native';
-import { useState } from 'react';
+import { History, Pencil, RefreshCw, Trash2 } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -29,16 +29,35 @@ interface GoalHistoryCardProps {
   goal: GoalHistoryItem;
   isLast?: boolean;
   onEdit?: () => void;
+  onRegenerateCheckins?: () => void;
   onDelete?: () => void;
+  isRegenerating?: boolean;
 }
 
-export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: GoalHistoryCardProps) {
+export function GoalHistoryCard({
+  goal,
+  isLast = false,
+  onEdit,
+  onRegenerateCheckins,
+  onDelete,
+  isRegenerating = false,
+}: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const weightDisplay = kgToDisplay(goal.weight, units);
   const [menuVisible, setMenuVisible] = useState(false);
+  const wasRegenerating = useRef(false);
+
+  useEffect(() => {
+    if (isRegenerating) {
+      wasRegenerating.current = true;
+    } else if (wasRegenerating.current) {
+      wasRegenerating.current = false;
+      setMenuVisible(false);
+    }
+  }, [isRegenerating]);
 
   const hasMenu = onEdit != null || onDelete != null;
 
@@ -52,6 +71,19 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
+          },
+        ]
+      : []),
+    ...(onRegenerateCheckins
+      ? [
+          {
+            icon: RefreshCw,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+            description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+            onPress: onRegenerateCheckins,
+            keepOpenOnPress: true,
           },
         ]
       : []),
@@ -108,6 +140,8 @@ export function GoalHistoryCard({ goal, isLast = false, onEdit, onDelete }: Goal
             onClose={() => setMenuVisible(false)}
             title={t('goalsManagement.manageGoalData.goalOptions')}
             items={menuItems}
+            isLoading={isRegenerating}
+            loadingTitle={t('common.processing')}
           />
         ) : null}
 

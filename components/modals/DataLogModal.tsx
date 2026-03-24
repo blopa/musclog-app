@@ -58,6 +58,7 @@ import {
   getEditFields,
 } from './GenericEditModal/entityEditConfig';
 import { useEditRecord } from './GenericEditModal/useEditRecord';
+import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 
 export type DataLogModalVariant =
   | 'meal'
@@ -379,15 +380,18 @@ export function getDataLogModalTranslations(
       deleteTitle: t('goalsManagement.manageCheckinData.deleteCheckin'),
       deleteDesc: t('goalsManagement.manageCheckinData.deleteCheckinDesc'),
       formatCaloriesMacros: () => '',
-      formatItemSubtitle: (item) =>
-        t('goalsManagement.manageCheckinData.subtitleFormat', {
+      formatItemSubtitle: (item) => {
+        const base = t('goalsManagement.manageCheckinData.subtitleFormat', {
           targetWeight:
             units != null && item.checkinTargetWeight != null
               ? Number(kgToDisplay(item.checkinTargetWeight, units).toFixed(1))
               : Number((item.checkinTargetWeight ?? 0).toFixed(1)),
           targetBodyFat: Number((item.checkinTargetBodyFat ?? 0).toFixed(1)),
           unit: unitLabel,
-        }),
+        });
+        const statusLabel = t(`nutrition.checkin.status.${item.status ?? 'pending'}`);
+        return `${base} • ${statusLabel}`;
+      },
     };
   }
 
@@ -523,6 +527,7 @@ export type DataLogDisplayItem = {
   goalTargetWeight?: number; // Optional - only nutrition goals have this
   checkinTargetWeight?: number; // Optional - only nutrition check-ins have this
   checkinTargetBodyFat?: number; // Optional - only nutrition check-ins have this
+  status?: string; // Optional - only nutrition check-ins have this
   chatMessageText?: string; // Optional - only chat messages have this
 };
 
@@ -568,7 +573,10 @@ export function DataLogModal({
   const [isDuplicating, setIsDuplicating] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
+  const [pastWorkoutDetailVisible, setPastWorkoutDetailVisible] = useState(false);
+  const [pastWorkoutDetailId, setPastWorkoutDetailId] = useState<string | null>(null);
   const [dependencyWarning, setDependencyWarning] = useState<string | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Create modal states
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
@@ -856,8 +864,40 @@ export function DataLogModal({
     }
 
     setShowMenu(false);
+
+    if (variant === 'workoutLog') {
+      setPastWorkoutDetailId(selectedItem.id);
+      setPastWorkoutDetailVisible(true);
+      return;
+    }
+
     setEditRecordId(selectedItem.id);
     setEditModalVisible(true);
+  };
+
+  const handleRegenerateCheckins = async () => {
+    if (!selectedItem) {
+      return;
+    }
+    setIsRegenerating(true);
+
+    // Use setTimeout to ensure the UI has time to update the loading state
+    // and show the loading indicator before starting heavy DB operations
+    setTimeout(async () => {
+      try {
+        await NutritionGoalService.regenerateCheckins(selectedItem.id);
+        showSnackbar('success', t('common.success'), {
+          action: t('common.ok'),
+        });
+      } catch (error) {
+        console.error('Regenerate check-ins failed:', error);
+        showSnackbar('error', t('common.error'), {
+          action: t('common.ok'),
+        });
+      } finally {
+        setIsRegenerating(false);
+      }
+    }, 100);
   };
 
   const handleDuplicate = async () => {
@@ -1008,6 +1048,9 @@ export function DataLogModal({
     const DuplicateIcon = (props: { size: number; color: string }) => (
       <MaterialIcons name="content-copy" {...props} />
     );
+    const RegenerateIcon = (props: { size: number; color: string }) => (
+      <MaterialIcons name="refresh" {...props} />
+    );
     const DeleteIcon = (props: { size: number; color: string }) => (
       <MaterialIcons name="delete" {...props} />
     );
@@ -1045,6 +1088,7 @@ export function DataLogModal({
       'nutritionGoal',
       'nutritionCheckin',
       'chatMessage',
+      'workoutLog',
     ];
 
     // Add Edit menu item only if supported
@@ -1059,6 +1103,19 @@ export function DataLogModal({
       });
     }
 
+    // Add regenerate check-ins only for nutrition goals
+    if (variant === 'nutritionGoal') {
+      menuItems.push({
+        icon: RegenerateIcon,
+        iconColor: theme.colors.text.primary,
+        iconBgColor: theme.colors.background.iconDarker,
+        title: t('goalsManagement.manageGoalData.regenerateCheckins'),
+        description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
+        onPress: handleRegenerateCheckins,
+        keepOpenOnPress: true,
+      });
+    }
+
     // Add duplicate only for variants that support it
     const duplicateSupportedVariants: DataLogModalVariant[] = [
       'meal',
@@ -1066,7 +1123,6 @@ export function DataLogModal({
       'foodPortion',
       'exercise',
       'workoutTemplate',
-      'workoutLog',
       'nutrition_log',
     ];
 
@@ -1134,13 +1190,19 @@ export function DataLogModal({
     </GenericCard>
   );
 
-  const renderHeaderRight = () => (
-    <MenuButton
-      onPress={() => {
-        setShowCreateMenu(true);
-      }}
-    />
-  );
+  const renderHeaderRight = () => {
+    if (getCreateMenuItems().length === 0) {
+      return undefined;
+    }
+
+    return (
+      <MenuButton
+        onPress={() => {
+          setShowCreateMenu(true);
+        }}
+      />
+    );
+  };
 
   const getCreateMenuItems = (): BottomPopUpMenuItem[] => {
     const CreateIcon = (props: { size: number; color: string }) => (
@@ -1398,6 +1460,8 @@ export function DataLogModal({
         onClose={() => setShowMenu(false)}
         title={translations.menuTitle}
         items={getMenuItems()}
+        isLoading={isRegenerating}
+        loadingTitle={t('common.processing')}
       />
 
       {/* Delete Confirmation Modal */}
@@ -1427,6 +1491,19 @@ export function DataLogModal({
         isLoading={isLoadingEdit}
         loadError={editError ?? undefined}
       />
+
+      {/* Past Workout Detail Modal (workoutLog edit) */}
+      {pastWorkoutDetailId ? (
+        <PastWorkoutDetailModal
+          visible={pastWorkoutDetailVisible}
+          onClose={() => {
+            setPastWorkoutDetailVisible(false);
+            setPastWorkoutDetailId(null);
+            refresh();
+          }}
+          workoutId={pastWorkoutDetailId}
+        />
+      ) : null}
 
       {/* Create Menu */}
       {showCreateMenu ? (

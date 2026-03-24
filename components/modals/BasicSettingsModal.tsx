@@ -109,7 +109,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
 
-  // TODO: add an option for local search only, and update the rest of the codebase to handle this case
   const foodSearchMenuItems: BottomPopUpMenuItem[] = [
     ...(hasUsdaApiKey
       ? [
@@ -119,7 +118,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             iconBgColor: theme.colors.accent.primary10,
             title: t('settings.basicSettings.foodSearchBoth'),
             description: t('settings.basicSettings.foodSearchBothDescription'),
-            onPress: () => handleFoodSearchSourceChange('both' as any),
+            onPress: () => handleFoodSearchSourceChange('both'),
           },
         ]
       : []),
@@ -129,7 +128,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       iconBgColor: theme.colors.status.info10,
       title: t('settings.basicSettings.foodSearchOpenFoodFacts'),
       description: t('settings.basicSettings.foodSearchOpenFoodFactsDescription'),
-      onPress: () => handleFoodSearchSourceChange('openfood' as any),
+      onPress: () => handleFoodSearchSourceChange('openfood'),
     },
     ...(hasUsdaApiKey
       ? [
@@ -139,10 +138,18 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             iconBgColor: theme.colors.status.emerald10,
             title: t('settings.basicSettings.foodSearchUSDA'),
             description: t('settings.basicSettings.foodSearchUSDADescription'),
-            onPress: () => handleFoodSearchSourceChange('usda' as any),
+            onPress: () => handleFoodSearchSourceChange('usda'),
           },
         ]
       : []),
+    {
+      icon: Scale,
+      iconColor: theme.colors.text.secondary,
+      iconBgColor: theme.colors.background.card,
+      title: t('settings.basicSettings.foodSearchNone'),
+      description: t('settings.basicSettings.foodSearchNoneDescription'),
+      onPress: () => handleFoodSearchSourceChange('none'),
+    },
   ];
 
   const effectiveFoodSearchSource: FoodSearchSource =
@@ -154,6 +161,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     both: t('settings.basicSettings.foodSearchBoth'),
     openfood: t('settings.basicSettings.foodSearchOpenFoodFacts'),
     usda: t('settings.basicSettings.foodSearchUSDA'),
+    none: t('settings.basicSettings.foodSearchNone'),
   }[effectiveFoodSearchSource];
 
   const currentLanguageLabel =

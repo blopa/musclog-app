@@ -29,6 +29,7 @@ import {
   OPENAI_MODEL_SETTING_TYPE,
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
+  SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -422,6 +423,13 @@ export class SettingsService {
    */
   static async setMaxAiMemories(value: number) {
     await SettingsService.setStringSetting(MAX_AI_MEMORIES_SETTING_TYPE, value.toString());
+  }
+
+  /**
+   * Upsert the show daily mood prompt setting
+   */
+  static async setShowDailyMoodPrompt(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, value);
   }
 
   /**

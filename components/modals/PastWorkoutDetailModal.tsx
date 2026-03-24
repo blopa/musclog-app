@@ -1,10 +1,11 @@
 import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Edit, Trophy } from 'lucide-react-native';
+import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
+import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
@@ -12,11 +13,13 @@ import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { XAxisLabel } from '../../utils/chartUtils';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import type { WorkoutExercise, WorkoutSet } from '../../utils/workoutDetail';
 import { GenericCard } from '../cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '../charts/LineChart';
+import { Button } from '../theme/Button';
 import { MenuButton } from '../theme/MenuButton';
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -338,7 +341,6 @@ type ExercisesSectionProps = {
 };
 
 function ExercisesSection({ exercises, onEdit, onClose }: ExercisesSectionProps) {
-  const theme = useTheme();
   const { t } = useTranslation();
 
   return (
@@ -381,13 +383,14 @@ export default function PastWorkoutDetailModal({
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, reload } =
+  const { workout, isLoading, isMenuVisible, setIsMenuVisible, rawSets, externalId, reload } =
     usePastWorkoutDetail({
       visible,
       workoutId,
     });
 
   const { isSaving: isSavingSets, error: saveError, saveSets } = useEditWorkoutSets();
+  const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
@@ -397,6 +400,58 @@ export default function PastWorkoutDetailModal({
     sets: EnrichedWorkoutLogSet[];
     exercises: Exercise[];
   } | null>(null);
+
+  const handleSaveToHealthConnect = async () => {
+    if (!workoutId) {
+      return;
+    }
+
+    setIsSavingToHC(true);
+    try {
+      const {
+        workoutLog: log,
+        sets,
+        exercises,
+      } = await WorkoutService.getWorkoutWithDetails(workoutId);
+
+      const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+      const byExercise = new Map<string, (typeof sets)[number][]>();
+      for (const set of sets) {
+        const eid = set.exerciseId ?? '';
+        if (!byExercise.has(eid)) {
+          byExercise.set(eid, []);
+        }
+        byExercise.get(eid)!.push(set);
+      }
+      const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => ({
+        exerciseName: exerciseMap.get(exerciseId)?.name ?? 'Exercise',
+        totalReps: exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0),
+        sets: exerciseSets.map((s) => ({ reps: s.reps ?? 0, weight: s.weight ?? 0 })),
+      }));
+
+      const hcRecordId = await writeWorkoutToHealthConnect({
+        workoutName: log.workoutName,
+        startedAt: log.startedAt,
+        completedAt: log.completedAt!,
+        totalVolume: log.totalVolume ?? undefined,
+        caloriesBurned: log.caloriesBurned ?? undefined,
+        workoutType: log.type ?? undefined,
+        segmentItems,
+      });
+
+      if (hcRecordId) {
+        await database.write(async () => {
+          await log.update((l) => {
+            l.externalId = hcRecordId;
+          });
+        });
+      }
+    } catch (err) {
+      console.error('Failed to save workout to Health Connect:', err);
+    } finally {
+      setIsSavingToHC(false);
+    }
+  };
 
   const formatDate = (date: Date) => {
     return format(date, 'EEEE, MMM d • hh:mm a');
@@ -459,6 +514,18 @@ export default function PastWorkoutDetailModal({
             weightUnitKey={weightUnitKey}
           />
 
+          {Platform.OS === 'android' && !externalId ? (
+            <Button
+              label={t('workoutDetail.syncToHealthConnect')}
+              icon={RefreshCw}
+              variant="outline"
+              width="full"
+              size="sm"
+              loading={isSavingToHC}
+              onPress={handleSaveToHealthConnect}
+            />
+          ) : null}
+
           {workout.volumeTrend.data.length > 0 ? (
             <VolumeTrendCard
               percentage={workout.volumeTrend.percentage}
@@ -479,6 +546,7 @@ export default function PastWorkoutDetailModal({
               if (!exerciseId || isSavingSets) {
                 return;
               }
+
               setEditingExerciseId(exerciseId);
               setIsEditModalVisible(true);
             }}
@@ -493,7 +561,7 @@ export default function PastWorkoutDetailModal({
         workoutName={workout.name}
         onEdit={onEdit}
         onShare={onShare}
-        onDelete={onDelete}
+        onDelete={onDelete ? onDelete : undefined}
         onPreview={async () => {
           if (!workoutId) {
             return;
@@ -502,6 +570,7 @@ export default function PastWorkoutDetailModal({
           try {
             const data = await WorkoutService.getWorkoutWithDetails(workoutId);
             setPreviewWorkoutData(data);
+            console.log('ON PREVIEW CLICKED', data, 11, workoutId);
             setIsPreviewModalVisible(true);
           } catch (error) {
             console.error('Error loading workout for preview:', error);
@@ -577,7 +646,7 @@ export default function PastWorkoutDetailModal({
           workoutLog={previewWorkoutData.workoutLog}
           sets={previewWorkoutData.sets}
           exercises={previewWorkoutData.exercises}
-          isPreview={true}
+          shouldShowTimer={false}
         />
       ) : null}
     </>

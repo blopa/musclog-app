@@ -37,7 +37,7 @@ const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   TEMP_NUTRITION_PLAN,
 ]);
 
-const EXPORT_VERSION = 2;
+const EXPORT_VERSION = 1;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [

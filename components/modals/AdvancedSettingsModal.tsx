@@ -73,6 +73,8 @@ export function AdvancedSettingsModal({
     handleAnonymousBugReportChange,
     chartTooltipPosition: debouncedChartTooltipPosition,
     handleChartTooltipPositionChange,
+    showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
+    handleShowDailyMoodPromptChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -168,6 +170,30 @@ export function AdvancedSettingsModal({
     },
   ];
 
+  const dailyMoodPromptItems = [
+    {
+      key: 'daily-mood-prompt',
+      label: t('settings.advancedSettings.dailyMoodPrompt'),
+      subtitle: t('settings.advancedSettings.dailyMoodPromptSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Activity size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedShowDailyMoodPrompt,
+      onValueChange: handleShowDailyMoodPromptChange,
+    },
+  ];
+
   const chartTooltipPositionItems = [
     {
       key: 'chart-tooltip-left',
@@ -252,6 +278,8 @@ export function AdvancedSettingsModal({
               {t('settings.advancedSettings.privacyDiagnostics')}
             </Text>
             <ToggleInput items={bugReportItems} />
+            <View className="mt-4" />
+            <ToggleInput items={dailyMoodPromptItems} />
           </View>
 
           {/* Charts Section */}

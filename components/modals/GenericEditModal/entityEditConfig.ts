@@ -86,6 +86,9 @@ const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'other'] as const;
 // Eating phases for Nutrition Goal
 const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
 
+// Checkin statuses for Nutrition Checkin
+const CHECKIN_STATUSES = ['pending', 'ahead', 'onTrack', 'behind'] as const;
+
 /**
  * Get edit field configuration for a given entity type
  */
@@ -195,7 +198,7 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         {
           type: 'select',
           key: 'type',
-          label: 'bodyMetrics.addEntry.enterWeight',
+          label: 'bodyMetrics.addEntry.enterType',
           required: true,
           options: USER_METRIC_TYPES.map((type) => ({
             value: type,
@@ -450,6 +453,16 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
           required: true,
         },
         {
+          type: 'select',
+          key: 'status',
+          label: 'common.status',
+          required: true,
+          options: CHECKIN_STATUSES.map((status) => ({
+            value: status,
+            label: `nutrition.checkin.status.${status}`,
+          })),
+        },
+        {
           type: 'number',
           key: 'targetWeight',
           label: 'currentGoalsCard.targetWeight',
@@ -578,6 +591,7 @@ export async function getInitialValues(
     case 'nutritionCheckin':
       return {
         checkinDate: recordAny.checkinDate ?? Date.now(),
+        status: recordAny.status ?? 'pending',
         targetWeight: recordAny.targetWeight ?? 0,
         targetBodyFat: recordAny.targetBodyFat ?? 0,
         targetBmi: recordAny.targetBmi ?? 0,
@@ -689,18 +703,22 @@ export async function saveRecord(
         targetWeightKg = displayToKg(targetWeightKg, context.units);
       }
 
-      await NutritionGoalService.updateGoal(recordId, {
-        totalCalories: values.totalCalories as number | undefined,
-        protein: values.protein as number | undefined,
-        carbs: values.carbs as number | undefined,
-        fats: values.fats as number | undefined,
-        fiber: values.fiber as number | undefined,
-        eatingPhase: values.eatingPhase as any,
-        targetWeight: targetWeightKg,
-        targetBodyFat: values.targetBodyFat as number | undefined,
-        targetBMI: values.targetBMI as number | undefined,
-        targetFFMI: values.targetFFMI as number | undefined,
-      });
+      await NutritionGoalService.updateGoal(
+        recordId,
+        {
+          totalCalories: values.totalCalories as number | undefined,
+          protein: values.protein as number | undefined,
+          carbs: values.carbs as number | undefined,
+          fats: values.fats as number | undefined,
+          fiber: values.fiber as number | undefined,
+          eatingPhase: values.eatingPhase as any,
+          targetWeight: targetWeightKg,
+          targetBodyFat: values.targetBodyFat as number | undefined,
+          targetBMI: values.targetBMI as number | undefined,
+          targetFFMI: values.targetFFMI as number | undefined,
+        },
+        true
+      );
       break;
     }
 
@@ -716,6 +734,7 @@ export async function saveRecord(
 
       await NutritionCheckinService.update(recordId, {
         checkinDate: values.checkinDate as number | undefined,
+        status: values.status as any,
         targetWeight: targetWeightKg,
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
@@ -793,6 +812,7 @@ export function getCreateInitialValues(entityType: DataLogModalVariant): EditFor
     case 'nutritionCheckin':
       return {
         checkinDate: Date.now(),
+        status: 'pending',
         targetWeight: 0,
         targetBodyFat: 0,
         targetBmi: 0,
@@ -909,6 +929,7 @@ export async function createRecord(
 
       await NutritionCheckinService.create(currentGoal.id, {
         checkinDate: (values.checkinDate as number) ?? Date.now(),
+        status: values.status as any,
         targetWeight: targetWeightKg,
         targetBodyFat: (values.targetBodyFat as number) ?? 0,
         targetBmi: (values.targetBmi as number) ?? 0,

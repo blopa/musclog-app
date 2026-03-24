@@ -28,7 +28,9 @@
       "foodSearchOpenFoodFacts": "Open Food Facts",
       "foodSearchOpenFoodFactsDescription": "Banco de dados de alimentos open source",
       "foodSearchUSDA": "USDA",
-      "foodSearchUSDADescription": "Banco de dados do Departamento de Agricultura dos EUA"
+      "foodSearchUSDADescription": "Banco de dados do Departamento de Agricultura dos EUA",
+      "foodSearchNone": "Nenhum",
+      "foodSearchNoneDescription": "Pesquisar apenas no seu banco de dados local"
     },
     "migration": {
       "title": "Migração de Dados",
@@ -80,6 +82,8 @@
       "privacyDiagnostics": "PRIVACIDADE E DIAGNÓSTICOS",
       "anonymousBugReport": "Relatório Anônimo de Bugs",
       "anonymousBugReportSubtitle": "Ajude a melhorar o Musclog enviando logs de falhas",
+      "dailyMoodPrompt": "Pergunta Diária de Humor",
+      "dailyMoodPromptSubtitle": "Mostrar um seletor de humor na tela inicial se ainda não tiver sido registrado hoje",
       "charts": "GRÁFICOS",
       "chartTooltipLeft": "Tooltip à Esquerda",
       "chartTooltipLeftSubtitle": "Mostrar tooltips de dados do gráfico no canto superior esquerdo em vez do superior direito",

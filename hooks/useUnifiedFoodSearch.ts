@@ -78,8 +78,10 @@ export function useUnifiedFoodSearch({
   const [accumulatedUsdaResults, setAccumulatedUsdaResults] = useState<any[]>([]);
   const [usdaCompleted, setUsdaCompleted] = useState(false);
 
-  const includeOpenFood = foodSearchSource === 'both' || foodSearchSource === 'openfood';
-  const includeUSDA = foodSearchSource === 'both' || foodSearchSource === 'usda';
+  const includeOpenFood =
+    foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'openfood');
+  const includeUSDA =
+    foodSearchSource !== 'none' && (foodSearchSource === 'both' || foodSearchSource === 'usda');
 
   // Debounce search term
   useEffect(() => {

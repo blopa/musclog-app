@@ -31,6 +31,7 @@ export type WorkoutHistoryModalProps = {
   exercises?: Exercise[];
   currentSetOrder?: number | null;
   isPreview?: boolean;
+  shouldShowTimer?: boolean;
   onStartWorkout?: () => void;
 };
 
@@ -44,6 +45,7 @@ export function WorkoutSessionHistoryModal({
   exercises = [],
   currentSetOrder = null,
   isPreview = false,
+  shouldShowTimer = true,
   onStartWorkout,
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
@@ -285,7 +287,7 @@ export function WorkoutSessionHistoryModal({
                 {workoutName}
               </Text>
             </View>
-            {!isPreview ? (
+            {!isPreview && shouldShowTimer ? (
               <View className="items-end">
                 <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}

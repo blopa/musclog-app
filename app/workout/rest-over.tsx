@@ -1,5 +1,4 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -161,7 +160,6 @@ export default function RestOverScreen() {
   if (isLoading) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
@@ -172,7 +170,6 @@ export default function RestOverScreen() {
   if (error || !workoutLog) {
     return (
       <MasterLayout showNavigationMenu={false}>
-        <StatusBar style="light" />
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={WifiOff}

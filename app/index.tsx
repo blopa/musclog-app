@@ -11,6 +11,7 @@ import { DailySummaryCard } from '../components/cards/DailySummaryCard/DailySumm
 import { DailySummaryEmptyState } from '../components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '../components/cards/DetailedItemCard';
 import { FoodItemCard } from '../components/cards/FoodItemCard';
+import { HomeMoodPrompt } from '../components/cards/HomeMoodPrompt';
 import { useCoach } from '../components/CoachContext';
 import { MasterLayout } from '../components/MasterLayout';
 import { AddFoodModal } from '../components/modals/AddFoodModal';
@@ -411,6 +412,11 @@ export default function HomeScreen() {
           ) : (
             <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
           )}
+        </View>
+
+        {/* Home Mood Prompt */}
+        <View className="mx-4">
+          <HomeMoodPrompt />
         </View>
 
         {/* Action Buttons */}
