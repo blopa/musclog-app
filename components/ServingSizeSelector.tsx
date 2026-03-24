@@ -2,7 +2,7 @@ import { Food } from 'database/models';
 import { Minus, Plus } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useFoodPortions } from '../hooks/useFoodPortions';
 import { useSettings } from '../hooks/useSettings';
@@ -93,7 +93,7 @@ export function ServingSizeSelector({
           </Pressable>
           <View className="flex-1 items-center justify-center py-1" style={{ minWidth: 0 }}>
             <View className="relative flex-row items-baseline justify-center">
-              <TextInput
+              <RNTextInput
                 className="bg-transparent p-0 text-center text-4xl font-black text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
