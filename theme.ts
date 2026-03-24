@@ -3,7 +3,7 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
-const baseColors = {
+const baseColors_light = {
   // --- Core Surfaces — Luminous Analyst palette ---
   surfaceBlack: '#F7F9FB', // background Level 0: the airy, sophisticated base (not pure white)
   white: '#191C1E', // on_surface: primary text — never pure black, maintains soft-light aesthetic
@@ -76,7 +76,7 @@ const baseColors = {
   pink500: '#EC4899',
 };
 
-const baseColors2 = {
+const baseColors = {
   surfaceBlack: '#0d1511', // Obsidian surface base
   gray900: '#1a1f1c', // Darkest neutral surface (obsidian-tinted)
   charcoalGreen: '#111a15', // Dark obsidian green surface
@@ -308,6 +308,8 @@ const themeColors = {
     gray300: colors.gray300, // Gray-300
     gray500: colors.gray500, // Gray-500
     white: colors.white, // White
+    // Fixed-white token: always pure white regardless of theme, for text on colorful gradient surfaces
+    onColorful: '#ffffff',
     // Text colors with opacity
     primary12: colors.surfaceHighlight12, // Primary with 12.5% opacity
     primary20: colors.borderWhite20, // Primary with 20% opacity
@@ -497,6 +499,9 @@ const themeColors = {
     backdrop: colors.darkJungleAlpha80, // Background primary with 80% opacity (for modals)
     backdrop90: colors.darkJungleAlpha90, // Background primary with 90% opacity
     darkGreenOverlayGradient: colors.deepTealAlpha90, // Dark green overlay gradient
+    // Fixed-white tokens: always pure white regardless of theme, for text on colorful gradient surfaces
+    onColorful70: 'rgba(255, 255, 255, 0.7)',
+    onColorful90: 'rgba(255, 255, 255, 0.9)',
   },
 
   // Opacity values (for use in style objects)

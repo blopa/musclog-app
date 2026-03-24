@@ -56,6 +56,7 @@ module.exports = {
           accent: darkTheme.colors.text.accent,
           accentLight: darkTheme.colors.text.accentLight,
           black: darkTheme.colors.text.black,
+          'on-colorful': darkTheme.colors.text.onColorful,
         },
         // Accent colors
         accent: {
