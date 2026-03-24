@@ -84,40 +84,40 @@ const lightColors = {
 };
 
 const baseColors = {
-  surfaceBlack: '#131314',
-  gray900: '#1f1f1f',
-  charcoalGreen: '#141a17',
-  emerald900: '#064e3b',
-  darkViridian: '#2a4d3f',
-  green800: '#125630',
-  deepGreen: '#1a3a2a',
-  darkForest: '#0d3520',
-  swampGreen: '#0a1f1a',
-  darkMint: '#0f2419',
-  gunmetalGreen: '#1a2420',
-  darkSeaGreen: '#0f2f27',
-  jade: '#10b981',
-  green500: '#22c55e',
-  teal500: '#14b8a6',
-  teal400: '#2dd4bf',
-  gray800: '#1f2937',
-  gray700: '#374151',
-  gray850: '#303030',
+  surfaceBlack: '#0d1511', // Obsidian surface base
+  gray900: '#1a1f1c', // Darkest neutral surface (obsidian-tinted)
+  charcoalGreen: '#111a15', // Dark obsidian green surface
+  emerald900: '#064e3b', // Data Series 4: Forest Accent
+  darkViridian: '#1c3829', // Medium dark obsidian green
+  green800: '#0d4a2d', // Deep green surface
+  deepGreen: '#132a1e', // Dark green surface
+  darkForest: '#0a1c13', // Very dark forest surface
+  swampGreen: '#091310', // Darkest obsidian variant
+  darkMint: '#0c1a13', // Near-obsidian dark
+  gunmetalGreen: '#152020', // Dark neutral-green surface
+  darkSeaGreen: '#0c2419', // Dark teal surface
+  jade: '#10b981', // Primary Vibrant Emerald
+  green500: '#34d399', // Data Series 1: Bright Mint
+  teal500: '#0f766e', // Data Series 2: Deep Teal
+  teal400: '#99f6e4', // Data Series 3: Soft Sage
+  gray800: '#1c2620', // Dark surface with green tint
+  gray700: '#2c3a32', // Medium-dark green-gray
+  gray850: '#1e2922', // Medium dark green surface
   blue600: '#2563eb',
   indigo500: '#6366f1',
   blue500: '#3b82f6',
   indigo400: '#818cf8',
-  gray500: '#6b7280',
-  zinc500: '#747775',
+  gray500: '#587068', // Muted teal-gray
+  zinc500: '#6a7874', // Muted teal-zinc
   red900: '#7f1d1d',
   rose900: '#9f1239',
   violet500: '#8b5cf6',
   purple500: '#a855f7',
-  zinc400: '#8e918f',
-  gray400: '#9ca3af',
-  gray300: '#d1d5db',
-  gray200: '#e3e3e3',
-  white: '#ffffff',
+  zinc400: '#8e9e96', // Teal-tinted zinc
+  gray400: '#9cb0a8', // Teal-tinted gray
+  gray300: '#c0cfc6', // Light green-tinted gray
+  gray200: '#dce5de', // On-Surface off-white
+  white: '#dce5de', // On-Surface: high-readability off-white (not pure white)
   rose500: '#da2552',
   rose600: '#e11d48',
   yellow500: '#eab308',
@@ -125,18 +125,18 @@ const baseColors = {
   amber500: '#f59e0b',
   red500: '#ef4444',
   red400: '#f87171',
-  teal600: '#0d9488',
-  green600: '#16a34a',
-  neonMint: '#29e08e',
+  teal600: '#007068', // Gradient end: Emerald-to-Teal CTA
+  green600: '#10b981', // Repeat of primary emerald
+  neonMint: '#34d399', // Bright Mint (Data Series 1)
   darkRedBg: '#3d1515',
   darkPurpleBg: '#3d3162',
-  gray600: '#4b5563',
+  gray600: '#476058', // Muted teal-gray
   indigo600: '#4f46e5',
   violet800: '#5b21b6',
-  warmGray: '#8b7d6b',
-  sage: '#95c6b0',
+  warmGray: '#8a9690', // Teal-tinted warm gray
+  sage: '#99f6e4', // Data Series 3: Soft Sage
   violet300: '#a78bfa',
-  emerald200: '#a7f3d0',
+  emerald200: '#a7f3d0', // Supporting Accent: Subtle Lime
   indigo200: '#c7d2fe',
   tan: '#d4b5a0',
   pink500: '#ec4899',
