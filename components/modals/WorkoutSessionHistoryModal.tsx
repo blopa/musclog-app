@@ -286,6 +286,11 @@ export function WorkoutSessionHistoryModal({
               <Text className="text-3xl font-bold leading-tight text-text-primary">
                 {workoutName}
               </Text>
+              {(isPreview ? workoutTemplate?.description : null) ? (
+                <Text className="mt-1 text-sm text-text-secondary">
+                  {workoutTemplate!.description}
+                </Text>
+              ) : null}
             </View>
             {!isPreview && shouldShowTimer ? (
               <View className="items-end">

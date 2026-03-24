@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../../hooks/useTheme';
 

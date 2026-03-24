@@ -276,7 +276,7 @@ export default function CreateWorkoutModal({
               {t('createWorkout.workoutType')}
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.gap.sm }}>
-              {WORKOUT_TYPES.map((type) => {
+              {WORKOUT_TYPES.filter((t) => t !== 'free').map((type) => {
                 const isSelected = workoutType === type;
                 return (
                   <Pressable

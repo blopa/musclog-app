@@ -90,7 +90,7 @@ const kineticDepth = {
   gunmetalGreen: '#152020', // Dark neutral-green surface
   darkSeaGreen: '#0c2419', // Dark teal surface
   jade: '#10b981', // Primary Vibrant Emerald
-  green500: '#34d399', // Data Series 1: Bright Mint
+  green500: '#29a577', // Data Series 1: Bright Mint
   teal500: '#0f766e', // Data Series 2: Deep Teal
   teal400: '#99f6e4', // Data Series 3: Soft Sage
   gray800: '#1c2620', // Dark surface with green tint
