@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme';
 
 export type ActivityRingConfig = {
   /** Progress 0–1 (e.g. 0.8 for 80%) */
@@ -35,30 +36,48 @@ export type ActivityRingsChartProps = {
   className?: string;
 };
 
-const DEFAULT_RINGS: ActivityRingConfig[] = [
-  // TODO: use i18n for the labels
-  { progress: 0.8, color: appTheme.colors.status.emeraldLight, label: 'Move', value: '80%' },
-  { progress: 0.65, color: appTheme.colors.status.teal400, label: 'Steps', value: '65%' },
-  { progress: 0.45, color: appTheme.colors.status.purple, label: 'Rest', value: '45%' },
-];
-
 const VIEWBOX_SIZE = 100;
 const RADII = [40, 30, 20]; // outer to inner
 
 export function ActivityRingsChart({
   title,
   subtitle,
-  rings = DEFAULT_RINGS,
+  rings,
   centerValue = '82',
-  centerLabel = 'Score',
+  centerLabel,
   size = 224,
   trackColor,
   strokeWidth = 8,
   className,
 }: ActivityRingsChartProps) {
   const theme = useTheme();
+  const { t } = useTranslation();
+  const defaultRings = useMemo<ActivityRingConfig[]>(
+    () => [
+      {
+        progress: 0.8,
+        color: theme.colors.status.emeraldLight,
+        label: t('home.activityRings.move'),
+        value: '80%',
+      },
+      {
+        progress: 0.65,
+        color: theme.colors.status.teal400,
+        label: t('home.activityRings.steps'),
+        value: '65%',
+      },
+      {
+        progress: 0.45,
+        color: theme.colors.status.purple,
+        label: t('home.activityRings.rest'),
+        value: '45%',
+      },
+    ],
+    [theme, t]
+  );
   const track = trackColor ?? theme.colors.border.light;
-  const displayRings = rings.slice(0, 3);
+  const displayRings = (rings ?? defaultRings).slice(0, 3);
+  const resolvedCenterLabel = centerLabel ?? t('home.activityRings.score');
 
   return (
     <View className={className} style={{ alignItems: 'center' }}>
@@ -142,7 +161,7 @@ export function ActivityRingsChart({
             className="mt-1 text-[10px] font-bold uppercase text-text-tertiary"
             style={{ marginTop: 4, fontSize: 10 }}
           >
-            {centerLabel}
+            {resolvedCenterLabel}
           </Text>
         </View>
       </View>

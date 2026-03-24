@@ -12,6 +12,12 @@
       "recentFoods": "Alimentos Recentes",
       "dailySummary": "Resumo Diário"
     },
+    "activityRings": {
+      "move": "Mover",
+      "steps": "Passos",
+      "rest": "Descanso",
+      "score": "Pontuação"
+    },
     "navigation": {
       "home": "Início",
       "profile": "Perfil",
