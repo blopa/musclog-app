@@ -35,6 +35,7 @@ export function ServingSizeSelector({
   const displayValue = gramsToDisplay(value, units);
   const massUnit = getMassUnitLabel(units);
   const stepAmount = units === 'imperial' ? displayToGrams(STEP_OZ, units) : STEP_GRAMS;
+  const stepDisplay = units === 'imperial' ? STEP_OZ : STEP_GRAMS;
 
   const { portions } = useFoodPortions({
     mode: 'all',
@@ -75,6 +76,7 @@ export function ServingSizeSelector({
         <StepperInput
           label={t('food.foodDetails.servingSize')}
           value={displayValue}
+          step={stepDisplay}
           onIncrement={handleIncrease}
           onDecrement={handleDecrease}
           onChangeValue={handleChangeValue}
