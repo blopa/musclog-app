@@ -17,6 +17,7 @@
     "setLabel": "Série {{index}}",
     "remove": "Remover",
     "rir": "RIR (Repetições em Reserva)",
+    "shareMessage": "Acabei de terminar um treino com volume de {{volume}} {{unit}} e queimei {{calories}} calorias",
     "inputs": {
       "weightKg": "Peso (kg)",
       "weightLbs": "Peso (lbs)",

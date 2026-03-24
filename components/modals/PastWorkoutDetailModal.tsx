@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Edit, RefreshCw, Trophy } from 'lucide-react-native';
 import { createElement, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Share, Text, View } from 'react-native';
 
 import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
@@ -13,6 +13,7 @@ import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { healthConnectService } from '../../services/healthConnect';
 import { writeWorkoutToHealthConnect } from '../../services/healthConnectWorkout';
 import { XAxisLabel } from '../../utils/chartUtils';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -401,6 +402,24 @@ export default function PastWorkoutDetailModal({
     exercises: Exercise[];
   } | null>(null);
 
+  const handleShare = async () => {
+    if (!workout) {
+      return;
+    }
+
+    try {
+      const message = t('workoutDetail.shareMessage', {
+        volume: workout.volume.toLocaleString(),
+        unit: t(weightUnitKey),
+        calories: workout.calories,
+      });
+
+      await Share.share({ message });
+    } catch (err) {
+      console.error('Failed to share workout:', err);
+    }
+  };
+
   const handleSaveToHealthConnect = async () => {
     if (!workoutId) {
       return;
@@ -408,6 +427,22 @@ export default function PastWorkoutDetailModal({
 
     setIsSavingToHC(true);
     try {
+      const hasWrite = await healthConnectService.hasPermissionForRecordType(
+        'ExerciseSession',
+        'write'
+      );
+
+      if (!hasWrite) {
+        const { denied } = await healthConnectService.requestPermissions([
+          { accessType: 'write', recordType: 'ExerciseSession' },
+        ]);
+
+        if (denied.length > 0) {
+          setIsSavingToHC(false);
+          return;
+        }
+      }
+
       const {
         workoutLog: log,
         sets,
@@ -560,7 +595,7 @@ export default function PastWorkoutDetailModal({
         onClose={() => setIsMenuVisible(false)}
         workoutName={workout.name}
         onEdit={onEdit}
-        onShare={onShare}
+        onShare={handleShare}
         onDelete={onDelete ? onDelete : undefined}
         onPreview={async () => {
           if (!workoutId) {
