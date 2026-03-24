@@ -3,87 +3,80 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
-// TODO: adjust the colors to make sure all screens look good and have good contrast
-const lightColors = {
-  // --- 💡 CORE READABILITY FIX ---
-  // If your app is built correctly, these two variables handle the bulk of your UI.
-  surfaceBlack: '#FFFFFF', // Mandatory: Was Black, now your pure white app background.
-  white: '#0F172A', // Mandatory: Was White, now Dark Slate for primary text readability.
+const baseColors = {
+  // --- Core Surfaces — Luminous Analyst palette ---
+  surfaceBlack: '#F7F9FB', // background Level 0: the airy, sophisticated base (not pure white)
+  white: '#191C1E', // on_surface: primary text — never pure black, maintains soft-light aesthetic
 
-  // --- Grays & Surface Layering (Inverted Neutral Scale) ---
-  // I have transformed this chaotic gray list into a layered light neutral scale using Slate tones.
-  gray900: '#F1F5F9', // Lightest neutral gray for secondary app backgrounds.
-  gray850: '#E2E8F0', // Standard card surface background.
-  gray800: '#CBD5E1', // Subtle border and divider color.
-  gray700: '#94A3B8', // Muted text or disabled states.
-  gray600: '#64748B', // Secondary text color.
-  gray500: '#475569', // Icons or tertiary text.
-  gray400: '#334155', // Occasional text or dark accents.
-  gray300: '#1E293B', // Almost dark slate text.
-  gray200: '#0F172A', // Re-mapping for deepest darks.
-  zinc400: '#71717A',
-  zinc500: '#A1A1AA',
-  warmGray: '#FAF7F5', // Very light warm off-white, excellent for "warning" cards.
+  // --- Surface Layering — tonal neutral scale (light backgrounds → dark text) ---
+  gray900: '#F2F4F6', // surface_container_low: section backgrounds
+  gray850: '#E8EEEB', // light neutral surface
+  gray800: '#BBCABF', // outline_variant: ghost borders (use at 30% opacity for accessibility)
+  gray700: '#6B8070', // muted/disabled text (green-tinted)
+  gray600: '#4D6058', // secondary text
+  gray500: '#3C4A42', // on_surface_variant: icons and tertiary text
+  gray400: '#2D3D35', // dark accents
+  gray300: '#1E2E28', // near-dark text
+  gray200: '#191C1E', // on_surface: deepest dark text (matches white token)
+  zinc400: '#71817A', // teal-tinted zinc
+  zinc500: '#9CABA4', // lighter teal-tinted zinc
+  warmGray: '#FAF9F7', // very light warm off-white for warning card backgrounds
 
-  // --- Primary Fitness Accents (Softenened Greens & Teals) ---
-  // The dark green cluster is now a layered mint/sage palette. Your high contrast concern is handled by making these energetic but not neon.
-  jade: '#34D399', // Clean mint green (primary action/success color).
-  green500: '#6EE7B7', // Slightly softer mint.
-  green600: '#10B981', // Saturated mint/emerald, perfect for a progress ring or success button.
-  green800: '#059669', // Deepest mint.
-  teal400: '#38BDF8', // Fresh Sky blue for hydration or rest tracking.
-  teal500: '#0EA5E9', // Main blue-teal.
-  teal600: '#0284C7', // Deeper cyan/blue.
-  emerald200: '#86EFAC',
+  // --- Primary Emerald Action Palette ---
+  jade: '#006C49', // primary action: deep authoritative emerald
+  green500: '#4EDEA3', // primary_fixed_dim: large background accents and illustrative shapes
+  green600: '#10B981', // primary_container: CTA gradient end (Emerald → Teal)
+  green800: '#006C49', // deepest primary (repeat of jade)
+  teal400: '#38BDF8', // sky blue: hydration or rest tracking
+  teal500: '#0EA5E9', // main blue-teal
+  teal600: '#0284C7', // deeper cyan/blue
+  emerald200: '#BAEED1', // secondary_fixed: "Data Pulse" chip background
 
-  // These former "dark background" names are now very soft background tint washes for cards.
-  emerald900: '#D1FAE5', // Soft light mint wash background.
-  swampGreen: '#F0FDF4', // Soft neutral green wash background.
-  darkMint: '#ECFDF5', // Very soft light mint wash background.
-  darkForest: '#FEF3C7', // Soft light amber wash background (for streaks).
-  deepGreen: '#FEFCE8', // Soft light yellow wash background (for warnings).
-  darkViridian: '#D1FAE5',
-  gunmetalGreen: '#E0F2FE',
-  darkSeaGreen: '#E0F2FE',
-  charcoalGreen: '#E2E8F0', // Re-mapped as card surface background.
+  // --- Soft Background Wash Colors (tonal layering, no borders) ---
+  emerald900: '#B7EBCE', // secondary_container: light green wash for hover states
+  swampGreen: '#F0FDF5', // soft neutral green wash background
+  darkMint: '#ECFDF5', // very soft mint wash background
+  darkForest: '#FEF3C7', // soft amber wash (streaks)
+  deepGreen: '#FEFCE8', // soft yellow wash (warnings)
+  darkViridian: '#B7EBCE', // secondary_container
+  gunmetalGreen: '#E0F2FE', // soft blue wash
+  darkSeaGreen: '#E0F2FE', // soft blue wash
+  charcoalGreen: '#F2F4F6', // surface_container_low: card surface background
 
-  // --- High Focus Accents (Sunrise/Citrus Tones) ---
-  // I've softened these to reduce the "crazy focus" issue. They are energetic but clear.
-  neonMint: '#A7F3D0', // Soft, calm Mint tint background (good for hydration goals).
-  tan: '#FED7AA', // Soft, warm Taupe for secondary accents.
-  sage: '#C6F6D5', // Soft green accent (good for recovery goals).
-  orange500: '#F97316', // Warm Orange (energetic accent).
-  amber400: '#FBBF24', // Bright amber/gold.
-  amber500: '#F59E0B', // Deep Amber (great for high focus but not red).
+  // --- Accent Colors ---
+  neonMint: '#BAEED1', // secondary_fixed: calm mint chip/tint background
+  tan: '#FED7AA', // soft warm taupe
+  sage: '#B7EBCE', // secondary_container soft green accent (recovery goals)
+  orange500: '#F97316',
+  amber400: '#FBBF24',
+  amber500: '#F59E0B',
   yellow500: '#FDE047',
 
   // --- Purples, Blues, Indigos (Rest & Recovery Tones) ---
-  // Layered soft-contrast purples for sleep and rest tracking.
-  indigo200: '#EEF2FF', // Very soft indigo background tint wash.
-  indigo400: '#A5B4FC', // Soft lavender.
-  indigo500: '#818CF8', // Medium purple-blue.
-  indigo600: '#6366F1', // Deeper indigo (good focus color).
+  indigo200: '#EEF2FF',
+  indigo400: '#A5B4FC',
+  indigo500: '#818CF8',
+  indigo600: '#6366F1',
   blue500: '#3B82F6',
   blue600: '#2563EB',
-  violet300: '#DDD6FE', // Softest violet.
+  violet300: '#DDD6FE',
   violet500: '#A78BFA',
   violet800: '#8B5CF6',
-  purple500: '#C084FC', // Saturated, clear purple.
-  darkPurpleBg: '#F3E8FF', // Soft light purple background wash.
+  purple500: '#C084FC',
+  darkPurpleBg: '#F3E8FF',
 
-  // --- Red/Danger Accents (Layered Reds & Roses) ---
-  // Softened to have clear meaning without being chaotic or harsh on light.
-  darkRedBg: '#FEE2E2', // Very soft light red wash (good for an error background).
-  red400: '#FCA5A5', // Soft coral red.
-  red500: '#F87171', // Rose red.
-  red900: '#B91C1C', // Rich, deeper red for destructive actions (buttons).
-  rose500: '#FB7185', // Soft pink red.
-  rose600: '#F43F5E', // Medium rose red.
-  rose900: '#E11D48', // Bright rose red.
+  // --- Red/Danger Accents ---
+  darkRedBg: '#FEE2E2', // very soft light red wash for error backgrounds
+  red400: '#FCA5A5', // soft coral red
+  red500: '#F87171', // rose red
+  red900: '#A43A3A', // tertiary editorial red: informs rather than screams
+  rose500: '#FB7185',
+  rose600: '#F43F5E',
+  rose900: '#E11D48',
   pink500: '#EC4899',
 };
 
-const baseColors = {
+const baseColors2 = {
   surfaceBlack: '#0d1511', // Obsidian surface base
   gray900: '#1a1f1c', // Darkest neutral surface (obsidian-tinted)
   charcoalGreen: '#111a15', // Dark obsidian green surface
