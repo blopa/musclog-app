@@ -14,6 +14,7 @@ import {
 } from '../../components/modals/BrowseTemplatesModal';
 import { ConfirmationModal } from '../../components/modals/ConfirmationModal';
 import CreateWorkoutModal from '../../components/modals/CreateWorkoutModal';
+import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
 import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
@@ -63,6 +64,8 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
+  const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
+  const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
     useState(false);
   const [isCreatingWorkoutsFromTemplate, setIsCreatingWorkoutsFromTemplate] = useState(false);
@@ -536,18 +539,9 @@ export default function WorkoutsScreen() {
             showSnackbar('error', t('common.error'));
           }
         }}
-        onDelete={async () => {
-          if (selectedWorkoutId) {
-            try {
-              const template = await database
-                .get<WorkoutTemplate>('workout_templates')
-                .find(selectedWorkoutId);
-              await template.markAsDeleted();
-            } catch (err) {
-              console.error('Error deleting workout:', err);
-            }
-          }
+        onDelete={() => {
           setIsMenuVisible(false);
+          setIsDeleteConfirmationVisible(true);
         }}
         onPreview={() => {
           if (selectedWorkoutId) {
@@ -571,8 +565,7 @@ export default function WorkoutsScreen() {
         }}
         onGenerateWithAi={() => {
           setIsCreateOptionsVisible(false);
-          setEditingTemplateId(undefined);
-          // TODO: Implement AI workout generation
+          setIsGenerateWithAiModalVisible(true);
         }}
         onCreateEmptyTemplate={() => {
           setIsCreateOptionsVisible(false);
@@ -593,6 +586,10 @@ export default function WorkoutsScreen() {
         }}
         templateId={editingTemplateId}
       />
+      <GenerateWorkoutWithAiModal
+        visible={isGenerateWithAiModalVisible}
+        onClose={() => setIsGenerateWithAiModalVisible(false)}
+      />
       <BrowseTemplatesModal
         visible={isBrowseTemplatesVisible}
         onClose={() => setIsBrowseTemplatesVisible(false)}
@@ -606,6 +603,30 @@ export default function WorkoutsScreen() {
             setIsBrowseTemplatesVisible(false);
           }
         }}
+      />
+      <ConfirmationModal
+        visible={isDeleteConfirmationVisible}
+        onClose={() => setIsDeleteConfirmationVisible(false)}
+        onConfirm={async () => {
+          if (!selectedWorkoutId) {
+            return;
+          }
+
+          try {
+            const template = await database
+              .get<WorkoutTemplate>('workout_templates')
+              .find(selectedWorkoutId);
+            await template.markAsDeleted();
+            showSnackbar('success', t('workouts.deleteSuccess'));
+          } catch (err) {
+            console.error('Error deleting workout:', err);
+            showSnackbar('error', t('workouts.deleteError'));
+          }
+        }}
+        title={t('workouts.deleteConfirmation.title')}
+        message={t('workouts.deleteConfirmation.message', { name: selectedWorkoutName })}
+        confirmLabel={t('workouts.delete')}
+        variant="destructive"
       />
       <ConfirmationModal
         visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}

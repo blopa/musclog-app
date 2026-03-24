@@ -13,6 +13,13 @@
     "archiveError": "Failed to archive workout",
     "duplicateSuccess": "Workout duplicated successfully",
     "duplicateError": "Failed to duplicate workout",
+    "delete": "Delete",
+    "deleteSuccess": "Workout deleted successfully",
+    "deleteError": "Failed to delete workout",
+    "deleteConfirmation": {
+      "title": "Delete Workout",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    },
     "searchPlaceholder": "Search workouts...",
     "noSearchResults": "No workouts found",
     "noSearchResultsDescription": "No workouts match \"{{query}}\"",
@@ -140,7 +147,15 @@
       "successMessage": "Workouts created successfully"
     },
     "aiGeneration": {
-      "comingSoon": "AI workout generation coming soon!"
+      "comingSoon": "AI workout generation coming soon!",
+      "title": "Generate with AI",
+      "subtitle": "Tell us about your goals and we'll build a personalized workout plan",
+      "preferencesLabel": "Your preferences",
+      "preferencesPlaceholder": "E.g. I want to build muscle, I can train 4 days a week, I have access to a full gym, I'm an intermediate lifter...",
+      "generateButton": "Generate Plan",
+      "successMessage": "Your workout plan is ready! {{count}} workout(s) added.",
+      "errorMessage": "Couldn't generate a plan. Please try again.",
+      "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings."
     },
     "templateBrowser": {
       "comingSoon": "Template browser coming soon!"
