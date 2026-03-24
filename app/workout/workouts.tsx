@@ -572,7 +572,7 @@ export default function WorkoutsScreen() {
         onGenerateWithAi={() => {
           setIsCreateOptionsVisible(false);
           setEditingTemplateId(undefined);
-          setIsCreateWorkoutModalVisible(true);
+          // TODO: Implement AI workout generation
         }}
         onCreateEmptyTemplate={() => {
           setIsCreateOptionsVisible(false);
