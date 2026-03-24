@@ -3,7 +3,7 @@
  * Centralizes colors, typography, spacing, and other design tokens
  */
 
-const kineticDepthLight = {
+const kineticDepth = {
   // --- Core Surfaces — Luminous Analyst palette ---
   surfaceBlack: '#F7F9FB', // background Level 0: the airy, sophisticated base (not pure white)
   white: '#191C1E', // on_surface: primary text — never pure black, maintains soft-light aesthetic
@@ -76,7 +76,7 @@ const kineticDepthLight = {
   pink500: '#EC4899',
 };
 
-const kineticDepth = {
+const kineticDepth2 = {
   surfaceBlack: '#0d1511', // Obsidian surface base
   gray900: '#1a1f1c', // Darkest neutral surface (obsidian-tinted)
   charcoalGreen: '#111a15', // Dark obsidian green surface

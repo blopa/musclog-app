@@ -121,6 +121,7 @@ export function Button({
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
 
+  // TODO: move this to a helper function to avoid use of nested ternary
   const gradientColors: readonly [string, string, ...string[]] = isDisabled
     ? ([theme.colors.background.white10, theme.colors.background.white10] as const)
     : isGradientCtaVariant
@@ -134,38 +135,33 @@ export function Button({
             : theme.colors.gradients.accent;
 
   const textColor = isDisabled
-    ? theme.colors.text.primary30
+    ? // TODO: move this to a helper function to avoid use of nested ternary
+      theme.colors.text.primary30
     : isOutlineVariant
       ? theme.colors.text.gray300
       : isDashedVariant
         ? theme.colors.text.secondary
-        : isGradientCtaVariant
-          ? theme.colors.text.white
-          : isSecondaryVariant || isSecondaryGradientVariant
-            ? theme.colors.text.primary
-            : isRedVariant
-              ? theme.colors.text.white
-              : theme.colors.text.white;
+        : isSecondaryVariant
+          ? theme.colors.text.primary
+          : theme.colors.text.onColorful;
 
   const iconColor = isDisabled
-    ? theme.colors.text.primary30
+    ? // TODO: move this to a helper function to avoid use of nested ternary
+      theme.colors.text.primary30
     : isOutlineVariant
       ? theme.colors.text.gray300
       : isDashedVariant
         ? theme.colors.text.secondary
-        : isGradientCtaVariant
-          ? theme.colors.text.white
-          : isSecondaryVariant || isSecondaryGradientVariant
-            ? theme.colors.accent.secondary
-            : isRedVariant
-              ? theme.colors.text.white
-              : theme.colors.text.white;
+        : isSecondaryVariant
+          ? theme.colors.accent.secondary
+          : theme.colors.text.onColorful;
 
   const shadow =
     isDisabled ||
     isOutlineVariant ||
     isSecondaryVariant ||
     isSecondaryGradientVariant ||
+    // TODO: move this to a helper function to avoid use of nested ternary
     isDashedVariant
       ? theme.shadows.none
       : isGradientCtaVariant
@@ -250,19 +246,16 @@ export function Button({
   const textElement = (
     <Text
       className={`tracking-wide ${
+        // TODO: move this to a helper function to avoid use of nested ternary
         isDisabled
           ? 'text-white/30'
           : isOutlineVariant
             ? 'text-gray-300'
             : isDashedVariant
               ? 'text-text-secondary'
-              : isGradientCtaVariant
-                ? 'text-white'
-                : isSecondaryVariant || isSecondaryGradientVariant
-                  ? 'text-text-primary'
-                  : isRedVariant
-                    ? 'text-white'
-                    : 'text-white'
+              : isSecondaryVariant
+                ? 'text-text-primary'
+                : 'text-text-on-colorful'
       }`}
       style={{
         fontSize: config.fontSize,
@@ -305,6 +298,7 @@ export function Button({
   );
 
   const outlineBackgroundColor =
+    // TODO: move this to a helper function to avoid use of nested ternary
     isOutlineVariant && !isDisabled && isPressed
       ? theme.colors.background.white5
       : isOutlineVariant && !isDisabled
@@ -324,12 +318,14 @@ export function Button({
     opacity: isDisabled ? theme.colors.opacity.full : undefined,
     backgroundColor: outlineBackgroundColor,
     borderWidth:
+      // TODO: move this to a helper function to avoid use of nested ternary
       isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant
         ? isOutlineVariant || isDashedVariant
           ? theme.borderWidth.medium
           : theme.borderWidth.thin
         : theme.borderWidth.none,
     borderStyle: borderStyle as 'solid' | 'dashed',
+    // TODO: move this to a helper function to avoid use of nested ternary
     borderColor: isOutlineVariant
       ? theme.colors.background.white10
       : isDashedVariant
