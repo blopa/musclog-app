@@ -264,7 +264,9 @@
       "noFoods": "No foods available",
       "noResults": "No results found",
       "scannedFoodDetails": "Scanned Food Details",
-      "barcodeNotFound": "Barcode not found in database"
+      "barcodeNotFound": "Barcode not found in database",
+      "loadMore": "Load More",
+      "loadingMore": "Loading..."
     },
     "createMeal": {
       "title": "Create New Meal",

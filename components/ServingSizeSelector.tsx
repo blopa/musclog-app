@@ -91,7 +91,9 @@ export function ServingSizeSelector({
               paddingVertical: theme.spacing.padding.sm,
             }}
           />
-        ) : null}
+        ) : (
+          <View pointerEvents="none" style={{ height: theme.spacing.padding.xs }} />
+        )}
       </View>
     </GenericCard>
   );

@@ -264,7 +264,9 @@
       "noFoods": "Nenhum alimento disponível",
       "noResults": "Nenhum resultado encontrado",
       "scannedFoodDetails": "Detalhes do Alimento Escaneado",
-      "barcodeNotFound": "Código de barras não encontrado no banco de dados"
+      "barcodeNotFound": "Código de barras não encontrado no banco de dados",
+      "loadMore": "Carregar Mais",
+      "loadingMore": "Carregando..."
     },
     "createMeal": {
       "title": "Criar Nova Refeição",
