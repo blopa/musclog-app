@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
 import packageJson from '../../package.json';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { GenericCard } from './GenericCard';
 
 const buildNumber =

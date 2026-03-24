@@ -8,7 +8,7 @@ import NutritionCheckin from '../database/models/NutritionCheckin';
 import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export class NotificationService {
   private static isConfigured = false;

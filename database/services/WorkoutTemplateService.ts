@@ -6,7 +6,7 @@ import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplates
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
 import i18n from '../../lang/lang';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getWeightUnit } from '../../utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
 import { database } from '../index';

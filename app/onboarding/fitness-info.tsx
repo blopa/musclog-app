@@ -8,7 +8,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { MaybeLaterButton } from '../../components/MaybeLaterButton';
 import { Button } from '../../components/theme/Button';
 import { useOnboardingFitnessData } from '../../hooks/useOnboardingFitnessData';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export default function FitnessInfo() {
   const { t } = useTranslation();

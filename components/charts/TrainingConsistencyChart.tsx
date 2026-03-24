@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 const DEFAULT_NEON = appTheme.colors.status.emeraldLight;
 const DEFAULT_BORDER = appTheme.colors.border.dark;

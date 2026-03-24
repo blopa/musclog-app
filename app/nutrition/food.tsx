@@ -37,10 +37,10 @@ import { useSmartCamera } from '../../context/SmartCameraContext';
 import { useSnackbar } from '../../context/SnackbarContext';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
-import { MealService, NutritionService } from '../../database/services';
+import { NutritionService } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {

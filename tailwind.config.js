@@ -1,4 +1,4 @@
-const { darkTheme } = require('./theme');
+const { darkTheme } = require('./theme'); // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 /**
  * Tailwind Configuration for NativeWind

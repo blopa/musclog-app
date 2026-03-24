@@ -1,4 +1,4 @@
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { AvatarColor } from '../types/AvatarColor';
 
 export function getAvatarColor(avatarColor?: AvatarColor | null) {

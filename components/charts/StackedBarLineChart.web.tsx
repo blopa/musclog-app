@@ -13,7 +13,7 @@ import {
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {

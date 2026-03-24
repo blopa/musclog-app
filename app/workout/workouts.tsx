@@ -29,7 +29,7 @@ import { WorkoutService, WorkoutTemplateService } from '../../database/services'
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 
 export default function WorkoutsScreen() {

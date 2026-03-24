@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
 import { EnergyLevel, MenstrualPhase } from '../database/services/MenstrualService';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 type PhaseWheelProps = {
   currentPhase: MenstrualPhase | null;

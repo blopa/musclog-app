@@ -26,7 +26,7 @@ import {
 import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getXAxisLabels } from '../../utils/chartUtils';
 
 export default function GraphsTestScreen() {

@@ -11,7 +11,7 @@ import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage'
 import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';

@@ -15,7 +15,7 @@ import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY

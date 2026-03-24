@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import i18n, { LanguageKeys, LOCALE_MAP } from '../lang/lang';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { DatePickerModal } from './modals/DatePickerModal';
 
 type DateNavigatorProps = {

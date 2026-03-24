@@ -14,7 +14,7 @@ import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerVi
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 type OnboardingBodyProps = {
   imageUrl?: string;

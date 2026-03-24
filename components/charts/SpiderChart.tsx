@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme';
+import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export type SpiderChartProps = {
   /** Chart title */

@@ -40,7 +40,7 @@ import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import packageJson from '../package.json';
-import { theme } from '../theme';
+import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';

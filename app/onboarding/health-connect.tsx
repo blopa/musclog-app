@@ -13,7 +13,7 @@ import { Button } from '../../components/theme/Button';
 import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
 import { useScrollFade } from '../../hooks/useScrollFade';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { theme } from '../../theme';
+import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 /**
  * Health Connect Onboarding Screen
