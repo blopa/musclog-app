@@ -3,7 +3,6 @@ import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { theme } from '../theme';
-
 import { showSnackbar } from '../utils/snackbarService';
 
 function sanitizeFilename(title: string): string {

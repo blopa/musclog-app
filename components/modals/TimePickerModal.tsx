@@ -11,8 +11,8 @@ import {
   View,
 } from 'react-native';
 
-import { addOpacityToHex } from '../../theme';
 import { useTheme } from '../../hooks/useTheme';
+import { addOpacityToHex } from '../../theme';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 

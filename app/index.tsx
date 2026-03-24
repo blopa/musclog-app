@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import packageJson from '../package.json';
 import * as ExpoLinking from 'expo-linking';
 import { useLocalSearchParams, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
@@ -40,6 +39,7 @@ import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
+import packageJson from '../package.json';
 import { theme } from '../theme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';

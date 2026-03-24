@@ -96,7 +96,10 @@ export function DailySummaryCard({
           {/* Progress bar */}
           <View className="gap-1.5">
             <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold" style={{ color: theme.colors.overlay.onColorful90 }}>
+              <Text
+                className="text-xs font-bold"
+                style={{ color: theme.colors.overlay.onColorful90 }}
+              >
                 {calories.remaining >= 0
                   ? `${calories.remaining} ${t('dailySummaryCard.remaining', 'remaining')}`
                   : `${Math.abs(calories.remaining)} ${t('dailySummaryCard.over', 'over')}`}
@@ -126,7 +129,10 @@ export function DailySummaryCard({
                 }}
               />
             </View>
-            <Text className="text-left text-xs" style={{ color: theme.colors.overlay.onColorful70 }}>
+            <Text
+              className="text-left text-xs"
+              style={{ color: theme.colors.overlay.onColorful70 }}
+            >
               {Math.round(calorieProgress)}%
             </Text>
           </View>
@@ -181,7 +187,10 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.onColorful70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(proteinProgress)}%
               </Text>
             </View>
@@ -232,7 +241,10 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.onColorful70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(carbsProgress)}%
               </Text>
             </View>
@@ -283,7 +295,10 @@ export function DailySummaryCard({
                   }}
                 />
               </View>
-              <Text className="text-left text-xs" style={{ color: theme.colors.overlay.onColorful70 }}>
+              <Text
+                className="text-left text-xs"
+                style={{ color: theme.colors.overlay.onColorful70 }}
+              >
                 {Math.round(fatsProgress)}%
               </Text>
             </View>
