@@ -40,10 +40,12 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {
-      setEditing(false);
+      if (editing) {
+        inputRef.current?.blur();
+      }
     });
     return () => subscription.remove();
-  }, []);
+  }, [editing]);
 
   const handleValuePress = () => {
     setEditing(true);
