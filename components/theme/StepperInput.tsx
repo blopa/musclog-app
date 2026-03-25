@@ -32,10 +32,10 @@ export const StepperInput: FC<StepperInputProps> = ({
   const { t } = useTranslation();
   const isPortion = variant === 'portion';
 
-  // TODO: only change the size of the text on the portion variant, but the unit keep it at 2xl
   const valueFontSize = isPortion
     ? theme.typography.fontSize['4xl']
     : theme.typography.fontSize['2xl'];
+  const unitFontSize = theme.typography.fontSize['2xl'];
   const [editing, setEditing] = useState(false);
   const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
   const [inputValue, setInputValue] = useState(formatValue(value));
@@ -151,7 +151,7 @@ export const StepperInput: FC<StepperInputProps> = ({
             {unit ? (
               <Text
                 className="ml-1 mr-2 flex-shrink-0 font-normal text-text-tertiary"
-                style={{ fontSize: valueFontSize }}
+                style={{ fontSize: unitFontSize }}
               >
                 {unit}
               </Text>
@@ -172,7 +172,11 @@ export const StepperInput: FC<StepperInputProps> = ({
               ellipsizeMode="tail"
             >
               {formatValue(value)}{' '}
-              {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
+              {unit ? (
+                <Text className="font-normal text-text-tertiary" style={{ fontSize: unitFontSize }}>
+                  {unit}
+                </Text>
+              ) : null}
             </Text>
           </Pressable>
         )}
