@@ -14,6 +14,7 @@ import {
   Pizza,
   Plus,
   QrCode,
+  AlertTriangle,
   Salad,
   Search,
   Soup,
@@ -973,9 +974,19 @@ export function FoodSearchModal({
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     </View>
                                     {apiError ? (
-                                      <View className="mb-2 px-1">
-                                        <Text className="text-xs text-accent-error">
-                                          ⚠️ {t('foodSearch.errorLoadingAPI')}
+                                      <View
+                                        className="mb-4 flex-row items-center gap-2 rounded-xl border border-status-error/20 bg-status-error/5 p-3"
+                                        style={{ backgroundColor: theme.colors.status.error10 }}
+                                      >
+                                        <AlertTriangle
+                                          size={theme.iconSize.sm}
+                                          color={theme.colors.status.error}
+                                        />
+                                        <Text
+                                          className="flex-1 text-xs font-medium"
+                                          style={{ color: theme.colors.status.error }}
+                                        >
+                                          {t('foodSearch.errorLoadingAPI')}
                                         </Text>
                                       </View>
                                     ) : (
@@ -1037,9 +1048,19 @@ export function FoodSearchModal({
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                   </View>
                                   {usdaError ? (
-                                    <View className="mb-2 px-1">
-                                      <Text className="text-xs text-accent-error">
-                                        ⚠️ {t('foodSearch.errorLoadingUSDA')}
+                                    <View
+                                      className="mb-4 flex-row items-center gap-2 rounded-xl border border-status-error/20 bg-status-error/5 p-3"
+                                      style={{ backgroundColor: theme.colors.status.error10 }}
+                                    >
+                                      <AlertTriangle
+                                        size={theme.iconSize.sm}
+                                        color={theme.colors.status.error}
+                                      />
+                                      <Text
+                                        className="flex-1 text-xs font-medium"
+                                        style={{ color: theme.colors.status.error }}
+                                      >
+                                        {t('foodSearch.errorLoadingUSDA')}
                                       </Text>
                                     </View>
                                   ) : (
