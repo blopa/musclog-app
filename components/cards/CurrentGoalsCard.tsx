@@ -10,7 +10,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -52,6 +52,7 @@ export function CurrentGoalsCard({
 }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width: windowWidth } = useWindowDimensions();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay =
@@ -139,7 +140,9 @@ export function CurrentGoalsCard({
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.protein')}
+              {windowWidth < 380
+                ? t('currentGoalsCard.proteinShort', 'P')
+                : t('currentGoalsCard.protein')}
             </Text>
             <Text className="font-bold text-text-primary">
               {goal.protein}
@@ -156,7 +159,9 @@ export function CurrentGoalsCard({
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.carbs')}
+              {windowWidth < 380
+                ? t('currentGoalsCard.carbsShort', 'C')
+                : t('currentGoalsCard.carbs')}
             </Text>
             <Text className="font-bold text-text-primary">
               {goal.carbs}
@@ -173,7 +178,9 @@ export function CurrentGoalsCard({
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {t('currentGoalsCard.fats')}
+              {windowWidth < 380
+                ? t('currentGoalsCard.fatsShort', 'F')
+                : t('currentGoalsCard.fats')}
             </Text>
             <Text className="font-bold text-text-primary">
               {goal.fat}

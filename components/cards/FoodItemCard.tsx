@@ -12,7 +12,7 @@ import {
 } from 'lucide-react-native';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ImageSourcePropType, Text, View } from 'react-native';
+import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -39,14 +39,20 @@ const MacroItem = ({
   value,
   label,
   unit,
+  shortLabel,
 }: {
   icon: any;
   value: number;
   label?: string;
   unit?: string;
+  shortLabel?: string;
 }) => {
   const theme = useTheme();
+  const { width: windowWidth } = useWindowDimensions();
   const { t } = useTranslation();
+
+  const isNarrow = windowWidth < 380;
+  const displayLabel = isNarrow && shortLabel ? shortLabel : label;
 
   return (
     <View className="flex-row items-center gap-1">
@@ -55,7 +61,7 @@ const MacroItem = ({
         {t('food.macroValueFormat', {
           value,
           unit: unit || '',
-          label: label || '',
+          label: displayLabel || '',
         })}
       </Text>
     </View>
@@ -155,9 +161,27 @@ export const FoodItemCard = memo(function FoodItemCard({
           </View>
           {variant === 'default' ? (
             <View className="flex-row items-center gap-3">
-              <MacroItem icon={Zap} value={p} label={t('food.macros.protein')} unit={massUnit} />
-              <MacroItem icon={Wheat} value={c} label={t('food.macros.carbs')} unit={massUnit} />
-              <MacroItem icon={Droplet} value={f} label={t('food.macros.fat')} unit={massUnit} />
+              <MacroItem
+                icon={Zap}
+                value={p}
+                label={t('food.macros.protein')}
+                shortLabel={t('food.macros.proteinShort')}
+                unit={massUnit}
+              />
+              <MacroItem
+                icon={Wheat}
+                value={c}
+                label={t('food.macros.carbs')}
+                shortLabel={t('food.macros.carbsShort')}
+                unit={massUnit}
+              />
+              <MacroItem
+                icon={Droplet}
+                value={f}
+                label={t('food.macros.fat')}
+                shortLabel={t('food.macros.fatShort')}
+                unit={massUnit}
+              />
             </View>
           ) : null}
         </View>
