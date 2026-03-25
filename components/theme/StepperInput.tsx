@@ -31,6 +31,8 @@ export const StepperInput: FC<StepperInputProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const isPortion = variant === 'portion';
+
+  // TODO: only change the size of the text on the portion variant, but the unit keep it at 2xl
   const valueFontSize = isPortion
     ? theme.typography.fontSize['4xl']
     : theme.typography.fontSize['2xl'];
@@ -68,6 +70,10 @@ export const StepperInput: FC<StepperInputProps> = ({
     // Allow only numbers, decimal point, and optional minus sign
     if (/^-?\d*\.?\d*$/.test(text)) {
       setInputValue(text);
+      const num = parseFloat(text);
+      if (!isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      }
     }
   };
 

@@ -66,6 +66,10 @@ export function StepperInlineInput({
     // Allow only numbers, decimal point, and optional minus sign
     if (/^-?\d*\.?\d*$/.test(text)) {
       setInputValue(text);
+      const num = parseFloat(text);
+      if (!isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      }
     }
   };
 
