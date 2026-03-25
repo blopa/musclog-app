@@ -20,18 +20,18 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
   return (
     <GenericCard variant="card" size="default">
       <View className="p-4">
-        <View className="mb-6 flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <Smile size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-            <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <View className="mb-6 flex-row items-start justify-between gap-2">
+          <View className="flex-1 flex-row items-start gap-3" style={{ minWidth: 0 }}>
+            <Smile size={theme.iconSize.xl} color={theme.colors.text.tertiary} style={{ flexShrink: 0 }} />
+            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
           </View>
           <View
-            className="rounded px-2 py-0.5"
+            className="flex-shrink-0 rounded px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-xs font-bold text-accent-primary">
+            <Text className="text-xs font-bold text-accent-primary" numberOfLines={1}>
               {t(`bodyMetrics.addEntry.moods.${value}`)}
             </Text>
           </View>
@@ -68,6 +68,9 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
                       isSelected ? 'text-accent-primary' : 'text-text-tertiary'
                     }`}
                     style={{ opacity: isSelected ? 1 : 0.4 }}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
                   >
                     {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
                   </Text>
