@@ -108,7 +108,6 @@ const getNormalizedTemplates = (t: TFunction) => {
       return {
         id,
         title,
-        // TODO: shouldn't these use i18n?
         difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
           ? (difficulty as any)
           : 'Beginner',
@@ -214,7 +213,7 @@ export function BrowseTemplatesModal({
                 className="text-[10px] font-bold uppercase tracking-wider"
                 style={{ color: difficultyColors.text }}
               >
-                {template.difficulty}
+                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty.toLowerCase()}`)}
               </Text>
             </View>
           </View>

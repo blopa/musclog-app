@@ -154,9 +154,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {isNarrow
-                    ? t('dailySummaryCard.proteinShort')
-                    : t('dailySummaryCard.protein')}
+                  {isNarrow ? t('dailySummaryCard.proteinShort') : t('dailySummaryCard.protein')}
                 </Text>
                 {highlightThresholds && proteinStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -210,9 +208,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {isNarrow
-                    ? t('dailySummaryCard.carbsShort')
-                    : t('dailySummaryCard.carbs')}
+                  {isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs')}
                 </Text>
                 {highlightThresholds && carbsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -266,9 +262,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {isNarrow
-                    ? t('dailySummaryCard.fatsShort')
-                    : t('dailySummaryCard.fats')}
+                  {isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats')}
                 </Text>
                 {highlightThresholds && fatsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />

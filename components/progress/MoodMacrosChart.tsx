@@ -17,12 +17,16 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
-// TODO: shouldn't these use i18n?
-const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
-
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const moodLabels = [
+    t('progress.mood.poor'),
+    t('progress.mood.low'),
+    t('progress.mood.okay'),
+    t('progress.mood.good'),
+    t('progress.mood.great'),
+  ];
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -94,7 +98,7 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
         ]}
         xAxisLabels={xAxisLabels}
         totalFormatter={(total) => `${Math.round(total)}g`}
-        lineFormatter={(v) => MOOD_LABELS[Math.round(v)] ?? v.toFixed(1)}
+        lineFormatter={(v) => moodLabels[Math.round(v)] ?? v.toFixed(1)}
       />
     </ProgressChartSection>
   );

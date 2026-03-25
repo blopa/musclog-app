@@ -104,9 +104,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {windowWidth < 380
-                    ? t('food.macros.proteinShort')
-                    : t('food.macros.protein')}
+                  {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">{food.protein}g</Text>
               </View>

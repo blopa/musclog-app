@@ -340,13 +340,15 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               height={100}
               barColor={theme.colors.status.emerald}
               innerPadding={0.3}
-              xAxisLabels={dailyWeights.map((_w: number, i: number) => ({
-                // TODO: shouldn't these use i18n?
-                label: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][
+              xAxisLabels={dailyWeights.map((_w: number, i: number) => {
+                const dayKey = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[
                   new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).getDay()
-                ],
-                positionPercent: (i / 6) * 100,
-              }))}
+                ];
+                return {
+                  label: t(`common.days.short.${dayKey}`),
+                  positionPercent: (i / 6) * 100,
+                };
+              })}
               marginTop={24}
               showGridLines={false}
             />

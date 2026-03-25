@@ -14,13 +14,13 @@ import {
   extractExerciseMetadata,
   formatExerciseDescription,
   getExerciseIconConfig,
+  getWeekdayLabels,
   indexToDayName,
   isBodyweightExercise,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
-  WEEKDAY_LABELS,
   WEEKDAY_NAMES,
 } from '../workout';
 
@@ -76,13 +76,13 @@ jest.mock('lucide-react-native', () => ({
 
 describe('utils/workout', () => {
   describe('Day Mapping Utilities', () => {
-    describe('WEEKDAY_LABELS', () => {
-      it('should have 7 elements', () => {
-        expect(WEEKDAY_LABELS).toHaveLength(7);
+    describe('getWeekdayLabels', () => {
+      it('should return 7 elements', () => {
+        expect(getWeekdayLabels()).toHaveLength(7);
       });
 
-      it('should have correct values', () => {
-        expect(WEEKDAY_LABELS).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
+      it('should return correct values for the default en-US locale', () => {
+        expect(getWeekdayLabels()).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
       });
     });
 

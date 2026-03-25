@@ -278,9 +278,7 @@ const MealMacrosSummary = ({
 
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
-            label={
-              windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')
-            }
+            label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
             value={`${Math.round(macros.protein)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}

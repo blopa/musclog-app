@@ -159,9 +159,7 @@ export function CurrentGoalsCard({
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {windowWidth < 380
-                ? t('currentGoalsCard.carbsShort')
-                : t('currentGoalsCard.carbs')}
+              {windowWidth < 380 ? t('currentGoalsCard.carbsShort') : t('currentGoalsCard.carbs')}
             </Text>
             <Text className="font-bold text-text-primary">
               {goal.carbs}
@@ -178,9 +176,7 @@ export function CurrentGoalsCard({
               className="font-bold uppercase text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
-              {windowWidth < 380
-                ? t('currentGoalsCard.fatsShort')
-                : t('currentGoalsCard.fats')}
+              {windowWidth < 380 ? t('currentGoalsCard.fatsShort') : t('currentGoalsCard.fats')}
             </Text>
             <Text className="font-bold text-text-primary">
               {goal.fat}

@@ -63,9 +63,7 @@ export function FoodNotFoundModal({
               </View>
               <View className="flex-1">
                 <Text className="text-lg font-bold text-white">{t('nutrition.tryAICamera')}</Text>
-                <Text className="text-xs text-white/80">
-                  {t('nutrition.tryAICameraDesc')}
-                </Text>
+                <Text className="text-xs text-white/80">{t('nutrition.tryAICameraDesc')}</Text>
               </View>
               <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </LinearGradient>
@@ -87,9 +85,7 @@ export function FoodNotFoundModal({
             <Text className="text-lg font-bold text-text-primary">
               {t('nutrition.searchAgain')}
             </Text>
-            <Text className="text-xs text-text-secondary">
-              {t('nutrition.searchAgainDesc')}
-            </Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.searchAgainDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
@@ -112,9 +108,7 @@ export function FoodNotFoundModal({
             <Text className="text-lg font-bold text-text-primary">
               {t('nutrition.createCustom')}
             </Text>
-            <Text className="text-xs text-text-secondary">
-              {t('nutrition.createCustomDesc')}
-            </Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.createCustomDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>

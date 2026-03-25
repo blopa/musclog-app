@@ -61,8 +61,9 @@ export function DatePickerModal({
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  // TODO: shouldn't these use i18n?
-  const weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const weekDays = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const).map((key) =>
+    t(`common.days.letter.${key}`)
+  );
 
   const handlePreviousMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));

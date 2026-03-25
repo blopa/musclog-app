@@ -508,9 +508,7 @@ export default function PastWorkoutDetailModal({
           {isLoading ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           ) : (
-            <Text className="text-text-secondary">
-              {t('common.error')}
-            </Text>
+            <Text className="text-text-secondary">{t('common.error')}</Text>
           )}
         </View>
       </FullScreenModal>

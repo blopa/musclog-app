@@ -327,9 +327,9 @@ export function TimePickerModal({
             className="mx-4 mb-5 flex-row overflow-hidden"
             style={{ backgroundColor: toggleBg, borderRadius: 9999 }}
           >
-            {/*TODO: shouldn't these use i18n?*/}
             {(['AM', 'PM'] as const).map((period) => {
               const isActive = amPm === period;
+              const periodLabel = period === 'AM' ? t('timePicker.am') : t('timePicker.pm');
               return (
                 <Pressable key={period} onPress={() => setAmPm(period)} style={{ flex: 1 }}>
                   {isActive ? (
@@ -351,13 +351,13 @@ export function TimePickerModal({
                           fontWeight: '700',
                         }}
                       >
-                        {period}
+                        {periodLabel}
                       </Text>
                     </LinearGradient>
                   ) : (
                     <View style={{ alignItems: 'center', height: 44, justifyContent: 'center' }}>
                       <Text style={{ color: textMuted, fontSize: 15, fontWeight: '600' }}>
-                        {period}
+                        {periodLabel}
                       </Text>
                     </View>
                   )}

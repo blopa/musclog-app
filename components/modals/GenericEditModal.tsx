@@ -67,8 +67,7 @@ export function GenericEditModal({
       onClose();
     } catch (error) {
       console.error('Error saving record:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : t('common.saveError');
+      const errorMessage = error instanceof Error ? error.message : t('common.saveError');
       showSnackbar('error', errorMessage, {
         subtitle: t('common.saveErrorSubtitle'),
       });

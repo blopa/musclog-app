@@ -1,5 +1,6 @@
 {
   "timePicker": {
+    "am": "AM",
     "cancel": "Cancel",
     "clearSelection": "Clear Selection",
     "confirm": "Set Time",
@@ -9,6 +10,7 @@
     "minutes": "Minutes",
     "noon": "Noon",
     "now": "Now",
+    "pm": "PM",
     "selectedStartTime": "Selected Start Time",
     "selectTime": "Select Time"
   }
