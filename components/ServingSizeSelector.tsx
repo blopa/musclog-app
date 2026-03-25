@@ -81,6 +81,7 @@ export function ServingSizeSelector({
           onDecrement={handleDecrease}
           onChangeValue={handleChangeValue}
           unit={massUnit}
+          variant="portion"
         />
         {quickSizeTabs.length > 0 ? (
           <FilterTabs
