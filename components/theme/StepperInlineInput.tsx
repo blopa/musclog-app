@@ -10,6 +10,7 @@ type TestStepperProps = {
   onIncrement: () => void;
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
+  onFocus?: () => void;
   unit?: string;
   icon?: LucideIcon;
   subtitle?: string;
@@ -23,6 +24,7 @@ export function StepperInlineInput({
   onIncrement,
   onDecrement,
   onChangeValue,
+  onFocus,
   unit,
   icon: Icon,
   subtitle,
@@ -53,6 +55,7 @@ export function StepperInlineInput({
 
   const handleValuePress = () => {
     setEditing(true);
+    onFocus?.();
     // Small delay to ensure state update before focusing
     setTimeout(() => {
       inputRef.current?.focus();

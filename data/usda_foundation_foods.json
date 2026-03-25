@@ -10,10 +10,11 @@
     "fat": "0",
     "fiber": "0.8",
     "sugar": "0",
-    "sodium": "100",
+    "sodium": "0.1",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "100"
   },
   {
     "barcode": "4656700201",
@@ -26,10 +27,11 @@
     "fat": "0",
     "fiber": "0.8",
     "sugar": "0",
-    "sodium": "240",
+    "sodium": "0.24",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "240"
   },
   {
     "barcode": "4656701922",
@@ -45,7 +47,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "4656702273",
@@ -58,10 +61,11 @@
     "fat": "0",
     "fiber": "0.9",
     "sugar": "0",
-    "sodium": "18",
+    "sodium": "0.018",
     "magnesium": "0",
     "vitamin_c": "5.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "18"
   },
   {
     "barcode": "7203671385",
@@ -77,7 +81,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "28.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "7203676317",
@@ -90,10 +95,11 @@
     "fat": "0.59",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "165",
+    "sodium": "0.165",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "165"
   },
   {
     "barcode": "7203676435",
@@ -106,10 +112,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "12",
+    "sodium": "0.012",
     "magnesium": "0",
     "vitamin_c": "25",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "12"
   },
   {
     "barcode": "7789013034",
@@ -122,10 +129,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "6",
+    "sodium": "0.006",
     "magnesium": "0",
     "vitamin_c": "30",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "6"
   },
   {
     "barcode": "7789020629",
@@ -138,10 +146,11 @@
     "fat": "0",
     "fiber": "1.2",
     "sugar": "0",
-    "sodium": "41",
+    "sodium": "0.041",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "41"
   },
   {
     "barcode": "7789039115",
@@ -154,10 +163,11 @@
     "fat": "0",
     "fiber": "1.8",
     "sugar": "0",
-    "sodium": "64",
+    "sodium": "0.064",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "64"
   },
   {
     "barcode": "7789095277",
@@ -173,7 +183,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "11110503244",
@@ -186,10 +197,11 @@
     "fat": "1.04",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "50",
+    "sodium": "0.05",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "42"
+    "vitamin_d": "42",
+    "sodium_mg": "50"
   },
   {
     "barcode": "11110847423",
@@ -202,10 +214,11 @@
     "fat": "1.46",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "121",
+    "sodium": "0.121",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "121"
   },
   {
     "barcode": "11433158725",
@@ -218,10 +231,11 @@
     "fat": "2.17",
     "fiber": "2.2",
     "sugar": "0",
-    "sodium": "22",
+    "sodium": "0.022",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "22"
   },
   {
     "barcode": "13951666010",
@@ -234,10 +248,11 @@
     "fat": "1.79",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "179",
+    "sodium": "0.179",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "179"
   },
   {
     "barcode": "15418012248",
@@ -250,10 +265,11 @@
     "fat": "0.79",
     "fiber": "2.4",
     "sugar": "0",
-    "sodium": "346",
+    "sodium": "0.346",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "346"
   },
   {
     "barcode": "17992591102",
@@ -266,10 +282,11 @@
     "fat": "0",
     "fiber": "2.6",
     "sugar": "0",
-    "sodium": "26",
+    "sodium": "0.026",
     "magnesium": "0",
     "vitamin_c": "32.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "26"
   },
   {
     "barcode": "17992591300",
@@ -282,10 +299,11 @@
     "fat": "0",
     "fiber": "2.6",
     "sugar": "0",
-    "sodium": "19",
+    "sodium": "0.019",
     "magnesium": "0",
     "vitamin_c": "41",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "19"
   },
   {
     "barcode": "18894921301",
@@ -298,10 +316,11 @@
     "fat": "0.38",
     "fiber": "2.3",
     "sugar": "0",
-    "sodium": "354",
+    "sodium": "0.354",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "8"
+    "vitamin_d": "8",
+    "sodium_mg": "354"
   },
   {
     "barcode": "19061092626",
@@ -314,10 +333,11 @@
     "fat": "60",
     "fiber": "6.7",
     "sugar": "0",
-    "sodium": "367",
+    "sodium": "0.367",
     "magnesium": "0",
     "vitamin_c": "4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "367"
   },
   {
     "barcode": "20000129747",
@@ -330,10 +350,11 @@
     "fat": "1.83",
     "fiber": "1.8",
     "sugar": "0",
-    "sodium": "404",
+    "sodium": "0.404",
     "magnesium": "0",
     "vitamin_c": "15.6",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "404"
   },
   {
     "barcode": "20871015569",
@@ -346,10 +367,11 @@
     "fat": "1.54",
     "fiber": "4.6",
     "sugar": "0",
-    "sodium": "180",
+    "sodium": "0.18",
     "magnesium": "0",
     "vitamin_c": "3.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "180"
   },
   {
     "barcode": "21130123933",
@@ -362,10 +384,11 @@
     "fat": "0.44",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "106",
+    "sodium": "0.106",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "106"
   },
   {
     "barcode": "21130250912",
@@ -378,10 +401,11 @@
     "fat": "0.8",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "360",
+    "sodium": "0.36",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "360"
   },
   {
     "barcode": "21140212221",
@@ -394,10 +418,11 @@
     "fat": "0",
     "fiber": "2.6",
     "sugar": "0",
-    "sodium": "39",
+    "sodium": "0.039",
     "magnesium": "0",
     "vitamin_c": "13",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "39"
   },
   {
     "barcode": "21333090124",
@@ -413,7 +438,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "23384002088",
@@ -426,10 +452,11 @@
     "fat": "4.46",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "1070",
+    "sodium": "1.07",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "5"
+    "vitamin_d": "5",
+    "sodium_mg": "1070"
   },
   {
     "barcode": "24600010511",
@@ -442,10 +469,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "39300",
+    "sodium": "39.3",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "39300"
   },
   {
     "barcode": "24627004227",
@@ -458,10 +486,11 @@
     "fat": "18.6",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "62",
+    "sodium": "0.062",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "62"
   },
   {
     "barcode": "25293002043",
@@ -474,10 +503,11 @@
     "fat": "1.04",
     "fiber": "0.4",
     "sugar": "0",
-    "sodium": "48",
+    "sodium": "0.048",
     "magnesium": "7",
     "vitamin_c": "0",
-    "vitamin_d": "2"
+    "vitamin_d": "2",
+    "sodium_mg": "48"
   },
   {
     "barcode": "25293600478",
@@ -490,10 +520,11 @@
     "fat": "1.88",
     "fiber": "0.8",
     "sugar": "0",
-    "sodium": "40",
+    "sodium": "0.04",
     "magnesium": "25",
     "vitamin_c": "0",
-    "vitamin_d": "50"
+    "vitamin_d": "50",
+    "sodium_mg": "40"
   },
   {
     "barcode": "26662830588",
@@ -506,10 +537,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "305",
+    "sodium": "0.305",
     "magnesium": "0",
     "vitamin_c": "0.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "305"
   },
   {
     "barcode": "26913145539",
@@ -522,10 +554,11 @@
     "fat": "4",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "840",
+    "sodium": "0.84",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "840"
   },
   {
     "barcode": "27000380673",
@@ -538,10 +571,11 @@
     "fat": "0",
     "fiber": "1.8",
     "sugar": "0",
-    "sodium": "13",
+    "sodium": "0.013",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "13"
   },
   {
     "barcode": "27000388273",
@@ -554,10 +588,11 @@
     "fat": "0",
     "fiber": "6.1",
     "sugar": "0",
-    "sodium": "76",
+    "sodium": "0.076",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "76"
   },
   {
     "barcode": "28300001305",
@@ -570,10 +605,11 @@
     "fat": "3.33",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "48",
+    "sodium": "0.048",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "42"
+    "vitamin_d": "42",
+    "sodium_mg": "48"
   },
   {
     "barcode": "28764001590",
@@ -586,10 +622,11 @@
     "fat": "0.7",
     "fiber": "3.5",
     "sugar": "0",
-    "sodium": "28",
+    "sodium": "0.028",
     "magnesium": "0",
     "vitamin_c": "77.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "28"
   },
   {
     "barcode": "29000002159",
@@ -602,10 +639,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "196",
+    "sodium": "0.196",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "196"
   },
   {
     "barcode": "30223030201",
@@ -621,7 +659,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "31446770325",
@@ -634,10 +673,11 @@
     "fat": "0.17",
     "fiber": "2.8",
     "sugar": "0",
-    "sodium": "78",
+    "sodium": "0.078",
     "magnesium": "21",
     "vitamin_c": "4.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "78"
   },
   {
     "barcode": "31903031730",
@@ -650,10 +690,11 @@
     "fat": "4.09",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "336",
+    "sodium": "0.336",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "336"
   },
   {
     "barcode": "33383086927",
@@ -669,7 +710,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "33383530512",
@@ -685,7 +727,8 @@
     "sodium": "0",
     "magnesium": "16",
     "vitamin_c": "18.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "33698817155",
@@ -701,7 +744,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "34952562798",
@@ -714,10 +758,11 @@
     "fat": "42.9",
     "fiber": "10.7",
     "sugar": "0",
-    "sodium": "750",
+    "sodium": "0.75",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "750"
   },
   {
     "barcode": "34952592160",
@@ -730,10 +775,11 @@
     "fat": "56.2",
     "fiber": "6.2",
     "sugar": "0",
-    "sodium": "234",
+    "sodium": "0.234",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "25"
+    "vitamin_d": "25",
+    "sodium_mg": "234"
   },
   {
     "barcode": "36035700028",
@@ -746,10 +792,11 @@
     "fat": "4.41",
     "fiber": "5.9",
     "sugar": "0",
-    "sodium": "559",
+    "sodium": "0.559",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "559"
   },
   {
     "barcode": "36632027238",
@@ -762,10 +809,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "44",
+    "sodium": "0.044",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "35"
+    "vitamin_d": "35",
+    "sodium_mg": "44"
   },
   {
     "barcode": "37600307119",
@@ -778,10 +826,11 @@
     "fat": "3.57",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "857",
+    "sodium": "0.857",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "857"
   },
   {
     "barcode": "37600814058",
@@ -794,10 +843,11 @@
     "fat": "6.12",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "612",
+    "sodium": "0.612",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "612"
   },
   {
     "barcode": "38259120071",
@@ -810,10 +860,11 @@
     "fat": "2.86",
     "fiber": "17.1",
     "sugar": "0",
-    "sodium": "257",
+    "sodium": "0.257",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "257"
   },
   {
     "barcode": "39153101425",
@@ -826,10 +877,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "200",
+    "sodium": "0.2",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "200"
   },
   {
     "barcode": "39978014535",
@@ -842,10 +894,11 @@
     "fat": "0",
     "fiber": "2.7",
     "sugar": "0",
-    "sodium": "27",
+    "sodium": "0.027",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "27"
   },
   {
     "barcode": "39978103017",
@@ -861,7 +914,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "39978113412",
@@ -877,7 +931,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "40232393655",
@@ -893,7 +948,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "40232423130",
@@ -909,7 +965,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "40822345293",
@@ -922,10 +979,11 @@
     "fat": "17.9",
     "fiber": "3.6",
     "sugar": "0",
-    "sodium": "429",
+    "sodium": "0.429",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "429"
   },
   {
     "barcode": "41188041836",
@@ -938,10 +996,11 @@
     "fat": "0",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "63",
+    "sodium": "0.063",
     "magnesium": "0",
     "vitamin_c": "9.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "63"
   },
   {
     "barcode": "41190012695",
@@ -954,10 +1013,11 @@
     "fat": "0",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "24",
+    "sodium": "0.024",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "24"
   },
   {
     "barcode": "41220102563",
@@ -970,10 +1030,11 @@
     "fat": "0",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "4",
+    "sodium": "0.004",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "4"
   },
   {
     "barcode": "41220112104",
@@ -986,10 +1047,11 @@
     "fat": "0",
     "fiber": "2.6",
     "sugar": "0",
-    "sodium": "83",
+    "sodium": "0.083",
     "magnesium": "0",
     "vitamin_c": "7.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "83"
   },
   {
     "barcode": "41220335572",
@@ -1002,10 +1064,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "15",
+    "sodium": "0.015",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "15"
   },
   {
     "barcode": "41220622610",
@@ -1018,10 +1081,11 @@
     "fat": "0",
     "fiber": "2.4",
     "sugar": "0",
-    "sodium": "29",
+    "sodium": "0.029",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "29"
   },
   {
     "barcode": "41220760695",
@@ -1034,10 +1098,11 @@
     "fat": "0",
     "fiber": "3.5",
     "sugar": "0",
-    "sodium": "41",
+    "sodium": "0.041",
     "magnesium": "0",
     "vitamin_c": "60",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "41"
   },
   {
     "barcode": "41220804641",
@@ -1050,10 +1115,11 @@
     "fat": "1.1",
     "fiber": "1.1",
     "sugar": "0",
-    "sodium": "359",
+    "sodium": "0.359",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "359"
   },
   {
     "barcode": "41244006427",
@@ -1069,7 +1135,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "41268167944",
@@ -1082,10 +1149,11 @@
     "fat": "2.08",
     "fiber": "20.8",
     "sugar": "0",
-    "sodium": "10",
+    "sodium": "0.01",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "10"
   },
   {
     "barcode": "41331050838",
@@ -1101,7 +1169,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "41331091053",
@@ -1117,7 +1186,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "41415019454",
@@ -1130,10 +1200,11 @@
     "fat": "7.14",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "119",
+    "sodium": "0.119",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "667"
+    "vitamin_d": "667",
+    "sodium_mg": "119"
   },
   {
     "barcode": "41443119324",
@@ -1146,10 +1217,11 @@
     "fat": "0.35",
     "fiber": "4.3",
     "sugar": "0",
-    "sodium": "560",
+    "sodium": "0.56",
     "magnesium": "0",
     "vitamin_c": "0.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "560"
   },
   {
     "barcode": "41493647402",
@@ -1165,7 +1237,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "41497031344",
@@ -1178,10 +1251,11 @@
     "fat": "0.39",
     "fiber": "1.8",
     "sugar": "0",
-    "sodium": "2",
+    "sodium": "0.002",
     "magnesium": "0",
     "vitamin_c": "27.6",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "2"
   },
   {
     "barcode": "41497099993",
@@ -1194,10 +1268,11 @@
     "fat": "1.97",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "48",
+    "sodium": "0.048",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "45"
+    "vitamin_d": "45",
+    "sodium_mg": "48"
   },
   {
     "barcode": "41497341566",
@@ -1213,7 +1288,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "41512145186",
@@ -1226,10 +1302,11 @@
     "fat": "10",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "140",
+    "sodium": "0.14",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "140"
   },
   {
     "barcode": "41512145186",
@@ -1242,10 +1319,11 @@
     "fat": "10",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "140",
+    "sodium": "0.14",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "140"
   },
   {
     "barcode": "41512169472",
@@ -1258,10 +1336,11 @@
     "fat": "0",
     "fiber": "1.4",
     "sugar": "0",
-    "sodium": "113",
+    "sodium": "0.113",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "113"
   },
   {
     "barcode": "41800380008",
@@ -1274,10 +1353,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "4",
+    "sodium": "0.004",
     "magnesium": "0",
     "vitamin_c": "26.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "4"
   },
   {
     "barcode": "42272005512",
@@ -1290,10 +1370,11 @@
     "fat": "2.31",
     "fiber": "4.6",
     "sugar": "0",
-    "sodium": "338",
+    "sodium": "0.338",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "338"
   },
   {
     "barcode": "45255151213",
@@ -1306,10 +1387,11 @@
     "fat": "37.9",
     "fiber": "10.3",
     "sugar": "0",
-    "sodium": "103",
+    "sodium": "0.103",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "103"
   },
   {
     "barcode": "45635291553",
@@ -1325,7 +1407,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "24",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "46567031453",
@@ -1341,7 +1424,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "48800036027",
@@ -1354,10 +1438,11 @@
     "fat": "0",
     "fiber": "1",
     "sugar": "0",
-    "sodium": "26",
+    "sodium": "0.026",
     "magnesium": "0",
     "vitamin_c": "6.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "26"
   },
   {
     "barcode": "49022854413",
@@ -1370,10 +1455,11 @@
     "fat": "0",
     "fiber": "0.8",
     "sugar": "0",
-    "sodium": "16",
+    "sodium": "0.016",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "16"
   },
   {
     "barcode": "49022950177",
@@ -1386,10 +1472,11 @@
     "fat": "12.5",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "2000",
+    "sodium": "2",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "2000"
   },
   {
     "barcode": "49646123001",
@@ -1402,10 +1489,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "5",
+    "sodium": "0.005",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "53"
+    "vitamin_d": "53",
+    "sodium_mg": "5"
   },
   {
     "barcode": "49646990108",
@@ -1418,10 +1506,11 @@
     "fat": "5.88",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "212",
+    "sodium": "0.212",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "212"
   },
   {
     "barcode": "51000272485",
@@ -1434,10 +1523,11 @@
     "fat": "1.25",
     "fiber": "1.7",
     "sugar": "0",
-    "sodium": "400",
+    "sodium": "0.4",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "400"
   },
   {
     "barcode": "51933376625",
@@ -1450,10 +1540,11 @@
     "fat": "0",
     "fiber": "1.2",
     "sugar": "0",
-    "sodium": "141",
+    "sodium": "0.141",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "141"
   },
   {
     "barcode": "60886402039",
@@ -1466,10 +1557,11 @@
     "fat": "0.35",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "732",
+    "sodium": "0.732",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "732"
   },
   {
     "barcode": "70038638735",
@@ -1482,10 +1574,11 @@
     "fat": "0.71",
     "fiber": "4.3",
     "sugar": "0",
-    "sodium": "4",
+    "sodium": "0.004",
     "magnesium": "0",
     "vitamin_c": "17.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "4"
   },
   {
     "barcode": "70506010445",
@@ -1498,10 +1591,11 @@
     "fat": "1.6",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "464",
+    "sodium": "0.464",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "464"
   },
   {
     "barcode": "70784402970",
@@ -1514,10 +1608,11 @@
     "fat": "1.52",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "136",
+    "sodium": "0.136",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "136"
   },
   {
     "barcode": "71262295039",
@@ -1530,10 +1625,11 @@
     "fat": "1.17",
     "fiber": "4.2",
     "sugar": "0",
-    "sodium": "197",
+    "sodium": "0.197",
     "magnesium": "0",
     "vitamin_c": "4.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "197"
   },
   {
     "barcode": "71518000752",
@@ -1546,10 +1642,11 @@
     "fat": "3.57",
     "fiber": "4.8",
     "sugar": "0",
-    "sodium": "571",
+    "sodium": "0.571",
     "magnesium": "0",
     "vitamin_c": "2.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "571"
   },
   {
     "barcode": "71518000769",
@@ -1562,10 +1659,11 @@
     "fat": "4.76",
     "fiber": "2.4",
     "sugar": "0",
-    "sodium": "595",
+    "sodium": "0.595",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "595"
   },
   {
     "barcode": "71700209819",
@@ -1578,10 +1676,11 @@
     "fat": "20",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "67",
+    "sodium": "0.067",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "67"
   },
   {
     "barcode": "72036982094",
@@ -1594,10 +1693,11 @@
     "fat": "0",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "33",
+    "sodium": "0.033",
     "magnesium": "0",
     "vitamin_c": "3.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "33"
   },
   {
     "barcode": "72050907554",
@@ -1610,10 +1710,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "54",
+    "sodium": "0.054",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "42"
+    "vitamin_d": "42",
+    "sodium_mg": "54"
   },
   {
     "barcode": "72368426273",
@@ -1626,10 +1727,11 @@
     "fat": "0.59",
     "fiber": "0.9",
     "sugar": "0",
-    "sodium": "164",
+    "sodium": "0.164",
     "magnesium": "0",
     "vitamin_c": "10.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "164"
   },
   {
     "barcode": "72488981102",
@@ -1645,7 +1747,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "72488982024",
@@ -1661,7 +1764,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "72700100779",
@@ -1674,10 +1778,11 @@
     "fat": "2.54",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "712",
+    "sodium": "0.712",
     "magnesium": "0",
     "vitamin_c": "2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "712"
   },
   {
     "barcode": "73296480078",
@@ -1690,10 +1795,11 @@
     "fat": "32.1",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "643",
+    "sodium": "0.643",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "643"
   },
   {
     "barcode": "73416004320",
@@ -1709,7 +1815,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "73416402515",
@@ -1725,7 +1832,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "74329123412",
@@ -1738,10 +1846,11 @@
     "fat": "0",
     "fiber": "2",
     "sugar": "0",
-    "sodium": "1200",
+    "sodium": "1.2",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "1200"
   },
   {
     "barcode": "75391026069",
@@ -1754,10 +1863,11 @@
     "fat": "1.33",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "62",
+    "sodium": "0.062",
     "magnesium": "0",
     "vitamin_c": "0.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "62"
   },
   {
     "barcode": "75391058831",
@@ -1770,10 +1880,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "726",
+    "sodium": "0.726",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "726"
   },
   {
     "barcode": "75450126297",
@@ -1789,7 +1900,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "76808010794",
@@ -1805,7 +1917,8 @@
     "sodium": "0",
     "magnesium": "127",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "77449503775",
@@ -1818,10 +1931,11 @@
     "fat": "52.8",
     "fiber": "8.3",
     "sugar": "0",
-    "sodium": "319",
+    "sodium": "0.319",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "319"
   },
   {
     "barcode": "77561052137",
@@ -1834,10 +1948,11 @@
     "fat": "27.6",
     "fiber": "1.3",
     "sugar": "0",
-    "sodium": "947",
+    "sodium": "0.947",
     "magnesium": "0",
     "vitamin_c": "19.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "947"
   },
   {
     "barcode": "77782003376",
@@ -1850,10 +1965,11 @@
     "fat": "26.8",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "1210",
+    "sodium": "1.21",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "1210"
   },
   {
     "barcode": "77782004113",
@@ -1866,10 +1982,11 @@
     "fat": "29.2",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "681",
+    "sodium": "0.681",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "681"
   },
   {
     "barcode": "77890271513",
@@ -1882,10 +1999,11 @@
     "fat": "0",
     "fiber": "2.4",
     "sugar": "0",
-    "sodium": "18",
+    "sodium": "0.018",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "18"
   },
   {
     "barcode": "77890399941",
@@ -1901,7 +2019,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "26.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "77890495599",
@@ -1917,7 +2036,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "78264039081",
@@ -1930,10 +2050,11 @@
     "fat": "57.1",
     "fiber": "7.1",
     "sugar": "0",
-    "sodium": "307",
+    "sodium": "0.307",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "307"
   },
   {
     "barcode": "78716909429",
@@ -1946,10 +2067,11 @@
     "fat": "38.5",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "692",
+    "sodium": "0.692",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "692"
   },
   {
     "barcode": "78742204734",
@@ -1965,7 +2087,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "78742256160",
@@ -1978,10 +2101,11 @@
     "fat": "0",
     "fiber": "0.8",
     "sugar": "0",
-    "sodium": "182",
+    "sodium": "0.182",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "182"
   },
   {
     "barcode": "79893125794",
@@ -1994,10 +2118,11 @@
     "fat": "14.7",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "94",
+    "sodium": "0.094",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "94"
   },
   {
     "barcode": "79893126531",
@@ -2010,10 +2135,11 @@
     "fat": "1.18",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "71",
+    "sodium": "0.071",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "5"
+    "vitamin_d": "5",
+    "sodium_mg": "71"
   },
   {
     "barcode": "79893409184",
@@ -2026,10 +2152,11 @@
     "fat": "1.76",
     "fiber": "3.5",
     "sugar": "0",
-    "sodium": "53",
+    "sodium": "0.053",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "53"
   },
   {
     "barcode": "85239032398",
@@ -2042,10 +2169,11 @@
     "fat": "8.93",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "107",
+    "sodium": "0.107",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "107"
   },
   {
     "barcode": "85239200810",
@@ -2058,10 +2186,11 @@
     "fat": "6.25",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "76",
+    "sodium": "0.076",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "76"
   },
   {
     "barcode": "92538000508",
@@ -2074,10 +2203,11 @@
     "fat": "0",
     "fiber": "2.3",
     "sugar": "0",
-    "sodium": "70",
+    "sodium": "0.07",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "70"
   },
   {
     "barcode": "94379303060",
@@ -2093,7 +2223,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "95829400490",
@@ -2109,7 +2240,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "191",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "95829420368",
@@ -2122,10 +2254,11 @@
     "fat": "0.26",
     "fiber": "1",
     "sugar": "0",
-    "sodium": "2",
+    "sodium": "0.002",
     "magnesium": "0",
     "vitamin_c": "18.4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "2"
   },
   {
     "barcode": "95829420924",
@@ -2141,7 +2274,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "2.8",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "99482412289",
@@ -2154,10 +2288,11 @@
     "fat": "35",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "350",
+    "sodium": "0.35",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "350"
   },
   {
     "barcode": "99482508333",
@@ -2170,10 +2305,11 @@
     "fat": "18.6",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "671",
+    "sodium": "0.671",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "671"
   },
   {
     "barcode": "184739002495",
@@ -2189,7 +2325,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "207324000000",
@@ -2202,10 +2339,11 @@
     "fat": "3.57",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "696",
+    "sodium": "0.696",
     "magnesium": "0",
     "vitamin_c": "2.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "696"
   },
   {
     "barcode": "603028000009",
@@ -2218,10 +2356,11 @@
     "fat": "46.9",
     "fiber": "12.5",
     "sugar": "0",
-    "sodium": "94",
+    "sodium": "0.094",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "94"
   },
   {
     "barcode": "607880011098",
@@ -2234,10 +2373,11 @@
     "fat": "13.2",
     "fiber": "1.2",
     "sugar": "0",
-    "sodium": "337",
+    "sodium": "0.337",
     "magnesium": "0",
     "vitamin_c": "4.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "337"
   },
   {
     "barcode": "614583624463",
@@ -2250,10 +2390,11 @@
     "fat": "0.65",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "630",
+    "sodium": "0.63",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "630"
   },
   {
     "barcode": "616112181348",
@@ -2266,10 +2407,11 @@
     "fat": "19.3",
     "fiber": "5.3",
     "sugar": "0",
-    "sodium": "9",
+    "sodium": "0.009",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "9"
   },
   {
     "barcode": "619684010344",
@@ -2285,7 +2427,8 @@
     "sodium": "0",
     "magnesium": "400",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "627843083047",
@@ -2301,7 +2444,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "629307123344",
@@ -2317,7 +2461,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "2.4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "630887012768",
@@ -2330,10 +2475,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "14",
+    "sodium": "0.014",
     "magnesium": "0",
     "vitamin_c": "36",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "14"
   },
   {
     "barcode": "641227751018",
@@ -2346,10 +2492,11 @@
     "fat": "28.1",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "719",
+    "sodium": "0.719",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "719"
   },
   {
     "barcode": "680569649836",
@@ -2362,10 +2509,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "44",
+    "sodium": "0.044",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "150"
+    "vitamin_d": "150",
+    "sodium_mg": "44"
   },
   {
     "barcode": "686443313008",
@@ -2378,10 +2526,11 @@
     "fat": "8.04",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "304",
+    "sodium": "0.304",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "304"
   },
   {
     "barcode": "688267005930",
@@ -2397,7 +2546,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "10",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "688267071706",
@@ -2413,7 +2563,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "697068120148",
@@ -2429,7 +2580,8 @@
     "sodium": "0",
     "magnesium": "7",
     "vitamin_c": "20.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "708820306370",
@@ -2442,10 +2594,11 @@
     "fat": "0",
     "fiber": "2.4",
     "sugar": "0",
-    "sodium": "30",
+    "sodium": "0.03",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "30"
   },
   {
     "barcode": "709351123139",
@@ -2458,10 +2611,11 @@
     "fat": "0.35",
     "fiber": "3.5",
     "sugar": "0",
-    "sodium": "24",
+    "sodium": "0.024",
     "magnesium": "0",
     "vitamin_c": "84.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "24"
   },
   {
     "barcode": "710069011021",
@@ -2477,7 +2631,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "2.9",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "710069312180",
@@ -2490,10 +2645,11 @@
     "fat": "0.4",
     "fiber": "1.6",
     "sugar": "0",
-    "sodium": "100",
+    "sodium": "0.1",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "100"
   },
   {
     "barcode": "717544206736",
@@ -2506,10 +2662,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "167",
+    "sodium": "0.167",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "27"
+    "vitamin_d": "27",
+    "sodium_mg": "167"
   },
   {
     "barcode": "725439950626",
@@ -2522,10 +2679,11 @@
     "fat": "0.44",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "133",
+    "sodium": "0.133",
     "magnesium": "0",
     "vitamin_c": "2.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "133"
   },
   {
     "barcode": "736211720733",
@@ -2538,10 +2696,11 @@
     "fat": "0",
     "fiber": "10.7",
     "sugar": "0",
-    "sodium": "11",
+    "sodium": "0.011",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "11"
   },
   {
     "barcode": "739625001023",
@@ -2554,10 +2713,11 @@
     "fat": "0.36",
     "fiber": "1.5",
     "sugar": "0",
-    "sodium": "893",
+    "sodium": "0.893",
     "magnesium": "0",
     "vitamin_c": "357",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "893"
   },
   {
     "barcode": "740695650226",
@@ -2570,10 +2730,11 @@
     "fat": "0",
     "fiber": "1.1",
     "sugar": "0",
-    "sodium": "11",
+    "sodium": "0.011",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "11"
   },
   {
     "barcode": "746104140128",
@@ -2586,10 +2747,11 @@
     "fat": "3.75",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "54",
+    "sodium": "0.054",
     "magnesium": "0",
     "vitamin_c": "1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "54"
   },
   {
     "barcode": "748252310699",
@@ -2605,7 +2767,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "751918018457",
@@ -2618,10 +2781,11 @@
     "fat": "0.3",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "10",
+    "sodium": "0.01",
     "magnesium": "48",
     "vitamin_c": "17",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "10"
   },
   {
     "barcode": "759033996322",
@@ -2634,10 +2798,11 @@
     "fat": "0",
     "fiber": "3.3",
     "sugar": "0",
-    "sodium": "467",
+    "sodium": "0.467",
     "magnesium": "0",
     "vitamin_c": "2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "467"
   },
   {
     "barcode": "763441400449",
@@ -2650,10 +2815,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "392",
+    "sodium": "0.392",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "392"
   },
   {
     "barcode": "768395527082",
@@ -2666,10 +2832,11 @@
     "fat": "14.9",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "85",
+    "sodium": "0.085",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "85"
   },
   {
     "barcode": "769087002603",
@@ -2682,10 +2849,11 @@
     "fat": "21.4",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "1290",
+    "sodium": "1.29",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "1290"
   },
   {
     "barcode": "769363973368",
@@ -2698,10 +2866,11 @@
     "fat": "9.73",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "66",
+    "sodium": "0.066",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "66"
   },
   {
     "barcode": "782796015436",
@@ -2714,10 +2883,11 @@
     "fat": "0",
     "fiber": "0.7",
     "sugar": "0",
-    "sodium": "11",
+    "sodium": "0.011",
     "magnesium": "0",
     "vitamin_c": "8.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "11"
   },
   {
     "barcode": "784672484374",
@@ -2730,10 +2900,11 @@
     "fat": "1.56",
     "fiber": "0.4",
     "sugar": "0",
-    "sodium": "4",
+    "sodium": "0.004",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "4"
   },
   {
     "barcode": "793232114033",
@@ -2749,7 +2920,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "796853100041",
@@ -2762,10 +2934,11 @@
     "fat": "4.46",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "214",
+    "sodium": "0.214",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "214"
   },
   {
     "barcode": "799137255017",
@@ -2781,7 +2954,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "4.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "799424002102",
@@ -2797,7 +2971,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "6.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "810016360728",
@@ -2810,10 +2985,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "2200",
+    "sodium": "2.2",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "2200"
   },
   {
     "barcode": "810112960600",
@@ -2829,7 +3005,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "810487003247",
@@ -2842,10 +3019,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "38",
+    "sodium": "0.038",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "38"
   },
   {
     "barcode": "810698548681",
@@ -2858,10 +3036,11 @@
     "fat": "1.79",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "464",
+    "sodium": "0.464",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "464"
   },
   {
     "barcode": "811371700648",
@@ -2877,7 +3056,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "35",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "811725031299",
@@ -2893,7 +3073,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "813636021611",
@@ -2906,10 +3087,11 @@
     "fat": "2.92",
     "fiber": "0.4",
     "sugar": "0",
-    "sodium": "48",
+    "sodium": "0.048",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "48"
   },
   {
     "barcode": "814703000065",
@@ -2922,10 +3104,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "933",
+    "sodium": "0.933",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "933"
   },
   {
     "barcode": "814857020018",
@@ -2938,10 +3121,11 @@
     "fat": "28.6",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "714",
+    "sodium": "0.714",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "714"
   },
   {
     "barcode": "815421011135",
@@ -2957,7 +3141,8 @@
     "sodium": "0",
     "magnesium": "114",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "815838024025",
@@ -2970,10 +3155,11 @@
     "fat": "0.4",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "400",
+    "sodium": "0.4",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "400"
   },
   {
     "barcode": "815867023211",
@@ -2986,10 +3172,11 @@
     "fat": "0",
     "fiber": "1.8",
     "sugar": "0",
-    "sodium": "29",
+    "sodium": "0.029",
     "magnesium": "0",
     "vitamin_c": "49.4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "29"
   },
   {
     "barcode": "815867028407",
@@ -3002,10 +3189,11 @@
     "fat": "0",
     "fiber": "2.2",
     "sugar": "0",
-    "sodium": "4",
+    "sodium": "0.004",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "4"
   },
   {
     "barcode": "815867028858",
@@ -3021,7 +3209,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "816143011069",
@@ -3034,10 +3223,11 @@
     "fat": "0",
     "fiber": "0.4",
     "sugar": "0",
-    "sodium": "6",
+    "sodium": "0.006",
     "magnesium": "0",
     "vitamin_c": "25.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "6"
   },
   {
     "barcode": "816697023006",
@@ -3050,10 +3240,11 @@
     "fat": "11.5",
     "fiber": "4.4",
     "sugar": "0",
-    "sodium": "327",
+    "sodium": "0.327",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "327"
   },
   {
     "barcode": "818617022793",
@@ -3066,10 +3257,11 @@
     "fat": "0.16",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "77",
+    "sodium": "0.077",
     "magnesium": "0",
     "vitamin_c": "4.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "77"
   },
   {
     "barcode": "818808018437",
@@ -3082,10 +3274,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "9290",
+    "sodium": "9.29",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "9290"
   },
   {
     "barcode": "819898014002",
@@ -3098,10 +3291,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "6",
+    "sodium": "0.006",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "6"
   },
   {
     "barcode": "826022000053",
@@ -3117,7 +3311,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "60.7",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "826766780891",
@@ -3133,7 +3328,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "850004143407",
@@ -3149,7 +3345,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "533"
+    "vitamin_d": "533",
+    "sodium_mg": "0"
   },
   {
     "barcode": "850160003225",
@@ -3162,10 +3359,11 @@
     "fat": "0.66",
     "fiber": "2.2",
     "sugar": "0",
-    "sodium": "145",
+    "sodium": "0.145",
     "magnesium": "0",
     "vitamin_c": "13.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "145"
   },
   {
     "barcode": "850403000448",
@@ -3178,10 +3376,11 @@
     "fat": "3.33",
     "fiber": "13.3",
     "sugar": "0",
-    "sodium": "7",
+    "sodium": "0.007",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "7"
   },
   {
     "barcode": "850898005034",
@@ -3197,7 +3396,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "37.5",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "851587003515",
@@ -3210,10 +3410,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "33",
+    "sodium": "0.033",
     "magnesium": "0",
     "vitamin_c": "0.8",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "33"
   },
   {
     "barcode": "852043003643",
@@ -3226,10 +3427,11 @@
     "fat": "0.21",
     "fiber": "0.2",
     "sugar": "0",
-    "sodium": "12",
+    "sodium": "0.012",
     "magnesium": "0",
     "vitamin_c": "3.8",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "12"
   },
   {
     "barcode": "853555003404",
@@ -3242,10 +3444,11 @@
     "fat": "32.1",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "643",
+    "sodium": "0.643",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "643"
   },
   {
     "barcode": "854393003649",
@@ -3258,10 +3461,11 @@
     "fat": "0.89",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "429",
+    "sodium": "0.429",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "29"
+    "vitamin_d": "29",
+    "sodium_mg": "429"
   },
   {
     "barcode": "854631006036",
@@ -3274,10 +3478,11 @@
     "fat": "0.63",
     "fiber": "1.3",
     "sugar": "0",
-    "sodium": "633",
+    "sodium": "0.633",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "633"
   },
   {
     "barcode": "855868002044",
@@ -3290,10 +3495,11 @@
     "fat": "0.22",
     "fiber": "1.3",
     "sugar": "0",
-    "sodium": "148",
+    "sodium": "0.148",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "148"
   },
   {
     "barcode": "859002004062",
@@ -3309,7 +3515,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "1.4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "859033603869",
@@ -3322,10 +3529,11 @@
     "fat": "1.32",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "70",
+    "sodium": "0.07",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "70"
   },
   {
     "barcode": "859165002332",
@@ -3338,10 +3546,11 @@
     "fat": "8.45",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "789",
+    "sodium": "0.789",
     "magnesium": "0",
     "vitamin_c": "25.4",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "789"
   },
   {
     "barcode": "860150001407",
@@ -3354,10 +3563,11 @@
     "fat": "0",
     "fiber": "2.2",
     "sugar": "0",
-    "sodium": "733",
+    "sodium": "0.733",
     "magnesium": "33",
     "vitamin_c": "11.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "733"
   },
   {
     "barcode": "860150001407",
@@ -3370,10 +3580,11 @@
     "fat": "0",
     "fiber": "2.2",
     "sugar": "0",
-    "sodium": "733",
+    "sodium": "0.733",
     "magnesium": "33",
     "vitamin_c": "11.1",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "733"
   },
   {
     "barcode": "861420000151",
@@ -3386,10 +3597,11 @@
     "fat": "3.57",
     "fiber": "14.3",
     "sugar": "0",
-    "sodium": "25",
+    "sodium": "0.025",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "25"
   },
   {
     "barcode": "873668003825",
@@ -3405,7 +3617,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "36.2",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "882694944019",
@@ -3418,10 +3631,11 @@
     "fat": "0.35",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "46",
+    "sodium": "0.046",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "46"
   },
   {
     "barcode": "884730006804",
@@ -3434,10 +3648,11 @@
     "fat": "9.82",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "58",
+    "sodium": "0.058",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "58"
   },
   {
     "barcode": "885616003955",
@@ -3450,10 +3665,11 @@
     "fat": "0",
     "fiber": "3.3",
     "sugar": "0",
-    "sodium": "1670",
+    "sodium": "1.67",
     "magnesium": "0",
     "vitamin_c": "12",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "1670"
   },
   {
     "barcode": "887434310475",
@@ -3469,7 +3685,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "10.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "891502000106",
@@ -3482,10 +3699,11 @@
     "fat": "2.86",
     "fiber": "1.4",
     "sugar": "0",
-    "sodium": "457",
+    "sodium": "0.457",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "457"
   },
   {
     "barcode": "893216001028",
@@ -3498,10 +3716,11 @@
     "fat": "1",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "296",
+    "sodium": "0.296",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "296"
   },
   {
     "barcode": "893265001550",
@@ -3517,7 +3736,8 @@
     "sodium": "0",
     "magnesium": "0",
     "vitamin_c": "97.3",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "0"
   },
   {
     "barcode": "893648001238",
@@ -3530,10 +3750,11 @@
     "fat": "0",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "714",
+    "sodium": "0.714",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "714"
   },
   {
     "barcode": "2002896009721",
@@ -3546,10 +3767,11 @@
     "fat": "17.9",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "58",
+    "sodium": "0.058",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "58"
   },
   {
     "barcode": "8007559204240",
@@ -3562,10 +3784,11 @@
     "fat": "32.1",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "786",
+    "sodium": "0.786",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "786"
   },
   {
     "barcode": "8824808830650",
@@ -3578,10 +3801,11 @@
     "fat": "3.68",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "74",
+    "sodium": "0.074",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "74"
   },
   {
     "barcode": "9414456001121",
@@ -3594,9 +3818,10 @@
     "fat": "11",
     "fiber": "0",
     "sugar": "0",
-    "sodium": "5600",
+    "sodium": "5.6",
     "magnesium": "0",
     "vitamin_c": "0",
-    "vitamin_d": "0"
+    "vitamin_d": "0",
+    "sodium_mg": "5600"
   }
 ]

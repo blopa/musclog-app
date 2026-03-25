@@ -7,6 +7,7 @@ Migrating from NativeWind 4.2.3 + Tailwind CSS 3.4.19 to Uniwind + Tailwind CSS 
 **Scope**: 247 files use `className=`, totalling ~3,679 occurrences. The good news: most of these require **zero changes** — the Tailwind utility class names are the same. The work is entirely in configuration and the custom theme color tokens.
 
 **Key findings from the codebase**:
+
 - No NativeWind `vars()` usage — theme is managed via `useThemeContext()` + inline `style=` props
 - No `cssInterop` usage
 - No NativeWind `ThemeProvider` — the app has its own custom one in `context/ThemeContext.tsx`
@@ -44,11 +45,13 @@ npm install --save-dev tailwindcss@next  # Tailwind v4
 Remove the NativeWind preset and the `jsxImportSource` option.
 
 **Before** (`babel.config.js:32`):
+
 ```js
 presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
 ```
 
 **After**:
+
 ```js
 presets: ['babel-preset-expo'],
 ```
@@ -62,6 +65,7 @@ The `react-native-reanimated/plugin` and decorator plugins stay as-is.
 Replace `withNativeWind` with Uniwind's equivalent.
 
 **Before** (`metro.config.js:3,18`):
+
 ```js
 const { withNativeWind } = require('nativewind/metro');
 // ...
@@ -69,6 +73,7 @@ module.exports = withNativeWind(config, { input: './global.css' });
 ```
 
 **After**:
+
 ```js
 const { withUniwindConfig } = require('uniwind/metro');
 // ...
@@ -78,6 +83,7 @@ module.exports = withUniwindConfig(config, { cssEntryFile: './global.css' });
 Note: `cssEntryFile` takes a **relative path** (unlike NativeWind's `input`). The existing Sentry config wrapper and the `sharp` stub resolver are unaffected.
 
 Optional — to keep NativeWind's 14px rem default:
+
 ```js
 module.exports = withUniwindConfig(config, {
   cssEntryFile: './global.css',
@@ -92,6 +98,7 @@ module.exports = withUniwindConfig(config, {
 Replace the `@tailwind` directives with Tailwind v4 / Uniwind imports, then migrate the entire `tailwind.config.js` color theme into CSS `@theme`.
 
 **Before** (`global.css`):
+
 ```css
 @tailwind base;
 @tailwind components;
@@ -99,6 +106,7 @@ Replace the `@tailwind` directives with Tailwind v4 / Uniwind imports, then migr
 ```
 
 **After**:
+
 ```css
 @import 'tailwindcss';
 @import 'uniwind';
@@ -144,12 +152,17 @@ Replace the `@tailwind` directives with Tailwind v4 / Uniwind imports, then migr
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Remove input outline on web for focused inputs */
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
 }
 ```
@@ -200,7 +213,7 @@ export function cn(...inputs: (string | undefined | null | false)[]) {
 }
 ```
 
-Scan for dynamic className composition patterns — places that concatenate or conditionally apply class strings — and update them to use `cn()`. A grep for `className={\`\`` or `className={[` will find most candidates.
+Scan for dynamic className composition patterns — places that concatenate or conditionally apply class strings — and update them to use `cn()`. A grep for `className={\`\``or`className={[` will find most candidates.
 
 ---
 
@@ -245,15 +258,15 @@ The plugin may need a config update to point at the CSS entry file instead of `t
 
 ## Risks and Known Complexity
 
-| Area | Risk | Notes |
-|------|------|-------|
-| Tailwind v3 → v4 syntax | Medium | Class names are largely the same; main change is config format |
-| Custom color tokens | Medium | 5 groups × ~10 colors = ~50 CSS variables to migrate manually |
-| `darkMode: 'class'` removal | Low | `dark:` classNames are not used in this codebase |
-| rem value change (14 → 16) | Low-Medium | App primarily uses inline styles; visually test spacing-heavy screens |
-| No `tailwind-merge` | Low | Dynamic className composition is not heavy in this codebase |
-| Web platform | Low | Web uses `.web.tsx` overrides; Tailwind v4 CSS-first approach may improve web support |
-| `prettier-plugin-tailwindcss` | Low | Already on a compatible version |
+| Area                          | Risk       | Notes                                                                                 |
+| ----------------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| Tailwind v3 → v4 syntax       | Medium     | Class names are largely the same; main change is config format                        |
+| Custom color tokens           | Medium     | 5 groups × ~10 colors = ~50 CSS variables to migrate manually                         |
+| `darkMode: 'class'` removal   | Low        | `dark:` classNames are not used in this codebase                                      |
+| rem value change (14 → 16)    | Low-Medium | App primarily uses inline styles; visually test spacing-heavy screens                 |
+| No `tailwind-merge`           | Low        | Dynamic className composition is not heavy in this codebase                           |
+| Web platform                  | Low        | Web uses `.web.tsx` overrides; Tailwind v4 CSS-first approach may improve web support |
+| `prettier-plugin-tailwindcss` | Low        | Already on a compatible version                                                       |
 
 ---
 
@@ -269,13 +282,13 @@ The plugin may need a config update to point at the CSS entry file instead of `t
 
 ## Estimated Effort
 
-| Task | Effort |
-|------|--------|
-| Steps 1–3 (install + config) | ~30 min |
-| Step 4 (CSS theme migration) | ~1–2 hours (manually resolve ~50 color values from theme.ts) |
-| Steps 5–7 (cleanup + cn util) | ~30 min |
-| Step 8 (safe area, if needed) | ~15 min |
-| Step 10 (testing + visual QA) | ~2–4 hours |
+| Task                          | Effort                                                       |
+| ----------------------------- | ------------------------------------------------------------ |
+| Steps 1–3 (install + config)  | ~30 min                                                      |
+| Step 4 (CSS theme migration)  | ~1–2 hours (manually resolve ~50 color values from theme.ts) |
+| Steps 5–7 (cleanup + cn util) | ~30 min                                                      |
+| Step 8 (safe area, if needed) | ~15 min                                                      |
+| Step 10 (testing + visual QA) | ~2–4 hours                                                   |
 
 ---
 

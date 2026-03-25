@@ -16,6 +16,7 @@ type ServingSizeSelectorProps = {
   onChange: (value: number) => void;
   quickSizes?: { label: string; value: number }[];
   food?: Food;
+  onFocus?: () => void;
 };
 
 const STEP_GRAMS = 10;
@@ -26,6 +27,7 @@ export function ServingSizeSelector({
   onChange,
   quickSizes,
   food,
+  onFocus,
 }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -80,6 +82,7 @@ export function ServingSizeSelector({
           onIncrement={handleIncrease}
           onDecrement={handleDecrease}
           onChangeValue={handleChangeValue}
+          onFocus={onFocus}
           unit={massUnit}
           variant="portion"
         />

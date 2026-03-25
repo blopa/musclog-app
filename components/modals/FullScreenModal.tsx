@@ -1,15 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject } from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks/useTheme';
@@ -128,37 +120,31 @@ export function FullScreenModal({
         ) : null}
 
         {/* Content area */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="flex-1"
-        >
-          <View className="flex-1">
-            {scrollable ? (
-              <ScrollView
-                ref={scrollViewRef}
-                className="flex-1"
-                showsVerticalScrollIndicator={false}
-                style={webScrollViewStyle}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{
-                  paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
-                }}
-              >
-                {children}
-              </ScrollView>
-            ) : (
-              <View className="flex-1">{children}</View>
-            )}
+        <View className="flex-1">
+          {scrollable ? (
+            <ScrollView
+              ref={scrollViewRef}
+              className="flex-1"
+              showsVerticalScrollIndicator={false}
+              style={webScrollViewStyle}
+              contentContainerStyle={{
+                paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
+              }}
+            >
+              {children}
+            </ScrollView>
+          ) : (
+            <View className="flex-1">{children}</View>
+          )}
 
-            {/* optional footer */}
-            {footer ? (
-              <BottomButtonWrapper>
-                {footer}
-                <View style={{ height: theme.spacing.margin.base }} />
-              </BottomButtonWrapper>
-            ) : null}
-          </View>
-        </KeyboardAvoidingView>
+          {/* optional footer */}
+          {footer ? (
+            <BottomButtonWrapper>
+              {footer}
+              <View style={{ height: theme.spacing.margin.base }} />
+            </BottomButtonWrapper>
+          ) : null}
+        </View>
       </View>
     </Modal>
   );

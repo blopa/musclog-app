@@ -11,6 +11,7 @@ interface StepperInputProps {
   onIncrement: () => void;
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
+  onFocus?: () => void;
   unit?: string;
   step?: number;
   variant?: 'default' | 'portion';
@@ -22,6 +23,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   onIncrement,
   onDecrement,
   onChangeValue,
+  onFocus,
   unit,
   step = 1,
   variant = 'default',
@@ -55,6 +57,7 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   const handleValuePress = () => {
     setEditing(true);
+    onFocus?.();
     // Small delay to ensure state update before focusing
     setTimeout(() => {
       inputRef.current?.focus();
