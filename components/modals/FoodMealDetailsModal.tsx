@@ -1648,7 +1648,7 @@ export function FoodMealDetailsModal({
         }
         footer={
           <Button
-            label={t('common.save', 'Save')}
+            label={t('common.save')}
             variant="gradientCta"
             size="sm"
             width="full"

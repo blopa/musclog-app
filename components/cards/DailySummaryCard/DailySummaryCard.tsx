@@ -81,7 +81,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.kcal', 'Kcal')}
+                  {t('dailySummaryCard.kcal')}
                 </Text>
               </View>
             </View>
@@ -155,8 +155,8 @@ export function DailySummaryCard({
                   }}
                 >
                   {isNarrow
-                    ? t('dailySummaryCard.proteinShort', 'P')
-                    : t('dailySummaryCard.protein', 'Prot')}
+                    ? t('dailySummaryCard.proteinShort')
+                    : t('dailySummaryCard.protein')}
                 </Text>
                 {highlightThresholds && proteinStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -211,8 +211,8 @@ export function DailySummaryCard({
                   }}
                 >
                   {isNarrow
-                    ? t('dailySummaryCard.carbsShort', 'C')
-                    : t('dailySummaryCard.carbs', 'Carb')}
+                    ? t('dailySummaryCard.carbsShort')
+                    : t('dailySummaryCard.carbs')}
                 </Text>
                 {highlightThresholds && carbsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -267,8 +267,8 @@ export function DailySummaryCard({
                   }}
                 >
                   {isNarrow
-                    ? t('dailySummaryCard.fatsShort', 'F')
-                    : t('dailySummaryCard.fats', 'Fat')}
+                    ? t('dailySummaryCard.fatsShort')
+                    : t('dailySummaryCard.fats')}
                 </Text>
                 {highlightThresholds && fatsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />

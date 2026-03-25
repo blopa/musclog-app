@@ -16,6 +16,7 @@ import { getWeightUnit } from './units';
 // ============================================================================
 
 // Day labels for WeekdayPicker (Monday through Sunday)
+// TODO: shouldn't these use i18n?
 export const WEEKDAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 // Day names mapping for database: WeekdayPicker index -> Day name

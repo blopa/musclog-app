@@ -193,7 +193,7 @@ export function LogMealModal({
                       style={{ color: theme.colors.text.secondary }}
                     >
                       {windowWidth < 380
-                        ? t('food.macros.proteinShort', 'P')
+                        ? t('food.macros.proteinShort')
                         : t('food.macros.protein')}
                     </Text>
                     <Text
@@ -219,7 +219,7 @@ export function LogMealModal({
                       style={{ color: theme.colors.text.secondary }}
                     >
                       {windowWidth < 380
-                        ? t('food.macros.carbsShort', 'C')
+                        ? t('food.macros.carbsShort')
                         : t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
@@ -241,7 +241,7 @@ export function LogMealModal({
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {windowWidth < 380 ? t('food.macros.fatShort', 'F') : t('food.macros.fat')}
+                      {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                     </Text>
                     <Text
                       className="text-lg font-bold"

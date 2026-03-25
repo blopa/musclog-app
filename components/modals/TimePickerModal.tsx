@@ -327,6 +327,7 @@ export function TimePickerModal({
             className="mx-4 mb-5 flex-row overflow-hidden"
             style={{ backgroundColor: toggleBg, borderRadius: 9999 }}
           >
+            {/*TODO: shouldn't these use i18n?*/}
             {(['AM', 'PM'] as const).map((period) => {
               const isActive = amPm === period;
               return (

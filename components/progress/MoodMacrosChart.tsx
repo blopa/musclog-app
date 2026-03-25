@@ -17,6 +17,7 @@ const formatDate = (timestamp: number): string => {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
 };
 
+// TODO: shouldn't these use i18n?
 const MOOD_LABELS = ['Poor', 'Low', 'Okay', 'Good', 'Great'];
 
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {

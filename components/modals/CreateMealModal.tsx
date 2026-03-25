@@ -279,20 +279,20 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={
-              windowWidth < 380 ? t('food.macros.proteinShort', 'P') : t('food.macros.protein')
+              windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')
             }
             value={`${Math.round(macros.protein)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
-            label={windowWidth < 380 ? t('food.macros.carbsShort', 'C') : t('food.macros.carbs')}
+            label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
             value={`${Math.round(macros.carbs)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
-            label={windowWidth < 380 ? t('food.macros.fatShort', 'F') : t('food.macros.fat')}
+            label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
             value={`${Math.round(macros.fat)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}

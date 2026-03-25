@@ -108,6 +108,7 @@ const getNormalizedTemplates = (t: TFunction) => {
       return {
         id,
         title,
+        // TODO: shouldn't these use i18n?
         difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
           ? (difficulty as any)
           : 'Beginner',

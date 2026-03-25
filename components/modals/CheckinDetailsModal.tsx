@@ -341,6 +341,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               barColor={theme.colors.status.emerald}
               innerPadding={0.3}
               xAxisLabels={dailyWeights.map((_w: number, i: number) => ({
+                // TODO: shouldn't these use i18n?
                 label: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][
                   new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).getDay()
                 ],

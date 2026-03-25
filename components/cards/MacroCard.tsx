@@ -40,13 +40,13 @@ export function MacroCard({
     // but typically the name passed in is already translated (e.g., "Proteína").
     // We'll check if it matches the current translation of the macro names.
     if (lowerName === t('food.macros.protein').toLowerCase()) {
-      return t('food.macros.proteinShort', 'P');
+      return t('food.macros.proteinShort');
     }
     if (lowerName === t('food.macros.carbs').toLowerCase()) {
-      return t('food.macros.carbsShort', 'C');
+      return t('food.macros.carbsShort');
     }
     if (lowerName === t('food.macros.fat').toLowerCase()) {
-      return t('food.macros.fatShort', 'F');
+      return t('food.macros.fatShort');
     }
 
     return name;

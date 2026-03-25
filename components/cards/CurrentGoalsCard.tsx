@@ -141,7 +141,7 @@ export function CurrentGoalsCard({
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380
-                ? t('currentGoalsCard.proteinShort', 'P')
+                ? t('currentGoalsCard.proteinShort')
                 : t('currentGoalsCard.protein')}
             </Text>
             <Text className="font-bold text-text-primary">
@@ -160,7 +160,7 @@ export function CurrentGoalsCard({
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380
-                ? t('currentGoalsCard.carbsShort', 'C')
+                ? t('currentGoalsCard.carbsShort')
                 : t('currentGoalsCard.carbs')}
             </Text>
             <Text className="font-bold text-text-primary">
@@ -179,7 +179,7 @@ export function CurrentGoalsCard({
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380
-                ? t('currentGoalsCard.fatsShort', 'F')
+                ? t('currentGoalsCard.fatsShort')
                 : t('currentGoalsCard.fats')}
             </Text>
             <Text className="font-bold text-text-primary">

@@ -138,7 +138,7 @@ export function FoodNutritionSectionCard({
               <View className="mt-2 flex-row items-center justify-center gap-2">
                 <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                 <Text className="text-xs text-text-secondary">
-                  {t('food.foodDetails.loadingMoreDetails', 'Loading more details...')}
+                  {t('food.foodDetails.loadingMoreDetails')}
                 </Text>
               </View>
             ) : null}
@@ -149,7 +149,7 @@ export function FoodNutritionSectionCard({
           <View className="flex-row items-center justify-center gap-2">
             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
             <Text className="text-xs text-text-secondary">
-              {t('food.foodDetails.loadingDetails', 'Loading details...')}
+              {t('food.foodDetails.loadingDetails')}
             </Text>
           </View>
         </View>
