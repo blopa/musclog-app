@@ -49,8 +49,8 @@ export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selec
         }}
       >
         {selectedCount === 1
-          ? t('optionsSelector.deleteExercise', 'Delete Exercise')
-          : t('optionsSelector.deleteExercises', `Delete ${selectedCount} Exercises`)}
+          ? t('optionsSelector.deleteExercise')
+          : t('optionsSelector.deleteExercises')}
       </Text>
     </Pressable>
   );

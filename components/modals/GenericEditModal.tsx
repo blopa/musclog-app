@@ -67,10 +67,9 @@ export function GenericEditModal({
       onClose();
     } catch (error) {
       console.error('Error saving record:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : t('common.saveError', 'Failed to save changes');
+      const errorMessage = error instanceof Error ? error.message : t('common.saveError');
       showSnackbar('error', errorMessage, {
-        subtitle: t('common.saveErrorSubtitle', 'Please try again'),
+        subtitle: t('common.saveErrorSubtitle'),
       });
     } finally {
       setIsSaving(false);
@@ -219,7 +218,7 @@ export function GenericEditModal({
         const selectedOption = options.find((opt) => opt.value === selectValue);
         const selectedLabel = selectedOption
           ? t(selectedOption.label, selectedOption.label)
-          : t('common.select', 'Select...');
+          : t('common.select');
 
         const menuItems = createBottomMenuItems(options, (val) => {
           handleFieldChange(field.key, val);
@@ -318,7 +317,7 @@ export function GenericEditModal({
         <View className="flex-1 items-center justify-center p-6">
           <Text className="text-status-error50 text-center text-base">{loadError}</Text>
           <Button
-            label={t('common.close', 'Close')}
+            label={t('common.close')}
             variant="outline"
             size="sm"
             onPress={onClose}
@@ -336,7 +335,7 @@ export function GenericEditModal({
       title={title}
       footer={
         <Button
-          label={submitLabel ?? t('common.saveChanges', 'Save Changes')}
+          label={submitLabel ?? t('common.saveChanges')}
           icon={Check}
           variant="gradientCta"
           size="md"
@@ -349,7 +348,7 @@ export function GenericEditModal({
     >
       {isLoading ? (
         <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-base text-text-secondary">{t('common.loading', 'Loading...')}</Text>
+          <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
         <ScrollView className="px-4 py-6">

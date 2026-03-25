@@ -31,7 +31,7 @@ export function FoodNotFoundModal({
     <BottomPopUpMenu
       visible={visible}
       onClose={onClose}
-      title={t('nutrition.foodNotFound', 'Food Not Found')}
+      title={t('nutrition.foodNotFound')}
       subtitle={t(
         'nutrition.foodNotFoundDescription',
         "We couldn't find this item in our database. What would you like to do?"
@@ -63,9 +63,7 @@ export function FoodNotFoundModal({
               </View>
               <View className="flex-1">
                 <Text className="text-lg font-bold text-white">{t('nutrition.tryAICamera')}</Text>
-                <Text className="text-xs text-white/80">
-                  {t('nutrition.tryAICameraDesc', 'Instantly identify food from a photo')}
-                </Text>
+                <Text className="text-xs text-white/80">{t('nutrition.tryAICameraDesc')}</Text>
               </View>
               <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
             </LinearGradient>
@@ -85,11 +83,9 @@ export function FoodNotFoundModal({
           </View>
           <View className="flex-1">
             <Text className="text-lg font-bold text-text-primary">
-              {t('nutrition.searchAgain', 'Search Again')}
+              {t('nutrition.searchAgain')}
             </Text>
-            <Text className="text-xs text-text-secondary">
-              {t('nutrition.searchAgainDesc', 'Try different keywords or brand names')}
-            </Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.searchAgainDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>
@@ -110,11 +106,9 @@ export function FoodNotFoundModal({
           </View>
           <View className="flex-1">
             <Text className="text-lg font-bold text-text-primary">
-              {t('nutrition.createCustom', 'Create Custom Food')}
+              {t('nutrition.createCustom')}
             </Text>
-            <Text className="text-xs text-text-secondary">
-              {t('nutrition.createCustomDesc', 'Manually add nutrition details')}
-            </Text>
+            <Text className="text-xs text-text-secondary">{t('nutrition.createCustomDesc')}</Text>
           </View>
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
         </Pressable>

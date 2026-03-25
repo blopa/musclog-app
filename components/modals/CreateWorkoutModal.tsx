@@ -8,7 +8,7 @@ import { WORKOUT_TYPES } from '../../constants/workoutTypes';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutForm } from '../../hooks/useWorkoutForm';
-import { WEEKDAY_LABELS } from '../../utils/workout';
+import { getWeekdayLabels } from '../../utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '../../utils/workoutIconUtils';
 import { Button } from '../theme/Button';
 import { OptionsMultiSelector } from '../theme/OptionsMultiSelector/OptionsMultiSelector';
@@ -419,7 +419,7 @@ export default function CreateWorkoutModal({
             </View>
 
             <WeekdayPicker
-              days={WEEKDAY_LABELS}
+              days={getWeekdayLabels()}
               selectedDays={selectedDays}
               onToggleDay={toggleDay}
             />

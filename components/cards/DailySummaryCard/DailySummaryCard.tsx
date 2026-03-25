@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../../hooks/useTheme';
 import { GenericCard } from '../GenericCard';
@@ -32,8 +32,11 @@ export function DailySummaryCard({
   highlightThresholdStyle = 'none',
   menuButton,
 }: DailySummaryCardProps) {
+  const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
   const { t } = useTranslation();
+
+  const isNarrow = windowWidth < 380;
   const highlightThresholds = highlightThresholdStyle === 'default';
   const showColoredIndicators =
     highlightThresholdStyle === 'default' || highlightThresholdStyle === 'simple';
@@ -78,7 +81,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.kcal', 'Kcal')}
+                  {t('dailySummaryCard.kcal')}
                 </Text>
               </View>
             </View>
@@ -151,7 +154,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.protein', 'Prot')}
+                  {isNarrow ? t('dailySummaryCard.proteinShort') : t('dailySummaryCard.protein')}
                 </Text>
                 {highlightThresholds && proteinStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -205,7 +208,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.carbs', 'Carb')}
+                  {isNarrow ? t('dailySummaryCard.carbsShort') : t('dailySummaryCard.carbs')}
                 </Text>
                 {highlightThresholds && carbsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />
@@ -259,7 +262,7 @@ export function DailySummaryCard({
                     color: theme.colors.overlay.onColorful70,
                   }}
                 >
-                  {t('dailySummaryCard.fats', 'Fat')}
+                  {isNarrow ? t('dailySummaryCard.fatsShort') : t('dailySummaryCard.fats')}
                 </Text>
                 {highlightThresholds && fatsStatus === 'reached' ? (
                   <CheckCircle2 size={16} color={theme.colors.status.success} strokeWidth={2.5} />

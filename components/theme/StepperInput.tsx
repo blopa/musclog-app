@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
@@ -13,6 +13,7 @@ interface StepperInputProps {
   onChangeValue?: (newValue: number) => void;
   unit?: string;
   step?: number;
+  variant?: 'default' | 'portion';
 }
 
 export const StepperInput: FC<StepperInputProps> = ({
@@ -23,24 +24,29 @@ export const StepperInput: FC<StepperInputProps> = ({
   onChangeValue,
   unit,
   step = 1,
+  variant = 'default',
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [internalValue, setInternalValue] = useState<number>(value);
+  const isPortion = variant === 'portion';
   const [editing, setEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
+  const [inputValue, setInputValue] = useState(formatValue(value));
   const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   }, [value, editing]);
+
+  useEffect(() => {
+    const subscription = Keyboard.addListener('keyboardDidHide', () => {
+      setEditing(false);
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleValuePress = () => {
     setEditing(true);
@@ -62,10 +68,9 @@ export const StepperInput: FC<StepperInputProps> = ({
     const num = parseFloat(inputValue);
     if (!isNaN(num) && onChangeValue) {
       onChangeValue(num);
-      setInternalValue(num);
     } else {
       // Reset to current value if invalid
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   };
 
@@ -84,19 +89,31 @@ export const StepperInput: FC<StepperInputProps> = ({
       <View className="flex flex-row items-center gap-2 overflow-hidden">
         <Pressable
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
-          style={{ backgroundColor: theme.colors.background.card }}
+          style={{
+            backgroundColor: isPortion
+              ? theme.colors.background.greenBlob
+              : theme.colors.background.card,
+          }}
           onPress={() => {
-            setInternalValue((prev) => prev - step);
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num - step));
+            }
             onDecrement();
           }}
           accessibilityLabel={t('common.decreaseValue')}
         >
-          <Minus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+          <Minus
+            size={theme.iconSize.lg}
+            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+          />
         </Pressable>
         {editing ? (
           <View
             className="h-14 min-w-0 flex-1 flex-row items-center justify-center rounded-xl"
-            style={{ backgroundColor: theme.colors.background.card }}
+            style={{
+              backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
+            }}
           >
             <TextInput
               ref={inputRef}
@@ -105,7 +122,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType="numeric"
-              className="min-w-0 flex-1 p-0 text-center text-2xl font-bold text-text-primary"
+              className={`min-w-0 flex-1 p-0 text-center font-bold text-text-primary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
               style={{
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
@@ -115,7 +132,9 @@ export const StepperInput: FC<StepperInputProps> = ({
               selectTextOnFocus
             />
             {unit ? (
-              <Text className="ml-1 mr-2 flex-shrink-0 text-2xl font-normal text-text-tertiary">
+              <Text
+                className={`ml-1 mr-2 flex-shrink-0 font-normal text-text-tertiary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
+              >
                 {unit}
               </Text>
             ) : null}
@@ -123,29 +142,39 @@ export const StepperInput: FC<StepperInputProps> = ({
         ) : (
           <Pressable
             className="h-14 min-w-0 flex-1 items-center justify-center rounded-xl"
-            style={{ backgroundColor: theme.colors.background.card }}
+            style={{
+              backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
+            }}
             onPress={handleValuePress}
           >
             <Text
-              className="text-center text-2xl font-bold text-text-primary"
+              className={`text-center font-bold text-text-primary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {internalValue % 1 === 0 ? String(internalValue) : internalValue.toFixed(1)}{' '}
+              {formatValue(value)}{' '}
               {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
             </Text>
           </Pressable>
         )}
         <Pressable
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
-          style={{ backgroundColor: theme.colors.background.card }}
+          style={{
+            backgroundColor: isPortion ? theme.colors.accent.primary : theme.colors.background.card,
+          }}
           onPress={() => {
-            setInternalValue((prev) => prev + step);
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num + step));
+            }
             onIncrement();
           }}
           accessibilityLabel={t('common.increaseValue')}
         >
-          <Plus size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+          <Plus
+            size={theme.iconSize.lg}
+            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+          />
         </Pressable>
       </View>
     </View>

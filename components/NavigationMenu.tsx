@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { NavItemKey } from '../constants/settings';
@@ -37,6 +37,8 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { rawSlots, isCycleActive } = useNavigationItems();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const unreadChatMessages = useUnreadChatMessages();
+  const { width: screenWidth } = useWindowDimensions();
+  const isSmallScreen = screenWidth < 350;
 
   const isPathActive = useCallback(
     (path: string) => {
@@ -343,18 +345,24 @@ export const NavigationMenu = memo(function NavigationMenu({
 
           {/* Camera - always fixed */}
           <Pressable
-            className="z-10 flex-1 items-center justify-center gap-1"
+            className="z-10 items-center justify-center gap-1"
+            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
             onPress={onCameraPress}
           >
             <View
-              className={`h-20 w-20 items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
+              className={`items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
                 isPathActive('/nutrition/ai-camera')
                   ? 'bg-accent-primary'
                   : 'bg-accent-primary opacity-80'
               }`}
+              style={
+                isSmallScreen
+                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                  : { width: 80, height: 80 }
+              }
             >
               <Camera
-                size={theme.iconSize.md}
+                size={isSmallScreen ? theme.iconSize.sm : theme.iconSize.md}
                 color={
                   isPathActive('/nutrition/ai-camera')
                     ? theme.colors.text.primary

@@ -64,9 +64,9 @@ export function getProgressBarColor(status: GoalStatus, theme: Theme): string {
 export function getStatusLabel(status: GoalStatus, t: TFunction): string {
   switch (status) {
     case 'reached':
-      return t('dailySummaryCard.goalReached', 'Goal reached!');
+      return t('dailySummaryCard.goalReached');
     case 'exceeded':
-      return t('dailySummaryCard.goalExceeded', 'Over goal');
+      return t('dailySummaryCard.goalExceeded');
     default:
       return '';
   }

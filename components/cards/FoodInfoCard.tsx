@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
@@ -34,6 +34,7 @@ const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => s
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width: windowWidth } = useWindowDimensions();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -103,21 +104,21 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {t('food.macros.protein')}
+                  {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">{food.protein}g</Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {t('food.macros.carbs')}
+                  {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">{food.carbs}g</Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
-                  {t('food.macros.fat')}
+                  {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">{food.fat}g</Text>
               </View>

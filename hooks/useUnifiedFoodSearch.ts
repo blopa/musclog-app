@@ -240,10 +240,10 @@ export function useUnifiedFoodSearch({
     }
 
     // Track when API completes (for initial load)
-    if (isApiSuccess && !isLoadingAPI) {
+    if ((isApiSuccess || apiError) && !isLoadingAPI) {
       setApiCompleted(true);
     }
-  }, [isApiSuccess, apiPageResults, apiOffset, isLoadingAPI]);
+  }, [isApiSuccess, apiError, apiPageResults, apiOffset, isLoadingAPI]);
 
   // Accumulate USDA results
   useEffect(() => {
@@ -257,10 +257,10 @@ export function useUnifiedFoodSearch({
       setIsLoadingMoreUSDA(false);
     }
 
-    if (isUsdaSuccess && !isLoadingUSDA) {
+    if ((isUsdaSuccess || usdaError) && !isLoadingUSDA) {
       setUsdaCompleted(true);
     }
-  }, [isUsdaSuccess, usdaPageResults, usdaOffset, isLoadingUSDA]);
+  }, [isUsdaSuccess, usdaError, usdaPageResults, usdaOffset, isLoadingUSDA]);
 
   // Convert local foods to unified format
   const localResults = useMemo(() => {
@@ -420,18 +420,20 @@ export function useUnifiedFoodSearch({
     isLoadingLocal,
     isLoadingAPI: isApiLoading,
     apiCompleted,
-    error: apiError,
+    usdaCompleted,
+    apiError,
+    usdaError,
+    error: apiError || usdaError, // Keep for backward compatibility if needed, but discouraged
     hasResults: combinedResults.length > 0,
     localCount: localResults.length,
-    apiCount: apiResultsFormatted.length,
+    apiCount: apiResultsFormatted.length + usdaResultsFormatted.length,
     totalCount: combinedResults.length,
     // Additional states for UI optimization
     hasLocalResults: localResults.length > 0,
     hasApiResults,
     isInitialLoad:
-      isLoadingLocal &&
-      (includeOpenFood ? !apiCompleted : true) &&
-      (includeUSDA ? !usdaCompleted : true),
+      (isLoadingLocal || (includeOpenFood && !apiCompleted) || (includeUSDA && !usdaCompleted)) &&
+      combinedResults.length === 0,
     // Pagination states
     hasMoreLocal,
     hasMoreAPI,

@@ -261,7 +261,7 @@ function SetsTable({ sets }: SetsTableProps) {
         </View>
         <View className="flex-1 items-center py-2">
           <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
-            {t('workoutDetail.rir', 'RIR')}
+            {t('workoutDetail.rir')}
           </Text>
         </View>
       </View>
@@ -508,9 +508,7 @@ export default function PastWorkoutDetailModal({
           {isLoading ? (
             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           ) : (
-            <Text className="text-text-secondary">
-              {t('common.error', 'Error loading workout')}
-            </Text>
+            <Text className="text-text-secondary">{t('common.error')}</Text>
           )}
         </View>
       </FullScreenModal>

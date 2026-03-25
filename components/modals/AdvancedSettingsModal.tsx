@@ -459,7 +459,7 @@ export function AdvancedSettingsModal({
                 borderRadius: theme.borderRadius.sm,
                 backgroundColor: theme.colors.accent.primary20,
               }}
-              title={t('settings.chatMessages.title', 'Chat Messages')}
+              title={t('settings.chatMessages.title')}
               subtitle={t(
                 'settings.chatMessages.subtitle',
                 'View and edit your conversation history'

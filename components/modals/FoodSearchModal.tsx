@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Apple,
   Beef,
   Carrot,
@@ -355,7 +356,8 @@ export function FoodSearchModal({
     resultsBySource,
     isLoadingLocal,
     isLoadingAPI,
-    error,
+    apiError,
+    usdaError,
     localCount,
     apiCount,
     hasLocalResults,
@@ -889,7 +891,7 @@ export function FoodSearchModal({
                         ) : null}
 
                         {/* Show results when available */}
-                        {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                        {!isInitialLoad && (filteredResults.length > 0 || apiError || usdaError) ? (
                           <>
                             {/* Local Results Section - only show if filter includes local or 'all' */}
                             {(activeFilter === 'all' || activeFilter === 'myFoods') &&
@@ -954,7 +956,7 @@ export function FoodSearchModal({
                               if (apiSource === 'openfood') {
                                 if (
                                   !(activeFilter === 'all' || activeFilter === 'openfood') ||
-                                  resultsBySource.api.length === 0
+                                  (resultsBySource.api.length === 0 && !apiError)
                                 ) {
                                   return null;
                                 }
@@ -971,20 +973,38 @@ export function FoodSearchModal({
                                       </View>
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     </View>
-                                    <View className="gap-1.5">
-                                      {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                        <FoodSearchItemCard
-                                          key={`api-${food.id}`}
-                                          food={{
-                                            ...food,
-                                            iconComponent: food.imageUrl
-                                              ? undefined
-                                              : searchSessionIcon,
-                                          }}
-                                          onAddPress={() => handleFoodClick(food)}
+                                    {apiError ? (
+                                      <View
+                                        className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
+                                        style={{ backgroundColor: theme.colors.status.error10 }}
+                                      >
+                                        <AlertTriangle
+                                          size={theme.iconSize.sm}
+                                          color={theme.colors.status.error}
                                         />
-                                      ))}
-                                    </View>
+                                        <Text
+                                          className="flex-1 text-xs font-medium"
+                                          style={{ color: theme.colors.status.error }}
+                                        >
+                                          {t('foodSearch.errorLoadingAPI')}
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <View className="gap-1.5">
+                                        {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                          <FoodSearchItemCard
+                                            key={`api-${food.id}`}
+                                            food={{
+                                              ...food,
+                                              iconComponent: food.imageUrl
+                                                ? undefined
+                                                : searchSessionIcon,
+                                            }}
+                                            onAddPress={() => handleFoodClick(food)}
+                                          />
+                                        ))}
+                                      </View>
+                                    )}
                                     {hasMoreAPI ? (
                                       <View className="py-3">
                                         <Button
@@ -1010,7 +1030,7 @@ export function FoodSearchModal({
                               // usda
                               if (
                                 !(activeFilter === 'all' || activeFilter === 'usda') ||
-                                resultsBySource.usda.length === 0
+                                (resultsBySource.usda.length === 0 && !usdaError)
                               ) {
                                 return null;
                               }
@@ -1027,15 +1047,33 @@ export function FoodSearchModal({
                                     </View>
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                   </View>
-                                  <View className="gap-1.5">
-                                    {resultsBySource.usda.map((food: UnifiedFoodResult) => (
-                                      <FoodSearchItemCard
-                                        key={`usda-${food.id}`}
-                                        food={{ ...food, iconComponent: searchSessionIcon }}
-                                        onAddPress={() => handleFoodClick(food)}
+                                  {usdaError ? (
+                                    <View
+                                      className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
+                                      style={{ backgroundColor: theme.colors.status.error10 }}
+                                    >
+                                      <AlertTriangle
+                                        size={theme.iconSize.sm}
+                                        color={theme.colors.status.error}
                                       />
-                                    ))}
-                                  </View>
+                                      <Text
+                                        className="flex-1 text-xs font-medium"
+                                        style={{ color: theme.colors.status.error }}
+                                      >
+                                        {t('foodSearch.errorLoadingUSDA')}
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <View className="gap-1.5">
+                                      {resultsBySource.usda.map((food: UnifiedFoodResult) => (
+                                        <FoodSearchItemCard
+                                          key={`usda-${food.id}`}
+                                          food={{ ...food, iconComponent: searchSessionIcon }}
+                                          onAddPress={() => handleFoodClick(food)}
+                                        />
+                                      ))}
+                                    </View>
+                                  )}
                                   {hasMoreUSDA ? (
                                     <View className="py-3">
                                       <Button
@@ -1072,7 +1110,8 @@ export function FoodSearchModal({
                         {/* Show no results state - only when API is completely done */}
                         {!isInitialLoad &&
                         !isLoadingAPI &&
-                        !error &&
+                        !apiError &&
+                        !usdaError &&
                         filteredResults.length === 0 &&
                         searchQuery ? (
                           <View className="py-8 text-center">
