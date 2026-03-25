@@ -1,12 +1,15 @@
 {
   "timePicker": {
     "cancel": "Cancel",
+    "clearSelection": "Clear Selection",
     "confirm": "Set Time",
+    "confirmTime": "Confirm Time",
     "hours": "Hours",
+    "midnight": "Midnight",
     "minutes": "Minutes",
-    "selectTime": "Select Time",
-    "now": "Now",
     "noon": "Noon",
-    "midnight": "Midnight"
+    "now": "Now",
+    "selectedStartTime": "Selected Start Time",
+    "selectTime": "Select Time"
   }
 }
