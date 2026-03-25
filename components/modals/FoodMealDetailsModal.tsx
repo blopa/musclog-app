@@ -746,6 +746,38 @@ export function FoodMealDetailsModal({
       };
     }
 
+    // Fallback for AI-sourced products (no or unrecognized source) that carry nutriments directly
+    if (productFromSearch) {
+      const nutrients = getNutrimentsWithFallback(productFromSearch);
+      if (nutrients) {
+        const getNum = (key: string) => (getNutrimentValue(nutrients, key) ?? 0) as number;
+        const directFiber = getNutrimentValue(nutrients, 'fiber');
+        let fiber: number;
+
+        if (directFiber !== undefined && directFiber >= 0) {
+          fiber = directFiber;
+        } else {
+          const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+          const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+          fiber =
+            carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+        }
+
+        const sodium =
+          getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+        return {
+          calories: getNum('energy-kcal') || getNum('kcal'),
+          protein: getNum('proteins'),
+          carbs: getNum('carbohydrates'),
+          fat: getNum('fat'),
+          fiber,
+          sugar: getNum('sugars'),
+          saturatedFat: getNum('saturated-fat'),
+          sodium: Number.isFinite(sodium) ? sodium : 0,
+        };
+      }
+    }
+
     return {
       calories: 0,
       protein: 0,
