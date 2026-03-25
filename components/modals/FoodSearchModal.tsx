@@ -955,7 +955,7 @@ export function FoodSearchModal({
                               if (apiSource === 'openfood') {
                                 if (
                                   !(activeFilter === 'all' || activeFilter === 'openfood') ||
-                                  resultsBySource.api.length === 0
+                                  (resultsBySource.api.length === 0 && !apiError)
                                 ) {
                                   return null;
                                 }
@@ -1019,7 +1019,7 @@ export function FoodSearchModal({
                               // usda
                               if (
                                 !(activeFilter === 'all' || activeFilter === 'usda') ||
-                                resultsBySource.usda.length === 0
+                                (resultsBySource.usda.length === 0 && !usdaError)
                               ) {
                                 return null;
                               }
