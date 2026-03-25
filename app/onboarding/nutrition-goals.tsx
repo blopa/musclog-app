@@ -18,7 +18,7 @@ import {
 } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useSettings } from '../../hooks/useSettings';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -29,6 +29,7 @@ import {
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function NutritionGoalsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { goal, isLoading } = useCurrentNutritionGoal();

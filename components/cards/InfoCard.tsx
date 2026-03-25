@@ -2,20 +2,11 @@ import { LucideIcon, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
 export type InsightCardSize = 'xs' | 'sm' | 'md';
-
-const sizeStyles: Record<
-  InsightCardSize,
-  { iconSize: number; fontSize: number; iconContainerSize: number }
-> = {
-  xs: { iconSize: 10, fontSize: theme.typography.fontSize.xxs, iconContainerSize: theme.size['5'] },
-  sm: { iconSize: 12, fontSize: theme.typography.fontSize.xs, iconContainerSize: theme.size['6'] },
-  md: { iconSize: 16, fontSize: theme.typography.fontSize.sm, iconContainerSize: theme.size['8'] },
-};
 
 interface InsightCardProps {
   variant: InsightCardVariant;
@@ -28,36 +19,6 @@ interface InsightCardProps {
   size?: InsightCardSize;
 }
 
-const variantStyles: Record<
-  InsightCardVariant,
-  { borderColor: string; backgroundColor: string; accentColor: string; iconTextColor: string }
-> = {
-  accent: {
-    borderColor: `${theme.colors.accent.primary}66`,
-    backgroundColor: `${theme.colors.accent.primary}33`,
-    accentColor: theme.colors.accent.primary,
-    iconTextColor: theme.colors.text.black,
-  },
-  neutral: {
-    borderColor: `${theme.colors.accent.tertiary}10`,
-    backgroundColor: `${theme.colors.background.secondaryDark}60`,
-    accentColor: theme.colors.accent.primary,
-    iconTextColor: theme.colors.text.black,
-  },
-  warning: {
-    borderColor: `${theme.colors.status.warning}66`,
-    backgroundColor: `${theme.colors.background.card}95`,
-    accentColor: theme.colors.status.warning,
-    iconTextColor: theme.colors.text.white,
-  },
-  success: {
-    borderColor: `${theme.colors.status.success}66`,
-    backgroundColor: `${theme.colors.background.card}95`,
-    accentColor: theme.colors.status.success,
-    iconTextColor: theme.colors.text.black,
-  },
-};
-
 export function InfoCard({
   variant,
   icon: Icon,
@@ -68,7 +29,54 @@ export function InfoCard({
   inlineLabel = false,
   size = 'md',
 }: InsightCardProps) {
+  const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const sizeStyles = {
+    xs: {
+      iconSize: 10,
+      fontSize: theme.typography.fontSize.xxs,
+      iconContainerSize: theme.size['5'],
+    },
+    sm: {
+      iconSize: 12,
+      fontSize: theme.typography.fontSize.xs,
+      iconContainerSize: theme.size['6'],
+    },
+    md: {
+      iconSize: 16,
+      fontSize: theme.typography.fontSize.sm,
+      iconContainerSize: theme.size['8'],
+    },
+  };
+
+  const variantStyles = {
+    accent: {
+      borderColor: `${theme.colors.accent.primary}66`,
+      backgroundColor: `${theme.colors.accent.primary}33`,
+      accentColor: theme.colors.accent.primary,
+      iconTextColor: theme.colors.text.black,
+    },
+    neutral: {
+      borderColor: `${theme.colors.accent.tertiary}10`,
+      backgroundColor: `${theme.colors.background.secondaryDark}60`,
+      accentColor: theme.colors.accent.primary,
+      iconTextColor: theme.colors.text.black,
+    },
+    warning: {
+      borderColor: `${theme.colors.status.warning}66`,
+      backgroundColor: `${theme.colors.background.card}95`,
+      accentColor: theme.colors.status.warning,
+      iconTextColor: theme.colors.text.white,
+    },
+    success: {
+      borderColor: `${theme.colors.status.success}66`,
+      backgroundColor: `${theme.colors.background.card}95`,
+      accentColor: theme.colors.status.success,
+      iconTextColor: theme.colors.text.black,
+    },
+  };
+
   const { borderColor, backgroundColor, accentColor, iconTextColor } = variantStyles[variant];
   const { iconSize, fontSize, iconContainerSize } = sizeStyles[size];
 

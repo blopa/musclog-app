@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useOldDatabaseMigration } from '../hooks/useOldDatabaseMigration';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 
 export const MigrationSection = () => {
+  const theme = useTheme();
   const { t } = useTranslation();
   const {
     migrationSummary,

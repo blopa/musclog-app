@@ -3,7 +3,7 @@ import { memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 import DashedButton from './theme/DashedButton';
 
 type MealSectionProps = {
@@ -23,6 +23,7 @@ type AddFoodButtonProps = {
 };
 
 function AddFoodButton({ mealType, onPress }: AddFoodButtonProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const buttonText = mealType
     ? t('food.meals.addFoodTo', { meal: mealType })
@@ -55,8 +56,8 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   totalFat = 0,
   menuButton,
 }: MealSectionHeaderProps) {
+  const theme = useTheme();
   const { t, i18n } = useTranslation();
-
   return (
     <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
       <Text className="text-2xl font-bold text-text-primary">{title}</Text>

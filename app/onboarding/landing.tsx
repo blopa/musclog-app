@@ -15,12 +15,13 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { seedDevData } from '../../database/seeders/dev';
 import { seedProductionData } from '../../database/seeders/prod';
 import { verifyDatabaseTables } from '../../database/verify';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { importDatabase, shouldSeedDevData } from '../../utils/file';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function LandingScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
 

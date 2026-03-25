@@ -36,36 +36,37 @@ import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
 
-const MANAGEMENT_ITEMS = [
-  {
-    id: 'personal',
-    titleKey: 'profile.managementItems.editPersonal',
-    descriptionKey: 'profile.managementItems.editPersonalDesc',
-    icon: User,
-    iconColor: theme.colors.accent.primary,
-  },
-  {
-    id: 'fitness',
-    titleKey: 'profile.managementItems.editFitness',
-    descriptionKey: 'profile.managementItems.editFitnessDesc',
-    icon: Dumbbell,
-    iconColor: theme.colors.status.purple,
-  },
-  {
-    id: 'preferences',
-    titleKey: 'profile.managementItems.appPreferences',
-    descriptionKey: 'profile.managementItems.appPreferencesDesc',
-    icon: List,
-    iconColor: theme.colors.text.secondary,
-  },
-];
-
 export default function ProfileScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
+
+  const MANAGEMENT_ITEMS = useMemo(() => [
+    {
+      id: 'personal',
+      titleKey: 'profile.managementItems.editPersonal',
+      descriptionKey: 'profile.managementItems.editPersonalDesc',
+      icon: User,
+      iconColor: theme.colors.accent.primary,
+    },
+    {
+      id: 'fitness',
+      titleKey: 'profile.managementItems.editFitness',
+      descriptionKey: 'profile.managementItems.editFitnessDesc',
+      icon: Dumbbell,
+      iconColor: theme.colors.status.purple,
+    },
+    {
+      id: 'preferences',
+      titleKey: 'profile.managementItems.appPreferences',
+      descriptionKey: 'profile.managementItems.appPreferencesDesc',
+      icon: List,
+      iconColor: theme.colors.text.secondary,
+    },
+  ], [theme]);
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
 

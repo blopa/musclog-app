@@ -15,7 +15,7 @@ import { Text, View } from 'react-native';
 
 import { type BirthControlType } from '../database/models';
 import { SyncGoal } from '../database/models/MenstrualCycle';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { GenericCard } from './cards/GenericCard';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -36,6 +36,7 @@ type EditCycleSetupDataProps = {
 };
 
 export function EditCycleSetupData({ initialData, onFormChange }: EditCycleSetupDataProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   const [selectedDate, setSelectedDate] = useState<Date>(

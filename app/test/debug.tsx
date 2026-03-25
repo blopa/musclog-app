@@ -20,7 +20,7 @@ import { useOldDatabaseMigration } from '../../hooks/useOldDatabaseMigration';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useUnreadChatMessages } from '../../hooks/useUnreadChatMessages';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
 import { getAccessToken, isGoogleSignedIn } from '../../utils/googleAuth';
 import { captureException } from '../../utils/sentry';
@@ -59,8 +59,9 @@ const APP_SCREENS = [
 ];
 
 export default function DebugTestScreen() {
-  const router = useRouter();
+  const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [name, setName] = useState('');
   const [muscleGroup, setMuscleGroup] = useState('');

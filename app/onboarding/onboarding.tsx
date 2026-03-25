@@ -14,7 +14,7 @@ import { PagerView, type PagerViewRef } from '../../components/PagerView/PagerVi
 import PreRegistrationIntro from '../../components/PreRegistrationIntro';
 import { Button } from '../../components/theme/Button';
 import { PageIndicators } from '../../components/theme/PageIndicators';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 
 type OnboardingBodyProps = {
   imageUrl?: string;
@@ -28,6 +28,7 @@ type OnboardingBodyProps = {
 };
 
 function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -94,6 +95,7 @@ function OnboardingStepFour({ title, description }: OnboardingBodyProps) {
 }
 
 function OnboardingStepThree({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -228,6 +230,7 @@ function OnboardingStepThree({ imageUrl, title, description, badge }: Onboarding
 }
 
 function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -362,6 +365,7 @@ function OnboardingStepTwo({ imageUrl, title, description, badge }: OnboardingBo
 }
 
 function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBodyProps) {
+  const theme = useTheme();
   return (
     <View
       style={{
@@ -496,6 +500,7 @@ function OnboardingStepOne({ imageUrl, title, description, badge }: OnboardingBo
 }
 
 export default function OnboardingScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);

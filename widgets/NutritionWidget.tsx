@@ -1,8 +1,10 @@
 import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-widget';
 
 import i18n from '../lang/lang';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { theme } from '../theme';
 
+// This is a static widget component, using the default theme.
+// It will not dynamically update if the theme is changed.
 interface NutritionWidgetProps {
   calories: number;
   targetCalories: number;

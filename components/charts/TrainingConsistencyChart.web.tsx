@@ -5,15 +5,14 @@ import { Text, View } from 'react-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
   style?: ViewProps['style'] & { cursor?: string; boxShadow?: string };
 };
 
-const DEFAULT_NEON = appTheme.colors.status.emeraldLight;
-const DEFAULT_BORDER = appTheme.colors.border.dark;
+const DEFAULT_NEON = '#4EDEA3';
+const DEFAULT_BORDER = '#0c2419';
 
 const OPACITIES: Record<number, number> = {
   0: 0,

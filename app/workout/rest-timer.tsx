@@ -17,12 +17,13 @@ import { WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutSessionState } from '../../hooks/useWorkoutSessionState';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 
 export default function RestTimerScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string; completedSetOrder?: string }>();

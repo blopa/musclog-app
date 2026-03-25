@@ -4,9 +4,10 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useSnackbar } from '../../context/SnackbarContext';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 
 export default function SnackbarTestScreen() {
+  const theme = useTheme();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
 

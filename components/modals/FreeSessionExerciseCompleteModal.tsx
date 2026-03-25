@@ -53,8 +53,8 @@ export function FreeSessionExerciseCompleteModal({
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const iconConfig = useMemo(
-    () => getExerciseIconConfig(isBodyweightExercise(equipmentType ?? undefined)),
-    [equipmentType]
+    () => getExerciseIconConfig(isBodyweightExercise(equipmentType ?? undefined), theme),
+    [equipmentType, theme]
   );
   const showImage = Boolean(exerciseImageUrl?.trim());
 

@@ -8,7 +8,7 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from './useTheme';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -99,6 +99,7 @@ function formatDuration(minutes: number): string {
 async function processWorkoutSimple(
   workout: WorkoutLog,
   t: TFunction,
+  theme: any,
   skipPRDetection: boolean = false
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration
@@ -148,6 +149,7 @@ export function useWorkoutHistory({
   visible = true,
   skipPRDetection = false,
 }: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
 
@@ -219,7 +221,7 @@ export function useWorkoutHistory({
       } else {
         // Simple processing for home screen
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t, theme, skipPRDetection))
         );
         setWorkouts(processedWorkouts);
       }
@@ -288,7 +290,7 @@ export function useWorkoutHistory({
       } else {
         // Simple processing
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
+          workoutLogs.map((workout) => processWorkoutSimple(workout, t, theme, skipPRDetection))
         );
         // Append to existing workouts
         setWorkouts((prev) => [...prev, ...processedWorkouts]);

@@ -49,10 +49,11 @@ import { WorkoutStatCard } from '../../components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '../../components/cards/WorkoutSummaryStatsCard';
 import { RestTimer } from '../../components/RestTimer';
 import { UpNextLabel } from '../../components/UpNextLabel';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { TestSection } from './components/TestSection';
 
 export default function CardsTestScreen() {
+  const theme = useTheme();
   const rotationAnim = React.useRef(new Animated.Value(0)).current;
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>

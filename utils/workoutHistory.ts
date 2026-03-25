@@ -8,7 +8,7 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { theme as defaultTheme, Theme } from '../theme';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
@@ -81,7 +81,7 @@ export function formatVolume(volume: number, t: TranslationFunction, units: Unit
 /**
  * Get icon and colors based on workout type
  */
-export function getWorkoutIcon(workoutName: string): IconData {
+export function getWorkoutIcon(workoutName: string, theme: Theme = defaultTheme): IconData {
   const nameLower = workoutName.toLowerCase();
   if (nameLower.includes('run') || nameLower.includes('cardio')) {
     return {
@@ -196,7 +196,8 @@ export async function processWorkouts(
   workouts: WorkoutLog[],
   filters: WorkoutFilters,
   t: TranslationFunction,
-  units: Units
+  units: Units,
+  theme: Theme = defaultTheme
 ): Promise<WorkoutHistoryItem[]> {
   const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
     workouts.map(async (workout) => {
@@ -247,7 +248,7 @@ export async function processWorkouts(
       const dateStr = format(workoutDate, 'MMM d • hh:mm a');
 
       // Get icon and colors
-      const iconData = getWorkoutIcon(workout.workoutName ?? '');
+      const iconData = getWorkoutIcon(workout.workoutName ?? '', theme);
 
       // Format stats
       const stats: { label: string; value: string }[] = [

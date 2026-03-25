@@ -58,7 +58,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,
@@ -98,6 +98,7 @@ function BlankWorkoutStats({
   startTime: number;
   workoutLogId?: string;
 }) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const time = useSessionTotalTime({ startTime });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
@@ -152,6 +153,7 @@ function BlankWorkoutStats({
 }
 
 export default function WorkoutSessionScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{

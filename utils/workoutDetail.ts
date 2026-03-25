@@ -8,6 +8,7 @@ import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
+import { theme as defaultTheme, Theme } from '../theme';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
@@ -170,7 +171,8 @@ export async function transformWorkoutToDetailData(
   sets: EnrichedWorkoutLogSet[],
   exercises: Exercise[],
   t: TFunction,
-  units: Units
+  units: Units,
+  theme: Theme = defaultTheme
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -209,7 +211,7 @@ export async function transformWorkoutToDetailData(
 
       const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
 
-      const iconData = getWorkoutIcon(exercise.name ?? '');
+      const iconData = getWorkoutIcon(exercise.name ?? '', theme);
       const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
       const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {

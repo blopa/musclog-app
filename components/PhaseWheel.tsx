@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
 import { EnergyLevel, MenstrualPhase } from '../database/services/MenstrualService';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 
 type PhaseWheelProps = {
   currentPhase: MenstrualPhase | null;
@@ -15,31 +15,6 @@ type PhaseWheelProps = {
   avgPeriodDuration?: number;
 };
 
-// Helper function to calculate phase proportions dynamically
-function calculatePhaseProportions(avgCycleLength: number, avgPeriodDuration: number) {
-  const menstrualLength = avgPeriodDuration;
-  const ovulationLength = 3; // Standard ovulation window
-
-  // Remaining days after menstrual and ovulation phases
-  const remainingDays = avgCycleLength - menstrualLength - ovulationLength;
-
-  // Split remaining days between follicular and luteal phases
-  // Follicular is typically shorter than luteal
-  const follicularLength = Math.floor(remainingDays * 0.4);
-  const lutealLength = remainingDays - follicularLength;
-
-  return [
-    { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
-    {
-      key: 'follicular' as const,
-      color: theme.colors.status.emeraldLight,
-      length: follicularLength,
-    },
-    { key: 'ovulation' as const, color: theme.colors.status.amber, length: ovulationLength },
-    { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
-  ];
-}
-
 export function PhaseWheel({
   currentPhase,
   energyLevel,
@@ -47,10 +22,33 @@ export function PhaseWheel({
   totalDays,
   avgPeriodDuration = 5,
 }: PhaseWheelProps) {
+  const theme = useTheme();
   const { t } = useTranslation();
 
   // Calculate phases dynamically based on user's cycle
-  const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration);
+  const PHASES = React.useMemo(() => {
+    const menstrualLength = avgPeriodDuration;
+    const ovulationLength = 3; // Standard ovulation window
+
+    // Remaining days after menstrual and ovulation phases
+    const remainingDays = totalDays - menstrualLength - ovulationLength;
+
+    // Split remaining days between follicular and luteal phases
+    // Follicular is typically shorter than luteal
+    const follicularLength = Math.floor(remainingDays * 0.4);
+    const lutealLength = remainingDays - follicularLength;
+
+    return [
+      { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
+      {
+        key: 'follicular' as const,
+        color: theme.colors.status.emeraldLight,
+        length: follicularLength,
+      },
+      { key: 'ovulation' as const, color: theme.colors.status.amber, length: ovulationLength },
+      { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
+    ];
+  }, [totalDays, avgPeriodDuration, theme]);
 
   const size = 260;
   const strokeWidth = 16;

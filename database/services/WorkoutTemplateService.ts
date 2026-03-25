@@ -6,7 +6,7 @@ import type { RawWorkoutTemplate } from '../../components/modals/BrowseTemplates
 import { UNITS_SETTING_TYPE } from '../../constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '../../constants/workoutTypes';
 import i18n from '../../lang/lang';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { getAsyncTheme, theme as defaultTheme, Theme } from '../../theme';
 import { getWeightUnit } from '../../utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '../../utils/workout';
 import { database } from '../index';
@@ -112,7 +112,8 @@ export class WorkoutTemplateService {
    */
   static async convertTemplateExercisesToUI(
     templateExercises: WorkoutTemplateExercise[],
-    sets: WorkoutTemplateSet[]
+    sets: WorkoutTemplateSet[],
+    theme: Theme = defaultTheme
   ): Promise<ExerciseInWorkout[]> {
     if (templateExercises.length === 0) {
       return [];
@@ -707,6 +708,7 @@ export class WorkoutTemplateService {
   static async createWorkoutsFromJsonTemplate(
     rawTemplate: RawWorkoutTemplate
   ): Promise<WorkoutTemplate[]> {
+    const theme = await getAsyncTheme();
     // Validate that exercises is an array
     if (!Array.isArray(rawTemplate.exercises)) {
       throw new Error('Template exercises must be an array');

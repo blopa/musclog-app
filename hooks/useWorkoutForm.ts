@@ -7,6 +7,7 @@ import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
 import { useSnackbar } from '../context/SnackbarContext';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
+import { useTheme } from './useTheme';
 import { WorkoutTemplateService } from '../database/services';
 import {
   createExerciseOption,
@@ -38,6 +39,7 @@ export interface AddExerciseData {
 }
 
 export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormParams = {}) {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
@@ -84,7 +86,8 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
       const exercisesInWorkout = await WorkoutTemplateService.convertTemplateExercisesToUI(
         templateExercises,
-        sets
+        sets,
+        theme
       );
 
       const exerciseOptions = transformExercisesToOptions(exercisesInWorkout);
@@ -124,15 +127,18 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       try {
         const exercise = await database.get<Exercise>('exercises').find(exerciseData.exerciseId);
 
-        const newExercise = createExerciseOption({
-          exercise,
-          sets: exerciseData.sets,
-          reps: exerciseData.reps,
-          weight: exerciseData.weight,
-          isBodyweight: exerciseData.isBodyweight,
-          groupId: undefined,
-          units,
-        });
+        const newExercise = createExerciseOption(
+          {
+            exercise,
+            sets: exerciseData.sets,
+            reps: exerciseData.reps,
+            weight: exerciseData.weight,
+            isBodyweight: exerciseData.isBodyweight,
+            groupId: undefined,
+            units,
+          },
+          theme
+        );
 
         setExerciseMetadata((prev) => {
           const updated = new Map(prev);
