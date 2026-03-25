@@ -14,7 +14,14 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Switch, Text, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  Switch,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import type { MealType } from '../../database/models';

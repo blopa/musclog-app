@@ -151,9 +151,7 @@ export function StepperInlineInput({
           </View>
         ) : (
           <Pressable onPress={handleValuePress} className="w-16 items-center">
-            <Text className="text-xl font-bold text-white">
-              {formatValue(value)}
-            </Text>
+            <Text className="text-xl font-bold text-white">{formatValue(value)}</Text>
             {unit ? (
               <Text
                 className="text-xs text-gray-500"

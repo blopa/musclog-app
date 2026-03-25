@@ -432,9 +432,7 @@ export function useUnifiedFoodSearch({
     hasLocalResults: localResults.length > 0,
     hasApiResults,
     isInitialLoad:
-      (isLoadingLocal ||
-        (includeOpenFood && !apiCompleted) ||
-        (includeUSDA && !usdaCompleted)) &&
+      (isLoadingLocal || (includeOpenFood && !apiCompleted) || (includeUSDA && !usdaCompleted)) &&
       combinedResults.length === 0,
     // Pagination states
     hasMoreLocal,

@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Apple,
   Beef,
   Carrot,
@@ -14,7 +15,6 @@ import {
   Pizza,
   Plus,
   QrCode,
-  AlertTriangle,
   Salad,
   Search,
   Soup,
@@ -975,7 +975,7 @@ export function FoodSearchModal({
                                     </View>
                                     {apiError ? (
                                       <View
-                                        className="mb-4 flex-row items-center gap-2 rounded-xl border border-status-error/20 bg-status-error/5 p-3"
+                                        className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
                                         style={{ backgroundColor: theme.colors.status.error10 }}
                                       >
                                         <AlertTriangle
@@ -994,12 +994,12 @@ export function FoodSearchModal({
                                         {resultsBySource.api.map((food: UnifiedFoodResult) => (
                                           <FoodSearchItemCard
                                             key={`api-${food.id}`}
-                                          food={{
-                                            ...food,
-                                            iconComponent: food.imageUrl
-                                              ? undefined
-                                              : searchSessionIcon,
-                                          }}
+                                            food={{
+                                              ...food,
+                                              iconComponent: food.imageUrl
+                                                ? undefined
+                                                : searchSessionIcon,
+                                            }}
                                             onAddPress={() => handleFoodClick(food)}
                                           />
                                         ))}
@@ -1049,7 +1049,7 @@ export function FoodSearchModal({
                                   </View>
                                   {usdaError ? (
                                     <View
-                                      className="mb-4 flex-row items-center gap-2 rounded-xl border border-status-error/20 bg-status-error/5 p-3"
+                                      className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
                                       style={{ backgroundColor: theme.colors.status.error10 }}
                                     >
                                       <AlertTriangle

@@ -24,7 +24,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   onChangeValue,
   unit,
   step = 1,
-  variant = 'default'
+  variant = 'default',
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -160,9 +160,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         <Pressable
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{
-            backgroundColor: isPortion
-              ? theme.colors.accent.primary
-              : theme.colors.background.card,
+            backgroundColor: isPortion ? theme.colors.accent.primary : theme.colors.background.card,
           }}
           onPress={() => {
             if (editing) {

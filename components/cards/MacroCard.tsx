@@ -31,15 +31,23 @@ export function MacroCard({
 
   // Map common macro names to their short versions if available
   const getResponsiveName = () => {
-    if (!isNarrow) return name;
+    if (!isNarrow) {
+      return name;
+    }
 
     const lowerName = name.toLowerCase();
     // Use the localized protein/carbs/fat name to match if possible,
     // but typically the name passed in is already translated (e.g., "Proteína").
     // We'll check if it matches the current translation of the macro names.
-    if (lowerName === t('food.macros.protein').toLowerCase()) return t('food.macros.proteinShort', 'P');
-    if (lowerName === t('food.macros.carbs').toLowerCase()) return t('food.macros.carbsShort', 'C');
-    if (lowerName === t('food.macros.fat').toLowerCase()) return t('food.macros.fatShort', 'F');
+    if (lowerName === t('food.macros.protein').toLowerCase()) {
+      return t('food.macros.proteinShort', 'P');
+    }
+    if (lowerName === t('food.macros.carbs').toLowerCase()) {
+      return t('food.macros.carbsShort', 'C');
+    }
+    if (lowerName === t('food.macros.fat').toLowerCase()) {
+      return t('food.macros.fatShort', 'F');
+    }
 
     return name;
   };

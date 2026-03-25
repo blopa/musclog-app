@@ -22,7 +22,11 @@ export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
       <View className="p-4">
         <View className="mb-6 flex-row items-start justify-between gap-2">
           <View className="flex-1 flex-row items-start gap-3" style={{ minWidth: 0 }}>
-            <Smile size={theme.iconSize.xl} color={theme.colors.text.tertiary} style={{ flexShrink: 0 }} />
+            <Smile
+              size={theme.iconSize.xl}
+              color={theme.colors.text.tertiary}
+              style={{ flexShrink: 0 }}
+            />
             <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>

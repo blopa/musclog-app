@@ -354,9 +354,7 @@ export function TimePickerModal({
                       </Text>
                     </LinearGradient>
                   ) : (
-                    <View
-                      style={{ alignItems: 'center', height: 44, justifyContent: 'center' }}
-                    >
+                    <View style={{ alignItems: 'center', height: 44, justifyContent: 'center' }}>
                       <Text style={{ color: textMuted, fontSize: 15, fontWeight: '600' }}>
                         {period}
                       </Text>

@@ -355,7 +355,11 @@ export const NavigationMenu = memo(function NavigationMenu({
                   ? 'bg-accent-primary'
                   : 'bg-accent-primary opacity-80'
               }`}
-              style={isSmallScreen ? { width: screenWidth * 0.2, height: screenWidth * 0.2 } : { width: 80, height: 80 }}
+              style={
+                isSmallScreen
+                  ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                  : { width: 80, height: 80 }
+              }
             >
               <Camera
                 size={isSmallScreen ? theme.iconSize.sm : theme.iconSize.md}
