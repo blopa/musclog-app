@@ -23,6 +23,7 @@ type TimePickerModalProps = {
     visible: boolean;
     onClose: () => void;
     selectedTime: Date;
+    title: string;
     onTimeSelect: (time: Date) => void;
 };
 
@@ -38,6 +39,7 @@ export function TimePickerModal({
     onClose,
     selectedTime,
     onTimeSelect,
+  title,
 }: TimePickerModalProps) {
     const theme = useTheme();
     const { t } = useTranslation();
@@ -162,271 +164,261 @@ export function TimePickerModal({
     const amPmLabel = isPm ? 'PM' : 'AM';
 
     return (
-        <FullScreenModal
-            visible={visible}
-            onClose={onClose}
-            title=""
-            scrollable={false}
-            showHeader={true}
-            footer={
-                <View className="items-center gap-3">
-                    <Button
-                        label={t('timePicker.confirmTime')}
-                        variant="gradientCta"
-                        size="lg"
-                        width="full"
-                        onPress={() => {
-                            onTimeSelect(selectedTime);
-                            onClose();
-                        }}
-                    />
-                    <Pressable onPress={onClose} className="py-2">
-                        <Text
-                            className="font-semibold uppercase tracking-widest"
-                            style={{
-                                fontSize: theme.typography.fontSize.xxs,
-                                color: addOpacityToHex(theme.colors.text.white, 0.4),
-                                letterSpacing: 2,
-                            }}
-                        >
-                            {t('timePicker.clearSelection')}
-                        </Text>
-                    </Pressable>
-                </View>
-            }
-        >
-            <View className="flex-1 flex-col items-center justify-center gap-8 bg-bg-primary py-8">
-                {/* Time display */}
-                <View className="items-center gap-2">
-                    <View className="flex-row items-end">
-                        <Text
-                            className="font-bold tracking-tight text-white"
-                            style={{
-                                fontSize: theme.typography.fontSize['8xl'],
-                                textShadowColor: theme.colors.background.black30,
-                                textShadowOffset: { width: 0, height: 2 },
-                                textShadowRadius: 8,
-                                lineHeight: theme.typography.fontSize['8xl'] * 1.05,
-                            }}
-                        >
-                            {displayHour}:{displayMinute}
-                        </Text>
-                        <Text
-                            className="mb-2 ml-2 font-bold"
-                            style={{
-                                fontSize: theme.typography.fontSize['2xl'],
-                                color: theme.colors.accent.primary,
-                            }}
-                        >
-                            {amPmLabel}
-                        </Text>
-                    </View>
-                    <Text
-                        className="font-semibold uppercase"
-                        style={{
-                            fontSize: theme.typography.fontSize.xxs,
-                            color: addOpacityToHex(theme.colors.text.white, 0.4),
-                            letterSpacing: 2,
-                        }}
-                    >
-                        {t('timePicker.selectedStartTime')}
-                    </Text>
-                </View>
-
-                {/* Picker card */}
-                <View
-                    className="w-full max-w-sm rounded-3xl px-5 py-5"
-                    style={{ backgroundColor: theme.colors.background.white5 }}
-                >
-                    {/* Column labels */}
-                    <View className="mb-3 flex-row justify-around">
-                        <Text
-                            className="font-semibold uppercase"
-                            style={{
-                                fontSize: theme.typography.fontSize.xxs,
-                                color: addOpacityToHex(theme.colors.text.white, 0.4),
-                                letterSpacing: 2,
-                            }}
-                        >
-                            {t('timePicker.hours')}
-                        </Text>
-                        <Text
-                            className="font-semibold uppercase"
-                            style={{
-                                fontSize: theme.typography.fontSize.xxs,
-                                color: addOpacityToHex(theme.colors.text.white, 0.4),
-                                letterSpacing: 2,
-                            }}
-                        >
-                            {t('timePicker.minutes')}
-                        </Text>
-                    </View>
-
-                    {/* Scroll pickers */}
-                    <View className="relative" style={{ height: PICKER_VIEW_HEIGHT }}>
-                        {/* Selection highlight */}
-                        <View
-                            className="absolute left-0 right-0 rounded-xl"
-                            style={{
-                                top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
-                                height: ITEM_HEIGHT,
-                                backgroundColor: theme.colors.background.white10,
-                            }}
-                            pointerEvents="none"
-                        />
-
-                        {/* Scroll columns */}
-                        <View
-                            className="z-10 h-full w-full flex-row items-center justify-around"
-                        >
-                            {/* Hours */}
-                            <ScrollView
-                                ref={hoursScrollRef}
-                                style={{ height: PICKER_VIEW_HEIGHT, width: 80 }}
-                                contentContainerStyle={{
-                                    paddingTop: PADDING_TOP,
-                                    paddingBottom: PADDING_TOP,
-                                }}
-                                showsVerticalScrollIndicator={false}
-                                scrollEventThrottle={16}
-                                onScroll={handleHoursScroll}
-                                onMomentumScrollEnd={snapHours}
-                                onScrollEndDrag={snapHours}
-                                nestedScrollEnabled
-                            >
-                                {hours.map((hour, i) => {
-                                    const distance = Math.abs(i - selectedHourIndex);
-                                    const opacity = getOpacityForDistance(distance);
-                                    const isSelected = distance === 0;
-                                    return (
-                                        <Pressable
-                                            key={hour}
-                                            onPress={() => handleHourPress(hour)}
-                                            className="items-center justify-center"
-                                            style={{ height: ITEM_HEIGHT }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    color: addOpacityToHex(theme.colors.text.white, opacity),
-                                                    fontSize: isSelected ? 36 : 24,
-                                                    fontWeight: isSelected ? '700' : '400',
-                                                }}
-                                            >
-                                                {hour}
-                                            </Text>
-                                        </Pressable>
-                                    );
-                                })}
-                            </ScrollView>
-
-                            {/* Colon separator — vertically centered at selected row */}
-                            <View
-                                className="items-center justify-center"
-                                style={{ height: ITEM_HEIGHT, width: 20 }}
-                            >
-                                <Text
-                                    style={{
-                                        color: theme.colors.accent.primary,
-                                        fontSize: 28,
-                                        fontWeight: '700',
-                                    }}
-                                >
-                                    :
-                                </Text>
-                            </View>
-
-                            {/* Minutes */}
-                            <ScrollView
-                                ref={minutesScrollRef}
-                                style={{ height: PICKER_VIEW_HEIGHT, width: 80 }}
-                                contentContainerStyle={{
-                                    paddingTop: PADDING_TOP,
-                                    paddingBottom: PADDING_TOP,
-                                }}
-                                showsVerticalScrollIndicator={false}
-                                scrollEventThrottle={16}
-                                onScroll={handleMinutesScroll}
-                                onMomentumScrollEnd={snapMinutes}
-                                onScrollEndDrag={snapMinutes}
-                                nestedScrollEnabled
-                            >
-                                {minutes.map((minute, i) => {
-                                    const distance = Math.abs(i - selectedMinuteIndex);
-                                    const opacity = getOpacityForDistance(distance);
-                                    const isSelected = distance === 0;
-                                    return (
-                                        <Pressable
-                                            key={minute}
-                                            onPress={() => handleMinutePress(minute)}
-                                            className="items-center justify-center"
-                                            style={{ height: ITEM_HEIGHT }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    color: addOpacityToHex(theme.colors.text.white, opacity),
-                                                    fontSize: isSelected ? 36 : 24,
-                                                    fontWeight: isSelected ? '700' : '400',
-                                                }}
-                                            >
-                                                {minute}
-                                            </Text>
-                                        </Pressable>
-                                    );
-                                })}
-                            </ScrollView>
-                        </View>
-                    </View>
-
-                    {/* AM / PM toggle */}
-                    <View
-                        className="mt-5 flex-row overflow-hidden rounded-full p-1"
-                        style={{ backgroundColor: theme.colors.background.white10 }}
-                    >
-                        <Pressable
-                            onPress={() => handleAmPmToggle(false)}
-                            className="flex-1 items-center justify-center rounded-full py-3"
-                            style={
-                                !isPm
-                                    ? { backgroundColor: theme.colors.accent.primary }
-                                    : undefined
-                            }
-                        >
-                            <Text
-                                style={{
-                                    color: !isPm
-                                        ? theme.colors.background.primary
-                                        : addOpacityToHex(theme.colors.text.white, 0.5),
-                                    fontSize: theme.typography.fontSize.sm,
-                                    fontWeight: '700',
-                                }}
-                            >
-                                AM
-                            </Text>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => handleAmPmToggle(true)}
-                            className="flex-1 items-center justify-center rounded-full py-3"
-                            style={
-                                isPm
-                                    ? { backgroundColor: theme.colors.accent.primary }
-                                    : undefined
-                            }
-                        >
-                            <Text
-                                style={{
-                                    color: isPm
-                                        ? theme.colors.background.primary
-                                        : addOpacityToHex(theme.colors.text.white, 0.5),
-                                    fontSize: theme.typography.fontSize.sm,
-                                    fontWeight: '700',
-                                }}
-                            >
-                                PM
-                            </Text>
-                        </Pressable>
-                    </View>
-                </View>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={title}
+        scrollable={false}
+        showHeader={true}
+        footer={
+          <View className="items-center gap-3">
+            <Button
+              label={t('timePicker.confirmTime')}
+              variant="gradientCta"
+              size="md"
+              width="full"
+              onPress={() => {
+                onTimeSelect(selectedTime);
+                onClose();
+              }}
+            />
+            <Pressable onPress={onClose} className="py-2">
+              <Text
+                className="font-semibold uppercase tracking-widest"
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  color: addOpacityToHex(theme.colors.text.white, 0.4),
+                  letterSpacing: 2,
+                }}
+              >
+                {t('timePicker.clearSelection')}
+              </Text>
+            </Pressable>
+          </View>
+        }
+      >
+        <View className="flex-1 flex-col items-center justify-start gap-8 bg-bg-primary pb-8 pt-4">
+          {/* Time display */}
+          <View className="items-center gap-2">
+            <View className="flex-row items-end">
+              <Text
+                className="font-bold tracking-tight text-white"
+                style={{
+                  fontSize: theme.typography.fontSize['8xl'],
+                  textShadowColor: theme.colors.background.black30,
+                  textShadowOffset: { width: 0, height: 2 },
+                  textShadowRadius: 8,
+                  lineHeight: theme.typography.fontSize['8xl'] * 1.05,
+                }}
+              >
+                {displayHour}:{displayMinute}
+              </Text>
+              <Text
+                className="mb-2 ml-2 font-bold"
+                style={{
+                  fontSize: theme.typography.fontSize['2xl'],
+                  color: theme.colors.accent.primary,
+                }}
+              >
+                {amPmLabel}
+              </Text>
             </View>
-        </FullScreenModal>
+            <Text
+              className="font-semibold uppercase"
+              style={{
+                fontSize: theme.typography.fontSize.xxs,
+                color: addOpacityToHex(theme.colors.text.white, 0.4),
+                letterSpacing: 2,
+              }}
+            >
+              {t('timePicker.selectedStartTime')}
+            </Text>
+          </View>
+
+          {/* Picker card */}
+          <View
+            className="w-full max-w-sm rounded-3xl px-5 py-5"
+            style={{ backgroundColor: theme.colors.background.white5 }}
+          >
+            {/* Column labels */}
+            <View className="mb-3 flex-row justify-around">
+              <Text
+                className="font-semibold uppercase"
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  color: addOpacityToHex(theme.colors.text.white, 0.4),
+                  letterSpacing: 2,
+                }}
+              >
+                {t('timePicker.hours')}
+              </Text>
+              <Text
+                className="font-semibold uppercase"
+                style={{
+                  fontSize: theme.typography.fontSize.xxs,
+                  color: addOpacityToHex(theme.colors.text.white, 0.4),
+                  letterSpacing: 2,
+                }}
+              >
+                {t('timePicker.minutes')}
+              </Text>
+            </View>
+
+            {/* Scroll pickers */}
+            <View className="relative" style={{ height: PICKER_VIEW_HEIGHT }}>
+              {/* Selection highlight */}
+              <View
+                className="absolute left-0 right-0 rounded-xl"
+                style={{
+                  top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
+                  height: ITEM_HEIGHT,
+                  backgroundColor: theme.colors.background.white10,
+                }}
+                pointerEvents="none"
+              />
+
+              {/* Scroll columns */}
+              <View className="z-10 h-full w-full flex-row items-center justify-around">
+                {/* Hours */}
+                <ScrollView
+                  ref={hoursScrollRef}
+                  style={{ height: PICKER_VIEW_HEIGHT, width: 80 }}
+                  contentContainerStyle={{
+                    paddingTop: PADDING_TOP,
+                    paddingBottom: PADDING_TOP,
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  scrollEventThrottle={16}
+                  onScroll={handleHoursScroll}
+                  onMomentumScrollEnd={snapHours}
+                  onScrollEndDrag={snapHours}
+                  nestedScrollEnabled
+                >
+                  {hours.map((hour, i) => {
+                    const distance = Math.abs(i - selectedHourIndex);
+                    const opacity = getOpacityForDistance(distance);
+                    const isSelected = distance === 0;
+                    return (
+                      <Pressable
+                        key={hour}
+                        onPress={() => handleHourPress(hour)}
+                        className="items-center justify-center"
+                        style={{ height: ITEM_HEIGHT }}
+                      >
+                        <Text
+                          style={{
+                            color: addOpacityToHex(theme.colors.text.white, opacity),
+                            fontSize: isSelected ? 36 : 24,
+                            fontWeight: isSelected ? '700' : '400',
+                          }}
+                        >
+                          {hour}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+
+                {/* Colon separator — vertically centered at selected row */}
+                <View
+                  className="items-center justify-center"
+                  style={{ height: ITEM_HEIGHT, width: 20 }}
+                >
+                  <Text
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontSize: 28,
+                      fontWeight: '700',
+                    }}
+                  >
+                    :
+                  </Text>
+                </View>
+
+                {/* Minutes */}
+                <ScrollView
+                  ref={minutesScrollRef}
+                  style={{ height: PICKER_VIEW_HEIGHT, width: 80 }}
+                  contentContainerStyle={{
+                    paddingTop: PADDING_TOP,
+                    paddingBottom: PADDING_TOP,
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  scrollEventThrottle={16}
+                  onScroll={handleMinutesScroll}
+                  onMomentumScrollEnd={snapMinutes}
+                  onScrollEndDrag={snapMinutes}
+                  nestedScrollEnabled
+                >
+                  {minutes.map((minute, i) => {
+                    const distance = Math.abs(i - selectedMinuteIndex);
+                    const opacity = getOpacityForDistance(distance);
+                    const isSelected = distance === 0;
+                    return (
+                      <Pressable
+                        key={minute}
+                        onPress={() => handleMinutePress(minute)}
+                        className="items-center justify-center"
+                        style={{ height: ITEM_HEIGHT }}
+                      >
+                        <Text
+                          style={{
+                            color: addOpacityToHex(theme.colors.text.white, opacity),
+                            fontSize: isSelected ? 36 : 24,
+                            fontWeight: isSelected ? '700' : '400',
+                          }}
+                        >
+                          {minute}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+            </View>
+
+            {/* AM / PM toggle */}
+            <View
+              className="mt-5 flex-row overflow-hidden rounded-full p-1"
+              style={{ backgroundColor: theme.colors.background.white10 }}
+            >
+              <Pressable
+                onPress={() => handleAmPmToggle(false)}
+                className="flex-1 items-center justify-center rounded-full py-3"
+                style={!isPm ? { backgroundColor: theme.colors.accent.primary } : undefined}
+              >
+                <Text
+                  style={{
+                    color: !isPm
+                      ? theme.colors.background.primary
+                      : addOpacityToHex(theme.colors.text.white, 0.5),
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: '700',
+                  }}
+                >
+                  AM
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => handleAmPmToggle(true)}
+                className="flex-1 items-center justify-center rounded-full py-3"
+                style={isPm ? { backgroundColor: theme.colors.accent.primary } : undefined}
+              >
+                <Text
+                  style={{
+                    color: isPm
+                      ? theme.colors.background.primary
+                      : addOpacityToHex(theme.colors.text.white, 0.5),
+                    fontSize: theme.typography.fontSize.sm,
+                    fontWeight: '700',
+                  }}
+                >
+                  PM
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </FullScreenModal>
     );
 }
