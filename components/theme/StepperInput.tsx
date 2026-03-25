@@ -91,8 +91,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num - step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num - step);
+              });
             }
             onDecrement();
           }}
@@ -148,8 +150,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num + step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num + step);
+              });
             }
             onIncrement();
           }}
