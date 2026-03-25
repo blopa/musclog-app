@@ -1,7 +1,7 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
@@ -26,21 +26,24 @@ export const StepperInput: FC<StepperInputProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [internalValue, setInternalValue] = useState<number>(value);
   const [editing, setEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
+  const [inputValue, setInputValue] = useState(formatValue(value));
   const inputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    setInternalValue(value);
-  }, [value]);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   }, [value, editing]);
+
+  useEffect(() => {
+    const subscription = Keyboard.addListener('keyboardDidHide', () => {
+      setEditing(false);
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleValuePress = () => {
     setEditing(true);
@@ -62,10 +65,9 @@ export const StepperInput: FC<StepperInputProps> = ({
     const num = parseFloat(inputValue);
     if (!isNaN(num) && onChangeValue) {
       onChangeValue(num);
-      setInternalValue(num);
     } else {
       // Reset to current value if invalid
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   };
 
@@ -86,7 +88,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            setInternalValue((prev) => prev - step);
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num - step));
+            }
             onDecrement();
           }}
           accessibilityLabel={t('common.decreaseValue')}
@@ -131,7 +136,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {internalValue % 1 === 0 ? String(internalValue) : internalValue.toFixed(1)}{' '}
+              {formatValue(value)}{' '}
               {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
             </Text>
           </Pressable>
@@ -140,7 +145,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{ backgroundColor: theme.colors.background.card }}
           onPress={() => {
-            setInternalValue((prev) => prev + step);
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num + step));
+            }
             onIncrement();
           }}
           accessibilityLabel={t('common.increaseValue')}
