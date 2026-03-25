@@ -1,4 +1,4 @@
-const { darkTheme } = require('./theme');
+const { darkTheme } = require('./theme.colors');
 
 /**
  * Tailwind Configuration for NativeWind

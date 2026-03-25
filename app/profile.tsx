@@ -44,29 +44,32 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const MANAGEMENT_ITEMS = useMemo(() => [
-    {
-      id: 'personal',
-      titleKey: 'profile.managementItems.editPersonal',
-      descriptionKey: 'profile.managementItems.editPersonalDesc',
-      icon: User,
-      iconColor: theme.colors.accent.primary,
-    },
-    {
-      id: 'fitness',
-      titleKey: 'profile.managementItems.editFitness',
-      descriptionKey: 'profile.managementItems.editFitnessDesc',
-      icon: Dumbbell,
-      iconColor: theme.colors.status.purple,
-    },
-    {
-      id: 'preferences',
-      titleKey: 'profile.managementItems.appPreferences',
-      descriptionKey: 'profile.managementItems.appPreferencesDesc',
-      icon: List,
-      iconColor: theme.colors.text.secondary,
-    },
-  ], [theme]);
+  const MANAGEMENT_ITEMS = useMemo(
+    () => [
+      {
+        id: 'personal',
+        titleKey: 'profile.managementItems.editPersonal',
+        descriptionKey: 'profile.managementItems.editPersonalDesc',
+        icon: User,
+        iconColor: theme.colors.accent.primary,
+      },
+      {
+        id: 'fitness',
+        titleKey: 'profile.managementItems.editFitness',
+        descriptionKey: 'profile.managementItems.editFitnessDesc',
+        icon: Dumbbell,
+        iconColor: theme.colors.status.purple,
+      },
+      {
+        id: 'preferences',
+        titleKey: 'profile.managementItems.appPreferences',
+        descriptionKey: 'profile.managementItems.appPreferencesDesc',
+        icon: List,
+        iconColor: theme.colors.text.secondary,
+      },
+    ],
+    [theme]
+  );
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
 

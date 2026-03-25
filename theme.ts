@@ -236,10 +236,22 @@ function generateColors(palette: typeof kineticDepth) {
     whiteAlpha70: addOpacityToHex(palette.white, 0.7),
     whiteAlpha80: addOpacityToHex(palette.white, 0.8),
     whiteAlpha90: addOpacityToHex(palette.white, 0.9),
-    swampGreenAlpha50: addOpacityToHex(palette === kineticDepth ? '#111413' : palette.swampGreen, 0.5),
-    darkGreenAlpha50: addOpacityToHex(palette === kineticDepth ? '#192b23' : palette.swampGreen, 0.5),
-    deepTealAlpha90: addOpacityToHex(palette === kineticDepth ? '#1a2e2a' : palette.swampGreen, 0.9),
-    swampGreenAlpha80: addOpacityToHex(palette === kineticDepth ? '#1b3227' : palette.swampGreen, 0.8),
+    swampGreenAlpha50: addOpacityToHex(
+      palette === kineticDepth ? '#111413' : palette.swampGreen,
+      0.5
+    ),
+    darkGreenAlpha50: addOpacityToHex(
+      palette === kineticDepth ? '#192b23' : palette.swampGreen,
+      0.5
+    ),
+    deepTealAlpha90: addOpacityToHex(
+      palette === kineticDepth ? '#1a2e2a' : palette.swampGreen,
+      0.9
+    ),
+    swampGreenAlpha80: addOpacityToHex(
+      palette === kineticDepth ? '#1b3227' : palette.swampGreen,
+      0.8
+    ),
     blackGrayAlpha40: addOpacityToHex(palette === kineticDepth ? '#1e2321' : palette.gray900, 0.4),
     blackGrayAlpha50: addOpacityToHex(palette === kineticDepth ? '#1e2321' : palette.gray900, 0.5),
     blackGrayAlpha90: addOpacityToHex(palette === kineticDepth ? '#1e2321' : palette.gray900, 0.9),

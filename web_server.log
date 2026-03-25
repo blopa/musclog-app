@@ -3,16 +3,6 @@
 > expo start --web
 
 Starting project at /app
-SyntaxError: Error loading Metro config at: /app/metro.config.js
-Unexpected token, expected "{" (27:8)
-SyntaxError: Unexpected token, expected "{" (27:8)
-    at unexpected (/app/node_modules/sucrase/dist/parser/traverser/util.js:99:15)
-    at expect (/app/node_modules/sucrase/dist/parser/traverser/util.js:86:5)
-    at parseImportSpecifiers (/app/node_modules/sucrase/dist/parser/traverser/statement.js:1281:16)
-    at parseImport (/app/node_modules/sucrase/dist/parser/traverser/statement.js:1241:5)
-    at parseStatementContent (/app/node_modules/sucrase/dist/parser/traverser/statement.js:198:9)
-    at parseStatement (/app/node_modules/sucrase/dist/parser/traverser/statement.js:116:3)
-    at parseBlockBody (/app/node_modules/sucrase/dist/parser/traverser/statement.js:586:5)
-    at parseTopLevel (/app/node_modules/sucrase/dist/parser/traverser/statement.js:92:3)
-    at parseFile (/app/node_modules/sucrase/dist/parser/traverser/index.js:17:35)
-    at parse (/app/node_modules/sucrase/dist/parser/index.js:26:35)
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
