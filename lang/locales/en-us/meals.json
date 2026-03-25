@@ -17,8 +17,8 @@
       "snack": "Snack"
     },
     "chatMealCard": {
-      "mealCount": "{{count}} meal",
-      "mealCount_plural": "{{count}} meals",
+      "mealCount_one": "{{count}} meal",
+      "mealCount_other": "{{count}} meals",
       "view": "View",
       "viewBreakfast": "View Breakfast",
       "viewLunch": "View Lunch",

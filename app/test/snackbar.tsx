@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
 import { AlertTriangle, CheckCircle, ChevronLeft } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,7 +8,6 @@ import { theme } from '../../theme'; // TODO: figure out a way to use useTheme i
 
 export default function SnackbarTestScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
 
   const triggerSuccessSnackbar = () => {
@@ -22,18 +20,6 @@ export default function SnackbarTestScreen() {
     showSnackbar('error', 'Failed to save workout', {
       subtitle: 'Please check your connection and try again.',
       action: 'RETRY',
-    });
-  };
-
-  const triggerSyncSuccessSnackbar = () => {
-    showSnackbar('success', t('snackbar.syncedRecords', { count: 57 }), {
-      action: 'VIEW',
-    });
-  };
-
-  const triggerSyncSuccessSingularSnackbar = () => {
-    showSnackbar('success', t('snackbar.syncedRecords', { count: 1 }), {
-      action: 'VIEW',
     });
   };
 
@@ -117,58 +103,6 @@ export default function SnackbarTestScreen() {
                 </View>
                 <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
                   Simulate Sync Error
-                </Text>
-                <ChevronLeft
-                  size={theme.iconSize.xl}
-                  color={theme.colors.text.tertiary}
-                  style={{ transform: [{ rotate: '180deg' }] }}
-                />
-              </Pressable>
-
-              {/* Sync Success Plural Button */}
-              <Pressable
-                onPress={triggerSyncSuccessSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl p-6"
-                style={{
-                  backgroundColor: theme.colors.background.buttonCard,
-                }}
-              >
-                <View
-                  className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor: theme.colors.status.success20,
-                  }}
-                >
-                  <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
-                </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
-                  Simulate Sync Success (Plural)
-                </Text>
-                <ChevronLeft
-                  size={theme.iconSize.xl}
-                  color={theme.colors.text.tertiary}
-                  style={{ transform: [{ rotate: '180deg' }] }}
-                />
-              </Pressable>
-
-              {/* Sync Success Singular Button */}
-              <Pressable
-                onPress={triggerSyncSuccessSingularSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl p-6"
-                style={{
-                  backgroundColor: theme.colors.background.buttonCard,
-                }}
-              >
-                <View
-                  className="h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    backgroundColor: theme.colors.status.success20,
-                  }}
-                >
-                  <CheckCircle size={theme.iconSize.xl} color={theme.colors.status.success} />
-                </View>
-                <Text className="flex-1 text-left text-xl font-semibold text-text-primary">
-                  Simulate Sync Success (Singular)
                 </Text>
                 <ChevronLeft
                   size={theme.iconSize.xl}

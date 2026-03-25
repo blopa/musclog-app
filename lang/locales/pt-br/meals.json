@@ -17,8 +17,8 @@
       "snack": "Lanche"
     },
     "chatMealCard": {
-      "mealCount": "{{count}} refeição",
-      "mealCount_plural": "{{count}} refeições",
+      "mealCount_one": "{{count}} refeição",
+      "mealCount_other": "{{count}} refeições",
       "view": "Ver",
       "viewBreakfast": "Ver Café da Manhã",
       "viewLunch": "Ver Almoço",
