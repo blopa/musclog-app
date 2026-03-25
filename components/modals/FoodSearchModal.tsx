@@ -355,7 +355,8 @@ export function FoodSearchModal({
     resultsBySource,
     isLoadingLocal,
     isLoadingAPI,
-    error,
+    apiError,
+    usdaError,
     localCount,
     apiCount,
     hasLocalResults,
@@ -889,7 +890,7 @@ export function FoodSearchModal({
                         ) : null}
 
                         {/* Show results when available */}
-                        {!isInitialLoad && !error && filteredResults.length > 0 ? (
+                        {!isInitialLoad && (filteredResults.length > 0 || apiError || usdaError) ? (
                           <>
                             {/* Local Results Section - only show if filter includes local or 'all' */}
                             {(activeFilter === 'all' || activeFilter === 'myFoods') &&
@@ -954,7 +955,7 @@ export function FoodSearchModal({
                               if (apiSource === 'openfood') {
                                 if (
                                   !(activeFilter === 'all' || activeFilter === 'openfood') ||
-                                  resultsBySource.api.length === 0
+                                  (resultsBySource.api.length === 0 && !apiError)
                                 ) {
                                   return null;
                                 }
@@ -971,20 +972,28 @@ export function FoodSearchModal({
                                       </View>
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     </View>
-                                    <View className="gap-1.5">
-                                      {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                        <FoodSearchItemCard
-                                          key={`api-${food.id}`}
+                                    {apiError ? (
+                                      <View className="mb-2 px-1">
+                                        <Text className="text-xs text-accent-error">
+                                          ⚠️ {t('foodSearch.errorLoadingAPI')}
+                                        </Text>
+                                      </View>
+                                    ) : (
+                                      <View className="gap-1.5">
+                                        {resultsBySource.api.map((food: UnifiedFoodResult) => (
+                                          <FoodSearchItemCard
+                                            key={`api-${food.id}`}
                                           food={{
                                             ...food,
                                             iconComponent: food.imageUrl
                                               ? undefined
                                               : searchSessionIcon,
                                           }}
-                                          onAddPress={() => handleFoodClick(food)}
-                                        />
-                                      ))}
-                                    </View>
+                                            onAddPress={() => handleFoodClick(food)}
+                                          />
+                                        ))}
+                                      </View>
+                                    )}
                                     {hasMoreAPI ? (
                                       <View className="py-3">
                                         <Button
@@ -1010,7 +1019,7 @@ export function FoodSearchModal({
                               // usda
                               if (
                                 !(activeFilter === 'all' || activeFilter === 'usda') ||
-                                resultsBySource.usda.length === 0
+                                (resultsBySource.usda.length === 0 && !usdaError)
                               ) {
                                 return null;
                               }
@@ -1027,15 +1036,23 @@ export function FoodSearchModal({
                                     </View>
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                   </View>
-                                  <View className="gap-1.5">
-                                    {resultsBySource.usda.map((food: UnifiedFoodResult) => (
-                                      <FoodSearchItemCard
-                                        key={`usda-${food.id}`}
-                                        food={{ ...food, iconComponent: searchSessionIcon }}
-                                        onAddPress={() => handleFoodClick(food)}
-                                      />
-                                    ))}
-                                  </View>
+                                  {usdaError ? (
+                                    <View className="mb-2 px-1">
+                                      <Text className="text-xs text-accent-error">
+                                        ⚠️ {t('foodSearch.errorLoadingUSDA')}
+                                      </Text>
+                                    </View>
+                                  ) : (
+                                    <View className="gap-1.5">
+                                      {resultsBySource.usda.map((food: UnifiedFoodResult) => (
+                                        <FoodSearchItemCard
+                                          key={`usda-${food.id}`}
+                                          food={{ ...food, iconComponent: searchSessionIcon }}
+                                          onAddPress={() => handleFoodClick(food)}
+                                        />
+                                      ))}
+                                    </View>
+                                  )}
                                   {hasMoreUSDA ? (
                                     <View className="py-3">
                                       <Button
@@ -1072,7 +1089,8 @@ export function FoodSearchModal({
                         {/* Show no results state - only when API is completely done */}
                         {!isInitialLoad &&
                         !isLoadingAPI &&
-                        !error &&
+                        !apiError &&
+                        !usdaError &&
                         filteredResults.length === 0 &&
                         searchQuery ? (
                           <View className="py-8 text-center">

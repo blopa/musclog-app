@@ -49,6 +49,8 @@
     "confirmTrackSameAsYesterdayMessage": "Are you sure you want to track these foods for today's {{meal}}?",
     "sameAsYesterdaySuccess": "Foods logged successfully",
     "sameAsYesterdayError": "Failed to log some foods",
+    "errorLoadingAPI": "Failed to load results from Open Food Facts",
+    "errorLoadingUSDA": "Failed to load results from USDA",
     "macroProtein": "P: {{value}}g",
     "macroCarbs": "C: {{value}}g",
     "macroFat": "F: {{value}}g",
