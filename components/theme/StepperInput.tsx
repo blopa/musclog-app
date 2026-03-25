@@ -13,6 +13,7 @@ interface StepperInputProps {
   onChangeValue?: (newValue: number) => void;
   unit?: string;
   step?: number;
+  variant?: 'default' | 'portion';
 }
 
 export const StepperInput: FC<StepperInputProps> = ({
@@ -23,6 +24,8 @@ export const StepperInput: FC<StepperInputProps> = ({
   onChangeValue,
   unit,
   step = 1,
+  // TODO: implement the portion variant. which will have bigger number and input with transparent background color and increment and decrement buttons with different colors (slightly different green shades)
+  variant = 'default'
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
