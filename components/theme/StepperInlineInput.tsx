@@ -1,6 +1,6 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 
@@ -14,6 +14,7 @@ type TestStepperProps = {
   icon?: LucideIcon;
   subtitle?: string;
   iconSize?: 'sm' | 'md';
+  step?: number;
 };
 
 export function StepperInlineInput({
@@ -26,18 +27,27 @@ export function StepperInlineInput({
   icon: Icon,
   subtitle,
   iconSize = 'md',
+  step = 1,
 }: TestStepperProps) {
   const theme = useTheme();
   const [editing, setEditing] = useState(false);
-  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
+  const [inputValue, setInputValue] = useState(formatValue(value));
   const inputRef = useRef<TextInput>(null);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   }, [value, editing]);
+
+  useEffect(() => {
+    const subscription = Keyboard.addListener('keyboardDidHide', () => {
+      setEditing(false);
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleValuePress = () => {
     setEditing(true);
@@ -61,7 +71,7 @@ export function StepperInlineInput({
       onChangeValue(num);
     } else {
       // Reset to current value if invalid
-      setInputValue(value.toFixed(1));
+      setInputValue(formatValue(value));
     }
   };
 
@@ -101,7 +111,13 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onDecrement}
+          onPress={() => {
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num - step));
+            }
+            onDecrement();
+          }}
         >
           <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>
@@ -135,9 +151,7 @@ export function StepperInlineInput({
           </View>
         ) : (
           <Pressable onPress={handleValuePress} className="w-16 items-center">
-            <Text className="text-xl font-bold text-white">
-              {value % 1 === 0 ? value : value.toFixed(1)}
-            </Text>
+            <Text className="text-xl font-bold text-white">{formatValue(value)}</Text>
             {unit ? (
               <Text
                 className="text-xs text-gray-500"
@@ -154,7 +168,13 @@ export function StepperInlineInput({
             backgroundColor: theme.colors.accent.primary10,
             borderColor: theme.colors.accent.primary20,
           }}
-          onPress={onIncrement}
+          onPress={() => {
+            if (editing) {
+              const num = parseFloat(inputValue) || 0;
+              setInputValue(formatValue(num + step));
+            }
+            onIncrement();
+          }}
         >
           <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
         </Pressable>

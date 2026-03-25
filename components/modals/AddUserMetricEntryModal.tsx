@@ -501,6 +501,7 @@ export default function AddUserMetricEntryModal({
         visible={isTimePickerVisible}
         onClose={() => setIsTimePickerVisible(false)}
         selectedTime={selectedTime}
+        title={t('timePicker.selectTime')}
         onTimeSelect={handleTimeSelect}
       />
     </FullScreenModal>

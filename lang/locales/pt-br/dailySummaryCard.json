@@ -1,11 +1,14 @@
 {
   "dailySummaryCard": {
     "carbs": "Carbo",
+    "carbsShort": "C",
     "dailySummary": "Resumo do Dia",
     "fats": "Gordura",
+    "fatsShort": "G",
     "kcal": "Kcal",
     "over": "Acima",
     "protein": "Proteína",
+    "proteinShort": "P",
     "remaining": "Restante",
     "setGoals": "Definir Metas",
     "setGoalsToTrack": "Definir Metas para Acompanhar",

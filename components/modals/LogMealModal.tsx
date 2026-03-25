@@ -1,7 +1,7 @@
 import { Check, Coffee, Info } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from '../cards/GenericCard';
@@ -51,6 +51,7 @@ export function LogMealModal({
 }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { width: windowWidth } = useWindowDimensions();
   const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
@@ -191,7 +192,7 @@ export function LogMealModal({
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {t('food.macros.protein')}
+                      {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                     </Text>
                     <Text
                       className="text-lg font-bold"
@@ -215,7 +216,7 @@ export function LogMealModal({
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {t('food.macros.carbs')}
+                      {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
                       {meal.carbs}
@@ -236,7 +237,7 @@ export function LogMealModal({
                       className="mb-1 text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {t('food.macros.fat')}
+                      {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                     </Text>
                     <Text
                       className="text-lg font-bold"

@@ -2068,6 +2068,7 @@ export default function ModalsTestScreen() {
         visible={isTimePickerVisible}
         onClose={() => setIsTimePickerVisible(false)}
         selectedTime={selectedTime}
+        title="Select Time"
         onTimeSelect={(time) => {
           console.log('Time selected:', time);
           setSelectedTime(time);

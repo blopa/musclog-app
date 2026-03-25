@@ -53,7 +53,6 @@
     "eatingPhase": "Eating Phase",
     "description": "Description",
     "loadMultiplier": "Load Multiplier",
-    "days": "Days",
     "deleteSuccess": "Deleted successfully",
     "notFound": "Not found",
     "time": {
@@ -63,6 +62,27 @@
     },
     "appName": "MUSCLOG",
     "selectIcon": "Select icon",
-    "selectIconLabel": "Select Icon"
+    "selectIconLabel": "Select Icon",
+    "days": {
+      "label": "Days",
+      "letter": {
+        "sun": "S",
+        "mon": "M",
+        "tue": "T",
+        "wed": "W",
+        "thu": "T",
+        "fri": "F",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "SUN",
+        "mon": "MON",
+        "tue": "TUE",
+        "wed": "WED",
+        "thu": "THU",
+        "fri": "FRI",
+        "sat": "SAT"
+      }
+    }
   }
 }

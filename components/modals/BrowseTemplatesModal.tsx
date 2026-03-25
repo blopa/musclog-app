@@ -213,7 +213,7 @@ export function BrowseTemplatesModal({
                 className="text-[10px] font-bold uppercase tracking-wider"
                 style={{ color: difficultyColors.text }}
               >
-                {template.difficulty}
+                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty.toLowerCase()}`)}
               </Text>
             </View>
           </View>

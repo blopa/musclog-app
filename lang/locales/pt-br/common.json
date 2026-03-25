@@ -53,7 +53,6 @@
     "eatingPhase": "Fase de Alimentação",
     "description": "Descrição",
     "loadMultiplier": "Multiplicador de Carga",
-    "days": "Dias",
     "deleteSuccess": "Excluído com sucesso",
     "notFound": "Não encontrado",
     "time": {
@@ -63,6 +62,27 @@
     },
     "appName": "MUSCLOG",
     "selectIcon": "Selecionar ícone",
-    "selectIconLabel": "Selecionar Ícone"
+    "selectIconLabel": "Selecionar Ícone",
+    "days": {
+      "label": "Dias",
+      "letter": {
+        "sun": "D",
+        "mon": "S",
+        "tue": "T",
+        "wed": "Q",
+        "thu": "Q",
+        "fri": "S",
+        "sat": "S"
+      },
+      "short": {
+        "sun": "DOM",
+        "mon": "SEG",
+        "tue": "TER",
+        "wed": "QUA",
+        "thu": "QUI",
+        "fri": "SEX",
+        "sat": "SÁB"
+      }
+    }
   }
 }
