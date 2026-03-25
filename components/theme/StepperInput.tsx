@@ -24,7 +24,6 @@ export const StepperInput: FC<StepperInputProps> = ({
   onChangeValue,
   unit,
   step = 1,
-  // TODO: when variant is portion, the increment and decrement buttons should have different colors between them, just make the decrement button have a darker green
   variant = 'default'
 }) => {
   const theme = useTheme();
@@ -92,7 +91,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{
             backgroundColor: isPortion
-              ? theme.colors.accent.secondary
+              ? theme.colors.background.greenBlob
               : theme.colors.background.card,
           }}
           onPress={() => {
