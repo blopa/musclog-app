@@ -7,7 +7,6 @@ import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '../constants/workoutTypes';
 import { useSnackbar } from '../context/SnackbarContext';
 import { database } from '../database';
 import Exercise from '../database/models/Exercise';
-import { useTheme } from './useTheme';
 import { WorkoutTemplateService } from '../database/services';
 import {
   createExerciseOption,
@@ -21,6 +20,7 @@ import {
   validateWorkoutTitle,
 } from '../utils/workout';
 import { useSettings } from './useSettings';
+import { useTheme } from './useTheme';
 
 export interface UseWorkoutFormParams {
   templateId?: string;

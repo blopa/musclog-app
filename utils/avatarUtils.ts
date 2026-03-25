@@ -22,7 +22,7 @@ import {
   Zap,
 } from 'lucide-react-native';
 
-import { theme as defaultTheme, Theme } from '../theme';
+import { Theme, theme as defaultTheme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarBackgroundColor, getAvatarColor } from './avatarColorUtils';

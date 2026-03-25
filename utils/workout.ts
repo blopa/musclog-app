@@ -7,7 +7,7 @@ import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import i18n from '../lang/lang';
-import { theme as defaultTheme, Theme } from '../theme';
+import { Theme, theme as defaultTheme } from '../theme';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 

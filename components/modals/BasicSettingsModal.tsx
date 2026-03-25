@@ -32,7 +32,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 type ThemeOption = 'system' | 'light' | 'dark';
 
-const HAS_THEMES = false; // TODO: remove this once we have option to pick dark or light theme
+const HAS_THEMES = true; // TODO: remove this once we have option to pick dark or light theme
 
 type BasicSettingsModalProps = {
   visible: boolean;

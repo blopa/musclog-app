@@ -8,7 +8,6 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import { useTheme } from './useTheme';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -19,6 +18,7 @@ import {
   type WorkoutHistorySection,
 } from '../utils/workoutHistory';
 import { useSettings } from './useSettings';
+import { useTheme } from './useTheme';
 
 // Types for simple workout format (home screen)
 export type ProcessedRecentWorkout = {

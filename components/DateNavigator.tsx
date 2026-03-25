@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import i18n, { LanguageKeys, LOCALE_MAP } from '../lang/lang';
 import { useTheme } from '../hooks/useTheme';
+import i18n, { LanguageKeys, LOCALE_MAP } from '../lang/lang';
 import { DatePickerModal } from './modals/DatePickerModal';
 
 type DateNavigatorProps = {

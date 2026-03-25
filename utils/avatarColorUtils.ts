@@ -1,4 +1,4 @@
-import { theme as defaultTheme, Theme } from '../theme';
+import { Theme, theme as defaultTheme } from '../theme';
 import { AvatarColor } from '../types/AvatarColor';
 
 export function getAvatarColor(avatarColor?: AvatarColor | null, theme: Theme = defaultTheme) {

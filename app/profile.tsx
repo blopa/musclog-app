@@ -34,9 +34,9 @@ import { UserService } from '../database/services';
 import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
-import { useTheme } from '../hooks/useTheme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
 

@@ -8,7 +8,7 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
-import { theme as defaultTheme, Theme } from '../theme';
+import { Theme, theme as defaultTheme } from '../theme';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
