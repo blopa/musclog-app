@@ -128,6 +128,9 @@
       "edit": "Edit",
       "editDesc": "Modify serving size and nutrition",
       "goToToday": "Go To Today",
+      "getMealInsights": "Get Meal Insights",
+      "getMealInsightsDesc": "Ask AI to analyze and critique this meal",
+      "getMealInsightsError": "Failed to get meal insights",
       "createMeal": "Create Meal",
       "createMealDesc": "Create a new meal from selected foods",
       "mergeDuplicates": "Merge Duplicate Foods",
@@ -138,6 +141,14 @@
       "mergeDuplicatesConfirm": "Merge",
       "mergeDuplicatesSuccess": "Duplicate foods merged successfully",
       "mergeDuplicatesError": "Failed to merge duplicate foods"
+    },
+    "mealInsights": {
+      "title": "Meal Insights",
+      "subtitle": "AI analysis for your {{meal}}",
+      "contextInputLabel": "Add context (optional)",
+      "contextInputPlaceholder": "e.g. post-workout meal, trying to cut...",
+      "submitButton": "Get Insights",
+      "loadingText": "Analyzing your meal…"
     },
     "meals": {
       "manageMealData": {

@@ -126,14 +126,17 @@ export const getUserDetailsPrompt = async (
   }
 
   if (user.fitnessGoal) {
+    // TODO: needs to user i18n to forced to english
     parts.push(`fitness goal is "${user.fitnessGoal}"`);
   }
 
   if (user.activityLevel) {
+    // TODO: needs to convert this to a text, right now we're passing it as a number
     parts.push(`activity level is "${user.activityLevel}"`);
   }
 
   if (user.liftingExperience) {
+    // TODO: needs to user i18n to forced to english
     parts.push(`lifting experience is "${user.liftingExperience}"`);
   }
 
@@ -458,6 +461,62 @@ export const getNutritionInsightsPrompt = async (
     nutritionData,
     '```',
   ].join('\n');
+};
+
+/**
+ * System prompt for critiquing a single meal
+ */
+export const getMealCritiquePrompt = async (
+  mealType: string,
+  foods: { name: string; gramWeight: number }[],
+  totals: { calories: number; protein: number; carbs: number; fat: number },
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const user = await UserService.getCurrentUser();
+  const nutritionGoal = await NutritionGoalService.getCurrent();
+  const eatingPhase = nutritionGoal?.eatingPhase ?? undefined;
+  const userDetails = await getUserDetailsPrompt(user, eatingPhase);
+
+  let heightInfo = '';
+  try {
+    const latestHeight = await UserMetricService.getLatest('height');
+    if (latestHeight) {
+      const { value, unit: storedUnit } = await latestHeight.getDecrypted();
+      heightInfo = `User height: ${Math.round(value)} ${storedUnit ?? 'cm'}`;
+    }
+  } catch {
+    // height not available
+  }
+
+  let nutritionGoalInfo = '';
+  if (nutritionGoal) {
+    nutritionGoalInfo = [
+      'Daily nutrition targets:',
+      `- Calories: ${nutritionGoal.totalCalories} kcal`,
+      `- Protein: ${nutritionGoal.protein}g`,
+      `- Carbs: ${nutritionGoal.carbs}g`,
+      `- Fat: ${nutritionGoal.fats}g`,
+    ].join('\n');
+  }
+
+  const foodList = foods.map((f) => `- ${f.name}: ${Math.round(f.gramWeight)}g`).join('\n');
+
+  return [
+    await getBaseSystemPrompt(language, context),
+    `The user wants feedback on their ${mealType} meal.`,
+    BE_CONCISE_PROMPT,
+    userDetails,
+    heightInfo,
+    nutritionGoalInfo,
+    `Meal to give feedback: ${mealType}`,
+    'Foods in the meal:',
+    foodList,
+    `Combined totals: Calories ${Math.round(totals.calories)} kcal | Protein ${Math.round(totals.protein)}g | Carbs ${Math.round(totals.carbs)}g | Fat ${Math.round(totals.fat)}g`,
+    "Please provide a concise, constructive critique of this meal. Comment on nutritional balance, macro distribution relative to the user's daily targets and goals, and give 1–2 practical suggestions to improve it. Be encouraging and positive.",
+  ]
+    .filter(Boolean)
+    .join('\n');
 };
 
 /**

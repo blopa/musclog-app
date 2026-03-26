@@ -41,7 +41,7 @@ export function useDailyNutritionSummary({
   const calories = useMemo(() => {
     const goal = nutritionGoal?.totalCalories ?? 0;
     const consumed = Math.round(dailyNutrients.calories);
-    const remaining = Math.max(0, goal - consumed);
+    const remaining = goal - consumed;
     return { consumed, remaining, goal };
   }, [nutritionGoal, dailyNutrients]);
 
