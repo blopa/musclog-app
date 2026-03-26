@@ -159,8 +159,14 @@ export function useUnifiedFoodSearch({
           return [];
         }
 
+        // Explicitly request localized name fields for better support in different languages
+        const supportedLangs = ['en', 'fr', 'de', 'nl', 'es', 'it', 'pt'];
+        const localizedFields = supportedLangs
+          .flatMap((lang) => [`product_name_${lang}`, `generic_name_${lang}`])
+          .join(',');
+
         // v2 API doesn't support text search, so we use the v1 search endpoint directly
-        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url,${localizedFields}`;
 
         const response = await fetch(url, { signal: abortController.signal });
 

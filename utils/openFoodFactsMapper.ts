@@ -491,11 +491,7 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
   let name: string | undefined =
     (p.product_name as string) ||
     (p.description as string) ||
-    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined) ||
-    (p.product_name_en as string) ||
-    (p.product_name_nl as string) ||
-    (p.product_name_fr as string) ||
-    (p.product_name_de as string);
+    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined);
 
   // 1b. V3 API often has only product_name_<lang> (e.g. product_name_en) without product_name – scan for any
   if (!name && typeof p === 'object' && p !== null) {
@@ -519,8 +515,20 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
   if (!name) {
     name =
       (p.generic_name as string) ||
-      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined) ||
-      (p.generic_name_en as string);
+      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined);
+
+    // 3b. Scan for any generic_name_<lang>
+    if (!name && typeof p === 'object' && p !== null) {
+      for (const key of Object.keys(p)) {
+        if (key.startsWith('generic_name_') && key !== 'generic_name') {
+          const val = p[key];
+          if (typeof val === 'string' && val.trim()) {
+            name = val;
+            break;
+          }
+        }
+      }
+    }
   }
 
   // 4. Ultimate Fallback: Brand + Category

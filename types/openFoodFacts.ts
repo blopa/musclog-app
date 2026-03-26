@@ -20,16 +20,12 @@ export type SearchResultProduct = ProductV2;
  */
 export interface ProductNameFields {
   product_name?: string;
-  product_name_en?: string;
-  product_name_nl?: string;
-  product_name_fr?: string;
-  product_name_de?: string;
   abbreviated_product_name?: string;
   generic_name?: string;
-  generic_name_en?: string;
   brands?: string;
   categories?: string;
   lang?: string;
+  /** Matches product_name_XX and generic_name_XX where XX is a language code. */
   [key: string]: string | undefined;
 }
 
