@@ -151,7 +151,7 @@ export function useUnifiedFoodSearch({
         }
 
         // v2 API doesn't support text search, so we use the v1 search endpoint directly
-        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,product_name_en,product_name_fr,product_name_de,product_name_nl,product_name_es,product_name_it,product_name_pt,brands,generic_name,generic_name_en,generic_name_fr,generic_name_de,generic_name_nl,generic_name_es,generic_name_it,generic_name_pt,nutriments,serving_size,categories,image_url,image_small_url`;
 
         const response = await fetch(url, { signal: abortController.signal });
 
