@@ -890,6 +890,7 @@ export function FoodSearchModal({
                     <View>
                       <SectionHeader
                         title={
+                          // TODO: move this to a helper function to avoid nested ternary
                           isInitialLoad
                             ? t('foodSearch.searching')
                             : hasLocalResults || hasApiResults || isLoadingAPI
@@ -903,6 +904,7 @@ export function FoodSearchModal({
                           <View className="flex items-center justify-center py-12">
                             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                             <Text className="mt-2 text-sm text-text-secondary">
+                              {/*TODO: move this to a helper function to avoid nested ternary*/}
                               {isLoadingLocal && isLoadingAPI
                                 ? t('foodSearch.searchingLocalAndAPI')
                                 : isLoadingLocal
@@ -910,15 +912,14 @@ export function FoodSearchModal({
                                   : t('foodSearch.searchingAPI')}
                             </Text>
                             {showCancelSearch ? (
-                              // TODO: use Button component from theme instead
-                              <Pressable
-                                onPress={handleCancelSearch}
-                                className="mt-4 rounded-full border border-border-light px-5 py-2"
-                              >
-                                <Text className="text-sm font-medium text-text-secondary">
-                                  {t('foodSearch.cancelSearch')}
-                                </Text>
-                              </Pressable>
+                              <View className="mt-4">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
                             ) : null}
                           </View>
                         ) : null}
@@ -993,6 +994,7 @@ export function FoodSearchModal({
                                 ) {
                                   return null;
                                 }
+
                                 return (
                                   <View key="openfood" className="mb-4">
                                     <View className="mb-3 flex-row items-center gap-2">
@@ -1017,7 +1019,9 @@ export function FoodSearchModal({
                                         <View className="flex-row items-center gap-3 p-3">
                                           <View
                                             className="items-center justify-center rounded-lg p-2"
-                                            style={{ backgroundColor: theme.colors.status.error + '22' }}
+                                            style={{
+                                              backgroundColor: theme.colors.status.error + '22',
+                                            }}
                                           >
                                             <AlertTriangle
                                               size={theme.iconSize.sm}
@@ -1086,6 +1090,7 @@ export function FoodSearchModal({
                               ) {
                                 return null;
                               }
+
                               return (
                                 <View key="usda" className="mb-4">
                                   <View className="mb-3 flex-row items-center gap-2">
@@ -1178,14 +1183,14 @@ export function FoodSearchModal({
                               {t('foodSearch.searchingAPI')}
                             </Text>
                             {showCancelSearch ? (
-                              <Pressable
-                                onPress={handleCancelSearch}
-                                className="mt-3 rounded-full border border-border-light px-5 py-2"
-                              >
-                                <Text className="text-sm font-medium text-text-secondary">
-                                  {t('foodSearch.cancelSearch')}
-                                </Text>
-                              </Pressable>
+                              <View className="mt-3">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
                             ) : null}
                           </View>
                         ) : null}
