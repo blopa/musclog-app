@@ -144,7 +144,9 @@ export const getUserDetailsPrompt = async (
       4: 'Active',
       5: 'Super Active',
     };
-    parts.push(`activity level is "${activityLevelLabels[user.activityLevel] ?? user.activityLevel}"`);
+    parts.push(
+      `activity level is "${activityLevelLabels[user.activityLevel] ?? user.activityLevel}"`
+    );
   }
 
   if (user.liftingExperience) {
@@ -153,7 +155,9 @@ export const getUserDetailsPrompt = async (
       intermediate: 'Intermediate',
       advanced: 'Advanced',
     };
-    parts.push(`lifting experience is "${liftingExperienceLabels[user.liftingExperience] ?? user.liftingExperience}"`);
+    parts.push(
+      `lifting experience is "${liftingExperienceLabels[user.liftingExperience] ?? user.liftingExperience}"`
+    );
   }
 
   const units = await SettingsService.getUnits();
@@ -612,11 +616,10 @@ export const getCalculateNextWorkoutVolumePrompt = async (
 
   return [
     await getBaseSystemPrompt(language),
-    // TODO: use the same as the other functions, and have an array that is joined
-    `The user just completed a "${workoutTitle}" workout. Your task is to:
-1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)
-2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan
-3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals`,
+    `The user just completed a "${workoutTitle}" workout. Your task is to:`,
+    '1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)',
+    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan",
+    "3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals",
     userDetails,
     'Historical data for this workout:',
     '```json',
