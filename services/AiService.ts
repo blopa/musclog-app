@@ -2,14 +2,16 @@ import { GEMINI_MODELS } from '../constants/ai';
 import { GoogleAuthService, SettingsService } from '../database/services';
 import type { CoachAIConfig } from '../utils/coachAI';
 import { getAccessToken } from '../utils/googleAuth';
+import { getOAuthOpenAIEnabled, getOpenAIAccessToken } from '../utils/openAIAuth';
 
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings and Google Auth state.
    * Priority:
    * 1. Google OAuth (Gemini)
-   * 2. Manual Gemini API Key
-   * 3. OpenAI API Key
+   * 2. OpenAI OAuth
+   * 3. Manual Gemini API Key
+   * 4. Manual OpenAI API Key
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
@@ -29,7 +31,21 @@ export class AiService {
         }
       }
 
-      // 2. Priority: Manual Gemini API key
+      // 2. Priority: OpenAI OAuth access token
+      const oauthOpenAIEnabled = await getOAuthOpenAIEnabled();
+      if (oauthOpenAIEnabled) {
+        const accessToken = await getOpenAIAccessToken();
+        if (accessToken) {
+          return {
+            provider: 'openai',
+            accessToken,
+            model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
+            language: await SettingsService.getLanguage(),
+          };
+        }
+      }
+
+      // 3. Priority: Manual Gemini API key
       const enableGemini = await SettingsService.getEnableGoogleGemini();
       const geminiKey = (await SettingsService.getGoogleGeminiApiKey()).trim();
       if (enableGemini && geminiKey) {
@@ -42,7 +58,7 @@ export class AiService {
         };
       }
 
-      // 3. Priority: OpenAI API key
+      // 4. Priority: OpenAI API key
       const enableOpenAi = await SettingsService.getEnableOpenAi();
       const openAiKey = (await SettingsService.getOpenAiApiKey()).trim();
       if (enableOpenAi && openAiKey) {
