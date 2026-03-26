@@ -159,8 +159,59 @@ export function useUnifiedFoodSearch({
           return [];
         }
 
-        // TODO: research online all languages supported by OFF and add them here
-        const supportedLangs = ['en', 'fr', 'de', 'nl', 'es', 'it', 'pt'];
+        // Languages supported by OFF with significant product data.
+        // Full taxonomy: https://github.com/openfoodfacts/openfoodfacts-server/blob/main/taxonomies/languages.txt
+        const supportedLangs = [
+          'ar',
+          'bg',
+          'bn',
+          'ca',
+          'cs',
+          'da',
+          'de',
+          'el',
+          'en',
+          'es',
+          'et',
+          'fa',
+          'fi',
+          'fr',
+          'he',
+          'hr',
+          'hu',
+          'hy',
+          'id',
+          'it',
+          'ja',
+          'ka',
+          'kk',
+          'ko',
+          'lt',
+          'lv',
+          'mk',
+          'ms',
+          'nb',
+          'nl',
+          'pl',
+          'pt',
+          'ro',
+          'ru',
+          'sk',
+          'sl',
+          'sq',
+          'sr',
+          'sv',
+          'ta',
+          'th',
+          'tr',
+          'uk',
+          'ur',
+          'uz',
+          'vi',
+          'xx',
+          'zh',
+        ];
+
         const localizedFields = supportedLangs
           .flatMap((lang) => [`product_name_${lang}`, `generic_name_${lang}`])
           .join(',');
