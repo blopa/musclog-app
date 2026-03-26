@@ -100,6 +100,8 @@ export default function FoodScreen() {
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
   const [isFoodMoveModalVisible, setIsFoodMoveModalVisible] = useState(false);
   const [isFoodMoveLoading, setIsFoodMoveLoading] = useState(false);
+  const [isFoodSplitModalVisible, setIsFoodSplitModalVisible] = useState(false);
+  const [isFoodSplitLoading, setIsFoodSplitLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -232,6 +234,11 @@ export default function FoodScreen() {
     setIsFoodMoveModalVisible(true);
   };
 
+  const handleSplitFood = () => {
+    setIsFoodMenuVisible(false);
+    setIsFoodSplitModalVisible(true);
+  };
+
   const handleConfirmFoodMove = async (targetDate: Date, targetMealType: MealType) => {
     if (!selectedFoodItem) {
       return;
@@ -251,6 +258,34 @@ export default function FoodScreen() {
     } finally {
       setIsFoodMoveLoading(false);
       setIsFoodMoveModalVisible(false);
+      setSelectedFoodItem(null);
+    }
+  };
+
+  const handleConfirmFoodSplit = async (
+    targetDate: Date,
+    targetMealType: MealType,
+    splitPercentage?: number
+  ) => {
+    if (!selectedFoodItem || !splitPercentage) {
+      return;
+    }
+    setIsFoodSplitLoading(true);
+    try {
+      await NutritionService.splitNutritionLogsToDate(
+        [selectedFoodItem.log],
+        targetDate,
+        targetMealType,
+        splitPercentage
+      );
+      showSnackbar('success', t('food.actions.splitSuccess'));
+      await refresh();
+    } catch (error) {
+      console.error('Error splitting food:', error);
+      showSnackbar('error', t('food.actions.splitError'));
+    } finally {
+      setIsFoodSplitLoading(false);
+      setIsFoodSplitModalVisible(false);
       setSelectedFoodItem(null);
     }
   };
@@ -303,6 +338,14 @@ export default function FoodScreen() {
       title: t('food.actions.move'),
       description: t('food.actions.moveDesc'),
       onPress: handleMoveFood,
+    },
+    {
+      icon: Scissors,
+      iconColor: theme.colors.status.warning,
+      iconBgColor: theme.colors.status.warning10,
+      title: t('food.actions.split'),
+      description: t('food.actions.splitDesc'),
+      onPress: handleSplitFood,
     },
     {
       icon: Trash2,
@@ -1014,6 +1057,21 @@ export default function FoodScreen() {
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
         sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
         isLoading={isFoodMoveLoading}
+      />
+
+      {/* Split Food Modal */}
+      <MoveCopyMealModal
+        visible={isFoodSplitModalVisible ? !!selectedFoodItem : false}
+        onClose={() => {
+          setIsFoodSplitModalVisible(false);
+          setSelectedFoodItem(null);
+        }}
+        onConfirm={handleConfirmFoodSplit}
+        mode="split"
+        title={t('food.actions.splitFoodModalTitle')}
+        sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
+        sourceDate={selectedFoodItem ? new Date(selectedFoodItem.log.date) : selectedDate}
+        isLoading={isFoodSplitLoading}
       />
 
       {/* Food Details Modal (edit/duplicate mode) */}
