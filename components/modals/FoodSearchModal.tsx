@@ -373,6 +373,8 @@ export function FoodSearchModal({
     loadMoreAPI,
     loadMoreUSDA,
     firstResolvedApi,
+    retryAPI,
+    retryUSDA,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -975,19 +977,38 @@ export function FoodSearchModal({
                                     </View>
                                     {apiError ? (
                                       <View
-                                        className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
-                                        style={{ backgroundColor: theme.colors.status.error10 }}
+                                        className="mb-4 overflow-hidden rounded-xl border"
+                                        style={{
+                                          backgroundColor: theme.colors.status.error10,
+                                          borderColor: theme.colors.status.error + '33',
+                                        }}
                                       >
-                                        <AlertTriangle
-                                          size={theme.iconSize.sm}
-                                          color={theme.colors.status.error}
-                                        />
-                                        <Text
-                                          className="flex-1 text-xs font-medium"
-                                          style={{ color: theme.colors.status.error }}
-                                        >
-                                          {t('foodSearch.errorLoadingAPI')}
-                                        </Text>
+                                        <View className="flex-row items-center gap-3 p-3">
+                                          <View
+                                            className="items-center justify-center rounded-lg p-2"
+                                            style={{ backgroundColor: theme.colors.status.error + '22' }}
+                                          >
+                                            <AlertTriangle
+                                              size={theme.iconSize.sm}
+                                              color={theme.colors.status.error}
+                                            />
+                                          </View>
+                                          <Text
+                                            className="flex-1 text-xs font-medium"
+                                            style={{ color: theme.colors.status.error }}
+                                          >
+                                            {t('foodSearch.errorLoadingAPI')}
+                                          </Text>
+                                        </View>
+                                        <View className="items-center px-3 pb-3">
+                                          <Button
+                                            label={t('foodSearch.retrySearch')}
+                                            onPress={retryAPI}
+                                            size="sm"
+                                            variant="outline"
+                                            width="full"
+                                          />
+                                        </View>
                                       </View>
                                     ) : (
                                       <View className="gap-1.5">
@@ -1049,19 +1070,37 @@ export function FoodSearchModal({
                                   </View>
                                   {usdaError ? (
                                     <View
-                                      className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
-                                      style={{ backgroundColor: theme.colors.status.error10 }}
+                                      className="mb-4 overflow-hidden rounded-xl border"
+                                      style={{
+                                        backgroundColor: theme.colors.status.error10,
+                                        borderColor: theme.colors.status.error + '33',
+                                      }}
                                     >
-                                      <AlertTriangle
-                                        size={theme.iconSize.sm}
-                                        color={theme.colors.status.error}
-                                      />
-                                      <Text
-                                        className="flex-1 text-xs font-medium"
-                                        style={{ color: theme.colors.status.error }}
-                                      >
-                                        {t('foodSearch.errorLoadingUSDA')}
-                                      </Text>
+                                      <View className="flex-row items-center gap-3 p-3">
+                                        <View
+                                          className="items-center justify-center rounded-lg p-2"
+                                          style={{ backgroundColor: theme.colors.status.error + '22' }}
+                                        >
+                                          <AlertTriangle
+                                            size={theme.iconSize.sm}
+                                            color={theme.colors.status.error}
+                                          />
+                                        </View>
+                                        <Text
+                                          className="flex-1 text-xs font-medium"
+                                          style={{ color: theme.colors.status.error }}
+                                        >
+                                          {t('foodSearch.errorLoadingUSDA')}
+                                        </Text>
+                                      </View>
+                                      <View className="items-center px-3 pb-3">
+                                        <Button
+                                          label={t('foodSearch.retrySearch')}
+                                          onPress={retryUSDA}
+                                          size="sm"
+                                          variant="outline"
+                                        />
+                                      </View>
                                     </View>
                                   ) : (
                                     <View className="gap-1.5">

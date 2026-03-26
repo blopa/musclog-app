@@ -51,6 +51,7 @@
     "sameAsYesterdayError": "Failed to log some foods",
     "errorLoadingAPI": "Failed to load results from Open Food Facts",
     "errorLoadingUSDA": "Failed to load results from USDA",
+    "retrySearch": "Retry",
     "macroProtein": "P: {{value}}g",
     "macroCarbs": "C: {{value}}g",
     "macroFat": "F: {{value}}g",

@@ -133,6 +133,7 @@ export function useUnifiedFoodSearch({
     isLoading: isLoadingAPI,
     error: apiError,
     isSuccess: isApiSuccess,
+    refetch: retryAPI,
   } = useQuery({
     queryKey: ['food-search-api', debouncedSearchTerm, apiOffset],
     queryFn: async () => {
@@ -197,6 +198,7 @@ export function useUnifiedFoodSearch({
     isLoading: isLoadingUSDA,
     error: usdaError,
     isSuccess: isUsdaSuccess,
+    refetch: retryUSDA,
   } = useQuery({
     queryKey: ['food-search-usda', debouncedSearchTerm, usdaOffset],
     queryFn: async () => {
@@ -445,5 +447,7 @@ export function useUnifiedFoodSearch({
     loadMoreAPI,
     loadMoreUSDA,
     firstResolvedApi,
+    retryAPI,
+    retryUSDA,
   };
 }
