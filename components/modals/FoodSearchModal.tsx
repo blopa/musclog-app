@@ -275,6 +275,36 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   );
 }
 
+function getSectionHeaderTitle(
+    isInitialLoad: boolean,
+    hasLocalResults: boolean,
+    hasApiResults: boolean,
+    isLoadingAPI: boolean,
+    t: (key: string) => string
+): string {
+    if (isInitialLoad) {
+        return t('foodSearch.searching');
+    }
+    if (hasLocalResults || hasApiResults || isLoadingAPI) {
+        return t('foodSearch.bestMatches');
+    }
+    return t('foodSearch.noResults');
+}
+
+function getSearchingStatusText(
+    isLoadingLocal: boolean,
+    isLoadingAPI: boolean,
+    t: (key: string) => string
+): string {
+    if (isLoadingLocal && isLoadingAPI) {
+        return t('foodSearch.searchingLocalAndAPI');
+    }
+    if (isLoadingLocal) {
+        return t('foodSearch.searchingLocal');
+    }
+    return t('foodSearch.searchingAPI');
+}
+
 export function FoodSearchModal({
   visible,
   onClose,
@@ -889,14 +919,7 @@ export function FoodSearchModal({
                     /* All / Favorites / API tabs: food search results */
                     <View>
                       <SectionHeader
-                        title={
-                          // TODO: move this to a helper function to avoid nested ternary
-                          isInitialLoad
-                            ? t('foodSearch.searching')
-                            : hasLocalResults || hasApiResults || isLoadingAPI
-                              ? t('foodSearch.bestMatches')
-                              : t('foodSearch.noResults')
-                        }
+                        title={getSectionHeaderTitle(isInitialLoad, hasLocalResults, hasApiResults, isLoadingAPI, t)}
                       />
                       <View className="gap-1.5">
                         {/* Show initial loading state */}
@@ -904,12 +927,7 @@ export function FoodSearchModal({
                           <View className="flex items-center justify-center py-12">
                             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                             <Text className="mt-2 text-sm text-text-secondary">
-                              {/*TODO: move this to a helper function to avoid nested ternary*/}
-                              {isLoadingLocal && isLoadingAPI
-                                ? t('foodSearch.searchingLocalAndAPI')
-                                : isLoadingLocal
-                                  ? t('foodSearch.searchingLocal')
-                                  : t('foodSearch.searchingAPI')}
+                              {getSearchingStatusText(isLoadingLocal, isLoadingAPI, t)}
                             </Text>
                             {showCancelSearch ? (
                               <View className="mt-4">
