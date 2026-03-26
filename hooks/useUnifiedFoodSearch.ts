@@ -160,7 +160,7 @@ export function useUnifiedFoodSearch({
         }
 
         // Languages supported by OFF with significant product data.
-        // Full taxonomy: https://github.com/openfoodfacts/openfoodfacts-server/blob/main/taxonomies/languages.txt
+        // Full taxonomy: https://github.com/openfoodfacts/openfoodfacts-server/blob/645053e9b62ac25b23e061d522de950309be2c4b/taxonomies/languages.txt
         const supportedLangs = [
           'ar',
           'bg',
