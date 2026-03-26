@@ -66,6 +66,7 @@ export function useUnifiedFoodSearch({
   const [apiCompleted, setApiCompleted] = useState(false);
   const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const prevDebouncedRef = useRef(searchTerm.trim());
 
   // API pagination states
   const [apiOffset, setApiOffset] = useState(0);
@@ -86,6 +87,7 @@ export function useUnifiedFoodSearch({
   // Debounce search term
   useEffect(() => {
     if (!searchTerm || searchTerm.trim().length < 2) {
+      prevDebouncedRef.current = '';
       setDebouncedSearchTerm('');
       setApiCompleted(false);
       setUsdaCompleted(false);
@@ -98,14 +100,20 @@ export function useUnifiedFoodSearch({
     }
 
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm.trim());
-      setApiCompleted(false);
-      setUsdaCompleted(false);
-      setFirstResolvedApi(null);
-      setApiOffset(0);
-      setUsdaOffset(0);
-      setAccumulatedApiResults([]);
-      setAccumulatedUsdaResults([]);
+      const trimmed = searchTerm.trim();
+      const didChange = trimmed !== prevDebouncedRef.current;
+      prevDebouncedRef.current = trimmed;
+      setDebouncedSearchTerm(trimmed);
+
+      if (didChange) {
+        setApiCompleted(false);
+        setUsdaCompleted(false);
+        setFirstResolvedApi(null);
+        setApiOffset(0);
+        setUsdaOffset(0);
+        setAccumulatedApiResults([]);
+        setAccumulatedUsdaResults([]);
+      }
     }, debounceMs);
 
     return () => clearTimeout(timer);
