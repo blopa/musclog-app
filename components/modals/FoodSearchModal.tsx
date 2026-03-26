@@ -276,33 +276,37 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
 }
 
 function getSectionHeaderTitle(
-    isInitialLoad: boolean,
-    hasLocalResults: boolean,
-    hasApiResults: boolean,
-    isLoadingAPI: boolean,
-    t: (key: string) => string
+  isInitialLoad: boolean,
+  hasLocalResults: boolean,
+  hasApiResults: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
 ): string {
-    if (isInitialLoad) {
-        return t('foodSearch.searching');
-    }
-    if (hasLocalResults || hasApiResults || isLoadingAPI) {
-        return t('foodSearch.bestMatches');
-    }
-    return t('foodSearch.noResults');
+  if (isInitialLoad) {
+    return t('foodSearch.searching');
+  }
+
+  if (hasLocalResults || hasApiResults || isLoadingAPI) {
+    return t('foodSearch.bestMatches');
+  }
+
+  return t('foodSearch.noResults');
 }
 
 function getSearchingStatusText(
-    isLoadingLocal: boolean,
-    isLoadingAPI: boolean,
-    t: (key: string) => string
+  isLoadingLocal: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
 ): string {
-    if (isLoadingLocal && isLoadingAPI) {
-        return t('foodSearch.searchingLocalAndAPI');
-    }
-    if (isLoadingLocal) {
-        return t('foodSearch.searchingLocal');
-    }
-    return t('foodSearch.searchingAPI');
+  if (isLoadingLocal && isLoadingAPI) {
+    return t('foodSearch.searchingLocalAndAPI');
+  }
+
+  if (isLoadingLocal) {
+    return t('foodSearch.searchingLocal');
+  }
+
+  return t('foodSearch.searchingAPI');
 }
 
 export function FoodSearchModal({
@@ -919,7 +923,13 @@ export function FoodSearchModal({
                     /* All / Favorites / API tabs: food search results */
                     <View>
                       <SectionHeader
-                        title={getSectionHeaderTitle(isInitialLoad, hasLocalResults, hasApiResults, isLoadingAPI, t)}
+                        title={getSectionHeaderTitle(
+                          isInitialLoad,
+                          hasLocalResults,
+                          hasApiResults,
+                          isLoadingAPI,
+                          t
+                        )}
                       />
                       <View className="gap-1.5">
                         {/* Show initial loading state */}
