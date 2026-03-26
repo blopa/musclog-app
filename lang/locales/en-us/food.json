@@ -129,7 +129,15 @@
       "editDesc": "Modify serving size and nutrition",
       "goToToday": "Go To Today",
       "createMeal": "Create Meal",
-      "createMealDesc": "Create a new meal from selected foods"
+      "createMealDesc": "Create a new meal from selected foods",
+      "mergeDuplicates": "Merge Duplicate Foods",
+      "mergeDuplicatesDesc": "Combine entries of the same food into one",
+      "mergeDuplicatesNone": "No duplicate foods found in this meal",
+      "mergeDuplicatesConfirmTitle": "Merge Duplicate Foods?",
+      "mergeDuplicatesConfirmMessage": "Duplicate entries in {{mealName}} will be combined into a single entry with the total amount.",
+      "mergeDuplicatesConfirm": "Merge",
+      "mergeDuplicatesSuccess": "Duplicate foods merged successfully",
+      "mergeDuplicatesError": "Failed to merge duplicate foods"
     },
     "meals": {
       "manageMealData": {

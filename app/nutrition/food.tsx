@@ -3,6 +3,7 @@ import {
   ArrowRight,
   Copy,
   Edit,
+  GitMerge,
   ListPlus,
   ScanLine,
   Scissors,
@@ -98,6 +99,8 @@ export default function FoodScreen() {
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
   const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
+  const [isMergeDuplicatesVisible, setIsMergeDuplicatesVisible] = useState(false);
+  const [isMergeDuplicatesLoading, setIsMergeDuplicatesLoading] = useState(false);
   const [isFoodMoveModalVisible, setIsFoodMoveModalVisible] = useState(false);
   const [isFoodMoveLoading, setIsFoodMoveLoading] = useState(false);
   const [isFoodSplitModalVisible, setIsFoodSplitModalVisible] = useState(false);
@@ -435,6 +438,81 @@ export default function FoodScreen() {
     setIsMealActionModalVisible(true);
   };
 
+  const handleMergeDuplicates = () => {
+    setIsMealMenuVisible(false);
+    if (!selectedMealForMenu) {
+      return;
+    }
+
+    const mealFoods = mealsByType[selectedMealForMenu] || [];
+    const grouped = new Map<string, typeof mealFoods>();
+    for (const entry of mealFoods) {
+      if (!entry.log.foodId) {
+        continue;
+      }
+
+      const existing = grouped.get(entry.log.foodId) || [];
+      existing.push(entry);
+      grouped.set(entry.log.foodId, existing);
+    }
+
+    const hasDuplicates = [...grouped.values()].some((g) => g.length > 1);
+    if (!hasDuplicates) {
+      showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
+      setSelectedMealForMenu(null);
+      return;
+    }
+
+    setIsMergeDuplicatesVisible(true);
+  };
+
+  const handleConfirmMergeDuplicates = async () => {
+    if (!selectedMealForMenu) {
+      return;
+    }
+
+    setIsMergeDuplicatesLoading(true);
+    try {
+      const mealFoods = mealsByType[selectedMealForMenu] || [];
+      const grouped = new Map<string, typeof mealFoods>();
+      for (const entry of mealFoods) {
+        if (!entry.log.foodId) {
+          continue;
+        }
+
+        const existing = grouped.get(entry.log.foodId) || [];
+        existing.push(entry);
+        grouped.set(entry.log.foodId, existing);
+      }
+
+      const toUpdate: { log: (typeof mealFoods)[number]['log']; newAmount: number }[] = [];
+      const toDelete: (typeof mealFoods)[number]['log'][] = [];
+
+      for (const group of grouped.values()) {
+        if (group.length <= 1) {
+          continue;
+        }
+
+        const totalGrams = group.reduce((sum, e) => sum + e.gramWeight, 0);
+        toUpdate.push({ log: group[0].log, newAmount: totalGrams });
+        for (let i = 1; i < group.length; i++) {
+          toDelete.push(group[i].log);
+        }
+      }
+
+      await NutritionService.mergeDuplicateNutritionLogs(toUpdate, toDelete);
+      showSnackbar('success', t('food.actions.mergeDuplicatesSuccess'));
+      await refresh();
+    } catch (error) {
+      console.error('Error merging duplicate foods:', error);
+      showSnackbar('error', t('food.actions.mergeDuplicatesError'));
+    } finally {
+      setIsMergeDuplicatesLoading(false);
+      setIsMergeDuplicatesVisible(false);
+      setSelectedMealForMenu(null);
+    }
+  };
+
   const handleConfirmMealAction = async (
     targetDate: Date,
     targetMealType: MealType,
@@ -483,6 +561,14 @@ export default function FoodScreen() {
       title: t('food.actions.createMeal'),
       description: t('food.actions.createMealDesc'),
       onPress: handleCreateMealFromFood,
+    },
+    {
+      icon: GitMerge,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.mergeDuplicates'),
+      description: t('food.actions.mergeDuplicatesDesc'),
+      onPress: handleMergeDuplicates,
     },
     {
       icon: Scissors,
@@ -1029,6 +1115,25 @@ export default function FoodScreen() {
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
         variant="destructive"
+      />
+
+      {/* Merge Duplicates Confirmation Modal */}
+      <ConfirmationModal
+        visible={isMergeDuplicatesVisible ? !!selectedMealForMenu : false}
+        onClose={() => {
+          setIsMergeDuplicatesVisible(false);
+          setSelectedMealForMenu(null);
+        }}
+        onConfirm={handleConfirmMergeDuplicates}
+        title={t('food.actions.mergeDuplicatesConfirmTitle')}
+        message={t('food.actions.mergeDuplicatesConfirmMessage', {
+          mealName: selectedMealForMenu
+            ? t(`food.meals.${selectedMealForMenu === 'snack' ? 'snacks' : selectedMealForMenu}`)
+            : '',
+        })}
+        confirmLabel={t('food.actions.mergeDuplicatesConfirm')}
+        cancelLabel={t('common.cancel')}
+        isLoading={isMergeDuplicatesLoading}
       />
 
       {/* Move / Copy Meal Modal */}

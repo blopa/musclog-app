@@ -129,7 +129,15 @@
       "editDesc": "Modificar tamanho da porção e nutrição",
       "goToToday": "Ir para Hoje",
       "createMeal": "Criar Refeição",
-      "createMealDesc": "Criar uma nova refeição dos alimentos selecionados"
+      "createMealDesc": "Criar uma nova refeição dos alimentos selecionados",
+      "mergeDuplicates": "Mesclar Alimentos Duplicados",
+      "mergeDuplicatesDesc": "Combinar entradas do mesmo alimento em uma só",
+      "mergeDuplicatesNone": "Nenhum alimento duplicado encontrado nesta refeição",
+      "mergeDuplicatesConfirmTitle": "Mesclar Alimentos Duplicados?",
+      "mergeDuplicatesConfirmMessage": "As entradas duplicadas em {{mealName}} serão combinadas em uma única entrada com a quantidade total.",
+      "mergeDuplicatesConfirm": "Mesclar",
+      "mergeDuplicatesSuccess": "Alimentos duplicados mesclados com sucesso",
+      "mergeDuplicatesError": "Falha ao mesclar alimentos duplicados"
     },
     "meals": {
       "manageMealData": {
