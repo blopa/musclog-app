@@ -14,9 +14,9 @@ import {
   RefreshCcwDot,
   ScanLine,
 } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import { useSnackbar } from '../../context/SnackbarContext';
@@ -110,6 +110,7 @@ export function FoodMealDetailsModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
   const inferMealTypeFromTime = (): MealType => {
@@ -1479,6 +1480,7 @@ export function FoodMealDetailsModal({
         onClose={onClose}
         title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
         scrollable={true}
+        scrollViewRef={scrollViewRef}
         headerRight={
           mode !== 'meal' ? (
             <Pressable
@@ -1546,11 +1548,16 @@ export function FoodMealDetailsModal({
           <View className="mt-6 gap-6">
             {/* Same serving size input for both food and meal (editable, same UX) */}
             {mode !== 'meal' ? (
-              <ServingSizeSelector value={servingSize} onChange={setServingSize} />
+              <ServingSizeSelector
+                value={servingSize}
+                onChange={setServingSize}
+                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+              />
             ) : (
               <ServingSizeSelector
                 value={mealAmountGrams}
                 onChange={(v) => setMealAmountGrams(Math.round(v))}
+                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 quickSizes={
                   totalMealGrams > 0
                     ? [

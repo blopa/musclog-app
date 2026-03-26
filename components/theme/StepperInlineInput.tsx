@@ -10,6 +10,7 @@ type TestStepperProps = {
   onIncrement: () => void;
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
+  onFocus?: () => void;
   unit?: string;
   icon?: LucideIcon;
   subtitle?: string;
@@ -23,6 +24,7 @@ export function StepperInlineInput({
   onIncrement,
   onDecrement,
   onChangeValue,
+  onFocus,
   unit,
   icon: Icon,
   subtitle,
@@ -44,13 +46,16 @@ export function StepperInlineInput({
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {
-      setEditing(false);
+      if (editing) {
+        inputRef.current?.blur();
+      }
     });
     return () => subscription.remove();
-  }, []);
+  }, [editing]);
 
   const handleValuePress = () => {
     setEditing(true);
+    onFocus?.();
     // Small delay to ensure state update before focusing
     setTimeout(() => {
       inputRef.current?.focus();
@@ -61,6 +66,10 @@ export function StepperInlineInput({
     // Allow only numbers, decimal point, and optional minus sign
     if (/^-?\d*\.?\d*$/.test(text)) {
       setInputValue(text);
+      const num = parseFloat(text);
+      if (!isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      }
     }
   };
 
@@ -113,8 +122,10 @@ export function StepperInlineInput({
           }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num - step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num - step);
+              });
             }
             onDecrement();
           }}
@@ -170,8 +181,10 @@ export function StepperInlineInput({
           }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num + step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num + step);
+              });
             }
             onIncrement();
           }}

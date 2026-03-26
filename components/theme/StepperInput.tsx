@@ -11,6 +11,7 @@ interface StepperInputProps {
   onIncrement: () => void;
   onDecrement: () => void;
   onChangeValue?: (newValue: number) => void;
+  onFocus?: () => void;
   unit?: string;
   step?: number;
   variant?: 'default' | 'portion';
@@ -22,6 +23,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   onIncrement,
   onDecrement,
   onChangeValue,
+  onFocus,
   unit,
   step = 1,
   variant = 'default',
@@ -29,6 +31,11 @@ export const StepperInput: FC<StepperInputProps> = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const isPortion = variant === 'portion';
+
+  const valueFontSize = isPortion
+    ? theme.typography.fontSize['4xl']
+    : theme.typography.fontSize['2xl'];
+  const unitFontSize = theme.typography.fontSize['2xl'];
   const [editing, setEditing] = useState(false);
   const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
   const [inputValue, setInputValue] = useState(formatValue(value));
@@ -43,13 +50,16 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {
-      setEditing(false);
+      if (editing) {
+        inputRef.current?.blur();
+      }
     });
     return () => subscription.remove();
-  }, []);
+  }, [editing]);
 
   const handleValuePress = () => {
     setEditing(true);
+    onFocus?.();
     // Small delay to ensure state update before focusing
     setTimeout(() => {
       inputRef.current?.focus();
@@ -60,6 +70,10 @@ export const StepperInput: FC<StepperInputProps> = ({
     // Allow only numbers, decimal point, and optional minus sign
     if (/^-?\d*\.?\d*$/.test(text)) {
       setInputValue(text);
+      const num = parseFloat(text);
+      if (!isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      }
     }
   };
 
@@ -96,8 +110,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num - step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num - step);
+              });
             }
             onDecrement();
           }}
@@ -122,18 +138,20 @@ export const StepperInput: FC<StepperInputProps> = ({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType="numeric"
-              className={`min-w-0 flex-1 p-0 text-center font-bold text-text-primary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
+              className="min-w-0 flex-1 p-0 text-center font-bold text-text-primary"
               style={{
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
                 color: theme.colors.text.primary,
+                fontSize: valueFontSize,
               }}
               returnKeyType="done"
               selectTextOnFocus
             />
             {unit ? (
               <Text
-                className={`ml-1 mr-2 flex-shrink-0 font-normal text-text-tertiary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
+                className="ml-1 mr-2 flex-shrink-0 font-normal text-text-tertiary"
+                style={{ fontSize: unitFontSize }}
               >
                 {unit}
               </Text>
@@ -148,12 +166,17 @@ export const StepperInput: FC<StepperInputProps> = ({
             onPress={handleValuePress}
           >
             <Text
-              className={`text-center font-bold text-text-primary ${isPortion ? 'text-4xl' : 'text-2xl'}`}
+              className="text-center font-bold text-text-primary"
+              style={{ fontSize: valueFontSize }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {formatValue(value)}{' '}
-              {unit ? <Text className="font-normal text-text-tertiary">{unit}</Text> : null}
+              {unit ? (
+                <Text className="font-normal text-text-tertiary" style={{ fontSize: unitFontSize }}>
+                  {unit}
+                </Text>
+              ) : null}
             </Text>
           </Pressable>
         )}
@@ -164,8 +187,10 @@ export const StepperInput: FC<StepperInputProps> = ({
           }}
           onPress={() => {
             if (editing) {
-              const num = parseFloat(inputValue) || 0;
-              setInputValue(formatValue(num + step));
+              setInputValue((prev) => {
+                const num = parseFloat(prev) || 0;
+                return formatValue(num + step);
+              });
             }
             onIncrement();
           }}

@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.4.8",
+  "version": "2.4.9",
   "scripts": {
     "playwright": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
