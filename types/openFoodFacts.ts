@@ -26,7 +26,8 @@ export interface ProductNameFields {
   categories?: string;
   lang?: string;
   /** Matches product_name_XX and generic_name_XX where XX is a language code. */
-  [key: string]: string | undefined;
+  [key: `product_name_${string}`]: string | undefined;
+  [key: `generic_name_${string}`]: string | undefined;
 }
 
 // Structured nutriments shape built by mapOpenFoodFactsProduct (not the raw API shape)
