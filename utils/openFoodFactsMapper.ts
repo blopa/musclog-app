@@ -491,14 +491,7 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
   let name: string | undefined =
     (p.product_name as string) ||
     (p.description as string) ||
-    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined) ||
-    (p.product_name_en as string) ||
-    (p.product_name_nl as string) ||
-    (p.product_name_fr as string) ||
-    (p.product_name_de as string) ||
-    (p.product_name_es as string) ||
-    (p.product_name_it as string) ||
-    (p.product_name_pt as string);
+    (p.lang != null ? (p[`product_name_${p.lang}`] as string) : undefined);
 
   // 1b. V3 API often has only product_name_<lang> (e.g. product_name_en) without product_name – scan for any
   if (!name && typeof p === 'object' && p !== null) {
@@ -522,14 +515,7 @@ export function getProductName(data: GetProductNameInput | null | undefined): st
   if (!name) {
     name =
       (p.generic_name as string) ||
-      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined) ||
-      (p.generic_name_en as string) ||
-      (p.generic_name_nl as string) ||
-      (p.generic_name_fr as string) ||
-      (p.generic_name_de as string) ||
-      (p.generic_name_es as string) ||
-      (p.generic_name_it as string) ||
-      (p.generic_name_pt as string);
+      (p.lang != null ? (p[`generic_name_${p.lang}`] as string) : undefined);
 
     // 3b. Scan for any generic_name_<lang>
     if (!name && typeof p === 'object' && p !== null) {
