@@ -375,6 +375,7 @@ export function FoodSearchModal({
     firstResolvedApi,
     retryAPI,
     retryUSDA,
+    cancelSearch,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -385,6 +386,25 @@ export function FoodSearchModal({
     usdaLimit,
     debounceMs: 300,
   });
+
+  const [showCancelSearch, setShowCancelSearch] = useState(false);
+
+  useEffect(() => {
+    setShowCancelSearch(false);
+
+    if (!searchQuery.trim() || (!isLoadingAPI && !isInitialLoad) || hasApiResults) {
+      return;
+    }
+
+    const timer = setTimeout(() => setShowCancelSearch(true), 10_000);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isLoadingAPI, isInitialLoad, hasApiResults]);
+
+  const handleCancelSearch = useCallback(() => {
+    cancelSearch();
+    setSearchQuery('');
+    setShowCancelSearch(false);
+  }, [cancelSearch]);
 
   const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
@@ -889,6 +909,17 @@ export function FoodSearchModal({
                                   ? t('foodSearch.searchingLocal')
                                   : t('foodSearch.searchingAPI')}
                             </Text>
+                            {showCancelSearch ? (
+                              // TODO: use Button component from theme instead
+                              <Pressable
+                                onPress={handleCancelSearch}
+                                className="mt-4 rounded-full border border-border-light px-5 py-2"
+                              >
+                                <Text className="text-sm font-medium text-text-secondary">
+                                  {t('foodSearch.cancelSearch')}
+                                </Text>
+                              </Pressable>
+                            ) : null}
                           </View>
                         ) : null}
 
@@ -1079,7 +1110,9 @@ export function FoodSearchModal({
                                       <View className="flex-row items-center gap-3 p-3">
                                         <View
                                           className="items-center justify-center rounded-lg p-2"
-                                          style={{ backgroundColor: theme.colors.status.error + '22' }}
+                                          style={{
+                                            backgroundColor: theme.colors.status.error + '22',
+                                          }}
                                         >
                                           <AlertTriangle
                                             size={theme.iconSize.sm}
@@ -1099,6 +1132,7 @@ export function FoodSearchModal({
                                           onPress={retryUSDA}
                                           size="sm"
                                           variant="outline"
+                                          width="full"
                                         />
                                       </View>
                                     </View>
@@ -1143,6 +1177,16 @@ export function FoodSearchModal({
                             <Text className="ml-2 text-xs text-text-secondary">
                               {t('foodSearch.searchingAPI')}
                             </Text>
+                            {showCancelSearch ? (
+                              <Pressable
+                                onPress={handleCancelSearch}
+                                className="mt-3 rounded-full border border-border-light px-5 py-2"
+                              >
+                                <Text className="text-sm font-medium text-text-secondary">
+                                  {t('foodSearch.cancelSearch')}
+                                </Text>
+                              </Pressable>
+                            ) : null}
                           </View>
                         ) : null}
 

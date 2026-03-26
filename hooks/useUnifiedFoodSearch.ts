@@ -414,6 +414,13 @@ export function useUnifiedFoodSearch({
   const isApiLoading = isLoadingAPI || isLoadingUSDA;
   const hasApiResults = apiResultsFormatted.length > 0 || usdaResultsFormatted.length > 0;
 
+  const cancelSearch = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+  }, []);
+
   // Cleanup abort controller on unmount
   useEffect(() => {
     return () => {
@@ -457,5 +464,6 @@ export function useUnifiedFoodSearch({
     firstResolvedApi,
     retryAPI,
     retryUSDA,
+    cancelSearch,
   };
 }
