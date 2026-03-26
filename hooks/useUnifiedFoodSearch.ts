@@ -159,7 +159,7 @@ export function useUnifiedFoodSearch({
           return [];
         }
 
-        // Explicitly request localized name fields for better support in different languages
+        // TODO: research online all languages supported by OFF and add them here
         const supportedLangs = ['en', 'fr', 'de', 'nl', 'es', 'it', 'pt'];
         const localizedFields = supportedLangs
           .flatMap((lang) => [`product_name_${lang}`, `generic_name_${lang}`])
