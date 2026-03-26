@@ -571,6 +571,22 @@ export default function FoodScreen() {
       onPress: handleMergeDuplicates,
     },
     {
+      icon: Copy,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.copyToAnotherDay'),
+      description: t('food.actions.copyToAnotherDayDesc'),
+      onPress: handleCopyMealToAnotherDay,
+    },
+    {
+      icon: ArrowRight,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.moveToAnotherDay'),
+      description: t('food.actions.moveToAnotherDayDesc'),
+      onPress: handleMoveMealToAnotherDay,
+    },
+    {
       icon: Scissors,
       iconColor: theme.colors.status.warning,
       iconBgColor: theme.colors.status.warning10,
@@ -585,22 +601,6 @@ export default function FoodScreen() {
       title: t('food.actions.deleteAll'),
       description: t('food.actions.deleteAllDesc'),
       onPress: handleDeleteAllMeal,
-    },
-    {
-      icon: ArrowRight,
-      iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
-      title: t('food.actions.moveToAnotherDay'),
-      description: t('food.actions.moveToAnotherDayDesc'),
-      onPress: handleMoveMealToAnotherDay,
-    },
-    {
-      icon: Copy,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      title: t('food.actions.copyToAnotherDay'),
-      description: t('food.actions.copyToAnotherDayDesc'),
-      onPress: handleCopyMealToAnotherDay,
     },
   ];
 
