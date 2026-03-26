@@ -21,6 +21,7 @@ type MoveCopyMealModalProps = {
     splitPercentage?: number
   ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
+  title?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
@@ -33,6 +34,7 @@ export function MoveCopyMealModal({
   onClose,
   onConfirm,
   mode,
+  title: customTitle,
   sourceMealType,
   sourceDate,
   isLoading = false,
@@ -45,11 +47,12 @@ export function MoveCopyMealModal({
   const [splitPercentage, setSplitPercentage] = useState(50);
 
   const title =
-    mode === 'move'
+    customTitle ||
+    (mode === 'move'
       ? t('food.actions.moveModalTitle')
       : mode === 'copy'
         ? t('food.actions.copyModalTitle')
-        : t('food.actions.splitModalTitle');
+        : t('food.actions.splitModalTitle'));
 
   const mealTabs: { id: MealType; label: string }[] = [
     { id: 'breakfast', label: t('food.meals.breakfast') },
