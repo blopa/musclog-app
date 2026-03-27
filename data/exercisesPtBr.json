@@ -1,321 +1,321 @@
 [
   {
-    "name": "Bench Press",
+    "name": "Supino Reto",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A chest exercise where you press a barbell upwards while lying on a bench.",
+    "description": "Exercício para o peitoral onde você empurra uma barra para cima enquanto deita em um banco.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 1
   },
   {
-    "name": "Inclined Bench Press",
+    "name": "Supino Inclinado",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A variation of the bench press performed on an inclined bench to target the upper chest.",
+    "description": "Variação do supino realizada em um banco inclinado para trabalhar a parte superior do peitoral.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Declined Bench Press",
+    "name": "Supino Declinado",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A variation of the bench press performed on a declined bench to target the lower chest.",
+    "description": "Variação do supino realizada em um banco declinado para trabalhar a parte inferior do peitoral.",
     "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
     "loadMultiplier": 1.1
   },
   {
-    "name": "Overhead Shoulder Press",
+    "name": "Desenvolvimento Frontal",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press a weight overhead while standing or seated.",
+    "description": "Exercício para ombros onde você empurra um peso acima da cabeça em pé ou sentado.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Deadlift",
+    "name": "Levantamento Terra",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A full-body exercise that involves lifting a barbell from the ground to a standing position.",
+    "description": "Exercício para o corpo todo que envolve levantar uma barra do chão até a posição ereta.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Pec Fly Machine",
+    "name": "Máquina de Crucifix",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A machine exercise that isolates the chest muscles by mimicking the motion of a fly.",
+    "description": "Exercício de máquina que isola os músculos peitorais imitando o movimento de um crucifixo.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Leg Extension Machine",
+    "name": "Extensora",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the quadriceps by extending the legs from a seated position.",
+    "description": "Exercício de máquina que trabalha o quadríceps estendendo as pernas na posição sentada.",
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Squat",
+    "name": "Agachamento",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you bend your knees and hips to lower your body, then stand back up.",
+    "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo e depois volta a ficar de pé.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.2
   },
   {
-    "name": "Barbell Back Squat",
+    "name": "Agachamento com Barra",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you bend your knees and hips to lower your body, with a barbell placed across your upper back, then stand back up.",
+    "description": "Exercício para o corpo inferior onde você dobra os joelhos e o quadril para abaixar o corpo, com uma barra apoiada na parte superior das costas, e depois volta a ficar de pé.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.2
   },
   {
-    "name": "Leg Press Machine",
+    "name": "Leg Press",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise where you push a weight away from you using your legs.",
+    "description": "Exercício de máquina onde você empurra um peso para longe usando as pernas.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 3.5
   },
   {
-    "name": "Lat Pulldown",
+    "name": "Puxada Alta",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A machine exercise that targets the upper back by pulling a bar down towards your chest.",
+    "description": "Exercício de máquina que trabalha a parte superior das costas puxando uma barra em direção ao peito.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Pull-Up",
+    "name": "Barra Fixa",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "An upper body exercise where you lift your body up to a bar using your back and arm muscles.",
+    "description": "Exercício para a parte superior do corpo onde você eleva o corpo até uma barra usando os músculos das costas e dos braços.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Seated Row",
+    "name": "Remada Sentado",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A machine exercise that targets the back muscles by pulling a handle towards your torso while seated.",
+    "description": "Exercício de máquina que trabalha os músculos das costas puxando uma alça em direção ao tronco na posição sentada.",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Bicep Curl",
+    "name": "Rosca Direta",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the biceps by lifting a weight towards your shoulder.",
+    "description": "Exercício para os braços que trabalha o bíceps levantando um peso em direção ao ombro.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Tricep Overhead Extension",
+    "name": "Tríceps Francês",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the triceps by extending the arm at the elbow.",
+    "description": "Exercício para os braços que trabalha o tríceps estendendo o braço no cotovelo.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Leg Curl Machine",
+    "name": "Flexora",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks.",
+    "description": "Exercício de máquina que trabalha os isquiotibiais flexionando as pernas em direção aos glúteos.",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Lateral Raise",
+    "name": "Elevação Lateral",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift weights out to the side of your body.",
+    "description": "Exercício para ombros onde você eleva pesos para o lado do corpo.",
     "targetMuscles": ["lateral_deltoid"],
     "loadMultiplier": 0.1
   },
   {
-    "name": "Front Raise",
+    "name": "Elevação Frontal",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift weights to the front of your body.",
+    "description": "Exercício para ombros onde você eleva pesos à frente do corpo.",
     "targetMuscles": ["anterior_deltoid"],
     "loadMultiplier": 0.08
   },
   {
-    "name": "Calf Raise",
+    "name": "Panturrilha em Pé",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A lower body exercise that targets the calf muscles by raising the heels off the ground.",
+    "description": "Exercício para o corpo inferior que trabalha a panturrilha elevando os calcanhares do chão.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Hammer Curl",
+    "name": "Rosca Martelo",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise similar to the bicep curl, but with a neutral grip.",
+    "description": "Exercício para os braços semelhante à rosca direta, mas com pegada neutra.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
-    "name": "Preacher Curl",
+    "name": "Rosca Scott",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A bicep curl variation performed on a preacher bench to isolate the biceps.",
+    "description": "Variação da rosca direta realizada em um banco Scott para isolar o bíceps.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Cable Tricep Pushdown",
+    "name": "Puxada Tríceps no Cabo",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the triceps by pushing a cable attachment downwards.",
+    "description": "Exercício para os braços que trabalha o tríceps empurrando um acessório de cabo para baixo.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Chest Press Machine",
+    "name": "Máquina de Supino",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A machine exercise that mimics the bench press.",
+    "description": "Exercício de máquina que imita o supino.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Smith Machine Squat",
+    "name": "Agachamento no Smith",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A squat variation performed on a Smith machine for added stability.",
+    "description": "Variação do agachamento realizada no Smith para maior estabilidade.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.3
   },
   {
-    "name": "T-Bar Row",
+    "name": "Remada Cavalinho",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a T-bar towards your torso.",
+    "description": "Exercício para as costas onde você puxa uma barra T em direção ao tronco.",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Bent Over Row",
+    "name": "Remada Curvada",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you bend at the waist and pull a weight towards your torso.",
+    "description": "Exercício para as costas onde você inclina o tronco e puxa um peso em direção ao corpo.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Upright Row",
+    "name": "Remada Alta",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you pull a weight upwards along the front of your body.",
+    "description": "Exercício para ombros onde você puxa um peso para cima ao longo da frente do corpo.",
     "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Fly",
+    "name": "Crucifixo com Halteres",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise where you lower and lift dumbbells out to the sides while lying on a bench.",
+    "description": "Exercício para o peitoral onde você abre e fecha halteres para os lados enquanto deita em um banco.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
-    "name": "Incline Dumbbell Press",
+    "name": "Supino Inclinado com Halteres",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A chest exercise similar to the incline bench press but using dumbbells.",
+    "description": "Exercício para o peitoral semelhante ao supino inclinado, mas usando halteres.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Machine Shoulder Press",
+    "name": "Desenvolvimento na Máquina",
     "muscleGroup": "shoulders",
     "type": "machine",
-    "description": "A shoulder exercise performed on a machine that mimics the overhead press.",
+    "description": "Exercício para ombros realizado em uma máquina que imita o desenvolvimento frontal.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Reverse Pec Deck Fly",
+    "name": "Crucifixo Inverso no Peck Deck",
     "muscleGroup": "shoulders",
     "type": "machine",
-    "description": "A machine exercise that targets the rear delts by mimicking the motion of a reverse fly.",
+    "description": "Exercício de máquina que trabalha os deltoides posteriores imitando o movimento de um crucifixo inverso.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Cable Crossover",
+    "name": "Crossover",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise that targets the inner chest by pulling cables across the body.",
+    "description": "Exercício para o peitoral que trabalha a parte interna do peitoral puxando cabos cruzando o corpo.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Seated Calf Raise",
+    "name": "Panturrilha Sentado",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise performed while seated, targeting the soleus muscle.",
+    "description": "Exercício para a panturrilha realizado na posição sentada, trabalhando o músculo sóleo.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Standing Calf Raise",
+    "name": "Panturrilha em Pé",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise performed while standing, targeting the gastrocnemius muscle.",
+    "description": "Exercício para a panturrilha realizado em pé, trabalhando o músculo gastrocnêmio.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Romanian Deadlift",
+    "name": "Levantamento Terra Romeno",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation that targets the hamstrings and glutes.",
+    "description": "Variação do levantamento terra que trabalha os isquiotibiais e glúteos.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 1
   },
   {
-    "name": "Glute Bridge",
+    "name": "Ponte de Glúteos",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground while lying on your back.",
+    "description": "Exercício para o corpo inferior que trabalha os glúteos elevando o quadril do chão enquanto deita de costas.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Hip Thrust",
+    "name": "Empurrada de Quadril",
     "muscleGroup": "glutes",
     "type": "compound",
-    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground with the shoulders supported on a bench.",
+    "description": "Exercício para o corpo inferior que trabalha os glúteos elevando o quadril do chão com os ombros apoiados em um banco.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 1.4
   },
   {
-    "name": "Cable Bicep Curl",
+    "name": "Rosca Direta no Cabo",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An arm exercise that targets the biceps by curling a cable attachment.",
+    "description": "Exercício para os braços que trabalha o bíceps flexionando um acessório de cabo.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Dumbbell Shoulder Press",
+    "name": "Desenvolvimento com Halteres",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press dumbbells overhead.",
+    "description": "Exercício para ombros onde você empurra halteres acima da cabeça.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.25
   },
   {
-    "name": "Smith Machine Bench Press",
+    "name": "Supino no Smith",
     "muscleGroup": "chest",
     "type": "machine",
-    "description": "A bench press variation performed on a Smith machine for added stability.",
+    "description": "Variação do supino realizada no Smith para maior estabilidade.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 1
   },
@@ -323,111 +323,111 @@
     "name": "Hack Squat",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A squat variation performed on a hack squat machine to target the quadriceps.",
+    "description": "Variação do agachamento realizada na máquina hack squat para trabalhar o quadríceps.",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Reverse Lunge",
+    "name": "Avanço para Trás",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you step backward into a lunge.",
+    "description": "Exercício para o corpo inferior onde você dá um passo para trás em posição de avanço.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Step-Up",
+    "name": "Subida no Banco",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you step onto a raised platform.",
+    "description": "Exercício para o corpo inferior onde você sobe em uma plataforma elevada.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Kettlebell Swing",
+    "name": "Swing com Kettlebell",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full-body exercise that involves swinging a kettlebell between the legs and up to shoulder height.",
+    "description": "Exercício para o corpo todo que envolve balançar um kettlebell entre as pernas e até a altura dos ombros.",
     "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Goblet Squat",
+    "name": "Agachamento Goblet",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat variation performed while holding a weight in front of the chest.",
+    "description": "Variação do agachamento realizada segurando um peso à frente do peito.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Sumo Deadlift",
+    "name": "Levantamento Terra Sumô",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation with a wide stance that targets the inner thighs and glutes.",
+    "description": "Variação do levantamento terra com stance aberto que trabalha a parte interna das coxas e glúteos.",
     "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
     "loadMultiplier": 1.5
   },
   {
-    "name": "Hip Abduction Machine",
+    "name": "Máquina de Abdução do Quadril",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the outer thighs by spreading the legs apart.",
+    "description": "Exercício de máquina que trabalha a parte externa das coxas abrindo as pernas.",
     "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Hip Adduction Machine",
+    "name": "Máquina de Adução do Quadril",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the inner thighs by bringing the legs together.",
+    "description": "Exercício de máquina que trabalha a parte interna das coxas aproximando as pernas.",
     "targetMuscles": ["adductors", "pectineus"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Cable Face Pull",
+    "name": "Face Pull no Cabo",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise that targets the rear delts by pulling a cable attachment towards the face.",
+    "description": "Exercício para ombros que trabalha os deltoides posteriores puxando um acessório de cabo em direção ao rosto.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Incline Dumbbell Fly",
+    "name": "Crucifixo Inclinado com Halteres",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise performed on an incline bench that targets the upper chest.",
+    "description": "Exercício para o peitoral realizado em um banco inclinado que trabalha a parte superior do peitoral.",
     "targetMuscles": ["pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.15
   },
   {
-    "name": "Dips",
+    "name": "Mergulho nas Barras",
     "muscleGroup": "arms",
     "type": "bodyweight",
-    "description": "A chest and triceps exercise where you lower and lift your body using parallel bars.",
+    "description": "Exercício para o peitoral e tríceps onde você abaixa e eleva o corpo usando barras paralelas.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0
   },
   {
-    "name": "Push-Up",
+    "name": "Flexão de Braços",
     "muscleGroup": "chest",
     "type": "bodyweight",
-    "description": "A chest, shoulders, and triceps exercise where you push your body up from the ground.",
+    "description": "Exercício para o peitoral, ombros e tríceps onde você empurra o corpo para cima a partir do chão.",
     "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
-    "name": "Plank",
+    "name": "Prancha",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise where you hold a push-up position for a set amount of time.",
+    "description": "Exercício para o core onde você mantém a posição de flexão por um determinado período de tempo.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
     "loadMultiplier": 0
   },
   {
-    "name": "Russian Twist",
+    "name": "Rotação Russa",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "An oblique exercise where you twist your torso side to side while holding a weight.",
+    "description": "Exercício para os oblíquos onde você gira o tronco de lado a lado segurando um peso.",
     "targetMuscles": [
       "external_obliques",
       "internal_obliques",
@@ -437,18 +437,18 @@
     "loadMultiplier": 0.1
   },
   {
-    "name": "Hanging Leg Raise",
+    "name": "Elevação de Pernas Suspenso",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you raise your legs while hanging from a bar.",
+    "description": "Exercício abdominal onde você eleva as pernas enquanto fica suspenso em uma barra.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Mountain Climbers",
+    "name": "Escalada da Montanha",
     "muscleGroup": "full_body",
     "type": "bodyweight",
-    "description": "A full-body exercise where you perform a running motion while in a plank position.",
+    "description": "Exercício para o corpo todo onde você realiza um movimento de corrida na posição de prancha.",
     "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
     "loadMultiplier": 0
   },
@@ -456,7 +456,7 @@
     "name": "Burpees",
     "muscleGroup": "full_body",
     "type": "bodyweight",
-    "description": "A full-body exercise that involves a squat, jump, and push-up.",
+    "description": "Exercício para o corpo todo que envolve agachamento, salto e flexão de braços.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -468,90 +468,90 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Box Jump",
+    "name": "Salto na Caixa",
     "muscleGroup": "legs",
     "type": "plyometric",
-    "description": "A lower body plyometric exercise where you jump onto a raised platform.",
+    "description": "Exercício pliométrico para o corpo inferior onde você salta em uma plataforma elevada.",
     "targetMuscles": ["quadriceps", "glutes", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Turkish Get-Up",
+    "name": "Levantamento Turco",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "A full-body exercise that involves transitioning from lying down to standing up while holding a weight overhead.",
+    "description": "Exercício para o corpo todo que envolve a transição de deitado para de pé enquanto segura um peso acima da cabeça.",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Farmer's Walk",
+    "name": "Caminhada do Fazendeiro",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An exercise where you walk while holding heavy weights in each hand.",
+    "description": "Exercício onde você caminha segurando pesos pesados em cada mão.",
     "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Snatch",
+    "name": "Arranco",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift where you lift a barbell from the ground to overhead in one motion.",
+    "description": "Levantamento olímpico onde você eleva uma barra do chão até acima da cabeça em um único movimento.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Clean and Jerk",
+    "name": "Arranque e Arremesso",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An Olympic lift where you lift a barbell from the ground to the shoulders and then overhead.",
+    "description": "Levantamento olímpico onde você eleva uma barra do chão até os ombros e depois acima da cabeça.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
     "loadMultiplier": 0.9
   },
   {
-    "name": "Battle Ropes",
+    "name": "Cordas de Batalha",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An exercise where you create waves with heavy ropes to build strength and endurance.",
+    "description": "Exercício onde você cria ondas com cordas pesadas para desenvolver força e resistência.",
     "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
     "loadMultiplier": 0
   },
   {
-    "name": "Crunch Machine",
+    "name": "Máquina de Abdominal",
     "muscleGroup": "abdomen",
     "type": "machine",
-    "description": "A machine exercise that targets the abdominal muscles by mimicking the motion of a crunch.",
+    "description": "Exercício de máquina que trabalha os músculos abdominais imitando o movimento de um abdominal.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Chest Supported Row Machine",
+    "name": "Remada com Suporte de Peito na Máquina",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A back exercise performed on a machine where you row with your chest supported on a pad, targeting the upper and middle back muscles.",
+    "description": "Exercício para as costas realizado em uma máquina onde você rema com o peito apoiado em um suporte, trabalhando os músculos da parte superior e média das costas.",
     "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Barbell Row",
+    "name": "Remada com Barra",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a barbell towards your torso while bent over.",
+    "description": "Exercício para as costas onde você puxa uma barra em direção ao tronco enquanto está inclinado.",
     "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Skull Crusher",
+    "name": "Tríceps Testa",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A tricep exercise where you lower a barbell towards your forehead and extend back up.",
+    "description": "Exercício para o tríceps onde você abaixa uma barra em direção à testa e estende de volta.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Bulgarian Split Squat",
+    "name": "Agachamento Búlgaro",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you perform a split squat with your rear foot elevated on a bench.",
+    "description": "Exercício para o corpo inferior onde você realiza um agachamento dividido com o pé traseiro elevado em um banco.",
     "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
     "loadMultiplier": 0.4
   },
@@ -559,7 +559,7 @@
     "name": "Pallof Press",
     "muscleGroup": "core",
     "type": "isolation",
-    "description": "A core exercise that involves pressing a cable or resistance band away from the body to resist rotation.",
+    "description": "Exercício para o core que envolve empurrar um cabo ou faixa elástica para longe do corpo para resistir à rotação.",
     "targetMuscles": [
       "rectus_abdominis",
       "internal_obliques",
@@ -569,82 +569,82 @@
     "loadMultiplier": 0.2
   },
   {
-    "name": "Hanging Knee Raise",
+    "name": "Elevação de Joelhos Suspenso",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you raise your knees towards your chest while hanging from a bar.",
+    "description": "Exercício abdominal onde você eleva os joelhos em direção ao peito enquanto fica suspenso em uma barra.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Landmine Press",
+    "name": "Desenvolvimento no Landmine",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A shoulder exercise where you press a barbell anchored at one end in a landmine attachment.",
+    "description": "Exercício para ombros onde você empurra uma barra ancorada em uma extremidade no acessório landmine.",
     "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Landmine Row",
+    "name": "Remada no Landmine",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you pull a barbell anchored at one end in a landmine attachment towards your torso.",
+    "description": "Exercício para as costas onde você puxa uma barra ancorada em uma extremidade no acessório landmine em direção ao tronco.",
     "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
     "loadMultiplier": 0.6
   },
   {
-    "name": "Donkey Calf Raise",
+    "name": "Panturrilha no Burro",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A calf exercise where you raise your heels while bent over with weight on your lower back.",
+    "description": "Exercício para a panturrilha onde você eleva os calcanhares enquanto está inclinado com peso na lombar.",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1
   },
   {
-    "name": "Jump Rope",
+    "name": "Corda de Pular",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves jumping over a rope as it passes under your feet and over your head.",
+    "description": "Exercício cardiovascular que envolve pular sobre uma corda à medida que ela passa sob seus pés e sobre a cabeça.",
     "targetMuscles": ["calves", "glutes", "quadriceps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Running",
+    "name": "Corrida",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves jogging or sprinting over a distance.",
+    "description": "Exercício cardiovascular que envolve trotar ou correr em velocidade por uma distância.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Cycling",
+    "name": "Ciclismo",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves riding a bicycle, either stationary or moving.",
+    "description": "Exercício cardiovascular que envolve pedalar uma bicicleta, estacionária ou em movimento.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Rowing Machine",
+    "name": "Máquina de Remo",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that mimics the action of rowing a boat, using a machine.",
+    "description": "Exercício cardiovascular que imita a ação de remar um barco usando uma máquina.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Elliptical Trainer",
+    "name": "Elíptico",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise performed on a machine that mimics walking or running without causing excessive pressure on the joints.",
+    "description": "Exercício cardiovascular realizado em uma máquina que imita a caminhada ou corrida sem causar pressão excessiva nas articulações.",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "High-Intensity Interval Training (HIIT)",
+    "name": "Treinamento Intervalado de Alta Intensidade (HIIT)",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A form of cardiovascular exercise that alternates short periods of intense anaerobic exercise with less intense recovery periods.",
+    "description": "Uma forma de exercício cardiovascular que alterna curtos períodos de exercício anaeróbico intenso com períodos de recuperação menos intensos.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -656,18 +656,18 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Stair Climber",
+    "name": "Escada de Exercício",
     "muscleGroup": "legs",
     "type": "cardio",
-    "description": "A cardiovascular exercise performed on a machine that mimics the motion of climbing stairs.",
+    "description": "Exercício cardiovascular realizado em uma máquina que imita o movimento de subir escadas.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Aerobics",
+    "name": "Aeróbica",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A form of cardiovascular exercise that includes rhythmic activities, often performed to music.",
+    "description": "Uma forma de exercício cardiovascular que inclui atividades rítmicas, geralmente realizadas ao som de música.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -679,10 +679,10 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Dance Cardio",
+    "name": "Cardio Dançante",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves various dance movements and routines to elevate heart rate.",
+    "description": "Exercício cardiovascular que envolve vários movimentos e rotinas de dança para elevar a frequência cardíaca.",
     "targetMuscles": [
       "quadriceps",
       "hamstrings",
@@ -694,10 +694,10 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Shadow Boxing",
+    "name": "Sombra",
     "muscleGroup": "full_body",
     "type": "cardio",
-    "description": "A cardiovascular exercise that involves throwing punches in the air to increase heart rate and improve cardiovascular fitness.",
+    "description": "Exercício cardiovascular que envolve socar o ar para aumentar a frequência cardíaca e melhorar o condicionamento cardiovascular.",
     "targetMuscles": [
       "rectus_abdominis",
       "external_obliques",
@@ -709,298 +709,298 @@
     "loadMultiplier": 0
   },
   {
-    "name": "Narrow Grip Lat Pulldown",
+    "name": "Puxada Alta com Pegada Fechada",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A lat pulldown variation where you use a narrow grip to target the inner back muscles.",
+    "description": "Variação da puxada alta onde você usa uma pegada fechada para trabalhar os músculos internos das costas.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Supinated Lat Pulldown",
+    "name": "Puxada Alta com Pegada Supinada",
     "muscleGroup": "back",
     "type": "machine",
-    "description": "A lat pulldown variation where you use a supinated grip to target the biceps and upper back.",
+    "description": "Variação da puxada alta onde você usa uma pegada supinada para trabalhar o bíceps e a parte superior das costas.",
     "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Cable Pullover",
+    "name": "Pullover no Cabo",
     "muscleGroup": "back",
     "type": "isolation",
-    "description": "A back exercise where you pull a cable bar from above your head down towards your hips, focusing on the lats.",
+    "description": "Exercício para as costas onde você puxa uma barra de cabo de acima da cabeça em direção ao quadril, focando nos latíssimos.",
     "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dumbbell Pullover",
+    "name": "Pullover com Haltere",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A versatile exercise that targets the chest and lats by lowering and raising a dumbbell over your head while lying on a bench.",
+    "description": "Exercício versátil que trabalha o peitoral e os latíssimos abaixando e levantando um haltere sobre a cabeça enquanto deita em um banco.",
     "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Reverse Grip Bench Press",
+    "name": "Supino com Pegada Invertida",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press variation where you use a reverse grip to emphasize the upper chest and triceps.",
+    "description": "Variação do supino onde você usa uma pegada invertida para enfatizar a parte superior do peitoral e o tríceps.",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.8
   },
   {
-    "name": "Cable Chest Press",
+    "name": "Supino no Cabo",
     "muscleGroup": "chest",
     "type": "isolation",
-    "description": "A chest exercise where you press a cable attachment forward, similar to a bench press, but with constant tension.",
+    "description": "Exercício para o peitoral onde você empurra um acessório de cabo para frente, semelhante ao supino, mas com tensão constante.",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Cable Front Raise",
+    "name": "Elevação Frontal no Cabo",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift a cable attachment to the front, targeting the anterior deltoids.",
+    "description": "Exercício para ombros onde você eleva um acessório de cabo à frente, trabalhando os deltoides anteriores.",
     "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
     "loadMultiplier": 0.08
   },
   {
-    "name": "Cable Lateral Raise",
+    "name": "Elevação Lateral no Cabo",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise where you lift a cable attachment to the side, targeting the lateral deltoids.",
+    "description": "Exercício para ombros onde você eleva um acessório de cabo para o lado, trabalhando os deltoides laterais.",
     "targetMuscles": ["lateral_deltoid", "traps"],
     "loadMultiplier": 0.1
   },
   {
-    "name": "Single-Arm Dumbbell Row",
+    "name": "Remada Unilateral com Haltere",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A back exercise where you row a dumbbell towards your torso while bent over, focusing on each side individually.",
+    "description": "Exercício para as costas onde você rema um haltere em direção ao tronco enquanto está inclinado, focando em cada lado individualmente.",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Shrug",
+    "name": "Encolhimento com Halteres",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A shoulder exercise that targets the trapezius by shrugging the shoulders while holding dumbbells.",
+    "description": "Exercício para ombros que trabalha o trapézio encolhendo os ombros enquanto segura halteres.",
     "targetMuscles": ["traps"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Lying Leg Curl",
+    "name": "Flexora Deitado",
     "muscleGroup": "legs",
     "type": "machine",
-    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks while lying face down.",
+    "description": "Exercício de máquina que trabalha os isquiotibiais flexionando as pernas em direção aos glúteos enquanto está deitado de bruços.",
     "targetMuscles": ["hamstrings", "calves"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Good Morning",
+    "name": "Bom Dia",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you hinge at the hips to lower your torso, targeting the hamstrings and glutes.",
+    "description": "Exercício para o corpo inferior onde você dobra o quadril para baixar o tronco, trabalhando os isquiotibiais e glúteos.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
     "loadMultiplier": 0.7
   },
   {
-    "name": "Zercher Squat",
+    "name": "Agachamento Zercher",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat variation where you hold the barbell in the crook of your elbows, emphasizing the quads and core.",
+    "description": "Variação do agachamento onde você segura a barra na dobra dos cotovelos, enfatizando o quadríceps e o core.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
     "loadMultiplier": 1
   },
   {
-    "name": "Sissy Squat",
+    "name": "Agachamento Sissy",
     "muscleGroup": "legs",
     "type": "isolation",
-    "description": "A quad-focused squat variation performed with a sissy squat bench or by leaning back on the balls of your feet.",
+    "description": "Variação do agachamento focada no quadríceps realizada com um banco sissy ou inclinando-se para trás nas pontas dos pés.",
     "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Jefferson Deadlift",
+    "name": "Levantamento Terra Jefferson",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift variation where you straddle the barbell, focusing on the quads, glutes, and core.",
+    "description": "Variação do levantamento terra onde você fica com as pernas em cada lado da barra, focando no quadríceps, glúteos e core.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
     "loadMultiplier": 1.4
   },
   {
-    "name": "Cossack Squat",
+    "name": "Agachamento Cossaco",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A lower body exercise where you perform a deep side lunge, targeting the inner thighs and glutes.",
+    "description": "Exercício para o corpo inferior onde você realiza um avanço lateral profundo, trabalhando a parte interna das coxas e glúteos.",
     "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dragon Flag",
+    "name": "Bandeira do Dragão",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "An advanced core exercise where you lower and raise your body in a straight line while lying on a bench.",
+    "description": "Exercício avançado para o core onde você abaixa e eleva o corpo em linha reta enquanto está deitado em um banco.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Hollow Body Hold",
+    "name": "Posição Côncava",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise where you hold a hollow position, with your lower back pressed to the floor and your arms and legs extended.",
+    "description": "Exercício para o core onde você mantém uma posição côncava, com a lombar pressionada ao chão e os braços e pernas estendidos.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Reverse Crunch",
+    "name": "Abdominal Inverso",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you curl your hips towards your chest, focusing on the lower abs.",
+    "description": "Exercício abdominal onde você curva o quadril em direção ao peito, focando nos abdominais inferiores.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Ab Wheel Rollout",
+    "name": "Roda Abdominal",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A core exercise that involves rolling an ab wheel away from your body while maintaining a stable core.",
+    "description": "Exercício para o core que envolve rolar uma roda abdominal para longe do corpo enquanto mantém o core estável.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pike Push-Up",
+    "name": "Flexão de Pique",
     "muscleGroup": "shoulders",
     "type": "bodyweight",
-    "description": "A shoulder exercise where you perform a push-up in a pike position, emphasizing the shoulders.",
+    "description": "Exercício para ombros onde você realiza uma flexão na posição de pique, enfatizando os ombros.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Cable Crunch",
+    "name": "Abdominal no Cabo",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise where you perform a crunch motion with a cable attachment for added resistance.",
+    "description": "Exercício abdominal onde você realiza o movimento de abdominal com um acessório de cabo para adicionar resistência.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Dumbbell Triceps Kickback",
+    "name": "Tríceps Coice com Haltere",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "An isolation triceps exercise where you hinge forward, keep the upper arm fixed, and extend the elbow to move the dumbbell back.",
+    "description": "Exercício de isolamento para o tríceps onde você inclina para frente, mantém o braço superior fixo e estende o cotovelo para mover o haltere para trás.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Two-Arm Dumbbell Triceps Kickback",
+    "name": "Tríceps Coice Bilateral com Halteres",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback variation using a dumbbell in each arm with the same bent-over elbow-extension pattern.",
+    "description": "Variação do coice de tríceps usando um haltere em cada braço com o mesmo padrão de extensão de cotovelo inclinado.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.22
   },
   {
-    "name": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "name": "Tríceps Coice Sentado Inclinado com Haltere",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback performed seated while leaning forward to support the torso and isolate elbow extension.",
+    "description": "Coice de tríceps realizado sentado enquanto se inclina para frente para apoiar o tronco e isolar a extensão do cotovelo.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Incline Bench Dumbbell Triceps Kickback",
+    "name": "Tríceps Coice no Banco Inclinado com Haltere",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback performed face-down on an incline bench to brace the chest and reduce momentum.",
+    "description": "Coice de tríceps realizado de bruços em um banco inclinado para apoiar o peito e reduzir o impulso.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Cable Triceps Kickback",
+    "name": "Tríceps Coice no Cabo",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback using a low cable, keeping the upper arm parallel to the floor while extending against the line of pull.",
+    "description": "Coice de tríceps usando um cabo baixo, mantendo o braço superior paralelo ao chão enquanto estende contra a linha de tração.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
   {
-    "name": "Cable Triceps Kickback from High Pulley",
+    "name": "Tríceps Coice no Cabo com Polia Alta",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps kickback pattern with the cable set higher so the pull angle emphasizes the long head differently.",
+    "description": "Padrão de coice de tríceps com o cabo posicionado mais alto para que o ângulo de tração enfatize a cabeça longa de forma diferente.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.26
   },
   {
-    "name": "Cable Glute Kickback",
+    "name": "Coice de Glúteos no Cabo",
     "muscleGroup": "glutes",
     "type": "isolation",
-    "description": "A hip-extension exercise where you sweep the working leg back against a low cable attached at the ankle or foot strap.",
+    "description": "Exercício de extensão do quadril onde você move a perna de trabalho para trás contra um cabo baixo fixado no tornozelo ou na alça do pé.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Glute Kickback Machine",
+    "name": "Máquina de Coice de Glúteos",
     "muscleGroup": "glutes",
     "type": "machine",
-    "description": "A machine-guided hip kickback that loads glute extension through a padded lever or platform.",
+    "description": "Coice de quadril guiado por máquina que carrega a extensão dos glúteos através de uma alavanca ou plataforma acolchoada.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.45
   },
   {
-    "name": "Banded Glute Kickback",
+    "name": "Coice de Glúteos com Elástico",
     "muscleGroup": "glutes",
     "type": "isolation",
-    "description": "A glute kickback performed with a resistance band anchored low or looped around the feet for hip extension.",
+    "description": "Coice de glúteos realizado com uma faixa elástica ancorada baixo ou enrolada nos pés para extensão do quadril.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0.12
   },
   {
-    "name": "Bodyweight Quadruped Glute Kickback",
+    "name": "Coice de Glúteos no Solo com Peso Corporal",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A bodyweight kickback from hands and knees, extending one hip straight back with a controlled squeeze at the top.",
+    "description": "Coice com peso corporal a partir das mãos e joelhos, estendendo um quadril para trás com uma contração controlada no topo.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Standing Bodyweight Glute Kickback",
+    "name": "Coice de Glúteos em Pé com Peso Corporal",
     "muscleGroup": "glutes",
     "type": "bodyweight",
-    "description": "A standing hip kickback extending the leg behind the body without equipment, often with a slight forward lean for balance.",
+    "description": "Coice de quadril em pé estendendo a perna atrás do corpo sem equipamento, geralmente com uma leve inclinação para frente para equilíbrio.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
   },
   {
-    "name": "Concentration Biceps",
+    "name": "Rosca Concentrada",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A biceps curl performed seated with the elbow braced against the inner thigh, curling a dumbbell toward the shoulder in a strict arc.",
+    "description": "Rosca bíceps realizada sentado com o cotovelo apoiado na parte interna da coxa, curvando um haltere em direção ao ombro em um arco preciso.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.22
   },
   {
-    "name": "Dumbbell Bench Press",
+    "name": "Supino com Halteres",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A horizontal press lying on a bench with dumbbells, allowing independent arm paths and a deep stretch at the bottom.",
+    "description": "Supino horizontal deitado em um banco com halteres, permitindo trajetórias independentes dos braços e um alongamento profundo na posição mais baixa.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Decline Dumbbell Bench Press",
+    "name": "Supino Declinado com Halteres",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A dumbbell chest press performed on a decline bench to emphasize the lower chest while pressing with a neutral-to-angled arm path.",
+    "description": "Supino com halteres realizado em um banco declinado para enfatizar a parte inferior do peitoral com uma trajetória de braço neutra a angulada.",
     "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.32
   },
   {
-    "name": "Close-Grip Bench Press",
+    "name": "Supino com Pegada Fechada",
     "muscleGroup": "chest",
     "type": "compound",
-    "description": "A bench press with a narrower grip to shift more load onto the triceps while still training the chest and anterior shoulders.",
+    "description": "Supino com pegada mais fechada para transferir mais carga para o tríceps enquanto ainda treina o peitoral e os deltoides anteriores.",
     "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
     "loadMultiplier": 0.9
   },
@@ -1008,231 +1008,231 @@
     "name": "Arnold Press",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "A seated or standing dumbbell press that rotates from palms-in at the bottom to palms-forward overhead, hitting all delt heads.",
+    "description": "Desenvolvimento com halteres sentado ou em pé que rotaciona das palmas voltadas para dentro na posição baixa até as palmas voltadas para frente acima da cabeça, trabalhando todas as cabeças do deltóide.",
     "targetMuscles": ["anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "triceps", "upper_traps"],
     "loadMultiplier": 0.22
   },
   {
-    "name": "Push Press",
+    "name": "Press com Impulso",
     "muscleGroup": "shoulders",
     "type": "compound",
-    "description": "An overhead press that uses a shallow dip and leg drive to accelerate the bar, allowing heavier loads than a strict press.",
+    "description": "Desenvolvimento frontal que usa uma leve flexão e impulso das pernas para acelerar a barra, permitindo cargas mais pesadas que um desenvolvimento estrito.",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
     "loadMultiplier": 0.55
   },
   {
-    "name": "Chin-Up",
+    "name": "Barra Supinada",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "A pull-up with an underhand grip that increases biceps and brachialis involvement while training the lats and upper back.",
+    "description": "Barra fixa com pegada supinada que aumenta o envolvimento do bíceps e braquial enquanto treina os latíssimos e a parte superior das costas.",
     "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
     "loadMultiplier": 0
   },
   {
-    "name": "Straight-Arm Pulldown",
+    "name": "Puxada de Braço Estendido",
     "muscleGroup": "back",
     "type": "isolation",
-    "description": "A cable movement with elbows nearly locked, pulling the bar down toward the thighs to isolate lat engagement and shoulder extension.",
+    "description": "Movimento de cabo com cotovelos quase bloqueados, puxando a barra em direção às coxas para isolar o engajamento dos latíssimos e a extensão do ombro.",
     "targetMuscles": ["lats", "teres_major", "triceps"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Dumbbell Romanian Deadlift",
+    "name": "Levantamento Terra Romeno com Halteres",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A hip-hinge deadlift pattern holding dumbbells, emphasizing hamstrings and glutes with less low-back load than a barbell version.",
+    "description": "Padrão de levantamento terra com dobradiça de quadril segurando halteres, enfatizando os isquiotibiais e glúteos com menos carga na lombar do que a versão com barra.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
     "loadMultiplier": 0.5
   },
   {
-    "name": "Trap Bar Deadlift",
+    "name": "Levantamento Terra com Barra Hexagonal",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A deadlift using a trap (hex) bar with a neutral grip and higher handles, often allowing a more upright torso and quad contribution.",
+    "description": "Levantamento terra usando uma barra trap (hexagonal) com pegada neutra e alças mais altas, geralmente permitindo um tronco mais ereto e maior contribuição do quadríceps.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
     "loadMultiplier": 1.45
   },
   {
-    "name": "Rack Pull",
+    "name": "Puxada no Rack",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A partial deadlift from pins or blocks below the knee, overloading the upper back, traps, and grip with reduced leg range.",
+    "description": "Levantamento terra parcial a partir de pinos ou blocos abaixo do joelho, sobrecarregando a parte superior das costas, trapézio e pegada com menor amplitude das pernas.",
     "targetMuscles": ["traps", "erector_spinae", "rhomboids", "lats", "glutes", "hamstrings", "forearms"],
     "loadMultiplier": 1.3
   },
   {
-    "name": "Front Squat",
+    "name": "Agachamento Frontal",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A squat with the barbell racked across the front delts, demanding an upright torso and strong core and quad emphasis.",
+    "description": "Agachamento com a barra apoiada nos deltoides anteriores, exigindo tronco ereto e forte core com ênfase no quadríceps.",
     "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Walking Lunge",
+    "name": "Avanço Caminhando",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A dynamic lunge pattern stepping forward alternately, training single-leg strength, balance, and hip/knee stability under load.",
+    "description": "Padrão de avanço dinâmico avançando alternadamente, treinando força unilateral das pernas, equilíbrio e estabilidade do quadril e joelho sob carga.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Forward Lunge",
+    "name": "Avanço para Frente",
     "muscleGroup": "legs",
     "type": "compound",
-    "description": "A split squat variation stepping forward into a deep lunge and returning, loading the front leg heavily through knee and hip extension.",
+    "description": "Variação do agachamento dividido dando um passo à frente em um avanço profundo e retornando, carregando intensamente a perna da frente através da extensão do joelho e quadril.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.3
   },
   {
-    "name": "Wall Sit",
+    "name": "Cadeira na Parede",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "An isometric hold with back against a wall and thighs parallel to the floor, building quad endurance and mental toughness.",
+    "description": "Sustentação isométrica com as costas contra a parede e as coxas paralelas ao chão, desenvolvendo resistência do quadríceps e resistência mental.",
     "targetMuscles": ["quadriceps", "glutes"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pistol Squat",
+    "name": "Agachamento Pistol",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A single-leg squat to full depth with the non-working leg extended, demanding mobility, balance, and unilateral leg strength.",
+    "description": "Agachamento unilateral até a profundidade total com a perna não ativa estendida, exigindo mobilidade, equilíbrio e força unilateral das pernas.",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
     "loadMultiplier": 0
   },
   {
-    "name": "Nordic Hamstring Curl",
+    "name": "Curl Nórdico",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A partner- or anchor-assisted hamstring exercise lowering the body from kneeling with hips extended, emphasizing eccentric strength.",
+    "description": "Exercício para os isquiotibiais assistido por parceiro ou âncora, abaixando o corpo a partir da posição ajoelhada com o quadril estendido, enfatizando a força excêntrica.",
     "targetMuscles": ["hamstrings", "glutes"],
     "loadMultiplier": 0
   },
   {
-    "name": "Glute-Ham Raise",
+    "name": "Elevação Glúteo-Posterior",
     "muscleGroup": "legs",
     "type": "bodyweight",
-    "description": "A glute-ham developer movement combining hip extension and knee flexion to heavily load hamstrings, glutes, and lower back.",
+    "description": "Movimento no GHD combinando extensão do quadril e flexão do joelho para sobrecarregar intensamente os isquiotibiais, glúteos e lombar.",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 0
   },
   {
-    "name": "Pendlay Row",
+    "name": "Remada Pendlay",
     "muscleGroup": "back",
     "type": "compound",
-    "description": "A bent-over barbell row where each rep starts from a dead stop on the floor, prioritizing explosive upper-back pulling strength.",
+    "description": "Remada com barra inclinada onde cada repetição começa a partir de uma parada total no chão, priorizando a força explosiva de puxada da parte superior das costas.",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
     "loadMultiplier": 0.85
   },
   {
-    "name": "Inverted Row",
+    "name": "Remada Invertida",
     "muscleGroup": "back",
     "type": "bodyweight",
-    "description": "A horizontal pull under a fixed bar or rings with the body straight, scaling difficulty by foot position and height.",
+    "description": "Puxada horizontal sob uma barra fixa ou argolas com o corpo reto, ajustando a dificuldade pela posição dos pés e altura.",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
     "loadMultiplier": 0
   },
   {
-    "name": "Barbell Curl",
+    "name": "Rosca com Barra",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A standing curl with a shoulder-width underhand grip on a barbell, allowing heavier loads than most dumbbell curl variations.",
+    "description": "Rosca em pé com pegada supinada na largura dos ombros em uma barra, permitindo cargas mais pesadas que a maioria das variações com haltere.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.42
   },
   {
-    "name": "EZ Bar Curl",
+    "name": "Rosca com Barra W",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A barbell curl using an EZ-cam bar to reduce wrist strain while targeting the biceps and brachialis.",
+    "description": "Rosca com barra usando uma barra W para reduzir a tensão no pulso enquanto trabalha o bíceps e braquial.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.4
   },
   {
-    "name": "Incline Dumbbell Curl",
+    "name": "Rosca no Banco Inclinado com Haltere",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A curl performed on an incline bench with arms hanging back, stretching the long head of the biceps through a long range of motion.",
+    "description": "Rosca realizada em um banco inclinado com os braços pendurados para trás, alongando a cabeça longa do bíceps através de uma longa amplitude de movimento.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.18
   },
   {
-    "name": "Zottman Curl",
+    "name": "Rosca Zottman",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A dumbbell curl supinating on the way up and rotating to overhand for a slow lowering phase to hit brachioradialis and extensors.",
+    "description": "Rosca com haltere supinando na fase ascendente e rotacionando para pronada na descida lenta para trabalhar o braquiorradial e os extensores.",
     "targetMuscles": ["biceps", "brachialis", "forearms"],
     "loadMultiplier": 0.2
   },
   {
-    "name": "Cable Overhead Tricep Extension",
+    "name": "Tríceps Francês no Cabo",
     "muscleGroup": "arms",
     "type": "isolation",
-    "description": "A triceps extension with the cable routed overhead, elbows fixed, extending the forearms to align with the high line of pull.",
+    "description": "Extensão de tríceps com o cabo direcionado acima da cabeça, cotovelos fixos, estendendo os antebraços para alinhar com a linha de tração alta.",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.28
   },
   {
-    "name": "Diamond Push-Up",
+    "name": "Flexão Diamante",
     "muscleGroup": "chest",
     "type": "bodyweight",
-    "description": "A push-up with hands close forming a diamond shape, increasing triceps demand while still training the chest and shoulders.",
+    "description": "Flexão com as mãos próximas formando um losango, aumentando a demanda sobre o tríceps enquanto ainda treina o peitoral e os ombros.",
     "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
     "loadMultiplier": 0
   },
   {
-    "name": "Bench Dip",
+    "name": "Tríceps no Banco",
     "muscleGroup": "arms",
     "type": "bodyweight",
-    "description": "A triceps dip performed with hands on a bench behind you and feet on the floor or elevated, lowering the hips by bending the elbows.",
+    "description": "Tríceps realizado com as mãos em um banco atrás de você e os pés no chão ou elevados, abaixando os quadris ao dobrar os cotovelos.",
     "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
     "loadMultiplier": 0
   },
   {
-    "name": "Lying Leg Raise",
+    "name": "Elevação de Pernas Deitado",
     "muscleGroup": "abdomen",
     "type": "bodyweight",
-    "description": "An abdominal exercise lying supine or on a bench, raising extended or bent legs toward the ceiling with controlled hip flexion.",
+    "description": "Exercício abdominal deitado de costas ou em um banco, elevando pernas estendidas ou dobradas em direção ao teto com flexão de quadril controlada.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Dead Bug",
+    "name": "Inseto Morto",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A supine core drill alternating opposite arm and leg extensions while keeping the low back pressed to the floor for anti-extension control.",
+    "description": "Exercício de core em decúbito dorsal alternando extensões de braço e perna opostos enquanto mantém a lombar pressionada ao chão para controle anti-extensão.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
     "loadMultiplier": 0
   },
   {
-    "name": "Side Plank",
+    "name": "Prancha Lateral",
     "muscleGroup": "core",
     "type": "bodyweight",
-    "description": "A lateral isometric hold supported on one forearm and the side of the foot, resisting lateral flexion and building oblique endurance.",
+    "description": "Sustentação isométrica lateral apoiada em um antebraço e no lado do pé, resistindo à flexão lateral e desenvolvendo a resistência dos oblíquos.",
     "targetMuscles": ["external_obliques", "internal_obliques", "transverse_abdominis", "shoulders"],
     "loadMultiplier": 0
   },
   {
-    "name": "Cable Woodchopper",
+    "name": "Corte de Lenha no Cabo",
     "muscleGroup": "core",
     "type": "compound",
-    "description": "A diagonal cable chop from high to low or low to high across the body, training rotational power and oblique strength.",
+    "description": "Corte diagonal no cabo de cima para baixo ou de baixo para cima cruzando o corpo, treinando potência rotacional e força dos oblíquos.",
     "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis", "transverse_abdominis", "shoulders"],
     "loadMultiplier": 0.35
   },
   {
-    "name": "Bent-Over Dumbbell Rear Delt Fly",
+    "name": "Crucifixo Inverso Inclinado com Halteres",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A hinge position fly with dumbbells, lifting the arms out to the sides with slight elbow bend to target the rear delts and rhomboids.",
+    "description": "Crucifixo na posição inclinada com halteres, elevando os braços para os lados com leve dobra do cotovelo para trabalhar os deltoides posteriores e romboides.",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
     "loadMultiplier": 0.12
   },
   {
-    "name": "Barbell Shrug",
+    "name": "Encolhimento com Barra",
     "muscleGroup": "shoulders",
     "type": "isolation",
-    "description": "A heavy upper trap exercise elevating the shoulders straight up against a barbell held in front or behind the body.",
+    "description": "Exercício pesado para o trapézio superior elevando os ombros verticalmente contra uma barra segura na frente ou atrás do corpo.",
     "targetMuscles": ["traps", "forearms"],
     "loadMultiplier": 0.85
   },
@@ -1240,7 +1240,7 @@
     "name": "Power Clean",
     "muscleGroup": "full_body",
     "type": "compound",
-    "description": "An explosive Olympic lift pulling the bar from the floor to the shoulders in one motion, training hips, back, and catch strength.",
+    "description": "Levantamento olímpico explosivo puxando a barra do chão até os ombros em um único movimento, treinando quadril, costas e força de recepção.",
     "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
     "loadMultiplier": 0.85
   }
