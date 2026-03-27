@@ -9,6 +9,7 @@ import { copyBundledExerciseImageToDocument } from '../../utils/file';
 import { database } from '../index';
 import Exercise, {
   type EquipmentType,
+  type ExerciseSource,
   type MechanicType,
   type MuscleGroup,
 } from '../models/Exercise';
@@ -99,7 +100,8 @@ export class ExerciseService {
     equipmentType: EquipmentType | string,
     mechanicType: MechanicType | string,
     loadMultiplier: number = 1.0,
-    imageUrl?: string
+    imageUrl?: string,
+    source: ExerciseSource = 'user'
   ): Promise<Exercise> {
     return await database.write(async () => {
       const now = Date.now();
@@ -111,6 +113,7 @@ export class ExerciseService {
         exercise.muscleGroup = muscleGroup as MuscleGroup;
         exercise.equipmentType = equipmentType as EquipmentType;
         exercise.mechanicType = mechanicType as MechanicType;
+        exercise.source = source;
         exercise.loadMultiplier = loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
@@ -307,6 +310,7 @@ export class ExerciseService {
         exercise.muscleGroup = originalExercise.muscleGroup;
         exercise.equipmentType = originalExercise.equipmentType;
         exercise.mechanicType = originalExercise.mechanicType;
+        exercise.source = 'user';
         exercise.loadMultiplier = originalExercise.loadMultiplier;
         exercise.createdAt = now;
         exercise.updatedAt = now;
@@ -423,6 +427,7 @@ export class ExerciseService {
             exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
             exercise.equipmentType = equipmentType as EquipmentType;
             exercise.mechanicType = mechanicType as MechanicType;
+            exercise.source = 'app';
             exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0; // Default to 1.0 if not specified
             exercise.imageUrl = undefined; // No image URLs in JSON
             exercise.createdAt = now;
@@ -485,6 +490,38 @@ export class ExerciseService {
     }
 
     return created;
+  }
+
+  /**
+   * Backfills the `source` field for exercises that predate the column addition.
+   * Exercises with no source are ordered by creation date (oldest first); the first
+   * `appExerciseCount` are assumed to be app-seeded and get `'app'`, the rest get `'user'`.
+   * Safe to call on every app start — it's a no-op when all exercises already have a source.
+   */
+  static async backfillExerciseSources(appExerciseCount: number = 105): Promise<void> {
+    const unsourced = await database
+      .get<Exercise>('exercises')
+      .query(
+        Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))),
+        Q.sortBy('created_at', Q.asc)
+      )
+      .fetch();
+
+    if (unsourced.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (let i = 0; i < unsourced.length; i++) {
+        const exercise = unsourced[i];
+        const source: ExerciseSource = i < appExerciseCount ? 'app' : 'user';
+        await exercise.update((e) => {
+          e.source = source;
+        });
+      }
+    });
+
+    console.log(`Backfilled source for ${unsourced.length} exercise(s)`);
   }
 
   /**

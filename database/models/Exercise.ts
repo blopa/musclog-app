@@ -33,6 +33,8 @@ export type EquipmentType =
 
 export type MechanicType = 'compound' | 'isolation';
 
+export type ExerciseSource = 'app' | 'user';
+
 export default class Exercise extends Model {
   static table = 'exercises';
 
@@ -47,6 +49,7 @@ export default class Exercise extends Model {
   @field('muscle_group') muscleGroup!: MuscleGroup;
   @field('equipment_type') equipmentType!: EquipmentType;
   @field('mechanic_type') mechanicType!: MechanicType;
+  @field('source') source?: ExerciseSource;
   @field('load_multiplier') loadMultiplier!: number;
   @field('created_at') createdAt!: number;
   @field('updated_at') updatedAt!: number;

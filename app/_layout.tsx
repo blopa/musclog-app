@@ -22,6 +22,7 @@ import { SmartCameraProvider } from '../context/SmartCameraContext';
 import { SnackbarProvider } from '../context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
+import { ExerciseService } from '../database/services';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
@@ -89,6 +90,19 @@ function RootLayout() {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
   }, [segments]);
+
+  // Backfill the exercise `source` field on web only. Native/SQLite handles
+  // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
+  // ignores that step, so we run the JS equivalent here instead.
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return;
+    }
+
+    ExerciseService.backfillExerciseSources().catch((err) =>
+      console.warn('[ExerciseService] backfillExerciseSources error:', err)
+    );
+  }, []);
 
   // Boot-time tasks (Android only, all run in parallel)
   useEffect(() => {

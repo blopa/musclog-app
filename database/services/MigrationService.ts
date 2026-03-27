@@ -949,6 +949,7 @@ export class MigrationService {
               oldExercise.type,
               oldExercise.muscleGroup
             );
+            newExercise.source = 'user';
             newExercise.createdAt = this.convertTimestamp(oldExercise.createdAt);
             newExercise.updatedAt = this.convertTimestamp(oldExercise.createdAt);
             newExercise.deletedAt = oldExercise.deletedAt
