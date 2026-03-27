@@ -1403,10 +1403,7 @@ export function FoodMealDetailsModal({
     (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
       const sanitized = value.replace(/[^0-9.]/g, '');
       const dotIndex = sanitized.indexOf('.');
-      const numericValue =
-        dotIndex !== -1
-          ? sanitized.slice(0, dotIndex + 3)
-          : sanitized;
+      const numericValue = dotIndex !== -1 ? sanitized.slice(0, dotIndex + 3) : sanitized;
       setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
     },
     []

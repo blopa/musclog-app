@@ -493,10 +493,7 @@ export default function SetGoals() {
           <OrbitalIllustration />
 
           {/* Header */}
-          <View
-            className="mb-4 flex-row flex-wrap items-center justify-center"
-            style={{ gap: 6 }}
-          >
+          <View className="mb-4 flex-row flex-wrap items-center justify-center" style={{ gap: 6 }}>
             <Text
               className="text-center text-[32px] font-bold leading-[1.1]"
               style={{

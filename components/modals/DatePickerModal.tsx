@@ -249,11 +249,13 @@ export function DatePickerModal({
               className="mt-6 pb-2"
               contentContainerStyle={{ gap: theme.spacing.gap.md }}
             >
-              {(quickDates ?? [
-                { label: t('datePicker.yesterday'), date: subDays(new Date(), 1) },
-                { label: t('datePicker.today'), date: new Date() },
-                { label: t('datePicker.tomorrow'), date: addDays(new Date(), 1) },
-              ]).map((option, index) => (
+              {(
+                quickDates ?? [
+                  { label: t('datePicker.yesterday'), date: subDays(new Date(), 1) },
+                  { label: t('datePicker.today'), date: new Date() },
+                  { label: t('datePicker.tomorrow'), date: addDays(new Date(), 1) },
+                ]
+              ).map((option, index) => (
                 <Button
                   key={index}
                   label={option.label}
