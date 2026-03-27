@@ -1009,7 +1009,13 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "Desenvolvimento com halteres sentado ou em pé que rotaciona das palmas voltadas para dentro na posição baixa até as palmas voltadas para frente acima da cabeça, trabalhando todas as cabeças do deltóide.",
-    "targetMuscles": ["anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "posterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0.22
   },
   {
@@ -1057,7 +1063,15 @@
     "muscleGroup": "back",
     "type": "compound",
     "description": "Levantamento terra parcial a partir de pinos ou blocos abaixo do joelho, sobrecarregando a parte superior das costas, trapézio e pegada com menor amplitude das pernas.",
-    "targetMuscles": ["traps", "erector_spinae", "rhomboids", "lats", "glutes", "hamstrings", "forearms"],
+    "targetMuscles": [
+      "traps",
+      "erector_spinae",
+      "rhomboids",
+      "lats",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
     "loadMultiplier": 1.3
   },
   {
@@ -1209,7 +1223,12 @@
     "muscleGroup": "core",
     "type": "bodyweight",
     "description": "Sustentação isométrica lateral apoiada em um antebraço e no lado do pé, resistindo à flexão lateral e desenvolvendo a resistência dos oblíquos.",
-    "targetMuscles": ["external_obliques", "internal_obliques", "transverse_abdominis", "shoulders"],
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "transverse_abdominis",
+      "shoulders"
+    ],
     "loadMultiplier": 0
   },
   {
@@ -1217,7 +1236,13 @@
     "muscleGroup": "core",
     "type": "compound",
     "description": "Corte diagonal no cabo de cima para baixo ou de baixo para cima cruzando o corpo, treinando potência rotacional e força dos oblíquos.",
-    "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis", "transverse_abdominis", "shoulders"],
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "shoulders"
+    ],
     "loadMultiplier": 0.35
   },
   {

@@ -1,9 +1,12 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '../../data/exercisesEnUS.json';
+import exercisesEnUS from '../../data/exercisesEnUS.json';
+import exercisesPtBr from '../../data/exercisesPtBr.json';
+import i18n, { PT_BR } from '../../lang/lang';
 import {
   getBundledExerciseImageSourceByIndex,
   getExerciseImageFilenameByIndex,
+  preloadExerciseImages,
 } from '../../utils/exerciseImage';
 import { copyBundledExerciseImageToDocument } from '../../utils/file';
 import { database } from '../index';
@@ -21,6 +24,10 @@ interface ExerciseJsonData {
   description: string;
   targetMuscles?: string[];
   loadMultiplier?: number;
+}
+
+function getExercisesData(): ExerciseJsonData[] {
+  return (i18n.language === PT_BR ? exercisesPtBr : exercisesEnUS) as ExerciseJsonData[];
 }
 
 export class ExerciseService {
@@ -399,7 +406,7 @@ export class ExerciseService {
    */
   static async createCommonExercises(): Promise<Exercise[]> {
     const exercises: Exercise[] = [];
-    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const exercisesJson = getExercisesData();
     const now = Date.now();
 
     const created = await database.write(async () => {
@@ -532,7 +539,7 @@ export class ExerciseService {
    * all images are already present.
    */
   static async repairMissingExerciseImages(): Promise<void> {
-    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const exercisesJson = getExercisesData();
     const allExercises = await database.get<Exercise>('exercises').query().fetch();
     const broken = allExercises.filter((ex) => !ex.imageUrl && !ex.deletedAt);
 
@@ -582,7 +589,7 @@ export class ExerciseService {
    * Returns the number of exercises created (0 on a no-op boot).
    */
   static async syncAppExercises(): Promise<number> {
-    const exercisesJson = exercisesData as ExerciseJsonData[];
+    const exercisesJson = getExercisesData();
 
     // Collect names of non-deleted app exercises already in the DB
     const existing = await database

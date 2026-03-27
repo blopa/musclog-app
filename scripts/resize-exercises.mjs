@@ -1,6 +1,6 @@
-import sharp from 'sharp';
 import { readdirSync } from 'fs';
-import { join, extname } from 'path';
+import { extname,join } from 'path';
+import sharp from 'sharp';
 
 const EXERCISES_DIR = new URL('../assets/exercises', import.meta.url).pathname;
 const TARGET_SIZE = 1024;

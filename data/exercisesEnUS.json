@@ -1009,7 +1009,13 @@
     "muscleGroup": "shoulders",
     "type": "compound",
     "description": "A seated or standing dumbbell press that rotates from palms-in at the bottom to palms-forward overhead, hitting all delt heads.",
-    "targetMuscles": ["anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "triceps", "upper_traps"],
+    "targetMuscles": [
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "posterior_deltoid",
+      "triceps",
+      "upper_traps"
+    ],
     "loadMultiplier": 0.22
   },
   {
@@ -1057,7 +1063,15 @@
     "muscleGroup": "back",
     "type": "compound",
     "description": "A partial deadlift from pins or blocks below the knee, overloading the upper back, traps, and grip with reduced leg range.",
-    "targetMuscles": ["traps", "erector_spinae", "rhomboids", "lats", "glutes", "hamstrings", "forearms"],
+    "targetMuscles": [
+      "traps",
+      "erector_spinae",
+      "rhomboids",
+      "lats",
+      "glutes",
+      "hamstrings",
+      "forearms"
+    ],
     "loadMultiplier": 1.3
   },
   {
@@ -1209,7 +1223,12 @@
     "muscleGroup": "core",
     "type": "bodyweight",
     "description": "A lateral isometric hold supported on one forearm and the side of the foot, resisting lateral flexion and building oblique endurance.",
-    "targetMuscles": ["external_obliques", "internal_obliques", "transverse_abdominis", "shoulders"],
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "transverse_abdominis",
+      "shoulders"
+    ],
     "loadMultiplier": 0
   },
   {
@@ -1217,7 +1236,13 @@
     "muscleGroup": "core",
     "type": "compound",
     "description": "A diagonal cable chop from high to low or low to high across the body, training rotational power and oblique strength.",
-    "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis", "transverse_abdominis", "shoulders"],
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis",
+      "shoulders"
+    ],
     "loadMultiplier": 0.35
   },
   {
