@@ -60,6 +60,10 @@ export default class Exercise extends Model {
 
   @writer
   async markAsDeleted(): Promise<void> {
+    if (this.source === 'app') {
+      throw new Error('Cannot delete a built-in app exercise.');
+    }
+
     const logExercises = await this.logExercises.fetch();
     const activeLogExercises = logExercises.filter((le: WorkoutLogExercise) => !le.deletedAt);
 

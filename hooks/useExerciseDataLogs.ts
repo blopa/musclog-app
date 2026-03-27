@@ -3,7 +3,11 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Exercise, { type EquipmentType, type MuscleGroup } from '../database/models/Exercise';
+import Exercise, {
+  type EquipmentType,
+  type ExerciseSource,
+  type MuscleGroup,
+} from '../database/models/Exercise';
 import { ExerciseService } from '../database/services';
 import { useTheme } from './useTheme';
 
@@ -15,6 +19,7 @@ export type ExerciseDataDisplayItem = {
   iconBgColor: string;
   muscleGroup: MuscleGroup | string;
   equipmentType: EquipmentType | string;
+  source?: ExerciseSource;
 };
 
 export type ExerciseDataDayGroup = {
@@ -55,6 +60,7 @@ function exerciseToDisplayItem(
     iconBgColor: colors.bg,
     muscleGroup: exercise.muscleGroup,
     equipmentType: exercise.equipmentType,
+    source: exercise.source,
   };
 }
 
