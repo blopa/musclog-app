@@ -1,6 +1,7 @@
 import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
+  // when updating database schema, also update export version in exportImport.ts
   version: 2,
   tables: [
     // 1. Master List of Exercises
