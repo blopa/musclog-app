@@ -883,5 +883,101 @@
     "description": "An abdominal exercise where you perform a crunch motion with a cable attachment for added resistance.",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
     "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An isolation triceps exercise where you hinge forward, keep the upper arm fixed, and extend the elbow to move the dumbbell back.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Two-Arm Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback variation using a dumbbell in each arm with the same bent-over elbow-extension pattern.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.22
+  },
+  {
+    "name": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback performed seated while leaning forward to support the torso and isolate elbow extension.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Incline Bench Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback performed face-down on an incline bench to brace the chest and reduce momentum.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Cable Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback using a low cable, keeping the upper arm parallel to the floor while extending against the line of pull.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.28
+  },
+  {
+    "name": "Cable Rope Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A cable triceps kickback using a rope attachment for a neutral grip and a slightly different end range.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.28
+  },
+  {
+    "name": "Cable Triceps Kickback from High Pulley",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback pattern with the cable set higher so the pull angle emphasizes the long head differently.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.26
+  },
+  {
+    "name": "Cable Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "description": "A hip-extension exercise where you sweep the working leg back against a low cable attached at the ankle or foot strap.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Glute Kickback Machine",
+    "muscleGroup": "glutes",
+    "type": "machine",
+    "description": "A machine-guided hip kickback that loads glute extension through a padded lever or platform.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.45
+  },
+  {
+    "name": "Banded Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "description": "A glute kickback performed with a resistance band anchored low or looped around the feet for hip extension.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.12
+  },
+  {
+    "name": "Bodyweight Quadruped Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "bodyweight",
+    "description": "A bodyweight kickback from hands and knees, extending one hip straight back with a controlled squeeze at the top.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Standing Bodyweight Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "bodyweight",
+    "description": "A standing hip kickback extending the leg behind the body without equipment, often with a slight forward lean for balance.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0
   }
 ]
