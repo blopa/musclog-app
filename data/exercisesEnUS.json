@@ -925,14 +925,6 @@
     "loadMultiplier": 0.28
   },
   {
-    "name": "Cable Rope Triceps Kickback",
-    "muscleGroup": "arms",
-    "type": "isolation",
-    "description": "A cable triceps kickback using a rope attachment for a neutral grip and a slightly different end range.",
-    "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28
-  },
-  {
     "name": "Cable Triceps Kickback from High Pulley",
     "muscleGroup": "arms",
     "type": "isolation",
@@ -987,5 +979,269 @@
     "description": "A biceps curl performed seated with the elbow braced against the inner thigh, curling a dumbbell toward the shoulder in a strict arc.",
     "targetMuscles": ["biceps", "brachialis"],
     "loadMultiplier": 0.22
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A horizontal press lying on a bench with dumbbells, allowing independent arm paths and a deep stretch at the bottom.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Decline Dumbbell Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A dumbbell chest press performed on a decline bench to emphasize the lower chest while pressing with a neutral-to-angled arm path.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "loadMultiplier": 0.32
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A bench press with a narrower grip to shift more load onto the triceps while still training the chest and anterior shoulders.",
+    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Arnold Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A seated or standing dumbbell press that rotates from palms-in at the bottom to palms-forward overhead, hitting all delt heads.",
+    "targetMuscles": ["anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.22
+  },
+  {
+    "name": "Push Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "An overhead press that uses a shallow dip and leg drive to accelerate the bar, allowing heavier loads than a strict press.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
+    "loadMultiplier": 0.55
+  },
+  {
+    "name": "Chin-Up",
+    "muscleGroup": "back",
+    "type": "bodyweight",
+    "description": "A pull-up with an underhand grip that increases biceps and brachialis involvement while training the lats and upper back.",
+    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Straight-Arm Pulldown",
+    "muscleGroup": "back",
+    "type": "isolation",
+    "description": "A cable movement with elbows nearly locked, pulling the bar down toward the thighs to isolate lat engagement and shoulder extension.",
+    "targetMuscles": ["lats", "teres_major", "triceps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Dumbbell Romanian Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A hip-hinge deadlift pattern holding dumbbells, emphasizing hamstrings and glutes with less low-back load than a barbell version.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Trap Bar Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A deadlift using a trap (hex) bar with a neutral grip and higher handles, often allowing a more upright torso and quad contribution.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
+    "loadMultiplier": 1.45
+  },
+  {
+    "name": "Rack Pull",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A partial deadlift from pins or blocks below the knee, overloading the upper back, traps, and grip with reduced leg range.",
+    "targetMuscles": ["traps", "erector_spinae", "rhomboids", "lats", "glutes", "hamstrings", "forearms"],
+    "loadMultiplier": 1.3
+  },
+  {
+    "name": "Front Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat with the barbell racked across the front delts, demanding an upright torso and strong core and quad emphasis.",
+    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Walking Lunge",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A dynamic lunge pattern stepping forward alternately, training single-leg strength, balance, and hip/knee stability under load.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Forward Lunge",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A split squat variation stepping forward into a deep lunge and returning, loading the front leg heavily through knee and hip extension.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Wall Sit",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "An isometric hold with back against a wall and thighs parallel to the floor, building quad endurance and mental toughness.",
+    "targetMuscles": ["quadriceps", "glutes"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Pistol Squat",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A single-leg squat to full depth with the non-working leg extended, demanding mobility, balance, and unilateral leg strength.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Nordic Hamstring Curl",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A partner- or anchor-assisted hamstring exercise lowering the body from kneeling with hips extended, emphasizing eccentric strength.",
+    "targetMuscles": ["hamstrings", "glutes"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Glute-Ham Raise",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A glute-ham developer movement combining hip extension and knee flexion to heavily load hamstrings, glutes, and lower back.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Pendlay Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A bent-over barbell row where each rep starts from a dead stop on the floor, prioritizing explosive upper-back pulling strength.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Inverted Row",
+    "muscleGroup": "back",
+    "type": "bodyweight",
+    "description": "A horizontal pull under a fixed bar or rings with the body straight, scaling difficulty by foot position and height.",
+    "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Barbell Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A standing curl with a shoulder-width underhand grip on a barbell, allowing heavier loads than most dumbbell curl variations.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.42
+  },
+  {
+    "name": "EZ Bar Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A barbell curl using an EZ-cam bar to reduce wrist strain while targeting the biceps and brachialis.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Incline Dumbbell Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A curl performed on an incline bench with arms hanging back, stretching the long head of the biceps through a long range of motion.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.18
+  },
+  {
+    "name": "Zottman Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A dumbbell curl supinating on the way up and rotating to overhand for a slow lowering phase to hit brachioradialis and extensors.",
+    "targetMuscles": ["biceps", "brachialis", "forearms"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Cable Overhead Tricep Extension",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps extension with the cable routed overhead, elbows fixed, extending the forearms to align with the high line of pull.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.28
+  },
+  {
+    "name": "Diamond Push-Up",
+    "muscleGroup": "chest",
+    "type": "bodyweight",
+    "description": "A push-up with hands close forming a diamond shape, increasing triceps demand while still training the chest and shoulders.",
+    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Bench Dip",
+    "muscleGroup": "arms",
+    "type": "bodyweight",
+    "description": "A triceps dip performed with hands on a bench behind you and feet on the floor or elevated, lowering the hips by bending the elbows.",
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Lying Leg Raise",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise lying supine or on a bench, raising extended or bent legs toward the ceiling with controlled hip flexion.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Dead Bug",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A supine core drill alternating opposite arm and leg extensions while keeping the low back pressed to the floor for anti-extension control.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Side Plank",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A lateral isometric hold supported on one forearm and the side of the foot, resisting lateral flexion and building oblique endurance.",
+    "targetMuscles": ["external_obliques", "internal_obliques", "transverse_abdominis", "shoulders"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Cable Woodchopper",
+    "muscleGroup": "core",
+    "type": "compound",
+    "description": "A diagonal cable chop from high to low or low to high across the body, training rotational power and oblique strength.",
+    "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis", "transverse_abdominis", "shoulders"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Bent-Over Dumbbell Rear Delt Fly",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A hinge position fly with dumbbells, lifting the arms out to the sides with slight elbow bend to target the rear delts and rhomboids.",
+    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "loadMultiplier": 0.12
+  },
+  {
+    "name": "Barbell Shrug",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A heavy upper trap exercise elevating the shoulders straight up against a barbell held in front or behind the body.",
+    "targetMuscles": ["traps", "forearms"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Power Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive Olympic lift pulling the bar from the floor to the shoulders in one motion, training hips, back, and catch strength.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.85
   }
 ]
