@@ -1360,10 +1360,10 @@ export function FoodMealDetailsModal({
       name: getFoodMealName(),
       barcode: barcode ?? productCode ?? '',
       description: currentDescription,
-      calories: String(baseNutritionalData.calories),
-      protein: String(baseNutritionalData.protein),
-      carbs: String(baseNutritionalData.carbs),
-      fat: String(baseNutritionalData.fat),
+      calories: parseFloat(baseNutritionalData.calories.toFixed(2)).toString(),
+      protein: parseFloat(baseNutritionalData.protein.toFixed(2)).toString(),
+      carbs: parseFloat(baseNutritionalData.carbs.toFixed(2)).toString(),
+      fat: parseFloat(baseNutritionalData.fat.toFixed(2)).toString(),
     });
     setIsEditPopUpVisible(true);
   }, [
@@ -1401,7 +1401,12 @@ export function FoodMealDetailsModal({
 
   const handleEditFormNumericChange = useCallback(
     (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
-      const numericValue = value.replace(/[^0-9.]/g, '');
+      const sanitized = value.replace(/[^0-9.]/g, '');
+      const dotIndex = sanitized.indexOf('.');
+      const numericValue =
+        dotIndex !== -1
+          ? sanitized.slice(0, dotIndex + 3)
+          : sanitized;
       setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
     },
     []
