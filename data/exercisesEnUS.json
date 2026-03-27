@@ -979,5 +979,13 @@
     "description": "A standing hip kickback extending the leg behind the body without equipment, often with a slight forward lean for balance.",
     "targetMuscles": ["glutes", "hamstrings"],
     "loadMultiplier": 0
+  },
+  {
+    "name": "Concentration Biceps",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A biceps curl performed seated with the elbow braced against the inner thigh, curling a dumbbell toward the shoulder in a strict arc.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.22
   }
 ]
