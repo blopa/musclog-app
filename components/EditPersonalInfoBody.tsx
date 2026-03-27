@@ -1,3 +1,4 @@
+import { subYears } from 'date-fns';
 import { Calendar, Check, Mail, User } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -266,6 +267,11 @@ export function EditPersonalInfoBody({
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={new Date().getFullYear()}
+        quickDates={[
+          { label: t('datePicker.xYearsAgo', { count: 20 }), date: subYears(new Date(), 20) },
+          { label: t('datePicker.xYearsAgo', { count: 30 }), date: subYears(new Date(), 30) },
+          { label: t('datePicker.xYearsAgo', { count: 40 }), date: subYears(new Date(), 40) },
+        ]}
       />
     </View>
   );

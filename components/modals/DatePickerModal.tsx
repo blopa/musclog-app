@@ -9,14 +9,12 @@ import {
   getYear,
   isSameDay,
   isSameMonth,
-  nextMonday,
   setMonth,
   setYear,
   startOfMonth,
   startOfWeek,
   subDays,
   subMonths,
-  subWeeks,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
@@ -28,6 +26,11 @@ import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
+type QuickDateOption = {
+  label: string;
+  date: Date;
+};
+
 type DatePickerModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -35,6 +38,7 @@ type DatePickerModalProps = {
   onDateSelect: (date: Date) => void | Promise<void>;
   minYear?: number;
   maxYear?: number;
+  quickDates?: QuickDateOption[];
 };
 
 export function DatePickerModal({
@@ -44,6 +48,7 @@ export function DatePickerModal({
   onDateSelect,
   minYear,
   maxYear,
+  quickDates,
 }: DatePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -87,49 +92,6 @@ export function DatePickerModal({
         onClose();
       }
     }, 0);
-  };
-
-  const handleQuickDate = (
-    type:
-      | 'today'
-      | 'tomorrow'
-      | 'nextMonday'
-      | 'yesterday'
-      | 'lastWeek'
-      | 'lastMonth'
-      | 'nextWeek'
-      | 'nextMonth'
-  ) => {
-    let date: Date;
-    switch (type) {
-      case 'today':
-        date = new Date();
-        break;
-      case 'tomorrow':
-        date = addDays(new Date(), 1);
-        break;
-      case 'nextMonday':
-        date = nextMonday(new Date());
-        break;
-      case 'yesterday':
-        date = subDays(new Date(), 1);
-        break;
-      case 'lastWeek':
-        date = subWeeks(new Date(), 1);
-        break;
-      case 'lastMonth':
-        date = subMonths(new Date(), 1);
-        break;
-      case 'nextWeek':
-        date = addDays(new Date(), 7);
-        break;
-      case 'nextMonth':
-        date = addMonths(new Date(), 1);
-        break;
-    }
-
-    setTempSelectedDate(date);
-    setCurrentMonth(startOfMonth(date));
   };
 
   const formatSelectedDate = (date: Date) => {
@@ -287,27 +249,23 @@ export function DatePickerModal({
               className="mt-6 pb-2"
               contentContainerStyle={{ gap: theme.spacing.gap.md }}
             >
-              <Button
-                label={t('datePicker.yesterday')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('yesterday')}
-              />
-              <Button
-                label={t('datePicker.today')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('today')}
-              />
-              <Button
-                label={t('datePicker.tomorrow')}
-                variant="secondary"
-                size="sm"
-                width="auto"
-                onPress={() => handleQuickDate('tomorrow')}
-              />
+              {(quickDates ?? [
+                { label: t('datePicker.yesterday'), date: subDays(new Date(), 1) },
+                { label: t('datePicker.today'), date: new Date() },
+                { label: t('datePicker.tomorrow'), date: addDays(new Date(), 1) },
+              ]).map((option, index) => (
+                <Button
+                  key={index}
+                  label={option.label}
+                  variant="secondary"
+                  size="sm"
+                  width="auto"
+                  onPress={() => {
+                    setTempSelectedDate(option.date);
+                    setCurrentMonth(startOfMonth(option.date));
+                  }}
+                />
+              ))}
             </ScrollView>
           </View>
         </ScrollView>
