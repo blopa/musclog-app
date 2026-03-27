@@ -1,0 +1,1247 @@
+[
+  {
+    "name": "Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A chest exercise where you press a barbell upwards while lying on a bench.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Inclined Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A variation of the bench press performed on an inclined bench to target the upper chest.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Declined Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A variation of the bench press performed on a declined bench to target the lower chest.",
+    "targetMuscles": ["pectineus", "triceps", "serratus_anterior"],
+    "loadMultiplier": 1.1
+  },
+  {
+    "name": "Overhead Shoulder Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A shoulder exercise where you press a weight overhead while standing or seated.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Deadlift",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A full-body exercise that involves lifting a barbell from the ground to a standing position.",
+    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "traps", "quadriceps", "forearms"],
+    "loadMultiplier": 1.5
+  },
+  {
+    "name": "Pec Fly Machine",
+    "muscleGroup": "chest",
+    "type": "machine",
+    "description": "A machine exercise that isolates the chest muscles by mimicking the motion of a fly.",
+    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Leg Extension Machine",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise that targets the quadriceps by extending the legs from a seated position.",
+    "targetMuscles": ["quadriceps"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you bend your knees and hips to lower your body, then stand back up.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 1.2
+  },
+  {
+    "name": "Barbell Back Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you bend your knees and hips to lower your body, with a barbell placed across your upper back, then stand back up.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "erector_spinae"],
+    "loadMultiplier": 1.2
+  },
+  {
+    "name": "Leg Press Machine",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise where you push a weight away from you using your legs.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 3.5
+  },
+  {
+    "name": "Lat Pulldown",
+    "muscleGroup": "back",
+    "type": "machine",
+    "description": "A machine exercise that targets the upper back by pulling a bar down towards your chest.",
+    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Pull-Up",
+    "muscleGroup": "back",
+    "type": "bodyweight",
+    "description": "An upper body exercise where you lift your body up to a bar using your back and arm muscles.",
+    "targetMuscles": ["lats", "biceps", "rhomboids", "lower_traps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Seated Row",
+    "muscleGroup": "back",
+    "type": "machine",
+    "description": "A machine exercise that targets the back muscles by pulling a handle towards your torso while seated.",
+    "targetMuscles": ["rhomboids", "lats", "traps", "biceps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Bicep Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An arm exercise that targets the biceps by lifting a weight towards your shoulder.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Tricep Overhead Extension",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An arm exercise that targets the triceps by extending the arm at the elbow.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Leg Curl Machine",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks.",
+    "targetMuscles": ["hamstrings"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Lateral Raise",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise where you lift weights out to the side of your body.",
+    "targetMuscles": ["lateral_deltoid"],
+    "loadMultiplier": 0.1
+  },
+  {
+    "name": "Front Raise",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise where you lift weights to the front of your body.",
+    "targetMuscles": ["anterior_deltoid"],
+    "loadMultiplier": 0.08
+  },
+  {
+    "name": "Calf Raise",
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "description": "A lower body exercise that targets the calf muscles by raising the heels off the ground.",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Hammer Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An arm exercise similar to the bicep curl, but with a neutral grip.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.18
+  },
+  {
+    "name": "Preacher Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A bicep curl variation performed on a preacher bench to isolate the biceps.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Cable Tricep Pushdown",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An arm exercise that targets the triceps by pushing a cable attachment downwards.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Chest Press Machine",
+    "muscleGroup": "chest",
+    "type": "machine",
+    "description": "A machine exercise that mimics the bench press.",
+    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Smith Machine Squat",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A squat variation performed on a Smith machine for added stability.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 1.3
+  },
+  {
+    "name": "T-Bar Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A back exercise where you pull a T-bar towards your torso.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Bent Over Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A back exercise where you bend at the waist and pull a weight towards your torso.",
+    "targetMuscles": ["lats", "rhomboids", "biceps", "erector_spinae"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Upright Row",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A shoulder exercise where you pull a weight upwards along the front of your body.",
+    "targetMuscles": ["upper_traps", "lateral_deltoid", "biceps"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Fly",
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "description": "A chest exercise where you lower and lift dumbbells out to the sides while lying on a bench.",
+    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.15
+  },
+  {
+    "name": "Incline Dumbbell Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A chest exercise similar to the incline bench press but using dumbbells.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Machine Shoulder Press",
+    "muscleGroup": "shoulders",
+    "type": "machine",
+    "description": "A shoulder exercise performed on a machine that mimics the overhead press.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Reverse Pec Deck Fly",
+    "muscleGroup": "shoulders",
+    "type": "machine",
+    "description": "A machine exercise that targets the rear delts by mimicking the motion of a reverse fly.",
+    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Cable Crossover",
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "description": "A chest exercise that targets the inner chest by pulling cables across the body.",
+    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Seated Calf Raise",
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "description": "A calf exercise performed while seated, targeting the soleus muscle.",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Standing Calf Raise",
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "description": "A calf exercise performed while standing, targeting the gastrocnemius muscle.",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Romanian Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A deadlift variation that targets the hamstrings and glutes.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Glute Bridge",
+    "muscleGroup": "glutes",
+    "type": "bodyweight",
+    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground while lying on your back.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Hip Thrust",
+    "muscleGroup": "glutes",
+    "type": "compound",
+    "description": "A lower body exercise that targets the glutes by lifting the hips off the ground with the shoulders supported on a bench.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps"],
+    "loadMultiplier": 1.4
+  },
+  {
+    "name": "Cable Bicep Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An arm exercise that targets the biceps by curling a cable attachment.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Dumbbell Shoulder Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A shoulder exercise where you press dumbbells overhead.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.25
+  },
+  {
+    "name": "Smith Machine Bench Press",
+    "muscleGroup": "chest",
+    "type": "machine",
+    "description": "A bench press variation performed on a Smith machine for added stability.",
+    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Hack Squat",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A squat variation performed on a hack squat machine to target the quadriceps.",
+    "targetMuscles": ["quadriceps", "glutes"],
+    "loadMultiplier": 1.5
+  },
+  {
+    "name": "Reverse Lunge",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you step backward into a lunge.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Step-Up",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you step onto a raised platform.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Kettlebell Swing",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A full-body exercise that involves swinging a kettlebell between the legs and up to shoulder height.",
+    "targetMuscles": ["glutes", "hamstrings", "erector_spinae", "shoulders", "forearms"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Goblet Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat variation performed while holding a weight in front of the chest.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Sumo Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A deadlift variation with a wide stance that targets the inner thighs and glutes.",
+    "targetMuscles": ["quadriceps", "glutes", "adductors", "erector_spinae"],
+    "loadMultiplier": 1.5
+  },
+  {
+    "name": "Hip Abduction Machine",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise that targets the outer thighs by spreading the legs apart.",
+    "targetMuscles": ["abductors", "gluteus_medius", "gluteus_minimus"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Hip Adduction Machine",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise that targets the inner thighs by bringing the legs together.",
+    "targetMuscles": ["adductors", "pectineus"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Cable Face Pull",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise that targets the rear delts by pulling a cable attachment towards the face.",
+    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Incline Dumbbell Fly",
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "description": "A chest exercise performed on an incline bench that targets the upper chest.",
+    "targetMuscles": ["pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.15
+  },
+  {
+    "name": "Dips",
+    "muscleGroup": "arms",
+    "type": "bodyweight",
+    "description": "A chest and triceps exercise where you lower and lift your body using parallel bars.",
+    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Push-Up",
+    "muscleGroup": "chest",
+    "type": "bodyweight",
+    "description": "A chest, shoulders, and triceps exercise where you push your body up from the ground.",
+    "targetMuscles": ["pectineus", "triceps", "anterior_deltoid", "serratus_anterior"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Plank",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A core exercise where you hold a push-up position for a set amount of time.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae", "shoulders"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Russian Twist",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "An oblique exercise where you twist your torso side to side while holding a weight.",
+    "targetMuscles": [
+      "external_obliques",
+      "internal_obliques",
+      "rectus_abdominis",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.1
+  },
+  {
+    "name": "Hanging Leg Raise",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise where you raise your legs while hanging from a bar.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Mountain Climbers",
+    "muscleGroup": "full_body",
+    "type": "bodyweight",
+    "description": "A full-body exercise where you perform a running motion while in a plank position.",
+    "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Burpees",
+    "muscleGroup": "full_body",
+    "type": "bodyweight",
+    "description": "A full-body exercise that involves a squat, jump, and push-up.",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "rectus_abdominis",
+      "triceps",
+      "shoulders"
+    ],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Box Jump",
+    "muscleGroup": "legs",
+    "type": "plyometric",
+    "description": "A lower body plyometric exercise where you jump onto a raised platform.",
+    "targetMuscles": ["quadriceps", "glutes", "calves"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Turkish Get-Up",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "A full-body exercise that involves transitioning from lying down to standing up while holding a weight overhead.",
+    "targetMuscles": ["glutes", "quadriceps", "hamstrings", "rectus_abdominis", "shoulders"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Farmer's Walk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An exercise where you walk while holding heavy weights in each hand.",
+    "targetMuscles": ["forearms", "glutes", "quadriceps", "calves", "erector_spinae"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Snatch",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An Olympic lift where you lift a barbell from the ground to overhead in one motion.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Clean and Jerk",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An Olympic lift where you lift a barbell from the ground to the shoulders and then overhead.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "shoulders", "traps"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Battle Ropes",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An exercise where you create waves with heavy ropes to build strength and endurance.",
+    "targetMuscles": ["shoulders", "traps", "biceps", "forearms"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Crunch Machine",
+    "muscleGroup": "abdomen",
+    "type": "machine",
+    "description": "A machine exercise that targets the abdominal muscles by mimicking the motion of a crunch.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Chest Supported Row Machine",
+    "muscleGroup": "back",
+    "type": "machine",
+    "description": "A back exercise performed on a machine where you row with your chest supported on a pad, targeting the upper and middle back muscles.",
+    "targetMuscles": ["rhomboids", "traps", "lats", "biceps"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Barbell Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A back exercise where you pull a barbell towards your torso while bent over.",
+    "targetMuscles": ["rhomboids", "lats", "traps", "erector_spinae", "biceps"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Skull Crusher",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A tricep exercise where you lower a barbell towards your forehead and extend back up.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you perform a split squat with your rear foot elevated on a bench.",
+    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Pallof Press",
+    "muscleGroup": "core",
+    "type": "isolation",
+    "description": "A core exercise that involves pressing a cable or resistance band away from the body to resist rotation.",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "internal_obliques",
+      "external_obliques",
+      "transverse_abdominis"
+    ],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Hanging Knee Raise",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise where you raise your knees towards your chest while hanging from a bar.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Landmine Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A shoulder exercise where you press a barbell anchored at one end in a landmine attachment.",
+    "targetMuscles": ["anterior_deltoid", "upper_traps", "triceps", "pectineus"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Landmine Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A back exercise where you pull a barbell anchored at one end in a landmine attachment towards your torso.",
+    "targetMuscles": ["rhomboids", "lats", "biceps", "traps"],
+    "loadMultiplier": 0.6
+  },
+  {
+    "name": "Donkey Calf Raise",
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "description": "A calf exercise where you raise your heels while bent over with weight on your lower back.",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Jump Rope",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that involves jumping over a rope as it passes under your feet and over your head.",
+    "targetMuscles": ["calves", "glutes", "quadriceps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Running",
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that involves jogging or sprinting over a distance.",
+    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Cycling",
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that involves riding a bicycle, either stationary or moving.",
+    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Rowing Machine",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that mimics the action of rowing a boat, using a machine.",
+    "targetMuscles": ["lats", "biceps", "rhomboids", "traps", "erector_spinae"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Elliptical Trainer",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A cardiovascular exercise performed on a machine that mimics walking or running without causing excessive pressure on the joints.",
+    "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "High-Intensity Interval Training (HIIT)",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A form of cardiovascular exercise that alternates short periods of intense anaerobic exercise with less intense recovery periods.",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Stair Climber",
+    "muscleGroup": "legs",
+    "type": "cardio",
+    "description": "A cardiovascular exercise performed on a machine that mimics the motion of climbing stairs.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Aerobics",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A form of cardiovascular exercise that includes rhythmic activities, often performed to music.",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Dance Cardio",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that involves various dance movements and routines to elevate heart rate.",
+    "targetMuscles": [
+      "quadriceps",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "rectus_abdominis",
+      "external_obliques"
+    ],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Shadow Boxing",
+    "muscleGroup": "full_body",
+    "type": "cardio",
+    "description": "A cardiovascular exercise that involves throwing punches in the air to increase heart rate and improve cardiovascular fitness.",
+    "targetMuscles": [
+      "rectus_abdominis",
+      "external_obliques",
+      "anterior_deltoid",
+      "lateral_deltoid",
+      "biceps",
+      "triceps"
+    ],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Narrow Grip Lat Pulldown",
+    "muscleGroup": "back",
+    "type": "machine",
+    "description": "A lat pulldown variation where you use a narrow grip to target the inner back muscles.",
+    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Supinated Lat Pulldown",
+    "muscleGroup": "back",
+    "type": "machine",
+    "description": "A lat pulldown variation where you use a supinated grip to target the biceps and upper back.",
+    "targetMuscles": ["lats", "rhomboids", "biceps", "traps"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Cable Pullover",
+    "muscleGroup": "back",
+    "type": "isolation",
+    "description": "A back exercise where you pull a cable bar from above your head down towards your hips, focusing on the lats.",
+    "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Dumbbell Pullover",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A versatile exercise that targets the chest and lats by lowering and raising a dumbbell over your head while lying on a bench.",
+    "targetMuscles": ["pectoralis_major", "lats", "teres_major"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Reverse Grip Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A bench press variation where you use a reverse grip to emphasize the upper chest and triceps.",
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "loadMultiplier": 0.8
+  },
+  {
+    "name": "Cable Chest Press",
+    "muscleGroup": "chest",
+    "type": "isolation",
+    "description": "A chest exercise where you press a cable attachment forward, similar to a bench press, but with constant tension.",
+    "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Cable Front Raise",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise where you lift a cable attachment to the front, targeting the anterior deltoids.",
+    "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
+    "loadMultiplier": 0.08
+  },
+  {
+    "name": "Cable Lateral Raise",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise where you lift a cable attachment to the side, targeting the lateral deltoids.",
+    "targetMuscles": ["lateral_deltoid", "traps"],
+    "loadMultiplier": 0.1
+  },
+  {
+    "name": "Single-Arm Dumbbell Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A back exercise where you row a dumbbell towards your torso while bent over, focusing on each side individually.",
+    "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Shrug",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A shoulder exercise that targets the trapezius by shrugging the shoulders while holding dumbbells.",
+    "targetMuscles": ["traps"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Lying Leg Curl",
+    "muscleGroup": "legs",
+    "type": "machine",
+    "description": "A machine exercise that targets the hamstrings by curling the legs towards the buttocks while lying face down.",
+    "targetMuscles": ["hamstrings", "calves"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Good Morning",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you hinge at the hips to lower your torso, targeting the hamstrings and glutes.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "adductors"],
+    "loadMultiplier": 0.7
+  },
+  {
+    "name": "Zercher Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat variation where you hold the barbell in the crook of your elbows, emphasizing the quads and core.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "rectus_abdominis", "erector_spinae"],
+    "loadMultiplier": 1
+  },
+  {
+    "name": "Sissy Squat",
+    "muscleGroup": "legs",
+    "type": "isolation",
+    "description": "A quad-focused squat variation performed with a sissy squat bench or by leaning back on the balls of your feet.",
+    "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Jefferson Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A deadlift variation where you straddle the barbell, focusing on the quads, glutes, and core.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "adductors", "erector_spinae"],
+    "loadMultiplier": 1.4
+  },
+  {
+    "name": "Cossack Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A lower body exercise where you perform a deep side lunge, targeting the inner thighs and glutes.",
+    "targetMuscles": ["adductors", "glutes", "hamstrings", "quadriceps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Dragon Flag",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "An advanced core exercise where you lower and raise your body in a straight line while lying on a bench.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Hollow Body Hold",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A core exercise where you hold a hollow position, with your lower back pressed to the floor and your arms and legs extended.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Reverse Crunch",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise where you curl your hips towards your chest, focusing on the lower abs.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Ab Wheel Rollout",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A core exercise that involves rolling an ab wheel away from your body while maintaining a stable core.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "erector_spinae"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Pike Push-Up",
+    "muscleGroup": "shoulders",
+    "type": "bodyweight",
+    "description": "A shoulder exercise where you perform a push-up in a pike position, emphasizing the shoulders.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Cable Crunch",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise where you perform a crunch motion with a cable attachment for added resistance.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "An isolation triceps exercise where you hinge forward, keep the upper arm fixed, and extend the elbow to move the dumbbell back.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Two-Arm Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback variation using a dumbbell in each arm with the same bent-over elbow-extension pattern.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.22
+  },
+  {
+    "name": "Seated Bent-Over Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback performed seated while leaning forward to support the torso and isolate elbow extension.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Incline Bench Dumbbell Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback performed face-down on an incline bench to brace the chest and reduce momentum.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Cable Triceps Kickback",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback using a low cable, keeping the upper arm parallel to the floor while extending against the line of pull.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.28
+  },
+  {
+    "name": "Cable Triceps Kickback from High Pulley",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps kickback pattern with the cable set higher so the pull angle emphasizes the long head differently.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.26
+  },
+  {
+    "name": "Cable Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "description": "A hip-extension exercise where you sweep the working leg back against a low cable attached at the ankle or foot strap.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Glute Kickback Machine",
+    "muscleGroup": "glutes",
+    "type": "machine",
+    "description": "A machine-guided hip kickback that loads glute extension through a padded lever or platform.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.45
+  },
+  {
+    "name": "Banded Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "isolation",
+    "description": "A glute kickback performed with a resistance band anchored low or looped around the feet for hip extension.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0.12
+  },
+  {
+    "name": "Bodyweight Quadruped Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "bodyweight",
+    "description": "A bodyweight kickback from hands and knees, extending one hip straight back with a controlled squeeze at the top.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Standing Bodyweight Glute Kickback",
+    "muscleGroup": "glutes",
+    "type": "bodyweight",
+    "description": "A standing hip kickback extending the leg behind the body without equipment, often with a slight forward lean for balance.",
+    "targetMuscles": ["glutes", "hamstrings"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Concentration Biceps",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A biceps curl performed seated with the elbow braced against the inner thigh, curling a dumbbell toward the shoulder in a strict arc.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.22
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A horizontal press lying on a bench with dumbbells, allowing independent arm paths and a deep stretch at the bottom.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps", "serratus_anterior"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Decline Dumbbell Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A dumbbell chest press performed on a decline bench to emphasize the lower chest while pressing with a neutral-to-angled arm path.",
+    "targetMuscles": ["pectineus", "anterior_deltoid", "triceps"],
+    "loadMultiplier": 0.32
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "muscleGroup": "chest",
+    "type": "compound",
+    "description": "A bench press with a narrower grip to shift more load onto the triceps while still training the chest and anterior shoulders.",
+    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid"],
+    "loadMultiplier": 0.9
+  },
+  {
+    "name": "Arnold Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "A seated or standing dumbbell press that rotates from palms-in at the bottom to palms-forward overhead, hitting all delt heads.",
+    "targetMuscles": ["anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "triceps", "upper_traps"],
+    "loadMultiplier": 0.22
+  },
+  {
+    "name": "Push Press",
+    "muscleGroup": "shoulders",
+    "type": "compound",
+    "description": "An overhead press that uses a shallow dip and leg drive to accelerate the bar, allowing heavier loads than a strict press.",
+    "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps", "quadriceps", "glutes"],
+    "loadMultiplier": 0.55
+  },
+  {
+    "name": "Chin-Up",
+    "muscleGroup": "back",
+    "type": "bodyweight",
+    "description": "A pull-up with an underhand grip that increases biceps and brachialis involvement while training the lats and upper back.",
+    "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "lower_traps"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Straight-Arm Pulldown",
+    "muscleGroup": "back",
+    "type": "isolation",
+    "description": "A cable movement with elbows nearly locked, pulling the bar down toward the thighs to isolate lat engagement and shoulder extension.",
+    "targetMuscles": ["lats", "teres_major", "triceps"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Dumbbell Romanian Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A hip-hinge deadlift pattern holding dumbbells, emphasizing hamstrings and glutes with less low-back load than a barbell version.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae", "forearms"],
+    "loadMultiplier": 0.5
+  },
+  {
+    "name": "Trap Bar Deadlift",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A deadlift using a trap (hex) bar with a neutral grip and higher handles, often allowing a more upright torso and quad contribution.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "erector_spinae", "traps", "forearms"],
+    "loadMultiplier": 1.45
+  },
+  {
+    "name": "Rack Pull",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A partial deadlift from pins or blocks below the knee, overloading the upper back, traps, and grip with reduced leg range.",
+    "targetMuscles": ["traps", "erector_spinae", "rhomboids", "lats", "glutes", "hamstrings", "forearms"],
+    "loadMultiplier": 1.3
+  },
+  {
+    "name": "Front Squat",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A squat with the barbell racked across the front delts, demanding an upright torso and strong core and quad emphasis.",
+    "targetMuscles": ["quadriceps", "glutes", "erector_spinae", "upper_traps", "rectus_abdominis"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Walking Lunge",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A dynamic lunge pattern stepping forward alternately, training single-leg strength, balance, and hip/knee stability under load.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Forward Lunge",
+    "muscleGroup": "legs",
+    "type": "compound",
+    "description": "A split squat variation stepping forward into a deep lunge and returning, loading the front leg heavily through knee and hip extension.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.3
+  },
+  {
+    "name": "Wall Sit",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "An isometric hold with back against a wall and thighs parallel to the floor, building quad endurance and mental toughness.",
+    "targetMuscles": ["quadriceps", "glutes"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Pistol Squat",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A single-leg squat to full depth with the non-working leg extended, demanding mobility, balance, and unilateral leg strength.",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Nordic Hamstring Curl",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A partner- or anchor-assisted hamstring exercise lowering the body from kneeling with hips extended, emphasizing eccentric strength.",
+    "targetMuscles": ["hamstrings", "glutes"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Glute-Ham Raise",
+    "muscleGroup": "legs",
+    "type": "bodyweight",
+    "description": "A glute-ham developer movement combining hip extension and knee flexion to heavily load hamstrings, glutes, and lower back.",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Pendlay Row",
+    "muscleGroup": "back",
+    "type": "compound",
+    "description": "A bent-over barbell row where each rep starts from a dead stop on the floor, prioritizing explosive upper-back pulling strength.",
+    "targetMuscles": ["lats", "rhomboids", "traps", "biceps", "erector_spinae"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Inverted Row",
+    "muscleGroup": "back",
+    "type": "bodyweight",
+    "description": "A horizontal pull under a fixed bar or rings with the body straight, scaling difficulty by foot position and height.",
+    "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Barbell Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A standing curl with a shoulder-width underhand grip on a barbell, allowing heavier loads than most dumbbell curl variations.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.42
+  },
+  {
+    "name": "EZ Bar Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A barbell curl using an EZ-cam bar to reduce wrist strain while targeting the biceps and brachialis.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.4
+  },
+  {
+    "name": "Incline Dumbbell Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A curl performed on an incline bench with arms hanging back, stretching the long head of the biceps through a long range of motion.",
+    "targetMuscles": ["biceps", "brachialis"],
+    "loadMultiplier": 0.18
+  },
+  {
+    "name": "Zottman Curl",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A dumbbell curl supinating on the way up and rotating to overhand for a slow lowering phase to hit brachioradialis and extensors.",
+    "targetMuscles": ["biceps", "brachialis", "forearms"],
+    "loadMultiplier": 0.2
+  },
+  {
+    "name": "Cable Overhead Tricep Extension",
+    "muscleGroup": "arms",
+    "type": "isolation",
+    "description": "A triceps extension with the cable routed overhead, elbows fixed, extending the forearms to align with the high line of pull.",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.28
+  },
+  {
+    "name": "Diamond Push-Up",
+    "muscleGroup": "chest",
+    "type": "bodyweight",
+    "description": "A push-up with hands close forming a diamond shape, increasing triceps demand while still training the chest and shoulders.",
+    "targetMuscles": ["triceps", "pectineus", "anterior_deltoid", "serratus_anterior"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Bench Dip",
+    "muscleGroup": "arms",
+    "type": "bodyweight",
+    "description": "A triceps dip performed with hands on a bench behind you and feet on the floor or elevated, lowering the hips by bending the elbows.",
+    "targetMuscles": ["triceps", "anterior_deltoid", "pectineus"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Lying Leg Raise",
+    "muscleGroup": "abdomen",
+    "type": "bodyweight",
+    "description": "An abdominal exercise lying supine or on a bench, raising extended or bent legs toward the ceiling with controlled hip flexion.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Dead Bug",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A supine core drill alternating opposite arm and leg extensions while keeping the low back pressed to the floor for anti-extension control.",
+    "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Side Plank",
+    "muscleGroup": "core",
+    "type": "bodyweight",
+    "description": "A lateral isometric hold supported on one forearm and the side of the foot, resisting lateral flexion and building oblique endurance.",
+    "targetMuscles": ["external_obliques", "internal_obliques", "transverse_abdominis", "shoulders"],
+    "loadMultiplier": 0
+  },
+  {
+    "name": "Cable Woodchopper",
+    "muscleGroup": "core",
+    "type": "compound",
+    "description": "A diagonal cable chop from high to low or low to high across the body, training rotational power and oblique strength.",
+    "targetMuscles": ["external_obliques", "internal_obliques", "rectus_abdominis", "transverse_abdominis", "shoulders"],
+    "loadMultiplier": 0.35
+  },
+  {
+    "name": "Bent-Over Dumbbell Rear Delt Fly",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A hinge position fly with dumbbells, lifting the arms out to the sides with slight elbow bend to target the rear delts and rhomboids.",
+    "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
+    "loadMultiplier": 0.12
+  },
+  {
+    "name": "Barbell Shrug",
+    "muscleGroup": "shoulders",
+    "type": "isolation",
+    "description": "A heavy upper trap exercise elevating the shoulders straight up against a barbell held in front or behind the body.",
+    "targetMuscles": ["traps", "forearms"],
+    "loadMultiplier": 0.85
+  },
+  {
+    "name": "Power Clean",
+    "muscleGroup": "full_body",
+    "type": "compound",
+    "description": "An explosive Olympic lift pulling the bar from the floor to the shoulders in one motion, training hips, back, and catch strength.",
+    "targetMuscles": ["glutes", "hamstrings", "quadriceps", "traps", "shoulders", "forearms"],
+    "loadMultiplier": 0.85
+  }
+]

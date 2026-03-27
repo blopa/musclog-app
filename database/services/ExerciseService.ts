@@ -571,4 +571,94 @@ export class ExerciseService {
       console.log(`Repaired ${updates.length} exercise image(s)`);
     }
   }
+
+  /**
+   * Compares the bundled exercisesEnUS.json against the exercises in the DB that
+   * have source='app', and creates any entries that are missing. Intended to run
+   * on every app boot so that new exercises added to the JSON in a future update
+   * are automatically seeded for existing users.
+   *
+   * Safe to call repeatedly — exits immediately when nothing is missing.
+   * Returns the number of exercises created (0 on a no-op boot).
+   */
+  static async syncAppExercises(): Promise<number> {
+    const exercisesJson = exercisesData as ExerciseJsonData[];
+
+    // Collect names of non-deleted app exercises already in the DB
+    const existing = await database
+      .get<Exercise>('exercises')
+      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const existingNames = new Set(existing.map((ex) => (ex.name ?? '').toLowerCase()));
+
+    // Determine which JSON entries are missing from the DB
+    const missing = exercisesJson.filter((data) => !existingNames.has(data.name.toLowerCase()));
+
+    if (missing.length === 0) {
+      return 0;
+    }
+
+    // Preload bundled image assets before doing any file copies
+    await preloadExerciseImages();
+
+    const now = Date.now();
+
+    // Prepare records — prepareCreate assigns IDs and is usable after batch()
+    const prepared = missing.map((data) => {
+      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(data.type);
+      const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
+
+      return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+        exercise.name = data.name;
+        exercise.description = data.description;
+        exercise.muscleGroup = data.muscleGroup as MuscleGroup;
+        exercise.equipmentType = equipmentType as EquipmentType;
+        exercise.mechanicType = mechanicType as MechanicType;
+        exercise.source = 'app';
+        exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
+        exercise.imageUrl = undefined;
+        exercise.createdAt = now;
+        exercise.updatedAt = now;
+        exercise.deletedAt = undefined;
+      });
+    });
+
+    await database.write(async () => {
+      await database.batch(...prepared);
+    });
+
+    // Copy the bundled image for each newly created exercise.
+    // File I/O cannot run inside a write transaction, so this is a second pass.
+    const imageUpdates: { exercise: Exercise; fileUri: string }[] = [];
+    for (const exercise of prepared) {
+      const jsonIndex = exercisesJson.findIndex(
+        (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
+      );
+      if (jsonIndex < 0) {
+        continue;
+      }
+
+      try {
+        const assetSource = getBundledExerciseImageSourceByIndex(jsonIndex);
+        const filename = getExerciseImageFilenameByIndex(jsonIndex);
+        const fileUri = await copyBundledExerciseImageToDocument(assetSource, filename);
+        imageUpdates.push({ exercise, fileUri });
+      } catch (err) {
+        console.warn('[syncAppExercises] Failed to copy image for', exercise.name, err);
+      }
+    }
+
+    if (imageUpdates.length > 0) {
+      await database.write(async () => {
+        for (const { exercise, fileUri } of imageUpdates) {
+          await exercise.update((e) => {
+            e.imageUrl = fileUri;
+          });
+        }
+      });
+    }
+
+    console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
+    return prepared.length;
+  }
 }

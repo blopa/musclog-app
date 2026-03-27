@@ -104,6 +104,15 @@ function RootLayout() {
     );
   }, []);
 
+  // Sync app exercises on every boot: seeds any exercises that are in the
+  // bundled JSON but missing from the DB with source='app'. This is a no-op
+  // on most boots once the DB is up to date.
+  useEffect(() => {
+    ExerciseService.syncAppExercises().catch((err) =>
+      console.warn('[ExerciseService] syncAppExercises error:', err)
+    );
+  }, []);
+
   // Boot-time tasks (Android only, all run in parallel)
   useEffect(() => {
     if (Platform.OS !== 'android') {
