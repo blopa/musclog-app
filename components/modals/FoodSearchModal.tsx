@@ -275,6 +275,40 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   );
 }
 
+function getSectionHeaderTitle(
+  isInitialLoad: boolean,
+  hasLocalResults: boolean,
+  hasApiResults: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
+): string {
+  if (isInitialLoad) {
+    return t('foodSearch.searching');
+  }
+
+  if (hasLocalResults || hasApiResults || isLoadingAPI) {
+    return t('foodSearch.bestMatches');
+  }
+
+  return t('foodSearch.noResults');
+}
+
+function getSearchingStatusText(
+  isLoadingLocal: boolean,
+  isLoadingAPI: boolean,
+  t: (key: string) => string
+): string {
+  if (isLoadingLocal && isLoadingAPI) {
+    return t('foodSearch.searchingLocalAndAPI');
+  }
+
+  if (isLoadingLocal) {
+    return t('foodSearch.searchingLocal');
+  }
+
+  return t('foodSearch.searchingAPI');
+}
+
 export function FoodSearchModal({
   visible,
   onClose,
@@ -373,6 +407,9 @@ export function FoodSearchModal({
     loadMoreAPI,
     loadMoreUSDA,
     firstResolvedApi,
+    retryAPI,
+    retryUSDA,
+    cancelSearch,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -383,6 +420,25 @@ export function FoodSearchModal({
     usdaLimit,
     debounceMs: 300,
   });
+
+  const [showCancelSearch, setShowCancelSearch] = useState(false);
+
+  useEffect(() => {
+    setShowCancelSearch(false);
+
+    if (!searchQuery.trim() || (!isLoadingAPI && !isInitialLoad) || hasApiResults) {
+      return;
+    }
+
+    const timer = setTimeout(() => setShowCancelSearch(true), 10_000);
+    return () => clearTimeout(timer);
+  }, [searchQuery, isLoadingAPI, isInitialLoad, hasApiResults]);
+
+  const handleCancelSearch = useCallback(() => {
+    cancelSearch();
+    setSearchQuery('');
+    setShowCancelSearch(false);
+  }, [cancelSearch]);
 
   const [suggestedFoods, setSuggestedFoods] = useState<FoodItem[] | null>(null);
   const [isLoadingSuggested, setIsLoadingSuggested] = useState(false);
@@ -867,13 +923,13 @@ export function FoodSearchModal({
                     /* All / Favorites / API tabs: food search results */
                     <View>
                       <SectionHeader
-                        title={
-                          isInitialLoad
-                            ? t('foodSearch.searching')
-                            : hasLocalResults || hasApiResults || isLoadingAPI
-                              ? t('foodSearch.bestMatches')
-                              : t('foodSearch.noResults')
-                        }
+                        title={getSectionHeaderTitle(
+                          isInitialLoad,
+                          hasLocalResults,
+                          hasApiResults,
+                          isLoadingAPI,
+                          t
+                        )}
                       />
                       <View className="gap-1.5">
                         {/* Show initial loading state */}
@@ -881,12 +937,18 @@ export function FoodSearchModal({
                           <View className="flex items-center justify-center py-12">
                             <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                             <Text className="mt-2 text-sm text-text-secondary">
-                              {isLoadingLocal && isLoadingAPI
-                                ? t('foodSearch.searchingLocalAndAPI')
-                                : isLoadingLocal
-                                  ? t('foodSearch.searchingLocal')
-                                  : t('foodSearch.searchingAPI')}
+                              {getSearchingStatusText(isLoadingLocal, isLoadingAPI, t)}
                             </Text>
+                            {showCancelSearch ? (
+                              <View className="mt-4">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
+                            ) : null}
                           </View>
                         ) : null}
 
@@ -960,6 +1022,7 @@ export function FoodSearchModal({
                                 ) {
                                   return null;
                                 }
+
                                 return (
                                   <View key="openfood" className="mb-4">
                                     <View className="mb-3 flex-row items-center gap-2">
@@ -975,19 +1038,40 @@ export function FoodSearchModal({
                                     </View>
                                     {apiError ? (
                                       <View
-                                        className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
-                                        style={{ backgroundColor: theme.colors.status.error10 }}
+                                        className="mb-4 overflow-hidden rounded-xl border"
+                                        style={{
+                                          backgroundColor: theme.colors.status.error10,
+                                          borderColor: theme.colors.status.error + '33',
+                                        }}
                                       >
-                                        <AlertTriangle
-                                          size={theme.iconSize.sm}
-                                          color={theme.colors.status.error}
-                                        />
-                                        <Text
-                                          className="flex-1 text-xs font-medium"
-                                          style={{ color: theme.colors.status.error }}
-                                        >
-                                          {t('foodSearch.errorLoadingAPI')}
-                                        </Text>
+                                        <View className="flex-row items-center gap-3 p-3">
+                                          <View
+                                            className="items-center justify-center rounded-lg p-2"
+                                            style={{
+                                              backgroundColor: theme.colors.status.error + '22',
+                                            }}
+                                          >
+                                            <AlertTriangle
+                                              size={theme.iconSize.sm}
+                                              color={theme.colors.status.error}
+                                            />
+                                          </View>
+                                          <Text
+                                            className="flex-1 text-xs font-medium"
+                                            style={{ color: theme.colors.status.error }}
+                                          >
+                                            {t('foodSearch.errorLoadingAPI')}
+                                          </Text>
+                                        </View>
+                                        <View className="items-center px-3 pb-3">
+                                          <Button
+                                            label={t('foodSearch.retrySearch')}
+                                            onPress={retryAPI}
+                                            size="sm"
+                                            variant="outline"
+                                            width="full"
+                                          />
+                                        </View>
                                       </View>
                                     ) : (
                                       <View className="gap-1.5">
@@ -1034,6 +1118,7 @@ export function FoodSearchModal({
                               ) {
                                 return null;
                               }
+
                               return (
                                 <View key="usda" className="mb-4">
                                   <View className="mb-3 flex-row items-center gap-2">
@@ -1049,19 +1134,40 @@ export function FoodSearchModal({
                                   </View>
                                   {usdaError ? (
                                     <View
-                                      className="border-status-error/20 bg-status-error/5 mb-4 flex-row items-center gap-2 rounded-xl border p-3"
-                                      style={{ backgroundColor: theme.colors.status.error10 }}
+                                      className="mb-4 overflow-hidden rounded-xl border"
+                                      style={{
+                                        backgroundColor: theme.colors.status.error10,
+                                        borderColor: theme.colors.status.error + '33',
+                                      }}
                                     >
-                                      <AlertTriangle
-                                        size={theme.iconSize.sm}
-                                        color={theme.colors.status.error}
-                                      />
-                                      <Text
-                                        className="flex-1 text-xs font-medium"
-                                        style={{ color: theme.colors.status.error }}
-                                      >
-                                        {t('foodSearch.errorLoadingUSDA')}
-                                      </Text>
+                                      <View className="flex-row items-center gap-3 p-3">
+                                        <View
+                                          className="items-center justify-center rounded-lg p-2"
+                                          style={{
+                                            backgroundColor: theme.colors.status.error + '22',
+                                          }}
+                                        >
+                                          <AlertTriangle
+                                            size={theme.iconSize.sm}
+                                            color={theme.colors.status.error}
+                                          />
+                                        </View>
+                                        <Text
+                                          className="flex-1 text-xs font-medium"
+                                          style={{ color: theme.colors.status.error }}
+                                        >
+                                          {t('foodSearch.errorLoadingUSDA')}
+                                        </Text>
+                                      </View>
+                                      <View className="items-center px-3 pb-3">
+                                        <Button
+                                          label={t('foodSearch.retrySearch')}
+                                          onPress={retryUSDA}
+                                          size="sm"
+                                          variant="outline"
+                                          width="full"
+                                        />
+                                      </View>
                                     </View>
                                   ) : (
                                     <View className="gap-1.5">
@@ -1104,6 +1210,16 @@ export function FoodSearchModal({
                             <Text className="ml-2 text-xs text-text-secondary">
                               {t('foodSearch.searchingAPI')}
                             </Text>
+                            {showCancelSearch ? (
+                              <View className="mt-3">
+                                <Button
+                                  label={t('foodSearch.cancelSearch')}
+                                  onPress={handleCancelSearch}
+                                  size="sm"
+                                  variant="outline"
+                                />
+                              </View>
+                            ) : null}
                           </View>
                         ) : null}
 

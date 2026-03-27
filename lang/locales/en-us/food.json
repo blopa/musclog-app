@@ -103,7 +103,10 @@
       "copyError": "Failed to copy meal",
       "splitMeal": "Split Meal",
       "splitMealDesc": "Move a portion of this meal to another day or meal",
+      "split": "Split",
+      "splitDesc": "Move a portion of this food to another day or meal",
       "splitModalTitle": "Split Meal",
+      "splitFoodModalTitle": "Split Food",
       "splitPercentage": "Percentage to move",
       "splitSuccess": "Meal split successfully",
       "splitError": "Failed to split meal",
@@ -125,8 +128,27 @@
       "edit": "Edit",
       "editDesc": "Modify serving size and nutrition",
       "goToToday": "Go To Today",
+      "getMealInsights": "Get Meal Insights",
+      "getMealInsightsDesc": "Ask AI to analyze and critique this meal",
+      "getMealInsightsError": "Failed to get meal insights",
       "createMeal": "Create Meal",
-      "createMealDesc": "Create a new meal from selected foods"
+      "createMealDesc": "Create a new meal from selected foods",
+      "mergeDuplicates": "Merge Duplicate Foods",
+      "mergeDuplicatesDesc": "Combine entries of the same food into one",
+      "mergeDuplicatesNone": "No duplicate foods found in this meal",
+      "mergeDuplicatesConfirmTitle": "Merge Duplicate Foods?",
+      "mergeDuplicatesConfirmMessage": "Duplicate entries in {{mealName}} will be combined into a single entry with the total amount.",
+      "mergeDuplicatesConfirm": "Merge",
+      "mergeDuplicatesSuccess": "Duplicate foods merged successfully",
+      "mergeDuplicatesError": "Failed to merge duplicate foods"
+    },
+    "mealInsights": {
+      "title": "Meal Insights",
+      "subtitle": "AI analysis for your {{meal}}",
+      "contextInputLabel": "Add context (optional)",
+      "contextInputPlaceholder": "e.g. post-workout meal, trying to cut...",
+      "submitButton": "Get Insights",
+      "loadingText": "Analyzing your meal…"
     },
     "meals": {
       "manageMealData": {

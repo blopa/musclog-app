@@ -66,6 +66,7 @@ export function useUnifiedFoodSearch({
   const [apiCompleted, setApiCompleted] = useState(false);
   const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const prevDebouncedRef = useRef(searchTerm.trim());
 
   // API pagination states
   const [apiOffset, setApiOffset] = useState(0);
@@ -86,6 +87,7 @@ export function useUnifiedFoodSearch({
   // Debounce search term
   useEffect(() => {
     if (!searchTerm || searchTerm.trim().length < 2) {
+      prevDebouncedRef.current = '';
       setDebouncedSearchTerm('');
       setApiCompleted(false);
       setUsdaCompleted(false);
@@ -98,14 +100,20 @@ export function useUnifiedFoodSearch({
     }
 
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm.trim());
-      setApiCompleted(false);
-      setUsdaCompleted(false);
-      setFirstResolvedApi(null);
-      setApiOffset(0);
-      setUsdaOffset(0);
-      setAccumulatedApiResults([]);
-      setAccumulatedUsdaResults([]);
+      const trimmed = searchTerm.trim();
+      const didChange = trimmed !== prevDebouncedRef.current;
+      prevDebouncedRef.current = trimmed;
+      setDebouncedSearchTerm(trimmed);
+
+      if (didChange) {
+        setApiCompleted(false);
+        setUsdaCompleted(false);
+        setFirstResolvedApi(null);
+        setApiOffset(0);
+        setUsdaOffset(0);
+        setAccumulatedApiResults([]);
+        setAccumulatedUsdaResults([]);
+      }
     }, debounceMs);
 
     return () => clearTimeout(timer);
@@ -133,6 +141,7 @@ export function useUnifiedFoodSearch({
     isLoading: isLoadingAPI,
     error: apiError,
     isSuccess: isApiSuccess,
+    refetch: retryAPI,
   } = useQuery({
     queryKey: ['food-search-api', debouncedSearchTerm, apiOffset],
     queryFn: async () => {
@@ -150,8 +159,65 @@ export function useUnifiedFoodSearch({
           return [];
         }
 
+        // Languages supported by OFF with significant product data.
+        // Full taxonomy: https://github.com/openfoodfacts/openfoodfacts-server/blob/645053e9b62ac25b23e061d522de950309be2c4b/taxonomies/languages.txt
+        const supportedLangs = [
+          'ar',
+          'bg',
+          'bn',
+          'ca',
+          'cs',
+          'da',
+          'de',
+          'el',
+          'en',
+          'es',
+          'et',
+          'fa',
+          'fi',
+          'fr',
+          'he',
+          'hr',
+          'hu',
+          'hy',
+          'id',
+          'it',
+          'ja',
+          'ka',
+          'kk',
+          'ko',
+          'lt',
+          'lv',
+          'mk',
+          'ms',
+          'nb',
+          'nl',
+          'pl',
+          'pt',
+          'ro',
+          'ru',
+          'sk',
+          'sl',
+          'sq',
+          'sr',
+          'sv',
+          'ta',
+          'th',
+          'tr',
+          'uk',
+          'ur',
+          'uz',
+          'vi',
+          'xx',
+          'zh',
+        ];
+
+        const localizedFields = supportedLangs
+          .flatMap((lang) => [`product_name_${lang}`, `generic_name_${lang}`])
+          .join(',');
+
         // v2 API doesn't support text search, so we use the v1 search endpoint directly
-        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url`;
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(debouncedSearchTerm)}&json=1&page_size=${apiLimit}&page=${Math.floor(apiOffset / apiLimit) + 1}&fields=code,product_name,brands,generic_name,nutriments,serving_size,categories,image_url,image_small_url,${localizedFields}`;
 
         const response = await fetch(url, { signal: abortController.signal });
 
@@ -197,6 +263,7 @@ export function useUnifiedFoodSearch({
     isLoading: isLoadingUSDA,
     error: usdaError,
     isSuccess: isUsdaSuccess,
+    refetch: retryUSDA,
   } = useQuery({
     queryKey: ['food-search-usda', debouncedSearchTerm, usdaOffset],
     queryFn: async () => {
@@ -404,6 +471,13 @@ export function useUnifiedFoodSearch({
   const isApiLoading = isLoadingAPI || isLoadingUSDA;
   const hasApiResults = apiResultsFormatted.length > 0 || usdaResultsFormatted.length > 0;
 
+  const cancelSearch = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+  }, []);
+
   // Cleanup abort controller on unmount
   useEffect(() => {
     return () => {
@@ -445,5 +519,8 @@ export function useUnifiedFoodSearch({
     loadMoreAPI,
     loadMoreUSDA,
     firstResolvedApi,
+    retryAPI,
+    retryUSDA,
+    cancelSearch,
   };
 }

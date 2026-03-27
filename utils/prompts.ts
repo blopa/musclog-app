@@ -126,15 +126,38 @@ export const getUserDetailsPrompt = async (
   }
 
   if (user.fitnessGoal) {
-    parts.push(`fitness goal is "${user.fitnessGoal}"`);
+    const fitnessGoalLabels: Record<string, string> = {
+      hypertrophy: 'Hypertrophy (Build Muscle)',
+      strength: 'Strength (Lift Heavier)',
+      endurance: 'Endurance (Stamina)',
+      weight_loss: 'Weight Loss (Burn Fat)',
+      general: 'General Fitness',
+    };
+    parts.push(`fitness goal is "${fitnessGoalLabels[user.fitnessGoal] ?? user.fitnessGoal}"`);
   }
 
   if (user.activityLevel) {
-    parts.push(`activity level is "${user.activityLevel}"`);
+    const activityLevelLabels: Record<number, string> = {
+      1: 'Sedentary',
+      2: 'Light',
+      3: 'Moderate',
+      4: 'Active',
+      5: 'Super Active',
+    };
+    parts.push(
+      `activity level is "${activityLevelLabels[user.activityLevel] ?? user.activityLevel}"`
+    );
   }
 
   if (user.liftingExperience) {
-    parts.push(`lifting experience is "${user.liftingExperience}"`);
+    const liftingExperienceLabels: Record<string, string> = {
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
+    };
+    parts.push(
+      `lifting experience is "${liftingExperienceLabels[user.liftingExperience] ?? user.liftingExperience}"`
+    );
   }
 
   const units = await SettingsService.getUnits();
@@ -447,7 +470,6 @@ export const getNutritionInsightsPrompt = async (
   return [
     await getBaseSystemPrompt(language, context),
     `Please provide insights about the user's nutrition in these ${diffInDays} days range, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.`,
-    BE_CONCISE_PROMPT,
     userDetails,
     'Weight and fat percentage metrics:',
     '```json',
@@ -458,6 +480,61 @@ export const getNutritionInsightsPrompt = async (
     nutritionData,
     '```',
   ].join('\n');
+};
+
+/**
+ * System prompt for critiquing a single meal
+ */
+export const getMealCritiquePrompt = async (
+  mealType: string,
+  foods: { name: string; gramWeight: number }[],
+  totals: { calories: number; protein: number; carbs: number; fat: number },
+  language: string = 'en-US',
+  context?: 'nutrition' | 'exercise' | 'general'
+): Promise<string> => {
+  const user = await UserService.getCurrentUser();
+  const nutritionGoal = await NutritionGoalService.getCurrent();
+  const eatingPhase = nutritionGoal?.eatingPhase ?? undefined;
+  const userDetails = await getUserDetailsPrompt(user, eatingPhase);
+
+  let heightInfo = '';
+  try {
+    const latestHeight = await UserMetricService.getLatest('height');
+    if (latestHeight) {
+      const { value, unit: storedUnit } = await latestHeight.getDecrypted();
+      heightInfo = `User height: ${Math.round(value)} ${storedUnit ?? 'cm'}`;
+    }
+  } catch {
+    // height not available
+  }
+
+  let nutritionGoalInfo = '';
+  if (nutritionGoal) {
+    nutritionGoalInfo = [
+      'Daily nutrition targets:',
+      `- Calories: ${nutritionGoal.totalCalories} kcal`,
+      `- Protein: ${nutritionGoal.protein}g`,
+      `- Carbs: ${nutritionGoal.carbs}g`,
+      `- Fat: ${nutritionGoal.fats}g`,
+    ].join('\n');
+  }
+
+  const foodList = foods.map((f) => `- ${f.name}: ${Math.round(f.gramWeight)}g`).join('\n');
+
+  return [
+    await getBaseSystemPrompt(language, context),
+    `The user wants feedback on their ${mealType} meal.`,
+    userDetails,
+    heightInfo,
+    nutritionGoalInfo,
+    `Meal to give feedback: ${mealType}`,
+    'Foods in the meal:',
+    foodList,
+    `Combined totals: Calories ${Math.round(totals.calories)} kcal | Protein ${Math.round(totals.protein)}g | Carbs ${Math.round(totals.carbs)}g | Fat ${Math.round(totals.fat)}g`,
+    "Please provide a concise, constructive critique of this meal. Comment on nutritional balance, macro distribution relative to the user's daily targets and goals, and give 1–2 practical suggestions to improve it. Be encouraging and positive.",
+  ]
+    .filter(Boolean)
+    .join('\n');
 };
 
 /**
@@ -500,7 +577,6 @@ export const getRecentWorkoutsInsightsPrompt = async (
   return [
     await getBaseSystemPrompt(language, context),
     `Please provide insights about the user's workouts in these ${diffInDays} days range, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
-    BE_CONCISE_PROMPT,
     userDetails,
     'Recent workouts:',
     '```json',
@@ -540,11 +616,10 @@ export const getCalculateNextWorkoutVolumePrompt = async (
 
   return [
     await getBaseSystemPrompt(language),
-    `The user just completed a "${workoutTitle}" workout. Your task is to:
-1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)
-2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan
-3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals`,
-    BE_CONCISE_PROMPT,
+    `The user just completed a "${workoutTitle}" workout. Your task is to:`,
+    '1. Congratulate them and give specific feedback on their performance (check difficulty level 1-10, rest times, exhaustion level 1-10, workout score 1-10)',
+    "2. Calculate the volume for the next workout session using an average of these formulas: Epley, Brzycki, Lander, Lombardi, Mayhew, O'Connor, and Wathan",
+    "3. Volume doesn't always mean increases - suggest adjustments based on the data and their goals",
     userDetails,
     'Historical data for this workout:',
     '```json',
@@ -618,7 +693,6 @@ export const getWorkoutInsightsPrompt = async (
   return [
     await getBaseSystemPrompt(language),
     `Please provide insights about the user's "${workoutTitle}" workout, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
-    BE_CONCISE_PROMPT,
     userDetails,
     'Workout details:',
     '```json',
@@ -647,7 +721,6 @@ export const getRecentWorkoutInsightsPrompt = async (
   return [
     await getBaseSystemPrompt(language),
     `Please provide insights and feedback about the user's recent "${workoutTitle}" workout performance, including volume, exercise selection, rest times, and effort level.`,
-    BE_CONCISE_PROMPT,
     userDetails,
     'Completed workout:',
     '```json',
@@ -707,7 +780,6 @@ export const getWorkoutVolumeInsightsPrompt = async (
   return [
     await getBaseSystemPrompt(language),
     `Analyze the volume trend for the user's "${workoutTitle}" workout over time. Identify patterns, recommend adjustments, and assess progress.`,
-    BE_CONCISE_PROMPT,
     userDetails,
     'Historical volume data (sorted by date):',
     '```json',

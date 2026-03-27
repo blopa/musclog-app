@@ -386,6 +386,39 @@ export class NutritionService {
   }
 
   /**
+   * Merge duplicate nutrition logs (same food) within a meal.
+   * Updates the first log of each duplicate group with the combined gram weight,
+   * clears its portionId so amount is interpreted as grams, then deletes the rest.
+   */
+  static async mergeDuplicateNutritionLogs(
+    toUpdate: { log: NutritionLog; newAmount: number }[],
+    toDelete: NutritionLog[]
+  ): Promise<void> {
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...toUpdate.map(({ log, newAmount }) =>
+          log.prepareUpdate((record) => {
+            record.amount = newAmount;
+            record.portionId = undefined;
+            record.updatedAt = now;
+          })
+        ),
+        ...toDelete.map((log) =>
+          log.prepareUpdate((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+
+    if (Platform.OS === 'android') {
+      await requestNutritionWidgetUpdate();
+    }
+  }
+
+  /**
    * Delete multiple nutrition logs at once (e.g. all items in a meal section)
    */
   static async deleteNutritionLogsBatch(logs: NutritionLog[]): Promise<void> {

@@ -103,7 +103,10 @@
       "copyError": "Falha ao copiar refeição",
       "splitMeal": "Dividir Refeição",
       "splitMealDesc": "Mover uma parte desta refeição para outro dia ou refeição",
+      "split": "Dividir",
+      "splitDesc": "Mover uma parte deste alimento para outro dia ou refeição",
       "splitModalTitle": "Dividir Refeição",
+      "splitFoodModalTitle": "Dividir Alimento",
       "splitPercentage": "Porcentagem para mover",
       "splitSuccess": "Refeição dividida com sucesso",
       "splitError": "Falha ao dividir refeição",
@@ -125,8 +128,27 @@
       "edit": "Editar",
       "editDesc": "Modificar tamanho da porção e nutrição",
       "goToToday": "Ir para Hoje",
+      "getMealInsights": "Obter Insights da Refeição",
+      "getMealInsightsDesc": "Pedir à IA para analisar e criticar esta refeição",
+      "getMealInsightsError": "Falha ao obter insights da refeição",
       "createMeal": "Criar Refeição",
-      "createMealDesc": "Criar uma nova refeição dos alimentos selecionados"
+      "createMealDesc": "Criar uma nova refeição dos alimentos selecionados",
+      "mergeDuplicates": "Mesclar Alimentos Duplicados",
+      "mergeDuplicatesDesc": "Combinar entradas do mesmo alimento em uma só",
+      "mergeDuplicatesNone": "Nenhum alimento duplicado encontrado nesta refeição",
+      "mergeDuplicatesConfirmTitle": "Mesclar Alimentos Duplicados?",
+      "mergeDuplicatesConfirmMessage": "As entradas duplicadas em {{mealName}} serão combinadas em uma única entrada com a quantidade total.",
+      "mergeDuplicatesConfirm": "Mesclar",
+      "mergeDuplicatesSuccess": "Alimentos duplicados mesclados com sucesso",
+      "mergeDuplicatesError": "Falha ao mesclar alimentos duplicados"
+    },
+    "mealInsights": {
+      "title": "Insights da Refeição",
+      "subtitle": "Análise de IA para o(a) {{meal}}",
+      "contextInputLabel": "Adicionar contexto (opcional)",
+      "contextInputPlaceholder": "ex: refeição pós-treino, em fase de cutting...",
+      "submitButton": "Obter Insights",
+      "loadingText": "Analisando sua refeição…"
     },
     "meals": {
       "manageMealData": {
