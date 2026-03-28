@@ -1,75 +1,75 @@
 {
   "editFitnessDetails": {
-    "title": "Edit Fitness Details",
-    "units": "Units",
-    "imperial": "Imperial",
-    "metric": "Metric",
-    "bodyStats": "Body Stats",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "other": "Other",
-    "currentWeight": "Current Weight",
-    "height": "Height",
-    "fatPercentage": "Body Fat Percentage",
-    "fatPercentageNotSet": "Not set — tap to enter",
-    "goalsStrategy": "Goals & Strategy",
-    "fitnessGoal": "Fitness Goal",
-    "eatingPhase": "Eating Phase",
-    "cut": "Cut",
-    "maintain": "Maintain",
-    "bulk": "Bulk",
-    "lifestyleContext": "Lifestyle Context",
-    "activityLevel": "Activity Level",
-    "liftingExperience": "Lifting Experience",
-    "saveChanges": "Save Changes",
-    "selectGoal": "Select Fitness Goal",
-    "selectGoalSubtitle": "Choose the goal that best fits your training",
-    "selectActivity": "Select Activity Level",
-    "selectActivitySubtitle": "Choose your daily activity level",
+    "title": "Редактировать данные о фитнесе",
+    "units": "Единицы измерения",
+    "imperial": "Имперские",
+    "metric": "Метрические",
+    "bodyStats": "Показатели тела",
+    "gender": "Пол",
+    "male": "Мужской",
+    "female": "Женский",
+    "other": "Другой",
+    "currentWeight": "Текущий вес",
+    "height": "Рост",
+    "fatPercentage": "Процент жировой массы",
+    "fatPercentageNotSet": "Не задан — нажмите для ввода",
+    "goalsStrategy": "Цели и стратегия",
+    "fitnessGoal": "Цель в фитнесе",
+    "eatingPhase": "Фаза питания",
+    "cut": "Сушка",
+    "maintain": "Поддержание",
+    "bulk": "Набор",
+    "lifestyleContext": "Контекст образа жизни",
+    "activityLevel": "Уровень активности",
+    "liftingExperience": "Опыт в тренировках",
+    "saveChanges": "Сохранить изменения",
+    "selectGoal": "Выбрать цель в фитнесе",
+    "selectGoalSubtitle": "Выберите цель, которая лучше всего соответствует вашим тренировкам",
+    "selectActivity": "Выбрать уровень активности",
+    "selectActivitySubtitle": "Выберите ваш ежедневный уровень активности",
     "activityLevelLabels": {
-      "sedentary": "Sedentary",
-      "light": "Light",
-      "moderate": "Moderate",
-      "active": "Active",
-      "superActive": "Super Active"
+      "sedentary": "Малоподвижный",
+      "light": "Лёгкий",
+      "moderate": "Умеренный",
+      "active": "Активный",
+      "superActive": "Очень активный"
     },
     "activityLevelDescriptions": {
-      "sedentary": "Little to no exercise, desk job",
-      "light": "Light exercise 1-3 days/week",
-      "moderate": "Moderate exercise 3-5 days/week",
-      "active": "Hard exercise 6-7 days/week",
-      "superActive": "Very hard exercise & physical job"
+      "sedentary": "Мало или нет физических нагрузок, сидячая работа",
+      "light": "Лёгкие нагрузки 1-3 дня/неделю",
+      "moderate": "Умеренные нагрузки 3-5 дней/неделю",
+      "active": "Интенсивные нагрузки 6-7 дней/неделю",
+      "superActive": "Очень интенсивные нагрузки и физическая работа"
     },
-    "weightGoal": "Your goal",
+    "weightGoal": "Ваша цель",
     "weightGoalLabels": {
-      "lose": "Lose weight",
-      "maintain": "Maintain",
-      "gain": "Gain muscle"
+      "lose": "Снизить вес",
+      "maintain": "Поддерживать",
+      "gain": "Набрать мышечную массу"
     },
     "fitnessGoalLabels": {
-      "hypertrophy": "Hypertrophy (Build Muscle)",
-      "strength": "Strength (Lift Heavier)",
-      "endurance": "Endurance (Stamina)",
-      "weightLoss": "Weight Loss (Burn Fat)",
-      "general": "General Fitness"
+      "hypertrophy": "Гипертрофия (наращивание мышц)",
+      "strength": "Силовая (поднимать больше)",
+      "endurance": "Выносливость (выносливость)",
+      "weightLoss": "Снижение веса (сжигание жира)",
+      "general": "Общий фитнес"
     },
     "fitnessGoalDescriptions": {
-      "hypertrophy": "Focus on muscle size and definition",
-      "strength": "Focus on maximum strength and power",
-      "endurance": "Focus on cardiovascular fitness",
-      "weightLoss": "Focus on fat loss and toning",
-      "general": "Maintain overall health and wellness"
+      "hypertrophy": "Акцент на размере и рельефе мышц",
+      "strength": "Акцент на максимальной силе",
+      "endurance": "Акцент на кардиофитнесе",
+      "weightLoss": "Акцент на сжигании жира и тонусе",
+      "general": "Поддержание общего здоровья"
     },
     "experienceLabels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "beginner": "Начинающий",
+      "intermediate": "Средний уровень",
+      "advanced": "Продвинутый"
     },
     "experienceDescriptions": {
-      "beginner": "0-1 years of consistent training",
-      "intermediate": "1-3 years of consistent training",
-      "advanced": "3+ years of consistent training"
+      "beginner": "0-1 год регулярных тренировок",
+      "intermediate": "1-3 года регулярных тренировок",
+      "advanced": "3+ лет регулярных тренировок"
     }
   }
 }

@@ -1,14 +1,14 @@
 {
   "userMenu": {
-    "greeting": "Account",
-    "profile": "Profile",
-    "settings": "Settings",
-    "progress": "Progress",
-    "cycle": "Cycle",
-    "workouts": "Workouts",
-    "food": "Food",
-    "coach": "Coach",
-    "checkin": "Check-ins",
-    "debugPage": "Debug Page"
+    "greeting": "Аккаунт",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "progress": "Прогресс",
+    "cycle": "Цикл",
+    "workouts": "Тренировки",
+    "food": "Питание",
+    "coach": "Тренер",
+    "checkin": "Отметки",
+    "debugPage": "Страница отладки"
   }
 }

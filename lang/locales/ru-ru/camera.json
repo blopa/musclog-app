@@ -1,12 +1,12 @@
 {
   "camera": {
-    "title": "Camera",
+    "title": "Камера",
     "processing": {
-      "aiAnalyzingMeal": "AI is analyzing your meal...",
-      "aiAnalyzingFood": "AI is analyzing your food...",
-      "processingNutrients": "Processing nutrients",
-      "analyzingImage": "Analyzing barcode...",
-      "processingData": "Processing data"
+      "aiAnalyzingMeal": "ИИ анализирует ваш приём пищи...",
+      "aiAnalyzingFood": "ИИ анализирует ваш продукт...",
+      "processingNutrients": "Обработка нутриентов",
+      "analyzingImage": "Сканирование штрихкода...",
+      "processingData": "Обработка данных"
     }
   }
 }

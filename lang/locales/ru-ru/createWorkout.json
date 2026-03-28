@@ -1,41 +1,41 @@
 {
   "createWorkout": {
-    "title": "Create New Workout",
-    "save": "Save",
-    "workoutIcon": "Workout Icon",
-    "essentials": "Essentials",
-    "workoutTitle": "Workout Title",
-    "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
-    "description": "Description",
-    "descriptionPlaceholder": "Focus on quads and calves...",
-    "workoutType": "Workout type",
+    "title": "Создать новую тренировку",
+    "save": "Сохранить",
+    "workoutIcon": "Иконка тренировки",
+    "essentials": "Основное",
+    "workoutTitle": "Название тренировки",
+    "workoutTitlePlaceholder": "например, День ног",
+    "description": "Описание",
+    "descriptionPlaceholder": "Акцент на квадрицепсы и икры...",
+    "workoutType": "Тип тренировки",
     "types": {
-      "strength": "Strength",
-      "cardio": "Cardio",
-      "flexibility": "Flexibility",
-      "calisthenics": "Calisthenics",
-      "other": "Other"
+      "strength": "Силовая",
+      "cardio": "Кардио",
+      "flexibility": "Гибкость",
+      "calisthenics": "Калистеника",
+      "other": "Другое"
     },
-    "intelligence": "Intelligence",
+    "intelligence": "Интеллект",
     "volumeCalculation": {
-      "title": "Volume Calculation",
-      "description": "Choose how Musclog calculates optimal volume for your next session. AI adapts based on recovery data.",
-      "none": "None",
-      "algorithm": "Algorithm",
-      "ai": "AI"
+      "title": "Расчёт объёма",
+      "description": "Выберите, как Musclog рассчитывает оптимальный объём для следующей тренировки. ИИ адаптируется на основе данных о восстановлении.",
+      "none": "Нет",
+      "algorithm": "Алгоритм",
+      "ai": "ИИ"
     },
-    "routine": "Routine",
-    "repeatOnDays": "Repeat on days",
-    "weekly": "Weekly",
-    "exercises": "Exercises",
-    "exercisesInWorkout": "Exercises in the workout",
-    "addExerciseError": "Failed to Add Exercise",
-    "editTitle": "Edit Workout",
-    "loadError": "Failed to Load",
-    "noExercisesPlaceholder": "No Exercises",
-    "saveError": "Failed to Save",
+    "routine": "Программа",
+    "repeatOnDays": "Повторять в дни",
+    "weekly": "Еженедельно",
+    "exercises": "Упражнения",
+    "exercisesInWorkout": "Упражнения в тренировке",
+    "addExerciseError": "Не удалось добавить упражнение",
+    "editTitle": "Редактировать тренировку",
+    "loadError": "Не удалось загрузить",
+    "noExercisesPlaceholder": "Нет упражнений",
+    "saveError": "Не удалось сохранить",
     "validation": {
-      "titleRequiredMessage": "Please enter a workout title"
+      "titleRequiredMessage": "Пожалуйста, введите название тренировки"
     }
   }
 }

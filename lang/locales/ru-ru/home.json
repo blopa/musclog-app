@@ -1,32 +1,32 @@
 {
   "home": {
     "greeting": {
-      "goodEvening": "Good Evening"
+      "goodEvening": "Добрый вечер"
     },
     "actions": {
-      "startWorkout": "Start\nWorkout",
-      "trackFood": "Track\nFood"
+      "startWorkout": "Начать\nтренировку",
+      "trackFood": "Записать\nпитание"
     },
     "sections": {
-      "recentWorkouts": "Recent Workouts",
-      "recentFoods": "Recent Foods",
-      "dailySummary": "Daily Summary"
+      "recentWorkouts": "Последние тренировки",
+      "recentFoods": "Последние продукты",
+      "dailySummary": "Дневная сводка"
     },
     "activityRings": {
-      "move": "Move",
-      "steps": "Steps",
-      "rest": "Rest",
-      "score": "Score"
+      "move": "Движение",
+      "steps": "Шаги",
+      "rest": "Отдых",
+      "score": "Оценка"
     },
     "navigation": {
-      "home": "Home",
-      "profile": "Profile",
-      "workouts": "Workouts",
-      "food": "Food",
-      "coach": "Chat",
-      "focus": "Focus",
-      "cycle": "Cycle",
-      "checkin": "Check-ins"
+      "home": "Главная",
+      "profile": "Профиль",
+      "workouts": "Тренировки",
+      "food": "Питание",
+      "coach": "Чат",
+      "focus": "Фокус",
+      "cycle": "Цикл",
+      "checkin": "Отметки"
     }
   }
 }

@@ -1,17 +1,17 @@
 {
   "timePicker": {
     "am": "AM",
-    "cancel": "Cancel",
-    "clearSelection": "Clear Selection",
-    "confirm": "Set Time",
-    "confirmTime": "Confirm Time",
-    "hours": "Hours",
-    "midnight": "Midnight",
-    "minutes": "Minutes",
-    "noon": "Noon",
-    "now": "Now",
+    "cancel": "Отмена",
+    "clearSelection": "Очистить выбор",
+    "confirm": "Установить время",
+    "confirmTime": "Подтвердить время",
+    "hours": "Часы",
+    "midnight": "Полночь",
+    "minutes": "Минуты",
+    "noon": "Полдень",
+    "now": "Сейчас",
     "pm": "PM",
-    "selectedStartTime": "Selected Start Time",
-    "selectTime": "Select Time"
+    "selectedStartTime": "Выбранное время начала",
+    "selectTime": "Выбрать время"
   }
 }

@@ -1,16 +1,16 @@
 {
   "sessionFeedback": {
-    "title": "Session Feedback",
-    "subtitle": "Rate your performance",
-    "difficulty": "Difficulty",
-    "exhaustion": "Exhaustion",
-    "enjoyment": "Enjoyment",
-    "easy": "Easy",
-    "extreme": "Extreme",
-    "fresh": "Fresh",
-    "drained": "Drained",
-    "disliked": "Disliked",
-    "loved": "Loved",
-    "submit": "SUBMIT FEEDBACK"
+    "title": "Отзыв о сессии",
+    "subtitle": "Оцените свою производительность",
+    "difficulty": "Сложность",
+    "exhaustion": "Усталость",
+    "enjoyment": "Удовольствие",
+    "easy": "Легко",
+    "extreme": "Предельно",
+    "fresh": "Свежо",
+    "drained": "Выжат",
+    "disliked": "Не понравилось",
+    "loved": "Понравилось",
+    "submit": "ОТПРАВИТЬ ОТЗЫВ"
   }
 }

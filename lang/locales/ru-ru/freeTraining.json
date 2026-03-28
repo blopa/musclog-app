@@ -1,31 +1,31 @@
 {
   "freeTraining": {
-    "workoutName": "Free Training",
-    "blankWorkout": "Blank Workout",
-    "title": "Free Training",
-    "titleSession": "Session",
-    "subtitle": "Build your workout as you go. No templates, just progress.",
-    "addFirstExercise": "ADD FIRST EXERCISE",
-    "tip": "Tip: You can add more exercises at any time.",
-    "startFreeTraining": "Start Free Training",
-    "startFreeTrainingSubtitle": "Build your workout as you go. No templates, just progress.",
-    "duration": "DURATION",
-    "calories": "CALORIES",
-    "volume": "VOLUME",
-    "inProgress": "In Progress",
+    "workoutName": "Свободная тренировка",
+    "blankWorkout": "Пустая тренировка",
+    "title": "Свободная тренировка",
+    "titleSession": "Сессия",
+    "subtitle": "Стройте тренировку по ходу. Без шаблонов, только прогресс.",
+    "addFirstExercise": "ДОБАВИТЬ ПЕРВОЕ УПРАЖНЕНИЕ",
+    "tip": "Совет: Вы можете добавлять упражнения в любое время.",
+    "startFreeTraining": "Начать свободную тренировку",
+    "startFreeTrainingSubtitle": "Стройте тренировку по ходу. Без шаблонов, только прогресс.",
+    "duration": "ДЛИТЕЛЬНОСТЬ",
+    "calories": "КАЛОРИИ",
+    "volume": "ОБЪЁМ",
+    "inProgress": "В процессе",
     "addExercise": {
-      "title": "Add Exercise",
-      "numberOfSets": "NUMBER OF SETS",
-      "addToWorkout": "ADD TO WORKOUT",
-      "menuDescription": "Add exercises and sets to this session"
+      "title": "Добавить упражнение",
+      "numberOfSets": "КОЛИЧЕСТВО ПОДХОДОВ",
+      "addToWorkout": "ДОБАВИТЬ В ТРЕНИРОВКУ",
+      "menuDescription": "Добавляйте упражнения и подходы в эту сессию"
     },
     "exerciseComplete": {
-      "title": "Great work!",
-      "subtitle": "Exercise complete. Ready for more?",
-      "setsCompleted": "{{count}} sets completed",
-      "totalVolume": "TOTAL VOLUME",
-      "addNextExercise": "Add next exercise",
-      "finishWorkout": "Finish workout"
+      "title": "Отличная работа!",
+      "subtitle": "Упражнение завершено. Готовы к большему?",
+      "setsCompleted": "Выполнено подходов: {{count}}",
+      "totalVolume": "ОБЩИЙ ОБЪЁМ",
+      "addNextExercise": "Добавить следующее упражнение",
+      "finishWorkout": "Завершить тренировку"
     }
   }
 }

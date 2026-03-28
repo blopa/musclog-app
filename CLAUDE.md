@@ -46,6 +46,7 @@
 - **App Services**: Non-database services (AI, notifications, Health Connect sync) live in top-level `services/`.
 - **Data Persistence**: Use WatermelonDB for local storage. Ensure models are registered in `database/database-instance.ts`.
 - **Encryption**: Sensitive metrics (weight, body fat) and nutrition logs must be encrypted/decrypted using helpers in `database/encryptionHelpers.ts`.
+- **Translation**: Check the `lang` directory for translation files. Any new feature implemented must use translation keys and add new keys to the translation files for all available languages.
 
 ### WatermelonDB Usage
 

@@ -1,144 +1,144 @@
 {
   "onboarding": {
-    "skip": "Skip",
-    "back": "Back",
-    "next": "Next",
-    "getStarted": "Get Started",
+    "skip": "Пропустить",
+    "back": "Назад",
+    "next": "Далее",
+    "getStarted": "Начать",
     "steps": {
       "step1": {
-        "title": "Effortless Tracking",
-        "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
+        "title": "Простое отслеживание",
+        "description": "Забудьте о блокноте. Записывайте подходы, повторения и вес за секунды и визуализируйте прирост силы со временем."
       },
       "step2": {
-        "title": "Smart Nutrition",
-        "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
+        "title": "Умное питание",
+        "description": "Записывайте приёмы пищи за секунды с помощью ИИ-сканирования или нашей обширной базы данных. Понимание своего рациона — ключ к максимальной производительности."
       },
       "step3": {
-        "title": "One App, Total Control",
-        "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
+        "title": "Одно приложение, полный контроль",
+        "description": "Свяжите диету и тренировки воедино. Узнайте, как именно питание влияет на прирост силы с помощью единых графиков прогресса."
       },
       "step4": {
-        "title": "Let's Get Personal",
-        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+        "title": "Давайте познакомимся",
+        "description": "Чтобы персонализировать ваш путь и точно отслеживать прогресс, нам хотелось бы узнать немного больше о вашей фитнес-истории."
       }
     },
     "fitnessInfo": {
-      "physicalTitle": "Body Stats",
-      "goalsTitle": "Fitness Goals",
-      "maybeLater": "Maybe later",
-      "save": "Save",
-      "next": "Next",
-      "continue": "Continue",
-      "errorSaving": "Error Saving"
+      "physicalTitle": "Показатели тела",
+      "goalsTitle": "Фитнес-цели",
+      "maybeLater": "Позже",
+      "save": "Сохранить",
+      "next": "Далее",
+      "continue": "Продолжить",
+      "errorSaving": "Ошибка сохранения"
     },
     "personalInfo": {
-      "title": "Set Personal Information",
-      "errorSaving": "Error Saving",
-      "finish": "Finish",
-      "trackCycle": "Track Menstrual Cycle?",
-      "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
+      "title": "Установить личные данные",
+      "errorSaving": "Ошибка сохранения",
+      "finish": "Завершить",
+      "trackCycle": "Отслеживать менструальный цикл?",
+      "trackCycleDescription": "Синхронизируйте производительность и питание с гормональными фазами."
     },
     "cycleSetup": {
       "anchor": {
-        "title": "Last Period",
-        "description": "When did your last period start? This helps us calibrate your current phase."
+        "title": "Последние месячные",
+        "description": "Когда начались ваши последние месячные? Это поможет нам определить вашу текущую фазу."
       },
       "birthControl": {
-        "title": "Hormonal Birth Control",
-        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
-        "none": "None",
-        "noneDescription": "No hormonal contraception.",
-        "pill": "Pill",
-        "pillDescription": "Daily oral contraceptive pill.",
-        "iud": "IUD",
-        "iudDescription": "Intrauterine device (hormonal or copper).",
-        "implant": "Implant",
-        "implantDescription": "Subcutaneous hormonal implant.",
-        "other": "Other",
-        "otherDescription": "Another form of contraception."
+        "title": "Гормональная контрацепция",
+        "description": "Используете ли вы в настоящее время какие-либо гормональные контрацептивы? Это влияет на прогнозы гормональных фаз.",
+        "none": "Нет",
+        "noneDescription": "Без гормональной контрацепции.",
+        "pill": "Таблетки",
+        "pillDescription": "Ежедневные оральные контрацептивы.",
+        "iud": "ВМС",
+        "iudDescription": "Внутриматочная спираль (гормональная или медная).",
+        "implant": "Имплант",
+        "implantDescription": "Подкожный гормональный имплант.",
+        "other": "Другое",
+        "otherDescription": "Другой вид контрацепции."
       },
       "length": {
-        "title": "Cycle Length",
-        "description": "How long is your typical cycle and period duration?",
-        "cycleLength": "Avg. Cycle Length",
-        "periodDuration": "Avg. Period Duration"
+        "title": "Длина цикла",
+        "description": "Какова типичная длина вашего цикла и продолжительность менструации?",
+        "cycleLength": "Ср. длина цикла",
+        "periodDuration": "Ср. продолжительность менструации"
       },
       "goal": {
-        "title": "Sync Goal",
-        "description": "What is your primary focus for hormonal syncing?",
-        "performance": "Optimize Performance",
-        "performanceDescription": "Peak strength and PR optimization.",
-        "symptoms": "Manage Symptoms",
-        "symptomsDescription": "Focus on comfort and recovery during shifts.",
-        "energy": "Predict Energy Lows",
-        "energyDescription": "Anticipate lows and adjust intensity accordingly."
+        "title": "Цель синхронизации",
+        "description": "Какова ваша основная цель гормональной синхронизации?",
+        "performance": "Оптимизация производительности",
+        "performanceDescription": "Максимальная сила и оптимизация ЛР.",
+        "symptoms": "Управление симптомами",
+        "symptomsDescription": "Акцент на комфорте и восстановлении во время фаз.",
+        "energy": "Прогноз спадов энергии",
+        "energyDescription": "Предвидеть спады и соответственно корректировать интенсивность."
       }
     },
     "connectGoogle": {
-      "title": "Connect Your Google Account",
-      "welcome": "Welcome, {{name}}",
-      "welcomeDescription": "You're connected — personalize your experience before continuing.",
-      "continue": "Continue",
-      "error": "Error"
+      "title": "Подключить аккаунт Google",
+      "welcome": "Добро пожаловать, {{name}}",
+      "welcomeDescription": "Вы подключены — персонализируйте свой опыт перед продолжением.",
+      "continue": "Продолжить",
+      "error": "Ошибка"
     },
     "healthConnect": {
-      "connectYour": "Connect Your",
+      "connectYour": "Подключить ваш",
       "health": "Health",
-      "description": "Sync your fitness data to Musclog for advanced progress tracking and personalized health insights.",
+      "description": "Синхронизируйте данные о фитнесе с Musclog для расширенного отслеживания прогресса и персональных советов по здоровью.",
       "categories": {
-        "nutrition": "Nutrition",
-        "weight": "Weight",
-        "sleep": "Sleep",
-        "vitals": "Vitals"
+        "nutrition": "Питание",
+        "weight": "Вес",
+        "sleep": "Сон",
+        "vitals": "Витальные показатели"
       },
-      "allowHealthAccess": "Allow Health Access",
-      "connectedCount": "Connected {{granted}}/{{total}}",
-      "maybeLater": "Maybe later",
-      "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
-      "initializing": "Initializing Health Connect...",
-      "syncing": "Syncing health data...",
-      "processing": "Processing...",
-      "continue": "Continue"
+      "allowHealthAccess": "Разрешить доступ к здоровью",
+      "connectedCount": "Подключено {{granted}}/{{total}}",
+      "maybeLater": "Позже",
+      "privacyStatement": "Musclog ценит вашу конфиденциальность. Ваши данные зашифрованы и используются только для вашей личной аналитики.",
+      "initializing": "Инициализация Health Connect...",
+      "syncing": "Синхронизация данных о здоровье...",
+      "processing": "Обработка...",
+      "continue": "Продолжить"
     },
     "landing": {
-      "getStarted": "Get Started",
-      "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
+      "getStarted": "Начать",
+      "termsAndPrivacy": "Продолжая, вы соглашаетесь с нашими Условиями использования и Политикой конфиденциальности.",
       "appName": "Musclog",
-      "tagline": "Lift, Log, Repeat",
-      "description": "Track your progress with data-driven insights and crush your fitness goals.",
-      "connectGoogle": "View Terms",
-      "preparingApp": "Preparing the app for you...",
-      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
-      "migratingData": "Migrating your data...",
-      "migratingStep": "Migrating {{step}}...",
+      "tagline": "Тренируйся, Записывай, Повторяй",
+      "description": "Отслеживайте прогресс с аналитикой на основе данных и достигайте своих фитнес-целей.",
+      "connectGoogle": "Просмотреть условия",
+      "preparingApp": "Подготовка приложения для вас...",
+      "migratingPreamble": "Обновление с предыдущей версии Musclog — переносим ваши данные.",
+      "migratingData": "Перенос данных...",
+      "migratingStep": "Перенос {{step}}...",
       "migrationSteps": {
-        "preparing": "Preparing",
-        "downloading": "Downloading",
-        "processing": "Processing",
-        "finalizing": "Finalizing",
-        "fitness_goals": "nutrition goals",
-        "user_metrics": "body metrics",
-        "users": "profile",
-        "foods": "foods",
-        "nutrition_logs": "nutrition logs",
-        "exercises": "exercises",
-        "workouts": "workout templates",
-        "workout_logs": "workout history",
-        "workout_template_sets": "workout template sets",
-        "workout_log_sets": "workout log sets",
-        "validating": "data"
+        "preparing": "Подготовка",
+        "downloading": "Загрузка",
+        "processing": "Обработка",
+        "finalizing": "Завершение",
+        "fitness_goals": "цели питания",
+        "user_metrics": "показатели тела",
+        "users": "профиль",
+        "foods": "продукты",
+        "nutrition_logs": "журналы питания",
+        "exercises": "упражнения",
+        "workouts": "шаблоны тренировок",
+        "workout_logs": "история тренировок",
+        "workout_template_sets": "подходы шаблонов",
+        "workout_log_sets": "подходы журналов",
+        "validating": "данные"
       },
-      "importData": "Import Data"
+      "importData": "Импорт данных"
     },
     "setGoals": {
-      "title": "Smart Goal",
-      "calculation": "Calculation",
-      "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
-      "personalizedMacros": "Personalized Macros",
-      "dynamicAdjustments": "Dynamic Adjustments",
-      "calculateForMe": "Calculate for Me",
-      "setThemMyself": "I'll Set Them Myself",
-      "missingData": "Please complete your fitness details first so we can calculate your plan."
+      "title": "Умная цель",
+      "calculation": "Расчёт",
+      "description": "Мы используем уравнения Миффлина–Сент-Жора и Катча–Макардла для оценки метаболизма, затем учитываем уровень активности и цели для установки норм калорий и макросов.",
+      "personalizedMacros": "Персональные макросы",
+      "dynamicAdjustments": "Динамические корректировки",
+      "calculateForMe": "Рассчитать за меня",
+      "setThemMyself": "Установлю сам",
+      "missingData": "Пожалуйста, сначала заполните данные о фитнесе, чтобы мы могли рассчитать ваш план."
     }
   }
 }

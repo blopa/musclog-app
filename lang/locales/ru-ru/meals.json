@@ -1,54 +1,54 @@
 {
   "meals": {
-    "title": "My Meals",
+    "title": "Мои приёмы пищи",
     "filters": {
-      "all": "All",
-      "highProtein": "High Protein",
-      "breakfast": "Breakfast",
-      "lunch": "Lunch"
+      "all": "Все",
+      "highProtein": "Высокобелковые",
+      "breakfast": "Завтрак",
+      "lunch": "Обед"
     },
     "tags": {
-      "highProtein": "High Protein",
-      "ketoFriendly": "Keto Friendly",
-      "vegetarian": "Vegetarian",
-      "breakfast": "Breakfast",
-      "lunch": "Lunch",
-      "dinner": "Dinner",
-      "snack": "Snack"
+      "highProtein": "Высокобелковый",
+      "ketoFriendly": "Подходит для кето",
+      "vegetarian": "Вегетарианский",
+      "breakfast": "Завтрак",
+      "lunch": "Обед",
+      "dinner": "Ужин",
+      "snack": "Перекус"
     },
     "chatMealCard": {
-      "mealCount_one": "{{count}} meal",
-      "mealCount_other": "{{count}} meals",
-      "view": "View",
-      "viewBreakfast": "View Breakfast",
-      "viewLunch": "View Lunch",
-      "viewDinner": "View Dinner",
-      "viewSnack": "View Snack",
-      "tracked": "Tracked"
+      "mealCount_one": "{{count}} приём пищи",
+      "mealCount_other": "{{count}} приёмов пищи",
+      "view": "Открыть",
+      "viewBreakfast": "Завтрак",
+      "viewLunch": "Обед",
+      "viewDinner": "Ужин",
+      "viewSnack": "Перекус",
+      "tracked": "Записан"
     },
-    "untitledMeal": "Untitled Meal",
-    "searchPlaceholder": "Search meals...",
-    "loadingMeals": "Loading meals...",
-    "noMealsFound": "No meals found",
-    "noMealsYet": "No meals yet",
-    "noMealsMatch": "No meals match \"{{query}}\"",
-    "createFirstMeal": "Create your first meal to get started",
-    "tryDifferentFilter": "Try a different filter",
-    "loadingMore": "Loading more...",
-    "loadMore": "Load More",
-    "customMeal": "Custom Meal",
-    "createdByYou": "Created by you",
-    "logMeal": "Log Meal",
-    "mealType": "Meal Type",
+    "untitledMeal": "Приём пищи без названия",
+    "searchPlaceholder": "Поиск приёмов пищи...",
+    "loadingMeals": "Загрузка приёмов пищи...",
+    "noMealsFound": "Приёмов пищи не найдено",
+    "noMealsYet": "Приёмов пищи пока нет",
+    "noMealsMatch": "Нет приёмов пищи по запросу «{{query}}»",
+    "createFirstMeal": "Создайте первый приём пищи для начала работы",
+    "tryDifferentFilter": "Попробуйте другой фильтр",
+    "loadingMore": "Загрузка ещё...",
+    "loadMore": "Загрузить ещё",
+    "customMeal": "Пользовательский приём пищи",
+    "createdByYou": "Создано вами",
+    "logMeal": "Записать приём пищи",
+    "mealType": "Тип приёма пищи",
     "history": {
-      "unknownMeal": "Unknown Meal"
+      "unknownMeal": "Неизвестный приём пищи"
     },
     "deleteItem": {
-      "title": "Delete Item",
-      "message": "Are you sure you want to delete this item?",
-      "cancel": "Cancel",
-      "delete": "Delete"
+      "title": "Удалить элемент",
+      "message": "Вы уверены, что хотите удалить этот элемент?",
+      "cancel": "Отмена",
+      "delete": "Удалить"
     },
-    "unknownFood": "Unknown"
+    "unknownFood": "Неизвестно"
   }
 }

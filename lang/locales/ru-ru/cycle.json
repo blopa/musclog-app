@@ -1,31 +1,31 @@
 {
   "cycle": {
-    "title": "Today's Cycle Focus",
-    "nextPeriod": "Next Period Prediction",
-    "insightsAndLog": "Cycle Insights & Log",
-    "dailyLog": "Daily Log",
-    "flowIntensity": "Flow Intensity",
-    "symptomsTitle": "Symptoms",
-    "noLogsToday": "No symptoms logged for today.",
-    "logSymptoms": "Log Symptoms",
-    "logDaily": "Daily Cycle Log",
+    "title": "Сегодняшний фокус цикла",
+    "nextPeriod": "Прогноз следующих месячных",
+    "insightsAndLog": "Анализ цикла и журнал",
+    "dailyLog": "Дневной журнал",
+    "flowIntensity": "Интенсивность выделений",
+    "symptomsTitle": "Симптомы",
+    "noLogsToday": "Симптомов за сегодня не записано.",
+    "logSymptoms": "Записать симптомы",
+    "logDaily": "Ежедневный журнал цикла",
     "settings": {
-      "title": "Cycle Settings",
-      "subtitle": "Edit your cycle configuration",
-      "save": "Save Changes"
+      "title": "Настройки цикла",
+      "subtitle": "Редактировать конфигурацию цикла",
+      "save": "Сохранить изменения"
     },
     "symptoms": {
-      "cramps": "Cramps",
-      "headache": "Headache",
-      "bloating": "Bloating",
-      "moodSwings": "Mood Swings",
-      "fatigue": "Fatigue"
+      "cramps": "Спазмы",
+      "headache": "Головная боль",
+      "bloating": "Вздутие",
+      "moodSwings": "Перепады настроения",
+      "fatigue": "Усталость"
     },
     "phase": {
-      "menstrual": "Menstrual",
-      "follicular": "Follicular",
-      "ovulatory": "Ovulatory",
-      "luteal": "Luteal"
+      "menstrual": "Менструальная",
+      "follicular": "Фолликулярная",
+      "ovulatory": "Овуляторная",
+      "luteal": "Лютеиновая"
     }
   }
 }

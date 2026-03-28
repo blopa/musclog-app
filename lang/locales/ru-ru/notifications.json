@@ -1,72 +1,72 @@
 {
   "notifications": {
     "header": {
-      "title": "Notifications",
-      "clearAll": "CLEAR ALL"
+      "title": "Уведомления",
+      "clearAll": "ОЧИСТИТЬ ВСЕ"
     },
     "sections": {
-      "today": "TODAY",
-      "yesterday": "YESTERDAY",
-      "earlier": "EARLIER"
+      "today": "СЕГОДНЯ",
+      "yesterday": "ВЧЕРА",
+      "earlier": "РАНЕЕ"
     },
     "channels": {
-      "default": "Default",
-      "activeWorkout": "Active Workout"
+      "default": "По умолчанию",
+      "activeWorkout": "Активная тренировка"
     },
-    "startNow": "Start Now",
+    "startNow": "Начать сейчас",
     "types": {
       "aiInsight": {
-        "title": "AI Insight",
-        "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
+        "title": "Совет ИИ",
+        "description": "На основе ваших последних тренировок попробуйте увеличить потребление белка на 15г сегодня для оптимального восстановления."
       },
       "workoutReminder": {
-        "title": "Workout Reminder",
-        "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
+        "title": "Напоминание о тренировке",
+        "description": "Готовы к {{workoutName}}? Запланировано на {{time}} сегодня."
       },
       "workoutCompleted": {
-        "title": "Workout Completed!",
-        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
+        "title": "Тренировка завершена!",
+        "description": "Отличная работа на {{workoutName}}. Вы сожгли {{calories}} ккал."
       },
       "kudosReceived": {
-        "title": "Kudos Received",
-        "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
+        "title": "Получены поздравления",
+        "description": "{{name}} и ещё {{count}} человек оценили ваш результат: \"{{milestone}}\""
       },
       "weeklyReport": {
-        "title": "Weekly Report Ready",
-        "description": "Your progress report for last week is available. Check your stats."
+        "title": "Еженедельный отчёт готов",
+        "description": "Ваш отчёт о прогрессе за прошлую неделю доступен. Проверьте показатели."
       },
       "activeWorkout": {
-        "title": "Workout: {{workoutName}}",
+        "title": "Тренировка: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
         "bodyNoExercise": "{{totalTime}}"
       },
       "workoutReminderMorning": {
-        "title": "Workout Reminder",
-        "body": "Ready to crush your {{workoutName}} workout today??"
+        "title": "Напоминание о тренировке",
+        "body": "Готовы к тренировке {{workoutName}} сегодня??"
       },
       "nutritionOverview": {
-        "title": "Daily Nutrition Overview",
-        "body": "Check how your nutrition aligned with your goals today!"
+        "title": "Ежедневный обзор питания",
+        "body": "Проверьте, как ваше питание соответствует целям сегодня!"
       },
       "nutritionCheckin": {
-        "title": "Weekly Progress Check-in",
-        "body": "It's time for your weekly nutrition check-in! Let's see how you've done."
+        "title": "Еженедельная проверка прогресса",
+        "body": "Время для еженедельной проверки питания! Посмотрим, как вы справились."
       },
       "periodPrediction": {
-        "title": "Period Prediction",
-        "body": "Your period is predicted to start in 2 days. Get ready!"
+        "title": "Прогноз месячных",
+        "body": "Прогнозируется начало месячных через 2 дня. Приготовьтесь!"
       },
       "fertileWindow": {
-        "title": "Fertile Window",
-        "body": "Your fertile window is starting! Useful for tracking your energy levels."
+        "title": "Фертильное окно",
+        "body": "Начинается ваше фертильное окно! Полезно для отслеживания уровня энергии."
       },
       "restTimerAlert": {
-        "title": "Rest Over - Back to Work!",
-        "body": "Your rest period is up. Time to crush the next set!"
+        "title": "Отдых завершён — к работе!",
+        "body": "Время отдыха истекло. Пора сделать следующий подход!"
       },
       "workoutDurationWarning": {
-        "title": "Still Working Out?",
-        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
+        "title": "Вы ещё тренируетесь?",
+        "body": "Ваша сессия продолжается уже 5 часов. Не забудьте завершить её в Musclog!"
       }
     }
   }

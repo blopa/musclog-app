@@ -1,11 +1,11 @@
 {
   "addMeal": {
-    "createMeal": "Create Meal",
-    "createMealDesc": "Add a new meal to your daily log",
-    "generateMealAI": "Generate Meal with AI",
-    "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
-    "manageCategories": "Manage Categories",
-    "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
-    "title": "Add Meal"
+    "createMeal": "Создать приём пищи",
+    "createMealDesc": "Добавить новый приём пищи в дневной журнал",
+    "generateMealAI": "Создать приём пищи с ИИ",
+    "generateMealAIDesc": "Пусть ИИ предложит приём пищи на основе ваших предпочтений",
+    "manageCategories": "Управление категориями",
+    "manageCategoriesDesc": "Организуйте категории приёмов пищи (завтрак, обед и т.д.)",
+    "title": "Добавить приём пищи"
   }
 }

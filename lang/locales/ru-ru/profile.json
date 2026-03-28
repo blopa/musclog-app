@@ -1,36 +1,36 @@
 {
   "profile": {
     "header": {
-      "title": "Profile"
+      "title": "Профиль"
     },
-    "goal": "Goal",
-    "currentStats": "Current Stats",
-    "history": "History",
-    "management": "Management",
-    "loading": "Loading...",
+    "goal": "Цель",
+    "currentStats": "Текущие показатели",
+    "history": "История",
+    "management": "Управление",
+    "loading": "Загрузка...",
     "syncing": {
-      "healthKit": "Syncing with HealthKit..."
+      "healthKit": "Синхронизация с HealthKit..."
     },
     "gender": {
-      "male": "Male",
-      "female": "Female",
-      "other": "Other"
+      "male": "Мужской",
+      "female": "Женский",
+      "other": "Другой"
     },
     "managementItems": {
-      "editPersonal": "Edit Personal Info",
-      "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit Fitness Details",
-      "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App Preferences",
-      "appPreferencesDesc": "Customize app settings and preferences"
+      "editPersonal": "Редактировать личные данные",
+      "editPersonalDesc": "Обновить имя, аватар и личные данные",
+      "editFitness": "Редактировать данные о фитнесе",
+      "editFitnessDesc": "Обновить фитнес-цели и предпочтения",
+      "appPreferences": "Настройки приложения",
+      "appPreferencesDesc": "Настроить параметры приложения"
     },
     "stats": {
-      "weight": "Weight",
-      "height": "Height",
-      "bodyFat": "Body Fat",
-      "bmi": "BMI",
-      "age": "Age",
-      "gender": "Gender"
+      "weight": "Вес",
+      "height": "Рост",
+      "bodyFat": "Жировая масса",
+      "bmi": "ИМТ",
+      "age": "Возраст",
+      "gender": "Пол"
     }
   }
 }

@@ -1,24 +1,24 @@
 {
   "workoutLog": {
     "manageWorkoutLogData": {
-      "deleteLogWarning": "Are you sure you want to delete this workout log? This action cannot be undone.",
-      "title": "Manage Workout Log Data",
-      "searchPlaceholder": "Search workout sessions...",
-      "noWorkoutLogs": "No workout logs yet",
-      "noWorkoutLogsDesc": "Complete workouts to see them here",
-      "endOfHistory": "End of workout history",
-      "workoutLogOptions": "Workout Options",
-      "editWorkoutLog": "Edit Workout",
-      "editWorkoutLogDesc": "Modify workout details",
-      "duplicateWorkoutLog": "Duplicate Workout",
-      "duplicateWorkoutLogDesc": "Create a copy of this workout",
-      "deleteWorkoutLog": "Delete Workout",
-      "deleteWorkoutLogDesc": "Remove this workout log",
+      "deleteLogWarning": "Вы уверены, что хотите удалить этот журнал тренировки? Это действие нельзя отменить.",
+      "title": "Управление данными журнала тренировок",
+      "searchPlaceholder": "Поиск тренировочных сессий...",
+      "noWorkoutLogs": "Журналов тренировок пока нет",
+      "noWorkoutLogsDesc": "Завершайте тренировки, чтобы они появились здесь",
+      "endOfHistory": "Конец истории тренировок",
+      "workoutLogOptions": "Параметры тренировки",
+      "editWorkoutLog": "Редактировать тренировку",
+      "editWorkoutLogDesc": "Изменить детали тренировки",
+      "duplicateWorkoutLog": "Дублировать тренировку",
+      "duplicateWorkoutLogDesc": "Создать копию этой тренировки",
+      "deleteWorkoutLog": "Удалить тренировку",
+      "deleteWorkoutLogDesc": "Удалить этот журнал тренировки",
       "detailFormat": "{{status}} • {{volume}}",
-      "statusCompleted": "Completed",
-      "statusInProgress": "In progress",
+      "statusCompleted": "Завершена",
+      "statusInProgress": "В процессе",
       "volumeFormat": "{{volume}} {{unit}}",
-      "unknownWorkout": "Unknown Workout"
+      "unknownWorkout": "Неизвестная тренировка"
     }
   }
 }

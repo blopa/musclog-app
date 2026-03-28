@@ -1,9 +1,9 @@
 {
   "portionSizes": {
-    "addNew": "Add New",
-    "noResults": "No Results",
-    "searchPlaceholder": "Search portions...",
-    "selectTitle": "Select portion size",
+    "addNew": "Добавить новый",
+    "noResults": "Нет результатов",
+    "searchPlaceholder": "Поиск порций...",
+    "selectTitle": "Выберите размер порции",
     "portionWithValueUnit": "{{name}} ({{value}} {{unit}})"
   }
 }
