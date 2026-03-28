@@ -60,6 +60,15 @@ const EXERCISE_IMAGE_ASSETS: Record<number, number> = {
   91: require('../assets/exercises/exercise91.png'),
   94: require('../assets/exercises/exercise94.png'),
   105: require('../assets/exercises/exercise105.png'),
+  106: require('../assets/exercises/exercise106.png'),
+  107: require('../assets/exercises/exercise107.png'),
+  108: require('../assets/exercises/exercise108.png'),
+  109: require('../assets/exercises/exercise109.png'),
+  110: require('../assets/exercises/exercise110.png'),
+  111: require('../assets/exercises/exercise111.png'),
+  112: require('../assets/exercises/exercise112.png'),
+  113: require('../assets/exercises/exercise113.png'),
+  118: require('../assets/exercises/exercise118.png'),
 };
 
 /**
@@ -121,6 +130,15 @@ const _ALL_EXERCISE_IMAGE_ASSETS = [
   EXERCISE_IMAGE_ASSETS[91],
   EXERCISE_IMAGE_ASSETS[94],
   EXERCISE_IMAGE_ASSETS[105],
+  EXERCISE_IMAGE_ASSETS[106],
+  EXERCISE_IMAGE_ASSETS[107],
+  EXERCISE_IMAGE_ASSETS[108],
+  EXERCISE_IMAGE_ASSETS[109],
+  EXERCISE_IMAGE_ASSETS[110],
+  EXERCISE_IMAGE_ASSETS[111],
+  EXERCISE_IMAGE_ASSETS[112],
+  EXERCISE_IMAGE_ASSETS[113],
+  EXERCISE_IMAGE_ASSETS[118],
   FALLBACK_EXERCISE_IMAGE,
 ];
 

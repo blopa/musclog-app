@@ -113,6 +113,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             ex.muscleGroup = muscleGroup as MuscleGroup;
             ex.equipmentType = 'dumbbell' as EquipmentType;
             ex.mechanicType = 'compound' as MechanicType;
+            ex.source = 'app';
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;
@@ -843,6 +844,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             ex.muscleGroup = muscleGroup as MuscleGroup;
             ex.equipmentType = 'dumbbell' as EquipmentType;
             ex.mechanicType = 'compound' as MechanicType;
+            ex.source = 'app';
             ex.loadMultiplier = 1.0; // Default load multiplier
             ex.createdAt = now;
             ex.updatedAt = now;

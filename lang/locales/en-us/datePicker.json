@@ -9,6 +9,7 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "year": "Year",
+    "xYearsAgo": "{{count}} years ago",
     "yesterday": "Yesterday"
   }
 }

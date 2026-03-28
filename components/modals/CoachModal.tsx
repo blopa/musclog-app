@@ -457,6 +457,7 @@ function ComposerWithRestoredText({
   clearFailedMessageText,
   onAttachFile,
   isImageAttachmentEnabled,
+  resetKey,
 }: {
   props: ComposerProps;
   t: TFunction;
@@ -465,6 +466,7 @@ function ComposerWithRestoredText({
   clearFailedMessageText: () => void;
   onAttachFile: () => void;
   isImageAttachmentEnabled: boolean;
+  resetKey: number;
 }) {
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
@@ -500,6 +502,7 @@ function ComposerWithRestoredText({
         </Pressable>
       ) : null}
       <Composer
+        key={resetKey}
         {...({ ...props, text, onTextChanged } as ComposerProps)}
         textInputProps={{
           ...props.textInputProps,
@@ -520,7 +523,8 @@ const renderComposer = (
   failedMessageText: string | null,
   clearFailedMessageText: () => void,
   onAttachFile: () => void,
-  isImageAttachmentEnabled: boolean
+  isImageAttachmentEnabled: boolean,
+  resetKey: number
 ) => (
   <ComposerWithRestoredText
     props={props}
@@ -530,6 +534,7 @@ const renderComposer = (
     clearFailedMessageText={clearFailedMessageText}
     onAttachFile={onAttachFile}
     isImageAttachmentEnabled={isImageAttachmentEnabled}
+    resetKey={resetKey}
   />
 );
 
@@ -658,6 +663,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
   const [isDeleteMessageModalVisible, setIsDeleteMessageModalVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<ExtendedIMessage | null>(null);
+  const [composerResetKey, setComposerResetKey] = useState(0);
 
   useEffect(() => {
     return NetInfo.addEventListener((state) => {
@@ -711,6 +717,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       if (text || image) {
         sendMessage(text ?? '', image);
         setAttachedImage(null);
+        setComposerResetKey((k) => k + 1);
       }
     },
     [sendMessage, attachedImage]
@@ -1239,9 +1246,18 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         failedMessageText,
         clearFailedMessageText,
         handleAttachFile,
-        pendingIntention === TRACK_MEAL
+        pendingIntention === TRACK_MEAL,
+        composerResetKey
       ),
-    [t, theme, failedMessageText, clearFailedMessageText, handleAttachFile, pendingIntention]
+    [
+      t,
+      theme,
+      failedMessageText,
+      clearFailedMessageText,
+      handleAttachFile,
+      pendingIntention,
+      composerResetKey,
+    ]
   );
 
   const gcRenderSend = useCallback(

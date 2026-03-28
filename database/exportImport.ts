@@ -26,6 +26,7 @@ import { database } from './database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import type NutritionLog from './models/NutritionLog';
 import type UserMetric from './models/UserMetric';
+import { ExerciseService } from './services';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
@@ -37,7 +38,7 @@ const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   TEMP_NUTRITION_PLAN,
 ]);
 
-const EXPORT_VERSION = 1;
+const EXPORT_VERSION = 2;
 
 /** Table names in dependency order for restore (parents before children). */
 const RESTORE_ORDER: string[] = [
@@ -418,6 +419,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         idMaps[tableName][oldId] = created.id;
       }
     });
+  }
+
+  // Backfill exercises.source for backups created before export version 2 (when
+  // the source column didn't exist yet). Safe no-op if all rows already have a value.
+  if (dbData._exportVersion < 2) {
+    await ExerciseService.backfillExerciseSources();
   }
 
   // Restore AsyncStorage values from the backup (only if async storage data was included in import)

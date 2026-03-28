@@ -79,12 +79,20 @@ export function AddExerciseToSessionModal({
   const [numberOfSets, setNumberOfSets] = useState(3);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { exercises: allExercises, isLoading } = useExercises({
+  const {
+    exercises: allExercises,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  } = useExercises({
     visible,
     enableReactivity: true,
     sortBy: 'name',
     sortOrder: 'asc',
-    getAll: true,
+    searchTerm: searchQuery.trim() || undefined,
+    initialLimit: 20,
+    batchSize: 20,
   });
 
   const exerciseOptions = useMemo(() => {
@@ -139,12 +147,10 @@ export function AddExerciseToSessionModal({
     return grouped;
   }, [allExercises, theme, t]);
 
+  // Search is handled at the DB level via searchTerm in useExercises; here we only filter by muscle tab
   const filteredExercises = useMemo(
-    () =>
-      exerciseOptions[activeMuscle].filter((ex) =>
-        ex.label.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [exerciseOptions, activeMuscle, searchQuery]
+    () => exerciseOptions[activeMuscle],
+    [exerciseOptions, activeMuscle]
   );
 
   const selectedExercise = useMemo(
@@ -266,17 +272,32 @@ export function AddExerciseToSessionModal({
               />
             </View>
             <View className="mb-8">
-              {isLoading ? (
+              {isLoading && filteredExercises.length === 0 ? (
                 <View className="items-center justify-center py-12">
                   <ActivityIndicator size="large" color={theme.colors.accent.primary} />
                 </View>
               ) : filteredExercises.length > 0 ? (
-                <OptionsSelector
-                  title=""
-                  options={filteredExercises}
-                  selectedId={selectedExerciseId ?? undefined}
-                  onSelect={(id) => setSelectedExerciseId(id as string)}
-                />
+                <>
+                  <OptionsSelector
+                    title=""
+                    options={filteredExercises}
+                    selectedId={selectedExerciseId ?? undefined}
+                    onSelect={(id) => setSelectedExerciseId(id as string)}
+                  />
+                  {hasMore ? (
+                    <View className="py-4">
+                      <Button
+                        label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
+                        variant="outline"
+                        size="md"
+                        width="full"
+                        onPress={loadMore}
+                        disabled={isLoadingMore}
+                        loading={isLoadingMore}
+                      />
+                    </View>
+                  ) : null}
+                </>
               ) : (
                 <View className="items-center justify-center py-12">
                   <Text

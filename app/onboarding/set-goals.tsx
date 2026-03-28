@@ -493,15 +493,17 @@ export default function SetGoals() {
           <OrbitalIllustration />
 
           {/* Header */}
-          <Text
-            className="mb-4 text-center text-[32px] font-bold leading-[1.1]"
-            style={{
-              color: theme.colors.text.primary,
-              fontSize: theme.typography.fontSize['3xl'],
-              fontWeight: theme.typography.fontWeight.bold,
-            }}
-          >
-            {t('onboarding.setGoals.title')}{' '}
+          <View className="mb-4 flex-row flex-wrap items-center justify-center" style={{ gap: 6 }}>
+            <Text
+              className="text-center text-[32px] font-bold leading-[1.1]"
+              style={{
+                color: theme.colors.text.primary,
+                fontSize: theme.typography.fontSize['3xl'],
+                fontWeight: theme.typography.fontWeight.bold,
+              }}
+            >
+              {t('onboarding.setGoals.title')}
+            </Text>
             <GradientText
               colors={theme.colors.gradients.cta}
               style={{
@@ -511,7 +513,7 @@ export default function SetGoals() {
             >
               {t('onboarding.setGoals.calculation')}
             </GradientText>
-          </Text>
+          </View>
 
           <Text
             className="mb-8 text-center text-[16px] font-normal leading-relaxed"

@@ -516,6 +516,7 @@ export type DataLogDisplayItem = {
   isFavorite?: boolean; // Optional - only meals have this
   muscleGroup?: string; // Optional - only exercises have this
   equipmentType?: string; // Optional - only exercises have this
+  source?: string; // Optional - only exercises have this ('app' | 'user')
   isCompleted?: boolean; // Optional - only workout logs have this
   totalVolume?: number; // Optional - only workout logs have this
   description?: string; // Optional - only workout templates have this
@@ -1137,14 +1138,17 @@ export function DataLogModal({
       });
     }
 
-    menuItems.push({
-      icon: DeleteIcon,
-      iconColor: theme.colors.status.error50,
-      iconBgColor: theme.colors.status.error10,
-      title: translations.deleteTitle,
-      description: translations.deleteDesc,
-      onPress: handleDelete,
-    });
+    const isAppExercise = variant === 'exercise' && selectedItem.source === 'app';
+    if (!isAppExercise) {
+      menuItems.push({
+        icon: DeleteIcon,
+        iconColor: theme.colors.status.error50,
+        iconBgColor: theme.colors.status.error10,
+        title: translations.deleteTitle,
+        description: translations.deleteDesc,
+        onPress: handleDelete,
+      });
+    }
 
     return menuItems;
   };

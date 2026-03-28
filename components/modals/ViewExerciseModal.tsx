@@ -315,6 +315,8 @@ export default function ViewExerciseModal({
     }
   };
 
+  const isAppExercise = exercise?.source === 'app';
+
   const menuItems: BottomPopUpMenuItem[] = [
     {
       icon: Pencil,
@@ -340,16 +342,20 @@ export default function ViewExerciseModal({
       description: t('exercises.viewExercise.duplicateDescription'),
       onPress: handleDuplicate,
     },
-    {
-      icon: Trash2,
-      iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
-      title: t('exercises.viewExercise.delete'),
-      description: t('exercises.viewExercise.deleteDescription'),
-      titleColor: theme.colors.status.error,
-      descriptionColor: theme.colors.status.error,
-      onPress: handleDeletePress,
-    },
+    ...(!isAppExercise
+      ? [
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('exercises.viewExercise.delete'),
+            description: t('exercises.viewExercise.deleteDescription'),
+            titleColor: theme.colors.status.error,
+            descriptionColor: theme.colors.status.error,
+            onPress: handleDeletePress,
+          } satisfies BottomPopUpMenuItem,
+        ]
+      : []),
   ];
 
   const displayName = exercise?.name ?? t('exercises.manageExerciseData.unknownExercise');
