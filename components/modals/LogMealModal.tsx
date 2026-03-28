@@ -6,7 +6,7 @@ import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'r
 import { useTheme } from '../../hooks/useTheme';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { GenericCard } from '../cards/GenericCard';
+import { MealNutritionHighlightCard } from '../cards/MealNutritionHighlightCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
@@ -66,7 +66,7 @@ export function LogMealModal({
 }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
   const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
   const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -140,161 +140,59 @@ export function LogMealModal({
         closable={!isLogging}
       >
         <View className="mb-6 mt-6 gap-6 px-4">
-          {/* Meal Details Card */}
-          <GenericCard variant="highlighted" backgroundVariant="gradient">
-            <View className="relative">
-              {/* Gradient decoration */}
-              <View
-                className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
-                style={{ backgroundColor: theme.colors.accent.primary }}
-              />
-
-              <View className="relative z-10 px-4 py-4">
-                {/* Meal Header */}
-                <View className="mb-4 flex-row items-start justify-between">
-                  <View className="flex-1">
-                    <View className="mb-2 flex-row items-center gap-2">
-                      <Text
-                        className="text-xs font-semibold uppercase tracking-wider"
-                        style={{
-                          color: theme.colors.text.secondary,
-                          backgroundColor: theme.colors.background.white5,
-                          paddingHorizontal: theme.spacing.padding.xs,
-                          paddingVertical: theme.spacing.padding.xsHalf,
-                          borderRadius: theme.borderRadius.sm,
-                          alignSelf: 'flex-start',
-                        }}
+          <MealNutritionHighlightCard
+            header={
+              <View className="mb-4 flex-row items-start justify-between">
+                <View className="flex-1">
+                  <View className="mb-2 flex-row items-center gap-2">
+                    <Text
+                      className="text-xs font-semibold uppercase tracking-wider"
+                      style={{
+                        color: theme.colors.text.secondary,
+                        backgroundColor: theme.colors.background.white5,
+                        paddingHorizontal: theme.spacing.padding.xs,
+                        paddingVertical: theme.spacing.padding.xsHalf,
+                        borderRadius: theme.borderRadius.sm,
+                        alignSelf: 'flex-start',
+                      }}
+                    >
+                      {meal.type}
+                    </Text>
+                    {ingredients && ingredients.length > 0 ? (
+                      <Pressable
+                        onPress={() => setShowIngredients(true)}
+                        hitSlop={8}
+                        className="active:opacity-60"
                       >
-                        {meal.type}
-                      </Text>
-                      {ingredients && ingredients.length > 0 ? (
-                        <Pressable
-                          onPress={() => setShowIngredients(true)}
-                          hitSlop={8}
-                          className="active:opacity-60"
-                        >
-                          <Info size={16} color={theme.colors.accent.primary} />
-                        </Pressable>
-                      ) : null}
-                    </View>
-                    <Text
-                      className="mb-1 text-2xl font-bold leading-tight tracking-tight"
-                      style={{ color: theme.colors.text.primary }}
-                    >
-                      {meal.name}
-                    </Text>
-                    <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-                      {t('meals.customMeal')} • {t('meals.createdByYou')}
-                    </Text>
+                        <Info size={16} color={theme.colors.accent.primary} />
+                      </Pressable>
+                    ) : null}
                   </View>
-
-                  {meal.image ? (
-                    <Image
-                      source={{ uri: meal.image }}
-                      className="ml-3 h-16 w-16 rounded-lg"
-                      style={{ backgroundColor: theme.colors.background.overlay }}
-                    />
-                  ) : null}
+                  <Text
+                    className="mb-1 text-2xl font-bold leading-tight tracking-tight"
+                    style={{ color: theme.colors.text.primary }}
+                  >
+                    {meal.name}
+                  </Text>
+                  <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                    {t('meals.customMeal')} • {t('meals.createdByYou')}
+                  </Text>
                 </View>
 
-                {/* Nutrition Stats */}
-                <View className="mt-6 flex-row gap-2">
-                  <View
-                    className="flex-1 flex-col items-center rounded-lg p-2"
-                    style={{
-                      backgroundColor: theme.colors.background.white5,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      className="mb-1 text-xs font-medium"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      {t('food.calories')}
-                    </Text>
-                    <Text
-                      className="text-lg font-bold"
-                      style={{ color: theme.colors.text.primary }}
-                    >
-                      {roundToDecimalPlaces(scaledMeal.calories)}
-                    </Text>
-                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                      kcal
-                    </Text>
-                  </View>
-
-                  <View
-                    className="flex-1 flex-col items-center rounded-lg p-2"
-                    style={{
-                      backgroundColor: theme.colors.background.white5,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      className="mb-1 text-xs font-medium"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-                    </Text>
-                    <Text
-                      className="text-lg font-bold"
-                      style={{ color: theme.colors.accent.primary }}
-                    >
-                      {roundToDecimalPlaces(scaledMeal.protein)}
-                    </Text>
-                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                      g
-                    </Text>
-                  </View>
-
-                  <View
-                    className="flex-1 flex-col items-center rounded-lg p-2"
-                    style={{
-                      backgroundColor: theme.colors.background.white5,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      className="mb-1 text-xs font-medium"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-                    </Text>
-                    <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                      {roundToDecimalPlaces(scaledMeal.carbs)}
-                    </Text>
-                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                      g
-                    </Text>
-                  </View>
-
-                  <View
-                    className="flex-1 flex-col items-center rounded-lg p-2"
-                    style={{
-                      backgroundColor: theme.colors.background.white5,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Text
-                      className="mb-1 text-xs font-medium"
-                      style={{ color: theme.colors.text.secondary }}
-                    >
-                      {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-                    </Text>
-                    <Text
-                      className="text-lg font-bold"
-                      style={{ color: theme.colors.status.amber }}
-                    >
-                      {roundToDecimalPlaces(scaledMeal.fat)}
-                    </Text>
-                    <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                      g
-                    </Text>
-                  </View>
-                </View>
+                {meal.image ? (
+                  <Image
+                    source={{ uri: meal.image }}
+                    className="ml-3 h-16 w-16 rounded-lg"
+                    style={{ backgroundColor: theme.colors.background.overlay }}
+                  />
+                ) : null}
               </View>
-            </View>
-          </GenericCard>
+            }
+            calories={scaledMeal.calories}
+            protein={scaledMeal.protein}
+            carbs={scaledMeal.carbs}
+            fat={scaledMeal.fat}
+          />
 
           <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
 
