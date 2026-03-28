@@ -99,7 +99,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           scrollEventThrottle={16}
           className="mb-4"
         >
-          {/* Grid View */}
+          {/* Grid View — inset lives on page 2 so the chart border is not flush with the page seam (avoids 1px bleed) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="mb-2 flex-row gap-3">
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -132,9 +132,12 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
             </View>
           </View>
 
-          {/* Circular Chart View */}
+          {/* Circular Chart View — margin insets the bordered card from the page seam (avoid padding on the page width, which can break paging) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
-            <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
+            <View
+              className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3"
+              style={{ marginLeft: 2 }}
+            >
               <View className="h-24 w-24 flex-none">
                 <MacrosPizzaChart
                   protein={food.protein}
