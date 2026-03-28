@@ -41,6 +41,7 @@ type LogMealModalProps = {
   onLogMeal: (date: Date, mealType: MealType) => void;
 };
 
+// TODO: allow user to update the portion size of this meal
 export function LogMealModal({
   visible,
   onClose,
