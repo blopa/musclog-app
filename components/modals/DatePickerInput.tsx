@@ -11,13 +11,20 @@ export type DatePickerInputProps = {
   onPress: () => void;
   /** When omitted, the label uses `food.foodDetails.date`. */
   label?: string;
-  variant?: 'default' | 'compact'; // TODO: implement compact version, will have a slightly smaller icon and smaller height
+  /** `compact` uses tighter padding, a smaller leading icon, and slightly smaller edit affordance. */
+  variant?: 'default' | 'compact';
 };
 
-export function DatePickerInput({ selectedDate, onPress, label, variant = 'default' }: DatePickerInputProps) {
+export function DatePickerInput({
+  selectedDate,
+  onPress,
+  label,
+  variant = 'compact',
+}: DatePickerInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
+  const isCompact = variant === 'compact';
 
   return (
     <View>
@@ -25,17 +32,22 @@ export function DatePickerInput({ selectedDate, onPress, label, variant = 'defau
         {label ?? t('food.foodDetails.date')}
       </Text>
       <Pressable
-        className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
+        className={`flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark ${
+          isCompact ? 'p-3' : 'p-4'
+        }`}
         onPress={onPress}
       >
-        <View className="flex-row items-center gap-3">
+        <View className={`flex-row items-center ${isCompact ? 'gap-2' : 'gap-3'}`}>
           <View
-            className="h-10 w-10 items-center justify-center rounded-full"
+            className={`items-center justify-center rounded-full ${isCompact ? 'h-8 w-8' : 'h-10 w-10'}`}
             style={{
               backgroundColor: theme.colors.status.indigo20,
             }}
           >
-            <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            <Calendar
+              size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
+              color={theme.colors.accent.primary}
+            />
           </View>
           <View>
             <Text className="font-medium text-text-primary">
@@ -48,7 +60,10 @@ export function DatePickerInput({ selectedDate, onPress, label, variant = 'defau
             </Text>
           </View>
         </View>
-        <Edit size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+        <Edit
+          size={isCompact ? theme.iconSize.xs : theme.iconSize.sm}
+          color={theme.colors.text.secondary}
+        />
       </Pressable>
     </View>
   );

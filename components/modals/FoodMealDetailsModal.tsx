@@ -1906,6 +1906,7 @@ export function FoodMealDetailsModal({
             <DatePickerInput
               selectedDate={selectedDate}
               onPress={() => setIsDatePickerVisible(true)}
+              variant="default"
             />
           </View>
         </View>
