@@ -274,6 +274,7 @@
       "sourceOpenFood": "Open Food Facts",
       "sourceUsda": "USDA",
       "sourceAi": "AI",
+      "sourceMusclog": "Musclog",
       "incompleteNutritionWarning": "Nutrition data is missing for this product. Tap the edit icon to add it manually."
     },
     "addFoodItemToMeal": {

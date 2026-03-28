@@ -280,7 +280,8 @@ export function FoodMealDetailsModal({
     const isOpenfoodSource =
       productFromSearch?.source === 'openfood' ||
       (isSuccessFoodDetailProductState(productDetails) &&
-        (productDetails as any).source !== 'usda');
+        (productDetails as any).source !== 'usda' &&
+        (productDetails as any).source !== 'musclog');
 
     if (!isOpenfoodSource) {
       return false;
@@ -604,6 +605,20 @@ export function FoodMealDetailsModal({
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
 
+      if ((productDetails as any).source === 'musclog') {
+        const p = product as any;
+        return {
+          calories: p.calories ?? 0,
+          protein: p.protein ?? 0,
+          carbs: p.carbs ?? 0,
+          fat: p.fat ?? 0,
+          fiber: p.fiber ?? 0,
+          sugar: p.sugar ?? 0,
+          saturatedFat: p.saturatedFat ?? 0,
+          sodium: p.sodium ?? 0,
+        };
+      }
+
       if ((productDetails as any).source === 'usda') {
         const nutrients = (product as any).foodNutrients as any[];
         // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g
@@ -837,6 +852,9 @@ export function FoodMealDetailsModal({
 
     // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
     if (isSuccessFoodDetailProductState(productDetails)) {
+      if ((productDetails as any).source === 'musclog') {
+        return (productDetails.product as any).name;
+      }
       if ((productDetails as any).source === 'usda') {
         return (productDetails.product as any).description;
       }
@@ -902,6 +920,9 @@ export function FoodMealDetailsModal({
 
     if (isSuccessFoodDetailProductState(productDetails)) {
       const product = productDetails.product;
+      if ((productDetails as any).source === 'musclog') {
+        return (product as any).brand || '';
+      }
       if ((productDetails as any).source === 'usda') {
         const usdaBrand = (product as any).brandOwner || (product as any).brandName;
         const usdaCategory = (product as any).foodCategory;
@@ -960,11 +981,13 @@ export function FoodMealDetailsModal({
     // For foods, scale by serving size
     const scaleFactor = servingSize / 100; // API data is per 100g
 
-    let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | undefined;
+    let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined;
     if (food || localFood) {
       dataSource = 'local';
     } else if (initialSource === 'ai') {
       dataSource = 'ai';
+    } else if ((productDetails as any)?.source === 'musclog') {
+      dataSource = 'musclog';
     } else if (
       (productDetails as any)?.source === 'usda' ||
       productFromSearch?.source === 'usda' ||
@@ -1198,6 +1221,46 @@ export function FoodMealDetailsModal({
             ingredients_text: editedOverrides.description?.trim() || productToSave.ingredients_text,
           } as typeof productToSave;
         }
+      }
+
+      // Musclog handle
+      if ((productDetails as any)?.source === 'musclog') {
+        const musclogProduct = (productDetails as any).product;
+        const newFood = await FoodService.createFromMusclogProduct(
+          musclogProduct,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            isFavorite: isFavorite,
+          },
+          barcode ?? undefined
+        );
+
+        const logFoodPromise = NutritionService.logFood(
+          newFood.id,
+          selectedDate,
+          selectedMeal as MealType,
+          servingSize
+        );
+
+        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
+
+        onAddFood?.({
+          servingSize,
+          meal: selectedMeal,
+          date: selectedDate,
+        });
+
+        onClose();
+        onFoodTracked?.();
+
+        showSnackbar('success', t('food.foodDetails.successMessage'), {
+          action: t('snackbar.ok'),
+        });
+        return;
       }
 
       // USDA handle

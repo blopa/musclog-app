@@ -13,7 +13,7 @@ type FoodData = {
   protein: number;
   carbs: number;
   fat: number;
-  source?: 'openfood' | 'usda' | 'local' | 'ai';
+  source?: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog';
 };
 
 type NutritionalData = {

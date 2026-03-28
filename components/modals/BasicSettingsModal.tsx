@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   ChevronRight,
+  Dumbbell,
   Globe,
   Heart,
   Languages,
@@ -143,6 +144,14 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
         ]
       : []),
     {
+      icon: Dumbbell,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('settings.basicSettings.foodSearchMusclog'),
+      description: t('settings.basicSettings.foodSearchMusclogDescription'),
+      onPress: () => handleFoodSearchSourceChange('musclog'),
+    },
+    {
       icon: Scale,
       iconColor: theme.colors.text.secondary,
       iconBgColor: theme.colors.background.card,
@@ -161,6 +170,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     both: t('settings.basicSettings.foodSearchBoth'),
     openfood: t('settings.basicSettings.foodSearchOpenFoodFacts'),
     usda: t('settings.basicSettings.foodSearchUSDA'),
+    musclog: t('settings.basicSettings.foodSearchMusclog'),
     none: t('settings.basicSettings.foodSearchNone'),
   }[effectiveFoodSearchSource];
 
