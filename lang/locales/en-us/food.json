@@ -140,7 +140,14 @@
       "mergeDuplicatesConfirmMessage": "Duplicate entries in {{mealName}} will be combined into a single entry with the total amount.",
       "mergeDuplicatesConfirm": "Merge",
       "mergeDuplicatesSuccess": "Duplicate foods merged successfully",
-      "mergeDuplicatesError": "Failed to merge duplicate foods"
+      "mergeDuplicatesError": "Failed to merge duplicate foods",
+      "scaleMealPortion": "Adjust meal serving size",
+      "scaleMealPortionDesc": "Increase or decrease total grams; all foods scale together",
+      "scaleMealPortionModalTitle": "Adjust meal serving size",
+      "scaleMealPortionModalSubtitle": "Total grams for this meal — each food is scaled proportionally",
+      "scaleMealPortionSuccess": "Meal portions updated",
+      "scaleMealPortionError": "Failed to update meal portions",
+      "scaleMealPortionInvalid": "Enter at least 1 g"
     },
     "mealInsights": {
       "title": "Meal Insights",

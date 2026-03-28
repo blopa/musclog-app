@@ -5,6 +5,7 @@ import {
   Edit,
   GitMerge,
   ListPlus,
+  Scale,
   ScanLine,
   Scissors,
   Sparkles,
@@ -32,6 +33,7 @@ import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '../../components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
+import { ScaleMealPortionModal } from '../../components/modals/ScaleMealPortionModal';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { MenuButton } from '../../components/theme/MenuButton';
@@ -40,7 +42,12 @@ import { useSmartCamera } from '../../context/SmartCameraContext';
 import { useSnackbar } from '../../context/SnackbarContext';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
-import { ChatService, NutritionService, SettingsService } from '../../database/services';
+import {
+  ChatService,
+  NutritionService,
+  SettingsService,
+  scaleMealNutritionLogsToTotalGrams,
+} from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
@@ -129,6 +136,8 @@ export default function FoodScreen() {
   const [isFoodMoveLoading, setIsFoodMoveLoading] = useState(false);
   const [isFoodSplitModalVisible, setIsFoodSplitModalVisible] = useState(false);
   const [isFoodSplitLoading, setIsFoodSplitLoading] = useState(false);
+  const [isScaleMealPortionModalVisible, setIsScaleMealPortionModalVisible] = useState(false);
+  const [isScaleMealPortionLoading, setIsScaleMealPortionLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -462,6 +471,47 @@ export default function FoodScreen() {
     setIsMealActionModalVisible(true);
   };
 
+  const handleScaleMealPortion = () => {
+    setIsMealMenuVisible(false);
+    setIsScaleMealPortionModalVisible(true);
+  };
+
+  const handleConfirmScaleMealPortion = async (newTotalGrams: number) => {
+    if (!selectedMealForMenu) {
+      return;
+    }
+    if (newTotalGrams < 1) {
+      showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
+      return;
+    }
+
+    const mealFoods = mealsByType[selectedMealForMenu] || [];
+    const currentTotal = mealFoods.reduce((sum, e) => sum + e.gramWeight, 0);
+    if (currentTotal <= 0) {
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      setIsScaleMealPortionModalVisible(false);
+      setSelectedMealForMenu(null);
+      return;
+    }
+
+    setIsScaleMealPortionLoading(true);
+    try {
+      await scaleMealNutritionLogsToTotalGrams(
+        mealFoods.map((e) => ({ log: e.log, gramWeight: e.gramWeight })),
+        newTotalGrams
+      );
+      showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
+      await refresh();
+      setIsScaleMealPortionModalVisible(false);
+      setSelectedMealForMenu(null);
+    } catch (error) {
+      console.error('Error scaling meal portions:', error);
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+    } finally {
+      setIsScaleMealPortionLoading(false);
+    }
+  };
+
   const handleMergeDuplicates = () => {
     setIsMealMenuVisible(false);
     if (!selectedMealForMenu) {
@@ -625,6 +675,13 @@ export default function FoodScreen() {
     selectedMealForMenu != null &&
     mealHasDuplicateFoodsByFoodId(mealsByType[selectedMealForMenu] || []);
 
+  const selectedMealTotalGrams = useMemo(() => {
+    if (!selectedMealForMenu) {
+      return 0;
+    }
+    return (mealsByType[selectedMealForMenu] || []).reduce((sum, e) => sum + e.gramWeight, 0);
+  }, [selectedMealForMenu, mealsByType]);
+
   const mealMenuItems = [
     ...(isAiConfigured
       ? [
@@ -645,6 +702,14 @@ export default function FoodScreen() {
       title: t('food.actions.createMeal'),
       description: t('food.actions.createMealDesc'),
       onPress: handleCreateMealFromFood,
+    },
+    {
+      icon: Scale,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: t('food.actions.scaleMealPortion'),
+      description: t('food.actions.scaleMealPortionDesc'),
+      onPress: handleScaleMealPortion,
     },
     ...(showMergeDuplicatesInMealMenu
       ? [
@@ -1270,6 +1335,18 @@ export default function FoodScreen() {
         sourceMealType={selectedMealForMenu || 'breakfast'}
         sourceDate={selectedDate}
         isLoading={isMealActionLoading}
+      />
+
+      {/* Scale meal total portion (grams) */}
+      <ScaleMealPortionModal
+        visible={isScaleMealPortionModalVisible ? !!selectedMealForMenu : false}
+        onClose={() => {
+          setIsScaleMealPortionModalVisible(false);
+          setSelectedMealForMenu(null);
+        }}
+        onConfirm={handleConfirmScaleMealPortion}
+        initialTotalGrams={selectedMealTotalGrams}
+        isLoading={isScaleMealPortionLoading}
       />
 
       {/* Move Food Modal */}
