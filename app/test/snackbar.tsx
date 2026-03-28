@@ -11,15 +11,12 @@ export default function SnackbarTestScreen() {
   const { showSnackbar } = useSnackbar();
 
   const triggerSuccessSnackbar = () => {
-    showSnackbar('success', 'Workout saved successfully!', {
-      action: 'VIEW',
-    });
+    showSnackbar('success', 'Workout saved successfully!');
   };
 
   const triggerErrorSnackbar = () => {
     showSnackbar('error', 'Failed to save workout', {
       subtitle: 'Please check your connection and try again.',
-      action: 'RETRY',
     });
   };
 

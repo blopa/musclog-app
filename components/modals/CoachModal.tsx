@@ -833,9 +833,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       }
     } catch (error) {
       console.error('Error picking document:', error);
-      showSnackbar('error', t('coach.errors.filePickFailed'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.errors.filePickFailed'));
     }
   }, [showSnackbar, t]);
 
@@ -893,7 +891,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
               onPress: async () => {
                 setSelectedMessage(null);
                 await Clipboard.setStringAsync(selectedMessage.text ?? '');
-                showSnackbar('success', t('coach.message.copied'), { action: t('snackbar.ok') });
+                showSnackbar('success', t('coach.message.copied'));
               },
             },
             {
@@ -968,9 +966,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     try {
       const records = await ChatService.getMessagesByContext(conversationContext);
       if (!records.length) {
-        showSnackbar('error', t('coach.share.noMessages'), {
-          action: t('snackbar.ok'),
-        });
+        showSnackbar('error', t('coach.share.noMessages'));
         return;
       }
 
@@ -990,9 +986,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       await Share.share({ message: lines.join('\n') });
     } catch (err) {
       console.error('[CoachModal] shareHistory failed:', err);
-      showSnackbar('error', t('coach.share.failed'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.share.failed'));
     }
   }, [conversationContext, showSnackbar, t]);
 
@@ -1006,14 +1000,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     await flushLoadingPaint();
     try {
       await clearHistory(conversationContext);
-      showSnackbar('success', t('coach.success.historyCleared'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('coach.success.historyCleared'));
     } catch (err) {
       console.error('[CoachModal] clearHistory failed:', err);
-      showSnackbar('error', t('coach.errors.generalError'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsClearingHistory(false);
     }
@@ -1029,10 +1019,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     await flushLoadingPaint();
     try {
       await deleteMessage(id);
-      showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+      showSnackbar('success', t('coach.message.deleted'));
     } catch (err) {
       console.error('[CoachModal] deleteMessage failed:', err);
-      showSnackbar('error', t('coach.errors.generalError'), { action: t('snackbar.ok') });
+      showSnackbar('error', t('coach.errors.generalError'));
     } finally {
       setIsDeletingMessage(false);
     }

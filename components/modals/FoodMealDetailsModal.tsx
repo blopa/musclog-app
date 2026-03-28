@@ -1275,9 +1275,7 @@ export function FoodMealDetailsModal({
           onClose();
           onFoodTracked?.();
 
-          showSnackbar('success', t('food.foodDetails.successMessage'), {
-            action: t('snackbar.ok'),
-          });
+          showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
           console.error('Error logging meal:', err);
 
@@ -1288,9 +1286,7 @@ export function FoodMealDetailsModal({
             },
           });
 
-          showSnackbar('error', t('food.foodDetails.errorMessage'), {
-            action: t('snackbar.ok'),
-          });
+          showSnackbar('error', t('food.foodDetails.errorMessage'));
         } finally {
           setIsAddingFood(false);
         }
@@ -1326,9 +1322,7 @@ export function FoodMealDetailsModal({
           onClose();
           onFoodTracked?.();
 
-          showSnackbar('success', t('food.foodDetails.successMessage'), {
-            action: t('snackbar.ok'),
-          });
+          showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
           console.error('Error updating food log:', err);
 
@@ -1339,9 +1333,7 @@ export function FoodMealDetailsModal({
             },
           });
 
-          showSnackbar('error', t('food.foodDetails.errorMessage'), {
-            action: t('snackbar.ok'),
-          });
+          showSnackbar('error', t('food.foodDetails.errorMessage'));
         } finally {
           setIsAddingFood(false);
         }
@@ -1383,9 +1375,7 @@ export function FoodMealDetailsModal({
         onClose();
         onFoodTracked?.();
 
-        showSnackbar('success', t('food.foodDetails.successMessage'), {
-          action: t('snackbar.ok'),
-        });
+        showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
       }
 
@@ -1453,9 +1443,7 @@ export function FoodMealDetailsModal({
         onClose();
         onFoodTracked?.();
 
-        showSnackbar('success', t('food.foodDetails.successMessage'), {
-          action: t('snackbar.ok'),
-        });
+        showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
       }
 
@@ -1509,9 +1497,7 @@ export function FoodMealDetailsModal({
         onClose();
         onFoodTracked?.();
 
-        showSnackbar('success', t('food.foodDetails.successMessage'), {
-          action: t('snackbar.ok'),
-        });
+        showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
       }
 
@@ -1556,9 +1542,7 @@ export function FoodMealDetailsModal({
       onClose();
       onFoodTracked?.();
 
-      showSnackbar('success', t('food.foodDetails.successMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
       console.error('Error tracking food:', error);
 
@@ -1569,9 +1553,7 @@ export function FoodMealDetailsModal({
         },
       });
 
-      showSnackbar('error', t('food.foodDetails.errorMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('food.foodDetails.errorMessage'));
     } finally {
       setIsAddingFood(false);
     }

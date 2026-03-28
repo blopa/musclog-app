@@ -79,7 +79,7 @@ const handleGoogleAuthError = async () => {
 
   const message = i18n.t('your_google_auth_expired_reauth');
   showSnackbar('error', message, {
-    duration: 6000,
+    duration: 4000,
   });
   await AsyncStorage.setItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN, today);
 };

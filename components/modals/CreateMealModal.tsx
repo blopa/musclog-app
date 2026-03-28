@@ -408,15 +408,11 @@ export function CreateMealModal({
 
   const handleTrack = async () => {
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'));
       return;
     }
     if (saveToMyMeals && !mealName.trim()) {
-      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'));
       return;
     }
 
@@ -441,14 +437,10 @@ export function CreateMealModal({
       }
       onTracked?.();
       onClose();
-      showSnackbar('success', t('food.quickTrackMeal.successMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
-      showSnackbar('error', t('food.quickTrackMeal.errorMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
     }
@@ -457,17 +449,13 @@ export function CreateMealModal({
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
-      showSnackbar('error', t('food.createMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.mealNameRequired'));
       return;
     }
 
     // Validate ingredients
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.createMeal.ingredientsRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.ingredientsRequired'));
       return;
     }
 
@@ -502,9 +490,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
-      showSnackbar('error', t('food.createMeal.saveFailed'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);
     }

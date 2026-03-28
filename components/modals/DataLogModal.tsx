@@ -887,14 +887,10 @@ export function DataLogModal({
     setTimeout(async () => {
       try {
         await NutritionGoalService.regenerateCheckins(selectedItem.id);
-        showSnackbar('success', t('common.success'), {
-          action: t('common.ok'),
-        });
+        showSnackbar('success', t('common.success'));
       } catch (error) {
         console.error('Regenerate check-ins failed:', error);
-        showSnackbar('error', t('common.error'), {
-          action: t('common.ok'),
-        });
+        showSnackbar('error', t('common.error'));
       } finally {
         setIsRegenerating(false);
       }
@@ -940,9 +936,7 @@ export function DataLogModal({
       await refresh();
     } catch (error) {
       console.error('Duplicate failed:', error);
-      showSnackbar('error', t('common.duplicateFailed'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('common.duplicateFailed'));
     } finally {
       setIsDuplicating(false);
     }
@@ -1030,9 +1024,7 @@ export function DataLogModal({
       setDeleteModalVisible(false);
     } catch (error) {
       console.error('Delete failed:', error);
-      showSnackbar('error', t('common.deleteFailed'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('common.deleteFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -1569,9 +1561,7 @@ export function DataLogModal({
             setCreateWorkoutOptionsModalVisible(false);
             // TODO: Implement AI workout generation
             // Placeholder for AI workout generation
-            showSnackbar('success', t('workouts.aiGeneration.comingSoon'), {
-              action: t('common.ok'),
-            });
+            showSnackbar('success', t('workouts.aiGeneration.comingSoon'));
           }}
           onCreateEmptyTemplate={() => {
             setCreateWorkoutOptionsModalVisible(false);
@@ -1581,9 +1571,7 @@ export function DataLogModal({
             setCreateWorkoutOptionsModalVisible(false);
             // TODO: Implement template browsing functionality
             // Placeholder for template browsing - could navigate to a template library
-            showSnackbar('success', t('workouts.templateBrowser.comingSoon'), {
-              action: t('common.ok'),
-            });
+            showSnackbar('success', t('workouts.templateBrowser.comingSoon'));
           }}
         />
       ) : null}
