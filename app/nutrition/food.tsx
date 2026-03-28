@@ -45,14 +45,15 @@ import NutritionLog, { type MealType } from '../../database/models/NutritionLog'
 import {
   ChatService,
   NutritionService,
-  SettingsService,
   scaleMealNutritionLogsToTotalGrams,
+  SettingsService,
 } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
 import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getMealCritique } from '../../utils/coachAI';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
@@ -108,6 +109,7 @@ export default function FoodScreen() {
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
@@ -125,6 +127,7 @@ export default function FoodScreen() {
     { food: Food; amount: number }[]
   >([]);
   const [isDeleteAllMealVisible, setIsDeleteAllMealVisible] = useState(false);
+  const [isDeleteAllMealLoading, setIsDeleteAllMealLoading] = useState(false);
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
   const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
@@ -280,6 +283,7 @@ export default function FoodScreen() {
       return;
     }
     setIsFoodMoveLoading(true);
+    await flushLoadingPaint();
     try {
       await NutritionService.moveNutritionLogsToDate(
         [selectedFoodItem.log],
@@ -307,6 +311,7 @@ export default function FoodScreen() {
       return;
     }
     setIsFoodSplitLoading(true);
+    await flushLoadingPaint();
     try {
       await NutritionService.splitNutritionLogsToDate(
         [selectedFoodItem.log],
@@ -331,6 +336,8 @@ export default function FoodScreen() {
       return;
     }
 
+    setIsDeleteFoodLoading(true);
+    await flushLoadingPaint();
     try {
       // The @writer method returns a promise that resolves when the operation completes
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
@@ -339,6 +346,7 @@ export default function FoodScreen() {
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
+      setIsDeleteFoodLoading(false);
       // Always close the modal and clear selection, regardless of success or error
       setIsDeleteConfirmationVisible(false);
       setSelectedFoodItem(null);
@@ -412,6 +420,8 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return;
     }
+    setIsDeleteAllMealLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
       await NutritionService.deleteNutritionLogsBatch(mealFoods.map((e) => e.log));
@@ -421,6 +431,7 @@ export default function FoodScreen() {
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
+      setIsDeleteAllMealLoading(false);
       setIsDeleteAllMealVisible(false);
       setSelectedMealForMenu(null);
     }
@@ -495,6 +506,7 @@ export default function FoodScreen() {
     }
 
     setIsScaleMealPortionLoading(true);
+    await flushLoadingPaint();
     try {
       await scaleMealNutritionLogsToTotalGrams(
         mealFoods.map((e) => ({ log: e.log, gramWeight: e.gramWeight })),
@@ -534,6 +546,7 @@ export default function FoodScreen() {
     }
 
     setIsMergeDuplicatesLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu] || [];
       const grouped = new Map<string, typeof mealFoods>();
@@ -584,6 +597,7 @@ export default function FoodScreen() {
       return;
     }
     setIsMealActionLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
       const logs = mealFoods.map((e) => e.log);
@@ -626,6 +640,7 @@ export default function FoodScreen() {
     }
 
     setIsMealInsightsLoading(true);
+    await flushLoadingPaint();
     try {
       const aiConfig = await AiService.getAiConfig();
       if (!aiConfig) {
@@ -1247,6 +1262,7 @@ export default function FoodScreen() {
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
         variant="destructive"
+        isLoading={isDeleteFoodLoading}
       />
 
       {/* Goals Management Modal */}
@@ -1290,6 +1306,7 @@ export default function FoodScreen() {
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
         variant="destructive"
+        isLoading={isDeleteAllMealLoading}
       />
 
       {/* Merge Duplicates Confirmation Modal */}
