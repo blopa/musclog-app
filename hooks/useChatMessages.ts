@@ -49,7 +49,7 @@ import {
 } from '../utils/coachAI';
 import { processMealPlanResponse } from '../utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '../utils/nutritionCalculator';
-import { getChatMessagePromptContent } from '../utils/prompts';
+import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -210,7 +210,8 @@ export type UseChatMessagesResult = {
     mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
     ingredients: TrackMealIngredient[],
     date: Date,
-    logMealType: MealType
+    logMealType: MealType,
+    portionGrams: number
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
@@ -812,22 +813,30 @@ export function useChatMessages(
       mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
       ingredients: TrackMealIngredient[],
       date: Date,
-      logMealType: MealType
+      logMealType: MealType,
+      portionGrams: number
     ) => {
-      await NutritionService.logCustomMealsBatch(
-        ingredients.map((i) => ({
+      const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
+      const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
+      const scale = portionGrams / safeBase;
+
+      const scaledIngredients = ingredients.map((i) => {
+        const scaledGramsRaw = i.grams * scale;
+        const scaledGrams = scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
+
+        return {
           name: i.name,
-          calories: i.kcal,
-          protein: i.protein,
-          carbs: i.carbs,
-          fat: i.fat,
-          fiber: i.fiber,
-          grams: i.grams,
+          calories: i.kcal * scale,
+          protein: i.protein * scale,
+          carbs: i.carbs * scale,
+          fat: i.fat * scale,
+          fiber: (i.fiber ?? 0) * scale,
+          grams: scaledGrams,
           foodId: i.foodId,
-        })),
-        date,
-        logMealType
-      );
+        };
+      });
+
+      await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType);
 
       const record = rawMessagesRef.current.find((r) => r.id === messageId);
       if (record?.payloadJson) {

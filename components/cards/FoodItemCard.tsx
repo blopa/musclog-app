@@ -16,6 +16,7 @@ import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'rea
 
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
@@ -106,10 +107,10 @@ export const FoodItemCard = memo(function FoodItemCard({
 
   const MealIcon = getMealIcon();
 
-  const p = Math.round(protein ?? 0);
-  const c = Math.round(carbs ?? 0);
-  const f = Math.round(fat ?? 0);
-  const g = Math.round(gramsToDisplay(portion ?? 0, units));
+  const p = roundToDecimalPlaces(protein ?? 0);
+  const c = roundToDecimalPlaces(carbs ?? 0);
+  const f = roundToDecimalPlaces(fat ?? 0);
+  const g = roundToDecimalPlaces(gramsToDisplay(portion ?? 0, units));
   const massUnit = getMassUnitLabel(units);
 
   const handleImageError = () => {
@@ -157,7 +158,11 @@ export const FoodItemCard = memo(function FoodItemCard({
           ) : null}
           <View className="flex-row items-center gap-3">
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
-            <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
+            <MacroItem
+              icon={Flame}
+              value={roundToDecimalPlaces(calories)}
+              label={t('food.common.kcal')}
+            />
           </View>
           {variant === 'default' ? (
             <View className="flex-row items-center gap-3">

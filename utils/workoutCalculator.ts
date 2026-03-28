@@ -1,6 +1,7 @@
 import { EXERCISE_TYPES } from '../constants/exercises';
 import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
+import { roundToDecimalPlaces } from './roundDecimal';
 
 /**
  * Type representing a set with only the fields needed for volume calculation.
@@ -54,7 +55,7 @@ export async function calculateWorkoutVolume(
       }
     }
 
-    return Math.round(totalVolume * 100) / 100;
+    return roundToDecimalPlaces(totalVolume);
   } catch (error) {
     console.error('Error calculating workout volume:', error);
     throw error;

@@ -189,8 +189,8 @@ export type NavItemKey =
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
-export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'none';
-export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation';
+export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
+export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
 
 export type UseSettingsResult = {

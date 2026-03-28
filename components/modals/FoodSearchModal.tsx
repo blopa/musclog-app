@@ -47,6 +47,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { Button } from '../theme/Button';
@@ -219,9 +220,9 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   const { t } = useTranslation();
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(mealData.protein),
-    carbs: Math.round(mealData.carbs),
-    fat: Math.round(mealData.fat),
+    protein: roundToDecimalPlaces(mealData.protein),
+    carbs: roundToDecimalPlaces(mealData.carbs),
+    fat: roundToDecimalPlaces(mealData.fat),
   });
 
   return (
@@ -257,7 +258,7 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
           </Text>
         ) : null}
         <Text className="mt-0.5 text-sm text-text-secondary">
-          {Math.round(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
+          {roundToDecimalPlaces(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
         </Text>
       </View>
 
@@ -549,7 +550,7 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: t('foodSearch.foodDescriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: Math.round(f.calories ?? 0),
+                calories: roundToDecimalPlaces(f.calories ?? 0),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -606,7 +607,7 @@ export function FoodSearchModal({
           name: f.name ?? '',
           description: t('foodSearch.foodDescriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: Math.round(f.calories ?? 0),
+            calories: roundToDecimalPlaces(f.calories ?? 0),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -1367,7 +1368,7 @@ export function FoodSearchModal({
                               name: food.name ?? '',
                               description: t('foodSearch.foodDescriptionPer100g', {
                                 brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: Math.round(food.calories ?? 0),
+                                calories: roundToDecimalPlaces(food.calories ?? 0),
                               }),
                               brand: food.brand,
                               serving_size: portion100gName,

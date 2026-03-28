@@ -20,6 +20,7 @@ import type { NavItemKey } from '../constants/settings';
 import { useNavigationItems } from '../hooks/useNavigationItems';
 import { useTheme } from '../hooks/useTheme';
 import { useUnreadChatMessages } from '../hooks/useUnreadChatMessages';
+import { addOpacityToHex } from '../theme';
 
 type NavigationMenuProps = {
   onCoachPress: () => void;
@@ -307,6 +308,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   );
 
   const homeActive = isPathActive('/');
+  const cameraFabActive = isPathActive('/nutrition/ai-camera');
 
   return (
     <View
@@ -350,29 +352,22 @@ export const NavigationMenu = memo(function NavigationMenu({
             onPress={onCameraPress}
           >
             <View
-              className={`items-center justify-center rounded-full shadow-lg shadow-accent-primary/50 ${
-                isPathActive('/nutrition/ai-camera')
-                  ? 'bg-accent-primary'
-                  : 'bg-accent-primary opacity-80'
-              }`}
-              style={
+              className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+              style={[
                 isSmallScreen
                   ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                  : { width: 80, height: 80 }
-              }
+                  : { width: 80, height: 80 },
+                {
+                  backgroundColor: cameraFabActive
+                    ? theme.colors.accent.primary
+                    : addOpacityToHex(theme.colors.accent.primary, 0.8),
+                },
+              ]}
             >
               <Camera
-                size={isSmallScreen ? theme.iconSize.sm : theme.iconSize.md}
-                color={
-                  isPathActive('/nutrition/ai-camera')
-                    ? theme.colors.text.primary
-                    : theme.colors.text.tertiary
-                }
-                strokeWidth={
-                  isPathActive('/nutrition/ai-camera')
-                    ? theme.strokeWidth.medium
-                    : theme.borderWidth.medium
-                }
+                size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+                color={theme.colors.background.secondaryDark}
+                strokeWidth={theme.strokeWidth.medium}
               />
             </View>
           </Pressable>

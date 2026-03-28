@@ -5,6 +5,7 @@ import {
   Edit,
   GitMerge,
   ListPlus,
+  Scale,
   ScanLine,
   Scissors,
   Sparkles,
@@ -32,6 +33,7 @@ import GoalsManagementModal from '../../components/modals/GoalsManagementModal';
 import { MealInsightsModal } from '../../components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '../../components/modals/MoveCopyMealModal';
 import MyMealsModal from '../../components/modals/MyMealsModal';
+import { ScaleMealPortionModal } from '../../components/modals/ScaleMealPortionModal';
 import { Button } from '../../components/theme/Button';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { MenuButton } from '../../components/theme/MenuButton';
@@ -40,13 +42,34 @@ import { useSmartCamera } from '../../context/SmartCameraContext';
 import { useSnackbar } from '../../context/SnackbarContext';
 import Food from '../../database/models/Food';
 import NutritionLog, { type MealType } from '../../database/models/NutritionLog';
-import { ChatService, NutritionService, SettingsService } from '../../database/services';
+import {
+  ChatService,
+  NutritionService,
+  scaleMealNutritionLogsToTotalGrams,
+  SettingsService,
+} from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
 import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getMealCritique } from '../../utils/coachAI';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
+
+/** Same grouping as merge: duplicates are multiple logs with the same foodId in one meal. */
+function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): boolean {
+  const grouped = new Map<string, typeof mealFoods>();
+  for (const entry of mealFoods) {
+    if (!entry.log.foodId) {
+      continue;
+    }
+    const existing = grouped.get(entry.log.foodId) || [];
+    existing.push(entry);
+    grouped.set(entry.log.foodId, existing);
+  }
+  return [...grouped.values()].some((g) => g.length > 1);
+}
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
   switch (mode) {
@@ -84,6 +107,7 @@ export default function FoodScreen() {
   } | null>(null);
   const [isFoodDetailsModalVisible, setIsFoodDetailsModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
@@ -101,6 +125,7 @@ export default function FoodScreen() {
     { food: Food; amount: number }[]
   >([]);
   const [isDeleteAllMealVisible, setIsDeleteAllMealVisible] = useState(false);
+  const [isDeleteAllMealLoading, setIsDeleteAllMealLoading] = useState(false);
   const [isMealActionModalVisible, setIsMealActionModalVisible] = useState(false);
   const [mealActionMode, setMealActionMode] = useState<'move' | 'copy' | 'split'>('move');
   const [isMealActionLoading, setIsMealActionLoading] = useState(false);
@@ -112,6 +137,8 @@ export default function FoodScreen() {
   const [isFoodMoveLoading, setIsFoodMoveLoading] = useState(false);
   const [isFoodSplitModalVisible, setIsFoodSplitModalVisible] = useState(false);
   const [isFoodSplitLoading, setIsFoodSplitLoading] = useState(false);
+  const [isScaleMealPortionModalVisible, setIsScaleMealPortionModalVisible] = useState(false);
+  const [isScaleMealPortionLoading, setIsScaleMealPortionLoading] = useState(false);
 
   const { logs, dailyNutrients, isLoading, refresh, totalCount, nutritionGoal } =
     useDailyNutritionSummary({
@@ -179,7 +206,7 @@ export default function FoodScreen() {
   // Calculate calories consumed and macros
   const caloriesData = useMemo(() => {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
-    const consumedCalories = Math.round(dailyNutrients?.calories || 0);
+    const consumedCalories = roundToDecimalPlaces(dailyNutrients?.calories || 0);
     const percentage = Math.round((consumedCalories / totalCalories) * 100);
 
     return {
@@ -254,6 +281,7 @@ export default function FoodScreen() {
       return;
     }
     setIsFoodMoveLoading(true);
+    await flushLoadingPaint();
     try {
       await NutritionService.moveNutritionLogsToDate(
         [selectedFoodItem.log],
@@ -281,6 +309,7 @@ export default function FoodScreen() {
       return;
     }
     setIsFoodSplitLoading(true);
+    await flushLoadingPaint();
     try {
       await NutritionService.splitNutritionLogsToDate(
         [selectedFoodItem.log],
@@ -305,6 +334,8 @@ export default function FoodScreen() {
       return;
     }
 
+    setIsDeleteFoodLoading(true);
+    await flushLoadingPaint();
     try {
       // The @writer method returns a promise that resolves when the operation completes
       await NutritionService.deleteNutritionLog(selectedFoodItem.log.id);
@@ -313,6 +344,7 @@ export default function FoodScreen() {
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
+      setIsDeleteFoodLoading(false);
       // Always close the modal and clear selection, regardless of success or error
       setIsDeleteConfirmationVisible(false);
       setSelectedFoodItem(null);
@@ -386,6 +418,8 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return;
     }
+    setIsDeleteAllMealLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
       await NutritionService.deleteNutritionLogsBatch(mealFoods.map((e) => e.log));
@@ -395,6 +429,7 @@ export default function FoodScreen() {
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
+      setIsDeleteAllMealLoading(false);
       setIsDeleteAllMealVisible(false);
       setSelectedMealForMenu(null);
     }
@@ -445,6 +480,48 @@ export default function FoodScreen() {
     setIsMealActionModalVisible(true);
   };
 
+  const handleScaleMealPortion = () => {
+    setIsMealMenuVisible(false);
+    setIsScaleMealPortionModalVisible(true);
+  };
+
+  const handleConfirmScaleMealPortion = async (newTotalGrams: number) => {
+    if (!selectedMealForMenu) {
+      return;
+    }
+    if (newTotalGrams < 1) {
+      showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
+      return;
+    }
+
+    const mealFoods = mealsByType[selectedMealForMenu] || [];
+    const currentTotal = mealFoods.reduce((sum, e) => sum + e.gramWeight, 0);
+    if (currentTotal <= 0) {
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+      setIsScaleMealPortionModalVisible(false);
+      setSelectedMealForMenu(null);
+      return;
+    }
+
+    setIsScaleMealPortionLoading(true);
+    await flushLoadingPaint();
+    try {
+      await scaleMealNutritionLogsToTotalGrams(
+        mealFoods.map((e) => ({ log: e.log, gramWeight: e.gramWeight })),
+        newTotalGrams
+      );
+      showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
+      await refresh();
+      setIsScaleMealPortionModalVisible(false);
+      setSelectedMealForMenu(null);
+    } catch (error) {
+      console.error('Error scaling meal portions:', error);
+      showSnackbar('error', t('food.actions.scaleMealPortionError'));
+    } finally {
+      setIsScaleMealPortionLoading(false);
+    }
+  };
+
   const handleMergeDuplicates = () => {
     setIsMealMenuVisible(false);
     if (!selectedMealForMenu) {
@@ -452,19 +529,7 @@ export default function FoodScreen() {
     }
 
     const mealFoods = mealsByType[selectedMealForMenu] || [];
-    const grouped = new Map<string, typeof mealFoods>();
-    for (const entry of mealFoods) {
-      if (!entry.log.foodId) {
-        continue;
-      }
-
-      const existing = grouped.get(entry.log.foodId) || [];
-      existing.push(entry);
-      grouped.set(entry.log.foodId, existing);
-    }
-
-    const hasDuplicates = [...grouped.values()].some((g) => g.length > 1);
-    if (!hasDuplicates) {
+    if (!mealHasDuplicateFoodsByFoodId(mealFoods)) {
       showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
       setSelectedMealForMenu(null);
       return;
@@ -479,6 +544,7 @@ export default function FoodScreen() {
     }
 
     setIsMergeDuplicatesLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu] || [];
       const grouped = new Map<string, typeof mealFoods>();
@@ -529,6 +595,7 @@ export default function FoodScreen() {
       return;
     }
     setIsMealActionLoading(true);
+    await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
       const logs = mealFoods.map((e) => e.log);
@@ -571,6 +638,7 @@ export default function FoodScreen() {
     }
 
     setIsMealInsightsLoading(true);
+    await flushLoadingPaint();
     try {
       const aiConfig = await AiService.getAiConfig();
       if (!aiConfig) {
@@ -616,6 +684,33 @@ export default function FoodScreen() {
     }
   };
 
+  const showMergeDuplicatesInMealMenu =
+    selectedMealForMenu != null &&
+    mealHasDuplicateFoodsByFoodId(mealsByType[selectedMealForMenu] || []);
+
+  const selectedMealTotalGrams = useMemo(() => {
+    if (!selectedMealForMenu) {
+      return 0;
+    }
+    return (mealsByType[selectedMealForMenu] || []).reduce((sum, e) => sum + e.gramWeight, 0);
+  }, [selectedMealForMenu, mealsByType]);
+
+  const selectedMealNutrients = useMemo(() => {
+    if (!selectedMealForMenu) {
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+    }
+    return (mealsByType[selectedMealForMenu] || []).reduce(
+      (acc, e) => ({
+        calories: acc.calories + e.nutrients.calories,
+        protein: acc.protein + e.nutrients.protein,
+        carbs: acc.carbs + e.nutrients.carbs,
+        fat: acc.fat + e.nutrients.fat,
+        fiber: acc.fiber + e.nutrients.fiber,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+  }, [selectedMealForMenu, mealsByType]);
+
   const mealMenuItems = [
     ...(isAiConfigured
       ? [
@@ -638,13 +733,25 @@ export default function FoodScreen() {
       onPress: handleCreateMealFromFood,
     },
     {
-      icon: GitMerge,
+      icon: Scale,
       iconColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.accent.primary10,
-      title: t('food.actions.mergeDuplicates'),
-      description: t('food.actions.mergeDuplicatesDesc'),
-      onPress: handleMergeDuplicates,
+      title: t('food.actions.scaleMealPortion'),
+      description: t('food.actions.scaleMealPortionDesc'),
+      onPress: handleScaleMealPortion,
     },
+    ...(showMergeDuplicatesInMealMenu
+      ? [
+          {
+            icon: GitMerge,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.mergeDuplicates'),
+            description: t('food.actions.mergeDuplicatesDesc'),
+            onPress: handleMergeDuplicates,
+          },
+        ]
+      : []),
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
@@ -776,15 +883,15 @@ export default function FoodScreen() {
                   }}
                   macros={{
                     protein: {
-                      value: Math.round(dailyNutrients?.protein || 0),
+                      value: roundToDecimalPlaces(dailyNutrients?.protein || 0),
                       goal: nutritionGoal?.protein || 150,
                     },
                     carbs: {
-                      value: Math.round(dailyNutrients?.carbs || 0),
+                      value: roundToDecimalPlaces(dailyNutrients?.carbs || 0),
                       goal: nutritionGoal?.carbs || 250,
                     },
                     fats: {
-                      value: Math.round(dailyNutrients?.fat || 0),
+                      value: roundToDecimalPlaces(dailyNutrients?.fat || 0),
                       goal: nutritionGoal?.fats || 80,
                     },
                   }}
@@ -857,10 +964,16 @@ export default function FoodScreen() {
                 {/* Breakfast Section */}
                 <MealSection
                   title={t('food.meals.breakfast')}
-                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.breakfast?.calories || 0)}
-                  totalProtein={dailyNutrients?.byMealType?.breakfast?.protein || 0}
-                  totalCarbs={dailyNutrients?.byMealType?.breakfast?.carbs || 0}
-                  totalFat={dailyNutrients?.byMealType?.breakfast?.fat || 0}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.carbs || 0
+                  )}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.breakfast?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('breakfast')}
                   menuButton={
                     mealsByType.breakfast.length > 0 ? (
@@ -878,7 +991,7 @@ export default function FoodScreen() {
                       name={entry.displayName}
                       // description={getSimpleServingDisplay(entry.gramWeight, units)}
                       portion={entry.gramWeight}
-                      calories={Math.ceil(entry.nutrients.calories)}
+                      calories={entry.nutrients.calories}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
@@ -892,10 +1005,14 @@ export default function FoodScreen() {
                 {/* Lunch Section */}
                 <MealSection
                   title={t('food.meals.lunch')}
-                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.lunch?.calories || 0)}
-                  totalProtein={dailyNutrients?.byMealType?.lunch?.protein || 0}
-                  totalCarbs={dailyNutrients?.byMealType?.lunch?.carbs || 0}
-                  totalFat={dailyNutrients?.byMealType?.lunch?.fat || 0}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.lunch?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.lunch?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.lunch?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.lunch?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('lunch')}
                   menuButton={
                     mealsByType.lunch.length > 0 ? (
@@ -913,7 +1030,7 @@ export default function FoodScreen() {
                       name={entry.displayName}
                       // description={getSimpleServingDisplay(entry.gramWeight, units)}
                       portion={entry.gramWeight}
-                      calories={Math.ceil(entry.nutrients.calories)}
+                      calories={entry.nutrients.calories}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
@@ -927,10 +1044,14 @@ export default function FoodScreen() {
                 {/* Dinner Section */}
                 <MealSection
                   title={t('food.meals.dinner')}
-                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.dinner?.calories || 0)}
-                  totalProtein={dailyNutrients?.byMealType?.dinner?.protein || 0}
-                  totalCarbs={dailyNutrients?.byMealType?.dinner?.carbs || 0}
-                  totalFat={dailyNutrients?.byMealType?.dinner?.fat || 0}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.dinner?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.dinner?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.dinner?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.dinner?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('dinner')}
                   menuButton={
                     mealsByType.dinner.length > 0 ? (
@@ -948,7 +1069,7 @@ export default function FoodScreen() {
                       name={entry.displayName}
                       // description={getSimpleServingDisplay(entry.gramWeight, units)}
                       portion={entry.gramWeight}
-                      calories={Math.ceil(entry.nutrients.calories)}
+                      calories={entry.nutrients.calories}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
@@ -962,10 +1083,14 @@ export default function FoodScreen() {
                 {/* Snack Section */}
                 <MealSection
                   title={t('food.meals.snacks')}
-                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.snack?.calories || 0)}
-                  totalProtein={dailyNutrients?.byMealType?.snack?.protein || 0}
-                  totalCarbs={dailyNutrients?.byMealType?.snack?.carbs || 0}
-                  totalFat={dailyNutrients?.byMealType?.snack?.fat || 0}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.snack?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.snack?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.snack?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.snack?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('snack')}
                   menuButton={
                     mealsByType.snack.length > 0 ? (
@@ -983,7 +1108,7 @@ export default function FoodScreen() {
                       name={entry.displayName}
                       // description={getSimpleServingDisplay(entry.gramWeight, units)}
                       portion={entry.gramWeight}
-                      calories={Math.ceil(entry.nutrients.calories)}
+                      calories={entry.nutrients.calories}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
@@ -997,10 +1122,14 @@ export default function FoodScreen() {
                 {/* Other Section */}
                 <MealSection
                   title={t('food.meals.other')}
-                  totalCalories={Math.ceil(dailyNutrients?.byMealType?.other?.calories || 0)}
-                  totalProtein={dailyNutrients?.byMealType?.other?.protein || 0}
-                  totalCarbs={dailyNutrients?.byMealType?.other?.carbs || 0}
-                  totalFat={dailyNutrients?.byMealType?.other?.fat || 0}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.other?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.other?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.other?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.other?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('other')}
                   menuButton={
                     mealsByType.other.length > 0 ? (
@@ -1018,7 +1147,7 @@ export default function FoodScreen() {
                       name={entry.displayName}
                       // description={getSimpleServingDisplay(entry.gramWeight, units)}
                       portion={entry.gramWeight}
-                      calories={Math.ceil(entry.nutrients.calories)}
+                      calories={entry.nutrients.calories}
                       protein={entry.nutrients.protein}
                       carbs={entry.nutrients.carbs}
                       fat={entry.nutrients.fat}
@@ -1147,6 +1276,7 @@ export default function FoodScreen() {
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
         variant="destructive"
+        isLoading={isDeleteFoodLoading}
       />
 
       {/* Goals Management Modal */}
@@ -1160,7 +1290,7 @@ export default function FoodScreen() {
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
         title={selectedFoodItem?.displayName ?? ''}
-        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${Math.ceil(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
+        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${roundToDecimalPlaces(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
       />
 
@@ -1190,6 +1320,7 @@ export default function FoodScreen() {
         confirmLabel={t('common.delete')}
         cancelLabel={t('common.cancel')}
         variant="destructive"
+        isLoading={isDeleteAllMealLoading}
       />
 
       {/* Merge Duplicates Confirmation Modal */}
@@ -1235,6 +1366,19 @@ export default function FoodScreen() {
         sourceMealType={selectedMealForMenu || 'breakfast'}
         sourceDate={selectedDate}
         isLoading={isMealActionLoading}
+      />
+
+      {/* Scale meal total portion (grams) */}
+      <ScaleMealPortionModal
+        visible={isScaleMealPortionModalVisible ? !!selectedMealForMenu : false}
+        onClose={() => {
+          setIsScaleMealPortionModalVisible(false);
+          setSelectedMealForMenu(null);
+        }}
+        onConfirm={handleConfirmScaleMealPortion}
+        initialTotalGrams={selectedMealTotalGrams}
+        mealNutrients={selectedMealNutrients}
+        isLoading={isScaleMealPortionLoading}
       />
 
       {/* Move Food Modal */}

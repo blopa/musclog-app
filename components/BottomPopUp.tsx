@@ -1,8 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
-import React, { ReactNode, useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Keyboard,
   Modal,
   Platform,
   Pressable,
@@ -49,6 +50,35 @@ export function BottomPopUp({
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
+  /** Lifts the sheet when the keyboard opens so focused inputs stay visible (half keyboard height). */
+  const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
+
+  useEffect(() => {
+    if (!visible) {
+      setKeyboardBottomLift(0);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web' || !visible) {
+      return;
+    }
+
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const onShow = (e: { endCoordinates: { height: number } }) => {
+      setKeyboardBottomLift(Math.max(0, e.endCoordinates.height) / 2);
+    };
+    const onHide = () => setKeyboardBottomLift(0);
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [visible]);
 
   useEffect(() => {
     if (visible) {
@@ -130,6 +160,7 @@ export function BottomPopUp({
                 borderTopRightRadius: theme.borderRadius['3xl'],
                 maxHeight: effectiveMaxHeight,
                 width: '100%',
+                marginBottom: keyboardBottomLift,
               },
               sheetHeightStyle,
             ]}

@@ -44,6 +44,7 @@ import { theme } from '../theme'; // TODO: figure out a way to use useTheme inst
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
+import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { captureException } from '../utils/sentry';
 import { showSnackbar } from '../utils/snackbarService';
 
@@ -401,11 +402,24 @@ export default function HomeScreen() {
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
             <DailySummaryCard
-              calories={dailyCalories}
+              calories={{
+                consumed: roundToDecimalPlaces(dailyCalories.consumed),
+                remaining: roundToDecimalPlaces(dailyCalories.remaining),
+                goal: dailyCalories.goal,
+              }}
               macros={{
-                protein: dailyMacros.protein,
-                carbs: dailyMacros.carbs,
-                fats: dailyMacros.fat,
+                protein: {
+                  value: roundToDecimalPlaces(dailyMacros.protein.value),
+                  goal: dailyMacros.protein.goal,
+                },
+                carbs: {
+                  value: roundToDecimalPlaces(dailyMacros.carbs.value),
+                  goal: dailyMacros.carbs.goal,
+                },
+                fats: {
+                  value: roundToDecimalPlaces(dailyMacros.fat.value),
+                  goal: dailyMacros.fat.goal,
+                },
               }}
               menuButton={
                 <MenuButton
@@ -493,10 +507,10 @@ export default function HomeScreen() {
                   key={entry.log.id}
                   variant="compact"
                   name={entry.displayName}
-                  calories={Math.round(entry.nutrients.calories)}
-                  protein={Math.round(entry.nutrients.protein)}
-                  carbs={Math.round(entry.nutrients.carbs)}
-                  fat={Math.round(entry.nutrients.fat)}
+                  calories={entry.nutrients.calories}
+                  protein={entry.nutrients.protein}
+                  carbs={entry.nutrients.carbs}
+                  fat={entry.nutrients.fat}
                   portion={entry.gramWeight}
                   image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                   mealType={entry.log.type}

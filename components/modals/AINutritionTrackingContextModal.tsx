@@ -121,16 +121,19 @@ export function AINutritionTrackingContextModal({
                 <Pressable
                   key={tag}
                   onPress={() => handleToggleTag(tag)}
-                  className="rounded-full border px-4 py-2"
+                  className={`flex-row items-center rounded-full px-4 py-2.5 ${
+                    isSelected ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
+                  }`}
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                  style={{
-                    backgroundColor: isSelected
-                      ? theme.colors.background.white10
-                      : theme.colors.background.darkGreenSolidAlt,
-                    borderColor: theme.colors.background.white5,
-                  }}
                 >
-                  <Text className="text-sm font-medium text-text-primary">{tag}</Text>
+                  <Text
+                    className={`text-sm font-medium ${isSelected ? 'font-semibold' : ''}`}
+                    style={{
+                      color: isSelected ? theme.colors.text.black : theme.colors.text.gray300,
+                    }}
+                  >
+                    {tag}
+                  </Text>
                 </Pressable>
               );
             })}

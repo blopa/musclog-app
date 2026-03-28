@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
 import { GenericCard } from './GenericCard';
 
@@ -14,11 +15,14 @@ type FoodInfoCardProps = {
     protein: number;
     carbs: number;
     fat: number;
-    source?: 'openfood' | 'usda' | 'local' | 'ai';
+    source?: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog';
   };
 };
 
-const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => string): string => {
+const getSourceText = (
+  source: 'openfood' | 'usda' | 'ai' | 'musclog',
+  t: (key: string) => string
+): string => {
   switch (source) {
     case 'openfood':
       return t('food.foodDetails.sourceOpenFood');
@@ -26,6 +30,8 @@ const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => s
       return t('food.foodDetails.sourceUsda');
     case 'ai':
       return t('food.foodDetails.sourceAi');
+    case 'musclog':
+      return t('food.foodDetails.sourceMusclog');
     default:
       return '';
   }
@@ -53,7 +59,10 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           <View className="flex-1">
             <Text className="mb-1 text-2xl font-bold text-text-primary">{food.name}</Text>
             <Text className="text-sm text-text-secondary">{food.category}</Text>
-            {food.source === 'openfood' || food.source === 'usda' || food.source === 'ai' ? (
+            {food.source === 'openfood' ||
+            food.source === 'usda' ||
+            food.source === 'ai' ||
+            food.source === 'musclog' ? (
               <Text className="mt-1 text-xs text-text-tertiary opacity-50">
                 {getSourceText(food.source, t)}
               </Text>
@@ -61,7 +70,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           </View>
           <View className="items-end">
             <Text className="text-4xl font-black tracking-tight text-accent-primary">
-              {food.calories}
+              {roundToDecimalPlaces(food.calories)}
             </Text>
             <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('food.common.kcal')}
@@ -98,7 +107,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           scrollEventThrottle={16}
           className="mb-4"
         >
-          {/* Grid View */}
+          {/* Grid View — inset lives on page 2 so the chart border is not flush with the page seam (avoids 1px bleed) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="mb-2 flex-row gap-3">
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -106,28 +115,37 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.protein}g</Text>
+                <Text className="text-xl font-bold text-text-primary">
+                  {roundToDecimalPlaces(food.protein)}g
+                </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.carbs}g</Text>
+                <Text className="text-xl font-bold text-text-primary">
+                  {roundToDecimalPlaces(food.carbs)}g
+                </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.fat}g</Text>
+                <Text className="text-xl font-bold text-text-primary">
+                  {roundToDecimalPlaces(food.fat)}g
+                </Text>
               </View>
             </View>
           </View>
 
-          {/* Circular Chart View */}
+          {/* Circular Chart View — margin insets the bordered card from the page seam (avoid padding on the page width, which can break paging) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
-            <View className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3">
+            <View
+              className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3"
+              style={{ marginLeft: 2 }}
+            >
               <View className="h-24 w-24 flex-none">
                 <MacrosPizzaChart
                   protein={food.protein}
@@ -145,7 +163,9 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.protein')} ({Math.round(proteinPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.protein}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">
+                    {roundToDecimalPlaces(food.protein)}g
+                  </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
@@ -154,7 +174,9 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.fat')} ({Math.round(fatPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.fat}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">
+                    {roundToDecimalPlaces(food.fat)}g
+                  </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
@@ -163,7 +185,9 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.carbs')} ({Math.round(carbsPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.carbs}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">
+                    {roundToDecimalPlaces(food.carbs)}g
+                  </Text>
                 </View>
               </View>
             </View>

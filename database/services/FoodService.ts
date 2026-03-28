@@ -193,6 +193,70 @@ export class FoodService {
   }
 
   /**
+   * Create a food entry from a Musclog API product
+   */
+  static async createFromMusclogProduct(
+    product: { name: string; brand?: string; [key: string]: any },
+    nutritionData: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      fiber?: number;
+      isFavorite?: boolean;
+    },
+    barcode?: string
+  ): Promise<Food> {
+    return await database.write(async () => {
+      const now = Date.now();
+
+      const existingPortion = await database
+        .get<FoodPortion>('food_portions')
+        .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
+        .fetch();
+
+      const defaultPortion =
+        existingPortion.length > 0
+          ? existingPortion[0]
+          : await database.get<FoodPortion>('food_portions').create((portion) => {
+              portion.name = '100g';
+              portion.gramWeight = 100;
+              portion.createdAt = now;
+              portion.updatedAt = now;
+            });
+
+      const food = await database.get<Food>('foods').create((food) => {
+        food.isAiGenerated = false;
+        food.name = product.name;
+        food.brand = product.brand;
+        food.barcode = barcode;
+        food.externalId = barcode;
+
+        food.calories = nutritionData.calories;
+        food.protein = nutritionData.protein;
+        food.carbs = nutritionData.carbs;
+        food.fat = nutritionData.fat;
+        food.fiber = nutritionData.fiber || 0;
+        food.micros = {};
+        food.isFavorite = nutritionData.isFavorite ?? false;
+        food.source = 'musclog';
+        food.createdAt = now;
+        food.updatedAt = now;
+      });
+
+      await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
+        ffp.foodId = food.id;
+        ffp.foodPortionId = defaultPortion.id;
+        ffp.isDefault = true;
+        ffp.createdAt = now;
+        ffp.updatedAt = now;
+      });
+
+      return food;
+    });
+  }
+
+  /**
    * Create a custom food (user-entered)
    */
   static async createCustomFood(

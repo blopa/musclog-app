@@ -29,6 +29,7 @@
     "prebuild": "expo prebuild --clean",
     "setup-android": "turtle setup:android",
     "build-android": "eas build -p android --profile production --clear-cache",
+    "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",
     "build-android-web": "expo export --platform web",
     "submit-android": "eas submit --platform android",

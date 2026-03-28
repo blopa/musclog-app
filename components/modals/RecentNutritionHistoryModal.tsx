@@ -4,6 +4,7 @@ import { ActivityIndicator, ImageSourcePropType, ScrollView, Text, View } from '
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -74,7 +75,7 @@ export function RecentNutritionHistoryModal({
                     name: food.name ?? '',
                     description: t('foodSearch.foodDescriptionPer100g', {
                       brand: food.brand || t('foodSearch.customFoodLabel'),
-                      calories: Math.round(food.calories ?? 0),
+                      calories: roundToDecimalPlaces(food.calories ?? 0),
                     }),
                     brand: food.brand,
                     serving_size: portion100gName,

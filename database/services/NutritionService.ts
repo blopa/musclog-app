@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
@@ -36,6 +37,69 @@ async function retryOnResetError<T>(
     }
   }
   throw new Error('Max retries exceeded');
+}
+
+/**
+ * Scale every log in the meal proportionally so combined gram weight matches `newTotalGrams`.
+ * Top-level export avoids rare cases where a class static is missing on the runtime object.
+ */
+export async function scaleMealNutritionLogsToTotalGrams(
+  entries: { log: NutritionLog; gramWeight: number }[],
+  newTotalGrams: number
+): Promise<void> {
+  const totalGrams = entries.reduce((sum, e) => sum + e.gramWeight, 0);
+  if (totalGrams <= 0) {
+    throw new Error('Meal has no weight');
+  }
+  if (newTotalGrams <= 0) {
+    throw new Error('Invalid target weight');
+  }
+  const ratio = newTotalGrams / totalGrams;
+
+  const prepared = await Promise.all(
+    entries.map(async ({ log, gramWeight }) => {
+      const newGramWeight = gramWeight * ratio;
+      let newAmount = newGramWeight;
+      let portionId: string | undefined = log.portionId;
+
+      if (log.portionId) {
+        try {
+          const portion = await log.portion;
+          const pg = portion?.gramWeight;
+          if (pg && pg > 0) {
+            newAmount = roundToDecimalPlaces(newGramWeight / pg, 6);
+          } else {
+            portionId = undefined;
+            newAmount = roundToDecimalPlaces(newGramWeight, 6);
+          }
+        } catch {
+          portionId = undefined;
+          newAmount = roundToDecimalPlaces(newGramWeight, 6);
+        }
+      } else {
+        newAmount = roundToDecimalPlaces(newGramWeight, 6);
+      }
+
+      return { log, newAmount, portionId };
+    })
+  );
+
+  await database.write(async () => {
+    const now = Date.now();
+    await database.batch(
+      ...prepared.map(({ log, newAmount, portionId }) =>
+        log.prepareUpdate((record) => {
+          record.amount = newAmount;
+          record.portionId = portionId;
+          record.updatedAt = now;
+        })
+      )
+    );
+  });
+
+  if (Platform.OS === 'android') {
+    await requestNutritionWidgetUpdate();
+  }
 }
 
 export class NutritionService {
@@ -383,6 +447,16 @@ export class NutritionService {
     if (Platform.OS === 'android') {
       await requestNutritionWidgetUpdate();
     }
+  }
+
+  /**
+   * @see scaleMealNutritionLogsToTotalGrams
+   */
+  static async scaleNutritionLogsProportionalToTotalGrams(
+    entries: { log: NutritionLog; gramWeight: number }[],
+    newTotalGrams: number
+  ): Promise<void> {
+    return scaleMealNutritionLogsToTotalGrams(entries, newTotalGrams);
   }
 
   /**
@@ -975,11 +1049,11 @@ export class NutritionService {
           const scale = ingredient.grams / 100;
           return {
             ...ingredient,
-            kcal: (food.calories ?? 0) * scale,
-            protein: (food.protein ?? 0) * scale,
-            carbs: (food.carbs ?? 0) * scale,
-            fat: (food.fat ?? 0) * scale,
-            fiber: (food.fiber ?? 0) * scale,
+            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
         } catch {
           // Food not found — fall back to LLM values

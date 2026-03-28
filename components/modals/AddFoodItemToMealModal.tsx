@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
@@ -30,7 +31,7 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = Math.round((food.calories * amount) / 100);
+  const calories = roundToDecimalPlaces((food.calories * amount) / 100);
 
   return (
     <View
@@ -115,7 +116,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${Math.round(food.calories)} ${t('common.kcal')}`}
+                  : `${roundToDecimalPlaces(food.calories)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -145,7 +146,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroProtein', { value: Math.round((food.protein * amount) / 100) })}
+              {t('foodSearch.macroProtein', {
+                value: roundToDecimalPlaces((food.protein * amount) / 100),
+              })}
             </Text>
             <Text
               style={{
@@ -154,7 +157,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroCarbs', { value: Math.round((food.carbs * amount) / 100) })}
+              {t('foodSearch.macroCarbs', {
+                value: roundToDecimalPlaces((food.carbs * amount) / 100),
+              })}
             </Text>
             <Text
               style={{
@@ -163,7 +168,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroFat', { value: Math.round((food.fat * amount) / 100) })}
+              {t('foodSearch.macroFat', { value: roundToDecimalPlaces((food.fat * amount) / 100) })}
             </Text>
           </View>
         </View>

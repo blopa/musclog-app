@@ -13,6 +13,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { BottomPopUp } from '../BottomPopUp';
 import { FoodInfoCard } from '../cards/FoodInfoCard';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -102,10 +103,10 @@ export function ScannedFoodDetailsModal({
     const foodInfo = {
       name: getProductName(product),
       category: product.categories?.split(',')[0] || t('food.generic'),
-      calories: Math.round(getNutrimentValue(nutriments, 'energy-kcal') || 0),
-      protein: Math.round(getNutrimentValue(nutriments, 'proteins') || 0),
-      carbs: Math.round(getNutrimentValue(nutriments, 'carbohydrates') || 0),
-      fat: Math.round(getNutrimentValue(nutriments, 'fat') || 0),
+      calories: roundToDecimalPlaces(getNutrimentValue(nutriments, 'energy-kcal') || 0),
+      protein: roundToDecimalPlaces(getNutrimentValue(nutriments, 'proteins') || 0),
+      carbs: roundToDecimalPlaces(getNutrimentValue(nutriments, 'carbohydrates') || 0),
+      fat: roundToDecimalPlaces(getNutrimentValue(nutriments, 'fat') || 0),
     };
 
     return (

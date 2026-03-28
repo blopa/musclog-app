@@ -2021,8 +2021,8 @@ export default function ModalsTestScreen() {
           carbs: 60,
           fat: 18,
         }}
-        onLogMeal={(date, mealType) => {
-          console.log('Meal logged:', { date, mealType });
+        onLogMeal={(date, mealType, portionGrams) => {
+          console.log('Meal logged:', { date, mealType, portionGrams });
         }}
       />
 

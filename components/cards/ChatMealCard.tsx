@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { Button } from '../theme/Button';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
@@ -25,7 +26,7 @@ type ChatMealCardProps = {
 export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const totalCalories = meals.reduce((s, m) => s + m.calories, 0);
+  const totalCalories = roundToDecimalPlaces(meals.reduce((s, m) => s + m.calories, 0));
 
   const getMealLabel = useCallback(
     (mealType: MealType): string => {
@@ -87,7 +88,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 {getMealLabel(meal.mealType)}
               </Text>
               <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {meal.calories} {t('common.kcal')}
+                {roundToDecimalPlaces(meal.calories)} {t('common.kcal')}
               </Text>
             </View>
 
@@ -104,7 +105,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   P
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  {meal.protein}g
+                  {roundToDecimalPlaces(meal.protein)}g
                 </Text>
               </View>
 
@@ -118,7 +119,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   C
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.indigo }}>
-                  {meal.carbs}g
+                  {roundToDecimalPlaces(meal.carbs)}g
                 </Text>
               </View>
 
@@ -132,7 +133,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   F
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.warning }}>
-                  {meal.fats}g
+                  {roundToDecimalPlaces(meal.fats)}g
                 </Text>
               </View>
             </View>

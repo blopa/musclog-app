@@ -30,7 +30,13 @@ import {
   MealService,
   NutritionService,
 } from '../../database/services';
-import { useFoodProductDetails } from '../../hooks/useFoodProductDetails';
+import {
+  fetchMusclogProductByBarcode,
+  fetchOFFProductByBarcode,
+  fetchUSDAProductByBarcode,
+  type ProductDetailsQueryData,
+  useFoodProductDetails,
+} from '../../hooks/useFoodProductDetails';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -45,6 +51,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
@@ -59,6 +66,124 @@ import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
+
+/** Coerce API / DB values that may be strings (e.g. "0") into finite numbers for macro comparisons. */
+function toFiniteMacro(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function areCoreMacrosEffectivelyZero(data: {
+  calories?: unknown;
+  protein?: unknown;
+  carbs?: unknown;
+  fat?: unknown;
+}): boolean {
+  const eps = 1e-6;
+  return (
+    Math.abs(toFiniteMacro(data.calories)) < eps &&
+    Math.abs(toFiniteMacro(data.protein)) < eps &&
+    Math.abs(toFiniteMacro(data.carbs)) < eps &&
+    Math.abs(toFiniteMacro(data.fat)) < eps
+  );
+}
+
+/**
+ * OFF barcode responses from `useFoodProductDetails` omit `source`; treat that as Open Food Facts
+ * so we do not redundantly refetch OFF when trying alternate providers.
+ */
+function inferBarcodeNutritionSource(
+  details: ProductDetailsQueryData | null | undefined,
+  productFromSearch: any
+): 'openfood' | 'usda' | 'musclog' | null {
+  const explicit = (details as any)?.source ?? productFromSearch?.source;
+  if (explicit === 'usda') {
+    return 'usda';
+  }
+  if (explicit === 'musclog') {
+    return 'musclog';
+  }
+  if (explicit === 'openfood') {
+    return 'openfood';
+  }
+  if (details && isSuccessFoodDetailProductState(details)) {
+    return 'openfood';
+  }
+  if (productFromSearch?.source === 'openfood') {
+    return 'openfood';
+  }
+  return null;
+}
+
+/** Per-100g core macros from a successful product-details payload (used to pick a non-empty alternate source). */
+function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+} | null {
+  if (!isSuccessFoodDetailProductState(state)) {
+    return null;
+  }
+  const product = state.product;
+  const src = (state as any).source;
+
+  if (src === 'musclog') {
+    const p = product as any;
+    return {
+      calories: toFiniteMacro(parseFloat(p.kcal ?? p.calories ?? 0)),
+      protein: toFiniteMacro(parseFloat(p.protein ?? 0)),
+      carbs: toFiniteMacro(parseFloat(p.carbs ?? 0)),
+      fat: toFiniteMacro(parseFloat(p.fat ?? 0)),
+    };
+  }
+
+  if (src === 'usda') {
+    const nutrients = (product as any).foodNutrients as any[];
+    const rawServingSize = (product as any).servingSize;
+    const isBranded = (product as any).dataType === 'Branded';
+    const normFactor = isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+    return {
+      calories: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1008') ??
+          mapUSDANutritient(nutrients, '208') ??
+          mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
+          0) * normFactor
+      ),
+      protein: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0) *
+          normFactor
+      ),
+      carbs: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0) *
+          normFactor
+      ),
+      fat: toFiniteMacro(
+        (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
+          normFactor
+      ),
+    };
+  }
+
+  const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
+  if (!nutrients) {
+    return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  }
+  const offKeys = {
+    calories: 'energy-kcal',
+    protein: 'proteins',
+    carbs: 'carbohydrates',
+    fat: 'fat',
+  } as const;
+  const getNum = (key: keyof typeof offKeys) =>
+    toFiniteMacro((getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number);
+  return {
+    calories: getNum('calories'),
+    protein: getNum('protein'),
+    carbs: getNum('carbs'),
+    fat: getNum('fat'),
+  };
+}
 
 type FoodDetailsModalProps = {
   visible: boolean;
@@ -180,6 +305,15 @@ export function FoodMealDetailsModal({
   } | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
   const [showBarcodeScannerInEdit, setShowBarcodeScannerInEdit] = useState(false);
+  /** Holds product data fetched from an alternate source when the primary source had zero macros. */
+  const [refetchedProductDetails, setRefetchedProductDetails] =
+    useState<ProductDetailsQueryData | null>(null);
+  /** True while the "try another source" cross-provider fetch is in flight. */
+  const [isRefetchingSource, setIsRefetchingSource] = useState(false);
+  /** Local override for canEdit — allows the modal to programmatically enable editing. */
+  const [localCanEdit, setLocalCanEdit] = useState(canEdit);
+  /** After "try another source" runs and no provider returns usable macros — show edit-only banner, hide retry. */
+  const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
   const [editForm, setEditForm] = useState<{
     name: string;
     barcode: string;
@@ -212,6 +346,11 @@ export function FoodMealDetailsModal({
   };
 
   const mode = getMode();
+
+  // Sync localCanEdit when the canEdit prop changes.
+  useEffect(() => {
+    setLocalCanEdit(canEdit);
+  }, [canEdit]);
 
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
@@ -279,7 +418,8 @@ export function FoodMealDetailsModal({
     const isOpenfoodSource =
       productFromSearch?.source === 'openfood' ||
       (isSuccessFoodDetailProductState(productDetails) &&
-        (productDetails as any).source !== 'usda');
+        (productDetails as any).source !== 'usda' &&
+        (productDetails as any).source !== 'musclog');
 
     if (!isOpenfoodSource) {
       return false;
@@ -474,11 +614,11 @@ export function FoodMealDetailsModal({
           MealService.getMealWithFoods(meal.id),
         ]);
         setMealNutrients({
-          calories: Math.round(nutrients.calories),
-          protein: Math.round(nutrients.protein * 10) / 10,
-          carbs: Math.round(nutrients.carbs * 10) / 10,
-          fat: Math.round(nutrients.fat * 10) / 10,
-          fiber: Math.round(nutrients.fiber * 10) / 10,
+          calories: roundToDecimalPlaces(nutrients.calories),
+          protein: roundToDecimalPlaces(nutrients.protein),
+          carbs: roundToDecimalPlaces(nutrients.carbs),
+          fat: roundToDecimalPlaces(nutrients.fat),
+          fiber: roundToDecimalPlaces(nutrients.fiber),
         });
         if (mealWithFoods?.foods) {
           let totalGrams = 0;
@@ -600,10 +740,26 @@ export function FoodMealDetailsModal({
       };
     }
 
-    if (isSuccessFoodDetailProductState(productDetails)) {
-      const product = productDetails.product;
+    const effectiveProductDetails = refetchedProductDetails ?? productDetails;
 
-      if ((productDetails as any).source === 'usda') {
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      const product = effectiveProductDetails.product;
+
+      if ((effectiveProductDetails as any).source === 'musclog') {
+        const p = product as any;
+        return {
+          calories: parseFloat(p.kcal ?? p.calories ?? 0) || 0,
+          protein: parseFloat(p.protein ?? 0) || 0,
+          carbs: parseFloat(p.carbs ?? 0) || 0,
+          fat: parseFloat(p.fat ?? 0) || 0,
+          fiber: parseFloat(p.fiber ?? 0) || 0,
+          sugar: parseFloat(p.other_nutrients?.sugar ?? p.sugar ?? 0) || 0,
+          saturatedFat: parseFloat(p.other_nutrients?.saturated_fat ?? p.saturatedFat ?? 0) || 0,
+          sodium: parseFloat(p.other_nutrients?.sodium ?? p.sodium ?? 0) || 0,
+        };
+      }
+
+      if ((effectiveProductDetails as any).source === 'usda') {
         const nutrients = (product as any).foodNutrients as any[];
         // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g
         // so that the modal's scaleFactor (servingSize / 100) produces correct values.
@@ -791,6 +947,7 @@ export function FoodMealDetailsModal({
     };
   }, [
     productDetails,
+    refetchedProductDetails,
     productFromSearch,
     food,
     localFood,
@@ -816,6 +973,46 @@ export function FoodMealDetailsModal({
         }
       : baseNutritionalData;
 
+  // True when we're in barcode mode, nutrition is settled, no successful refetch yet, and all core macros are zero
+  const hasAllZeroMacros = useMemo(() => {
+    if (mode !== 'barcode' || refetchedProductDetails) {
+      return false;
+    }
+    // Wait until local DB lookup finishes so we don't use placeholder zeros before we know local vs remote data.
+    if (barcode && !hasCheckedLocalFood) {
+      return false;
+    }
+    // While the barcode product query is active, wait for it to finish (not the USDA-by-id path).
+    if (barcodeForHook && isLoadingDetails) {
+      return false;
+    }
+    if (!areCoreMacrosEffectivelyZero(baseNutritionalData)) {
+      return false;
+    }
+    const hasProductPayload =
+      !!food ||
+      !!localFood ||
+      !!productFromSearch ||
+      isSuccessFoodDetailProductState(productDetails) ||
+      isSuccessFoodDetailProductState(refetchedProductDetails);
+    if (!hasProductPayload) {
+      return false;
+    }
+    return true;
+  }, [
+    mode,
+    refetchedProductDetails,
+    barcode,
+    hasCheckedLocalFood,
+    barcodeForHook,
+    isLoadingDetails,
+    baseNutritionalData,
+    food,
+    localFood,
+    productFromSearch,
+    productDetails,
+  ]);
+
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
   const getFoodMealName = useCallback(() => {
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
@@ -835,11 +1032,15 @@ export function FoodMealDetailsModal({
     }
 
     // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
-    if (isSuccessFoodDetailProductState(productDetails)) {
-      if ((productDetails as any).source === 'usda') {
-        return (productDetails.product as any).description;
+    const effectiveProductDetails = refetchedProductDetails ?? productDetails;
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      if ((effectiveProductDetails as any).source === 'musclog') {
+        return (effectiveProductDetails.product as any).name;
       }
-      return getProductName(productDetails.product);
+      if ((effectiveProductDetails as any).source === 'usda') {
+        return (effectiveProductDetails.product as any).description;
+      }
+      return getProductName(effectiveProductDetails.product);
     }
 
     if (productFromSearch) {
@@ -853,6 +1054,7 @@ export function FoodMealDetailsModal({
   }, [
     editedOverrides?.name,
     productDetails,
+    refetchedProductDetails,
     productFromSearch,
     food,
     localFood,
@@ -899,9 +1101,13 @@ export function FoodMealDetailsModal({
       return '';
     }
 
-    if (isSuccessFoodDetailProductState(productDetails)) {
-      const product = productDetails.product;
-      if ((productDetails as any).source === 'usda') {
+    const effectiveProductDetails = refetchedProductDetails ?? productDetails;
+    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
+      const product = effectiveProductDetails.product;
+      if ((effectiveProductDetails as any).source === 'musclog') {
+        return (product as any).brand || '';
+      }
+      if ((effectiveProductDetails as any).source === 'usda') {
         const usdaBrand = (product as any).brandOwner || (product as any).brandName;
         const usdaCategory = (product as any).foodCategory;
         if (usdaBrand && usdaCategory) {
@@ -909,8 +1115,9 @@ export function FoodMealDetailsModal({
         }
         return usdaBrand || usdaCategory || '';
       }
-      const brand = product.brands;
-      const categories = product.categories;
+      const product2 = effectiveProductDetails.product;
+      const brand = product2.brands;
+      const categories = product2.categories;
 
       if (brand && categories) {
         return `${brand} • ${categories}`;
@@ -923,7 +1130,16 @@ export function FoodMealDetailsModal({
       }
     }
     return '';
-  }, [productDetails, productFromSearch, food, localFood, foodLog, meal, t]);
+  }, [
+    productDetails,
+    refetchedProductDetails,
+    productFromSearch,
+    food,
+    localFood,
+    foodLog,
+    meal,
+    t,
+  ]);
 
   // Update serving size when product details or search product load
   useEffect(() => {
@@ -949,29 +1165,32 @@ export function FoodMealDetailsModal({
       return {
         name: getFoodMealName(),
         category: getProductCategory(),
-        calories: Math.round(mealNutrients.calories * mealScaleFactor),
-        protein: Math.round(mealNutrients.protein * mealScaleFactor * 10) / 10,
-        carbs: Math.round(mealNutrients.carbs * mealScaleFactor * 10) / 10,
-        fat: Math.round(mealNutrients.fat * mealScaleFactor * 10) / 10,
+        calories: roundToDecimalPlaces(mealNutrients.calories * mealScaleFactor),
+        protein: roundToDecimalPlaces(mealNutrients.protein * mealScaleFactor),
+        carbs: roundToDecimalPlaces(mealNutrients.carbs * mealScaleFactor),
+        fat: roundToDecimalPlaces(mealNutrients.fat * mealScaleFactor),
       };
     }
 
     // For foods, scale by serving size
     const scaleFactor = servingSize / 100; // API data is per 100g
 
-    let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | undefined;
+    const effectiveProductDetails = refetchedProductDetails ?? productDetails;
+    let dataSource: 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined;
     if (food || localFood) {
       dataSource = 'local';
     } else if (initialSource === 'ai') {
       dataSource = 'ai';
+    } else if ((effectiveProductDetails as any)?.source === 'musclog') {
+      dataSource = 'musclog';
     } else if (
-      (productDetails as any)?.source === 'usda' ||
+      (effectiveProductDetails as any)?.source === 'usda' ||
       productFromSearch?.source === 'usda' ||
       initialSource === 'usda'
     ) {
       dataSource = 'usda';
     } else if (
-      productDetails ||
+      effectiveProductDetails ||
       productFromSearch?.source === 'openfood' ||
       initialSource === 'openfood'
     ) {
@@ -981,10 +1200,10 @@ export function FoodMealDetailsModal({
     return {
       name: getFoodMealName(),
       category: getProductCategory(),
-      calories: Math.round(nutritionalData.calories * scaleFactor),
-      protein: Math.round(nutritionalData.protein * scaleFactor * 10) / 10,
-      carbs: Math.round(nutritionalData.carbs * scaleFactor * 10) / 10,
-      fat: Math.round(nutritionalData.fat * scaleFactor * 10) / 10,
+      calories: roundToDecimalPlaces(nutritionalData.calories * scaleFactor),
+      protein: roundToDecimalPlaces(nutritionalData.protein * scaleFactor),
+      carbs: roundToDecimalPlaces(nutritionalData.carbs * scaleFactor),
+      fat: roundToDecimalPlaces(nutritionalData.fat * scaleFactor),
       source: dataSource,
     };
   }, [
@@ -995,6 +1214,7 @@ export function FoodMealDetailsModal({
     localFood,
     initialSource,
     productDetails,
+    refetchedProductDetails,
     productFromSearch?.source,
     getFoodMealName,
     getProductCategory,
@@ -1197,6 +1417,46 @@ export function FoodMealDetailsModal({
             ingredients_text: editedOverrides.description?.trim() || productToSave.ingredients_text,
           } as typeof productToSave;
         }
+      }
+
+      // Musclog handle
+      if ((productDetails as any)?.source === 'musclog') {
+        const musclogProduct = (productDetails as any).product;
+        const newFood = await FoodService.createFromMusclogProduct(
+          musclogProduct,
+          {
+            calories: nutritionalData.calories,
+            protein: nutritionalData.protein,
+            carbs: nutritionalData.carbs,
+            fat: nutritionalData.fat,
+            fiber: nutritionalData.fiber,
+            isFavorite: isFavorite,
+          },
+          barcode ?? undefined
+        );
+
+        const logFoodPromise = NutritionService.logFood(
+          newFood.id,
+          selectedDate,
+          selectedMeal as MealType,
+          servingSize
+        );
+
+        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
+
+        onAddFood?.({
+          servingSize,
+          meal: selectedMeal,
+          date: selectedDate,
+        });
+
+        onClose();
+        onFoodTracked?.();
+
+        showSnackbar('success', t('food.foodDetails.successMessage'), {
+          action: t('snackbar.ok'),
+        });
+        return;
       }
 
       // USDA handle
@@ -1433,6 +1693,72 @@ export function FoodMealDetailsModal({
     onClose();
   }, [onClose]);
 
+  const handleTryAnotherSource = useCallback(async () => {
+    if (!barcode) {
+      return;
+    }
+
+    setIsRefetchingSource(true);
+
+    const effectiveDetails = refetchedProductDetails ?? productDetails;
+    const currentSource = inferBarcodeNutritionSource(effectiveDetails, productFromSearch);
+
+    try {
+      const attempts: Promise<ProductDetailsQueryData | null>[] = [];
+
+      if (currentSource !== 'openfood') {
+        attempts.push(
+          fetchOFFProductByBarcode(barcode)
+            .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
+            .catch(() => null)
+        );
+      }
+      if (currentSource !== 'usda') {
+        attempts.push(
+          fetchUSDAProductByBarcode(barcode)
+            .then((raw) =>
+              raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null
+            )
+            .catch(() => null)
+        );
+      }
+      if (currentSource !== 'musclog') {
+        attempts.push(
+          fetchMusclogProductByBarcode(barcode)
+            .then((raw) =>
+              raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
+            )
+            .catch(() => null)
+        );
+      }
+
+      const results = await Promise.all(attempts);
+      const withNonZeroMacros = results.filter((r): r is ProductDetailsQueryData => {
+        if (!r) {
+          return false;
+        }
+        const macros = parseCoreMacrosFromAlternateSource(r);
+        return macros !== null && !areCoreMacrosEffectivelyZero(macros);
+      });
+
+      const found = withNonZeroMacros[0] ?? null;
+
+      if (found) {
+        setAlternateSourceLookupFailed(false);
+        setRefetchedProductDetails(found);
+      } else {
+        setAlternateSourceLookupFailed(true);
+        setLocalCanEdit(true);
+      }
+    } catch (error) {
+      captureException(error, { data: { context: 'FoodMealDetailsModal.handleTryAnotherSource' } });
+      setAlternateSourceLookupFailed(true);
+      setLocalCanEdit(true);
+    } finally {
+      setIsRefetchingSource(false);
+    }
+  }, [barcode, productDetails, productFromSearch, refetchedProductDetails]);
+
   // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
     if (!visible) {
@@ -1440,8 +1766,12 @@ export function FoodMealDetailsModal({
       setEditedOverrides(null);
       setIsEditPopUpVisible(false);
       setShowBarcodeScannerInEdit(false);
+      setRefetchedProductDetails(null);
+      setIsRefetchingSource(false);
+      setAlternateSourceLookupFailed(false);
+      setLocalCanEdit(canEdit);
     }
-  }, [visible]);
+  }, [visible, canEdit]);
 
   if (!visible) {
     return null;
@@ -1537,13 +1867,18 @@ export function FoodMealDetailsModal({
         <View className="flex-1 px-4 pb-6">
           <FoodNutritionSectionCard
             food={scaledFood}
-            canEdit={canEdit || hasNoNutrition}
+            canEdit={localCanEdit || hasNoNutrition}
             mode={mode}
             showIncompleteWarning={hasNoNutrition}
             onEditPress={handleOpenEditPopUp}
             nutritionalData={nutritionalData}
             servingSize={servingSize}
             isLoadingDetails={isLoadingDetails}
+            onTryAnotherSource={
+              hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
+            }
+            isRefetchingSource={isRefetchingSource}
+            alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
           />
 
           {/* Form Sections */}

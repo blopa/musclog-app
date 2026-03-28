@@ -15,6 +15,7 @@ import { GEMINI_MODELS, OPENAI_MODELS } from '../../constants/ai';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { deleteAllData } from '../../utils/googleAuth';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { LegalLinksCard } from '../cards/LegalLinksCard';
@@ -22,7 +23,6 @@ import { GoogleSignInButton } from '../GoogleSignInButton';
 import { Button } from '../theme/Button';
 import NewNumericalInput from '../theme/NewNumericalInput';
 import { SecretInput } from '../theme/SecretInput';
-import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -214,6 +214,7 @@ export function AISettingsModal({
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [isDisconnectingGoogle, setIsDisconnectingGoogle] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
 
   const { isSignedInWithGoogle: isGoogleConnected } = useSettings();
@@ -245,9 +246,16 @@ export function AISettingsModal({
   }, [visible, flushAllPendingChanges]);
 
   const handleDisconnectGoogle = async () => {
-    await deleteAllData();
-    if (!googleGeminiApiKey.trim()) {
-      handleEnableGoogleGeminiChange(false);
+    setIsDisconnectingGoogle(true);
+    await flushLoadingPaint();
+    try {
+      await deleteAllData();
+      if (!googleGeminiApiKey.trim()) {
+        handleEnableGoogleGeminiChange(false);
+      }
+      setShowDisconnectConfirm(false);
+    } finally {
+      setIsDisconnectingGoogle(false);
     }
   };
 
@@ -606,6 +614,7 @@ export function AISettingsModal({
         message={t('settings.aiSettings.disconnectGoogleMessage')}
         confirmLabel={t('settings.aiSettings.disconnectGoogleConfirm')}
         variant="destructive"
+        isLoading={isDisconnectingGoogle}
       />
 
       <AiCustomPromptsModal

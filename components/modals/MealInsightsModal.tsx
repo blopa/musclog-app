@@ -30,12 +30,11 @@ export function MealInsightsModal({
     onSubmit(remarks);
   };
 
-  const handleClose = isLoading ? () => {} : onClose;
-
   return (
     <CenteredModal
       visible={visible}
-      onClose={handleClose}
+      onClose={onClose}
+      isLoading={isLoading}
       title={t('food.mealInsights.title')}
       subtitle={t('food.mealInsights.subtitle', {
         meal: t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`),

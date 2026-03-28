@@ -67,6 +67,7 @@ import type { Theme } from '../../theme';
 import { type TrackMealIngredient } from '../../utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import { createThumbnail, pickDocument } from '../../utils/file';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { ChatMealCard } from '../cards/ChatMealCard';
 import { ChatWorkoutCard } from '../cards/ChatWorkoutCard';
@@ -663,6 +664,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
   const [isDeleteMessageModalVisible, setIsDeleteMessageModalVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<ExtendedIMessage | null>(null);
+  const [isDeletingMessage, setIsDeletingMessage] = useState(false);
   const [composerResetKey, setComposerResetKey] = useState(0);
 
   useEffect(() => {
@@ -946,6 +948,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
       selectedMealForTracking.mealTypeIdentifier.slice(1);
 
+    const totalIngredientGrams = selectedMealForTracking.ingredients.reduce(
+      (sum, i) => sum + i.grams,
+      0
+    );
+
     return {
       name: ingredientsDesc,
       type: mealLabel,
@@ -953,6 +960,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       protein: selectedMealForTracking.protein,
       carbs: selectedMealForTracking.carbs,
       fat: selectedMealForTracking.fats,
+      grams: totalIngredientGrams > 0 ? totalIngredientGrams : 100,
     };
   }, [selectedMealForTracking]);
 
@@ -994,8 +1002,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   }, []);
 
   const handleConfirmClearHistory = useCallback(async () => {
+    setIsClearingHistory(true);
+    await flushLoadingPaint();
     try {
-      setIsClearingHistory(true);
       await clearHistory(conversationContext);
       showSnackbar('success', t('coach.success.historyCleared'), {
         action: t('snackbar.ok'),
@@ -1009,6 +1018,25 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       setIsClearingHistory(false);
     }
   }, [clearHistory, conversationContext, showSnackbar, t]);
+
+  const handleConfirmDeleteMessage = useCallback(async () => {
+    if (!messageToDelete) {
+      return;
+    }
+
+    const id = messageToDelete._id;
+    setIsDeletingMessage(true);
+    await flushLoadingPaint();
+    try {
+      await deleteMessage(id);
+      showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
+    } catch (err) {
+      console.error('[CoachModal] deleteMessage failed:', err);
+      showSnackbar('error', t('coach.errors.generalError'), { action: t('snackbar.ok') });
+    } finally {
+      setIsDeletingMessage(false);
+    }
+  }, [messageToDelete, deleteMessage, showSnackbar, t]);
 
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [
@@ -1498,18 +1526,12 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           setIsDeleteMessageModalVisible(false);
           setMessageToDelete(null);
         }}
-        onConfirm={async () => {
-          if (messageToDelete) {
-            await deleteMessage(messageToDelete._id);
-            showSnackbar('success', t('coach.message.deleted'), { action: t('snackbar.ok') });
-          }
-          setIsDeleteMessageModalVisible(false);
-          setMessageToDelete(null);
-        }}
+        onConfirm={handleConfirmDeleteMessage}
         title={t('coach.message.delete')}
         message={t('coach.message.deleteDesc')}
         confirmLabel={t('common.delete')}
         variant="destructive"
+        isLoading={isDeletingMessage}
       />
 
       {selectedMealForTracking && mealForLogMealModal ? (
@@ -1519,13 +1541,14 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           meal={mealForLogMealModal}
           ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
-          onLogMeal={async (date, logMealType) => {
+          onLogMeal={async (date, logMealType, portionGrams) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
               selectedMealForTracking.mealTypeIdentifier,
               selectedMealForTracking.ingredients,
               date,
-              logMealType
+              logMealType,
+              portionGrams
             );
             setSelectedMealForTracking(null);
           }}
