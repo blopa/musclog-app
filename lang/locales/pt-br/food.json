@@ -278,6 +278,8 @@
       "incompleteNutritionWarning": "Dados nutricionais ausentes para este produto. Toque no ícone de edição para adicioná-los manualmente.",
       "zeroMacrosBannerTitle": "Confira os dados",
       "zeroMacrosWarningBody": "Isso parece errado? Tente obter os dados deste alimento de outra fonte.",
+      "zeroMacrosNotFoundTitle": "Nada em outras fontes",
+      "zeroMacrosNotFoundBody": "Não encontramos dados nutricionais em outras bases. Use o ícone de lápis para informar os valores manualmente.",
       "tryAnotherSource": "Tentar outra fonte >",
       "tryAnotherSourceNotFound": "Nenhum dado nutricional encontrado em outras fontes."
     },

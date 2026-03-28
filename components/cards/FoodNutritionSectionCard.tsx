@@ -35,6 +35,8 @@ type FoodNutritionSectionProps = {
   isLoadingDetails: boolean;
   onTryAnotherSource?: () => void;
   isRefetchingSource?: boolean;
+  /** After alternate sources were tried with no usable data — show edit-only message, no "try another" link. */
+  alternateSourceNotFound?: boolean;
 };
 
 export function FoodNutritionSectionCard({
@@ -48,6 +50,7 @@ export function FoodNutritionSectionCard({
   showIncompleteWarning = false,
   onTryAnotherSource,
   isRefetchingSource = false,
+  alternateSourceNotFound = false,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -100,12 +103,23 @@ export function FoodNutritionSectionCard({
         </View>
       ) : null}
 
-      {onTryAnotherSource ? (
+      {onTryAnotherSource || isRefetchingSource || alternateSourceNotFound ? (
         isRefetchingSource ? (
           <View className="mt-3 items-center justify-center py-14">
             <View style={{ transform: [{ scale: 2.25 }] }}>
               <ActivityIndicator size="large" color={theme.colors.accent.primary} />
             </View>
+          </View>
+        ) : alternateSourceNotFound ? (
+          <View className="mt-3">
+            <InfoCard
+              variant="warning"
+              icon={AlertCircle}
+              label={t('food.foodDetails.zeroMacrosNotFoundTitle')}
+              message={t('food.foodDetails.zeroMacrosNotFoundBody')}
+              expandable={false}
+              size="sm"
+            />
           </View>
         ) : (
           <View className="mt-3 gap-2">

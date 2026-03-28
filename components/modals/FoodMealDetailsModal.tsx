@@ -313,6 +313,8 @@ export function FoodMealDetailsModal({
   const [isRefetchingSource, setIsRefetchingSource] = useState(false);
   /** Local override for canEdit — allows the modal to programmatically enable editing. */
   const [localCanEdit, setLocalCanEdit] = useState(canEdit);
+  /** After "try another source" runs and no provider returns usable macros — show edit-only banner, hide retry. */
+  const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
   const [editForm, setEditForm] = useState<{
     name: string;
     barcode: string;
@@ -1734,23 +1736,20 @@ export function FoodMealDetailsModal({
       const found = withNonZeroMacros[0] ?? null;
 
       if (found) {
+        setAlternateSourceLookupFailed(false);
         setRefetchedProductDetails(found);
       } else {
-        showSnackbar('error', t('food.foodDetails.tryAnotherSourceNotFound'), {
-          action: t('snackbar.ok'),
-        });
+        setAlternateSourceLookupFailed(true);
         setLocalCanEdit(true);
       }
     } catch (error) {
       captureException(error, { data: { context: 'FoodMealDetailsModal.handleTryAnotherSource' } });
-      showSnackbar('error', t('food.foodDetails.tryAnotherSourceNotFound'), {
-        action: t('snackbar.ok'),
-      });
+      setAlternateSourceLookupFailed(true);
       setLocalCanEdit(true);
     } finally {
       setIsRefetchingSource(false);
     }
-  }, [barcode, productDetails, productFromSearch, refetchedProductDetails, showSnackbar, t]);
+  }, [barcode, productDetails, productFromSearch, refetchedProductDetails]);
 
   // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
@@ -1761,6 +1760,7 @@ export function FoodMealDetailsModal({
       setShowBarcodeScannerInEdit(false);
       setRefetchedProductDetails(null);
       setIsRefetchingSource(false);
+      setAlternateSourceLookupFailed(false);
       setLocalCanEdit(canEdit);
     }
   }, [visible, canEdit]);
@@ -1866,8 +1866,11 @@ export function FoodMealDetailsModal({
             nutritionalData={nutritionalData}
             servingSize={servingSize}
             isLoadingDetails={isLoadingDetails}
-            onTryAnotherSource={hasAllZeroMacros ? handleTryAnotherSource : undefined}
+            onTryAnotherSource={
+              hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
+            }
             isRefetchingSource={isRefetchingSource}
+            alternateSourceNotFound={alternateSourceLookupFailed && hasAllZeroMacros}
           />
 
           {/* Form Sections */}

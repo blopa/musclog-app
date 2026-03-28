@@ -278,6 +278,8 @@
       "incompleteNutritionWarning": "Nutrition data is missing for this product. Tap the edit icon to add it manually.",
       "zeroMacrosBannerTitle": "Check the data",
       "zeroMacrosWarningBody": "Does this seem wrong? Try to get this food data from another source.",
+      "zeroMacrosNotFoundTitle": "Nothing from other sources",
+      "zeroMacrosNotFoundBody": "We couldn't find nutrition data from other databases. Use the pencil icon to enter values yourself.",
       "tryAnotherSource": "Try another source >",
       "tryAnotherSourceNotFound": "No nutrition data found from other sources."
     },
