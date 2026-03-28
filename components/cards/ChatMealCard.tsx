@@ -25,7 +25,8 @@ type ChatMealCardProps = {
 export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const totalCalories = meals.reduce((s, m) => s + m.calories, 0);
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
+  const totalCalories = formatVal(meals.reduce((s, m) => s + m.calories, 0));
 
   const getMealLabel = useCallback(
     (mealType: MealType): string => {
@@ -87,7 +88,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 {getMealLabel(meal.mealType)}
               </Text>
               <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {meal.calories} {t('common.kcal')}
+                {formatVal(meal.calories)} {t('common.kcal')}
               </Text>
             </View>
 
@@ -104,7 +105,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   P
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  {meal.protein}g
+                  {formatVal(meal.protein)}g
                 </Text>
               </View>
 
@@ -118,7 +119,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   C
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.indigo }}>
-                  {meal.carbs}g
+                  {formatVal(meal.carbs)}g
                 </Text>
               </View>
 
@@ -132,7 +133,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   F
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.warning }}>
-                  {meal.fats}g
+                  {formatVal(meal.fats)}g
                 </Text>
               </View>
             </View>

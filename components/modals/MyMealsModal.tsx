@@ -137,6 +137,8 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
         return;
       }
 
+      const formatVal = (v: number) => Math.round(v * 100) / 100;
+
       setIsTransforming(true);
       try {
         const transformedMeals = await Promise.all(
@@ -148,11 +150,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               id: meal.id,
               title: meal.name ?? t('meals.untitledMeal'),
               tags,
-              calories: Math.round(nutrients.calories),
+              calories: formatVal(nutrients.calories),
               macros: {
-                protein: Math.round(nutrients.protein) + 'g',
-                carbs: Math.round(nutrients.carbs) + 'g',
-                fat: Math.round(nutrients.fat) + 'g',
+                protein: formatVal(nutrients.protein) + 'g',
+                carbs: formatVal(nutrients.carbs) + 'g',
+                fat: formatVal(nutrients.fat) + 'g',
               },
               image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
             };

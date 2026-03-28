@@ -30,7 +30,8 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = Math.round((food.calories * amount) / 100);
+  const formatVal = (val: number) => Math.round(val * 100) / 100;
+  const calories = formatVal((food.calories * amount) / 100);
 
   return (
     <View
@@ -115,7 +116,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${Math.round(food.calories)} ${t('common.kcal')}`}
+                  : `${formatVal(food.calories)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -145,7 +146,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroProtein', { value: Math.round((food.protein * amount) / 100) })}
+              {t('foodSearch.macroProtein', {
+                value: formatVal((food.protein * amount) / 100),
+              })}
             </Text>
             <Text
               style={{
@@ -154,7 +157,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroCarbs', { value: Math.round((food.carbs * amount) / 100) })}
+              {t('foodSearch.macroCarbs', {
+                value: formatVal((food.carbs * amount) / 100),
+              })}
             </Text>
             <Text
               style={{
@@ -163,7 +168,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroFat', { value: Math.round((food.fat * amount) / 100) })}
+              {t('foodSearch.macroFat', { value: formatVal((food.fat * amount) / 100) })}
             </Text>
           </View>
         </View>

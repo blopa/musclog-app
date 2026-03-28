@@ -52,6 +52,8 @@ export function DailySummaryCard({
     fatsStatus,
   } = calculateDailySummaryMetrics(calories, macros);
 
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
+
   return (
     <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View className="gap-4 p-5">
@@ -60,7 +62,7 @@ export function DailySummaryCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-on-colorful">
-                {calories.consumed}
+                {formatVal(calories.consumed)}
               </Text>
 
               <View className="flex-col">
@@ -104,8 +106,8 @@ export function DailySummaryCard({
                 style={{ color: theme.colors.overlay.onColorful90 }}
               >
                 {calories.remaining >= 0
-                  ? `${calories.remaining} ${t('dailySummaryCard.remaining', 'remaining')}`
-                  : `${Math.abs(calories.remaining)} ${t('dailySummaryCard.over', 'over')}`}
+                  ? `${formatVal(calories.remaining)} ${t('dailySummaryCard.remaining', 'remaining')}`
+                  : `${formatVal(Math.abs(calories.remaining))} ${t('dailySummaryCard.over', 'over')}`}
               </Text>
               {highlightThresholds && calorieStatus !== 'not-reached' ? (
                 <Text
@@ -171,7 +173,7 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.protein.value}</Text>
+                      <Text style={{ fontWeight: '700' }}>{formatVal(macros.protein.value)}</Text>
                     <Text style={{ fontWeight: '400' }}>{`/${macros.protein.goal}g`}</Text>
                   </Text>
                 ) : null}
@@ -225,7 +227,7 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.carbs.value}</Text>
+                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.carbs.value)}</Text>
                     <Text style={{ fontWeight: '400' }}>{`/${macros.carbs.goal}g`}</Text>
                   </Text>
                 ) : null}
@@ -279,7 +281,7 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{macros.fats.value}</Text>
+                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.fats.value)}</Text>
                     <Text style={{ fontWeight: '400' }}>{`/${macros.fats.goal}g`}</Text>
                   </Text>
                 ) : null}

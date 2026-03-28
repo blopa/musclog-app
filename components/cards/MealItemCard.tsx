@@ -56,6 +56,7 @@ export function MealItemCard({
 }: MealItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
 
   return (
     <GenericCard variant="default" containerStyle={{}}>
@@ -88,7 +89,7 @@ export function MealItemCard({
                 fontSize: theme.typography.fontSize.xs,
               }}
             >
-              {calories} {t('food.common.kcal')}
+              {formatVal(calories)} {t('food.common.kcal')}
             </Text>
           </View>
         </View>

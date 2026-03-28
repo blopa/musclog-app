@@ -97,15 +97,16 @@ export function ScannedFoodDetailsModal({
 
     const product = productData.product;
     const nutriments = getNutrimentsWithFallback(product);
+    const formatVal = (v: number) => Math.round(v * 100) / 100;
 
     // Extract nutritional values for FoodInfoCard
     const foodInfo = {
       name: getProductName(product),
       category: product.categories?.split(',')[0] || t('food.generic'),
-      calories: Math.round(getNutrimentValue(nutriments, 'energy-kcal') || 0),
-      protein: Math.round(getNutrimentValue(nutriments, 'proteins') || 0),
-      carbs: Math.round(getNutrimentValue(nutriments, 'carbohydrates') || 0),
-      fat: Math.round(getNutrimentValue(nutriments, 'fat') || 0),
+      calories: formatVal(getNutrimentValue(nutriments, 'energy-kcal') || 0),
+      protein: formatVal(getNutrimentValue(nutriments, 'proteins') || 0),
+      carbs: formatVal(getNutrimentValue(nutriments, 'carbohydrates') || 0),
+      fat: formatVal(getNutrimentValue(nutriments, 'fat') || 0),
     };
 
     return (

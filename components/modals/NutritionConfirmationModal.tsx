@@ -34,6 +34,8 @@ export function NutritionConfirmationModal({
     onConfirm(entries);
   }, [entries, onConfirm]);
 
+  const formatValue = (val: number) => Math.round(val * 100) / 100;
+
   const renderNutritionEntry = ({ item, index }: { item: NutritionEntry; index: number }) => (
     <View
       key={index}
@@ -48,24 +50,26 @@ export function NutritionConfirmationModal({
       <View className="space-y-1">
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.calories} kcal</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatValue(item.calories)} kcal
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.protein.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">{formatValue(item.protein)}g</Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.carbs.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">{formatValue(item.carbs)}g</Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{item.fat.toFixed(1)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">{formatValue(item.fat)}g</Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
-            <Text className="text-xs font-medium text-text-primary">{item.fiber.toFixed(1)}g</Text>
+            <Text className="text-xs font-medium text-text-primary">{formatValue(item.fiber)}g</Text>
           </View>
         ) : null}
       </View>
@@ -90,25 +94,25 @@ export function NutritionConfirmationModal({
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.calories')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalCalories} kcal
+                {formatValue(totals.totalCalories)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.protein')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalProtein.toFixed(1)}g
+                {formatValue(totals.totalProtein)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.carbs')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalCarbs.toFixed(1)}g
+                {formatValue(totals.totalCarbs)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.fat')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {totals.totalFat.toFixed(1)}g
+                {formatValue(totals.totalFat)}g
               </Text>
             </View>
           </View>
