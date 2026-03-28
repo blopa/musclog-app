@@ -1,8 +1,18 @@
-import { InteractionManager } from 'react-native';
-
 /** Yields so React can commit a setState (e.g. loading) before more sync work. */
 export async function yieldToUi(): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, 1));
+}
+
+function waitForIdlePaint(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const ric = globalThis.requestIdleCallback;
+    if (typeof ric === 'function') {
+      // Prefer idle time; timeout ensures we still proceed if the main thread stays busy.
+      ric(() => resolve(), { timeout: 150 });
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
 }
 
 /**
@@ -11,7 +21,5 @@ export async function yieldToUi(): Promise<void> {
  */
 export async function flushLoadingPaint(): Promise<void> {
   await yieldToUi();
-  await new Promise<void>((resolve) => {
-    InteractionManager.runAfterInteractions(() => resolve());
-  });
+  await waitForIdlePaint();
 }
