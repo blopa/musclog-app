@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
@@ -975,11 +976,11 @@ export class NutritionService {
           const scale = ingredient.grams / 100;
           return {
             ...ingredient,
-            kcal: Math.round((food.calories ?? 0) * scale * 100) / 100,
-            protein: Math.round((food.protein ?? 0) * scale * 100) / 100,
-            carbs: Math.round((food.carbs ?? 0) * scale * 100) / 100,
-            fat: Math.round((food.fat ?? 0) * scale * 100) / 100,
-            fiber: Math.round((food.fiber ?? 0) * scale * 100) / 100,
+            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
           };
         } catch {
           // Food not found — fall back to LLM values

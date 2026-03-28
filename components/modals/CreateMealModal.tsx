@@ -31,6 +31,7 @@ import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
@@ -184,8 +185,6 @@ const MealMacrosSummary = ({
   const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
   const fatProgress = Math.min((macros.fat / 80) * 100, 100);
 
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
-
   return (
     <View
       style={{
@@ -251,7 +250,7 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
               }}
             >
-              {formatVal(calories)} {t('common.kcal')}
+              {roundToDecimalPlaces(calories)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -281,19 +280,19 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            value={`${formatVal(macros.protein)}g`}
+            value={`${roundToDecimalPlaces(macros.protein)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            value={`${formatVal(macros.carbs)}g`}
+            value={`${roundToDecimalPlaces(macros.carbs)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            value={`${formatVal(macros.fat)}g`}
+            value={`${roundToDecimalPlaces(macros.fat)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}
           />
@@ -328,7 +327,6 @@ export function CreateMealModal({
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
 
   const isQuickTrack = mode === 'quickTrack';
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
 
   const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(
     isQuickTrack ? undefined : meal
@@ -730,7 +728,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {formatVal(item.calories)} {t('common.kcal')}
+                        {roundToDecimalPlaces(item.calories)} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>

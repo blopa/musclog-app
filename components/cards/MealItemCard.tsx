@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { MenuButton } from '../theme/MenuButton';
 import { GenericCard } from './GenericCard';
 
@@ -56,8 +57,6 @@ export function MealItemCard({
 }: MealItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
-
   return (
     <GenericCard variant="default" containerStyle={{}}>
       <View className="flex-row gap-x-4 p-4">
@@ -89,7 +88,7 @@ export function MealItemCard({
                 fontSize: theme.typography.fontSize.xs,
               }}
             >
-              {formatVal(calories)} {t('food.common.kcal')}
+              {roundToDecimalPlaces(calories)} {t('food.common.kcal')}
             </Text>
           </View>
         </View>

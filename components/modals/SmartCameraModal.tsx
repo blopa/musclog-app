@@ -31,6 +31,7 @@ import {
 } from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
 import { performOcr } from '../../utils/ocr';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
 import { CameraView, useCameraPermissions } from '../CameraView';
@@ -295,15 +296,14 @@ export default function SmartCameraModal({
             // Normalize: if the AI matched a DB food (foodId), replace LLM estimates
             // with the actual DB macros scaled to grams so the preview matches what's logged.
             const [normalized] = await NutritionService.normalizeAiMealIngredients([result]);
-            const formatVal = (v: number) => Math.round(v * 100) / 100;
             showSnackbar(
               'success',
               t('food.aiCamera.analysisSuccess', {
                 name: normalized.name,
-                kcal: formatVal(normalized.kcal),
-                protein: formatVal(normalized.protein),
-                carbs: formatVal(normalized.carbs),
-                fat: formatVal(normalized.fat),
+                kcal: roundToDecimalPlaces(normalized.kcal),
+                protein: roundToDecimalPlaces(normalized.protein),
+                carbs: roundToDecimalPlaces(normalized.carbs),
+                fat: roundToDecimalPlaces(normalized.fat),
               })
             );
 

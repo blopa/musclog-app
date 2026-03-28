@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/useTheme';
 import type { NutritionEntry } from '../../utils/coachAI';
 import { calculateNutritionTotals, mealTypeToString } from '../../utils/nutritionAI';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FullScreenModal } from './FullScreenModal';
 
 type NutritionConfirmationModalProps = {
@@ -34,8 +35,6 @@ export function NutritionConfirmationModal({
     onConfirm(entries);
   }, [entries, onConfirm]);
 
-  const formatValue = (val: number) => Math.round(val * 100) / 100;
-
   const renderNutritionEntry = ({ item, index }: { item: NutritionEntry; index: number }) => (
     <View
       key={index}
@@ -51,28 +50,32 @@ export function NutritionConfirmationModal({
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {formatValue(item.calories)} kcal
+            {roundToDecimalPlaces(item.calories)} kcal
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {formatValue(item.protein)}g
+            {roundToDecimalPlaces(item.protein)}g
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{formatValue(item.carbs)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {roundToDecimalPlaces(item.carbs)}g
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{formatValue(item.fat)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {roundToDecimalPlaces(item.fat)}g
+          </Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {formatValue(item.fiber)}g
+              {roundToDecimalPlaces(item.fiber)}g
             </Text>
           </View>
         ) : null}
@@ -98,25 +101,25 @@ export function NutritionConfirmationModal({
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.calories')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatValue(totals.totalCalories)} kcal
+                {roundToDecimalPlaces(totals.totalCalories)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.protein')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatValue(totals.totalProtein)}g
+                {roundToDecimalPlaces(totals.totalProtein)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.carbs')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatValue(totals.totalCarbs)}g
+                {roundToDecimalPlaces(totals.totalCarbs)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.fat')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {formatValue(totals.totalFat)}g
+                {roundToDecimalPlaces(totals.totalFat)}g
               </Text>
             </View>
           </View>

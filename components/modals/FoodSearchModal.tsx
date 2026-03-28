@@ -47,6 +47,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { Button } from '../theme/Button';
@@ -217,12 +218,11 @@ type MealSearchCardProps = {
 function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
-    protein: formatVal(mealData.protein),
-    carbs: formatVal(mealData.carbs),
-    fat: formatVal(mealData.fat),
+    protein: roundToDecimalPlaces(mealData.protein),
+    carbs: roundToDecimalPlaces(mealData.carbs),
+    fat: roundToDecimalPlaces(mealData.fat),
   });
 
   return (
@@ -258,7 +258,7 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
           </Text>
         ) : null}
         <Text className="mt-0.5 text-sm text-text-secondary">
-          {formatVal(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
+          {roundToDecimalPlaces(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
         </Text>
       </View>
 
@@ -542,8 +542,6 @@ export function FoodSearchModal({
           setSuggestedTitle(t(titleKey));
         }
 
-        const formatVal = (v: number) => Math.round(v * 100) / 100;
-
         // Map to FoodItem
         const mapped = foodsArr.map(
           (f) =>
@@ -552,7 +550,7 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: t('foodSearch.foodDescriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: formatVal(f.calories ?? 0),
+                calories: roundToDecimalPlaces(f.calories ?? 0),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -602,7 +600,6 @@ export function FoodSearchModal({
 
   // Memoized mapping of favorite foods to FoodItem format
   const favoriteFoods = useMemo(() => {
-    const formatVal = (v: number) => Math.round(v * 100) / 100;
     return favoriteFoodsRaw.map(
       (f) =>
         ({
@@ -610,7 +607,7 @@ export function FoodSearchModal({
           name: f.name ?? '',
           description: t('foodSearch.foodDescriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: formatVal(f.calories ?? 0),
+            calories: roundToDecimalPlaces(f.calories ?? 0),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -1365,14 +1362,13 @@ export function FoodSearchModal({
                       <View className="gap-1.5">
                         {recentFoods.length > 0 ? (
                           recentFoods.map((food) => {
-                            const formatVal = (v: number) => Math.round(v * 100) / 100;
                             const foodItem: FoodItem = {
                               ...food,
                               id: food.id,
                               name: food.name ?? '',
                               description: t('foodSearch.foodDescriptionPer100g', {
                                 brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: formatVal(food.calories ?? 0),
+                                calories: roundToDecimalPlaces(food.calories ?? 0),
                               }),
                               brand: food.brand,
                               serving_size: portion100gName,

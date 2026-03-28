@@ -4,6 +4,7 @@ import { database } from '../database';
 import Food from '../database/models/Food';
 import { FoodService, MealService, NutritionService } from '../database/services';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
+import { roundToDecimalPlaces } from './roundDecimal';
 
 /**
  * Normalize macros by weight (convert to per-100g)
@@ -15,14 +16,13 @@ export function normalizeMacrosByGrams(macros: MacroEstimate, grams: number): Ma
 
   const factor = 100 / grams;
 
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
   return {
     name: macros.name,
     kcal: Math.round(macros.kcal * factor),
-    carbs: formatVal(macros.carbs * factor),
-    fat: formatVal(macros.fat * factor),
-    protein: formatVal(macros.protein * factor),
-    fiber: formatVal(macros.fiber * factor),
+    carbs: roundToDecimalPlaces(macros.carbs * factor),
+    fat: roundToDecimalPlaces(macros.fat * factor),
+    protein: roundToDecimalPlaces(macros.protein * factor),
+    fiber: roundToDecimalPlaces(macros.fiber * factor),
     grams: 100,
     barcode: macros.barcode,
   };
@@ -232,7 +232,6 @@ export async function processMealPlanResponse(response: GenerateMealPlanResponse
       fats: number;
     }[] = [];
 
-    const formatVal = (v: number) => Math.round(v * 100) / 100;
     for (const aiMeal of response.meals) {
       const foodItems = [];
       let totalCalories = 0;
@@ -243,11 +242,11 @@ export async function processMealPlanResponse(response: GenerateMealPlanResponse
       for (const ingredient of aiMeal.ingredients) {
         // Create or find food for each ingredient
         const food = await FoodService.createCustomFood(ingredient.name, {
-          calories: formatVal((ingredient.kcal / ingredient.grams) * 100), // Normalize to 100g
-          protein: formatVal((ingredient.protein / ingredient.grams) * 100),
-          carbs: formatVal((ingredient.carbs / ingredient.grams) * 100),
-          fat: formatVal((ingredient.fat / ingredient.grams) * 100),
-          fiber: formatVal(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+          calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100), // Normalize to 100g
+          protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
+          carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
+          fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
+          fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
         });
 
         foodItems.push({

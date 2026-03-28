@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
@@ -61,10 +62,6 @@ export function LogMealModal({
   const formatDate = useCallback((date: Date) => {
     return date.toISOString().split('T')[0];
   }, []);
-
-  const formatMacro = (val: number) => {
-    return Math.round(val * 100) / 100;
-  };
 
   const handleLogMeal = useCallback(async () => {
     setIsLogging(true);
@@ -178,7 +175,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
-                      {formatMacro(meal.calories)}
+                      {roundToDecimalPlaces(meal.calories)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       kcal
@@ -202,7 +199,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      {formatMacro(meal.protein)}
+                      {roundToDecimalPlaces(meal.protein)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -223,7 +220,7 @@ export function LogMealModal({
                       {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                      {formatMacro(meal.carbs)}
+                      {roundToDecimalPlaces(meal.carbs)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -247,7 +244,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      {formatMacro(meal.fat)}
+                      {roundToDecimalPlaces(meal.fat)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -360,10 +357,10 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      P {formatMacro(ingredient.protein)}g
+                      P {roundToDecimalPlaces(ingredient.protein)}g
                     </Text>
                     <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
-                      C {formatMacro(ingredient.carbs)}g
+                      C {roundToDecimalPlaces(ingredient.carbs)}g
                     </Text>
                   </View>
                   <View className="items-end">
@@ -371,13 +368,13 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      F {formatMacro(ingredient.fat)}g
+                      F {roundToDecimalPlaces(ingredient.fat)}g
                     </Text>
                     <Text
                       className="text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {formatMacro(ingredient.kcal)} kcal
+                      {roundToDecimalPlaces(ingredient.kcal)} kcal
                     </Text>
                   </View>
                 </View>

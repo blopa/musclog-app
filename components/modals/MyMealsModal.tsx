@@ -9,6 +9,7 @@ import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import i18n from '../../lang/lang';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -137,8 +138,6 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
         return;
       }
 
-      const formatVal = (v: number) => Math.round(v * 100) / 100;
-
       setIsTransforming(true);
       try {
         const transformedMeals = await Promise.all(
@@ -150,11 +149,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               id: meal.id,
               title: meal.name ?? t('meals.untitledMeal'),
               tags,
-              calories: formatVal(nutrients.calories),
+              calories: roundToDecimalPlaces(nutrients.calories),
               macros: {
-                protein: formatVal(nutrients.protein) + 'g',
-                carbs: formatVal(nutrients.carbs) + 'g',
-                fat: formatVal(nutrients.fat) + 'g',
+                protein: roundToDecimalPlaces(nutrients.protein) + 'g',
+                carbs: roundToDecimalPlaces(nutrients.carbs) + 'g',
+                fat: roundToDecimalPlaces(nutrients.fat) + 'g',
               },
               image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
             };

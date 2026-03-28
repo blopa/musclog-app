@@ -47,6 +47,7 @@ import AiService from '../../services/AiService';
 import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getMealCritique } from '../../utils/coachAI';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
   switch (mode) {
@@ -179,7 +180,7 @@ export default function FoodScreen() {
   // Calculate calories consumed and macros
   const caloriesData = useMemo(() => {
     const totalCalories = nutritionGoal?.totalCalories || 2500;
-    const consumedCalories = Math.round((dailyNutrients?.calories || 0) * 100) / 100;
+    const consumedCalories = roundToDecimalPlaces(dailyNutrients?.calories || 0);
     const percentage = Math.round((consumedCalories / totalCalories) * 100);
 
     return {
@@ -776,15 +777,15 @@ export default function FoodScreen() {
                   }}
                   macros={{
                     protein: {
-                      value: Math.round((dailyNutrients?.protein || 0) * 100) / 100,
+                      value: roundToDecimalPlaces(dailyNutrients?.protein || 0),
                       goal: nutritionGoal?.protein || 150,
                     },
                     carbs: {
-                      value: Math.round((dailyNutrients?.carbs || 0) * 100) / 100,
+                      value: roundToDecimalPlaces(dailyNutrients?.carbs || 0),
                       goal: nutritionGoal?.carbs || 250,
                     },
                     fats: {
-                      value: Math.round((dailyNutrients?.fat || 0) * 100) / 100,
+                      value: roundToDecimalPlaces(dailyNutrients?.fat || 0),
                       goal: nutritionGoal?.fats || 80,
                     },
                   }}
@@ -857,18 +858,16 @@ export default function FoodScreen() {
                 {/* Breakfast Section */}
                 <MealSection
                   title={t('food.meals.breakfast')}
-                  totalCalories={
-                    Math.round((dailyNutrients?.byMealType?.breakfast?.calories || 0) * 100) / 100
-                  }
-                  totalProtein={
-                    Math.round((dailyNutrients?.byMealType?.breakfast?.protein || 0) * 100) / 100
-                  }
-                  totalCarbs={
-                    Math.round((dailyNutrients?.byMealType?.breakfast?.carbs || 0) * 100) / 100
-                  }
-                  totalFat={
-                    Math.round((dailyNutrients?.byMealType?.breakfast?.fat || 0) * 100) / 100
-                  }
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.breakfast?.carbs || 0
+                  )}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.breakfast?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('breakfast')}
                   menuButton={
                     mealsByType.breakfast.length > 0 ? (
@@ -900,16 +899,14 @@ export default function FoodScreen() {
                 {/* Lunch Section */}
                 <MealSection
                   title={t('food.meals.lunch')}
-                  totalCalories={
-                    Math.round((dailyNutrients?.byMealType?.lunch?.calories || 0) * 100) / 100
-                  }
-                  totalProtein={
-                    Math.round((dailyNutrients?.byMealType?.lunch?.protein || 0) * 100) / 100
-                  }
-                  totalCarbs={
-                    Math.round((dailyNutrients?.byMealType?.lunch?.carbs || 0) * 100) / 100
-                  }
-                  totalFat={Math.round((dailyNutrients?.byMealType?.lunch?.fat || 0) * 100) / 100}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.lunch?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.lunch?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.lunch?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.lunch?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('lunch')}
                   menuButton={
                     mealsByType.lunch.length > 0 ? (
@@ -941,16 +938,14 @@ export default function FoodScreen() {
                 {/* Dinner Section */}
                 <MealSection
                   title={t('food.meals.dinner')}
-                  totalCalories={
-                    Math.round((dailyNutrients?.byMealType?.dinner?.calories || 0) * 100) / 100
-                  }
-                  totalProtein={
-                    Math.round((dailyNutrients?.byMealType?.dinner?.protein || 0) * 100) / 100
-                  }
-                  totalCarbs={
-                    Math.round((dailyNutrients?.byMealType?.dinner?.carbs || 0) * 100) / 100
-                  }
-                  totalFat={Math.round((dailyNutrients?.byMealType?.dinner?.fat || 0) * 100) / 100}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.dinner?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.dinner?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.dinner?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.dinner?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('dinner')}
                   menuButton={
                     mealsByType.dinner.length > 0 ? (
@@ -982,16 +977,14 @@ export default function FoodScreen() {
                 {/* Snack Section */}
                 <MealSection
                   title={t('food.meals.snacks')}
-                  totalCalories={
-                    Math.round((dailyNutrients?.byMealType?.snack?.calories || 0) * 100) / 100
-                  }
-                  totalProtein={
-                    Math.round((dailyNutrients?.byMealType?.snack?.protein || 0) * 100) / 100
-                  }
-                  totalCarbs={
-                    Math.round((dailyNutrients?.byMealType?.snack?.carbs || 0) * 100) / 100
-                  }
-                  totalFat={Math.round((dailyNutrients?.byMealType?.snack?.fat || 0) * 100) / 100}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.snack?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.snack?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.snack?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.snack?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('snack')}
                   menuButton={
                     mealsByType.snack.length > 0 ? (
@@ -1023,16 +1016,14 @@ export default function FoodScreen() {
                 {/* Other Section */}
                 <MealSection
                   title={t('food.meals.other')}
-                  totalCalories={
-                    Math.round((dailyNutrients?.byMealType?.other?.calories || 0) * 100) / 100
-                  }
-                  totalProtein={
-                    Math.round((dailyNutrients?.byMealType?.other?.protein || 0) * 100) / 100
-                  }
-                  totalCarbs={
-                    Math.round((dailyNutrients?.byMealType?.other?.carbs || 0) * 100) / 100
-                  }
-                  totalFat={Math.round((dailyNutrients?.byMealType?.other?.fat || 0) * 100) / 100}
+                  totalCalories={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.other?.calories || 0
+                  )}
+                  totalProtein={roundToDecimalPlaces(
+                    dailyNutrients?.byMealType?.other?.protein || 0
+                  )}
+                  totalCarbs={roundToDecimalPlaces(dailyNutrients?.byMealType?.other?.carbs || 0)}
+                  totalFat={roundToDecimalPlaces(dailyNutrients?.byMealType?.other?.fat || 0)}
                   onAddFood={() => handleAddFoodToMeal('other')}
                   menuButton={
                     mealsByType.other.length > 0 ? (
@@ -1192,7 +1183,7 @@ export default function FoodScreen() {
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
         title={selectedFoodItem?.displayName ?? ''}
-        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${Math.round((selectedFoodItem?.nutrients?.calories || 0) * 100) / 100} kcal`}
+        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${roundToDecimalPlaces(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
         items={foodMenuItems}
       />
 

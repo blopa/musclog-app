@@ -5,6 +5,7 @@ import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native'
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '../../theme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
@@ -25,12 +26,10 @@ type FoodSearchItemCardProps = {
 export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
-
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: formatVal(food.protein ?? 0),
-    carbs: formatVal(food.carbs ?? 0),
-    fat: formatVal(food.fat ?? 0),
+    protein: roundToDecimalPlaces(food.protein ?? 0),
+    carbs: roundToDecimalPlaces(food.carbs ?? 0),
+    fat: roundToDecimalPlaces(food.fat ?? 0),
   });
 
   return (

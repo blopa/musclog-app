@@ -45,6 +45,7 @@ import {
   getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '../../utils/usdaMapper';
@@ -474,11 +475,11 @@ export function FoodMealDetailsModal({
           MealService.getMealWithFoods(meal.id),
         ]);
         setMealNutrients({
-          calories: Math.round(nutrients.calories * 100) / 100,
-          protein: Math.round(nutrients.protein * 100) / 100,
-          carbs: Math.round(nutrients.carbs * 100) / 100,
-          fat: Math.round(nutrients.fat * 100) / 100,
-          fiber: Math.round(nutrients.fiber * 100) / 100,
+          calories: roundToDecimalPlaces(nutrients.calories),
+          protein: roundToDecimalPlaces(nutrients.protein),
+          carbs: roundToDecimalPlaces(nutrients.carbs),
+          fat: roundToDecimalPlaces(nutrients.fat),
+          fiber: roundToDecimalPlaces(nutrients.fiber),
         });
         if (mealWithFoods?.foods) {
           let totalGrams = 0;
@@ -949,10 +950,10 @@ export function FoodMealDetailsModal({
       return {
         name: getFoodMealName(),
         category: getProductCategory(),
-        calories: Math.round(mealNutrients.calories * mealScaleFactor * 100) / 100,
-        protein: Math.round(mealNutrients.protein * mealScaleFactor * 100) / 100,
-        carbs: Math.round(mealNutrients.carbs * mealScaleFactor * 100) / 100,
-        fat: Math.round(mealNutrients.fat * mealScaleFactor * 100) / 100,
+        calories: roundToDecimalPlaces(mealNutrients.calories * mealScaleFactor),
+        protein: roundToDecimalPlaces(mealNutrients.protein * mealScaleFactor),
+        carbs: roundToDecimalPlaces(mealNutrients.carbs * mealScaleFactor),
+        fat: roundToDecimalPlaces(mealNutrients.fat * mealScaleFactor),
       };
     }
 
@@ -981,10 +982,10 @@ export function FoodMealDetailsModal({
     return {
       name: getFoodMealName(),
       category: getProductCategory(),
-      calories: Math.round(nutritionalData.calories * scaleFactor * 100) / 100,
-      protein: Math.round(nutritionalData.protein * scaleFactor * 100) / 100,
-      carbs: Math.round(nutritionalData.carbs * scaleFactor * 100) / 100,
-      fat: Math.round(nutritionalData.fat * scaleFactor * 100) / 100,
+      calories: roundToDecimalPlaces(nutritionalData.calories * scaleFactor),
+      protein: roundToDecimalPlaces(nutritionalData.protein * scaleFactor),
+      carbs: roundToDecimalPlaces(nutritionalData.carbs * scaleFactor),
+      fat: roundToDecimalPlaces(nutritionalData.fat * scaleFactor),
       source: dataSource,
     };
   }, [

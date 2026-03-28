@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
 import { useTheme } from '../../hooks/useTheme';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
@@ -30,8 +31,7 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const formatVal = (val: number) => Math.round(val * 100) / 100;
-  const calories = formatVal((food.calories * amount) / 100);
+  const calories = roundToDecimalPlaces((food.calories * amount) / 100);
 
   return (
     <View
@@ -116,7 +116,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${formatVal(food.calories)} ${t('common.kcal')}`}
+                  : `${roundToDecimalPlaces(food.calories)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -147,7 +147,7 @@ function FoodResultCard({
               }}
             >
               {t('foodSearch.macroProtein', {
-                value: formatVal((food.protein * amount) / 100),
+                value: roundToDecimalPlaces((food.protein * amount) / 100),
               })}
             </Text>
             <Text
@@ -158,7 +158,7 @@ function FoodResultCard({
               }}
             >
               {t('foodSearch.macroCarbs', {
-                value: formatVal((food.carbs * amount) / 100),
+                value: roundToDecimalPlaces((food.carbs * amount) / 100),
               })}
             </Text>
             <Text
@@ -168,7 +168,7 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroFat', { value: formatVal((food.fat * amount) / 100) })}
+              {t('foodSearch.macroFat', { value: roundToDecimalPlaces((food.fat * amount) / 100) })}
             </Text>
           </View>
         </View>
