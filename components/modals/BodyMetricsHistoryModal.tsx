@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
@@ -6,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
@@ -48,9 +50,9 @@ type MetricData = {
 };
 
 // Helper function to format relative date
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
-  const timeStr = format(date, 'hh:mm a');
+  const timeStr = format(date, 'hh:mm a', { locale });
 
   if (isToday(date)) {
     return `${t('bodyMetrics.dateFormats.today')}, ${timeStr}`;
@@ -59,9 +61,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return `${t('bodyMetrics.dateFormats.yesterday')}, ${timeStr}`;
   }
   if (isThisWeek(date)) {
-    return `${format(date, 'EEE')}, ${timeStr}`;
+    return `${format(date, 'EEE', { locale })}, ${timeStr}`;
   }
-  return format(date, 'MMM d, hh:mm a');
+  return format(date, 'MMM d, hh:mm a', { locale });
 }
 
 type BodyMetricsHistoryModalProps = {
@@ -75,6 +77,7 @@ export default function BodyMetricsHistoryModal({
 }: BodyMetricsHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
@@ -287,7 +290,7 @@ export default function BodyMetricsHistoryModal({
 
         entries.push({
           id: metric.id,
-          date: formatRelativeDate(d.date, t),
+          date: formatRelativeDate(d.date, t, dateFnsLocale),
           value: valueStr,
           change,
           changeType,
@@ -304,6 +307,7 @@ export default function BodyMetricsHistoryModal({
     [
       selectedMetric,
       t,
+      dateFnsLocale,
       theme.colors.border.light,
       theme.colors.status.indigo600,
       theme.colors.text.primary,
@@ -442,9 +446,10 @@ export default function BodyMetricsHistoryModal({
     const sorted = [...allMetricsForChart].sort((a, b) => a.decrypted.date - b.decrypted.date);
     return getXAxisLabels(
       sorted.map((m) => ({ x: m.decrypted.date })),
-      (x) => format(x, 'MMM d')
+      (x) => format(x, 'MMM d', { locale: dateFnsLocale }),
+      dateFnsLocale
     );
-  }, [allMetricsForChart]);
+  }, [allMetricsForChart, dateFnsLocale]);
 
   const handleNewMetric = () => {
     setIsAddMetricVisible(true);

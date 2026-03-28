@@ -19,6 +19,7 @@ import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from
 
 import { type EatingPhase } from '../database/models';
 import { UserMetricService } from '../database/services';
+import { useDateFnsLocale } from '../hooks/useDateFnsLocale';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
@@ -229,6 +230,7 @@ export function NutritionGoalsBody({
 }: NutritionGoalsModalBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { width: screenWidth } = useWindowDimensions();
   const { units } = useSettings();
   const showIcons = screenWidth >= 415;
@@ -516,7 +518,7 @@ export function NutritionGoalsBody({
             <View className="flex-shrink flex-row items-center gap-2">
               <Text className="text-text-secondary" numberOfLines={1}>
                 {goalStartDate != null
-                  ? format(new Date(goalStartDate), 'MMM d, yyyy')
+                  ? format(new Date(goalStartDate), 'MMM d, yyyy', { locale: dateFnsLocale })
                   : t('nutritionGoals.goalStartDateToday')}
               </Text>
               {goalStartDate != null ? (
@@ -836,7 +838,7 @@ export function NutritionGoalsBody({
             <View className="flex-shrink flex-row items-center gap-2">
               <Text className="text-text-secondary" numberOfLines={1}>
                 {targetDate != null
-                  ? format(new Date(targetDate), 'MMM d, yyyy')
+                  ? format(new Date(targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
                   : t('nutritionGoals.targetDateNotSet')}
               </Text>
               {targetDate != null ? (

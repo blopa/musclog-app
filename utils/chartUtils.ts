@@ -1,4 +1,6 @@
+import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 export interface XAxisLabel {
   label: string;
@@ -20,11 +22,13 @@ export const X_AXIS_LABEL_OFFSET = 20;
  *
  * @param data Array of objects with an 'x' numeric property (usually timestamp)
  * @param formatFn Optional function to format the x value into a string label
+ * @param locale date-fns locale for default `MMM d` labels (when `formatFn` is omitted)
  * @returns Array of XAxisLabel objects
  */
 export function getXAxisLabels<T extends { x: number }>(
   data: T[],
-  formatFn?: (x: number) => string
+  formatFn?: (x: number) => string,
+  locale: Locale = enUS
 ): XAxisLabel[] {
   if (data.length === 0) {
     return [];
@@ -32,13 +36,13 @@ export function getXAxisLabels<T extends { x: number }>(
   if (data.length === 1) {
     return [
       {
-        label: formatFn ? formatFn(data[0].x) : format(new Date(data[0].x), 'MMM d'),
+        label: formatFn ? formatFn(data[0].x) : format(new Date(data[0].x), 'MMM d', { locale }),
         positionPercent: 50,
       },
     ];
   }
 
-  const formatLabel = formatFn || ((x: number) => format(new Date(x), 'MMM d'));
+  const formatLabel = formatFn || ((x: number) => format(new Date(x), 'MMM d', { locale }));
 
   // If we have few enough points, show all of them
   if (data.length <= MAX_X_LABELS) {

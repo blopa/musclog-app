@@ -11,6 +11,7 @@ import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutService } from '../database/services';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 
 const WORKOUT_LOG_SET_COLUMNS = [
@@ -34,6 +35,7 @@ export interface UsePastWorkoutDetailParams {
 export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetailParams) {
   const { t } = useTranslation();
   const { units } = useSettings();
+  const dateFnsLocale = useDateFnsLocale();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
   const [rawSets, setRawSets] = useState<EnrichedWorkoutLogSet[] | null>(null);
@@ -109,7 +111,9 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
             notes: le.notes,
           }));
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
-          return from(transformWorkoutToDetailData(log, enrichedSets, exercises, t, units)).pipe(
+          return from(
+            transformWorkoutToDetailData(log, enrichedSets, exercises, t, units, dateFnsLocale)
+          ).pipe(
             map((transformed) => ({
               transformed,
               rawSets: enrichedSets,
@@ -139,7 +143,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       });
 
     return () => subscription.unsubscribe();
-  }, [visible, workoutId, t, units]);
+  }, [visible, workoutId, t, units, dateFnsLocale]);
 
   const reload = () => {
     if (!workoutId) {
@@ -153,7 +157,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .then(({ workoutLog: log, sets: s, exercises: ex }) => {
         setRawSets(s);
         setExternalId(log.externalId ?? null);
-        return transformWorkoutToDetailData(log, s, ex, t, units);
+        return transformWorkoutToDetailData(log, s, ex, t, units, dateFnsLocale);
       })
       .then(setWorkout)
       .catch((err) => {

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { DateRangePreset } from '../../hooks/useProgressData';
 import { useTheme } from '../../hooks/useTheme';
 import { FilterTabs } from '../FilterTabs';
@@ -30,6 +31,7 @@ export function ProgressDateFilter({
 }: ProgressDateFilterProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const dateFnsLocale = useDateFnsLocale();
 
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -97,7 +99,7 @@ export function ProgressDateFilter({
                   {t('progress.startDate')}
                 </Text>
                 <Text className="text-sm font-semibold text-text-primary">
-                  {format(tempStartDate, 'MMM d, yyyy')}
+                  {format(tempStartDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                 </Text>
               </View>
               <Calendar size={16} color={theme.colors.text.tertiary} />
@@ -112,7 +114,7 @@ export function ProgressDateFilter({
                   {t('progress.endDate')}
                 </Text>
                 <Text className="text-sm font-semibold text-text-primary">
-                  {format(tempEndDate, 'MMM d, yyyy')}
+                  {format(tempEndDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                 </Text>
               </View>
               <Calendar size={16} color={theme.colors.text.tertiary} />

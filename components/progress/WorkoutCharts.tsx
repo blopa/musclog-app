@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
@@ -18,6 +19,7 @@ interface WorkoutChartsProps {
 export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: WorkoutChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const dateFnsLocale = useDateFnsLocale();
 
   return (
     <View>
@@ -40,7 +42,11 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               Math.max(...workoutVolumeHistory.map((p) => p.volume)) * 1.2,
             ]}
             tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
-            xAxisLabels={getXAxisLabels(workoutVolumeHistory.map((p) => ({ x: p.date })))}
+            xAxisLabels={getXAxisLabels(
+              workoutVolumeHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}

@@ -38,7 +38,13 @@ function dateFnsLocaleKeyToVarName(localeKey) {
     return parts[0];
   }
 
-  return parts[0] + parts.slice(1).map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+  return (
+    parts[0] +
+    parts
+      .slice(1)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join('')
+  );
 }
 
 // access_token → AccessToken, addMeal → AddMeal, food_food_portions → FoodFoodPortions
@@ -60,6 +66,14 @@ function defaultUntranslatedLabel(dir) {
   }
 }
 
+function capitalizeLanguageLabel(label) {
+  const s = label.trim();
+  if (!s) {
+    return s;
+  }
+  return s[0].toLocaleUpperCase() + s.slice(1);
+}
+
 /** Keeps `untranslated.json` in sync with locale subdirs; preserves existing non-empty labels. */
 function writeUntranslatedJson(langDirs) {
   let existing = {};
@@ -76,8 +90,9 @@ function writeUntranslatedJson(langDirs) {
   const untranslated = {};
   for (const dir of langDirs) {
     const prev = existing[dir];
-    untranslated[dir] =
+    const raw =
       typeof prev === 'string' && prev.trim() !== '' ? prev : defaultUntranslatedLabel(dir);
+    untranslated[dir] = capitalizeLanguageLabel(raw);
   }
 
   const out = `${JSON.stringify({ untranslated }, null, 2)}\n`;

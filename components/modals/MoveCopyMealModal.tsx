@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUp } from '../BottomPopUp';
@@ -42,6 +43,7 @@ export function MoveCopyMealModal({
 }: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const [targetDate, setTargetDate] = useState(sourceDate);
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -148,7 +150,7 @@ export function MoveCopyMealModal({
                 className="flex-1 font-medium text-text-primary"
                 style={{ fontSize: theme.typography.fontSize.sm }}
               >
-                {format(targetDate, 'EEEE, MMM d, yyyy')}
+                {format(targetDate, 'EEEE, MMM d, yyyy', { locale: dateFnsLocale })}
               </Text>
             </Pressable>
           </View>

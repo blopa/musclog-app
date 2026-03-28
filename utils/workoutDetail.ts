@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 
@@ -67,7 +68,8 @@ function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units
  */
 async function calculateVolumeTrend(
   currentWorkoutLog: WorkoutLog,
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): Promise<{
   percentage: number;
   data: LineChartDataPoint[];
@@ -144,8 +146,9 @@ async function calculateVolumeTrend(
     (x) => {
       const log = sortedLogs[x];
       const date = new Date(log.startedAt || log.completedAt || Date.now());
-      return format(date, 'MMM d');
-    }
+      return format(date, 'MMM d', { locale });
+    },
+    locale
   );
 
   // Map data x back to chartWidth scale if needed, but LineChart can handle domain [0, n-1]
@@ -170,7 +173,8 @@ export async function transformWorkoutToDetailData(
   sets: EnrichedWorkoutLogSet[],
   exercises: Exercise[],
   t: TFunction,
-  units: Units
+  units: Units,
+  locale: Locale
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -245,7 +249,7 @@ export async function transformWorkoutToDetailData(
 
   const workoutDate = new Date(workoutLog.startedAt || workoutLog.completedAt || Date.now());
 
-  const volumeTrend = await calculateVolumeTrend(workoutLog, t);
+  const volumeTrend = await calculateVolumeTrend(workoutLog, t, locale);
 
   return {
     name: workoutLog.workoutName ?? '',

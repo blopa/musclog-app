@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
@@ -18,6 +19,7 @@ type CycleLogModalProps = {
 
 export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalProps) {
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const [flow, setFlow] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -154,8 +156,10 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     }
   };
 
-  const isToday = isSameDay(selectedDate, new Date());
-  const dateLabel = isToday ? t('datePicker.today') : format(selectedDate, 'MMM d, yyyy');
+  const selectedIsToday = isSameDay(selectedDate, new Date());
+  const dateLabel = selectedIsToday
+    ? t('datePicker.today')
+    : format(selectedDate, 'MMM d, yyyy', { locale: dateFnsLocale });
 
   return (
     <>

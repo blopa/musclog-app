@@ -8,6 +8,7 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
@@ -56,6 +57,7 @@ export default function AddUserMetricEntryModal({
 }: AddUserMetricEntryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
   const pagerRef = useRef<PagerViewRef>(null);
@@ -121,11 +123,11 @@ export default function AddUserMetricEntryModal({
   }, [visible, units]);
 
   const formatDate = (date: Date) => {
-    return format(date, 'MMM d, yyyy');
+    return format(date, 'MMM d, yyyy', { locale: dateFnsLocale });
   };
 
   const formatTime = (date: Date) => {
-    return format(date, 'hh:mm a');
+    return format(date, 'hh:mm a', { locale: dateFnsLocale });
   };
 
   // Sync PagerView when selectedMetric changes

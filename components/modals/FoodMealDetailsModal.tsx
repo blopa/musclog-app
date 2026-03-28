@@ -30,6 +30,7 @@ import {
   MealService,
   NutritionService,
 } from '../../database/services';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import {
   fetchMusclogProductByBarcode,
   fetchOFFProductByBarcode,
@@ -233,6 +234,7 @@ export function FoodMealDetailsModal({
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -1927,10 +1929,10 @@ export function FoodMealDetailsModal({
                     <Text className="font-medium text-text-primary">
                       {isSameDay(selectedDate, new Date())
                         ? t('food.foodDetails.today')
-                        : format(selectedDate, 'EEEE')}
+                        : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
                     </Text>
                     <Text className="text-xs text-text-secondary">
-                      {format(selectedDate, 'MMMM d, yyyy')}
+                      {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
                     </Text>
                   </View>
                 </View>

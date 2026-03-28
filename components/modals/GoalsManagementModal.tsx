@@ -8,6 +8,7 @@ import { type EatingPhase } from '../../database/models';
 import NutritionGoal from '../../database/models/NutritionGoal';
 import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
@@ -67,6 +68,7 @@ function goalToFormData(goal: NutritionGoal): Partial<NutritionGoals> {
 export default function GoalsManagementModal({ visible, onClose }: GoalsManagementModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const [nutritionGoalsModalVisible, setNutritionGoalsModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
@@ -96,10 +98,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       bmi: current.targetBmi,
       ffmi: current.targetFfmi,
       goalDate: current.targetDate
-        ? format(new Date(current.targetDate), 'MMM d, yyyy')
+        ? format(new Date(current.targetDate), 'MMM d, yyyy', { locale: dateFnsLocale })
         : undefined,
     };
-  }, [current]);
+  }, [current, dateFnsLocale]);
 
   const currentGoalsData = useMemo<Partial<NutritionGoals> | undefined>(() => {
     if (!current) {
@@ -117,9 +119,10 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
           const startDate = new Date(goal.createdAt);
           const endDate = goal.effectiveUntil ? new Date(goal.effectiveUntil) : new Date();
           const dateRange =
-            format(startDate, 'MMM d') === format(endDate, 'MMM d')
-              ? format(startDate, 'MMM d, yyyy')
-              : `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`;
+            format(startDate, 'MMM d', { locale: dateFnsLocale }) ===
+            format(endDate, 'MMM d', { locale: dateFnsLocale })
+              ? format(startDate, 'MMM d, yyyy', { locale: dateFnsLocale })
+              : `${format(startDate, 'MMM d', { locale: dateFnsLocale })} - ${format(endDate, 'MMM d, yyyy', { locale: dateFnsLocale })}`;
 
           const display: GoalHistoryItem = {
             id: parseInt(goal.id, 10) || index,
@@ -135,7 +138,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
           return { display, raw: goal };
         }),
-    [goals]
+    [goals, dateFnsLocale]
   );
 
   const handleNewGoal = () => {

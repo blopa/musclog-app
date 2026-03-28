@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '../database/models/NutritionGoal';
 import { NutritionGoalService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type NutritionGoalDisplayItem = {
@@ -28,7 +30,7 @@ const BATCH_SIZE = 20;
 
 const ICON = 'flag';
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -37,9 +39,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d, yyyy');
+  return format(date, 'MMM d, yyyy', { locale });
 }
 
 function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
@@ -54,10 +56,11 @@ function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
 function goalToDisplayItem(
   goal: NutritionGoal,
   t: TFunction,
-  iconColors: { color: string; bg: string }
+  iconColors: { color: string; bg: string },
+  locale: Locale
 ): NutritionGoalDisplayItem {
   const phaseLabel = getPhaseLabel(goal.eatingPhase, t);
-  const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy');
+  const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy', { locale });
   return {
     id: goal.id,
     name: `${phaseLabel} • ${dateLabel}`,
@@ -72,7 +75,8 @@ function goalToDisplayItem(
 
 function groupGoalsByDate(
   items: { item: NutritionGoalDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): NutritionGoalDayGroup[] {
   const groupMap = new Map<number, NutritionGoalDisplayItem[]>();
 
@@ -85,7 +89,7 @@ function groupGoalsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -95,7 +99,8 @@ function groupGoalsByDate(
 function mergeIntoDayGroups(
   existing: NutritionGoalDayGroup[],
   newItemsWithDates: { item: NutritionGoalDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): NutritionGoalDayGroup[] {
   const groupMap = new Map<number, NutritionGoalDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -119,7 +124,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => b.id.localeCompare(a.id)),
     }))
@@ -168,6 +173,7 @@ export function useNutritionGoalDataLogs({
 }: UseNutritionGoalDataLogsParams = {}): UseNutritionGoalDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({ color: theme.colors.status.violet500, bg: theme.colors.status.purple10 }),
     [theme]
@@ -190,10 +196,10 @@ export function useNutritionGoalDataLogs({
     try {
       const goals = await NutritionGoalService.getGoalsHistory(batchSize, 0);
       const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t, iconColors),
+        item: goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
         dateTimestamp: goal.createdAt,
       }));
-      const groups = groupGoalsByDate(results, t);
+      const groups = groupGoalsByDate(results, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(goals.length === batchSize);
       setOffset(goals.length);
@@ -204,7 +210,7 @@ export function useNutritionGoalDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -222,11 +228,11 @@ export function useNutritionGoalDataLogs({
       }
 
       const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t, iconColors),
+        item: goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
         dateTimestamp: goal.createdAt,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t, dateFnsLocale));
       setHasMore(goals.length === batchSize);
       setOffset((prev) => prev + goals.length);
     } catch (err) {
@@ -235,7 +241,7 @@ export function useNutritionGoalDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

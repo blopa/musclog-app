@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
@@ -23,6 +24,7 @@ export function BodyMetricsCharts({
 }: BodyMetricsChartsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const dateFnsLocale = useDateFnsLocale();
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -50,7 +52,11 @@ export function BodyMetricsCharts({
               (v) => `${Math.round(v)} ${weightLabel}`
             )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
-            xAxisLabels={getXAxisLabels(weightHistory.map((p) => ({ x: p.date })))}
+            xAxisLabels={getXAxisLabels(
+              weightHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}
@@ -77,7 +83,11 @@ export function BodyMetricsCharts({
               (v) => `${Math.round(v)}%`
             )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
-            xAxisLabels={getXAxisLabels(fatHistory.map((p) => ({ x: p.date })))}
+            xAxisLabels={getXAxisLabels(
+              fatHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}
@@ -100,7 +110,11 @@ export function BodyMetricsCharts({
               3
             )}
             tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
-            xAxisLabels={getXAxisLabels(ffmiHistory.map((p) => ({ x: p.date })))}
+            xAxisLabels={getXAxisLabels(
+              ffmiHistory.map((p) => ({ x: p.date })),
+              undefined,
+              dateFnsLocale
+            )}
           />
         </ProgressChartSection>
       ) : null}

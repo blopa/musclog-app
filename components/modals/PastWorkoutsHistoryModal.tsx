@@ -403,7 +403,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
             <View className="flex-1 gap-6 p-4">
               {workoutHistoryData.map((section, sectionIndex) => (
                 <WorkoutMonthSection
-                  key={section.month}
+                  key={section.monthKey}
                   section={section}
                   isLastMonth={sectionIndex === workoutHistoryData.length - 1}
                   onWorkoutPress={setSelectedWorkoutId}
