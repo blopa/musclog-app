@@ -147,7 +147,8 @@
       "scaleMealPortionModalSubtitle": "Total grams for this meal — each food is scaled proportionally",
       "scaleMealPortionSuccess": "Meal portions updated",
       "scaleMealPortionError": "Failed to update meal portions",
-      "scaleMealPortionInvalid": "Enter at least 1 g"
+      "scaleMealPortionInvalid": "Enter at least 1 g",
+      "scaleMealPortionPreview": "Estimated totals for this portion"
     },
     "mealInsights": {
       "title": "Meal Insights",

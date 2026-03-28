@@ -695,6 +695,22 @@ export default function FoodScreen() {
     return (mealsByType[selectedMealForMenu] || []).reduce((sum, e) => sum + e.gramWeight, 0);
   }, [selectedMealForMenu, mealsByType]);
 
+  const selectedMealNutrients = useMemo(() => {
+    if (!selectedMealForMenu) {
+      return { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+    }
+    return (mealsByType[selectedMealForMenu] || []).reduce(
+      (acc, e) => ({
+        calories: acc.calories + e.nutrients.calories,
+        protein: acc.protein + e.nutrients.protein,
+        carbs: acc.carbs + e.nutrients.carbs,
+        fat: acc.fat + e.nutrients.fat,
+        fiber: acc.fiber + e.nutrients.fiber,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+    );
+  }, [selectedMealForMenu, mealsByType]);
+
   const mealMenuItems = [
     ...(isAiConfigured
       ? [
@@ -1361,6 +1377,7 @@ export default function FoodScreen() {
         }}
         onConfirm={handleConfirmScaleMealPortion}
         initialTotalGrams={selectedMealTotalGrams}
+        mealNutrients={selectedMealNutrients}
         isLoading={isScaleMealPortionLoading}
       />
 

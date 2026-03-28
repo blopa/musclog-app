@@ -147,7 +147,8 @@
       "scaleMealPortionModalSubtitle": "Total em gramas desta refeição — cada alimento é escalado proporcionalmente",
       "scaleMealPortionSuccess": "Porções da refeição atualizadas",
       "scaleMealPortionError": "Falha ao atualizar as porções da refeição",
-      "scaleMealPortionInvalid": "Informe pelo menos 1 g"
+      "scaleMealPortionInvalid": "Informe pelo menos 1 g",
+      "scaleMealPortionPreview": "Totais estimados para esta porção"
     },
     "mealInsights": {
       "title": "Insights da Refeição",
