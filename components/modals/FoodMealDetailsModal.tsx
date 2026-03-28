@@ -1585,6 +1585,7 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    barcode,
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
