@@ -68,6 +68,7 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
@@ -443,8 +444,9 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    setIsSaving(true);
+    await flushLoadingPaint();
     try {
-      setIsSaving(true);
       await workoutLog.updateSet(currentSetData.set.id, {
         isSkipped: true,
         difficultyLevel: 0,
@@ -1095,6 +1097,7 @@ export default function WorkoutSessionScreen() {
           confirmLabel={t('workoutSession.skipSet.confirm')}
           cancelLabel={t('workoutSession.skipSet.cancel')}
           variant="destructive"
+          isLoading={isSaving}
         />
       ) : null}
 

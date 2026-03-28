@@ -48,9 +48,8 @@ import {
   type TrackMealIngredient,
 } from '../utils/coachAI';
 import { processMealPlanResponse } from '../utils/nutritionAI';
-import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '../utils/nutritionCalculator';
-import { getChatMessagePromptContent } from '../utils/prompts';
+import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '../utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -823,8 +822,7 @@ export function useChatMessages(
 
       const scaledIngredients = ingredients.map((i) => {
         const scaledGramsRaw = i.grams * scale;
-        const scaledGrams =
-          scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
+        const scaledGrams = scaledGramsRaw > 0 ? roundToDecimalPlaces(scaledGramsRaw, 1) : 1;
 
         return {
           name: i.name,

@@ -32,6 +32,7 @@ import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
 import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 
 export default function WorkoutsScreen() {
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ export default function WorkoutsScreen() {
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
+  const [isDeletingWorkoutTemplate, setIsDeletingWorkoutTemplate] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
     useState(false);
   const [isCreatingWorkoutsFromTemplate, setIsCreatingWorkoutsFromTemplate] = useState(false);
@@ -79,6 +81,27 @@ export default function WorkoutsScreen() {
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   const { showSnackbar } = useSnackbar();
+
+  const handleConfirmDeleteWorkout = useCallback(async () => {
+    if (!selectedWorkoutId) {
+      return;
+    }
+
+    setIsDeletingWorkoutTemplate(true);
+    await flushLoadingPaint();
+    try {
+      const template = await database
+        .get<WorkoutTemplate>('workout_templates')
+        .find(selectedWorkoutId);
+      await template.markAsDeleted();
+      showSnackbar('success', t('workouts.deleteSuccess'));
+    } catch (err) {
+      console.error('Error deleting workout:', err);
+      showSnackbar('error', t('workouts.deleteError'));
+    } finally {
+      setIsDeletingWorkoutTemplate(false);
+    }
+  }, [selectedWorkoutId, showSnackbar, t]);
 
   // Reactively fetch template details when previewTemplateId is set
   const {
@@ -607,26 +630,12 @@ export default function WorkoutsScreen() {
       <ConfirmationModal
         visible={isDeleteConfirmationVisible}
         onClose={() => setIsDeleteConfirmationVisible(false)}
-        onConfirm={async () => {
-          if (!selectedWorkoutId) {
-            return;
-          }
-
-          try {
-            const template = await database
-              .get<WorkoutTemplate>('workout_templates')
-              .find(selectedWorkoutId);
-            await template.markAsDeleted();
-            showSnackbar('success', t('workouts.deleteSuccess'));
-          } catch (err) {
-            console.error('Error deleting workout:', err);
-            showSnackbar('error', t('workouts.deleteError'));
-          }
-        }}
+        onConfirm={handleConfirmDeleteWorkout}
         title={t('workouts.deleteConfirmation.title')}
         message={t('workouts.deleteConfirmation.message', { name: selectedWorkoutName })}
         confirmLabel={t('workouts.delete')}
         variant="destructive"
+        isLoading={isDeletingWorkoutTemplate}
       />
       <ConfirmationModal
         visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
@@ -640,9 +649,7 @@ export default function WorkoutsScreen() {
           }
 
           setIsCreatingWorkoutsFromTemplate(true);
-
-          // Small delay to ensure React processes the state update and shows loading state
-          await new Promise<void>((resolve) => setTimeout(resolve, 1));
+          await flushLoadingPaint();
 
           try {
             const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);

@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { ServingSizeSelector } from '../ServingSizeSelector';
 import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
+import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerModal } from './DatePickerModal';
@@ -105,8 +106,7 @@ export function LogMealModal({
 
   const handleLogMeal = useCallback(async () => {
     setIsLogging(true);
-    // Small delay to allow React to render the loading state before closing
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await flushLoadingPaint();
 
     try {
       onLogMeal(selectedDate, selectedMealType, clampPortionGrams(portionGrams));
@@ -137,6 +137,7 @@ export function LogMealModal({
         title={t('meals.logMeal')}
         footer={footer}
         scrollable
+        closable={!isLogging}
       >
         <View className="mb-6 mt-6 gap-6 px-4">
           {/* Meal Details Card */}

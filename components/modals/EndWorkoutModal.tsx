@@ -26,6 +26,7 @@ export function EndWorkoutModal({
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const [isSaving, setIsSaving] = useState(false);
   const [isDiscarding, setIsDiscarding] = useState(false);
+  const isBusy = isSaving || isDiscarding;
 
   useEffect(() => {
     if (visible) {
@@ -82,14 +83,14 @@ export function EndWorkoutModal({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={isBusy ? () => {} : onClose}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
-        onPress={onClose}
+        onPress={isBusy ? undefined : onClose}
       >
         {/* Modal Content */}
         <Pressable
@@ -148,7 +149,8 @@ export function EndWorkoutModal({
                   </View>
                   <Pressable
                     className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                    onPress={onClose}
+                    onPress={isBusy ? undefined : onClose}
+                    disabled={isBusy}
                   >
                     <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   </Pressable>

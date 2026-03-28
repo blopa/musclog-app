@@ -82,10 +82,7 @@ export function ScaleMealPortionModal({
         </View>
       }
     >
-      <View
-        pointerEvents={isBusy ? 'none' : 'auto'}
-        style={{ opacity: isBusy ? 0.65 : 1 }}
-      >
+      <View pointerEvents={isBusy ? 'none' : 'auto'} style={{ opacity: isBusy ? 0.65 : 1 }}>
         <ServingSizeSelector value={targetGrams} onChange={setTargetGrams} />
       </View>
       <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />

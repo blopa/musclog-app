@@ -89,6 +89,7 @@ export function NutritionConfirmationModal({
       onClose={onClose}
       title={t('nutrition.review')}
       scrollable={false}
+      closable={!isLoading}
     >
       <ScrollView className="flex-1 px-4 py-4">
         {/* Summary */}

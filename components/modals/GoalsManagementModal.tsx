@@ -10,6 +10,7 @@ import { NutritionGoalService } from '../../database/services';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
+import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
 import { Button } from '../theme/Button';
@@ -71,6 +72,7 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
   const [selectedGoal, setSelectedGoal] = useState<NutritionGoal | null>(null);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<NutritionGoal | null>(null);
+  const [isDeletingGoal, setIsDeletingGoal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   const { goals, current, isLoading, refresh } = useCurrentNutritionGoal({
@@ -173,11 +175,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
       return;
     }
 
+    setIsDeletingGoal(true);
+    await flushLoadingPaint();
     try {
       await NutritionGoalService.deleteGoal(goalToDelete.id);
       await refresh();
     } catch (error) {
       console.error('Error deleting nutrition goal:', error);
+    } finally {
+      setIsDeletingGoal(false);
+      setGoalToDelete(null);
     }
   };
 
@@ -348,12 +355,16 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
 
       <ConfirmationModal
         visible={confirmDeleteVisible}
-        onClose={() => setConfirmDeleteVisible(false)}
+        onClose={() => {
+          setConfirmDeleteVisible(false);
+          setGoalToDelete(null);
+        }}
         onConfirm={handleConfirmDelete}
         title={t('goalsManagement.deleteGoal')}
         message={t('goalsManagement.deleteGoalMessage')}
         confirmLabel={t('common.delete')}
         variant="destructive"
+        isLoading={isDeletingGoal}
       />
     </>
   );

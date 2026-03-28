@@ -142,8 +142,7 @@ function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
     const nutrients = (product as any).foodNutrients as any[];
     const rawServingSize = (product as any).servingSize;
     const isBranded = (product as any).dataType === 'Branded';
-    const normFactor =
-      isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
+    const normFactor = isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
     return {
       calories: toFiniteMacro(
         (mapUSDANutritient(nutrients, '1008') ??
@@ -1131,7 +1130,16 @@ export function FoodMealDetailsModal({
       }
     }
     return '';
-  }, [productDetails, refetchedProductDetails, productFromSearch, food, localFood, foodLog, meal, t]);
+  }, [
+    productDetails,
+    refetchedProductDetails,
+    productFromSearch,
+    food,
+    localFood,
+    foodLog,
+    meal,
+    t,
+  ]);
 
   // Update serving size when product details or search product load
   useEffect(() => {

@@ -58,9 +58,7 @@ import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
 /** Same grouping as merge: duplicates are multiple logs with the same foodId in one meal. */
-function mealHasDuplicateFoodsByFoodId(
-  mealFoods: { log: NutritionLog }[]
-): boolean {
+function mealHasDuplicateFoodsByFoodId(mealFoods: { log: NutritionLog }[]): boolean {
   const grouped = new Map<string, typeof mealFoods>();
   for (const entry of mealFoods) {
     if (!entry.log.foodId) {

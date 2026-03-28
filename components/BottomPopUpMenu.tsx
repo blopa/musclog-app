@@ -99,7 +99,7 @@ export function BottomPopUpMenu({
   return (
     <BottomPopUp
       visible={visible}
-      onClose={onClose}
+      onClose={isLoading ? undefined : onClose}
       title={title}
       subtitle={subtitle}
       maxHeight={maxHeight}

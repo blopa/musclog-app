@@ -97,7 +97,10 @@ export async function fetchOFFProductByBarcode(
   }
 }
 
-export async function fetchUSDAProductByBarcode(barcode: string, signal?: AbortSignal): Promise<any> {
+export async function fetchUSDAProductByBarcode(
+  barcode: string,
+  signal?: AbortSignal
+): Promise<any> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
 
@@ -119,7 +122,10 @@ export async function fetchUSDAProductByBarcode(barcode: string, signal?: AbortS
   }
 }
 
-export async function fetchMusclogProductByBarcode(barcode: string, signal?: AbortSignal): Promise<any> {
+export async function fetchMusclogProductByBarcode(
+  barcode: string,
+  signal?: AbortSignal
+): Promise<any> {
   const url = `https://api.musclog.app/barcodes/${encodeURIComponent(barcode)}.json`;
   try {
     const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });

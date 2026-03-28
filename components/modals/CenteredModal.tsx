@@ -13,6 +13,8 @@ type CenteredModalProps = {
   children: ReactNode;
   footer?: ReactNode;
   maxWidth?: number;
+  /** When true, backdrop, X, and Android back do not dismiss the modal. */
+  isLoading?: boolean;
 };
 
 export function CenteredModal({
@@ -23,6 +25,7 @@ export function CenteredModal({
   children,
   footer,
   maxWidth,
+  isLoading = false,
 }: CenteredModalProps) {
   const theme = useTheme();
   // Web-specific styles for proper viewport positioning
@@ -47,7 +50,7 @@ export function CenteredModal({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={isLoading ? () => {} : onClose}
       statusBarTranslucent={Platform.OS !== 'web'}
     >
       {/* Root fills the screen; backdrop tap is a sibling behind the sheet so ScrollView inside the sheet can scroll on native (Pressable ancestors steal pan gestures). */}
@@ -55,11 +58,8 @@ export function CenteredModal({
         className="flex-1"
         style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
       >
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View
-          className="flex-1 items-center justify-center p-4"
-          pointerEvents="box-none"
-        >
+        <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
+        <View className="flex-1 items-center justify-center p-4" pointerEvents="box-none">
           <View
             className="w-full overflow-hidden rounded-xl border border-border-dark"
             style={{
@@ -69,7 +69,11 @@ export function CenteredModal({
           >
             {/* Gradient Header */}
             <LinearGradient
-              colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
+              colors={[
+                theme.colors.status.purple40,
+                theme.colors.accent.secondary10,
+                'transparent',
+              ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={{
@@ -84,7 +88,11 @@ export function CenteredModal({
                     <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
                   ) : null}
                 </View>
-                <Pressable className="h-10 w-10 items-center justify-center" onPress={onClose}>
+                <Pressable
+                  className="h-10 w-10 items-center justify-center"
+                  onPress={isLoading ? undefined : onClose}
+                  disabled={isLoading}
+                >
                   <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
@@ -95,7 +103,9 @@ export function CenteredModal({
 
             {/* Footer */}
             {footer ? (
-              <View className="border-t border-border-dark bg-bg-overlay/50 px-4 py-4">{footer}</View>
+              <View className="border-t border-border-dark bg-bg-overlay/50 px-4 py-4">
+                {footer}
+              </View>
             ) : null}
           </View>
         </View>
