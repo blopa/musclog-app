@@ -65,7 +65,8 @@ export function LogMealModal({
 }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { width: windowWidth } = useWindowDimensions();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
   const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
@@ -370,9 +371,11 @@ export function LogMealModal({
           subtitle={`${ingredients.length} ingredients`}
         >
           <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{ maxHeight: 360 }}
-            contentContainerStyle={{ gap: 8 }}
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator
+            style={{ maxHeight: ingredientsScrollMaxHeight, flexGrow: 0 }}
+            contentContainerStyle={{ gap: 8, flexGrow: 0 }}
           >
             {ingredients.map((ingredient, index) => (
               <View
