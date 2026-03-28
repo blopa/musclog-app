@@ -31,10 +31,14 @@ function dirToVarPrefix(dir) {
   return lang + region.charAt(0).toUpperCase() + region.slice(1);
 }
 
-// en-us → enUS (date-fns locale variable name, e.g. enUS, ptBR)
-function dirToDateFnsVar(dir) {
-  const [lang, region] = dir.split('-');
-  return lang + region.toUpperCase();
+// date-fns locale key (e.g. "ru", "en-US", "pt-BR") → JS export name (ru, enUS, ptBR)
+function dateFnsLocaleKeyToVarName(localeKey) {
+  const parts = localeKey.split('-');
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  return parts[0] + parts.slice(1).map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join('');
 }
 
 // access_token → AccessToken, addMeal → AddMeal, food_food_portions → FoodFoodPortions
@@ -48,7 +52,8 @@ function fileNameToSuffix(baseName) {
 function defaultUntranslatedLabel(dir) {
   const tag = dirToLanguageTag(dir);
   try {
-    const dn = new Intl.DisplayNames(['en'], { type: 'language' });
+    // Resolve the name *in* that locale so labels match the language (e.g. русский for ru-RU).
+    const dn = new Intl.DisplayNames([tag], { type: 'language' });
     return dn.of(tag) ?? tag;
   } catch {
     return tag;
@@ -154,13 +159,12 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
     // Build the output sections
     const constantName = (lang) => dirToConstantName(lang.dir);
     const varPrefix = (lang) => dirToVarPrefix(lang.dir);
-    const dateFnsVar = (lang) => dirToDateFnsVar(lang.dir);
 
     // date-fns imports (one per language that has a matching locale)
     const dateFnsImportNames = languages
       .filter((l) => l.dateFnsLocaleName)
       .map((l) => {
-        const dfVar = dateFnsVar(l);
+        const dfVar = dateFnsLocaleKeyToVarName(l.dateFnsLocaleName);
         return `${dfVar} as locale${dfVar.charAt(0).toUpperCase() + dfVar.slice(1)}`;
       });
 
@@ -198,7 +202,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
     const localeMapEntries = languages
       .filter((l) => l.dateFnsLocaleName)
       .map((lang) => {
-        const dfVar = dateFnsVar(lang);
+        const dfVar = dateFnsLocaleKeyToVarName(lang.dateFnsLocaleName);
         const localeAlias = `locale${dfVar.charAt(0).toUpperCase() + dfVar.slice(1)}`;
         return `  [${constantName(lang)}]: ${localeAlias},`;
       });

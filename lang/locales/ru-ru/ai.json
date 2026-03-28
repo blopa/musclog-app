@@ -1,0 +1,15 @@
+{
+  "ai": {
+    "settings": {
+      "notConfigured": "AI is not configured. Please add an API key or connect your account in Settings."
+    },
+    "notConfiguredModal": {
+      "title": "AI isn’t set up yet",
+      "subtitle": "Add an API key or connect an account before you can chat with the coach.",
+      "tipApiKey": "Use OpenAI or Google Gemini from AI settings, or Google sign-in where available.",
+      "tipFeatures": "Once configured, your messages are sent to the model you choose.",
+      "openSettings": "Open AI settings",
+      "notNow": "Not now"
+    }
+  }
+}

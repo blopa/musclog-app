@@ -3,7 +3,7 @@
 
 import 'intl-pluralrules';
 
-import { enUS as localeEnUS, ptBR as localePtBR } from 'date-fns/locale';
+import { enUS as localeEnUS, ptBR as localePtBR, ru as localeRu } from 'date-fns/locale';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
@@ -150,11 +150,83 @@ import ptBrWorkouts from './locales/pt-br/workouts.json';
 import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 import ptBrYourGoogleAuthExpiredReauth from './locales/pt-br/your_google_auth_expired_reauth.json';
+// ru-ru
+import ruRuAccessToken from './locales/ru-ru/access_token.json';
+import ruRuAddMeal from './locales/ru-ru/addMeal.json';
+import ruRuAi from './locales/ru-ru/ai.json';
+import ruRuBodyFat from './locales/ru-ru/body_fat.json';
+import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
+import ruRuCamera from './locales/ru-ru/camera.json';
+import ruRuCoach from './locales/ru-ru/coach.json';
+import ruRuCommon from './locales/ru-ru/common.json';
+import ruRuConnectGoogleAccount from './locales/ru-ru/connectGoogleAccount.json';
+import ruRuCreateWorkout from './locales/ru-ru/createWorkout.json';
+import ruRuCurrentGoalsCard from './locales/ru-ru/currentGoalsCard.json';
+import ruRuCycle from './locales/ru-ru/cycle.json';
+import ruRuDailySummaryCard from './locales/ru-ru/dailySummaryCard.json';
+import ruRuDatePicker from './locales/ru-ru/datePicker.json';
+import ruRuEatingPhaseBadge from './locales/ru-ru/eatingPhaseBadge.json';
+import ruRuEditFitnessDetails from './locales/ru-ru/editFitnessDetails.json';
+import ruRuEditPersonalInfo from './locales/ru-ru/editPersonalInfo.json';
+import ruRuEditScreenInfo from './locales/ru-ru/editScreenInfo.json';
+import ruRuEditSetDetails from './locales/ru-ru/editSetDetails.json';
+import ruRuEmptyStates from './locales/ru-ru/emptyStates.json';
+import ruRuEndWorkout from './locales/ru-ru/endWorkout.json';
+import ruRuErrors from './locales/ru-ru/errors.json';
+import ruRuExercises from './locales/ru-ru/exercises.json';
+import ruRuExerciseTransition from './locales/ru-ru/exerciseTransition.json';
+import ruRuExpiresIn from './locales/ru-ru/expires_in.json';
+import ruRuFocus from './locales/ru-ru/focus.json';
+import ruRuFood from './locales/ru-ru/food.json';
+import ruRuFoodFoodPortions from './locales/ru-ru/food_food_portions.json';
+import ruRuFoodSearch from './locales/ru-ru/foodSearch.json';
+import ruRuFreeTraining from './locales/ru-ru/freeTraining.json';
+import ruRuGoalHistoryCard from './locales/ru-ru/goalHistoryCard.json';
+import ruRuGoalsManagement from './locales/ru-ru/goalsManagement.json';
+import ruRuHealthConnect from './locales/ru-ru/healthConnect.json';
+import ruRuHome from './locales/ru-ru/home.json';
+import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
+import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
+import ruRuMeals from './locales/ru-ru/meals.json';
+import ruRuNotifications from './locales/ru-ru/notifications.json';
+import ruRuNutrition from './locales/ru-ru/nutrition.json';
+import ruRuNutritionLogs from './locales/ru-ru/nutrition_logs.json';
+import ruRuNutritionGoals from './locales/ru-ru/nutritionGoals.json';
+import ruRuOnboarding from './locales/ru-ru/onboarding.json';
+import ruRuOptionsSelector from './locales/ru-ru/optionsSelector.json';
+import ruRuPastWorkoutHistory from './locales/ru-ru/pastWorkoutHistory.json';
+import ruRuPortionSizes from './locales/ru-ru/portionSizes.json';
+import ruRuProfile from './locales/ru-ru/profile.json';
+import ruRuProgress from './locales/ru-ru/progress.json';
+import ruRuReplaceExercise from './locales/ru-ru/replaceExercise.json';
+import ruRuRestOver from './locales/ru-ru/restOver.json';
+import ruRuRestTimer from './locales/ru-ru/restTimer.json';
+import ruRuSessionFeedback from './locales/ru-ru/sessionFeedback.json';
+import ruRuSettings from './locales/ru-ru/settings.json';
+import ruRuSnackbar from './locales/ru-ru/snackbar.json';
+import ruRuStartWorkout from './locales/ru-ru/startWorkout.json';
+import ruRuTimePicker from './locales/ru-ru/timePicker.json';
+import ruRuTokenType from './locales/ru-ru/token_type.json';
+import ruRuUserMenu from './locales/ru-ru/userMenu.json';
+import ruRuWorkout from './locales/ru-ru/workout.json';
+import ruRuWorkoutLogSets from './locales/ru-ru/workout_log_sets.json';
+import ruRuWorkoutLogs from './locales/ru-ru/workout_logs.json';
+import ruRuWorkoutTemplateSets from './locales/ru-ru/workout_template_sets.json';
+import ruRuWorkoutDetail from './locales/ru-ru/workoutDetail.json';
+import ruRuWorkoutDetails from './locales/ru-ru/workoutDetails.json';
+import ruRuWorkoutHistory from './locales/ru-ru/workoutHistory.json';
+import ruRuWorkoutLog from './locales/ru-ru/workoutLog.json';
+import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
+import ruRuWorkouts from './locales/ru-ru/workouts.json';
+import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
+import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
+import ruRuYourGoogleAuthExpiredReauth from './locales/ru-ru/your_google_auth_expired_reauth.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
 export const EN_US = 'en-US';
 export const PT_BR = 'pt-BR';
+export const RU_RU = 'ru-RU';
 
 const resources = {
   [EN_US]: {
@@ -307,6 +379,81 @@ const resources = {
       ...ptBrYourGoogleAuthExpiredReauth,
     },
   },
+  [RU_RU]: {
+    translation: {
+      ...untranslated,
+      ...ruRuAccessToken,
+      ...ruRuAddMeal,
+      ...ruRuAi,
+      ...ruRuBodyMetrics,
+      ...ruRuBodyFat,
+      ...ruRuCamera,
+      ...ruRuCoach,
+      ...ruRuCommon,
+      ...ruRuConnectGoogleAccount,
+      ...ruRuCreateWorkout,
+      ...ruRuCurrentGoalsCard,
+      ...ruRuCycle,
+      ...ruRuDailySummaryCard,
+      ...ruRuDatePicker,
+      ...ruRuEatingPhaseBadge,
+      ...ruRuEditFitnessDetails,
+      ...ruRuEditPersonalInfo,
+      ...ruRuEditScreenInfo,
+      ...ruRuEditSetDetails,
+      ...ruRuEmptyStates,
+      ...ruRuEndWorkout,
+      ...ruRuErrors,
+      ...ruRuExerciseTransition,
+      ...ruRuExercises,
+      ...ruRuExpiresIn,
+      ...ruRuFocus,
+      ...ruRuFood,
+      ...ruRuFoodSearch,
+      ...ruRuFoodFoodPortions,
+      ...ruRuFreeTraining,
+      ...ruRuGoalHistoryCard,
+      ...ruRuGoalsManagement,
+      ...ruRuHealthConnect,
+      ...ruRuHome,
+      ...ruRuLogSetPerformance,
+      ...ruRuMealFoods,
+      ...ruRuMeals,
+      ...ruRuNotifications,
+      ...ruRuNutrition,
+      ...ruRuNutritionGoals,
+      ...ruRuNutritionLogs,
+      ...ruRuOnboarding,
+      ...ruRuOptionsSelector,
+      ...ruRuPastWorkoutHistory,
+      ...ruRuPortionSizes,
+      ...ruRuProfile,
+      ...ruRuProgress,
+      ...ruRuReplaceExercise,
+      ...ruRuRestOver,
+      ...ruRuRestTimer,
+      ...ruRuSessionFeedback,
+      ...ruRuSettings,
+      ...ruRuSnackbar,
+      ...ruRuStartWorkout,
+      ...ruRuTimePicker,
+      ...ruRuTokenType,
+      ...ruRuUserMenu,
+      ...ruRuWorkout,
+      ...ruRuWorkoutDetail,
+      ...ruRuWorkoutDetails,
+      ...ruRuWorkoutHistory,
+      ...ruRuWorkoutLog,
+      ...ruRuWorkoutOptions,
+      ...ruRuWorkoutSession,
+      ...ruRuWorkoutSummary,
+      ...ruRuWorkoutLogSets,
+      ...ruRuWorkoutLogs,
+      ...ruRuWorkoutTemplateSets,
+      ...ruRuWorkouts,
+      ...ruRuYourGoogleAuthExpiredReauth,
+    },
+  },
 };
 
 export type LanguageKeys = keyof typeof resources;
@@ -314,6 +461,7 @@ export type LanguageKeys = keyof typeof resources;
 export const LOCALE_MAP = {
   [EN_US]: localeEnUS,
   [PT_BR]: localePtBR,
+  [RU_RU]: localeRu,
 };
 
 export const AVAILABLE_LANGUAGES = Object.keys(resources) as LanguageKeys[];
@@ -336,6 +484,7 @@ i18n.use(initReactI18next).init({
 export const languageLabels: Record<string, string> = {
   [EN_US]: i18n.t('untranslated.en-us'),
   [PT_BR]: i18n.t('untranslated.pt-br'),
+  [RU_RU]: i18n.t('untranslated.ru-ru'),
 };
 
 export default i18n;

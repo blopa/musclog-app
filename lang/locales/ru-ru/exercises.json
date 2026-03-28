@@ -1,0 +1,146 @@
+{
+  "exercises": {
+    "title": "Exercises",
+    "searchPlaceholder": "Search exercises...",
+    "muscleGroups": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "abdomen": "Abdomen",
+      "glutes": "Glutes",
+      "fullBody": "Full Body",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "forearms": "Forearms",
+      "abs": "Abs",
+      "quads": "Quads",
+      "hamstrings": "Hamstrings",
+      "calves": "Calves",
+      "full_body": "Full Body",
+      "cardio": "Cardio",
+      "other": "Other"
+    },
+    "typeTags": {
+      "bodyweight": "BODYWEIGHT",
+      "equipment": "EQUIPMENT"
+    },
+    "emptyGroupMessage": "Tap to view {{muscleGroup}} exercises.",
+    "createExercise": {
+      "title": "Create exercise",
+      "imagePermissionDenied": "Photo library access is required",
+      "imageSelected": "Image selected",
+      "videoURLSet": "URL set",
+      "description": "Add a new exercise to your library",
+      "exerciseName": "Exercise Name",
+      "exerciseNamePlaceholder": "e.g. Incline Dumbbell Press",
+      "muscleTarget": "Muscle Target",
+      "primaryMuscleGroup": "Primary Muscle Group",
+      "secondaryMuscles": "Secondary Muscles",
+      "selectPrimaryMuscle": "Select primary muscle",
+      "bodyweightOnly": "Bodyweight Only",
+      "bodyweightOnlySubtitle": "This exercise doesn't require equipment",
+      "addVisuals": "Add Visuals",
+      "uploadImage": "Upload Image",
+      "videoURL": "Video URL",
+      "createButton": "Create Exercise",
+      "nameRequired": "Exercise name is required",
+      "primaryMuscleRequired": "Please select a primary muscle group",
+      "createSuccess": "Exercise created successfully",
+      "createError": "Failed to create exercise. Please try again.",
+      "muscleGroups": {
+        "primary": {
+          "abdomen": "Abdomen",
+          "glutes": "Glutes",
+          "chest": "Chest",
+          "shoulders": "Shoulders",
+          "back": "Back",
+          "legs": "Legs",
+          "arms": "Arms",
+          "core": "Core"
+        },
+        "secondary": {
+          "chest": "Chest",
+          "back": "Back",
+          "legs": "Legs",
+          "shoulders": "Shoulders",
+          "arms": "Arms",
+          "core": "Core",
+          "abdomen": "Abdomen",
+          "triceps": "Triceps",
+          "biceps": "Biceps",
+          "abs": "Abs",
+          "forearms": "Forearms",
+          "traps": "Traps",
+          "glutes": "Glutes"
+        }
+      }
+    },
+    "viewExercise": {
+      "watchTechnique": "WATCH TECHNIQUE",
+      "primaryMuscle": "Primary Muscle",
+      "equipment": "Equipment",
+      "mechanic": "Mechanic",
+      "personalBest": "Personal Best",
+      "avgFrequency": "Avg. Frequency",
+      "workoutsUsingThis": "Workouts Using This",
+      "templates": "TEMPLATES",
+      "exerciseOptions": "Exercise Options",
+      "editExercise": "Edit Exercise",
+      "editExerciseDescription": "Modify exercise details",
+      "share": "Share",
+      "shareDescription": "Share this exercise",
+      "duplicate": "Duplicate",
+      "duplicateDescription": "Create a copy of this exercise",
+      "delete": "Delete",
+      "deleteDescription": "Remove this exercise permanently",
+      "duplicateSuccess": "Exercise duplicated",
+      "couldNotOpenLink": "Could not open link",
+      "usedInTemplatesShort": "Template"
+    },
+    "manageExerciseData": {
+      "deleteExerciseWarning": "Are you sure you want to delete this exercise? This action cannot be undone.",
+      "usedInLogs": "Used in {{count}} workout log",
+      "usedInTemplates": "Used in {{count}} template",
+      "title": "Manage Exercise Data",
+      "searchPlaceholder": "Search exercises...",
+      "noExercises": "No exercises yet",
+      "noExercisesDesc": "Create custom exercises to see them here",
+      "endOfHistory": "End of exercise history",
+      "exerciseOptions": "Exercise Options",
+      "editExercise": "Edit Exercise",
+      "editExerciseDesc": "Modify exercise details",
+      "duplicateExercise": "Duplicate Exercise",
+      "duplicateExerciseDesc": "Create a copy of this exercise",
+      "deleteExercise": "Delete Exercise",
+      "deleteExerciseDesc": "Remove this exercise permanently",
+      "detailFormat": "{{muscleGroup}} • {{equipment}}",
+      "unknownExercise": "Unknown Exercise"
+    },
+    "equipmentTypes": {
+      "medicine_ball": "Medicine Ball",
+      "smith_machine": "Smith Machine",
+      "dumbbell": "Dumbbell",
+      "barbell": "Barbell",
+      "bodyweight": "Bodyweight",
+      "machine": "Machine",
+      "cable": "Cable",
+      "kettlebell": "Kettlebell",
+      "resistance_band": "Resistance Band",
+      "other": "Other"
+    },
+    "mechanicTypes": {
+      "compound": "Compound",
+      "isolation": "Isolation"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "lbs"
+    },
+    "frequency": {
+      "perWeek": "{{value}}x / wk"
+    }
+  }
+}

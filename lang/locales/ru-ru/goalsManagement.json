@@ -1,0 +1,53 @@
+{
+  "goalsManagement": {
+    "title": "Goals Management",
+    "subtitle": "Track your progress and history.",
+    "currentGoals": "CURRENT GOALS",
+    "active": "Active",
+    "history": "GOALS HISTORY",
+    "newGoal": "New Goal",
+    "createGoalDesc": "Set new nutrition targets and macros",
+    "createCheckin": "Create Check-in",
+    "createCheckinDesc": "Add a new nutrition check-in entry",
+    "emptyStateMessage": "Create a new goal to get started",
+    "editGoal": "Edit",
+    "deleteGoalAction": "Delete",
+    "deleteGoal": "Delete Goal",
+    "deleteGoalMessage": "This goal will be permanently removed from your history.",
+    "manageGoalData": {
+      "deleteGoalWarning": "Are you sure you want to delete this goal? This action cannot be undone.",
+      "title": "Nutrition goals",
+      "searchPlaceholder": "Search goals...",
+      "noGoals": "No goals yet",
+      "noGoalsDesc": "Set nutrition goals to see them here",
+      "endOfHistory": "End of goals history",
+      "goalOptions": "Goal options",
+      "editGoal": "Edit goal",
+      "editGoalDesc": "Change calories, macros, and targets",
+      "duplicateGoal": "Duplicate goal",
+      "duplicateGoalDesc": "Create a copy to use as a new goal",
+      "regenerateCheckins": "Regenerate check-ins",
+      "regenerateCheckinsDesc": "Delete and recreate check-ins for this goal",
+      "deleteGoal": "Delete goal",
+      "deleteGoalDesc": "Remove this goal from history",
+      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} {{unit}}",
+      "phaseCut": "Cut",
+      "phaseMaintain": "Maintain",
+      "phaseBulk": "Bulk"
+    },
+    "manageCheckinData": {
+      "title": "Nutrition Check-ins",
+      "searchPlaceholder": "Search check-ins...",
+      "noCheckins": "No check-ins yet",
+      "noCheckinsDesc": "Check-ins are created when you set up an AI-calculated nutrition goal",
+      "endOfHistory": "All check-ins loaded",
+      "checkinOptions": "Check-in options",
+      "editCheckin": "Edit check-in",
+      "editCheckinDesc": "Change check-in targets",
+      "deleteCheckin": "Delete check-in",
+      "deleteCheckinDesc": "Permanently remove this check-in",
+      "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
+      "checkinDate": "Check-in Date"
+    }
+  }
+}
