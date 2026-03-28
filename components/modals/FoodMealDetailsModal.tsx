@@ -608,14 +608,14 @@ export function FoodMealDetailsModal({
       if ((productDetails as any).source === 'musclog') {
         const p = product as any;
         return {
-          calories: p.calories ?? 0,
-          protein: p.protein ?? 0,
-          carbs: p.carbs ?? 0,
-          fat: p.fat ?? 0,
-          fiber: p.fiber ?? 0,
-          sugar: p.sugar ?? 0,
-          saturatedFat: p.saturatedFat ?? 0,
-          sodium: p.sodium ?? 0,
+          calories: parseFloat(p.kcal ?? p.calories ?? 0) || 0,
+          protein: parseFloat(p.protein ?? 0) || 0,
+          carbs: parseFloat(p.carbs ?? 0) || 0,
+          fat: parseFloat(p.fat ?? 0) || 0,
+          fiber: parseFloat(p.fiber ?? 0) || 0,
+          sugar: parseFloat(p.other_nutrients?.sugar ?? p.sugar ?? 0) || 0,
+          saturatedFat: parseFloat(p.other_nutrients?.saturated_fat ?? p.saturatedFat ?? 0) || 0,
+          sodium: parseFloat(p.other_nutrients?.sodium ?? p.sodium ?? 0) || 0,
         };
       }
 
