@@ -949,10 +949,10 @@ export function FoodMealDetailsModal({
       return {
         name: getFoodMealName(),
         category: getProductCategory(),
-      calories: Math.round(mealNutrients.calories * mealScaleFactor * 100) / 100,
-      protein: Math.round(mealNutrients.protein * mealScaleFactor * 100) / 100,
-      carbs: Math.round(mealNutrients.carbs * mealScaleFactor * 100) / 100,
-      fat: Math.round(mealNutrients.fat * mealScaleFactor * 100) / 100,
+        calories: Math.round(mealNutrients.calories * mealScaleFactor * 100) / 100,
+        protein: Math.round(mealNutrients.protein * mealScaleFactor * 100) / 100,
+        carbs: Math.round(mealNutrients.carbs * mealScaleFactor * 100) / 100,
+        fat: Math.round(mealNutrients.fat * mealScaleFactor * 100) / 100,
       };
     }
 

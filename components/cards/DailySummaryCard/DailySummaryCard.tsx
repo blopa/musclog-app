@@ -52,7 +52,7 @@ export function DailySummaryCard({
     fatsStatus,
   } = calculateDailySummaryMetrics(calories, macros);
 
-  const formatVal = (v: number) => Math.round(v * 100) / 100;
+  const formatVal = (v: number) => Math.round(v);
 
   return (
     <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
@@ -173,7 +173,7 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                      <Text style={{ fontWeight: '700' }}>{formatVal(macros.protein.value)}</Text>
+                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.protein.value)}</Text>
                     <Text style={{ fontWeight: '400' }}>{`/${macros.protein.goal}g`}</Text>
                   </Text>
                 ) : null}

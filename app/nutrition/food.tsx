@@ -857,10 +857,18 @@ export default function FoodScreen() {
                 {/* Breakfast Section */}
                 <MealSection
                   title={t('food.meals.breakfast')}
-                  totalCalories={Math.round((dailyNutrients?.byMealType?.breakfast?.calories || 0) * 100) / 100}
-                  totalProtein={Math.round((dailyNutrients?.byMealType?.breakfast?.protein || 0) * 100) / 100}
-                  totalCarbs={Math.round((dailyNutrients?.byMealType?.breakfast?.carbs || 0) * 100) / 100}
-                  totalFat={Math.round((dailyNutrients?.byMealType?.breakfast?.fat || 0) * 100) / 100}
+                  totalCalories={
+                    Math.round((dailyNutrients?.byMealType?.breakfast?.calories || 0) * 100) / 100
+                  }
+                  totalProtein={
+                    Math.round((dailyNutrients?.byMealType?.breakfast?.protein || 0) * 100) / 100
+                  }
+                  totalCarbs={
+                    Math.round((dailyNutrients?.byMealType?.breakfast?.carbs || 0) * 100) / 100
+                  }
+                  totalFat={
+                    Math.round((dailyNutrients?.byMealType?.breakfast?.fat || 0) * 100) / 100
+                  }
                   onAddFood={() => handleAddFoodToMeal('breakfast')}
                   menuButton={
                     mealsByType.breakfast.length > 0 ? (
@@ -892,9 +900,15 @@ export default function FoodScreen() {
                 {/* Lunch Section */}
                 <MealSection
                   title={t('food.meals.lunch')}
-                  totalCalories={Math.round((dailyNutrients?.byMealType?.lunch?.calories || 0) * 100) / 100}
-                  totalProtein={Math.round((dailyNutrients?.byMealType?.lunch?.protein || 0) * 100) / 100}
-                  totalCarbs={Math.round((dailyNutrients?.byMealType?.lunch?.carbs || 0) * 100) / 100}
+                  totalCalories={
+                    Math.round((dailyNutrients?.byMealType?.lunch?.calories || 0) * 100) / 100
+                  }
+                  totalProtein={
+                    Math.round((dailyNutrients?.byMealType?.lunch?.protein || 0) * 100) / 100
+                  }
+                  totalCarbs={
+                    Math.round((dailyNutrients?.byMealType?.lunch?.carbs || 0) * 100) / 100
+                  }
                   totalFat={Math.round((dailyNutrients?.byMealType?.lunch?.fat || 0) * 100) / 100}
                   onAddFood={() => handleAddFoodToMeal('lunch')}
                   menuButton={
@@ -927,9 +941,15 @@ export default function FoodScreen() {
                 {/* Dinner Section */}
                 <MealSection
                   title={t('food.meals.dinner')}
-                  totalCalories={Math.round((dailyNutrients?.byMealType?.dinner?.calories || 0) * 100) / 100}
-                  totalProtein={Math.round((dailyNutrients?.byMealType?.dinner?.protein || 0) * 100) / 100}
-                  totalCarbs={Math.round((dailyNutrients?.byMealType?.dinner?.carbs || 0) * 100) / 100}
+                  totalCalories={
+                    Math.round((dailyNutrients?.byMealType?.dinner?.calories || 0) * 100) / 100
+                  }
+                  totalProtein={
+                    Math.round((dailyNutrients?.byMealType?.dinner?.protein || 0) * 100) / 100
+                  }
+                  totalCarbs={
+                    Math.round((dailyNutrients?.byMealType?.dinner?.carbs || 0) * 100) / 100
+                  }
                   totalFat={Math.round((dailyNutrients?.byMealType?.dinner?.fat || 0) * 100) / 100}
                   onAddFood={() => handleAddFoodToMeal('dinner')}
                   menuButton={
@@ -962,9 +982,15 @@ export default function FoodScreen() {
                 {/* Snack Section */}
                 <MealSection
                   title={t('food.meals.snacks')}
-                  totalCalories={Math.round((dailyNutrients?.byMealType?.snack?.calories || 0) * 100) / 100}
-                  totalProtein={Math.round((dailyNutrients?.byMealType?.snack?.protein || 0) * 100) / 100}
-                  totalCarbs={Math.round((dailyNutrients?.byMealType?.snack?.carbs || 0) * 100) / 100}
+                  totalCalories={
+                    Math.round((dailyNutrients?.byMealType?.snack?.calories || 0) * 100) / 100
+                  }
+                  totalProtein={
+                    Math.round((dailyNutrients?.byMealType?.snack?.protein || 0) * 100) / 100
+                  }
+                  totalCarbs={
+                    Math.round((dailyNutrients?.byMealType?.snack?.carbs || 0) * 100) / 100
+                  }
                   totalFat={Math.round((dailyNutrients?.byMealType?.snack?.fat || 0) * 100) / 100}
                   onAddFood={() => handleAddFoodToMeal('snack')}
                   menuButton={
@@ -997,9 +1023,15 @@ export default function FoodScreen() {
                 {/* Other Section */}
                 <MealSection
                   title={t('food.meals.other')}
-                  totalCalories={Math.round((dailyNutrients?.byMealType?.other?.calories || 0) * 100) / 100}
-                  totalProtein={Math.round((dailyNutrients?.byMealType?.other?.protein || 0) * 100) / 100}
-                  totalCarbs={Math.round((dailyNutrients?.byMealType?.other?.carbs || 0) * 100) / 100}
+                  totalCalories={
+                    Math.round((dailyNutrients?.byMealType?.other?.calories || 0) * 100) / 100
+                  }
+                  totalProtein={
+                    Math.round((dailyNutrients?.byMealType?.other?.protein || 0) * 100) / 100
+                  }
+                  totalCarbs={
+                    Math.round((dailyNutrients?.byMealType?.other?.carbs || 0) * 100) / 100
+                  }
                   totalFat={Math.round((dailyNutrients?.byMealType?.other?.fat || 0) * 100) / 100}
                   onAddFood={() => handleAddFoodToMeal('other')}
                   menuButton={

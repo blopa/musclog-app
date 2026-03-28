@@ -56,7 +56,9 @@ export function NutritionConfirmationModal({
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
-          <Text className="text-xs font-medium text-text-primary">{formatValue(item.protein)}g</Text>
+          <Text className="text-xs font-medium text-text-primary">
+            {formatValue(item.protein)}g
+          </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
@@ -69,7 +71,9 @@ export function NutritionConfirmationModal({
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
-            <Text className="text-xs font-medium text-text-primary">{formatValue(item.fiber)}g</Text>
+            <Text className="text-xs font-medium text-text-primary">
+              {formatValue(item.fiber)}g
+            </Text>
           </View>
         ) : null}
       </View>
