@@ -255,19 +255,22 @@ export function DatePickerModal({
                   { label: t('datePicker.today'), date: new Date() },
                   { label: t('datePicker.tomorrow'), date: addDays(new Date(), 1) },
                 ]
-              ).map((option, index) => (
-                <Button
-                  key={index}
-                  label={option.label}
-                  variant="secondary"
-                  size="sm"
-                  width="auto"
-                  onPress={() => {
-                    setTempSelectedDate(option.date);
-                    setCurrentMonth(startOfMonth(option.date));
-                  }}
-                />
-              ))}
+              ).map((option, index) => {
+                const isQuickPickActive = isSameDay(tempSelectedDate, option.date);
+                return (
+                  <Button
+                    key={index}
+                    label={option.label}
+                    variant={isQuickPickActive ? 'accent' : 'secondary'}
+                    size="sm"
+                    width="auto"
+                    onPress={() => {
+                      setTempSelectedDate(option.date);
+                      setCurrentMonth(startOfMonth(option.date));
+                    }}
+                  />
+                );
+              })}
             </ScrollView>
           </View>
         </ScrollView>
