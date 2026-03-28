@@ -184,6 +184,8 @@ const MealMacrosSummary = ({
   const carbsProgress = Math.min((macros.carbs / 150) * 100, 100);
   const fatProgress = Math.min((macros.fat / 80) * 100, 100);
 
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
+
   return (
     <View
       style={{
@@ -249,7 +251,7 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
               }}
             >
-              {Math.round(calories)} {t('common.kcal')}
+              {formatVal(calories)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -279,19 +281,19 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            value={`${Math.round(macros.protein)}g`}
+            value={`${formatVal(macros.protein)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            value={`${Math.round(macros.carbs)}g`}
+            value={`${formatVal(macros.carbs)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            value={`${Math.round(macros.fat)}g`}
+            value={`${formatVal(macros.fat)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}
           />
@@ -326,6 +328,8 @@ export function CreateMealModal({
   const [mealAmountGrams, setMealAmountGrams] = useState(0);
 
   const isQuickTrack = mode === 'quickTrack';
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
+
   const { ingredients, setIngredients, removedMealFoodIdsRef } = useEditMealIngredients(
     isQuickTrack ? undefined : meal
   );
@@ -726,7 +730,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {Math.round(item.calories)} {t('common.kcal')}
+                        {formatVal(item.calories)} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>

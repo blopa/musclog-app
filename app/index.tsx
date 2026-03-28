@@ -401,11 +401,24 @@ export default function HomeScreen() {
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : nutritionGoal ? (
             <DailySummaryCard
-              calories={dailyCalories}
+              calories={{
+                consumed: Math.round(dailyCalories.consumed * 100) / 100,
+                remaining: Math.round(dailyCalories.remaining * 100) / 100,
+                goal: dailyCalories.goal,
+              }}
               macros={{
-                protein: dailyMacros.protein,
-                carbs: dailyMacros.carbs,
-                fats: dailyMacros.fat,
+                protein: {
+                  value: Math.round(dailyMacros.protein.value * 100) / 100,
+                  goal: dailyMacros.protein.goal,
+                },
+                carbs: {
+                  value: Math.round(dailyMacros.carbs.value * 100) / 100,
+                  goal: dailyMacros.carbs.goal,
+                },
+                fats: {
+                  value: Math.round(dailyMacros.fat.value * 100) / 100,
+                  goal: dailyMacros.fat.goal,
+                },
               }}
               menuButton={
                 <MenuButton
@@ -493,10 +506,10 @@ export default function HomeScreen() {
                   key={entry.log.id}
                   variant="compact"
                   name={entry.displayName}
-                  calories={Math.round(entry.nutrients.calories)}
-                  protein={Math.round(entry.nutrients.protein)}
-                  carbs={Math.round(entry.nutrients.carbs)}
-                  fat={Math.round(entry.nutrients.fat)}
+                  calories={entry.nutrients.calories}
+                  protein={entry.nutrients.protein}
+                  carbs={entry.nutrients.carbs}
+                  fat={entry.nutrients.fat}
                   portion={entry.gramWeight}
                   image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
                   mealType={entry.log.type}

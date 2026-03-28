@@ -68,13 +68,14 @@ export function RecentNutritionHistoryModal({
             ) : foods.length > 0 ? (
               <>
                 {foods.map((food) => {
+                  const formatVal = (v: number) => Math.round(v * 100) / 100;
                   const foodItem: FoodItem = {
                     ...food,
                     id: food.id,
                     name: food.name ?? '',
                     description: t('foodSearch.foodDescriptionPer100g', {
                       brand: food.brand || t('foodSearch.customFoodLabel'),
-                      calories: Math.round(food.calories ?? 0),
+                      calories: formatVal(food.calories ?? 0),
                     }),
                     brand: food.brand,
                     serving_size: portion100gName,

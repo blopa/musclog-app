@@ -34,6 +34,7 @@ const getSourceText = (source: 'openfood' | 'usda' | 'ai', t: (key: string) => s
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
   const { width: windowWidth } = useWindowDimensions();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
@@ -61,7 +62,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           </View>
           <View className="items-end">
             <Text className="text-4xl font-black tracking-tight text-accent-primary">
-              {food.calories}
+              {formatVal(food.calories)}
             </Text>
             <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('food.common.kcal')}
@@ -106,21 +107,21 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.protein}g</Text>
+                <Text className="text-xl font-bold text-text-primary">{formatVal(food.protein)}g</Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.carbs}g</Text>
+                <Text className="text-xl font-bold text-text-primary">{formatVal(food.carbs)}g</Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
-                <Text className="text-xl font-bold text-text-primary">{food.fat}g</Text>
+                <Text className="text-xl font-bold text-text-primary">{formatVal(food.fat)}g</Text>
               </View>
             </View>
           </View>
@@ -145,7 +146,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.protein')} ({Math.round(proteinPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.protein}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">{formatVal(food.protein)}g</Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
@@ -154,7 +155,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.fat')} ({Math.round(fatPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.fat}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">{formatVal(food.fat)}g</Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
@@ -163,7 +164,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                       {t('food.macros.carbs')} ({Math.round(carbsPercent)}%)
                     </Text>
                   </View>
-                  <Text className="text-xs font-bold text-text-primary">{food.carbs}g</Text>
+                  <Text className="text-xs font-bold text-text-primary">{formatVal(food.carbs)}g</Text>
                 </View>
               </View>
             </View>

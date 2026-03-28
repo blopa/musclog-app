@@ -295,14 +295,15 @@ export default function SmartCameraModal({
             // Normalize: if the AI matched a DB food (foodId), replace LLM estimates
             // with the actual DB macros scaled to grams so the preview matches what's logged.
             const [normalized] = await NutritionService.normalizeAiMealIngredients([result]);
+            const formatVal = (v: number) => Math.round(v * 100) / 100;
             showSnackbar(
               'success',
               t('food.aiCamera.analysisSuccess', {
                 name: normalized.name,
-                kcal: Math.round(normalized.kcal),
-                protein: normalized.protein,
-                carbs: normalized.carbs,
-                fat: normalized.fat,
+                kcal: formatVal(normalized.kcal),
+                protein: formatVal(normalized.protein),
+                carbs: formatVal(normalized.carbs),
+                fat: formatVal(normalized.fat),
               })
             );
 

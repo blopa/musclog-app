@@ -217,11 +217,12 @@ type MealSearchCardProps = {
 function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(mealData.protein),
-    carbs: Math.round(mealData.carbs),
-    fat: Math.round(mealData.fat),
+    protein: formatVal(mealData.protein),
+    carbs: formatVal(mealData.carbs),
+    fat: formatVal(mealData.fat),
   });
 
   return (
@@ -257,7 +258,7 @@ function MealSearchCard({ mealData, onAddPress }: MealSearchCardProps) {
           </Text>
         ) : null}
         <Text className="mt-0.5 text-sm text-text-secondary">
-          {Math.round(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
+          {formatVal(mealData.calories)} {t('food.common.kcal')} • {macroSummary}
         </Text>
       </View>
 
@@ -541,6 +542,8 @@ export function FoodSearchModal({
           setSuggestedTitle(t(titleKey));
         }
 
+        const formatVal = (v: number) => Math.round(v * 100) / 100;
+
         // Map to FoodItem
         const mapped = foodsArr.map(
           (f) =>
@@ -549,7 +552,7 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: t('foodSearch.foodDescriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: Math.round(f.calories ?? 0),
+                calories: formatVal(f.calories ?? 0),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -599,6 +602,7 @@ export function FoodSearchModal({
 
   // Memoized mapping of favorite foods to FoodItem format
   const favoriteFoods = useMemo(() => {
+    const formatVal = (v: number) => Math.round(v * 100) / 100;
     return favoriteFoodsRaw.map(
       (f) =>
         ({
@@ -606,7 +610,7 @@ export function FoodSearchModal({
           name: f.name ?? '',
           description: t('foodSearch.foodDescriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: Math.round(f.calories ?? 0),
+            calories: formatVal(f.calories ?? 0),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -1361,13 +1365,14 @@ export function FoodSearchModal({
                       <View className="gap-1.5">
                         {recentFoods.length > 0 ? (
                           recentFoods.map((food) => {
+                      const formatVal = (v: number) => Math.round(v * 100) / 100;
                             const foodItem: FoodItem = {
                               ...food,
                               id: food.id,
                               name: food.name ?? '',
                               description: t('foodSearch.foodDescriptionPer100g', {
                                 brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: Math.round(food.calories ?? 0),
+                          calories: formatVal(food.calories ?? 0),
                               }),
                               brand: food.brand,
                               serving_size: portion100gName,

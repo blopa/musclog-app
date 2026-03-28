@@ -26,6 +26,7 @@ const SEE_ALL_CARD_WIDTH = 88;
 export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
   const { width: screenWidth } = useWindowDimensions();
 
   if (!meals || meals.length === 0) {
@@ -93,7 +94,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                   className="text-base font-bold leading-none"
                   style={{ color: theme.colors.text.primary }}
                 >
-                  {meal.calories}
+                  {formatVal(meal.calories)}
                 </Text>
                 <Text
                   className="text-[10px] font-medium leading-none"
@@ -115,7 +116,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.accent.primary }}
                   >
-                    {meal.protein}g
+                    {formatVal(meal.protein)}g
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -129,7 +130,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.indigo }}
                   >
-                    {meal.carbs}g
+                    {formatVal(meal.carbs)}g
                   </Text>
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
@@ -143,7 +144,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                     className="text-[10px] font-bold leading-none"
                     style={{ color: theme.colors.status.warning }}
                   >
-                    {meal.fats}g
+                    {formatVal(meal.fats)}g
                   </Text>
                 </View>
               </View>

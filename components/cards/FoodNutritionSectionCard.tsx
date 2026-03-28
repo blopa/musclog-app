@@ -46,6 +46,7 @@ export function FoodNutritionSectionCard({
   const theme = useTheme();
   const { t } = useTranslation();
 
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
   const scaleFactor = servingSize / 100;
 
   const showAdditionalNutrition =
@@ -104,7 +105,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {Math.round(nutritionalData.fiber * scaleFactor * 10) / 10}g
+                  {formatVal(nutritionalData.fiber * scaleFactor)}g
                 </Text>
               </View>
             ) : null}
@@ -112,7 +113,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.sugars')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {Math.round((nutritionalData.sugar ?? 0) * scaleFactor * 10) / 10}g
+                  {formatVal((nutritionalData.sugar ?? 0) * scaleFactor)}g
                 </Text>
               </View>
             ) : null}
@@ -122,7 +123,7 @@ export function FoodNutritionSectionCard({
                   {t('food.foodDetails.saturatedFat')}
                 </Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {Math.round(nutritionalData.saturatedFat * scaleFactor * 10) / 10}g
+                  {formatVal(nutritionalData.saturatedFat * scaleFactor)}g
                 </Text>
               </View>
             ) : null}
@@ -130,7 +131,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {Math.round(nutritionalData.sodium * scaleFactor * 1000) / 1000}g
+                  {formatVal(nutritionalData.sodium * scaleFactor)}g
                 </Text>
               </View>
             ) : null}

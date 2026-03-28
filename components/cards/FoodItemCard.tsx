@@ -106,10 +106,11 @@ export const FoodItemCard = memo(function FoodItemCard({
 
   const MealIcon = getMealIcon();
 
-  const p = Math.round(protein ?? 0);
-  const c = Math.round(carbs ?? 0);
-  const f = Math.round(fat ?? 0);
-  const g = Math.round(gramsToDisplay(portion ?? 0, units));
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
+  const p = formatVal(protein ?? 0);
+  const c = formatVal(carbs ?? 0);
+  const f = formatVal(fat ?? 0);
+  const g = formatVal(gramsToDisplay(portion ?? 0, units));
   const massUnit = getMassUnitLabel(units);
 
   const handleImageError = () => {
@@ -157,7 +158,7 @@ export const FoodItemCard = memo(function FoodItemCard({
           ) : null}
           <View className="flex-row items-center gap-3">
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
-            <MacroItem icon={Flame} value={calories} label={t('food.common.kcal')} />
+            <MacroItem icon={Flame} value={formatVal(calories)} label={t('food.common.kcal')} />
           </View>
           {variant === 'default' ? (
             <View className="flex-row items-center gap-3">

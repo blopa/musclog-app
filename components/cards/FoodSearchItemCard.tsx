@@ -25,11 +25,12 @@ type FoodSearchItemCardProps = {
 export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const formatVal = (v: number) => Math.round(v * 100) / 100;
 
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: Math.round(food.protein ?? 0),
-    carbs: Math.round(food.carbs ?? 0),
-    fat: Math.round(food.fat ?? 0),
+    protein: formatVal(food.protein ?? 0),
+    carbs: formatVal(food.carbs ?? 0),
+    fat: formatVal(food.fat ?? 0),
   });
 
   return (
