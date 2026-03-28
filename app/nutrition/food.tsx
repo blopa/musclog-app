@@ -49,6 +49,22 @@ import { getMealCritique } from '../../utils/coachAI';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
+/** Same grouping as merge: duplicates are multiple logs with the same foodId in one meal. */
+function mealHasDuplicateFoodsByFoodId(
+  mealFoods: { log: NutritionLog }[]
+): boolean {
+  const grouped = new Map<string, typeof mealFoods>();
+  for (const entry of mealFoods) {
+    if (!entry.log.foodId) {
+      continue;
+    }
+    const existing = grouped.get(entry.log.foodId) || [];
+    existing.push(entry);
+    grouped.set(entry.log.foodId, existing);
+  }
+  return [...grouped.values()].some((g) => g.length > 1);
+}
+
 const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
   switch (mode) {
     case 'move':
@@ -453,19 +469,7 @@ export default function FoodScreen() {
     }
 
     const mealFoods = mealsByType[selectedMealForMenu] || [];
-    const grouped = new Map<string, typeof mealFoods>();
-    for (const entry of mealFoods) {
-      if (!entry.log.foodId) {
-        continue;
-      }
-
-      const existing = grouped.get(entry.log.foodId) || [];
-      existing.push(entry);
-      grouped.set(entry.log.foodId, existing);
-    }
-
-    const hasDuplicates = [...grouped.values()].some((g) => g.length > 1);
-    if (!hasDuplicates) {
+    if (!mealHasDuplicateFoodsByFoodId(mealFoods)) {
       showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
       setSelectedMealForMenu(null);
       return;
@@ -617,6 +621,10 @@ export default function FoodScreen() {
     }
   };
 
+  const showMergeDuplicatesInMealMenu =
+    selectedMealForMenu != null &&
+    mealHasDuplicateFoodsByFoodId(mealsByType[selectedMealForMenu] || []);
+
   const mealMenuItems = [
     ...(isAiConfigured
       ? [
@@ -638,14 +646,18 @@ export default function FoodScreen() {
       description: t('food.actions.createMealDesc'),
       onPress: handleCreateMealFromFood,
     },
-    {
-      icon: GitMerge,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      title: t('food.actions.mergeDuplicates'),
-      description: t('food.actions.mergeDuplicatesDesc'),
-      onPress: handleMergeDuplicates,
-    },
+    ...(showMergeDuplicatesInMealMenu
+      ? [
+          {
+            icon: GitMerge,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('food.actions.mergeDuplicates'),
+            description: t('food.actions.mergeDuplicatesDesc'),
+            onPress: handleMergeDuplicates,
+          },
+        ]
+      : []),
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
