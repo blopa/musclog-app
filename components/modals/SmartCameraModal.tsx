@@ -468,25 +468,28 @@ export default function SmartCameraModal({
   }, []);
 
   const handleLogMeal = useCallback(
-    async (date: Date, mealType: MealType) => {
+    async (date: Date, mealType: MealType, portionGrams: number) => {
       try {
         if (!selectedMealForLogging) {
           showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
           return;
         }
 
+        const baseGrams = Math.max(selectedMealForLogging.grams ?? 100, 1);
+        const scale = portionGrams / baseGrams;
+
         await NutritionService.logCustomMeal(
           {
             name: selectedMealForLogging.name,
-            calories: selectedMealForLogging.calories,
-            protein: selectedMealForLogging.protein,
-            carbs: selectedMealForLogging.carbs,
-            fat: selectedMealForLogging.fat,
+            calories: selectedMealForLogging.calories * scale,
+            protein: selectedMealForLogging.protein * scale,
+            carbs: selectedMealForLogging.carbs * scale,
+            fat: selectedMealForLogging.fat * scale,
             foodId: selectedMealForLogging.foodId,
           },
           date,
           mealType,
-          selectedMealForLogging.grams
+          portionGrams
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));

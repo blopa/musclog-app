@@ -946,6 +946,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       selectedMealForTracking.mealTypeIdentifier.charAt(0).toUpperCase() +
       selectedMealForTracking.mealTypeIdentifier.slice(1);
 
+    const totalIngredientGrams = selectedMealForTracking.ingredients.reduce(
+      (sum, i) => sum + i.grams,
+      0
+    );
+
     return {
       name: ingredientsDesc,
       type: mealLabel,
@@ -953,6 +958,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       protein: selectedMealForTracking.protein,
       carbs: selectedMealForTracking.carbs,
       fat: selectedMealForTracking.fats,
+      grams: totalIngredientGrams > 0 ? totalIngredientGrams : 100,
     };
   }, [selectedMealForTracking]);
 
@@ -1519,13 +1525,14 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           meal={mealForLogMealModal}
           ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
-          onLogMeal={async (date, logMealType) => {
+          onLogMeal={async (date, logMealType, portionGrams) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
               selectedMealForTracking.mealTypeIdentifier,
               selectedMealForTracking.ingredients,
               date,
-              logMealType
+              logMealType,
+              portionGrams
             );
             setSelectedMealForTracking(null);
           }}

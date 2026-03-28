@@ -39,6 +39,7 @@
     "customMeal": "Refeição Personalizada",
     "createdByYou": "Criada por você",
     "logMeal": "Registrar Refeição",
+    "portionSize": "Tamanho da porção",
     "mealType": "Tipo de Refeição",
     "history": {
       "unknownMeal": "Refeição Desconhecida"

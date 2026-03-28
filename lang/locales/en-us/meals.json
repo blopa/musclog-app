@@ -39,6 +39,7 @@
     "customMeal": "Custom Meal",
     "createdByYou": "Created by you",
     "logMeal": "Log Meal",
+    "portionSize": "Portion size",
     "mealType": "Meal Type",
     "history": {
       "unknownMeal": "Unknown Meal"

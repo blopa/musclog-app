@@ -1,5 +1,5 @@
 import { Check, Coffee, Info } from 'lucide-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
@@ -8,6 +8,7 @@ import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { GenericCard } from '../cards/GenericCard';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
+import { StepperInput } from '../theme/StepperInput';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -34,14 +35,26 @@ type LogMealModalProps = {
     protein: number;
     carbs: number;
     fat: number;
+    /** Grams the displayed macros refer to; defaults to 100g when omitted. */
+    grams?: number;
   };
   ingredients?: Ingredient[];
   initialMealType?: MealType;
   initialDate?: Date;
-  onLogMeal: (date: Date, mealType: MealType) => void;
+  onLogMeal: (date: Date, mealType: MealType, portionGrams: number) => void;
 };
 
-// TODO: allow user to update the portion size of this meal
+const MIN_PORTION_G = 1;
+const MAX_PORTION_G = 9999;
+const PORTION_STEP = 5;
+
+function clampPortionGrams(g: number): number {
+  if (Number.isNaN(g) || !Number.isFinite(g)) {
+    return MIN_PORTION_G;
+  }
+  return Math.min(MAX_PORTION_G, Math.max(MIN_PORTION_G, g));
+}
+
 export function LogMealModal({
   visible,
   onClose,
@@ -60,6 +73,28 @@ export function LogMealModal({
   const [isLogging, setIsLogging] = useState(false);
   const [showIngredients, setShowIngredients] = useState(false);
 
+  const referenceGrams = useMemo(() => Math.max(meal.grams ?? 100, 1), [meal.grams]);
+
+  const [portionGrams, setPortionGrams] = useState(referenceGrams);
+
+  useEffect(() => {
+    if (visible) {
+      setPortionGrams(referenceGrams);
+    }
+  }, [visible, referenceGrams]);
+
+  const portionScale = portionGrams / referenceGrams;
+
+  const scaledMeal = useMemo(
+    () => ({
+      calories: meal.calories * portionScale,
+      protein: meal.protein * portionScale,
+      carbs: meal.carbs * portionScale,
+      fat: meal.fat * portionScale,
+    }),
+    [meal.calories, meal.carbs, meal.fat, meal.protein, portionScale]
+  );
+
   const formatDate = useCallback((date: Date) => {
     return date.toISOString().split('T')[0];
   }, []);
@@ -70,12 +105,12 @@ export function LogMealModal({
     await new Promise((resolve) => setTimeout(resolve, 1));
 
     try {
-      onLogMeal(selectedDate, selectedMealType);
+      onLogMeal(selectedDate, selectedMealType, clampPortionGrams(portionGrams));
       onClose();
     } finally {
       setIsLogging(false);
     }
-  }, [onClose, onLogMeal, selectedDate, selectedMealType]);
+  }, [onClose, onLogMeal, portionGrams, selectedDate, selectedMealType]);
 
   const footer = (
     <Button
@@ -176,7 +211,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
-                      {roundToDecimalPlaces(meal.calories)}
+                      {roundToDecimalPlaces(scaledMeal.calories)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       kcal
@@ -200,7 +235,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      {roundToDecimalPlaces(meal.protein)}
+                      {roundToDecimalPlaces(scaledMeal.protein)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -221,7 +256,7 @@ export function LogMealModal({
                       {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                      {roundToDecimalPlaces(meal.carbs)}
+                      {roundToDecimalPlaces(scaledMeal.carbs)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -245,7 +280,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      {roundToDecimalPlaces(meal.fat)}
+                      {roundToDecimalPlaces(scaledMeal.fat)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -255,6 +290,21 @@ export function LogMealModal({
               </View>
             </View>
           </GenericCard>
+
+          <StepperInput
+            label={t('meals.portionSize')}
+            value={clampPortionGrams(portionGrams)}
+            unit={t('food.unitGrams')}
+            step={PORTION_STEP}
+            variant="portion"
+            onIncrement={() =>
+              setPortionGrams((g) => clampPortionGrams(g + PORTION_STEP))
+            }
+            onDecrement={() =>
+              setPortionGrams((g) => clampPortionGrams(g - PORTION_STEP))
+            }
+            onChangeValue={(value) => setPortionGrams(clampPortionGrams(value))}
+          />
 
           {/* Date Picker */}
           <View>
@@ -349,7 +399,7 @@ export function LogMealModal({
                     {ingredient.name}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                    {ingredient.grams}g
+                    {roundToDecimalPlaces(ingredient.grams * portionScale)}g
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-3">
@@ -358,10 +408,10 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      P {roundToDecimalPlaces(ingredient.protein)}g
+                      P {roundToDecimalPlaces(ingredient.protein * portionScale)}g
                     </Text>
                     <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
-                      C {roundToDecimalPlaces(ingredient.carbs)}g
+                      C {roundToDecimalPlaces(ingredient.carbs * portionScale)}g
                     </Text>
                   </View>
                   <View className="items-end">
@@ -369,13 +419,13 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      F {roundToDecimalPlaces(ingredient.fat)}g
+                      F {roundToDecimalPlaces(ingredient.fat * portionScale)}g
                     </Text>
                     <Text
                       className="text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {roundToDecimalPlaces(ingredient.kcal)} kcal
+                      {roundToDecimalPlaces(ingredient.kcal * portionScale)} kcal
                     </Text>
                   </View>
                 </View>
