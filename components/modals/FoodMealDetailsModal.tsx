@@ -1,13 +1,10 @@
-import { format, isSameDay } from 'date-fns';
 import {
   AlignLeft,
   BarChart,
   BookmarkPlus,
-  Calendar,
   Cookie,
   Droplet,
   Dumbbell,
-  Edit,
   Edit3,
   Pencil,
   PlusCircle,
@@ -30,7 +27,6 @@ import {
   MealService,
   NutritionService,
 } from '../../database/services';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import {
   fetchMusclogProductByBarcode,
   fetchOFFProductByBarcode,
@@ -64,6 +60,7 @@ import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { TextInput } from '../theme/TextInput';
 import { BarcodeCameraModal } from './BarcodeCameraModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -234,7 +231,6 @@ export function FoodMealDetailsModal({
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -1907,38 +1903,10 @@ export function FoodMealDetailsModal({
               />
             </View>
 
-            {/* Date Selection */}
-            <View>
-              <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
-                {t('food.foodDetails.date')}
-              </Text>
-              <Pressable
-                className="flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark p-4"
-                onPress={() => setIsDatePickerVisible(true)}
-              >
-                <View className="flex-row items-center gap-3">
-                  <View
-                    className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor: theme.colors.status.indigo20,
-                    }}
-                  >
-                    <Calendar size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                  </View>
-                  <View>
-                    <Text className="font-medium text-text-primary">
-                      {isSameDay(selectedDate, new Date())
-                        ? t('food.foodDetails.today')
-                        : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
-                    </Text>
-                    <Text className="text-xs text-text-secondary">
-                      {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
-                    </Text>
-                  </View>
-                </View>
-                <Edit size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              </Pressable>
-            </View>
+            <DatePickerInput
+              selectedDate={selectedDate}
+              onPress={() => setIsDatePickerVisible(true)}
+            />
           </View>
         </View>
 
