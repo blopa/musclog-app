@@ -1870,7 +1870,7 @@ export function FoodMealDetailsModal({
               hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
             }
             isRefetchingSource={isRefetchingSource}
-            alternateSourceNotFound={alternateSourceLookupFailed && hasAllZeroMacros}
+            alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
           />
 
           {/* Form Sections */}
