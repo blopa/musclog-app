@@ -60,15 +60,24 @@ export function DatePickerModal({
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
 
   const today = new Date();
+  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
+  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday = 0
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  const weekDays = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const).map((key) =>
-    t(`common.days.letter.${key}`)
+  const weekRefStart = startOfWeek(today, { weekStartsOn: 0 });
+  const weekDayLetters = Array.from({ length: 7 }, (_, i) =>
+    format(addDays(weekRefStart, i), 'EEEEE', { locale })
   );
+
+  const monthNames = Array.from({ length: 12 }, (_, i) => {
+    const monthDate = setMonth(new Date(2024, 0, 1), i);
+    return format(monthDate, 'MMMM', { locale });
+  });
 
   const handlePreviousMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
@@ -95,8 +104,8 @@ export function DatePickerModal({
   };
 
   const formatSelectedDate = (date: Date) => {
-    const dayName = format(date, 'EEEE', { weekStartsOn: 0 });
-    const monthDay = format(date, 'MMM d');
+    const dayName = format(date, 'EEEE', { locale });
+    const monthDay = format(date, 'MMM d', { locale });
     return `${dayName},\n${monthDay}`;
   };
 
@@ -119,14 +128,6 @@ export function DatePickerModal({
   const minYearToUse = minYear ?? defaultMinYear;
   const maxYearToUse = maxYear ?? defaultMaxYear;
   const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => maxYearToUse - i);
-
-  // Generate month names using date-fns format with locale support
-  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
-  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
-  const monthNames = Array.from({ length: 12 }, (_, i) => {
-    const monthDate = setMonth(new Date(2024, 0, 1), i);
-    return format(monthDate, 'MMMM', { locale });
-  });
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
@@ -161,7 +162,7 @@ export function DatePickerModal({
                   onPress={handleMonthYearPickerOpen}
                 >
                   <Text className="text-base font-semibold text-text-primary">
-                    {format(currentMonth, 'MMMM yyyy')}
+                    {format(currentMonth, 'MMMM yyyy', { locale })}
                   </Text>
                   <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
@@ -177,7 +178,7 @@ export function DatePickerModal({
 
               {/* Week Days Header */}
               <View className="mb-4 flex-row">
-                {weekDays.map((day, index) => (
+                {weekDayLetters.map((day, index) => (
                   <View key={index} className="flex-1">
                     <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
                       {day}
