@@ -62,6 +62,10 @@ export function LogMealModal({
     return date.toISOString().split('T')[0];
   }, []);
 
+  const formatMacro = (val: number) => {
+    return Math.round(val * 100) / 100;
+  };
+
   const handleLogMeal = useCallback(async () => {
     setIsLogging(true);
     // Small delay to allow React to render the loading state before closing
@@ -174,7 +178,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.text.primary }}
                     >
-                      {meal.calories}
+                      {formatMacro(meal.calories)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       kcal
@@ -198,7 +202,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      {meal.protein}
+                      {formatMacro(meal.protein)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -219,7 +223,7 @@ export function LogMealModal({
                       {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                     </Text>
                     <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                      {meal.carbs}
+                      {formatMacro(meal.carbs)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -243,7 +247,7 @@ export function LogMealModal({
                       className="text-lg font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      {meal.fat}
+                      {formatMacro(meal.fat)}
                     </Text>
                     <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                       g
@@ -356,10 +360,10 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      P {ingredient.protein}g
+                      P {formatMacro(ingredient.protein)}g
                     </Text>
                     <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
-                      C {ingredient.carbs}g
+                      C {formatMacro(ingredient.carbs)}g
                     </Text>
                   </View>
                   <View className="items-end">
@@ -367,13 +371,13 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      F {ingredient.fat}g
+                      F {formatMacro(ingredient.fat)}g
                     </Text>
                     <Text
                       className="text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {ingredient.kcal} kcal
+                      {formatMacro(ingredient.kcal)} kcal
                     </Text>
                   </View>
                 </View>

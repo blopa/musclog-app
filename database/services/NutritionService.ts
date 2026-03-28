@@ -975,11 +975,11 @@ export class NutritionService {
           const scale = ingredient.grams / 100;
           return {
             ...ingredient,
-            kcal: (food.calories ?? 0) * scale,
-            protein: (food.protein ?? 0) * scale,
-            carbs: (food.carbs ?? 0) * scale,
-            fat: (food.fat ?? 0) * scale,
-            fiber: (food.fiber ?? 0) * scale,
+            kcal: Math.round((food.calories ?? 0) * scale * 100) / 100,
+            protein: Math.round((food.protein ?? 0) * scale * 100) / 100,
+            carbs: Math.round((food.carbs ?? 0) * scale * 100) / 100,
+            fat: Math.round((food.fat ?? 0) * scale * 100) / 100,
+            fiber: Math.round((food.fiber ?? 0) * scale * 100) / 100,
           };
         } catch {
           // Food not found — fall back to LLM values
