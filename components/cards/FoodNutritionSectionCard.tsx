@@ -1,10 +1,11 @@
-import { AlertTriangle, Edit3 } from 'lucide-react-native';
+import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FoodInfoCard } from './FoodInfoCard';
+import { InfoCard } from './InfoCard';
 
 type FoodData = {
   name: string;
@@ -32,6 +33,8 @@ type FoodNutritionSectionProps = {
   nutritionalData: NutritionalData;
   servingSize: number;
   isLoadingDetails: boolean;
+  onTryAnotherSource?: () => void;
+  isRefetchingSource?: boolean;
 };
 
 export function FoodNutritionSectionCard({
@@ -43,6 +46,8 @@ export function FoodNutritionSectionCard({
   servingSize,
   isLoadingDetails,
   showIncompleteWarning = false,
+  onTryAnotherSource,
+  isRefetchingSource = false,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -93,6 +98,35 @@ export function FoodNutritionSectionCard({
             {t('food.foodDetails.incompleteNutritionWarning')}
           </Text>
         </View>
+      ) : null}
+
+      {onTryAnotherSource ? (
+        isRefetchingSource ? (
+          <View className="mt-3 items-center justify-center py-14">
+            <View style={{ transform: [{ scale: 2.25 }] }}>
+              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+            </View>
+          </View>
+        ) : (
+          <View className="mt-3 gap-2">
+            <InfoCard
+              variant="warning"
+              icon={AlertCircle}
+              label={t('food.foodDetails.zeroMacrosBannerTitle')}
+              message={t('food.foodDetails.zeroMacrosWarningBody')}
+              expandable={false}
+              size="sm"
+            />
+            <Pressable onPress={onTryAnotherSource} hitSlop={8} className="self-start">
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: theme.colors.status.warning }}
+              >
+                {t('food.foodDetails.tryAnotherSource')}
+              </Text>
+            </Pressable>
+          </View>
+        )
       ) : null}
 
       {showAdditionalNutrition ? (

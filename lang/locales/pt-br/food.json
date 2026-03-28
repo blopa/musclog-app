@@ -275,7 +275,11 @@
       "sourceUsda": "USDA",
       "sourceAi": "IA",
       "sourceMusclog": "Musclog",
-      "incompleteNutritionWarning": "Dados nutricionais ausentes para este produto. Toque no ícone de edição para adicioná-los manualmente."
+      "incompleteNutritionWarning": "Dados nutricionais ausentes para este produto. Toque no ícone de edição para adicioná-los manualmente.",
+      "zeroMacrosBannerTitle": "Confira os dados",
+      "zeroMacrosWarningBody": "Isso parece errado? Tente obter os dados deste alimento de outra fonte.",
+      "tryAnotherSource": "Tentar outra fonte >",
+      "tryAnotherSourceNotFound": "Nenhum dado nutricional encontrado em outras fontes."
     },
     "addFoodItemToMeal": {
       "title": "Adicionar Alimento",
