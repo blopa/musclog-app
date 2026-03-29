@@ -86,6 +86,17 @@ export class SettingsService {
   }
 
   /**
+   * Get the theme preference setting ('system' | 'light' | 'dark').
+   * Defaults to 'system' if not set.
+   */
+  static async getThemePreference(): Promise<'system' | 'light' | 'dark'> {
+    return (await SettingsService.getStringSetting(
+      THEME_SETTING_TYPE,
+      'system'
+    )) as 'system' | 'light' | 'dark';
+  }
+
+  /**
    * Upsert the theme setting ('system' | 'light' | 'dark')
    */
   static async setTheme(theme: 'system' | 'light' | 'dark') {

@@ -12,9 +12,10 @@ import { PhaseWheel } from '../components/PhaseWheel';
 import { UserMetricService } from '../database/services';
 import { MenstrualService } from '../database/services/MenstrualService';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 
 export default function CycleScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);

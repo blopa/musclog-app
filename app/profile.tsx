@@ -36,35 +36,12 @@ import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
 
-const MANAGEMENT_ITEMS = [
-  {
-    id: 'personal',
-    titleKey: 'profile.managementItems.editPersonal',
-    descriptionKey: 'profile.managementItems.editPersonalDesc',
-    icon: User,
-    iconColor: theme.colors.accent.primary,
-  },
-  {
-    id: 'fitness',
-    titleKey: 'profile.managementItems.editFitness',
-    descriptionKey: 'profile.managementItems.editFitnessDesc',
-    icon: Dumbbell,
-    iconColor: theme.colors.status.purple,
-  },
-  {
-    id: 'preferences',
-    titleKey: 'profile.managementItems.appPreferences',
-    descriptionKey: 'profile.managementItems.appPreferencesDesc',
-    icon: List,
-    iconColor: theme.colors.text.secondary,
-  },
-];
-
 export default function ProfileScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
@@ -75,6 +52,33 @@ export default function ProfileScreen() {
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
   const [isEditFitnessVisible, setIsEditFitnessVisible] = useState(false);
+
+  const managementItems = useMemo(
+    () => [
+      {
+        id: 'personal',
+        titleKey: 'profile.managementItems.editPersonal',
+        descriptionKey: 'profile.managementItems.editPersonalDesc',
+        icon: User,
+        iconColor: theme.colors.accent.primary,
+      },
+      {
+        id: 'fitness',
+        titleKey: 'profile.managementItems.editFitness',
+        descriptionKey: 'profile.managementItems.editFitnessDesc',
+        icon: Dumbbell,
+        iconColor: theme.colors.status.purple,
+      },
+      {
+        id: 'preferences',
+        titleKey: 'profile.managementItems.appPreferences',
+        descriptionKey: 'profile.managementItems.appPreferencesDesc',
+        icon: List,
+        iconColor: theme.colors.text.secondary,
+      },
+    ],
+    [theme]
+  );
 
   useEffect(() => {
     syncNow();
@@ -283,20 +287,20 @@ export default function ProfileScreen() {
                   className="h-32 w-32 overflow-hidden rounded-full border-4"
                   style={{
                     borderColor: dbUser
-                      ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
                       : theme.colors.accent.primary,
                     backgroundColor: dbUser
-                      ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
                       : theme.colors.accent.primary20,
                   }}
                 >
                   {dbUser?.avatarIcon ? (
                     <View className="h-full w-full items-center justify-center rounded-full">
                       {createElement(
-                        getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                          getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
                         {
                           size: 40,
-                          color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color,
+                            color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color,
                         }
                       )}
                     </View>
@@ -365,7 +369,7 @@ export default function ProfileScreen() {
             {t('profile.management')}
           </Text>
           <View className="gap-3">
-            {MANAGEMENT_ITEMS.map((item) => (
+            {managementItems.map((item) => (
               <ManagementItem
                 key={item.id}
                 title={t(item.titleKey)}

@@ -20,6 +20,7 @@ import {
   validateWorkoutTitle,
 } from '../utils/workout';
 import { useSettings } from './useSettings';
+import { useTheme } from './useTheme';
 
 export interface UseWorkoutFormParams {
   templateId?: string;
@@ -41,6 +42,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
+  const theme = useTheme();
   const isEditMode = !!templateId;
 
   const [workoutTitle, setWorkoutTitle] = useState('');
@@ -124,7 +126,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       try {
         const exercise = await database.get<Exercise>('exercises').find(exerciseData.exerciseId);
 
-        const newExercise = createExerciseOption({
+        const newExercise = createExerciseOption(theme, {
           exercise,
           sets: exerciseData.sets,
           reps: exerciseData.reps,

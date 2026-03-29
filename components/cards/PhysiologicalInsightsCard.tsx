@@ -1,7 +1,7 @@
 import { Dna, Flame, Minus, TrendingDown, TrendingUp } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 
 type PhysiologicalInsightsCardProps = {
   type: 'estrogen' | 'metabolism' | 'progesterone';
@@ -16,6 +16,7 @@ export function PhysiologicalInsightsCard({
   value,
   trend,
 }: PhysiologicalInsightsCardProps) {
+  const theme = useTheme();
   const getTrendIcon = () => {
     switch (trend) {
       case 'up':

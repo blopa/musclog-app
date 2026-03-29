@@ -8,7 +8,7 @@ import { type CycleSetupData, EditCycleSetupData } from '../../components/EditCy
 import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { MenstrualCycleRepository } from '../../database/repositories/MenstrualCycleRepository';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 const DEFAULT_CYCLE_DATA: CycleSetupData = {
@@ -20,6 +20,7 @@ const DEFAULT_CYCLE_DATA: CycleSetupData = {
 };
 
 export default function CycleSetup() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
 

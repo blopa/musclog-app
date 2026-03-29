@@ -3,9 +3,10 @@ import { ChevronDown } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from './useTheme';
 
 export function useScrollFade() {
+  const theme = useTheme();
   const scrollRef = useRef<ScrollView>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isScrollable, setIsScrollable] = useState(false);

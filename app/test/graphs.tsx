@@ -26,10 +26,11 @@ import {
 import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 
 export default function GraphsTestScreen() {
+  const theme = useTheme();
   // Sample data for LineChart
   const [lineChartData, setLineChartData] = useState<LineChartDataPoint[]>([
     { x: 0, y: 20 },

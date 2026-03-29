@@ -4,7 +4,7 @@ import type { SelectorOption } from '../../components/theme/OptionsMultiSelector
 import Exercise from '../../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../../database/models/Schedule';
 import type { ExerciseInWorkout } from '../../database/services/WorkoutTemplateService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { darkTheme as theme } from '../../theme';
 import {
   createExerciseOption,
   type CreateExerciseOptionParams,
@@ -213,22 +213,22 @@ describe('utils/workout', () => {
 
     describe('getExerciseIconConfig', () => {
       it('should return User icon and correct colors for bodyweight exercises', () => {
-        const config = getExerciseIconConfig(true);
+        const config = getExerciseIconConfig(theme, true);
         expect(config.icon).toBe(User);
         expect(config.iconBgColor).toBe(theme.colors.background.white5);
         expect(config.iconColor).toBe(theme.colors.text.secondary);
       });
 
       it('should return Dumbbell icon and correct colors for non-bodyweight exercises', () => {
-        const config = getExerciseIconConfig(false);
+        const config = getExerciseIconConfig(theme, false);
         expect(config.icon).toBe(Dumbbell);
         expect(config.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(config.iconColor).toBe(theme.colors.accent.primary);
       });
 
       it('should return correct icon types', () => {
-        const bodyweightConfig = getExerciseIconConfig(true);
-        const nonBodyweightConfig = getExerciseIconConfig(false);
+        const bodyweightConfig = getExerciseIconConfig(theme, true);
+        const nonBodyweightConfig = getExerciseIconConfig(theme, false);
         expect(bodyweightConfig.icon).toBe(User);
         expect(nonBodyweightConfig.icon).toBe(Dumbbell);
       });
@@ -280,7 +280,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(User);
         expect(result.id).toBe('ex-1');
         expect(result.label).toBe('Push Up');
@@ -297,7 +297,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(User);
       });
 
@@ -311,7 +311,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.icon).toBe(Dumbbell);
         expect(result.iconBgColor).toBe(theme.colors.accent.primary10);
         expect(result.iconColor).toBe(theme.colors.accent.primary);
@@ -329,7 +329,7 @@ describe('utils/workout', () => {
           groupId: 'group-1',
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.groupId).toBe('group-1');
       });
 
@@ -343,7 +343,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.groupId).toBeUndefined();
       });
 
@@ -361,7 +361,7 @@ describe('utils/workout', () => {
           groupId: 'group-2',
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result).toMatchObject({
           id: 'ex-1',
           label: 'Bench Press',
@@ -383,7 +383,7 @@ describe('utils/workout', () => {
           isBodyweight: true,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.label).toBe('');
       });
 
@@ -397,7 +397,7 @@ describe('utils/workout', () => {
           isBodyweight: false,
         };
 
-        const result = createExerciseOption(params);
+        const result = createExerciseOption(theme, params);
         expect(result.label).toBe("O'Brien Press");
       });
     });

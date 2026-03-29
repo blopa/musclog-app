@@ -51,7 +51,7 @@ import {
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
 import AiService from '../../services/AiService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { getMealCritique } from '../../utils/coachAI';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
@@ -85,6 +85,7 @@ const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
 };
 
 export default function FoodScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const { units, isAiConfigured } = useSettings();
   const { openCoach } = useCoach();
