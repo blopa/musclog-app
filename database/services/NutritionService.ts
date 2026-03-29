@@ -3,11 +3,19 @@ import { Platform } from 'react-native';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
-import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
 import { database } from '../index';
 import Food from '../models/Food';
 import NutritionLog, { MealType } from '../models/NutritionLog';
+
+async function triggerWidgetUpdate(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+
+  const { requestNutritionWidgetUpdate } = await import('../../widgets/widget-update-helpers');
+  await requestNutritionWidgetUpdate();
+}
 
 /**
  * Helper function to retry database queries that fail during database reset.
@@ -97,9 +105,7 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  if (Platform.OS === 'android') {
-    await requestNutritionWidgetUpdate();
-  }
+  await triggerWidgetUpdate();
 }
 
 export class NutritionService {
@@ -151,7 +157,7 @@ export class NutritionService {
     // Write to Health Connect (Android only, user-entered records only — HC-sourced records
     // already have externalId set and must not be written back to avoid an echo loop).
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
 
       if (!externalId) {
         const [nutrients, snapshot] = await Promise.all([
@@ -429,9 +435,7 @@ export class NutritionService {
       return log;
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
 
     return updatedLog;
   }
@@ -444,9 +448,7 @@ export class NutritionService {
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await log.markAsDeleted();
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -487,9 +489,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -508,9 +508,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -552,9 +550,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -584,9 +580,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -640,9 +634,7 @@ export class NutritionService {
       );
     });
 
-    if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
-    }
+    await triggerWidgetUpdate();
   }
 
   /**
@@ -1000,7 +992,7 @@ export class NutritionService {
 
     // Write to Health Connect (Android only)
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
 
       const [nutrients, snapshot] = await Promise.all([
         log.getNutrients(),
@@ -1180,7 +1172,7 @@ export class NutritionService {
 
     // Update widgets and Health Connect
     if (Platform.OS === 'android') {
-      await requestNutritionWidgetUpdate();
+      await triggerWidgetUpdate();
 
       for (const log of logs) {
         try {
