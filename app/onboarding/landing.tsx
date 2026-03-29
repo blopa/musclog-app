@@ -289,7 +289,7 @@ export default function LandingScreen() {
                   <Text
                     accessibilityRole="link"
                     onPress={async () => {
-                      const url = 'https://werules.com/musclog/terms';
+                      const url = 'https://musclog.app/en-us/terms';
                       try {
                         await Linking.openURL(url);
                       } catch (e) {
