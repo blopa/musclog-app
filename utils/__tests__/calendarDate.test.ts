@@ -3,12 +3,21 @@ import { addDays } from 'date-fns';
 import {
   localDayClosedRangeMaxMs,
   localDayHalfOpenRange,
+  localDayKeyPlusCalendarDays,
   localDayStartFromUtcMs,
   localDayStartMs,
+  localDayStartMsFromIsoDateOnly,
   localNextDayStartMsFromDate,
+  parseLocalCalendarDate,
 } from '../calendarDate';
 
 describe('calendarDate', () => {
+  it('parseLocalCalendarDate: yyyy-MM-dd matches local start of that calendar day', () => {
+    const iso = '2026-06-15';
+    expect(parseLocalCalendarDate(iso).getTime()).toBe(localDayStartMs(new Date(2026, 5, 15, 12, 0, 0)));
+    expect(localDayStartMsFromIsoDateOnly(iso)).toBe(localDayStartMs(parseLocalCalendarDate(iso)));
+  });
+
   it('localDayStartMs: same calendar day yields same value', () => {
     const base = new Date(2026, 2, 15, 14, 30, 0);
     const morning = new Date(2026, 2, 15, 8, 0, 0);
@@ -37,5 +46,11 @@ describe('calendarDate', () => {
     const d = new Date(2026, 0, 10, 0, 0, 0);
     const { nextStart } = localDayHalfOpenRange(d);
     expect(localDayClosedRangeMaxMs(d)).toBe(nextStart - 1);
+  });
+
+  it('localDayKeyPlusCalendarDays moves by calendar days, not fixed 24h blocks', () => {
+    const day = localDayStartMs(new Date(2026, 2, 15, 12, 0, 0));
+    expect(localDayKeyPlusCalendarDays(day, -7)).toBe(localDayStartMs(new Date(2026, 2, 8, 0, 0, 0)));
+    expect(localDayKeyPlusCalendarDays(day, 1)).toBe(localDayStartMs(new Date(2026, 2, 16, 0, 0, 0)));
   });
 });

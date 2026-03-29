@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionLog from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
+import { localDayStartFromUtcMs } from '../utils/calendarDate';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -236,7 +237,7 @@ export function useFoodDataLogs({
       const results = await Promise.all(
         logs.map(async (log) => {
           const item = await logToDisplayItemWithT(log, t, iconColors);
-          return item ? { item, dateTimestamp: log.date } : null;
+          return item ? { item, dateTimestamp: localDayStartFromUtcMs(log.date) } : null;
         })
       );
 
@@ -277,7 +278,7 @@ export function useFoodDataLogs({
       const results = await Promise.all(
         logs.map(async (log) => {
           const item = await logToDisplayItemWithT(log, t, iconColors);
-          return item ? { item, dateTimestamp: log.date } : null;
+          return item ? { item, dateTimestamp: localDayStartFromUtcMs(log.date) } : null;
         })
       );
 

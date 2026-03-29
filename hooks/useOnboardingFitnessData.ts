@@ -35,7 +35,7 @@ function parseDobToTimestamp(dob: string): number {
   const month = parseInt(parts[0], 10) - 1;
   const day = parseInt(parts[1], 10);
   const year = parseInt(parts[2], 10);
-  return new Date(year, month, day).getTime();
+  return localDayStartMs(new Date(year, month, day));
 }
 
 function formatDateToDob(date: Date): string {

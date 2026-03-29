@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 
 import { writeNutritionLogToHealthConnect } from '../../services/healthConnectNutrition';
 import {
+  localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
-  localNextDayStartMsFromDate,
 } from '../../utils/calendarDate';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { encryptNutritionLogSnapshot } from '../encryptionHelpers';
@@ -201,14 +201,14 @@ export class NutritionService {
    */
   static async getNutritionLogsForDate(date: Date): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
-    const nextDayTimestamp = localNextDayStartMsFromDate(date);
+    const maxInclusive = localDayClosedRangeMaxMs(date);
 
     return await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1))
+          Q.where('date', Q.between(dateTimestamp, maxInclusive))
         )
         .fetch()
     );
@@ -246,14 +246,14 @@ export class NutritionService {
     endDate: Date
   ): Promise<NutritionLog[]> {
     const startTimestamp = localDayStartMs(startDate);
-    const endTimestamp = localNextDayStartMsFromDate(endDate);
+    const maxInclusive = localDayClosedRangeMaxMs(endDate);
 
     return await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(startTimestamp, endTimestamp - 1))
+          Q.where('date', Q.between(startTimestamp, maxInclusive))
         )
         .fetch()
     );
@@ -264,13 +264,13 @@ export class NutritionService {
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
-    const nextDayTimestamp = localNextDayStartMsFromDate(date);
+    const maxInclusive = localDayClosedRangeMaxMs(date);
 
     return await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)),
+        Q.where('date', Q.between(dateTimestamp, maxInclusive)),
         Q.where('type', mealType)
       )
       .fetch();
@@ -636,8 +636,8 @@ export class NutritionService {
 
     if (date) {
       const dateTimestamp = localDayStartMs(date);
-      const nextDayTimestamp = localNextDayStartMsFromDate(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)));
+      const maxInclusive = localDayClosedRangeMaxMs(date);
+      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
     }
 
     const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
@@ -681,8 +681,8 @@ export class NutritionService {
 
     if (date) {
       const dateTimestamp = localDayStartMs(date);
-      const nextDayTimestamp = localNextDayStartMsFromDate(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, nextDayTimestamp - 1)));
+      const maxInclusive = localDayClosedRangeMaxMs(date);
+      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
     }
 
     const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
@@ -875,7 +875,7 @@ export class NutritionService {
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
-        log.date = originalLog.date;
+        log.date = localDayStartFromUtcMs(originalLog.date);
         log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
         log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
         log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';

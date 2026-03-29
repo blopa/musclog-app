@@ -1,6 +1,6 @@
 import { FunctionDeclaration } from '@google/generative-ai';
 import convert, { Unit } from 'convert';
-import { parseISO } from 'date-fns';
+import { differenceInCalendarDays, format } from 'date-fns';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -17,7 +17,12 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '../database/services';
-import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
+import {
+  localDayClosedRangeMaxMs,
+  localDayStartFromUtcMs,
+  localDayStartMs,
+  parseLocalCalendarDate,
+} from './calendarDate';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -385,8 +390,8 @@ export const getNutritionInsightsPrompt = async (
 
   // Fetch nutrition data via NutritionService
   // Format as: { date, calories, protein, carbs, fat }[]
-  const startDateObj = new Date(startDate);
-  const endDateObj = new Date(endDate);
+  const startDateObj = parseLocalCalendarDate(startDate);
+  const endDateObj = parseLocalCalendarDate(endDate);
 
   let nutritionData = '[]';
   try {
@@ -401,7 +406,10 @@ export const getNutritionInsightsPrompt = async (
     for (const log of logs) {
       try {
         const nutrients = await log.getNutrients();
-        const dateKey = new Date(log.date ?? Date.now()).toISOString().split('T')[0]; // YYYY-MM-DD format
+        const dateKey = format(
+          new Date(localDayStartFromUtcMs(log.date ?? Date.now())),
+          'yyyy-MM-dd'
+        );
 
         const existing = dailyNutritionMap.get(dateKey) || {
           calories: 0,
@@ -428,7 +436,7 @@ export const getNutritionInsightsPrompt = async (
         date,
         ...nutrition,
       }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     nutritionData = JSON.stringify(nutritionArray, null, 2);
   } catch (error) {
@@ -438,8 +446,8 @@ export const getNutritionInsightsPrompt = async (
 
   let metricsData = '[]';
   try {
-    const startTs = startDateObj.getTime();
-    const endTs = endDateObj.getTime();
+    const startTs = localDayStartMs(startDateObj);
+    const endTs = localDayClosedRangeMaxMs(endDateObj);
     const [weightMetrics, bodyFatMetrics] = await Promise.all([
       UserMetricService.getMetricsHistory('weight', { startDate: startTs, endDate: endTs }),
       UserMetricService.getMetricsHistory('body_fat', { startDate: startTs, endDate: endTs }),
@@ -447,13 +455,13 @@ export const getNutritionInsightsPrompt = async (
     const byDate = new Map<string, { weight?: number; fatPercentage?: number }>();
     for (const m of weightMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, weight: value });
     }
     for (const m of bodyFatMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, fatPercentage: value });
     }
@@ -465,8 +473,9 @@ export const getNutritionInsightsPrompt = async (
     console.error('Error fetching user metrics for nutrition prompt:', error);
   }
 
-  const diffInDays = Math.floor(
-    (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+  const diffInDays = Math.max(
+    0,
+    differenceInCalendarDays(localDayStartMs(endDateObj), localDayStartMs(startDateObj))
   );
 
   return [
@@ -557,8 +566,8 @@ export const getRecentWorkoutsInsightsPrompt = async (
   let workoutsJson = '[]';
   try {
     const units = await SettingsService.getUnits();
-    const startTs = localDayStartMs(parseISO(startDate));
-    const endTs = localDayClosedRangeMaxMs(parseISO(endDate));
+    const startTs = localDayStartMs(parseLocalCalendarDate(startDate));
+    const endTs = localDayClosedRangeMaxMs(parseLocalCalendarDate(endDate));
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {
@@ -572,8 +581,12 @@ export const getRecentWorkoutsInsightsPrompt = async (
     console.error('Error fetching recent workouts for insights prompt:', error);
   }
 
-  const diffInDays = Math.floor(
-    (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+  const diffInDays = Math.max(
+    0,
+    differenceInCalendarDays(
+      localDayStartMs(parseLocalCalendarDate(endDate)),
+      localDayStartMs(parseLocalCalendarDate(startDate))
+    )
   );
 
   return [

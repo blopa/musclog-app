@@ -5,6 +5,7 @@ import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
 import i18n from '../../lang/lang';
+import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
 import { decryptDatabaseValue } from '../../utils/encryption';
 import { database } from '../database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
@@ -352,7 +353,7 @@ export class MigrationService {
 
     for (const oldMetric of oldMetrics) {
       const baseTimestamp = this.convertTimestamp(oldMetric.createdAt);
-      const dateTimestamp = this.convertTimestamp(oldMetric.date);
+      const dateTimestamp = localDayStartFromUtcMs(this.convertTimestamp(oldMetric.date));
 
       // Create separate records for each metric type
       const metricTypes = [
@@ -856,11 +857,7 @@ export class MigrationService {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
             newLog.foodId = newFoodId;
             const rawDate = new Date(this.convertTimestamp(oldLog.date));
-            newLog.date = new Date(
-              rawDate.getFullYear(),
-              rawDate.getMonth(),
-              rawDate.getDate()
-            ).getTime();
+            newLog.date = localDayStartMs(rawDate);
             newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema

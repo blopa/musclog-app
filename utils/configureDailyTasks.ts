@@ -133,8 +133,8 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
     } else {
       try {
         const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
-          new Date(startDateStr),
-          new Date(endDateStr)
+          startCal,
+          today
         );
 
         let nutritionMessage: string;

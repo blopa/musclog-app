@@ -39,6 +39,7 @@ import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
+import { localDayStartMs } from '../utils/calendarDate';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -224,10 +225,22 @@ export default function ProfileScreen() {
 
   const handleSavePersonalInfo = async (data: PersonalInfo) => {
     try {
+      const dobParts = data.dob.split('/');
+      const dateOfBirth =
+        dobParts.length === 3
+          ? localDayStartMs(
+              new Date(
+                parseInt(dobParts[2], 10),
+                parseInt(dobParts[0], 10) - 1,
+                parseInt(dobParts[1], 10)
+              )
+            )
+          : localDayStartMs(new Date(data.dob));
+
       await UserService.updateUserProfile({
         fullName: data.fullName,
         email: data.email,
-        dateOfBirth: new Date(data.dob).getTime(),
+        dateOfBirth,
         gender: data.gender as Gender,
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,

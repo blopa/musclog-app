@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 
-import { localDayStartFromUtcMs } from '../../utils/calendarDate';
+import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '../../utils/calendarDate';
 import { database } from '../index';
 import type NutritionCheckin from '../models/NutritionCheckin';
 import type { CheckinStatus } from '../models/NutritionCheckin';
@@ -82,9 +82,9 @@ export class NutritionCheckinService {
    * Compute metrics for a check-in based on logs from the 7 days ending on checkinDate.
    */
   static async getCheckinMetrics(checkin: NutritionCheckin): Promise<CheckinMetrics> {
-    const periodEnd = checkin.checkinDate;
-    const periodStart = periodEnd - 7 * 24 * 60 * 60 * 1000;
-    const prevPeriodStart = periodStart - 7 * 24 * 60 * 60 * 1000;
+    const periodEnd = localDayStartFromUtcMs(checkin.checkinDate);
+    const periodStart = localDayKeyPlusCalendarDays(periodEnd, -7);
+    const prevPeriodStart = localDayKeyPlusCalendarDays(periodEnd, -14);
 
     // Fetch all check-ins for the same goal to compute weekInfo
     const allCheckins = await NutritionCheckinService.getByGoalId(checkin.nutritionGoalId);
