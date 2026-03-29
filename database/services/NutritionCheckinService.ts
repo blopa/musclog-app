@@ -1,5 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
+import { differenceInCalendarDays } from 'date-fns';
 
+import { localDayStartFromUtcMs } from '../../utils/calendarDate';
 import { database } from '../index';
 import type NutritionCheckin from '../models/NutritionCheckin';
 import type { CheckinStatus } from '../models/NutritionCheckin';
@@ -109,7 +111,10 @@ export class NutritionCheckinService {
     for (const metric of weightMetrics) {
       const { value } = await metric.getDecrypted();
       decryptedWeights.push(value);
-      const dayIndex = Math.floor((metric.date - periodStart) / (24 * 60 * 60 * 1000));
+      const dayIndex = differenceInCalendarDays(
+        new Date(localDayStartFromUtcMs(metric.date)),
+        new Date(localDayStartFromUtcMs(periodStart))
+      );
       if (dayIndex >= 0 && dayIndex < 7) {
         dailyWeights[dayIndex] = value;
       }
@@ -150,7 +155,7 @@ export class NutritionCheckinService {
     const caloriesByDay = new Map<number, number>();
     for (const log of nutritionLogs) {
       const snapshot = await log.getDecryptedSnapshot();
-      const dayKey = Math.floor(log.date / (24 * 60 * 60 * 1000));
+      const dayKey = localDayStartFromUtcMs(log.date);
       caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
     }
 

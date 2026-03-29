@@ -32,6 +32,7 @@ import FoodFoodPortion from '../database/models/FoodFoodPortion';
 import FoodPortion from '../database/models/FoodPortion';
 import NutritionLog, { type MealType } from '../database/models/NutritionLog';
 import Setting from '../database/models/Setting';
+import { localDayStartMs } from '../utils/calendarDate';
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
@@ -173,12 +174,6 @@ function mapMealType(hcMealType: number | undefined): MealType {
   }
 }
 
-/** Returns midnight (00:00:00.000) local timestamp for a given ISO datetime string. */
-function toMidnightTimestamp(isoString: string): number {
-  const d = new Date(isoString);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
-
 /**
  * Find-or-create the sentinel Food record used as food_id for all HC nutrition logs.
  * Must be called inside a database.write() transaction.
@@ -311,7 +306,7 @@ async function syncNutritionOnce(timeRange: {
     }
     hcMap.set(externalId, {
       externalId,
-      date: toMidnightTimestamp(rec.startTime),
+      date: localDayStartMs(new Date(rec.startTime)),
       mealType: mapMealType(rec.mealType),
       foodName: rec.name ?? HC_SENTINEL_FOOD_NAME,
       calories: rec.energy?.inKilocalories ?? 0,

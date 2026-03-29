@@ -9,6 +9,7 @@ import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
@@ -159,11 +160,7 @@ export default function AddUserMetricEntryModal({
       const now = Date.now();
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Combine date and time into a single timestamp
-      // Set the date to midnight for date tracking, but preserve the time component
-      const combinedDate = new Date(selectedDate);
-      combinedDate.setHours(selectedTime.getHours(), selectedTime.getMinutes(), 0, 0);
-      const dateTimestamp = new Date(combinedDate.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
+      const dateTimestamp = localDayStartMs(selectedDate);
 
       const weightKg = displayToKg(weight, units);
       const heightCm = displayToCm(height, units);

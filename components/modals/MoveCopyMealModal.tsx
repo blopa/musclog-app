@@ -50,10 +50,14 @@ export function MoveCopyMealModal({
   const isBusy = isLoading || isSubmitting;
 
   useEffect(() => {
-    if (!visible) {
+    if (visible) {
+      setTargetDate(sourceDate);
+      setTargetMealType(sourceMealType);
+      setSplitPercentage(50);
+    } else {
       setIsSubmitting(false);
     }
-  }, [visible]);
+  }, [visible, sourceDate, sourceMealType]);
 
   const title =
     customTitle ||

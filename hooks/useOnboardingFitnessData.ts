@@ -8,6 +8,7 @@ import { FitnessDetails } from '../components/EditFitnessDetailsBody';
 import { TEMP_GOOGLE_USER_NAME } from '../constants/misc';
 import { useSnackbar } from '../context/SnackbarContext';
 import { SettingsService, UserMetricService, UserService } from '../database/services';
+import { localDayClosedRangeMaxMs, localDayStartMs } from '../utils/calendarDate';
 import {
   cmToDisplay,
   displayToCm,
@@ -180,16 +181,16 @@ export function useOnboardingFitnessData() {
           });
         }
 
-        const currentDate = new Date().setUTCHours(0, 0, 0, 0);
+        const dayStart = localDayStartMs(new Date());
         const now = Date.now();
-        const endOfDay = currentDate + 24 * 60 * 60 * 1000 - 1;
+        const dayEnd = localDayClosedRangeMaxMs(new Date());
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         if (data.weight && parseFloat(data.weight) > 0) {
           const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
           const existingWeight = await UserMetricService.getMetricsHistory(
             'weight',
-            { startDate: currentDate, endDate: endOfDay },
+            { startDate: dayStart, endDate: dayEnd },
             1
           );
           if (existingWeight.length > 0) {
@@ -215,7 +216,7 @@ export function useOnboardingFitnessData() {
           const heightValueCm = displayToCm(parseFloat(data.height), data.units);
           const existingHeight = await UserMetricService.getMetricsHistory(
             'height',
-            { startDate: currentDate, endDate: endOfDay },
+            { startDate: dayStart, endDate: dayEnd },
             1
           );
           if (existingHeight.length > 0) {
@@ -241,7 +242,7 @@ export function useOnboardingFitnessData() {
           const fatValue = data.fatPercentage;
           const existingBodyFat = await UserMetricService.getMetricsHistory(
             'body_fat',
-            { startDate: currentDate, endDate: endOfDay },
+            { startDate: dayStart, endDate: dayEnd },
             1
           );
           if (existingBodyFat.length > 0) {

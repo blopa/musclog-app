@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
+import { localDayStartFromUtcMs } from '../../utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -347,9 +348,7 @@ export class ProgressService {
 
     for (const log of logs) {
       const nutrients = await log.getNutrients();
-      // Normalize to midnight to handle migrated logs with non-midnight timestamps
-      const d = new Date(log.date);
-      const date = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const date = localDayStartFromUtcMs(log.date);
       const existing = dailyMap.get(date) || {
         date,
         calories: 0,

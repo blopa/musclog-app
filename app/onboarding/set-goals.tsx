@@ -19,6 +19,7 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { localDayClosedRangeMaxMs, localDayStartMs } from '../../utils/calendarDate';
 import { getHistoricalNutritionParams } from '../../utils/historicalNutritionParams';
 import {
   bmiFromWeightAndHeightM,
@@ -339,8 +340,8 @@ export default function SetGoals() {
       let rawWeight = weightDec?.value ?? 0;
       let rawHeight = heightDec?.value ?? 0;
 
-      const todayStart = new Date().setUTCHours(0, 0, 0, 0);
-      const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
+      const todayStart = localDayStartMs(new Date());
+      const todayEnd = localDayClosedRangeMaxMs(new Date());
       if (rawWeight <= 0) {
         const todayWeights = await UserMetricService.getMetricsHistory(
           'weight',

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
+import { localDayClosedRangeMaxMs, localDayStartMs } from '../../utils/calendarDate';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
@@ -54,21 +55,19 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     }
 
     const loadExistingMetrics = async () => {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      const startMs = localDayStartMs(selectedDate);
+      const endMs = localDayClosedRangeMaxMs(selectedDate);
 
       resetForm(); // Reset form fields before loading new data
 
       const [flowMetrics, symptomMetrics] = await Promise.all([
         UserMetricService.getMetricsHistory('period_flow', {
-          startDate: startOfDay.getTime(),
-          endDate: endOfDay.getTime(),
+          startDate: startMs,
+          endDate: endMs,
         }),
         UserMetricService.getMetricsHistory('period_symptoms', {
-          startDate: startOfDay.getTime(),
-          endDate: endOfDay.getTime(),
+          startDate: startMs,
+          endDate: endMs,
         }),
       ]);
 

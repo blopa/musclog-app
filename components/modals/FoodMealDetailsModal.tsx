@@ -47,6 +47,7 @@ import {
   getNutrimentValue,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { getProductName } from '../../utils/productName';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
@@ -1293,16 +1294,7 @@ export function FoodMealDetailsModal({
       // If editing an existing food log, update it instead of creating a new one
       if (foodLog) {
         try {
-          // Convert selectedDate to midnight timestamp for database storage
-          const dateTimestamp = Date.UTC(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth(),
-            selectedDate.getDate(),
-            0,
-            0,
-            0,
-            0
-          );
+          const dateTimestamp = localDayStartMs(selectedDate);
 
           await Promise.all([
             // Update amount in grams (set portion to undefined so amount is grams)

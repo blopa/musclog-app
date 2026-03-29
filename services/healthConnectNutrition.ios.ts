@@ -27,6 +27,7 @@ import FoodFoodPortion from '../database/models/FoodFoodPortion';
 import FoodPortion from '../database/models/FoodPortion';
 import NutritionLog, { type MealType } from '../database/models/NutritionLog';
 import Setting from '../database/models/Setting';
+import { localDayStartMs } from '../utils/calendarDate';
 import { RETRY_CONFIG } from './healthConnectErrors';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
@@ -201,10 +202,6 @@ function mapMealType(hcMealType: number | undefined): MealType {
   }
 }
 
-function toMidnightTimestamp(d: Date): number {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
-
 async function getOrCreateSentinelFood(): Promise<Food> {
   const existing = await database
     .get<Food>('foods')
@@ -339,7 +336,7 @@ async function syncNutritionOnce(timeRange: {
 
     hcMap.set(externalId, {
       externalId,
-      date: toMidnightTimestamp(corr.startDate),
+      date: localDayStartMs(new Date(corr.startDate)),
       mealType: mapMealType(mealRaw),
       foodName: nameRaw ?? HC_SENTINEL_FOOD_NAME,
       calories,
