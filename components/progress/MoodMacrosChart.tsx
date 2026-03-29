@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodMacrosPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { StackedBarLineChart } from '../charts/StackedBarLineChart';
@@ -20,6 +21,7 @@ const formatDate = (timestamp: number): string => {
 export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const moodLabels = [
     t('progress.mood.poor'),
     t('progress.mood.low'),
@@ -97,8 +99,8 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
           t('progress.mood.great'),
         ]}
         xAxisLabels={xAxisLabels}
-        totalFormatter={(total) => `${Math.round(total)}g`}
-        lineFormatter={(v) => moodLabels[Math.round(v)] ?? v.toFixed(1)}
+        totalFormatter={(total) => `${formatInteger(Math.round(total))}g`}
+        lineFormatter={(v) => moodLabels[Math.round(v)] ?? formatDecimal(v, 1)}
       />
     </ProgressChartSection>
   );

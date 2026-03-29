@@ -1,7 +1,8 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 
 type TestStepperProps = {
@@ -32,9 +33,13 @@ export function StepperInlineInput({
   step = 1,
 }: TestStepperProps) {
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const formatValue = useCallback(
+    (v: number) => (v % 1 === 0 ? formatInteger(v, { useGrouping: false }) : formatDecimal(v, 1)),
+    [formatDecimal, formatInteger]
+  );
   const [editing, setEditing] = useState(false);
-  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
-  const [inputValue, setInputValue] = useState(formatValue(value));
+  const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInput>(null);
 
   // Sync inputValue with value prop when not editing
@@ -42,7 +47,7 @@ export function StepperInlineInput({
     if (!editing) {
       setInputValue(formatValue(value));
     }
-  }, [value, editing]);
+  }, [value, editing, formatValue]);
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {

@@ -132,10 +132,7 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
       console.log('[configureDailyTasks] Nutrition insights disabled, skipping');
     } else {
       try {
-        const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(
-          startCal,
-          today
-        );
+        const nutritionLogs = await NutritionService.getNutritionLogsForDateRange(startCal, today);
 
         let nutritionMessage: string;
         if (nutritionLogs.length === 0) {

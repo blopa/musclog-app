@@ -1,8 +1,9 @@
 import { Minus, Plus } from 'lucide-react-native';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 
 interface StepperInputProps {
@@ -30,6 +31,11 @@ export const StepperInput: FC<StepperInputProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const formatValue = useCallback(
+    (v: number) => (v % 1 === 0 ? formatInteger(v, { useGrouping: false }) : formatDecimal(v, 1)),
+    [formatDecimal, formatInteger]
+  );
   const isPortion = variant === 'portion';
 
   const valueFontSize = isPortion
@@ -37,8 +43,7 @@ export const StepperInput: FC<StepperInputProps> = ({
     : theme.typography.fontSize['2xl'];
   const unitFontSize = theme.typography.fontSize['2xl'];
   const [editing, setEditing] = useState(false);
-  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
-  const [inputValue, setInputValue] = useState(formatValue(value));
+  const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInput>(null);
 
   // Sync inputValue with value prop when not editing
@@ -46,7 +51,7 @@ export const StepperInput: FC<StepperInputProps> = ({
     if (!editing) {
       setInputValue(formatValue(value));
     }
-  }, [value, editing]);
+  }, [value, editing, formatValue]);
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {

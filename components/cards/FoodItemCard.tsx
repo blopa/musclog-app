@@ -14,6 +14,7 @@ import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
@@ -41,26 +42,34 @@ const MacroItem = ({
   label,
   unit,
   shortLabel,
+  valueMode = 'decimal1',
 }: {
   icon: any;
   value: number;
   label?: string;
   unit?: string;
   shortLabel?: string;
+  /** `integer` = kcal-style; `decimal1` = grams/macros */
+  valueMode?: 'integer' | 'decimal1';
 }) => {
   const theme = useTheme();
   const { width: windowWidth } = useWindowDimensions();
   const { t } = useTranslation();
+  const { formatInteger, formatDecimal } = useFormatAppNumber();
 
   const isNarrow = windowWidth < 380;
   const displayLabel = isNarrow && shortLabel ? shortLabel : label;
+  const displayValue =
+    valueMode === 'integer'
+      ? formatInteger(Math.round(value), { useGrouping: false })
+      : formatDecimal(value, 1);
 
   return (
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text className="text-xs text-text-secondary">
         {t('food.macroValueFormat', {
-          value,
+          value: displayValue,
           unit: unit || '',
           label: displayLabel || '',
         })}
@@ -162,6 +171,7 @@ export const FoodItemCard = memo(function FoodItemCard({
               icon={Flame}
               value={roundToDecimalPlaces(calories)}
               label={t('food.common.kcal')}
+              valueMode="integer"
             />
           </View>
           {variant === 'default' ? (

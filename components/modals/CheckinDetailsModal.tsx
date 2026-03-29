@@ -12,6 +12,7 @@ import {
   NutritionCheckinService,
 } from '../../database/services/NutritionCheckinService';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -38,6 +39,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const { t } = useTranslation();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { weightUnit } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [metrics, setMetrics] = useState<CheckinMetrics | null>(null);
@@ -304,7 +306,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 </Text>
                 <View className="mt-1 flex-row items-baseline">
                   <Text className="text-3xl font-black text-white">
-                    {displayActualWeight.toFixed(1)}
+                    {formatDecimal(displayActualWeight, 1)}
                   </Text>
                   <Text className="ml-1 text-base font-bold text-gray-400">
                     {t(weightUnitKey, { value: '' })}
@@ -315,7 +317,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   >
                     <Text className="text-xs font-bold" style={{ color: trendColor }}>
                       {trend > 0 ? '+' : '-'}
-                      {displayTrend.toFixed(1)}
+                      {formatDecimal(displayTrend, 1)}
                       {t(weightUnitKey, { value: '' })}
                     </Text>
                   </View>
@@ -326,7 +328,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   {t('nutrition.checkin.target')}
                 </Text>
                 <Text className="mt-1 text-xl font-bold text-white">
-                  {displayTargetWeight.toFixed(1)}
+                  {formatDecimal(displayTargetWeight, 1)}
                   <Text className="text-sm font-medium text-gray-400">
                     {' '}
                     {t(weightUnitKey, { value: '' })}
@@ -388,7 +390,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               {t('nutrition.checkin.summaryIntro', { target: currentGoal?.totalCalories ?? 0 })}
               <Text style={{ color: theme.colors.status.warning }}>
                 {' '}
-                {avgCalories} {t('common.kcal')}/day
+                {formatInteger(avgCalories)} {t('common.kcal')}/day
               </Text>
               . {t('nutrition.checkin.summaryOutro')}
               <Text
@@ -418,7 +420,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   {t('nutrition.checkin.avgIntake')}
                 </Text>
                 <Text className="mt-1 text-xl font-black text-white">
-                  {avgCalories}{' '}
+                  {formatInteger(avgCalories)}{' '}
                   <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text>
                 </Text>
               </View>
@@ -455,10 +457,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   {t('nutrition.checkin.avgBodyFat')}
                 </Text>
                 <Text className="mt-1 text-xl font-black text-white">
-                  {avgBodyFat?.toFixed(1) ?? '--'}%
+                  {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
                 </Text>
                 <Text className="mt-1 text-[10px] font-medium text-gray-500">
-                  {t('nutrition.checkin.targetShort', { value: checkin.targetBodyFat.toFixed(1) })}
+                  {t('nutrition.checkin.targetShort', {
+                    value: formatDecimal(checkin.targetBodyFat, 1),
+                  })}
                 </Text>
               </View>
               <View
@@ -472,7 +476,9 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                   {t('nutrition.checkin.activeMinutes')}
                 </Text>
-                <Text className="mt-1 text-xl font-black text-white">{activeMinutes}</Text>
+                <Text className="mt-1 text-xl font-black text-white">
+                  {formatInteger(activeMinutes)}
+                </Text>
                 {activeMinutesTrend !== null ? (
                   <Text
                     className="mt-1 text-[10px] font-medium"
@@ -485,7 +491,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   >
                     {t('nutrition.checkin.vsLastWeek', {
                       prefix: activeMinutesTrend >= 0 ? '+' : '',
-                      value: activeMinutesTrend,
+                      value: formatInteger(activeMinutesTrend),
                     })}
                   </Text>
                 ) : null}

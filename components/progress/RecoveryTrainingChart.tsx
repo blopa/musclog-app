@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Scatter } from 'victory-native';
 
 import { RecoveryTrainingPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getYAxisLabels } from '../../utils/chartUtils';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -15,6 +16,7 @@ interface RecoveryTrainingChartProps {
 export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -124,9 +126,9 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           )}
         </CartesianChart>
         <View className="mt-2 flex-row justify-between px-8">
-          <Text className="text-[10px] text-text-tertiary">{xMin.toFixed(0)}</Text>
+          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMin, 0)}</Text>
           <Text className="text-[10px] text-text-tertiary">{t('progress.workoutVolume')}</Text>
-          <Text className="text-[10px] text-text-tertiary">{xMax.toFixed(0)}</Text>
+          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMax, 0)}</Text>
         </View>
       </View>
     </ProgressChartSection>

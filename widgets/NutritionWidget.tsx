@@ -2,6 +2,7 @@ import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-wid
 
 import i18n from '../lang/lang';
 import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
+import { formatAppInteger } from '../utils/formatAppNumber';
 
 interface NutritionWidgetProps {
   calories: number;
@@ -29,6 +30,7 @@ export function NutritionWidget({
   // Use dark theme colors for widget as per requirements.
   // this will not dynamically update if the theme is changed.
   const theme = darkTheme;
+  const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const caloriePercentage = Math.min(Math.round((calories / (targetCalories || 1)) * 100), 100);
   const proteinPercentage = Math.min(Math.round((protein / (targetProtein || 1)) * 100), 100);
@@ -79,7 +81,7 @@ export function NutritionWidget({
         <FlexWidget style={{ flex: 1 }} />
         <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <TextWidget
-            text={Math.round(calories).toLocaleString()}
+            text={formatAppInteger(locale, Math.round(calories))}
             style={{
               fontSize: theme.typography.fontSize['2xl'],
               fontWeight: 'bold',
@@ -87,7 +89,7 @@ export function NutritionWidget({
             }}
           />
           <TextWidget
-            text={` / ${targetCalories.toLocaleString()} ${i18n.t('common.kcal')}`}
+            text={` / ${formatAppInteger(locale, targetCalories)} ${i18n.t('common.kcal')}`}
             style={{
               fontSize: theme.typography.fontSize.xs,
               color: theme.colors.text.secondary as ColorProp,
@@ -144,7 +146,7 @@ export function NutritionWidget({
               }}
             />
             <TextWidget
-              text={`${Math.round(protein)}g`}
+              text={`${formatAppInteger(locale, Math.round(protein))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}
             />
           </FlexWidget>
@@ -181,7 +183,7 @@ export function NutritionWidget({
               }}
             />
             <TextWidget
-              text={`${Math.round(carbs)}g`}
+              text={`${formatAppInteger(locale, Math.round(carbs))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}
             />
           </FlexWidget>
@@ -218,7 +220,7 @@ export function NutritionWidget({
               }}
             />
             <TextWidget
-              text={`${Math.round(fat)}g`}
+              text={`${formatAppInteger(locale, Math.round(fat))}g`}
               style={{ fontSize: 9, color: theme.colors.text.primary as ColorProp, marginLeft: 2 }}
             />
           </FlexWidget>

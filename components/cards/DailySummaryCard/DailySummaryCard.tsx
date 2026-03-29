@@ -2,6 +2,7 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../../hooks/useFormatAppNumber';
 import { useTheme } from '../../../hooks/useTheme';
 import { GenericCard } from '../GenericCard';
 import {
@@ -35,6 +36,7 @@ export function DailySummaryCard({
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatDecimal } = useFormatAppNumber();
 
   const isNarrow = windowWidth < 380;
   const highlightThresholds = highlightThresholdStyle === 'default';
@@ -52,8 +54,6 @@ export function DailySummaryCard({
     fatsStatus,
   } = calculateDailySummaryMetrics(calories, macros);
 
-  const formatVal = (v: number) => Math.round(v);
-
   return (
     <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View className="gap-4 p-5">
@@ -62,7 +62,7 @@ export function DailySummaryCard({
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-start gap-1">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-on-colorful">
-                {formatVal(calories.consumed)}
+                {formatInteger(Math.round(calories.consumed))}
               </Text>
 
               <View className="flex-col">
@@ -74,7 +74,7 @@ export function DailySummaryCard({
                     marginTop: theme.spacing.margin.md,
                   }}
                 >
-                  {`/ ${calories.goal}`}
+                  {`/ ${formatInteger(Math.round(calories.goal))}`}
                 </Text>
                 <Text
                   className="font-bold uppercase"
@@ -106,8 +106,8 @@ export function DailySummaryCard({
                 style={{ color: theme.colors.overlay.onColorful90 }}
               >
                 {calories.remaining >= 0
-                  ? `${formatVal(calories.remaining)} ${t('dailySummaryCard.remaining', 'remaining')}`
-                  : `${formatVal(Math.abs(calories.remaining))} ${t('dailySummaryCard.over', 'over')}`}
+                  ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining', 'remaining')}`
+                  : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over', 'over')}`}
               </Text>
               {highlightThresholds && calorieStatus !== 'not-reached' ? (
                 <Text
@@ -173,8 +173,12 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.protein.value)}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.protein.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>
+                      {formatDecimal(macros.protein.value, 1)}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.protein.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -227,8 +231,12 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.carbs.value)}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.carbs.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>
+                      {formatDecimal(macros.carbs.value, 1)}
+                    </Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.carbs.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>
@@ -281,8 +289,10 @@ export function DailySummaryCard({
                         : theme.colors.text.onColorful,
                     }}
                   >
-                    <Text style={{ fontWeight: '700' }}>{formatVal(macros.fats.value)}</Text>
-                    <Text style={{ fontWeight: '400' }}>{`/${macros.fats.goal}g`}</Text>
+                    <Text style={{ fontWeight: '700' }}>{formatDecimal(macros.fats.value, 1)}</Text>
+                    <Text
+                      style={{ fontWeight: '400' }}
+                    >{`/${formatInteger(Math.round(macros.fats.goal))}g`}</Text>
                   </Text>
                 ) : null}
               </View>

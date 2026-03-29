@@ -49,6 +49,7 @@ import {
   SettingsService,
 } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
@@ -87,6 +88,7 @@ const getMealActionErrorKey = (mode: 'move' | 'copy' | 'split'): string => {
 export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, locale: appLocale } = useFormatAppNumber();
   const { units, isAiConfigured } = useSettings();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
@@ -1296,7 +1298,7 @@ export default function FoodScreen() {
         visible={isFoodMenuVisible}
         onClose={() => setIsFoodMenuVisible(false)}
         title={selectedFoodItem?.displayName ?? ''}
-        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units)} • ${roundToDecimalPlaces(selectedFoodItem?.nutrients?.calories || 0)} kcal`}
+        subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${formatInteger(Math.round(roundToDecimalPlaces(selectedFoodItem?.nutrients?.calories || 0)), { useGrouping: false })} kcal`}
         items={foodMenuItems}
       />
 

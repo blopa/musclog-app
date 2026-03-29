@@ -8,6 +8,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
@@ -79,6 +80,7 @@ export default function BodyMetricsHistoryModal({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [selectedMetric, setSelectedMetric] = useState<UiMetricType>('weight');
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('30D');
   const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
@@ -269,12 +271,14 @@ export default function BodyMetricsHistoryModal({
             if (absDiff > 0.01) {
               changeType = diff > 0 ? 'up' : 'down';
               const sign = diff > 0 ? '+' : '';
-              change = `${sign}${absDiff.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+              const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
+              change = `${sign}${formatDecimal(absDiff, decPlaces)}${unit ? ` ${unit}` : ''}`;
             }
           }
         }
 
-        const valueStr = `${displayValue % 1 === 0 ? displayValue : displayValue.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2)}${unit ? ` ${unit}` : ''}`;
+        const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
+        const valueStr = `${displayValue % 1 === 0 ? formatInteger(displayValue, { useGrouping: false }) : formatDecimal(displayValue, decPlaces)}${unit ? ` ${unit}` : ''}`;
 
         let note = '';
         if (index === metrics.length - 1) {
@@ -313,6 +317,8 @@ export default function BodyMetricsHistoryModal({
       theme.colors.text.primary,
       theme.colors.text.secondary,
       getDisplayValue,
+      formatDecimal,
+      formatInteger,
     ]
   );
 
@@ -360,15 +366,24 @@ export default function BodyMetricsHistoryModal({
 
     const unit = getMetricUnit(selectedMetric);
 
+    const decPlaces = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2;
     return {
       current:
         displayVal % 1 === 0
-          ? String(displayVal)
-          : displayVal.toFixed(selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 2),
+          ? formatInteger(displayVal, { useGrouping: false })
+          : formatDecimal(displayVal, decPlaces),
       unit,
       label: getMetricLabel(selectedMetric),
     };
-  }, [paginatedMetrics, selectedMetric, getMetricUnit, getMetricLabel, getDisplayValue]);
+  }, [
+    paginatedMetrics,
+    selectedMetric,
+    getMetricUnit,
+    getMetricLabel,
+    getDisplayValue,
+    formatDecimal,
+    formatInteger,
+  ]);
 
   // Generate chart data from all metrics
   const chartData = useMemo(() => {
@@ -422,9 +437,10 @@ export default function BodyMetricsHistoryModal({
     const midDisplay = (minDisplay + maxDisplay) / 2;
 
     const unit = getMetricUnit(selectedMetric);
+    const decimals = 1;
     const fmt = (v: number) => {
-      const decimals = selectedMetric === 'weight' || selectedMetric === 'bodyFat' ? 1 : 1;
-      return unit ? `${v.toFixed(decimals)} ${unit}` : v.toFixed(decimals);
+      const s = formatDecimal(v, decimals);
+      return unit ? `${s} ${unit}` : s;
     };
 
     if (range < 0.01) {
@@ -436,7 +452,7 @@ export default function BodyMetricsHistoryModal({
       { label: fmt(midDisplay), yDomainValue: toDomainY((minStored + maxStored) / 2) },
       { label: fmt(minDisplay), yDomainValue: toDomainY(minStored) },
     ];
-  }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit]);
+  }, [allMetricsForChart, selectedMetric, getDisplayValue, getMetricUnit, formatDecimal]);
 
   // X-axis labels from actual date range
   const xAxisLabels = useMemo(() => {

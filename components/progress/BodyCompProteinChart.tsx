@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { CartesianChart, Line, Scatter } from 'victory-native';
 
 import { BodyCompProteinPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getYAxisLabels } from '../../utils/chartUtils';
 import { ProgressChartSection } from './ProgressChartSection';
@@ -16,6 +17,7 @@ interface BodyCompProteinChartProps {
 export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -147,9 +149,9 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           )}
         </CartesianChart>
         <View className="mt-2 flex-row justify-between px-8">
-          <Text className="text-[10px] text-text-tertiary">{xMin.toFixed(0)}g</Text>
+          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMin, 0)}g</Text>
           <Text className="text-[10px] text-text-tertiary">{t('progress.proteinIntake')}</Text>
-          <Text className="text-[10px] text-text-tertiary">{xMax.toFixed(0)}g</Text>
+          <Text className="text-[10px] text-text-tertiary">{formatDecimal(xMax, 0)}g</Text>
         </View>
       </View>
     </ProgressChartSection>

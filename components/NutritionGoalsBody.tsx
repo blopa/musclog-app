@@ -18,6 +18,7 @@ import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from
 
 import { type EatingPhase } from '../database/models';
 import { UserMetricService } from '../database/services';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
@@ -231,6 +232,7 @@ export function NutritionGoalsBody({
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
@@ -464,7 +466,7 @@ export function NutritionGoalsBody({
             </Text>
             <View className="flex-row items-baseline gap-2">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {totalCalories.toLocaleString()}
+                {formatInteger(totalCalories)}
               </Text>
               <Text className="text-lg font-semibold uppercase text-accent-primary">
                 {t('food.common.kcal')}

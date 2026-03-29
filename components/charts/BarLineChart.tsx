@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { Bar, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -71,12 +72,15 @@ export function BarLineChart({
   leftAxisLabels = DEFAULT_LEFT_LABELS,
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
-  stepsFormatter = (v) => v.toLocaleString(),
-  heartRateFormatter = (v) => String(Math.round(v)),
+  stepsFormatter: stepsFormatterProp,
+  heartRateFormatter: heartRateFormatterProp,
   interactive = true,
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
+  const stepsFormatter = stepsFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
+  const heartRateFormatter = heartRateFormatterProp ?? ((v: number) => String(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);

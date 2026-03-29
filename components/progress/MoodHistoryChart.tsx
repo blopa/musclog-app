@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
@@ -28,6 +29,7 @@ const formatDate = (timestamp: number): string => {
 export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -106,7 +108,7 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
         interactive
         tooltipFormatter={(p) => {
           const key = MOOD_KEYS[Math.round(p.y)];
-          return key ? t(`progress.mood.${key}`) : `${p.y.toFixed(1)}`;
+          return key ? t(`progress.mood.${key}`) : formatDecimal(p.y, 1);
         }}
       />
     </ProgressChartSection>

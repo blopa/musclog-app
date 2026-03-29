@@ -36,6 +36,11 @@ import Food from '../../database/models/Food';
 import { FoodService } from '../../database/services';
 import { useFoodPortions } from '../../hooks/useFoodPortions';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedDecimalInput,
+} from '../../utils/localizedDecimalInput';
 import { MacroInput } from '../MacroInput';
 import { Button } from '../theme/Button';
 import { SkeletonLoader } from '../theme/SkeletonLoader';
@@ -45,11 +50,6 @@ import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-  sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
 
 type NewCustomFoodModalProps = {
   visible: boolean;

@@ -11,6 +11,7 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -44,6 +45,7 @@ function WorkoutSummaryCard({
 }: WorkoutSummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View className="overflow-hidden rounded-xl">
@@ -86,7 +88,7 @@ function WorkoutSummaryCard({
             </Text>
             <View className="flex-row items-baseline gap-1">
               <Text className="text-2xl font-extrabold tracking-tight text-white">
-                {volume.toLocaleString()}
+                {formatInteger(volume)}
               </Text>
               <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
                 {t(weightUnitKey)}
@@ -106,7 +108,9 @@ function WorkoutSummaryCard({
               {t('workoutDetail.calories')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">{calories}</Text>
+              <Text className="text-2xl font-extrabold tracking-tight text-white">
+                {formatInteger(calories)}
+              </Text>
               <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
                 {t('common.kcal')}
               </Text>
@@ -383,6 +387,7 @@ export default function PastWorkoutDetailModal({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -411,9 +416,9 @@ export default function PastWorkoutDetailModal({
 
     try {
       const message = t('workoutDetail.shareMessage', {
-        volume: workout.volume.toLocaleString(),
+        volume: formatInteger(workout.volume),
         unit: t(weightUnitKey),
-        calories: workout.calories,
+        calories: formatInteger(workout.calories),
       });
 
       await Share.share({ message });

@@ -6,6 +6,7 @@ import { Image, Text, View } from 'react-native';
 
 import type { Units } from '../../constants/settings';
 import type { EnrichedWorkoutLogSet } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -49,7 +50,8 @@ export function FreeSessionExerciseCompleteModal({
   isFinishing = false,
 }: FreeSessionExerciseCompleteModalProps) {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const iconConfig = useMemo(
@@ -69,9 +71,7 @@ export function FreeSessionExerciseCompleteModal({
 
   const displayVolume = kgToDisplay(totalVolumeKg, units);
   const displayVolumeStr =
-    displayVolume % 1 === 0
-      ? displayVolume.toLocaleString(i18n.language)
-      : displayVolume.toLocaleString(i18n.language, { maximumFractionDigits: 1 });
+    displayVolume % 1 === 0 ? formatInteger(displayVolume) : formatDecimal(displayVolume, 1);
 
   const emerald = theme.colors.status.emerald;
   const indigo = theme.colors.status.indigo;

@@ -10,6 +10,7 @@ import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
 import i18n from '../lang/lang';
 import { getDateFnsLocale } from './dateFnsLocale';
+import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
@@ -70,14 +71,19 @@ export function formatDuration(minutes: number, t: TranslationFunction): string 
 }
 
 /**
- * Format volume with weight unit suffix (kg or lb)
+ * Format volume with weight unit suffix (kg or lb). Pass app locale (i18n) for correct separators.
  */
-export function formatVolume(volume: number, t: TranslationFunction, units: Units): string {
+export function formatVolume(
+  volume: number,
+  t: TranslationFunction,
+  units: Units,
+  locale: string
+): string {
   const unit = t(getWeightUnitI18nKey(units));
   if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}k ${unit}`;
+    return `${formatAppDecimal(locale, volume / 1000, 1)}k ${unit}`;
   }
-  return `${Math.round(volume).toLocaleString()} ${unit}`;
+  return `${formatAppInteger(locale, Math.round(volume))} ${unit}`;
 }
 
 // Workout Classification
@@ -204,6 +210,7 @@ export async function processWorkouts(
   theme: any
 ): Promise<WorkoutHistoryItem[]> {
   const locale = getDateFnsLocale(i18n.language);
+  const appLocale = i18n.resolvedLanguage ?? i18n.language;
   const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
     workouts.map(async (workout) => {
       // Calculate duration
@@ -267,7 +274,7 @@ export async function processWorkouts(
       if (workout.totalVolume && workout.totalVolume > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.volume'),
-          value: formatVolume(workout.totalVolume, t, units),
+          value: formatVolume(workout.totalVolume, t, units, appLocale),
         });
       }
 
@@ -275,7 +282,7 @@ export async function processWorkouts(
       if (workout.caloriesBurned && workout.caloriesBurned > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.calories'),
-          value: `${workout.caloriesBurned} ${t('common.kcal')}`,
+          value: `${formatAppInteger(appLocale, workout.caloriesBurned)} ${t('common.kcal')}`,
         });
       }
 

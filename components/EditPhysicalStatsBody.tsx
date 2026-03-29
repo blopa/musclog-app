@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { type Gender } from '../database/models';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { DatePickerInput } from './modals/DatePickerInput';
@@ -50,9 +51,12 @@ export function EditPhysicalStatsBody({
 }: EditPhysicalStatsBodyProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatDecimal } = useFormatAppNumber();
   const [dob, setDob] = useState(initialData?.dob ?? '');
   const [gender, setGender] = useState<Gender>(initialData?.gender ?? 'other');
-  const [weight, setWeight] = useState(parseFloat(initialData?.weight || '0.0').toFixed(2));
+  const [weight, setWeight] = useState(() =>
+    formatDecimal(parseFloat(initialData?.weight || '0'), 2)
+  );
   const [height, setHeight] = useState(initialData?.height ?? '0');
   const [fatPercentage, setFatPercentage] = useState<number | null>(
     initialData?.fatPercentage ?? null

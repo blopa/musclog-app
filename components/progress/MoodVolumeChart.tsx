@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodVolumePoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
@@ -29,6 +30,7 @@ const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
 export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -91,10 +93,10 @@ export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
           t('progress.mood.okay'),
           t('progress.mood.great'),
         ]}
-        stepsFormatter={(v) => `${Math.round(v)} ${weightLabel}`}
+        stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${weightLabel}`}
         heartRateFormatter={(v) => {
           const key = MOOD_KEYS[Math.round(v)];
-          return key ? t(`progress.mood.${key}`) : v.toFixed(1);
+          return key ? t(`progress.mood.${key}`) : formatDecimal(v, 1);
         }}
         lineColor={theme.colors.status.indigo}
         xAxisLabels={xAxisLabels}

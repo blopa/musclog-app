@@ -43,17 +43,17 @@ import {
 } from '../../types/guards/openFoodFacts';
 import { localDayStartMs } from '../../utils/calendarDate';
 import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedDecimalInput,
+} from '../../utils/localizedDecimalInput';
+import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
 import { getProductName } from '../../utils/productName';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-  sanitizeLocalizedDecimalInput,
-} from '../../utils/localizedDecimalInput';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';

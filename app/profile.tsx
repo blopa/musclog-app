@@ -32,6 +32,7 @@ import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { type Gender } from '../database/models';
 import { UserService } from '../database/services';
 import { SettingsService } from '../database/services/SettingsService';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
 import { useTheme } from '../hooks/useTheme';
@@ -46,6 +47,7 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { units, weightUnit, heightUnit } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
@@ -116,7 +118,7 @@ export default function ProfileScreen() {
       statsArray.push({
         id: 'weight',
         titleKey: 'profile.stats.weight',
-        value: metrics.weight.toFixed(1),
+        value: formatDecimal(metrics.weight, 1),
         unit: weightUnit,
         icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
         iconColor: isGainPhase
@@ -132,7 +134,7 @@ export default function ProfileScreen() {
       statsArray.push({
         id: 'height',
         titleKey: 'profile.stats.height',
-        value: metrics.height.toFixed(0),
+        value: formatInteger(Math.round(metrics.height)),
         unit: heightUnit,
         status: 'Verified',
         icon: Ruler,
@@ -149,7 +151,7 @@ export default function ProfileScreen() {
       statsArray.push({
         id: 'bodyFat',
         titleKey: 'profile.stats.bodyFat',
-        value: metrics.bodyFat.toFixed(1),
+        value: formatDecimal(metrics.bodyFat, 1),
         unit: '%',
         icon: isGainPhase ? TrendingUp : isLosePhase ? TrendingDown : TrendingUp,
         iconColor: isGainPhase
@@ -174,7 +176,7 @@ export default function ProfileScreen() {
       statsArray.push({
         id: 'bmi',
         titleKey: 'profile.stats.bmi',
-        value: calculatedBMI.toFixed(1),
+        value: formatDecimal(calculatedBMI, 1),
         status: t(bmiStatusKey),
         statusColor: theme.colors.status.info,
         icon: Activity,
@@ -211,7 +213,18 @@ export default function ProfileScreen() {
     }
 
     return statsArray;
-  }, [metrics?.weight, metrics?.height, metrics?.bodyFat, dbUser, weightUnit, heightUnit, t]);
+  }, [
+    metrics?.weight,
+    metrics?.height,
+    metrics?.bodyFat,
+    dbUser,
+    weightUnit,
+    heightUnit,
+    t,
+    theme,
+    formatDecimal,
+    formatInteger,
+  ]);
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') {
