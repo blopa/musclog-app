@@ -49,6 +49,11 @@ import {
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
 import { getProductName } from '../../utils/productName';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedDecimalInput,
+} from '../../utils/localizedDecimalInput';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
@@ -231,7 +236,11 @@ export function FoodMealDetailsModal({
   canEdit = false,
 }: FoodDetailsModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const decimalSeparator = useMemo(
+    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -1629,10 +1638,10 @@ export function FoodMealDetailsModal({
     if (!editForm) {
       return;
     }
-    const cal = Number(editForm.calories);
-    const pro = Number(editForm.protein);
-    const carb = Number(editForm.carbs);
-    const f = Number(editForm.fat);
+    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
+    const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
+    const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
+    const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
     setEditedOverrides({
       name: editForm.name.trim() || undefined,
       barcode: editForm.barcode.trim() || undefined,
@@ -1644,16 +1653,14 @@ export function FoodMealDetailsModal({
     });
     setEditForm(null);
     setIsEditPopUpVisible(false);
-  }, [editForm]);
+  }, [editForm, decimalSeparator]);
 
   const handleEditFormNumericChange = useCallback(
     (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
-      const sanitized = value.replace(/[^0-9.]/g, '');
-      const dotIndex = sanitized.indexOf('.');
-      const numericValue = dotIndex !== -1 ? sanitized.slice(0, dotIndex + 3) : sanitized;
+      const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
       setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
     },
-    []
+    [decimalSeparator]
   );
 
   // Handlers for FoodNotFoundModal actions — close Food Details modal too so parent can resume camera.
@@ -2031,6 +2038,7 @@ export function FoodMealDetailsModal({
               label={t('food.newCustomFood.calories')}
               value={editForm.calories}
               onChange={handleEditFormNumericChange('calories')}
+              allowDecimals
               topRightElement={
                 <View
                   className="rounded-full px-2"
@@ -2053,6 +2061,7 @@ export function FoodMealDetailsModal({
                 label={t('food.newCustomFood.protein')}
                 value={editForm.protein}
                 onChange={handleEditFormNumericChange('protein')}
+                allowDecimals
                 topRightElement={
                   <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 }
@@ -2063,6 +2072,7 @@ export function FoodMealDetailsModal({
                 label={t('food.newCustomFood.carbs')}
                 value={editForm.carbs}
                 onChange={handleEditFormNumericChange('carbs')}
+                allowDecimals
                 topRightElement={
                   <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
                 }
@@ -2073,6 +2083,7 @@ export function FoodMealDetailsModal({
                 label={t('food.newCustomFood.fat')}
                 value={editForm.fat}
                 onChange={handleEditFormNumericChange('fat')}
+                allowDecimals
                 topRightElement={
                   <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
                 }
