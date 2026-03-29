@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { subYears } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,9 +58,7 @@ export function useOnboardingFitnessData() {
     undefined
   );
 
-  const defaultDob = formatDateToDob(
-    new Date(new Date().getFullYear() - 25, new Date().getMonth(), new Date().getDate())
-  );
+  const defaultDob = formatDateToDob(subYears(new Date(), 25));
 
   useEffect(() => {
     const loadFitnessData = async () => {

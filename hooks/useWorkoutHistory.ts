@@ -9,6 +9,7 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
+import { type Theme } from '../theme';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -104,7 +105,7 @@ async function processWorkoutSimple(
   workout: WorkoutLog,
   t: TFunction,
   locale: Locale,
-  theme: any,
+  theme: Theme,
   skipPRDetection: boolean = false
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration

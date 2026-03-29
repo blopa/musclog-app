@@ -66,3 +66,18 @@ export function localDayClosedRangeMaxMs(date: Date): number {
 export function localDayKeyPlusCalendarDays(dayKeyMs: number, deltaDays: number): number {
   return localDayStartMs(addDays(new Date(dayKeyMs), deltaDays));
 }
+
+/** Local calendar day key for today + `deltaDays` (e.g. +90 for a 90-day goal horizon). */
+export function localDayKeyPlusCalendarDaysFromNow(deltaDays: number): number {
+  return localDayKeyPlusCalendarDays(localDayStartMs(new Date()), deltaDays);
+}
+
+/**
+ * True if both values fall on the same local calendar day.
+ * Accepts a `Date` or a stored day key / instant in milliseconds.
+ */
+export function isSameLocalCalendarDay(a: Date | number, b: Date | number): boolean {
+  const ta = typeof a === 'number' ? localDayStartFromUtcMs(a) : localDayStartMs(a);
+  const tb = typeof b === 'number' ? localDayStartFromUtcMs(b) : localDayStartMs(b);
+  return ta === tb;
+}

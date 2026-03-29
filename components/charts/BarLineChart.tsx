@@ -80,11 +80,14 @@ export function BarLineChart({
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const stepsFormatter = stepsFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
-  const heartRateFormatter = heartRateFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
+  const heartRateFormatter =
+    heartRateFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
   const [activeLabelSecondary, setActiveLabelSecondary] = useState<string | null>(null);
+
+  // TODO: why is setLabelContainerWidth never used?
   const [labelContainerWidth, setLabelContainerWidth] = useState(0);
   const containerWidthRef = useRef(0);
 

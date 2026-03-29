@@ -1,3 +1,4 @@
+import { addDays } from 'date-fns';
 import { AlertCircle } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,7 @@ import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '../../utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -137,7 +139,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         const checkins = generateWeeklyCheckins(
           plan,
           Date.now(),
-          goals.targetDate ?? Date.now() + 90 * 24 * 60 * 60 * 1000,
+          goals.targetDate ?? localDayKeyPlusCalendarDaysFromNow(90),
           heightDecrypted.value / 100,
           bodyFatDecrypted?.value ?? null
         );
@@ -343,8 +345,10 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               barColor={theme.colors.status.emerald}
               innerPadding={0.3}
               xAxisLabels={dailyWeights.map((_w: number, i: number) => {
+                const dayInstant = addDays(new Date(localDayStartMs(new Date())), -(6 - i));
+                // TODO: do we need to use i18n here?
                 const dayKey = (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const)[
-                  new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).getDay()
+                  dayInstant.getDay()
                 ];
                 return {
                   label: t(`common.days.short.${dayKey}`),

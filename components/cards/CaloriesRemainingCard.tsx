@@ -51,7 +51,7 @@ export function CaloriesRemainingCard({
 }: CaloriesRemainingCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const needsVerticalLayout =
     willOverflow(macros.protein.amount, macros.protein.goal) ||
@@ -76,7 +76,10 @@ export function CaloriesRemainingCard({
                   className="ml-auto text-3xl font-semibold"
                   style={{ color: theme.colors.accent.secondary }}
                 >
-                  {calories.percentage}%
+                  {calories.percentage % 1 === 0
+                    ? formatInteger(Math.round(calories.percentage), { useGrouping: false })
+                    : formatRoundedDecimal(calories.percentage, 1)}
+                  %
                 </Text>
               </View>
             </View>

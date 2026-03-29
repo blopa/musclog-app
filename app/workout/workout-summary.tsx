@@ -13,8 +13,8 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
-import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { formatAppInteger } from '../../utils/formatAppNumber';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { showSnackbar } from '../../utils/snackbarService';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
@@ -91,7 +91,11 @@ export default function WorkoutSummaryScreen() {
         let volumeStr = `0 ${weightUnit}`;
         if (completedWorkout.totalVolume) {
           const locale = i18n.resolvedLanguage ?? i18n.language;
-          const formattedVolume = formatDisplayWeightKg(locale, units, completedWorkout.totalVolume);
+          const formattedVolume = formatDisplayWeightKg(
+            locale,
+            units,
+            completedWorkout.totalVolume
+          );
           volumeStr = `${formattedVolume} ${weightUnit}`;
           setVolume(volumeStr);
         }

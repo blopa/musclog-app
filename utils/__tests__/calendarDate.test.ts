@@ -1,9 +1,11 @@
 import { addDays } from 'date-fns';
 
 import {
+  isSameLocalCalendarDay,
   localDayClosedRangeMaxMs,
   localDayHalfOpenRange,
   localDayKeyPlusCalendarDays,
+  localDayKeyPlusCalendarDaysFromNow,
   localDayStartFromUtcMs,
   localDayStartMs,
   localDayStartMsFromIsoDateOnly,
@@ -58,5 +60,20 @@ describe('calendarDate', () => {
     expect(localDayKeyPlusCalendarDays(day, 1)).toBe(
       localDayStartMs(new Date(2026, 2, 16, 0, 0, 0))
     );
+  });
+
+  it('localDayKeyPlusCalendarDaysFromNow matches today start + delta', () => {
+    const now = new Date();
+    expect(localDayKeyPlusCalendarDaysFromNow(90)).toBe(
+      localDayKeyPlusCalendarDays(localDayStartMs(now), 90)
+    );
+  });
+
+  it('isSameLocalCalendarDay matches same local day for Date and ms', () => {
+    const noon = new Date(2026, 5, 10, 15, 30, 0);
+    const evening = new Date(2026, 5, 10, 22, 0, 0);
+    expect(isSameLocalCalendarDay(noon, evening)).toBe(true);
+    expect(isSameLocalCalendarDay(noon.getTime(), evening.getTime())).toBe(true);
+    expect(isSameLocalCalendarDay(noon, new Date(2026, 5, 11, 1, 0, 0))).toBe(false);
   });
 });

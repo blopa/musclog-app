@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
@@ -26,6 +27,7 @@ export function MacroCard({
   const theme = useTheme();
   const { width: windowWidth } = useWindowDimensions();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const isNarrow = windowWidth < 380;
 
@@ -60,19 +62,26 @@ export function MacroCard({
         <View className="mb-1 flex-row items-baseline gap-1">
           <Text className="text-sm text-text-secondary">{displayName}</Text>
           <Text className="text-sm font-semibold" style={{ color }}>
-            {percentage}%
+            {percentage % 1 === 0
+              ? formatInteger(percentage, { useGrouping: false })
+              : formatRoundedDecimal(percentage, 1)}
+            %
           </Text>
         </View>
 
         {forceVertical ? (
           <View className="mb-3">
             <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
-            <Text className="text-sm text-text-secondary">/ {goal}g</Text>
+            <Text className="text-sm text-text-secondary">
+              / {formatInteger(goal, { useGrouping: false })}g
+            </Text>
           </View>
         ) : (
           <View className="mb-3 flex-row items-baseline gap-1">
             <Text className="text-2xl font-bold text-text-primary">{amount}</Text>
-            <Text className="text-sm text-text-secondary">/ {goal}g</Text>
+            <Text className="text-sm text-text-secondary">
+              / {formatInteger(goal, { useGrouping: false })}g
+            </Text>
           </View>
         )}
 

@@ -23,7 +23,8 @@ import {
   localDayStartMs,
   parseLocalCalendarDate,
 } from './calendarDate';
-import { kgToDisplay } from './unitConversion';
+import { formatAppInteger } from './formatAppNumber';
+import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
@@ -207,7 +208,7 @@ export const getUserDetailsPrompt = async (
 };
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
- * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs"). */
+ * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
 function buildWorkoutSummaryFromDetails(
   details: {
     workoutLog: {
@@ -227,7 +228,8 @@ function buildWorkoutSummaryFromDetails(
     }[];
     exercises: { id: string; name?: string; muscleGroup?: string }[];
   },
-  units?: Units
+  units?: Units,
+  locale: string = 'en-US'
 ): string {
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
@@ -247,7 +249,7 @@ function buildWorkoutSummaryFromDetails(
   const totalVolumeKg = workoutLog.totalVolume ?? 0;
   const totalVolumeWithUnit =
     units !== undefined
-      ? `${Math.round(kgToDisplay(totalVolumeKg, units))} ${units === 'imperial' ? 'lbs' : 'kg'}`
+      ? `${formatDisplayWeightKg(locale, units, totalVolumeKg)} ${units === 'imperial' ? 'lbs' : 'kg'}`
       : totalVolumeKg;
 
   const workoutData = {
@@ -280,11 +282,15 @@ function buildWorkoutSummaryFromDetails(
   return JSON.stringify(workoutData);
 }
 
-async function buildWorkoutSummaryJson(workoutLogId: string, units?: Units): Promise<string> {
+async function buildWorkoutSummaryJson(
+  workoutLogId: string,
+  units?: Units,
+  locale: string = 'en-US'
+): Promise<string> {
   try {
     const resolvedUnits = units ?? (await SettingsService.getUnits());
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-    return buildWorkoutSummaryFromDetails(details, resolvedUnits);
+    return buildWorkoutSummaryFromDetails(details, resolvedUnits, locale);
   } catch (error) {
     console.error('[prompts] buildWorkoutSummaryJson error:', error);
     return '{}';
@@ -312,7 +318,7 @@ export const getChatMessagePromptContent = async (
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
     const summaries: string[] = [];
     for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -513,7 +519,7 @@ export const getMealCritiquePrompt = async (
     const latestHeight = await UserMetricService.getLatest('height');
     if (latestHeight) {
       const { value, unit: storedUnit } = await latestHeight.getDecrypted();
-      heightInfo = `User height: ${Math.round(value)} ${storedUnit ?? 'cm'}`;
+      heightInfo = `User height: ${formatAppInteger(language, Math.round(value))} ${storedUnit ?? 'cm'}`;
     }
   } catch {
     // height not available
@@ -523,15 +529,17 @@ export const getMealCritiquePrompt = async (
   if (nutritionGoal) {
     nutritionGoalInfo = [
       'Daily nutrition targets:',
-      `- Calories: ${nutritionGoal.totalCalories} kcal`,
-      `- Protein: ${nutritionGoal.protein}g`,
-      `- Carbs: ${nutritionGoal.carbs}g`,
-      `- Fat: ${nutritionGoal.fats}g`,
+      `- Calories: ${formatAppInteger(language, Math.round(nutritionGoal.totalCalories))} kcal`,
+      `- Protein: ${formatAppInteger(language, Math.round(nutritionGoal.protein))}g`,
+      `- Carbs: ${formatAppInteger(language, Math.round(nutritionGoal.carbs))}g`,
+      `- Fat: ${formatAppInteger(language, Math.round(nutritionGoal.fats))}g`,
     ].join('\n');
   }
 
   // TODO: use a translation here, because some languages have a white space before the :, like french
-  const foodList = foods.map((f) => `- ${f.name}: ${Math.round(f.gramWeight)}g`).join('\n');
+  const foodList = foods
+    .map((f) => `- ${f.name}: ${formatAppInteger(language, Math.round(f.gramWeight))}g`)
+    .join('\n');
 
   return [
     await getBaseSystemPrompt(language, context),
@@ -542,7 +550,7 @@ export const getMealCritiquePrompt = async (
     `Meal to give feedback: ${mealType}`,
     'Foods in the meal:',
     foodList,
-    `Combined totals: Calories ${Math.round(totals.calories)} kcal | Protein ${Math.round(totals.protein)}g | Carbs ${Math.round(totals.carbs)}g | Fat ${Math.round(totals.fat)}g`,
+    `Combined totals: Calories ${formatAppInteger(language, Math.round(totals.calories))} kcal | Protein ${formatAppInteger(language, Math.round(totals.protein))}g | Carbs ${formatAppInteger(language, Math.round(totals.carbs))}g | Fat ${formatAppInteger(language, Math.round(totals.fat))}g`,
     "Please provide a concise, constructive critique of this meal. Comment on nutritional balance, macro distribution relative to the user's daily targets and goals, and give 1–2 practical suggestions to improve it. Be encouraging and positive.",
   ]
     .filter(Boolean)
@@ -572,7 +580,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -620,7 +628,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -755,7 +763,7 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
   const units = await SettingsService.getUnits();
-  const workoutJson = buildWorkoutSummaryFromDetails(details, units);
+  const workoutJson = buildWorkoutSummaryFromDetails(details, units, language);
   return getRecentWorkoutInsightsPrompt(
     details.workoutLog.workoutName,
     language,
@@ -783,7 +791,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }

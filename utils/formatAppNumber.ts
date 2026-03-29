@@ -136,6 +136,49 @@
  * **Still intentional:** `app/profile.tsx` edit form seeds may use `toString()` for controlled inputs;
  * **debug/test** screens may show raw numbers; **NumericInput** in tests has no central formatter;
  * **DataLogModal** `toFixed` is coercion not labels.
+ *
+ * ---
+ * ## Deep audit (March 2026, third pass — display decimals & locale)
+ *
+ * **Method:** `grep` for `.toFixed(` in `*.tsx` (only `DataLogModal`, coercion); `grep` for files under
+ * `app/` + `components/` missing `useFormatAppNumber` / `formatApp*` / `formatDisplayWeightKg` (many are
+ * layout-only); spot-check `kgToDisplay` (callers pair with `formatDecimal` / `formatDisplayWeightKg` in
+ * product flows); verify `utils/foodDisplay.ts`, `workoutHistory.formatVolume`, widgets, onboarding
+ * results.
+ *
+ * **Conclusion:** Product surfaces that show user-facing quantities are largely covered. **Typed input**
+ * (comma vs dot) stays in `localizedDecimalInput.ts`; **read-only display** stays here and in
+ * `formatDisplayWeightKg`.
+ *
+ * **Small gaps closed in this pass:** `MacroCard` (`/` goal `g` and macro `%`); `CaloriesRemainingCard`
+ * header calorie `%`; `ChatWorkoutCompletedCard` PR count (integers — still use `formatInteger` for
+ * non-Latin digit locales).
+ *
+ * **Presentation components** (`StatCard`, `WorkoutStatCard`, `ChatWorkoutCompletedCard.volume` string):
+ * receive **pre-formatted** strings from parents — callers must format before passing.
+ *
+ * ---
+ * ## Deep audit (March 2026, fourth pass — cross-cutting string pipelines)
+ *
+ * **Checked:** `grep` / spot review of `kgToDisplay(` — product UIs pair with `formatDecimal` /
+ * `formatDisplayWeightKg` / `useFormatAppNumber` (e.g. `CheckinDetailsModal`, `FreeSessionExerciseCompleteModal`,
+ * onboarding results). `AddFoodItemToMealModal` kcal line uses pre-formatted `formatRoundedDecimal` output.
+ *
+ * **Implemented this pass:** `healthConnectWorkout.android.ts` / `healthConnectWorkout.ios.ts`
+ * (`formatSegmentBreakdown`): set weights and rep counts in Health session notes use `formatAppDecimal` /
+ * `formatAppInteger` with `i18n` locale. `workoutDetail.ts` `formatWeight` + `transformWorkoutToDetailData`
+ * take `appNumberLocale` (from `usePastWorkoutDetail`). `workout.ts` `formatExerciseDescription` formats
+ * displayed weight with `formatApp*`; `createExerciseOption` passes current i18n locale.
+ *
+ * **`utils/prompts.ts` (AI strings):** workout JSON `totalVolume` uses `formatDisplayWeightKg(locale, …)`;
+ * meal critique prompts use `formatAppInteger(language, …)` for grams, kcal, and macro lines. Pass the same
+ * `language` as `getBaseSystemPrompt` into `buildWorkoutSummaryJson(…, locale)`.
+ *
+ * **StepperInput** free-typing still uses an ASCII decimal regex for the validation path (see
+ * `localizedDecimalInput` for locale-aware typing in food forms).
+ *
+ * **Ongoing:** When adding UI, import `useFormatAppNumber()` in the screen or use `formatApp*` with an
+ * explicit `locale` argument in non-React code paths.
  */
 
 import { roundToDecimalPlaces } from './roundDecimal';

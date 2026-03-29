@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
 import type { Units } from '../constants/settings';
@@ -9,6 +9,8 @@ import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
 import i18n from '../lang/lang';
+import { type Theme } from '../theme';
+import { localDayStartMs } from './calendarDate';
 import { getDateFnsLocale } from './dateFnsLocale';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
@@ -91,7 +93,7 @@ export function formatVolume(
 /**
  * Get icon and colors based on workout type
  */
-export function getWorkoutIcon(theme: any, workoutName: string): IconData {
+export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
   const nameLower = workoutName.toLowerCase();
   if (nameLower.includes('run') || nameLower.includes('cardio')) {
     return {
@@ -100,6 +102,7 @@ export function getWorkoutIcon(theme: any, workoutName: string): IconData {
       iconBgOpacity: theme.colors.status.emerald10,
     };
   }
+
   if (nameLower.includes('leg') || nameLower.includes('squat')) {
     return {
       icon: Square,
@@ -107,6 +110,7 @@ export function getWorkoutIcon(theme: any, workoutName: string): IconData {
       iconBgOpacity: theme.colors.accent.primary10,
     };
   }
+
   return {
     icon: Dumbbell,
     iconBgColor: theme.colors.status.indigo600,
@@ -187,12 +191,12 @@ export function normalizeMuscleGroup(group: string): string {
 export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange | undefined {
   if (dateRange === '30') {
     const endDate = Date.now();
-    const startDate = endDate - 30 * 24 * 60 * 60 * 1000;
+    const startDate = localDayStartMs(subDays(new Date(), 30));
     return { startDate, endDate };
   }
   if (dateRange === '90') {
     const endDate = Date.now();
-    const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
+    const startDate = localDayStartMs(subDays(new Date(), 90));
     return { startDate, endDate };
   }
   // 'custom' date range would need a date picker, skip for now
@@ -207,7 +211,7 @@ export async function processWorkouts(
   filters: WorkoutFilters,
   t: TranslationFunction,
   units: Units,
-  theme: any
+  theme: Theme
 ): Promise<WorkoutHistoryItem[]> {
   const locale = getDateFnsLocale(i18n.language);
   const appLocale = i18n.resolvedLanguage ?? i18n.language;

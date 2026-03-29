@@ -23,6 +23,7 @@ import {
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
+import { localDayKeyPlusCalendarDays, localDayStartMs } from '../../utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   estimateTargetBodyFatWhenCutting,
@@ -329,7 +330,10 @@ export default function NutritionGoalsResults() {
             : 0;
 
         const startDate = Date.now();
-        const targetDate = startDate + parsedPlan.projectionDays * 24 * 60 * 60 * 1000;
+        const targetDate = localDayKeyPlusCalendarDays(
+          localDayStartMs(new Date(startDate)),
+          parsedPlan.projectionDays
+        );
 
         const savedGoal = await NutritionGoalService.saveGoals({
           totalCalories: parsedPlan.targetCalories,
@@ -345,8 +349,7 @@ export default function NutritionGoalsResults() {
           targetDate,
         });
 
-        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        if (targetDate - startDate > oneWeekMs) {
+        if (parsedPlan.projectionDays > 7) {
           const weeklyData = generateWeeklyCheckins(
             parsedPlan,
             startDate,

@@ -253,8 +253,12 @@ describe('utils/workout', () => {
       });
 
       it('should include weight for non-bodyweight exercises', () => {
-        expect(formatExerciseDescription(3, 10, 60, false)).toBe('3 sets × 10 reps @ 60kg');
-        expect(formatExerciseDescription(4, 8, 22.5, false)).toBe('4 sets × 8 reps @ 22.5kg');
+        expect(formatExerciseDescription(3, 10, 60, false, 'metric', 'en-US')).toBe(
+          '3 sets × 10 reps @ 60kg'
+        );
+        expect(formatExerciseDescription(4, 8, 22.5, false, 'metric', 'en-US')).toBe(
+          '4 sets × 8 reps @ 22.5kg'
+        );
       });
 
       it('should not include weight for bodyweight exercises', () => {

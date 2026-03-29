@@ -1,9 +1,9 @@
-import { subDays } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { type MealType } from '../database/models';
 import NutritionLog from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
+import { localDayKeyPlusCalendarDays, localDayStartMs } from '../utils/calendarDate';
 
 export type YesterdayMealData = {
   logs: NutritionLog[];
@@ -46,7 +46,7 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
     let mounted = true;
     setIsLoadingYesterday(true);
     const baseDay = logDate ?? new Date();
-    const yesterdayDay = subDays(baseDay, 1);
+    const yesterdayDay = new Date(localDayKeyPlusCalendarDays(localDayStartMs(baseDay), -1));
 
     const doTask = async () => {
       try {

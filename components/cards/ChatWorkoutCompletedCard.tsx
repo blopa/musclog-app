@@ -2,6 +2,7 @@ import { ExternalLink, ScrollText, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 
 type ChatWorkoutCompletedCardProps = {
@@ -21,6 +22,7 @@ export function ChatWorkoutCompletedCard({
 }: ChatWorkoutCompletedCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View
@@ -95,7 +97,7 @@ export function ChatWorkoutCompletedCard({
               color: personalRecords > 0 ? theme.colors.accent.primary : theme.colors.text.primary,
             }}
           >
-            {personalRecords}
+            {formatInteger(personalRecords, { useGrouping: false })}
           </Text>
         </View>
       </View>

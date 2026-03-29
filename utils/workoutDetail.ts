@@ -8,7 +8,9 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogSet from '../database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '../database/services';
+import { type Theme } from '../theme';
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
+import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnitI18nKey } from './units';
 import { getWorkoutIcon } from './workoutHistory';
@@ -53,14 +55,24 @@ export type WorkoutDetailData = {
 /**
  * Format weight for display (input in kg, output in user unit)
  */
-function formatWeight(weight: number, isBodyweight: boolean, t: TFunction, units: Units): string {
+function formatWeight(
+  weight: number,
+  isBodyweight: boolean,
+  t: TFunction,
+  units: Units,
+  appNumberLocale: string
+): string {
   const unitKey = getWeightUnitI18nKey(units);
   const displayWeight = kgToDisplay(weight, units);
   const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
+  const weightStr =
+    rounded % 1 === 0
+      ? formatAppInteger(appNumberLocale, Math.round(rounded))
+      : formatAppDecimal(appNumberLocale, rounded, 1);
   if (isBodyweight) {
-    return weight > 0 ? `+${rounded} ${t(unitKey)}` : t('workoutSession.bodyweight');
+    return weight > 0 ? `+${weightStr} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
-  return `${rounded} ${t(unitKey)}`;
+  return `${weightStr} ${t(unitKey)}`;
 }
 
 /**
@@ -175,7 +187,9 @@ export async function transformWorkoutToDetailData(
   t: TFunction,
   units: Units,
   locale: Locale,
-  theme: any
+  theme: Theme,
+  /** `Intl` / `formatApp*` locale string (e.g. i18n.resolvedLanguage), not date-fns Locale */
+  appNumberLocale: string
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -221,7 +235,7 @@ export async function transformWorkoutToDetailData(
         const isHighlighted = prSetIds.has(set.id);
         return {
           setNumber: index + 1,
-          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units),
+          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
           reps: set.reps ?? 0,
           partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
           repsInReserve: set.repsInReserve ?? 0,

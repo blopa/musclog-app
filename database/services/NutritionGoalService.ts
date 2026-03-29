@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 import { Platform } from 'react-native';
 
+import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '../../utils/calendarDate';
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
 import { NutritionCheckinService } from './NutritionCheckinService';
@@ -310,7 +311,7 @@ export class NutritionGoalService {
       const checkins = generateWeeklyCheckins(
         plan,
         goal.createdAt,
-        goal.targetDate ?? goal.createdAt + 90 * 24 * 60 * 60 * 1000,
+        goal.targetDate ?? localDayKeyPlusCalendarDays(localDayStartFromUtcMs(goal.createdAt), 90),
         heightDecrypted.value / 100,
         bodyFatDecrypted?.value ?? null
       );

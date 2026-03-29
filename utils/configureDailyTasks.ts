@@ -10,7 +10,7 @@ import {
 } from '../database/services';
 import i18n from '../lang/lang';
 import AiService from '../services/AiService';
-import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
+import { isSameLocalCalendarDay, localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
 import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
 const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
@@ -29,12 +29,7 @@ async function shouldRunToday(): Promise<boolean> {
     const lastRunDate = new Date(parseInt(lastRunTimestamp, 10));
     const today = new Date();
 
-    // Compare dates (ignore time)
-    return (
-      lastRunDate.getFullYear() !== today.getFullYear() ||
-      lastRunDate.getMonth() !== today.getMonth() ||
-      lastRunDate.getDate() !== today.getDate()
-    );
+    return !isSameLocalCalendarDay(lastRunDate, today);
   } catch (error) {
     console.error('[shouldRunToday] Error:', error);
     return false;

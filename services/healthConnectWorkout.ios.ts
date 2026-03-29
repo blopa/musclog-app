@@ -14,7 +14,7 @@ import type { ObjectTypeIdentifier } from '@kingstinct/react-native-healthkit/ty
 import type { Units } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
-import { formatAppInteger } from '../utils/formatAppNumber';
+import { formatAppDecimal, formatAppInteger } from '../utils/formatAppNumber';
 import { kgToDisplay } from '../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../utils/units';
 
@@ -56,17 +56,23 @@ function formatSegmentBreakdown(
   unitLabel: string,
   units: Units
 ): string {
+  const locale = i18n.resolvedLanguage ?? i18n.language;
+  const formatDisplayWeight = (displayKg: number) => {
+    const rounded = displayKg % 1 === 0 ? displayKg : Math.round(displayKg * 10) / 10;
+    return rounded % 1 === 0
+      ? formatAppInteger(locale, Math.round(rounded))
+      : formatAppDecimal(locale, rounded, 1);
+  };
+
   return segmentItems
     .map((item) => {
       const setStr = item.sets
         .filter((s) => s.reps > 0 || s.weight > 0)
         .map((s) => {
           const displayWeight = kgToDisplay(s.weight, units);
-          const rounded =
-            displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
           return i18n.t('healthConnect.repsWeightFormat', {
             reps: s.reps,
-            weight: rounded,
+            weight: formatDisplayWeight(displayWeight),
             unit: unitLabel,
           });
         })
@@ -75,7 +81,7 @@ function formatSegmentBreakdown(
       // TODO: use a translation here, because some languages have a white space before the :, like french
       return setStr
         ? `${item.exerciseName}: ${setStr}`
-        : `${item.exerciseName}: ${item.totalReps} reps`;
+        : `${item.exerciseName}: ${formatAppInteger(locale, item.totalReps)} reps`;
     })
     .join('; ');
 }

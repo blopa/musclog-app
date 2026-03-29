@@ -1,5 +1,5 @@
 import type { Locale } from 'date-fns';
-import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
+import { format, isThisWeek, isToday, isYesterday, subDays, subMonths, subYears } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -14,6 +14,7 @@ import { useTheme } from '../../hooks/useTheme';
 import type { UserMetricWithDecrypted } from '../../hooks/useUserMetrics';
 import { useUserMetrics } from '../../hooks/useUserMetrics';
 import { MetricType as AppMetricType } from '../../services/healthDataTransform';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { kgToDisplay, storedHeightToCm, storedWeightToKg } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
@@ -147,18 +148,20 @@ export default function BodyMetricsHistoryModal({
 
   // Calculate date range based on selected period
   const dateRange = useMemo(() => {
-    const now = Date.now();
-    let startDate = now;
+    const endDate = Date.now();
+    const today = new Date();
+    let startDate = endDate;
     if (selectedPeriod === '30D') {
-      startDate = now - 30 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subDays(today, 30));
     } else if (selectedPeriod === '3M') {
-      startDate = now - 90 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subMonths(today, 3));
     } else if (selectedPeriod === '6M') {
-      startDate = now - 180 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subMonths(today, 6));
     } else if (selectedPeriod === '1Y') {
-      startDate = now - 365 * 24 * 60 * 60 * 1000;
+      startDate = localDayStartMs(subYears(today, 1));
     }
-    return { startDate, endDate: now };
+
+    return { startDate, endDate };
   }, [selectedPeriod]);
 
   // Use hook for paginated history (for list display)
