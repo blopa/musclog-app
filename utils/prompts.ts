@@ -1,5 +1,6 @@
 import { FunctionDeclaration } from '@google/generative-ai';
 import convert, { Unit } from 'convert';
+import { parseISO } from 'date-fns';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -16,6 +17,7 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '../database/services';
+import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -555,8 +557,8 @@ export const getRecentWorkoutsInsightsPrompt = async (
   let workoutsJson = '[]';
   try {
     const units = await SettingsService.getUnits();
-    const startTs = new Date(startDate).setUTCHours(0, 0, 0, 0);
-    const endTs = new Date(endDate).setUTCHours(23, 59, 59, 999);
+    const startTs = localDayStartMs(parseISO(startDate));
+    const endTs = localDayClosedRangeMaxMs(parseISO(endDate));
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {

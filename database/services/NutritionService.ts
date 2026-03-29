@@ -837,9 +837,9 @@ export class NutritionService {
       return 0;
     }
 
-    const uniqueDayStarts = [...new Set(logs.map((log) => localDayStartFromUtcMs(log.date ?? 0)))].sort(
-      (a, b) => b - a
-    );
+    const uniqueDayStarts = [
+      ...new Set(logs.map((log) => localDayStartFromUtcMs(log.date ?? 0))),
+    ].sort((a, b) => b - a);
 
     let streak = 0;
     const expectedStart = localDayStartMs(new Date());

@@ -5,7 +5,7 @@
 The app has 2+ second screen transitions with zero visual feedback, making it feel broken.
 Root causes identified:
 
-1. **`useEffect` + `observe().subscribe()` timing gap** — WatermelonDB subscriptions fire *after* the first render is committed to screen, so every screen always starts with one blank `isLoading: true` frame before data can appear
+1. **`useEffect` + `observe().subscribe()` timing gap** — WatermelonDB subscriptions fire _after_ the first render is committed to screen, so every screen always starts with one blank `isLoading: true` frame before data can appear
 2. **Sequential DB queries in `useNutritionLogs`** — `getNutritionLogsForDate`, `getDailyNutrients`, and `fetchCount` are awaited one-by-one (~150ms compound delay)
 3. **No haptic/visual press feedback on nav buttons** — `NavigationMenu` calls `router.push()` in `onPress` only, giving zero feedback for 200–600ms
 4. **Static `SkeletonLoader`** — no animation, looks like broken UI rather than intentional loading state
@@ -37,10 +37,7 @@ const opacity = useSharedValue(0.4);
 
 useEffect(() => {
   opacity.value = withRepeat(
-    withSequence(
-      withTiming(0.8, { duration: 800 }),
-      withTiming(0.4, { duration: 800 })
-    ),
+    withSequence(withTiming(0.8, { duration: 800 }), withTiming(0.4, { duration: 800 })),
     -1 // loop forever
   );
 }, [opacity]);
@@ -58,17 +55,20 @@ const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 **File:** `components/NavigationMenu.tsx`
 
 Add `onPressIn` to every `Pressable`. On press-down (before `onPress` fires), two things happen simultaneously:
+
 - Haptic fires in <16ms (native thread) — immediate tactile confirmation
 - `router.prefetch(destination)` starts mounting the target screen off-screen via `react-native-screens` preloaded routes — data hooks begin firing ~300ms before the user even lifts their finger
 
 `expo-haptics@15.0.8` is already installed. Pattern already used in `CoachModal.tsx` (line 339) and `SmartCameraModal.tsx` (line 146).
 
 **New import** (add after existing imports):
+
 ```ts
 import * as Haptics from 'expo-haptics';
 ```
 
 **Pattern for each routed item** inside `renderNavSlot` (workouts, food, cycle, settings, progress, checkin):
+
 ```tsx
 onPressIn={() => {
   if (!active) {
@@ -79,6 +79,7 @@ onPressIn={() => {
 ```
 
 **Special cases:**
+
 - **`coach` case (line 148):** `onPressIn` haptic only — no prefetch (opens a modal, not a route)
 - **Home `Pressable` (line 321, outside `renderNavSlot`):** `onPressIn` haptic + `router.prefetch('/')` gated by `!homeActive`
 - **Camera FAB `Pressable` (line 349, outside `renderNavSlot`):** `onPressIn` haptic only — callback-driven
@@ -94,6 +95,7 @@ onPressIn={() => {
 **File:** `hooks/useNutritionLogs.ts`
 
 **Current code (lines 232–264):** Three independent queries run sequentially:
+
 1. `await NutritionService.getNutritionLogsForDate(date)` — reads `nutrition_logs` table
 2. `await NutritionService.getDailyNutrients(date)` — reads same table (different aggregation)
 3. `await database.get<NutritionLog>(...).fetchCount()` — with retry logic for DB reset errors
@@ -238,7 +240,7 @@ export function useUserContext(): UserContextValue {
 import { useUserContext } from '../context/UserContext';
 
 export interface UseUserResult {
-  user: User | null;  // keep interface for any external type references
+  user: User | null; // keep interface for any external type references
   isLoading: boolean;
 }
 
@@ -252,16 +254,16 @@ All three callers (`app/index.tsx`, `app/profile.tsx`, `hooks/useEmpiricalTDEE.t
 ### `app/_layout.tsx` — add `UserProvider`
 
 Add to imports:
+
 ```ts
 import { UserProvider } from '../context/UserContext';
 ```
 
 Wrap `RootLayout`'s return JSX with `<UserProvider>`, alongside the existing providers (after `SettingsProvider` since it's independent):
+
 ```tsx
 <SettingsProvider>
-  <UserProvider>
-    {/* ... rest of providers ... */}
-  </UserProvider>
+  <UserProvider>{/* ... rest of providers ... */}</UserProvider>
 </SettingsProvider>
 ```
 
@@ -270,6 +272,7 @@ Wrap `RootLayout`'s return JSX with `<UserProvider>`, alongside the existing pro
 ## Execution Order
 
 Tasks are independent and can be implemented in any order. Recommended sequence:
+
 1. Task 1 (SkeletonLoader shimmer) — lowest risk, improves all existing skeletons immediately
 2. Task 2 (NavigationMenu haptics + prefetch) — zero risk, instant perceived improvement
 3. Task 4 (progress.tsx skeleton) — low risk, replaces spinner with shimmer layout
@@ -280,13 +283,13 @@ Tasks are independent and can be implemented in any order. Recommended sequence:
 
 ## Verification
 
-| Change | How to verify |
-|--------|--------------|
-| Shimmer animation | Navigate to any screen — skeleton placeholders pulse between light and slightly lighter |
-| Haptics | Tap nav buttons — immediate vibration on finger-down, before screen transition |
-| Prefetch | Navigate workouts → nutrition → workouts repeatedly — second+ visits noticeably faster |
-| Nutrition speed | Time the Nutrition screen from tap to content: should be ~150ms faster |
-| Progress skeleton | Navigate to Progress — shimmer card placeholders instead of centered spinner |
-| UserContext | Home and Profile screens: user name/avatar appears without a loading flash on return visits |
+| Change            | How to verify                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| Shimmer animation | Navigate to any screen — skeleton placeholders pulse between light and slightly lighter     |
+| Haptics           | Tap nav buttons — immediate vibration on finger-down, before screen transition              |
+| Prefetch          | Navigate workouts → nutrition → workouts repeatedly — second+ visits noticeably faster      |
+| Nutrition speed   | Time the Nutrition screen from tap to content: should be ~150ms faster                      |
+| Progress skeleton | Navigate to Progress — shimmer card placeholders instead of centered spinner                |
+| UserContext       | Home and Profile screens: user name/avatar appears without a loading flash on return visits |
 
 Run after all changes: `npm run lint:all`

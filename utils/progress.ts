@@ -1,3 +1,5 @@
+import { localDayStartFromUtcMs } from './calendarDate';
+
 export interface MetricPoint {
   date: number;
   value: number;
@@ -28,13 +30,13 @@ export function calculateEmpiricalTDEEWindow(
 ): EmpiricalTDEEWindow {
   const weightByDay = new Map<number, number>();
   for (const p of weightPoints) {
-    const day = new Date(p.date).setUTCHours(0, 0, 0, 0);
+    const day = localDayStartFromUtcMs(p.date);
     weightByDay.set(day, p.value);
   }
 
   const fatByDay = new Map<number, number>();
   for (const p of fatPoints) {
-    const day = new Date(p.date).setUTCHours(0, 0, 0, 0);
+    const day = localDayStartFromUtcMs(p.date);
     fatByDay.set(day, p.value);
   }
 

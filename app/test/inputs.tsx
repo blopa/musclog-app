@@ -273,14 +273,15 @@ export default function InputsTestScreen() {
             onPress={() => {}}
           />
           <View className="mt-4">
-            <IconPicker label="Icon picker (chevron row QA)" value={qaIconName} onSelect={setQaIconName} />
+            <IconPicker
+              label="Icon picker (chevron row QA)"
+              value={qaIconName}
+              onSelect={setQaIconName}
+            />
           </View>
         </TestSection>
 
-        <TestSection
-          title="Accordion"
-          subtitle="Header row with chevron — native row padding QA"
-        >
+        <TestSection title="Accordion" subtitle="Header row with chevron — native row padding QA">
           <Accordion
             title="Sample section"
             isOpen={qaAccordionOpen}

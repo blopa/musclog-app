@@ -6,7 +6,11 @@ import { database } from '../database';
 import Food from '../database/models/Food';
 import NutritionLog, { type MealType } from '../database/models/NutritionLog';
 import { NutritionService } from '../database/services';
-import { localDayHalfOpenRange, localDayStartMs, localNextDayStartMsFromDate } from '../utils/calendarDate';
+import {
+  localDayHalfOpenRange,
+  localDayStartMs,
+  localNextDayStartMsFromDate,
+} from '../utils/calendarDate';
 
 // Hook parameters
 export interface UseNutritionLogsParams {
@@ -425,10 +429,7 @@ export function useNutritionLogs({
     // Add mode-specific filters to avoid unnecessary re-renders
     if (mode === 'daily' && date) {
       const { start, nextStart } = localDayHalfOpenRange(date);
-      query = query.extend(
-        Q.where('date', Q.gte(start)),
-        Q.where('date', Q.lt(nextStart))
-      );
+      query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
     } else if (mode === 'range' && startDate && endDate) {
       const startTimestamp = localDayStartMs(startDate);
       const endTimestamp = localNextDayStartMsFromDate(endDate);

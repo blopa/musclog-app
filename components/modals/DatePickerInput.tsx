@@ -133,7 +133,9 @@ export function DatePickerInput({
               )}
             </View>
           </View>
-          {TrailingIcon ? <View className="shrink-0 justify-center pl-2">{TrailingIcon}</View> : null}
+          {TrailingIcon ? (
+            <View className="shrink-0 justify-center pl-2">{TrailingIcon}</View>
+          ) : null}
         </View>
       </Pressable>
     </View>

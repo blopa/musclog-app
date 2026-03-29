@@ -96,7 +96,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const dateTimestamp = selectedDate.getTime();
+      const dateTimestamp = localDayStartMs(selectedDate);
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       if (flow !== null) {

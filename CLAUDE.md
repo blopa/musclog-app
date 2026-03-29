@@ -45,6 +45,7 @@
 - **Repositories**: Complex queries live in `database/repositories/` (e.g., `WorkoutLogRepository`, `MenstrualCycleRepository`). Prefer repositories over direct model queries for non-trivial reads.
 - **App Services**: Non-database services (AI, notifications, Health Connect sync) live in top-level `services/`.
 - **Data Persistence**: Use WatermelonDB for local storage. Ensure models are registered in `database/database-instance.ts`.
+- **Calendar day keys**: Fields that represent a calendar day (`nutrition_logs.date`, `user_metrics.date`, diary pickers) store **local** midnight ms. Use `utils/calendarDate.ts` (`localDayStartMs`, `localDayHalfOpenRange`, etc.); do not use `Date.UTC` or `setUTCHours(0, …)` for those stored values.
 - **Encryption**: Sensitive metrics (weight, body fat) and nutrition logs must be encrypted/decrypted using helpers in `database/encryptionHelpers.ts`.
 - **Translation**: Check the `lang` directory for translation files. Any new feature implemented must use translation keys and add new keys to the translation files for all available languages.
 

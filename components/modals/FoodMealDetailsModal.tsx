@@ -41,13 +41,13 @@ import {
   isSuccessFoodDetailProductState,
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
+import { localDayStartMs } from '../../utils/calendarDate';
 import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
-import { localDayStartMs } from '../../utils/calendarDate';
 import { getProductName } from '../../utils/productName';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';

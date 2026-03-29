@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 
-import { localDayStartFromUtcMs } from '../../utils/calendarDate';
+import { localDayStartFromUtcMs, localDayStartMs } from '../../utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -584,11 +584,11 @@ export class ProgressService {
     // Only include calories within the period covered by the measurements.
     // We use [start, end) interval for calories because the final weight measurement
     // is typically taken at the start of the final day.
-    const empiricalStartMidnight = new Date(empiricalStart).setUTCHours(0, 0, 0, 0);
-    const empiricalEndMidnight = new Date(empiricalEnd).setUTCHours(0, 0, 0, 0);
+    const empiricalStartKey = localDayStartFromUtcMs(empiricalStart);
+    const empiricalEndKey = localDayStartFromUtcMs(empiricalEnd);
 
     const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStartMidnight && n.date < empiricalEndMidnight)
+      .filter((n) => n.date >= empiricalStartKey && n.date < empiricalEndKey)
       .reduce((acc, curr) => acc + curr.calories, 0);
 
     if (isImperial) {
@@ -705,8 +705,7 @@ export class ProgressService {
   }
 
   private static getStartOfAggregation(date: number, aggregation: TimeAggregation): number {
-    const d = new Date(date);
-    d.setUTCHours(0, 0, 0, 0);
+    const d = new Date(localDayStartFromUtcMs(date));
     if (aggregation === 'weekly') {
       const day = d.getDay();
       const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
@@ -714,7 +713,7 @@ export class ProgressService {
     } else if (aggregation === 'monthly') {
       d.setDate(1);
     }
-    return d.getTime();
+    return localDayStartMs(d);
   }
 
   private static calculateCorrelationHistory(

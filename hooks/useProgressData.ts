@@ -1,6 +1,8 @@
+import { subDays, subMonths, subYears } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ProgressData, ProgressService } from '../database/services/ProgressService';
+import { localDayClosedRangeMaxMs, localDayStartMs } from '../utils/calendarDate';
 
 export type DateRangePreset = '7d' | '30d' | '90d' | '6m' | '1y' | 'all' | 'custom';
 
@@ -29,42 +31,37 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     setError(null);
     try {
       let start: number;
-      let end: number = new Date().getTime();
+      let end: number;
 
       if (preset === 'custom' && appliedCustomRange) {
-        start = appliedCustomRange.startDate.getTime();
-        end = appliedCustomRange.endDate.getTime();
+        start = localDayStartMs(appliedCustomRange.startDate);
+        end = localDayClosedRangeMaxMs(appliedCustomRange.endDate);
       } else {
-        const now = new Date();
-        now.setUTCHours(23, 59, 59, 999);
-        end = now.getTime();
-
-        const startDate = new Date();
-        startDate.setUTCHours(0, 0, 0, 0);
+        const today = new Date();
+        end = localDayClosedRangeMaxMs(today);
 
         switch (preset) {
           case '7d':
-            startDate.setDate(startDate.getDate() - 7);
+            start = localDayStartMs(subDays(today, 7));
             break;
           case '30d':
-            startDate.setDate(startDate.getDate() - 30);
+            start = localDayStartMs(subDays(today, 30));
             break;
           case '90d':
-            startDate.setDate(startDate.getDate() - 90);
+            start = localDayStartMs(subDays(today, 90));
             break;
           case '6m':
-            startDate.setMonth(startDate.getMonth() - 6);
+            start = localDayStartMs(subMonths(today, 6));
             break;
           case '1y':
-            startDate.setFullYear(startDate.getFullYear() - 1);
+            start = localDayStartMs(subYears(today, 1));
             break;
           case 'all':
-            startDate.setFullYear(startDate.getFullYear() - 10); // Fallback for "all"
+            start = localDayStartMs(subYears(today, 10)); // Fallback for "all"
             break;
           default:
-            startDate.setDate(startDate.getDate() - 30);
+            start = localDayStartMs(subDays(today, 30));
         }
-        start = startDate.getTime();
       }
 
       // Fetch data for all aggregations in parallel to check if any have data

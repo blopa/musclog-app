@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { format, subDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import {
@@ -9,6 +10,7 @@ import {
 } from '../database/services';
 import i18n from '../lang/lang';
 import AiService from '../services/AiService';
+import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
 import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
 const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
@@ -78,14 +80,11 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
       return;
     }
 
-    // Calculate date range (last 7 days)
+    // Calculate date range (last 7 calendar days including today)
     const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - 7);
-
-    // Format dates as ISO strings
-    const startDateStr = startDate.toISOString().split('T')[0];
-    const endDateStr = today.toISOString().split('T')[0];
+    const startCal = subDays(today, 7);
+    const startDateStr = format(startCal, 'yyyy-MM-dd');
+    const endDateStr = format(today, 'yyyy-MM-dd');
 
     const [workoutInsightsEnabled, nutritionInsightsEnabled] = await Promise.all([
       SettingsService.getWorkoutInsights(),
@@ -97,8 +96,8 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
       console.log('[configureDailyTasks] Workout insights disabled, skipping');
     } else {
       try {
-        const startTs = new Date(startDateStr).setUTCHours(0, 0, 0, 0);
-        const endTs = new Date(endDateStr).setUTCHours(23, 59, 59, 999);
+        const startTs = localDayStartMs(startCal);
+        const endTs = localDayClosedRangeMaxMs(today);
         const workoutLogs = await WorkoutService.getWorkoutHistory({
           startDate: startTs,
           endDate: endTs,

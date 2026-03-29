@@ -68,7 +68,9 @@ export function Accordion({
               headerContent
             ) : (
               <>
-                {Icon ? <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} /> : null}
+                {Icon ? (
+                  <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                ) : null}
                 <Text className="text-base font-semibold text-text-primary">
                   {title}
                   {count !== undefined ? (
