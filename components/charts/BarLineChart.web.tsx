@@ -64,8 +64,7 @@ export function BarLineChart({
 }: BarLineChartProps) {
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
-  const resolvedStepsFormatter =
-    stepsFormatter ?? ((v: number) => formatInteger(Math.round(v)));
+  const resolvedStepsFormatter = stepsFormatter ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

@@ -16,7 +16,7 @@ import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -53,12 +53,12 @@ export function CurrentGoalsCard({
 }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay =
-    goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
+    goal.targetWeight != null ? formatDisplayWeightKg(locale, units, goal.targetWeight) : undefined;
   const [menuVisible, setMenuVisible] = useState(false);
   const wasRegenerating = useRef(false);
 
@@ -222,9 +222,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {targetWeightDisplay % 1 === 0
-                      ? targetWeightDisplay
-                      : Math.round(targetWeightDisplay * 10) / 10}{' '}
+                    {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -246,7 +244,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.bodyFat}{' '}
+                    {formatRoundedDecimal(goal.bodyFat, 1)}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}

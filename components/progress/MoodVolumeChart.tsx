@@ -87,7 +87,11 @@ export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
         lineSeriesLabel={t('progress.mood.moodScore')}
         stepsDomain={[0, maxVol * 1.1]}
         heartRateDomain={[0, 4]}
-        leftAxisLabels={['0', `${Math.round(maxVol / 2)}`, `${Math.round(maxVol)}`]}
+        leftAxisLabels={[
+          formatInteger(0),
+          formatInteger(Math.round(maxVol / 2)),
+          formatInteger(Math.round(maxVol)),
+        ]}
         rightAxisLabels={[
           t('progress.mood.poor'),
           t('progress.mood.okay'),

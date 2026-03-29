@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { useFoodPortions } from '../hooks/useFoodPortions';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '../utils/unitConversion';
@@ -31,6 +32,7 @@ export function ServingSizeSelector({
 }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const { units } = useSettings();
 
   // value is always in grams (from parent). Display in g or oz based on units.
@@ -49,17 +51,19 @@ export function ServingSizeSelector({
     return portions.map((portion) => {
       const display = gramsToDisplay(portion.gramWeight, units);
       const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
+      const valueLabel =
+        labelVal % 1 === 0 ? formatInteger(Math.round(labelVal)) : formatDecimal(labelVal, 1);
 
       return {
         label: t('portionSizes.portionWithValueUnit', {
           name: portion.name,
-          value: labelVal,
+          value: valueLabel,
           unit: massUnit === 'g' ? t('common.units.g') : t('common.units.oz'),
         }),
         value: portion.gramWeight,
       };
     });
-  }, [portions, units, massUnit, t]);
+  }, [portions, units, massUnit, t, formatInteger, formatDecimal]);
 
   const effectiveQuickSizes = quickSizes || databaseQuickSizes;
 

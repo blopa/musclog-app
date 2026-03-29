@@ -530,6 +530,7 @@ export const getMealCritiquePrompt = async (
     ].join('\n');
   }
 
+  // TODO: use a translation here, because some languages have a white space before the :, like french
   const foodList = foods.map((f) => `- ${f.name}: ${Math.round(f.gramWeight)}g`).join('\n');
 
   return [

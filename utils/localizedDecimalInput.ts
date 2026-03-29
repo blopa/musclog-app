@@ -52,6 +52,7 @@ export function sanitizeLocalizedDecimalInput(
 /**
  * Parses a string entered with the locale decimal separator into a number (JS float).
  * Strips the other symbol when it is used as a thousands separator in pasted values.
+ * Supports an optional leading minus (e.g. stepper / signed input).
  */
 export function parseLocalizedDecimalString(
   value: string,
@@ -59,20 +60,59 @@ export function parseLocalizedDecimalString(
   maxFractionDigits = 2
 ): number {
   const s = value.trim();
-  if (!s) {
+  if (!s || s === '-') {
+    return 0;
+  }
+
+  const negative = s.startsWith('-');
+  const unsigned = negative ? s.slice(1).trim() : s;
+  if (!unsigned) {
     return 0;
   }
 
   let normalized: string;
   if (decimalSeparator === ',') {
-    normalized = s.replace(/\./g, '').replace(',', '.');
+    normalized = unsigned.replace(/\./g, '').replace(',', '.');
   } else {
-    normalized = s.replace(/,/g, '');
+    normalized = unsigned.replace(/,/g, '');
   }
 
-  const n = parseFloat(normalized);
+  let n = parseFloat(normalized);
   if (Number.isNaN(n)) {
     return 0;
   }
+  if (negative) {
+    n = -Math.abs(n);
+  }
   return roundToDecimalPlaces(n, maxFractionDigits);
+}
+
+/**
+ * Optional leading minus, then same rules as {@link sanitizeLocalizedDecimalInput}.
+ * Used by steppers when `maxFractionDigits` &gt; 0.
+ */
+export function sanitizeLocalizedSignedDecimalInput(
+  raw: string,
+  decimalSeparator: ',' | '.',
+  maxFractionDigits = 1
+): string {
+  if (raw === '') {
+    return '';
+  }
+  const trimmed = raw.trim();
+  const neg = trimmed.startsWith('-');
+  const body = neg ? trimmed.slice(1) : trimmed;
+  const sanitized = sanitizeLocalizedDecimalInput(body, decimalSeparator, maxFractionDigits);
+  if (!neg) {
+    return sanitized;
+  }
+  if (sanitized === '') {
+    return '-';
+  }
+  return `-${sanitized}`;
+}
+
+/** Digits only — for integer steppers (sets, reps, rest seconds). */
+export function sanitizeLocalizedIntegerInput(raw: string): string {
+  return raw.replace(/[^0-9]/g, '');
 }

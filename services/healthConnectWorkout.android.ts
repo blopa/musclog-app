@@ -105,6 +105,7 @@ function formatSegmentBreakdown(
         })
         .join(', ');
 
+      // TODO: use a translation here, because some languages have a white space before the :, like french
       return setStr
         ? `${item.exerciseName}: ${setStr}`
         : `${item.exerciseName}: ${item.totalReps} reps`;

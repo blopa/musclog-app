@@ -139,12 +139,14 @@ export function GenericEditModal({
         const numberField = field as NumberFieldConfig;
         const numValue = (value as number) ?? numberField.min ?? 0;
         const step = numberField.step ?? 1;
+        const maxFractionDigits = numberField.maxFractionDigits ?? (step % 1 === 0 ? 0 : 1);
         return (
           <StepperInput
             key={field.key}
             label={label}
             value={numValue}
             unit={numberField.unit}
+            maxFractionDigits={maxFractionDigits}
             onIncrement={() => {
               const max = numberField.max ?? Infinity;
               const newValue = Math.min(numValue + step, max);

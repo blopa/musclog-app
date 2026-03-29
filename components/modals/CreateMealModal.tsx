@@ -22,12 +22,12 @@ import {
 } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
-import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
 import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
@@ -314,7 +314,7 @@ export function CreateMealModal({
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -699,7 +699,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {Math.round(item.amount)}g
+                        {formatInteger(Math.round(item.amount))}g
                       </Text>
                       <View
                         style={{

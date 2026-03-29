@@ -2,6 +2,8 @@ import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
+  sanitizeLocalizedIntegerInput,
+  sanitizeLocalizedSignedDecimalInput,
 } from '../localizedDecimalInput';
 
 describe('getDecimalSeparator', () => {
@@ -36,5 +38,26 @@ describe('parseLocalizedDecimalString', () => {
   it('parses comma-locale strings', () => {
     expect(parseLocalizedDecimalString('12,34', ',')).toBe(12.34);
     expect(parseLocalizedDecimalString('1.234,5', ',')).toBe(1234.5);
+  });
+
+  it('parses signed values', () => {
+    expect(parseLocalizedDecimalString('-12.5', '.', 1)).toBe(-12.5);
+    expect(parseLocalizedDecimalString('-12,5', ',', 1)).toBe(-12.5);
+  });
+});
+
+describe('sanitizeLocalizedSignedDecimalInput', () => {
+  it('keeps a lone minus while editing', () => {
+    expect(sanitizeLocalizedSignedDecimalInput('-', '.', 1)).toBe('-');
+  });
+
+  it('combines minus with locale decimal body', () => {
+    expect(sanitizeLocalizedSignedDecimalInput('-0,5', ',', 1)).toBe('-0,5');
+  });
+});
+
+describe('sanitizeLocalizedIntegerInput', () => {
+  it('strips non-digits', () => {
+    expect(sanitizeLocalizedIntegerInput('12ab3')).toBe('123');
   });
 });

@@ -12,6 +12,10 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+} from '../../utils/localizedDecimalInput';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { SelectedExerciseCard } from '../cards/SelectedExerciseCard';
 import { FilterTabs } from '../FilterTabs';
@@ -98,8 +102,16 @@ const getExerciseIcon = (type: string) => {
 
 export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExerciseModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { units } = useSettings();
+  const decimalSeparator = useMemo(
+    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
+  const parseWeightString = useCallback(
+    (s: string) => parseLocalizedDecimalString(s, decimalSeparator, 1),
+    [decimalSeparator]
+  );
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [activeMuscle, setActiveMuscle] = useState<MuscleGroupFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -286,11 +298,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     }
     onAddExercise?.({
       exerciseId: selectedExerciseId,
-      sets: parseInt(sets),
-      reps: parseInt(reps),
-      weight: parseFloat(weight),
+      sets: parseInt(sets, 10),
+      reps: parseInt(reps, 10),
+      weight: parseWeightString(weight),
       isBodyweight,
-      restTimeAfter: parseInt(restTime) || 60,
+      restTimeAfter: parseInt(restTime, 10) || 60,
       isDropSet,
       notes: notes.trim() || undefined,
     });
@@ -452,20 +464,26 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             <View className="mb-4">
               <StepperInlineInput
                 label={t('workouts.addExercise.sets')}
-                value={parseInt(sets) || 0}
+                value={parseInt(sets, 10) || 0}
                 unit=""
-                onIncrement={() => setSets((prev) => (parseInt(prev) + 1).toString())}
-                onDecrement={() => setSets((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+                maxFractionDigits={0}
+                onIncrement={() => setSets((prev) => (parseInt(prev, 10) + 1).toString())}
+                onDecrement={() =>
+                  setSets((prev) => Math.max(1, parseInt(prev, 10) - 1).toString())
+                }
                 onChangeValue={(num) => setSets(Math.max(1, Math.round(num)).toString())}
               />
             </View>
             <View className="mb-4">
               <StepperInlineInput
                 label={t('workouts.addExercise.reps')}
-                value={parseInt(reps) || 0}
+                value={parseInt(reps, 10) || 0}
                 unit=""
-                onIncrement={() => setReps((prev) => (parseInt(prev) + 1).toString())}
-                onDecrement={() => setReps((prev) => Math.max(1, parseInt(prev) - 1).toString())}
+                maxFractionDigits={0}
+                onIncrement={() => setReps((prev) => (parseInt(prev, 10) + 1).toString())}
+                onDecrement={() =>
+                  setReps((prev) => Math.max(1, parseInt(prev, 10) - 1).toString())
+                }
                 onChangeValue={(num) => setReps(Math.max(1, Math.round(num)).toString())}
               />
             </View>
@@ -474,11 +492,16 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             <View className="mb-4">
               <StepperInlineInput
                 label={t('workouts.addExercise.weight')}
-                value={parseFloat(weight) || 0}
+                value={parseWeightString(weight)}
                 unit={t(weightUnitKey)}
-                onIncrement={() => setWeight((prev) => (parseFloat(prev) + 2.5).toString())}
-                onDecrement={() => setWeight((prev) => (parseFloat(prev) - 2.5).toString())}
-                onChangeValue={(num) => setWeight((Math.round(num * 10) / 10).toString())}
+                maxFractionDigits={1}
+                onIncrement={() =>
+                  setWeight((prev) => String(Math.round((parseWeightString(prev) + 2.5) * 10) / 10))
+                }
+                onDecrement={() =>
+                  setWeight((prev) => String(Math.round((parseWeightString(prev) - 2.5) * 10) / 10))
+                }
+                onChangeValue={(num) => setWeight(String(Math.round(num * 10) / 10))}
               />
             </View>
             <View
@@ -491,11 +514,12 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             <View className="mb-4">
               <StepperInlineInput
                 label={t('workouts.addExercise.restTime')}
-                value={parseInt(restTime) || 0}
+                value={parseInt(restTime, 10) || 0}
                 unit={t('workouts.addExercise.seconds')}
-                onIncrement={() => setRestTime((prev) => (parseInt(prev) + 5).toString())}
+                maxFractionDigits={0}
+                onIncrement={() => setRestTime((prev) => (parseInt(prev, 10) + 5).toString())}
                 onDecrement={() =>
-                  setRestTime((prev) => Math.max(0, parseInt(prev) - 5).toString())
+                  setRestTime((prev) => Math.max(0, parseInt(prev, 10) - 5).toString())
                 }
                 onChangeValue={(num) => setRestTime(Math.max(0, Math.round(num)).toString())}
               />

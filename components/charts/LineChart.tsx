@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanima
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -131,6 +132,8 @@ export function LineChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
 
+  const { formatRoundedDecimal } = useFormatAppNumber();
+
   const cursorLineStyle = useAnimatedStyle(() => ({
     left: activeXPos.value,
   }));
@@ -171,9 +174,7 @@ export function LineChart({
 
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
-    const label = tooltipFormatter
-      ? tooltipFormatter(nearest)
-      : String(Math.round(nearest.y * 10) / 10);
+    const label = tooltipFormatter ? tooltipFormatter(nearest) : formatRoundedDecimal(nearest.y, 1);
 
     notifyChartActive(chartId);
     setActiveLabel(label);

@@ -27,6 +27,7 @@ import { WorkoutCharts } from '../components/progress/WorkoutCharts';
 import { MenuButton } from '../components/theme/MenuButton';
 import { ChartTooltipProvider, useChartTooltip } from '../context/ChartTooltipContext';
 import { useAiEnabled } from '../hooks/useAiEnabled';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useProgressData } from '../hooks/useProgressData';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
@@ -228,6 +229,7 @@ function ProgressScreenContent({
   useWeeklyAverages,
 }: any) {
   const { dismissAll } = useChartTooltip();
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   return (
     <View className="flex-1 bg-bg-primary" style={{ paddingTop: 8 }}>
@@ -381,7 +383,7 @@ function ProgressScreenContent({
                               Math.min(...history.map((p: any) => p.value)) * 0.95,
                               Math.max(...history.map((p: any) => p.value)) * 1.05,
                             ]}
-                            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+                            tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
                           />
                         </ProgressChartSection>
                       )

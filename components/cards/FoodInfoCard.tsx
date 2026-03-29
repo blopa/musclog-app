@@ -163,7 +163,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-indigo-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.protein')} ({Math.round(proteinPercent)}%)
+                      {t('food.macros.protein')} ({formatInteger(Math.round(proteinPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">
@@ -174,7 +174,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-yellow-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.fat')} ({Math.round(fatPercent)}%)
+                      {t('food.macros.fat')} ({formatInteger(Math.round(fatPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">
@@ -185,7 +185,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-emerald-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.carbs')} ({Math.round(carbsPercent)}%)
+                      {t('food.macros.carbs')} ({formatInteger(Math.round(carbsPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">

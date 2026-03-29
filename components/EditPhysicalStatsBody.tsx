@@ -181,6 +181,7 @@ export function EditPhysicalStatsBody({
                 <StepperInlineInput
                   label={t('editFitnessDetails.fatPercentage')}
                   value={fatPercentage}
+                  maxFractionDigits={1}
                   onIncrement={() => setFatPercentage((prev) => Math.min(50, (prev ?? 20) + 0.5))}
                   onDecrement={() => setFatPercentage((prev) => Math.max(5, (prev ?? 20) - 0.5))}
                   onChangeValue={(value) => setFatPercentage(Math.min(50, Math.max(5, value)))}

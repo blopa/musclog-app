@@ -92,7 +92,11 @@ export function MoodMacrosChart({ allData }: MoodMacrosChartProps) {
           theme.colors.macros.fat.bg,
         ]}
         lineColor={theme.colors.status.indigo}
-        leftAxisLabels={['0', `${Math.round(maxTotal / 2)}`, `${Math.round(maxTotal)}`]}
+        leftAxisLabels={[
+          formatInteger(0),
+          formatInteger(Math.round(maxTotal / 2)),
+          formatInteger(Math.round(maxTotal)),
+        ]}
         rightAxisLabels={[
           t('progress.mood.poor'),
           t('progress.mood.okay'),

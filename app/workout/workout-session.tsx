@@ -52,12 +52,14 @@ import { database } from '../../database';
 import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
 import { useActiveWorkout } from '../../hooks/useActiveWorkout';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
+import i18n from '../../lang/lang';
 import { NotificationService } from '../../services/NotificationService';
 import {
   clearActiveWorkoutLogId,
@@ -68,9 +70,9 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
-import i18n from '../../lang/lang';
-import { formatAppDecimal } from '../../utils/formatAppNumber';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
+import { formatAppDecimal } from '../../utils/formatAppNumber';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
@@ -106,6 +108,9 @@ function BlankWorkoutStats({
   workoutLogId?: string;
 }) {
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
+  const { units } = useSettings();
+  const weightUnitKey = getWeightUnitI18nKey(units);
   const theme = useTheme();
   const time = useSessionTotalTime({ startTime });
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
@@ -143,7 +148,9 @@ function BlankWorkoutStats({
         >
           {t('freeTraining.calories')}
         </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">0 kcal</Text>
+        <Text className="mt-0.5 text-base font-bold text-text-primary">
+          {formatInteger(0, { useGrouping: false })} {t('common.kcal')}
+        </Text>
       </View>
       <View className="items-center">
         <BarChart3 size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -153,7 +160,9 @@ function BlankWorkoutStats({
         >
           {t('freeTraining.volume')}
         </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">0 kg</Text>
+        <Text className="mt-0.5 text-base font-bold text-text-primary">
+          {formatInteger(0, { useGrouping: false })} {t(weightUnitKey)}
+        </Text>
       </View>
     </View>
   );
@@ -161,7 +170,8 @@ function BlankWorkoutStats({
 
 export default function WorkoutSessionScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const params = useLocalSearchParams<{
     workoutLogId?: string;
@@ -175,6 +185,14 @@ export default function WorkoutSessionScreen() {
     isActive: isCycleTrackingActive,
   } = useMenstrualCycle();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const formatWeightStatDisplay = useCallback(
+    (displayUnit: number) =>
+      displayUnit % 1 === 0
+        ? formatInteger(displayUnit, { useGrouping: false })
+        : formatDecimal(displayUnit, 1),
+    [formatDecimal, formatInteger]
+  );
 
   const workoutLogId = params.workoutLogId;
   const initialExerciseId = params.exerciseId;
@@ -880,7 +898,7 @@ export default function WorkoutSessionScreen() {
                 !isStatsDataLoaded ? (
                   <ActivityIndicator size="small" color={theme.colors.text.primary} />
                 ) : (
-                  weight
+                  formatWeightStatDisplay(weight)
                 )
               }
               unit={isStatsDataLoaded ? t(weightUnitKey) : undefined}
@@ -894,7 +912,7 @@ export default function WorkoutSessionScreen() {
                 !isStatsDataLoaded ? (
                   <ActivityIndicator size="small" color={theme.colors.text.primary} />
                 ) : (
-                  reps
+                  formatInteger(reps, { useGrouping: false })
                 )
               }
               onPress={() => {
@@ -909,7 +927,7 @@ export default function WorkoutSessionScreen() {
                 ) : partials === 0 ? (
                   '-'
                 ) : (
-                  partials
+                  formatInteger(partials, { useGrouping: false })
                 )
               }
               onPress={() => {
@@ -925,7 +943,11 @@ export default function WorkoutSessionScreen() {
                 {t('workoutSession.previous')}:{' '}
                 <Text className="text-text-primary">
                   {t('workoutSession.previousSetFormat', {
-                    weight: kgToDisplay(previousSet.weight ?? 0, units),
+                    weight: formatDisplayWeightKg(
+                      i18n.resolvedLanguage ?? i18n.language,
+                      units,
+                      previousSet.weight ?? 0
+                    ),
                     unit: t(weightUnitKey),
                     count: previousSet.reps,
                     repsLabel: t('workoutSession.reps'),

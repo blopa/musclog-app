@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { MetricPoint } from '../../database/services/ProgressService';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { LineChart } from '../charts/LineChart';
@@ -25,6 +26,7 @@ export function BodyMetricsCharts({
   const { t } = useTranslation();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -49,9 +51,9 @@ export function BodyMetricsCharts({
               Math.min(...weightHistory.map((p) => p.value)) * 0.95,
               Math.max(...weightHistory.map((p) => p.value)) * 1.05,
               3,
-              (v) => `${Math.round(v)} ${weightLabel}`
+              (v) => `${formatInteger(Math.round(v))} ${weightLabel}`
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10} ${weightLabel}`}
+            tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)} ${weightLabel}`}
             xAxisLabels={getXAxisLabels(
               weightHistory.map((p) => ({ x: p.date })),
               undefined,
@@ -80,9 +82,9 @@ export function BodyMetricsCharts({
               Math.min(...fatHistory.map((p) => p.value)) * 0.9,
               Math.max(...fatHistory.map((p) => p.value)) * 1.1,
               3,
-              (v) => `${Math.round(v)}%`
+              (v) => `${formatInteger(Math.round(v))}%`
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}%`}
+            tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)}%`}
             xAxisLabels={getXAxisLabels(
               fatHistory.map((p) => ({ x: p.date })),
               undefined,
@@ -107,9 +109,10 @@ export function BodyMetricsCharts({
             yAxisLabels={getYAxisLabels(
               Math.min(...ffmiHistory.map((p) => p.value)) * 0.95,
               Math.max(...ffmiHistory.map((p) => p.value)) * 1.05,
-              3
+              3,
+              (v) => formatInteger(Math.round(v))
             )}
-            tooltipFormatter={(p) => `${Math.round(p.y * 10) / 10}`}
+            tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
             xAxisLabels={getXAxisLabels(
               ffmiHistory.map((p) => ({ x: p.date })),
               undefined,

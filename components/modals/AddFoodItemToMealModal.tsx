@@ -190,6 +190,7 @@ function FoodResultCard({
           <StepperInput
             label={t('food.addFoodItemToMeal.amount')}
             value={amount}
+            maxFractionDigits={0}
             onChangeValue={onAmountChange}
             onIncrement={() => onAmountChange(amount + 1)}
             onDecrement={() => onAmountChange(Math.max(0, amount - 1))}

@@ -16,7 +16,7 @@ interface RecoveryTrainingChartProps {
 export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatDecimal } = useFormatAppNumber();
+  const { formatDecimal, formatRoundedDecimal } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -58,7 +58,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   const xMin = Math.min(...bubbleData.map((d) => d.x));
   const xMax = Math.max(...bubbleData.map((d) => d.x));
 
-  const yAxisLabels = getYAxisLabels(0, 11, 3);
+  const yAxisLabels = getYAxisLabels(0, 11, 3, (v) => formatRoundedDecimal(v, 1));
 
   return (
     <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>

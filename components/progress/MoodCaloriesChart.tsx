@@ -85,7 +85,11 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
         lineSeriesLabel={t('progress.mood.moodScore')}
         stepsDomain={[0, maxCal * 1.1]}
         heartRateDomain={[0, 4]}
-        leftAxisLabels={['0', `${Math.round(maxCal / 2)}`, `${Math.round(maxCal)}`]}
+        leftAxisLabels={[
+          formatInteger(0),
+          formatInteger(Math.round(maxCal / 2)),
+          formatInteger(Math.round(maxCal)),
+        ]}
         rightAxisLabels={[
           t('progress.mood.poor'),
           t('progress.mood.okay'),

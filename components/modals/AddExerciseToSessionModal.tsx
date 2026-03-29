@@ -244,6 +244,7 @@ export function AddExerciseToSessionModal({
               <StepperInlineInput
                 label={t('freeTraining.addExercise.numberOfSets')}
                 value={numberOfSets}
+                maxFractionDigits={0}
                 onIncrement={() => setNumberOfSets((prev) => Math.min(prev + 1, 99))}
                 onDecrement={() => setNumberOfSets((prev) => Math.max(1, prev - 1))}
                 onChangeValue={(num) => setNumberOfSets(Math.max(1, Math.min(99, Math.round(num))))}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MacroMusclePoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels, getYAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
@@ -22,6 +23,7 @@ const formatDate = (timestamp: number): string => {
 export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
@@ -59,7 +61,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   );
 
   const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;
-  const yAxisLabels = getYAxisLabels(0, maxY, 3, (v) => `${Math.round(v)}g`);
+  const yAxisLabels = getYAxisLabels(0, maxY, 3, (v) => `${formatInteger(Math.round(v))}g`);
   const macroSeries = [
     { key: 'protein', label: t('nutrition.protein'), color: theme.colors.macros.protein.bg },
     { key: 'carbs', label: t('nutrition.carbs'), color: theme.colors.macros.carbs.bg },

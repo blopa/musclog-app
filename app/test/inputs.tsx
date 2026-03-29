@@ -159,6 +159,7 @@ export default function InputsTestScreen() {
           <StepperInlineInput
             label="Target Weight"
             value={targetWeight}
+            maxFractionDigits={1}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}
@@ -170,6 +171,7 @@ export default function InputsTestScreen() {
           <StepperInput
             label="Weight (KG)"
             value={targetWeight}
+            maxFractionDigits={1}
             onIncrement={() => setTargetWeight((v) => v + 0.5)}
             onDecrement={() => setTargetWeight((v) => Math.max(0, v - 0.5))}
             onChangeValue={setTargetWeight}

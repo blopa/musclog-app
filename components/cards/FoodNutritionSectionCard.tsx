@@ -172,8 +172,7 @@ export function FoodNutritionSectionCard({
                   {t('food.foodDetails.saturatedFat')}
                 </Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}
-                  g
+                  {formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}g
                 </Text>
               </View>
             ) : null}

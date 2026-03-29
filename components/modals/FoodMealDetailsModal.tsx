@@ -42,6 +42,7 @@ import {
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
 import { localDayStartMs } from '../../utils/calendarDate';
+import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
@@ -237,10 +238,11 @@ export function FoodMealDetailsModal({
 }: FoodDetailsModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const decimalSeparator = useMemo(
-    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+  const locale = useMemo(
+    () => i18n.resolvedLanguage ?? i18n.language,
     [i18n.resolvedLanguage, i18n.language]
   );
+  const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -1616,10 +1618,10 @@ export function FoodMealDetailsModal({
       name: getFoodMealName(),
       barcode: barcode ?? productCode ?? '',
       description: currentDescription,
-      calories: parseFloat(baseNutritionalData.calories.toFixed(2)).toString(),
-      protein: parseFloat(baseNutritionalData.protein.toFixed(2)).toString(),
-      carbs: parseFloat(baseNutritionalData.carbs.toFixed(2)).toString(),
-      fat: parseFloat(baseNutritionalData.fat.toFixed(2)).toString(),
+      calories: formatAppRoundedDecimal(locale, baseNutritionalData.calories, 2),
+      protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
+      carbs: formatAppRoundedDecimal(locale, baseNutritionalData.carbs, 2),
+      fat: formatAppRoundedDecimal(locale, baseNutritionalData.fat, 2),
     });
     setIsEditPopUpVisible(true);
   }, [
@@ -1632,6 +1634,7 @@ export function FoodMealDetailsModal({
     productFromSearch,
     food,
     editedOverrides,
+    locale,
   ]);
 
   const handleSaveEditPopUp = useCallback(() => {
