@@ -2,8 +2,8 @@ import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { useTheme } from './useTheme';
 import { showSnackbar } from '../utils/snackbarService';
+import { useTheme } from './useTheme';
 
 function sanitizeFilename(title: string): string {
   return title

@@ -90,10 +90,10 @@ export class SettingsService {
    * Defaults to 'system' if not set.
    */
   static async getThemePreference(): Promise<'system' | 'light' | 'dark'> {
-    return (await SettingsService.getStringSetting(
-      THEME_SETTING_TYPE,
-      'system'
-    )) as 'system' | 'light' | 'dark';
+    return (await SettingsService.getStringSetting(THEME_SETTING_TYPE, 'system')) as
+      | 'system'
+      | 'light'
+      | 'dark';
   }
 
   /**

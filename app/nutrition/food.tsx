@@ -50,8 +50,8 @@ import {
 } from '../../database/services';
 import { useDailyNutritionSummary } from '../../hooks/useDailyNutritionSummary';
 import { useSettings } from '../../hooks/useSettings';
-import AiService from '../../services/AiService';
 import { useTheme } from '../../hooks/useTheme';
+import AiService from '../../services/AiService';
 import { getMealCritique } from '../../utils/coachAI';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';

@@ -37,10 +37,10 @@ import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import packageJson from '../package.json';
-import { useTheme } from '../hooks/useTheme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
@@ -350,8 +350,11 @@ export default function HomeScreen() {
                             .IconComponent,
                           {
                             size: 24,
-                            color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                              .color,
+                            color: getAvatarDisplayProps(
+                              theme,
+                              dbUser.avatarIcon,
+                              dbUser.avatarColor
+                            ).color,
                           }
                         )}
                       </View>

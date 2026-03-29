@@ -55,10 +55,10 @@ import { useActiveWorkout } from '../../hooks/useActiveWorkout';
 import { useMenstrualCycle } from '../../hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutFeedback } from '../../hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '../../hooks/useWorkoutFueling';
 import { NotificationService } from '../../services/NotificationService';
-import { useTheme } from '../../hooks/useTheme';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,

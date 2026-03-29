@@ -3,8 +3,8 @@ import { ExternalLink } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
-import packageJson from '../../package.json';
 import { useTheme } from '../../hooks/useTheme';
+import packageJson from '../../package.json';
 import { GenericCard } from './GenericCard';
 
 const buildNumber =

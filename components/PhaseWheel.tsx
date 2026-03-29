@@ -16,11 +16,7 @@ type PhaseWheelProps = {
 };
 
 // Helper function to calculate phase proportions dynamically
-function calculatePhaseProportions(
-  avgCycleLength: number,
-  avgPeriodDuration: number,
-  theme: any
-) {
+function calculatePhaseProportions(avgCycleLength: number, avgPeriodDuration: number, theme: any) {
   const menstrualLength = avgPeriodDuration;
   const ovulationLength = 3; // Standard ovulation window
 

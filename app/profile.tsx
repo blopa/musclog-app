@@ -34,9 +34,9 @@ import { UserService } from '../database/services';
 import { SettingsService } from '../database/services/SettingsService';
 import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
-import { useTheme } from '../hooks/useTheme';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
 
@@ -287,20 +287,23 @@ export default function ProfileScreen() {
                   className="h-32 w-32 overflow-hidden rounded-full border-4"
                   style={{
                     borderColor: dbUser
-                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
+                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
                       : theme.colors.accent.primary,
                     backgroundColor: dbUser
-                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).backgroundColor
+                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                          .backgroundColor
                       : theme.colors.accent.primary20,
                   }}
                 >
                   {dbUser?.avatarIcon ? (
                     <View className="h-full w-full items-center justify-center rounded-full">
                       {createElement(
-                          getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).IconComponent,
+                        getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                          .IconComponent,
                         {
                           size: 40,
-                            color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color,
+                          color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                            .color,
                         }
                       )}
                     </View>

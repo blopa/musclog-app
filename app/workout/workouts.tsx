@@ -28,9 +28,9 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import { useTheme } from '../../hooks/useTheme';
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 
