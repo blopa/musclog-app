@@ -122,7 +122,14 @@ export function TextInput({
             textAlignVertical={multiline ? 'top' : 'center'}
           />
           {icon ? (
-            <View className="absolute right-4 items-center justify-center">{icon}</View>
+            <View
+              className={classNames('absolute right-4 justify-center', {
+                'bottom-0 top-0': !multiline,
+                'top-3': multiline,
+              })}
+            >
+              {icon}
+            </View>
           ) : null}
         </View>
       ) : (
@@ -158,7 +165,14 @@ export function TextInput({
             textAlignVertical={multiline ? 'top' : 'center'}
           />
           {icon ? (
-            <View className="absolute right-4 items-center justify-center">{icon}</View>
+            <View
+              className={classNames('absolute right-4 justify-center', {
+                'bottom-0 top-0': !multiline,
+                'top-3': multiline,
+              })}
+            >
+              {icon}
+            </View>
           ) : null}
         </Animated.View>
       )}

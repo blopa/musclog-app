@@ -1,10 +1,18 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  sanitizeLocalizedIntegerInput,
+  sanitizeLocalizedSignedDecimalInput,
+} from '../../utils/localizedDecimalInput';
 
-type TestStepperProps = {
+type StepperInlineInputProps = {
   label: string;
   value: number;
   onIncrement: () => void;
@@ -16,6 +24,8 @@ type TestStepperProps = {
   subtitle?: string;
   iconSize?: 'sm' | 'md';
   step?: number;
+  /** 0 = integer only; 1+ = locale decimal separator. Default 1. */
+  maxFractionDigits?: number;
 };
 
 export function StepperInlineInput({
@@ -30,19 +40,33 @@ export function StepperInlineInput({
   subtitle,
   iconSize = 'md',
   step = 1,
-}: TestStepperProps) {
+  maxFractionDigits = 1,
+}: StepperInlineInputProps) {
   const theme = useTheme();
+  const { i18n } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const decimalSeparator = useMemo(
+    () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
+  const formatValue = useCallback(
+    (v: number) =>
+      maxFractionDigits === 0
+        ? formatInteger(v, { useGrouping: false })
+        : v % 1 === 0
+          ? formatInteger(v, { useGrouping: false })
+          : formatDecimal(v, maxFractionDigits),
+    [formatDecimal, formatInteger, maxFractionDigits]
+  );
   const [editing, setEditing] = useState(false);
-  const formatValue = (v: number) => (v % 1 === 0 ? String(v) : v.toFixed(1));
-  const [inputValue, setInputValue] = useState(formatValue(value));
+  const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInput>(null);
 
-  // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
       setInputValue(formatValue(value));
     }
-  }, [value, editing]);
+  }, [value, editing, formatValue]);
 
   useEffect(() => {
     const subscription = Keyboard.addListener('keyboardDidHide', () => {
@@ -56,30 +80,55 @@ export function StepperInlineInput({
   const handleValuePress = () => {
     setEditing(true);
     onFocus?.();
-    // Small delay to ensure state update before focusing
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
   };
 
   const handleInputChange = (text: string) => {
-    // Allow only numbers, decimal point, and optional minus sign
-    if (/^-?\d*\.?\d*$/.test(text)) {
-      setInputValue(text);
-      const num = parseFloat(text);
-      if (!isNaN(num) && onChangeValue) {
+    if (maxFractionDigits === 0) {
+      const sanitized = sanitizeLocalizedIntegerInput(text);
+      setInputValue(sanitized);
+      if (sanitized === '') {
+        return;
+      }
+      const num = parseInt(sanitized, 10);
+      if (!Number.isNaN(num) && onChangeValue) {
         onChangeValue(num);
       }
+      return;
+    }
+
+    const sanitized = sanitizeLocalizedSignedDecimalInput(
+      text,
+      decimalSeparator,
+      maxFractionDigits
+    );
+    setInputValue(sanitized);
+    if (sanitized === '' || sanitized === '-') {
+      return;
+    }
+    const num = parseLocalizedDecimalString(sanitized, decimalSeparator, maxFractionDigits);
+    if (onChangeValue) {
+      onChangeValue(num);
     }
   };
 
   const handleInputBlur = () => {
     setEditing(false);
-    const num = parseFloat(inputValue);
-    if (!isNaN(num) && onChangeValue) {
+    if (maxFractionDigits === 0) {
+      const num = parseInt(inputValue, 10);
+      if (!Number.isNaN(num) && onChangeValue) {
+        onChangeValue(num);
+      } else {
+        setInputValue(formatValue(value));
+      }
+      return;
+    }
+    if (inputValue.trim() !== '' && inputValue.trim() !== '-' && onChangeValue) {
+      const num = parseLocalizedDecimalString(inputValue, decimalSeparator, maxFractionDigits);
       onChangeValue(num);
     } else {
-      // Reset to current value if invalid
       setInputValue(formatValue(value));
     }
   };
@@ -87,6 +136,14 @@ export function StepperInlineInput({
   const handleInputSubmit = () => {
     inputRef.current?.blur();
   };
+
+  const parseCurrent = useCallback(
+    (prev: string) =>
+      maxFractionDigits === 0
+        ? parseInt(prev, 10) || 0
+        : parseLocalizedDecimalString(prev, decimalSeparator, maxFractionDigits),
+    [decimalSeparator, maxFractionDigits]
+  );
 
   return (
     <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
@@ -122,10 +179,7 @@ export function StepperInlineInput({
           }}
           onPress={() => {
             if (editing) {
-              setInputValue((prev) => {
-                const num = parseFloat(prev) || 0;
-                return formatValue(num - step);
-              });
+              setInputValue((prev) => formatValue(parseCurrent(prev) - step));
             }
             onDecrement();
           }}
@@ -140,7 +194,7 @@ export function StepperInlineInput({
               onChangeText={handleInputChange}
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
-              keyboardType="numeric"
+              keyboardType={maxFractionDigits === 0 ? 'numeric' : 'decimal-pad'}
               className="p-0 text-center text-xl font-bold text-white"
               style={{
                 width: theme.size['4xl'],
@@ -181,10 +235,7 @@ export function StepperInlineInput({
           }}
           onPress={() => {
             if (editing) {
-              setInputValue((prev) => {
-                const num = parseFloat(prev) || 0;
-                return formatValue(num + step);
-              });
+              setInputValue((prev) => formatValue(parseCurrent(prev) + step));
             }
             onIncrement();
           }}

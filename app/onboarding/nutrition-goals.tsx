@@ -19,6 +19,7 @@ import {
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
+import { localDayKeyPlusCalendarDaysFromNow } from '../../utils/calendarDate';
 import {
   calculateNutritionPlan,
   eatingPhaseToWeightGoal,
@@ -138,7 +139,7 @@ export default function NutritionGoalsScreen() {
           const checkins = generateWeeklyCheckins(
             plan,
             Date.now(),
-            goals.targetDate ?? Date.now() + 90 * 24 * 60 * 60 * 1000,
+            goals.targetDate ?? localDayKeyPlusCalendarDaysFromNow(90),
             heightDecrypted.value / 100,
             bodyFatDecrypted?.value ?? null
           );

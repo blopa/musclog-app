@@ -20,6 +20,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { type MealType } from '../../database/models';
 import { NutritionService } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import type { SearchResultProduct } from '../../types/openFoodFacts';
@@ -31,7 +32,6 @@ import {
 } from '../../utils/coachAI';
 import { detectBarcodes, openCropperAsync, readFileAsStringAsync } from '../../utils/file';
 import { performOcr } from '../../utils/ocr';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { showSnackbar } from '../../utils/snackbarService';
 import { CameraProcessingIndicator } from '../CameraProcessingIndicator';
 import { CameraView, useCameraPermissions } from '../CameraView';
@@ -69,6 +69,7 @@ type CameraModalProps = {
   isAiEnabled?: boolean;
   useOcrBeforeAi?: boolean;
   logDate?: Date;
+  mealTypeForLog?: MealType;
 };
 
 export default function SmartCameraModal({
@@ -79,9 +80,11 @@ export default function SmartCameraModal({
   isAiEnabled = true,
   useOcrBeforeAi = false,
   logDate,
+  mealTypeForLog,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
@@ -300,10 +303,10 @@ export default function SmartCameraModal({
               'success',
               t('food.aiCamera.analysisSuccess', {
                 name: normalized.name,
-                kcal: roundToDecimalPlaces(normalized.kcal),
-                protein: roundToDecimalPlaces(normalized.protein),
-                carbs: roundToDecimalPlaces(normalized.carbs),
-                fat: roundToDecimalPlaces(normalized.fat),
+                kcal: formatRoundedDecimal(normalized.kcal, 2),
+                protein: formatRoundedDecimal(normalized.protein, 2),
+                carbs: formatRoundedDecimal(normalized.carbs, 2),
+                fat: formatRoundedDecimal(normalized.fat, 2),
               })
             );
 
@@ -323,6 +326,7 @@ export default function SmartCameraModal({
     [
       cameraMode,
       t,
+      formatRoundedDecimal,
       useOcrBeforeAi,
       aiContext,
       mapMacroEstimateToMeal,
@@ -1027,6 +1031,7 @@ export default function SmartCameraModal({
             isAiEnabled={isAiEnabled}
             canEdit={!!productFromAiLabel}
             initialDate={logDate}
+            initialMealType={mealTypeForLog}
           />
         ) : null}
 

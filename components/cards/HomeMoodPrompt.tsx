@@ -13,6 +13,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { UserMetricService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
 import { useTodayMood } from '../../hooks/useTodayMood';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { showSnackbar } from '../../utils/snackbarService';
 import { Button } from '../theme/Button';
 import { MoodSelectorCard } from './MoodSelectorCard';
@@ -68,9 +69,7 @@ export function HomeMoodPrompt() {
     }
 
     try {
-      const now = new Date();
-      now.setUTCHours(0, 0, 0, 0);
-      const dateTimestamp = now.getTime();
+      const dateTimestamp = localDayStartMs(new Date());
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       await UserMetricService.createMetric({

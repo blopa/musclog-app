@@ -2,6 +2,7 @@
   "common": {
     "clear": "Clear",
     "value": "Value",
+    "name": "Name",
     "processing": "processing...",
     "success": "Success",
     "saveError": "Failed to save changes",
@@ -26,6 +27,8 @@
     "loading": "Loading...",
     "saving": "Saving...",
     "save": "Save",
+    "category": "Category",
+    "active": "Active",
     "edit": "Edit",
     "status": "Status",
     "change": "Change",
@@ -64,6 +67,11 @@
     "appName": "MUSCLOG",
     "selectIcon": "Select icon",
     "selectIconLabel": "Select Icon",
+    "icon": "Icon",
+    "archived": "Archived",
+    "descriptions": {
+      "none": "None"
+    },
     "days": {
       "label": "Days",
       "letter": {

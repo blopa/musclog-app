@@ -323,7 +323,6 @@ export default function GraphsTestScreen() {
                 )}
                 barSeriesLabel="Steps Taken"
                 lineSeriesLabel="Avg Heart Rate"
-                stepsFormatter={(v) => v.toLocaleString()}
                 heartRateFormatter={(v) => `${Math.round(v)} bpm`}
                 interactive={true}
               />

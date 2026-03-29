@@ -3,9 +3,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { MealNutritionHighlightCard } from '../cards/MealNutritionHighlightCard';
 import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
@@ -67,6 +67,7 @@ export function LogMealModal({
 }: LogMealModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { height: windowHeight } = useWindowDimensions();
   const ingredientsScrollMaxHeight = Math.min(360, Math.round(windowHeight * 0.5));
   const [selectedDate, setSelectedDate] = useState(initialDate ?? new Date());
@@ -266,7 +267,7 @@ export function LogMealModal({
                     {ingredient.name}
                   </Text>
                   <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
-                    {roundToDecimalPlaces(ingredient.grams * portionScale)}g
+                    {formatRoundedDecimal(ingredient.grams * portionScale, 2)}g
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-3">
@@ -275,10 +276,10 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.accent.primary }}
                     >
-                      P {roundToDecimalPlaces(ingredient.protein * portionScale)}g
+                      P {formatRoundedDecimal(ingredient.protein * portionScale, 2)}g
                     </Text>
                     <Text className="text-xs font-bold" style={{ color: theme.colors.status.info }}>
-                      C {roundToDecimalPlaces(ingredient.carbs * portionScale)}g
+                      C {formatRoundedDecimal(ingredient.carbs * portionScale, 2)}g
                     </Text>
                   </View>
                   <View className="items-end">
@@ -286,13 +287,13 @@ export function LogMealModal({
                       className="text-xs font-bold"
                       style={{ color: theme.colors.status.amber }}
                     >
-                      F {roundToDecimalPlaces(ingredient.fat * portionScale)}g
+                      F {formatRoundedDecimal(ingredient.fat * portionScale, 2)}g
                     </Text>
                     <Text
                       className="text-xs font-medium"
                       style={{ color: theme.colors.text.secondary }}
                     >
-                      {roundToDecimalPlaces(ingredient.kcal * portionScale)} kcal
+                      {formatRoundedDecimal(ingredient.kcal * portionScale, 2)} kcal
                     </Text>
                   </View>
                 </View>

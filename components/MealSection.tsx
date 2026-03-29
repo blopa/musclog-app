@@ -3,6 +3,7 @@ import { memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
 import DashedButton from './theme/DashedButton';
 
@@ -56,8 +57,9 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   totalFat = 0,
   menuButton,
 }: MealSectionHeaderProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
@@ -70,21 +72,21 @@ export const MealSectionHeader = memo(function MealSectionHeader({
       >
         <View className="items-end">
           <Text className="text-lg text-text-secondary">
-            {totalCalories.toLocaleString(i18n.language, { useGrouping: false })}{' '}
+            {formatInteger(Math.round(totalCalories), { useGrouping: false })}{' '}
             {t('food.common.kcal')}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <Text className="text-sm">
               <Text style={{ color: theme.colors.macros.protein.text }}>
-                P: {Math.round(totalProtein)}g
+                P: {formatInteger(Math.round(totalProtein))}g
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.carbs.text }}>
-                C: {Math.round(totalCarbs)}g
+                C: {formatInteger(Math.round(totalCarbs))}g
               </Text>{' '}
               <Text className="text-text-secondary">•</Text>{' '}
               <Text style={{ color: theme.colors.macros.fat.text }}>
-                F: {Math.round(totalFat)}g
+                F: {formatInteger(Math.round(totalFat))}g
               </Text>
             </Text>
           ) : null}

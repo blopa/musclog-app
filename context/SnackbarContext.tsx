@@ -41,7 +41,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       }
     ) => {
       const id = Date.now();
-      const duration = options?.duration ?? 1000;
+      const duration = options?.duration ?? 2000;
 
       const newSnackbar: SnackbarType = {
         id,

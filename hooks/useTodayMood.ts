@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { database } from '../database';
 import UserMetric from '../database/models/UserMetric';
+import { localDayHalfOpenRange } from '../utils/calendarDate';
 
 /**
  * Hook to check if a mood entry exists for today.
@@ -12,20 +13,15 @@ export function useTodayMood() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0, 0);
-    const startTimestamp = startOfDay.getTime();
-
-    const endOfDay = new Date();
-    endOfDay.setUTCHours(23, 59, 59, 999);
-    const endTimestamp = endOfDay.getTime();
+    const today = new Date();
+    const { start, nextStart } = localDayHalfOpenRange(today);
 
     const query = database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'mood'),
-        Q.where('date', Q.gte(startTimestamp)),
-        Q.where('date', Q.lte(endTimestamp)),
+        Q.where('date', Q.gte(start)),
+        Q.where('date', Q.lt(nextStart)),
         Q.where('deleted_at', Q.eq(null)),
         Q.take(1)
       );

@@ -11,6 +11,7 @@ import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { convertEatingPhaseToUI, type EatingPhaseUI } from '../../types/EatingPhaseUI';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { CurrentGoalsCard } from '../cards/CurrentGoalsCard';
 import { GoalHistoryCard } from '../cards/GoalHistoryCard';
@@ -215,9 +216,8 @@ export default function GoalsManagementModal({ visible, onClose }: GoalsManageme
         await NutritionGoalService.updateGoal(selectedGoal.id, input);
       } else {
         const startDate = nutritionGoals.goalStartDate;
-        const todayStart = new Date();
-        todayStart.setUTCHours(0, 0, 0, 0);
-        if (startDate != null && startDate < todayStart.getTime()) {
+        const todayStartMs = localDayStartMs(new Date());
+        if (startDate != null && startDate < todayStartMs) {
           await NutritionGoalService.addGoalAtDate(input, startDate);
         } else {
           await NutritionGoalService.saveGoals(input);

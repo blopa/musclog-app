@@ -8,6 +8,7 @@ import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '../../database/models/WorkoutTemplateSet';
 import type { EnrichedWorkoutLogSet } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
@@ -51,6 +52,7 @@ export function WorkoutSessionHistoryModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
 
   const sessionTime = useSessionTotalTime({ startTime: workoutLog?.startedAt });
@@ -312,7 +314,7 @@ export function WorkoutSessionHistoryModal({
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
               <Text className="text-sm font-semibold" style={{ color: theme.colors.status.info }}>
-                {totalVolume.toLocaleString()} {t(weightUnitKey)} {t('workoutHistory.volume')}
+                {formatInteger(totalVolume)} {t(weightUnitKey)} {t('workoutHistory.volume')}
               </Text>
             </View>
             {!isPreview ? (

@@ -79,7 +79,7 @@ export function SelectModal({
               return (
                 <Pressable
                   key={option.value}
-                  className="flex-row items-center justify-between px-4 py-4"
+                  className="overflow-hidden"
                   style={{
                     borderBottomWidth: theme.borderWidth.thin,
                     borderBottomColor: theme.colors.border.dark,
@@ -89,17 +89,21 @@ export function SelectModal({
                   }}
                   onPress={() => onSelect(option.value)}
                 >
-                  <Text
-                    className="text-base font-medium"
-                    style={{
-                      color: isSelected ? theme.colors.accent.primary : theme.colors.text.primary,
-                    }}
-                  >
-                    {option.label}
-                  </Text>
-                  {isSelected ? (
-                    <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                  ) : null}
+                  <View className="flex-row items-center justify-between px-4 py-4">
+                    <Text
+                      className="min-w-0 flex-1 text-base font-medium"
+                      style={{
+                        color: isSelected ? theme.colors.accent.primary : theme.colors.text.primary,
+                      }}
+                    >
+                      {option.label}
+                    </Text>
+                    {isSelected ? (
+                      <View className="shrink-0 justify-center pl-2">
+                        <Check size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                      </View>
+                    ) : null}
+                  </View>
                 </Pressable>
               );
             })}

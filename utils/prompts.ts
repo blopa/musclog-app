@@ -1,5 +1,6 @@
 import { FunctionDeclaration } from '@google/generative-ai';
 import convert, { Unit } from 'convert';
+import { differenceInCalendarDays, format } from 'date-fns';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -16,7 +17,14 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '../database/services';
-import { kgToDisplay } from './unitConversion';
+import {
+  localDayClosedRangeMaxMs,
+  localDayStartFromUtcMs,
+  localDayStartMs,
+  parseLocalCalendarDate,
+} from './calendarDate';
+import { formatAppInteger } from './formatAppNumber';
+import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
@@ -200,7 +208,7 @@ export const getUserDetailsPrompt = async (
 };
 
 /** Build workout summary object from getWorkoutWithDetails result (same shape as prepareWorkoutDataForAI).
- * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs"). */
+ * When units is provided: omits muscleGroup from exercises and formats totalVolume as string with unit (e.g. "5400 kg" or "11905 lbs") using `locale` for digit shaping. */
 function buildWorkoutSummaryFromDetails(
   details: {
     workoutLog: {
@@ -220,7 +228,8 @@ function buildWorkoutSummaryFromDetails(
     }[];
     exercises: { id: string; name?: string; muscleGroup?: string }[];
   },
-  units?: Units
+  units?: Units,
+  locale: string = 'en-US'
 ): string {
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
@@ -240,7 +249,7 @@ function buildWorkoutSummaryFromDetails(
   const totalVolumeKg = workoutLog.totalVolume ?? 0;
   const totalVolumeWithUnit =
     units !== undefined
-      ? `${Math.round(kgToDisplay(totalVolumeKg, units))} ${units === 'imperial' ? 'lbs' : 'kg'}`
+      ? `${formatDisplayWeightKg(locale, units, totalVolumeKg)} ${units === 'imperial' ? 'lbs' : 'kg'}`
       : totalVolumeKg;
 
   const workoutData = {
@@ -273,11 +282,15 @@ function buildWorkoutSummaryFromDetails(
   return JSON.stringify(workoutData);
 }
 
-async function buildWorkoutSummaryJson(workoutLogId: string, units?: Units): Promise<string> {
+async function buildWorkoutSummaryJson(
+  workoutLogId: string,
+  units?: Units,
+  locale: string = 'en-US'
+): Promise<string> {
   try {
     const resolvedUnits = units ?? (await SettingsService.getUnits());
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-    return buildWorkoutSummaryFromDetails(details, resolvedUnits);
+    return buildWorkoutSummaryFromDetails(details, resolvedUnits, locale);
   } catch (error) {
     console.error('[prompts] buildWorkoutSummaryJson error:', error);
     return '{}';
@@ -305,7 +318,7 @@ export const getChatMessagePromptContent = async (
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
     const summaries: string[] = [];
     for (const log of recentLogs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -383,8 +396,8 @@ export const getNutritionInsightsPrompt = async (
 
   // Fetch nutrition data via NutritionService
   // Format as: { date, calories, protein, carbs, fat }[]
-  const startDateObj = new Date(startDate);
-  const endDateObj = new Date(endDate);
+  const startDateObj = parseLocalCalendarDate(startDate);
+  const endDateObj = parseLocalCalendarDate(endDate);
 
   let nutritionData = '[]';
   try {
@@ -399,7 +412,10 @@ export const getNutritionInsightsPrompt = async (
     for (const log of logs) {
       try {
         const nutrients = await log.getNutrients();
-        const dateKey = new Date(log.date ?? Date.now()).toISOString().split('T')[0]; // YYYY-MM-DD format
+        const dateKey = format(
+          new Date(localDayStartFromUtcMs(log.date ?? Date.now())),
+          'yyyy-MM-dd'
+        );
 
         const existing = dailyNutritionMap.get(dateKey) || {
           calories: 0,
@@ -426,7 +442,7 @@ export const getNutritionInsightsPrompt = async (
         date,
         ...nutrition,
       }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     nutritionData = JSON.stringify(nutritionArray, null, 2);
   } catch (error) {
@@ -436,8 +452,8 @@ export const getNutritionInsightsPrompt = async (
 
   let metricsData = '[]';
   try {
-    const startTs = startDateObj.getTime();
-    const endTs = endDateObj.getTime();
+    const startTs = localDayStartMs(startDateObj);
+    const endTs = localDayClosedRangeMaxMs(endDateObj);
     const [weightMetrics, bodyFatMetrics] = await Promise.all([
       UserMetricService.getMetricsHistory('weight', { startDate: startTs, endDate: endTs }),
       UserMetricService.getMetricsHistory('body_fat', { startDate: startTs, endDate: endTs }),
@@ -445,13 +461,13 @@ export const getNutritionInsightsPrompt = async (
     const byDate = new Map<string, { weight?: number; fatPercentage?: number }>();
     for (const m of weightMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, weight: value });
     }
     for (const m of bodyFatMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = new Date(m.date).toISOString().split('T')[0];
+      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, fatPercentage: value });
     }
@@ -463,8 +479,9 @@ export const getNutritionInsightsPrompt = async (
     console.error('Error fetching user metrics for nutrition prompt:', error);
   }
 
-  const diffInDays = Math.floor(
-    (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+  const diffInDays = Math.max(
+    0,
+    differenceInCalendarDays(localDayStartMs(endDateObj), localDayStartMs(startDateObj))
   );
 
   return [
@@ -502,7 +519,7 @@ export const getMealCritiquePrompt = async (
     const latestHeight = await UserMetricService.getLatest('height');
     if (latestHeight) {
       const { value, unit: storedUnit } = await latestHeight.getDecrypted();
-      heightInfo = `User height: ${Math.round(value)} ${storedUnit ?? 'cm'}`;
+      heightInfo = `User height: ${formatAppInteger(language, Math.round(value))} ${storedUnit ?? 'cm'}`;
     }
   } catch {
     // height not available
@@ -512,14 +529,17 @@ export const getMealCritiquePrompt = async (
   if (nutritionGoal) {
     nutritionGoalInfo = [
       'Daily nutrition targets:',
-      `- Calories: ${nutritionGoal.totalCalories} kcal`,
-      `- Protein: ${nutritionGoal.protein}g`,
-      `- Carbs: ${nutritionGoal.carbs}g`,
-      `- Fat: ${nutritionGoal.fats}g`,
+      `- Calories: ${formatAppInteger(language, Math.round(nutritionGoal.totalCalories))} kcal`,
+      `- Protein: ${formatAppInteger(language, Math.round(nutritionGoal.protein))}g`,
+      `- Carbs: ${formatAppInteger(language, Math.round(nutritionGoal.carbs))}g`,
+      `- Fat: ${formatAppInteger(language, Math.round(nutritionGoal.fats))}g`,
     ].join('\n');
   }
 
-  const foodList = foods.map((f) => `- ${f.name}: ${Math.round(f.gramWeight)}g`).join('\n');
+  // TODO: use a translation here, because some languages have a white space before the :, like french
+  const foodList = foods
+    .map((f) => `- ${f.name}: ${formatAppInteger(language, Math.round(f.gramWeight))}g`)
+    .join('\n');
 
   return [
     await getBaseSystemPrompt(language, context),
@@ -530,7 +550,7 @@ export const getMealCritiquePrompt = async (
     `Meal to give feedback: ${mealType}`,
     'Foods in the meal:',
     foodList,
-    `Combined totals: Calories ${Math.round(totals.calories)} kcal | Protein ${Math.round(totals.protein)}g | Carbs ${Math.round(totals.carbs)}g | Fat ${Math.round(totals.fat)}g`,
+    `Combined totals: Calories ${formatAppInteger(language, Math.round(totals.calories))} kcal | Protein ${formatAppInteger(language, Math.round(totals.protein))}g | Carbs ${formatAppInteger(language, Math.round(totals.carbs))}g | Fat ${formatAppInteger(language, Math.round(totals.fat))}g`,
     "Please provide a concise, constructive critique of this meal. Comment on nutritional balance, macro distribution relative to the user's daily targets and goals, and give 1–2 practical suggestions to improve it. Be encouraging and positive.",
   ]
     .filter(Boolean)
@@ -555,12 +575,12 @@ export const getRecentWorkoutsInsightsPrompt = async (
   let workoutsJson = '[]';
   try {
     const units = await SettingsService.getUnits();
-    const startTs = new Date(startDate).setUTCHours(0, 0, 0, 0);
-    const endTs = new Date(endDate).setUTCHours(23, 59, 59, 999);
+    const startTs = localDayStartMs(parseLocalCalendarDate(startDate));
+    const endTs = localDayClosedRangeMaxMs(parseLocalCalendarDate(endDate));
     const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -570,8 +590,12 @@ export const getRecentWorkoutsInsightsPrompt = async (
     console.error('Error fetching recent workouts for insights prompt:', error);
   }
 
-  const diffInDays = Math.floor(
-    (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+  const diffInDays = Math.max(
+    0,
+    differenceInCalendarDays(
+      localDayStartMs(parseLocalCalendarDate(endDate)),
+      localDayStartMs(parseLocalCalendarDate(startDate))
+    )
   );
 
   return [
@@ -604,7 +628,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }
@@ -739,7 +763,7 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
   const units = await SettingsService.getUnits();
-  const workoutJson = buildWorkoutSummaryFromDetails(details, units);
+  const workoutJson = buildWorkoutSummaryFromDetails(details, units, language);
   return getRecentWorkoutInsightsPrompt(
     details.workoutLog.workoutName,
     language,
@@ -767,7 +791,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
     const logs = await WorkoutService.getWorkoutLogsByWorkoutName(workoutTitle);
     const summaries: string[] = [];
     for (const log of logs) {
-      const json = await buildWorkoutSummaryJson(log.id, units);
+      const json = await buildWorkoutSummaryJson(log.id, units, language);
       if (json !== '{}') {
         summaries.push(json);
       }

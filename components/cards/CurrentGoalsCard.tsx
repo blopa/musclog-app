@@ -12,10 +12,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -52,11 +53,12 @@ export function CurrentGoalsCard({
 }: CurrentGoalsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay =
-    goal.targetWeight != null ? kgToDisplay(goal.targetWeight, units) : undefined;
+    goal.targetWeight != null ? formatDisplayWeightKg(locale, units, goal.targetWeight) : undefined;
   const [menuVisible, setMenuVisible] = useState(false);
   const wasRegenerating = useRef(false);
 
@@ -125,7 +127,7 @@ export function CurrentGoalsCard({
           </Text>
           <View className="flex-row items-baseline gap-1">
             <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
-              {goal.calories.toLocaleString()}
+              {formatInteger(goal.calories)}
             </Text>
             <Text className="text-sm font-bold uppercase text-accent-primary">
               {t('currentGoalsCard.kcal')}
@@ -145,7 +147,7 @@ export function CurrentGoalsCard({
                 : t('currentGoalsCard.protein')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.protein}
+              {formatInteger(goal.protein)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -162,7 +164,7 @@ export function CurrentGoalsCard({
               {windowWidth < 380 ? t('currentGoalsCard.carbsShort') : t('currentGoalsCard.carbs')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.carbs}
+              {formatInteger(goal.carbs)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -179,7 +181,7 @@ export function CurrentGoalsCard({
               {windowWidth < 380 ? t('currentGoalsCard.fatsShort') : t('currentGoalsCard.fats')}
             </Text>
             <Text className="font-bold text-text-primary">
-              {goal.fat}
+              {formatInteger(goal.fat)}
               <Text
                 className="ml-0.5 text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
@@ -220,9 +222,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {targetWeightDisplay % 1 === 0
-                      ? targetWeightDisplay
-                      : Math.round(targetWeightDisplay * 10) / 10}{' '}
+                    {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -244,7 +244,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.bodyFat}{' '}
+                    {formatRoundedDecimal(goal.bodyFat, 1)}{' '}
                     <Text
                       className="text-text-secondary"
                       style={{ fontSize: theme.typography.fontSize.xs }}
@@ -266,7 +266,7 @@ export function CurrentGoalsCard({
                     {t('currentGoalsCard.ffmi')}
                   </Text>
                   <Text className="text-sm font-bold text-text-primary">
-                    {goal.ffmi.toFixed(1)}
+                    {formatRoundedDecimal(goal.ffmi, 1)}
                   </Text>
                 </View>
               </View>
@@ -281,7 +281,9 @@ export function CurrentGoalsCard({
                   >
                     {t('currentGoalsCard.bmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">{goal.bmi.toFixed(1)}</Text>
+                  <Text className="text-sm font-bold text-text-primary">
+                    {formatRoundedDecimal(goal.bmi, 1)}
+                  </Text>
                 </View>
               </View>
             ) : null}

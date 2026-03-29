@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { MacrosPizzaChart } from '../theme/MacrosPizzaChart';
 import { GenericCard } from './GenericCard';
 
@@ -40,6 +40,7 @@ const getSourceText = (
 export function FoodInfoCard({ food }: FoodInfoCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
@@ -70,7 +71,9 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
           </View>
           <View className="items-end">
             <Text className="text-4xl font-black tracking-tight text-accent-primary">
-              {roundToDecimalPlaces(food.calories)}
+              {formatInteger(Math.round(food.calories), {
+                useGrouping: false,
+              })}
             </Text>
             <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
               {t('food.common.kcal')}
@@ -116,7 +119,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">
-                  {roundToDecimalPlaces(food.protein)}g
+                  {formatRoundedDecimal(food.protein, 1)}g
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -125,7 +128,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">
-                  {roundToDecimalPlaces(food.carbs)}g
+                  {formatRoundedDecimal(food.carbs, 1)}g
                 </Text>
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
@@ -134,7 +137,7 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
                 <Text className="text-xl font-bold text-text-primary">
-                  {roundToDecimalPlaces(food.fat)}g
+                  {formatRoundedDecimal(food.fat, 1)}g
                 </Text>
               </View>
             </View>
@@ -160,33 +163,33 @@ export function FoodInfoCard({ food }: FoodInfoCardProps) {
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-indigo-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.protein')} ({Math.round(proteinPercent)}%)
+                      {t('food.macros.protein')} ({formatInteger(Math.round(proteinPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">
-                    {roundToDecimalPlaces(food.protein)}g
+                    {formatRoundedDecimal(food.protein, 1)}g
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-yellow-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.fat')} ({Math.round(fatPercent)}%)
+                      {t('food.macros.fat')} ({formatInteger(Math.round(fatPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">
-                    {roundToDecimalPlaces(food.fat)}g
+                    {formatRoundedDecimal(food.fat, 1)}g
                   </Text>
                 </View>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-row items-center gap-2">
                     <View className="h-2 w-2 rounded-full bg-emerald-500" />
                     <Text className="text-xs text-text-secondary">
-                      {t('food.macros.carbs')} ({Math.round(carbsPercent)}%)
+                      {t('food.macros.carbs')} ({formatInteger(Math.round(carbsPercent))}%)
                     </Text>
                   </View>
                   <Text className="text-xs font-bold text-text-primary">
-                    {roundToDecimalPlaces(food.carbs)}g
+                    {formatRoundedDecimal(food.carbs, 1)}g
                   </Text>
                 </View>
               </View>

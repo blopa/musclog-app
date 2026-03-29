@@ -19,6 +19,11 @@ import { TEMP_NUTRITION_PLAN } from '../../constants/misc';
 import { type EatingPhase } from '../../database/models';
 import { UserMetricService, UserService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import {
+  localDayClosedRangeMaxMs,
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { getHistoricalNutritionParams } from '../../utils/historicalNutritionParams';
 import {
   bmiFromWeightAndHeightM,
@@ -339,8 +344,8 @@ export default function SetGoals() {
       let rawWeight = weightDec?.value ?? 0;
       let rawHeight = heightDec?.value ?? 0;
 
-      const todayStart = new Date().setUTCHours(0, 0, 0, 0);
-      const todayEnd = todayStart + 24 * 60 * 60 * 1000 - 1;
+      const todayStart = localDayStartMs(new Date());
+      const todayEnd = localDayClosedRangeMaxMs(new Date());
       if (rawWeight <= 0) {
         const todayWeights = await UserMetricService.getMetricsHistory(
           'weight',
@@ -430,7 +435,7 @@ export default function SetGoals() {
     // Set a goal date for 90 days from now if the eatingPhase is either cut or bulk
     const goalDate =
       eatingPhase === 'cut' || eatingPhase === 'bulk'
-        ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000) // 90 days from now
+        ? new Date(localDayKeyPlusCalendarDaysFromNow(90))
         : undefined;
 
     const planWithTargets: NutritionPlan = {

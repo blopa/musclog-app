@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { NutritionEntry } from '../../utils/coachAI';
 import { calculateNutritionTotals, mealTypeToString } from '../../utils/nutritionAI';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FullScreenModal } from './FullScreenModal';
 
 type NutritionConfirmationModalProps = {
@@ -27,6 +27,7 @@ export function NutritionConfirmationModal({
 }: NutritionConfirmationModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const insets = useSafeAreaInsets();
 
   const totals = useMemo(() => calculateNutritionTotals(entries), [entries]);
@@ -50,32 +51,32 @@ export function NutritionConfirmationModal({
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.calories')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {roundToDecimalPlaces(item.calories)} kcal
+            {formatRoundedDecimal(item.calories, 2)} kcal
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.protein')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {roundToDecimalPlaces(item.protein)}g
+            {formatRoundedDecimal(item.protein, 2)}g
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.carbs')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {roundToDecimalPlaces(item.carbs)}g
+            {formatRoundedDecimal(item.carbs, 2)}g
           </Text>
         </View>
         <View className="flex-row justify-between">
           <Text className="text-xs text-text-secondary">{t('nutrition.fat')}:</Text>
           <Text className="text-xs font-medium text-text-primary">
-            {roundToDecimalPlaces(item.fat)}g
+            {formatRoundedDecimal(item.fat, 2)}g
           </Text>
         </View>
         {item.fiber ? (
           <View className="flex-row justify-between">
             <Text className="text-xs text-text-secondary">{t('nutrition.fiber')}:</Text>
             <Text className="text-xs font-medium text-text-primary">
-              {roundToDecimalPlaces(item.fiber)}g
+              {formatRoundedDecimal(item.fiber, 2)}g
             </Text>
           </View>
         ) : null}
@@ -102,31 +103,32 @@ export function NutritionConfirmationModal({
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.calories')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {roundToDecimalPlaces(totals.totalCalories)} kcal
+                {formatRoundedDecimal(totals.totalCalories, 2)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.protein')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {roundToDecimalPlaces(totals.totalProtein)}g
+                {formatRoundedDecimal(totals.totalProtein, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.carbs')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {roundToDecimalPlaces(totals.totalCarbs)}g
+                {formatRoundedDecimal(totals.totalCarbs, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-sm text-text-secondary">{t('nutrition.fat')}:</Text>
               <Text className="text-sm font-semibold text-text-primary">
-                {roundToDecimalPlaces(totals.totalFat)}g
+                {formatRoundedDecimal(totals.totalFat, 2)}g
               </Text>
             </View>
           </View>
         </View>
 
         {/* Entry Count */}
+        {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
         <Text className="mb-4 text-xs text-text-secondary">
           {t('nutrition.entriesCount')}: {entries.length}
         </Text>

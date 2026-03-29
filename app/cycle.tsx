@@ -13,6 +13,7 @@ import { UserMetricService } from '../database/services';
 import { MenstrualService } from '../database/services/MenstrualService';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { useTheme } from '../hooks/useTheme';
+import { localDayClosedRangeMaxMs, localDayStartMs } from '../utils/calendarDate';
 
 export default function CycleScreen() {
   const theme = useTheme();
@@ -30,19 +31,17 @@ export default function CycleScreen() {
 
   useEffect(() => {
     const fetchDailyMetrics = async () => {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      const startMs = localDayStartMs(selectedDate);
+      const endMs = localDayClosedRangeMaxMs(selectedDate);
 
       const flowMetrics = await UserMetricService.getMetricsHistory('period_flow', {
-        startDate: startOfDay.getTime(),
-        endDate: endOfDay.getTime(),
+        startDate: startMs,
+        endDate: endMs,
       });
 
       const symptomMetrics = await UserMetricService.getMetricsHistory('period_symptoms', {
-        startDate: startOfDay.getTime(),
-        endDate: endOfDay.getTime(),
+        startDate: startMs,
+        endDate: endMs,
       });
 
       const allMetrics = [...flowMetrics, ...symptomMetrics];

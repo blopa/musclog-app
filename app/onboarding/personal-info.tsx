@@ -16,6 +16,7 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
@@ -84,7 +85,7 @@ export default function PersonalInfo() {
       const month = parseInt(dobParts[0], 10) - 1; // Month is 0-indexed
       const day = parseInt(dobParts[1], 10);
       const year = parseInt(dobParts[2], 10);
-      const dateOfBirth = new Date(year, month, day).getTime();
+      const dateOfBirth = localDayStartMs(new Date(year, month, day));
 
       // Check if user already exists
       const existingUser = await UserService.getCurrentUser();

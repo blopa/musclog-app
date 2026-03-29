@@ -437,8 +437,8 @@ export function getEditFields(entityType: DataLogModalVariant): EditFieldConfig[
         {
           type: 'text',
           key: 'message',
-          label: 'Message',
-          placeholder: 'Type your message...',
+          label: 'ai.chat.message',
+          placeholder: 'ai.chat.typeYourMessage',
           required: true,
           multiline: true,
         },

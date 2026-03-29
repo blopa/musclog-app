@@ -18,6 +18,7 @@ import { Platform, Pressable, ScrollView, Text, useWindowDimensions, View } from
 
 import { type EatingPhase } from '../database/models';
 import { UserMetricService } from '../database/services';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
@@ -152,6 +153,7 @@ function MacrosDistributionChart({
 }) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const total = protein + carbs + fats; // Exclude fiber from macro total
   const fiberTotal = total + fiber; // Include fiber for display percentages
   const proteinPercentage = total > 0 ? (protein / total) * 100 : 0;
@@ -182,7 +184,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.protein.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(proteinPercentage)}% {t('food.macros.proteinLegend')}
+            {formatInteger(Math.round(proteinPercentage))}% {t('food.macros.proteinLegend')}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -191,7 +193,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.carbs.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(carbsPercentage)}% {t('food.macros.carbsLegend')}
+            {formatInteger(Math.round(carbsPercentage))}% {t('food.macros.carbsLegend')}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -200,7 +202,7 @@ function MacrosDistributionChart({
             style={{ backgroundColor: theme.colors.macros.fat.bg }}
           />
           <Text className="text-xs text-text-secondary">
-            {Math.round(fatsPercentage)}% {t('food.macros.fatLegend')}
+            {formatInteger(Math.round(fatsPercentage))}% {t('food.macros.fatLegend')}
           </Text>
         </View>
         {fiber > 0 ? (
@@ -210,7 +212,7 @@ function MacrosDistributionChart({
               style={{ backgroundColor: theme.colors.macros.fiber.bg }}
             />
             <Text className="text-xs text-text-secondary">
-              {Math.round(fiberPercentage)}% {t('food.macros.fiberLegend')}
+              {formatInteger(Math.round(fiberPercentage))}% {t('food.macros.fiberLegend')}
             </Text>
           </View>
         ) : null}
@@ -231,6 +233,7 @@ export function NutritionGoalsBody({
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
   const { units } = useSettings();
+  const { formatInteger } = useFormatAppNumber();
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
   const [totalCalories, setTotalCalories] = useState(initialGoals?.totalCalories ?? 2450);
@@ -464,7 +467,7 @@ export function NutritionGoalsBody({
             </Text>
             <View className="flex-row items-baseline gap-2">
               <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
-                {totalCalories.toLocaleString()}
+                {formatInteger(totalCalories)}
               </Text>
               <Text className="text-lg font-semibold uppercase text-accent-primary">
                 {t('food.common.kcal')}
@@ -559,6 +562,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.protein')}
             value={protein}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Beef : undefined}
             iconSize="sm"
             onIncrement={() => setProtein(Math.min(macroMax.protein, protein + 1))}
@@ -570,6 +574,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.carbs')}
             value={carbs}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Wheat : undefined}
             iconSize="sm"
             onIncrement={() => setCarbs(Math.min(macroMax.carbs, carbs + 1))}
@@ -581,6 +586,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.fats')}
             value={fats}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Droplet : undefined}
             iconSize="sm"
             onIncrement={() => setFats(Math.min(macroMax.fats, fats + 1))}
@@ -592,6 +598,7 @@ export function NutritionGoalsBody({
             subtitle={t('nutritionGoals.kcalPerGram.fiber')}
             value={fiber}
             unit="g"
+            maxFractionDigits={0}
             icon={showIcons ? Leaf : undefined}
             iconSize="sm"
             onIncrement={() => setFiber(Math.min(macroMax.fiber, fiber + 1))}
@@ -648,6 +655,7 @@ export function NutritionGoalsBody({
                 })}
                 value={targetWeight}
                 unit={units === 'metric' ? 'kg' : 'lbs'}
+                maxFractionDigits={1}
                 icon={showIcons ? Scale : undefined}
                 iconSize="sm"
                 onIncrement={() =>
@@ -697,6 +705,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetBodyFat')}
                 value={targetBodyFat}
                 unit="%"
+                maxFractionDigits={0}
                 icon={showIcons ? Percent : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetBodyFat(Math.min(50, targetBodyFat + 1))}
@@ -748,6 +757,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetBMI')}
                 value={targetBMI}
                 unit="index"
+                maxFractionDigits={1}
                 icon={showIcons ? TrendingUp : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetBMI(Math.min(40, targetBMI + 0.1))}
@@ -801,6 +811,7 @@ export function NutritionGoalsBody({
                 subtitle={t('nutritionGoals.sublabels.targetFFMI')}
                 value={targetFFMI}
                 unit="index"
+                maxFractionDigits={1}
                 icon={showIcons ? Activity : undefined}
                 iconSize="sm"
                 onIncrement={() => setTargetFFMI(Math.min(30, targetFFMI + 0.1))}

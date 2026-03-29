@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 18.1.0",
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
@@ -15,12 +16,19 @@
       "distribution": "internal",
       "env": {
         "GRADLE_OPTS": "-Xmx4g -XX:MaxMetaspaceSize=1g"
+      },
+      "ios": {
+        "simulator": false,
+        "image": "macos-sequoia-15.4-xcode-16.3"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "GRADLE_OPTS": "-Xmx4g -XX:MaxMetaspaceSize=1g"
+      },
+      "ios": {
+        "image": "macos-sequoia-15.4-xcode-16.3"
       }
     }
   },

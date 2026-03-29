@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -13,10 +13,11 @@ import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import WorkoutLogExercise from '../../database/models/WorkoutLogExercise';
 import WorkoutLogSet from '../../database/models/WorkoutLogSet';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSessionTotalTime } from '../../hooks/useSessionTotalTime';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { formatDuration } from '../../utils/workout';
 
@@ -36,6 +37,11 @@ export default function NewExerciseTransitionScreen() {
   const { t } = useTranslation();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
+  const { locale } = useFormatAppNumber();
+  const formatDisplayWeight = useCallback(
+    (kg: number) => formatDisplayWeightKg(locale, units, kg),
+    [locale, units]
+  );
   const router = useRouter();
   const params = useLocalSearchParams<{
     workoutLogId?: string;
@@ -120,8 +126,8 @@ export default function NewExerciseTransitionScreen() {
         } else {
           const minWKg = Math.min(...weights);
           const maxWKg = Math.max(...weights);
-          const minW = kgToDisplay(minWKg, units);
-          const maxW = kgToDisplay(maxWKg, units);
+          const minW = formatDisplayWeight(minWKg);
+          const maxW = formatDisplayWeight(maxWKg);
           targetWeight =
             minWKg === maxWKg
               ? t('exerciseTransition.weightSingle', { value: minW, unit })
@@ -169,6 +175,7 @@ export default function NewExerciseTransitionScreen() {
     t,
     weightUnitKey,
     units,
+    formatDisplayWeight,
   ]);
 
   const handleStartNextExercise = () => {

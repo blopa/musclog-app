@@ -1,4 +1,5 @@
 import convert from 'convert';
+import { differenceInCalendarDays } from 'date-fns';
 
 import { NutritionGoals } from '../components/NutritionGoalsBody';
 import type {
@@ -8,6 +9,7 @@ import type {
   LiftingExperience,
   WeightGoal,
 } from '../database/models';
+import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from './calendarDate';
 
 // ---------------------------------------------------------------------------
 // Input / Output types
@@ -874,14 +876,18 @@ export function generateWeeklyCheckins(
   currentBodyFatPercent: number | null,
   frequencyDays: number = 7
 ): WeeklyCheckinData[] {
-  const msPerInterval = frequencyDays * 24 * 60 * 60 * 1000;
-  const totalDuration = endDate - startDate;
+  const startDayKey = localDayStartFromUtcMs(startDate);
+  const endDayKey = localDayStartFromUtcMs(endDate);
+  const totalCalendarDays = Math.max(
+    0,
+    differenceInCalendarDays(new Date(endDayKey), new Date(startDayKey))
+  );
 
-  if (totalDuration <= msPerInterval) {
+  if (totalCalendarDays <= frequencyDays) {
     return [];
   }
 
-  const totalIntervals = Math.floor(totalDuration / msPerInterval);
+  const totalIntervals = Math.floor(totalCalendarDays / frequencyDays);
   const checkins: WeeklyCheckinData[] = [];
 
   const currentWeightKg = plan.currentWeightKg;
@@ -890,7 +896,7 @@ export function generateWeeklyCheckins(
   const isBulking = plan.targetCalories > plan.tdee;
 
   for (let interval = 1; interval < totalIntervals; interval++) {
-    const checkinDate = startDate + interval * msPerInterval;
+    const checkinDate = localDayKeyPlusCalendarDays(startDayKey, interval * frequencyDays);
     const daysElapsed = interval * frequencyDays;
     const intermediateWeight = parseFloat(
       (currentWeightKg + dailyWeightChangeKg * daysElapsed).toFixed(1)

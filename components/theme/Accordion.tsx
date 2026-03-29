@@ -61,33 +61,37 @@ export function Accordion({
     <View
       className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}
     >
-      <Pressable onPress={handlePress} className="flex-row items-center justify-between px-4 py-4">
-        <View className="flex-1 flex-row items-center gap-3">
-          {headerContent ? (
-            headerContent
-          ) : (
-            <>
-              {Icon ? <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} /> : null}
-              <Text className="text-base font-semibold text-text-primary">
-                {title}
-                {count !== undefined ? (
-                  <>
-                    {' '}
-                    <Text
-                      className="text-sm font-normal"
-                      style={{ color: theme.colors.status.customGreen }}
-                    >
-                      ({count})
-                    </Text>
-                  </>
+      <Pressable onPress={handlePress} className="overflow-hidden">
+        <View className="flex-row items-center justify-between px-4 py-4">
+          <View className="min-w-0 flex-1 flex-row items-center gap-3">
+            {headerContent ? (
+              headerContent
+            ) : (
+              <>
+                {Icon ? (
+                  <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 ) : null}
-              </Text>
-            </>
-          )}
+                <Text className="text-base font-semibold text-text-primary">
+                  {title}
+                  {count !== undefined ? (
+                    <>
+                      {' '}
+                      <Text
+                        className="text-sm font-normal"
+                        style={{ color: theme.colors.status.customGreen }}
+                      >
+                        ({count})
+                      </Text>
+                    </>
+                  ) : null}
+                </Text>
+              </>
+            )}
+          </View>
+          <Animated.View className="shrink-0 justify-center pl-2" style={animatedChevronStyle}>
+            <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+          </Animated.View>
         </View>
-        <Animated.View style={animatedChevronStyle}>
-          <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-        </Animated.View>
       </Pressable>
       <Animated.View style={animatedContentStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
         <View className="border-t border-border-dark">{children}</View>

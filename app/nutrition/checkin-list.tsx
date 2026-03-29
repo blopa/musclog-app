@@ -103,23 +103,25 @@ export default function CheckinListScreen() {
               <Pressable
                 key={c.id}
                 onPress={() => setSelectedCheckinId(c.id)}
-                className="flex-row items-center justify-between rounded-2xl bg-bg-card p-4 shadow-sm"
+                className="overflow-hidden rounded-2xl bg-bg-card shadow-sm"
               >
-                <View className="flex-1">
-                  <Text className="mb-1 text-lg font-bold text-text-primary">
-                    {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
-                  </Text>
-                  <Text className="text-sm text-text-secondary">
-                    {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
-                  </Text>
-                </View>
-                <View className="flex-row items-center gap-3">
-                  <View className="rounded-full bg-accent-primary px-4 py-2">
-                    <Text className="text-sm font-bold text-bg-primary">
-                      {t('nutrition.checkin.prepareNow')}
+                <View className="flex-row items-center justify-between p-4">
+                  <View className="min-w-0 flex-1">
+                    <Text className="mb-1 text-lg font-bold text-text-primary">
+                      {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
+                    </Text>
+                    <Text className="text-sm text-text-secondary">
+                      {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                     </Text>
                   </View>
-                  <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                  <View className="shrink-0 flex-row items-center gap-3 pl-2">
+                    <View className="rounded-full bg-accent-primary px-4 py-2">
+                      <Text className="text-sm font-bold text-bg-primary">
+                        {t('nutrition.checkin.prepareNow')}
+                      </Text>
+                    </View>
+                    <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                  </View>
                 </View>
               </Pressable>
             ))
@@ -155,19 +157,21 @@ export default function CheckinListScreen() {
                 <Pressable
                   key={c.id}
                   onPress={() => setSelectedCheckinId(c.id)}
-                  className="flex-row items-center justify-between rounded-2xl bg-bg-card p-4"
+                  className="overflow-hidden rounded-2xl bg-bg-card"
                 >
-                  <View>
-                    <Text className="mb-1 font-bold text-text-primary">
-                      {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
-                    </Text>
-                    <Text className="text-xs text-text-secondary">
-                      {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center gap-2">
-                    {renderStatusBadge(c.status ?? 'pending')}
-                    <ChevronRight size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+                  <View className="flex-row items-center justify-between p-4">
+                    <View className="min-w-0 flex-1">
+                      <Text className="mb-1 font-bold text-text-primary">
+                        {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
+                      </Text>
+                      <Text className="text-xs text-text-secondary">
+                        {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
+                      </Text>
+                    </View>
+                    <View className="shrink-0 flex-row items-center gap-2 pl-2">
+                      {renderStatusBadge(c.status ?? 'pending')}
+                      <ChevronRight size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+                    </View>
                   </View>
                 </Pressable>
               ))

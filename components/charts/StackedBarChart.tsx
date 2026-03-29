@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { CartesianChart, StackedBar } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -68,7 +69,7 @@ export function StackedBarChart({
   marginTop = 16,
   marginBottom = 16,
   showTotalLabels = false,
-  totalLabelFormatter = (t) => String(Math.round(t)),
+  totalLabelFormatter,
   className,
   domainPadding = { left: 20, right: 20, top: 10 },
   interactive = true,
@@ -91,6 +92,10 @@ export function StackedBarChart({
     registerChart(chartId, () => setActiveLabel(null));
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
+
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const totalLabelFormatterResolved =
+    totalLabelFormatter ?? ((total: number) => formatInteger(Math.round(total)));
 
   if (data.length === 0) {
     return null;
@@ -144,9 +149,7 @@ export function StackedBarChart({
       (nearest.segments[1] ?? 0) +
       (nearest.segments[2] ?? 0) +
       (nearest.segments[3] ?? 0);
-    const label = tooltipFormatter
-      ? tooltipFormatter(nearest)
-      : String(Math.round(total * 10) / 10);
+    const label = tooltipFormatter ? tooltipFormatter(nearest) : formatRoundedDecimal(total, 1);
     notifyChartActive(chartId);
     setActiveLabel(label);
   };

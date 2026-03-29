@@ -5,8 +5,8 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 
 import Food from '../../database/models/Food';
 import { useFoods } from '../../hooks/useFoods';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { Button } from '../theme/Button';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
@@ -31,7 +31,8 @@ function FoodResultCard({
 }: FoodResultCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const calories = roundToDecimalPlaces((food.calories * amount) / 100);
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const calories = formatRoundedDecimal((food.calories * amount) / 100, 2);
 
   return (
     <View
@@ -116,7 +117,7 @@ function FoodResultCard({
               >
                 {isSelected
                   ? `${calories} ${t('common.kcal')}`
-                  : `${roundToDecimalPlaces(food.calories)} ${t('common.kcal')}`}
+                  : `${formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`}
               </Text>
             </View>
           </View>
@@ -147,7 +148,7 @@ function FoodResultCard({
               }}
             >
               {t('foodSearch.macroProtein', {
-                value: roundToDecimalPlaces((food.protein * amount) / 100),
+                value: formatRoundedDecimal((food.protein * amount) / 100, 2),
               })}
             </Text>
             <Text
@@ -158,7 +159,7 @@ function FoodResultCard({
               }}
             >
               {t('foodSearch.macroCarbs', {
-                value: roundToDecimalPlaces((food.carbs * amount) / 100),
+                value: formatRoundedDecimal((food.carbs * amount) / 100, 2),
               })}
             </Text>
             <Text
@@ -168,7 +169,9 @@ function FoodResultCard({
                 fontWeight: theme.typography.fontWeight.medium,
               }}
             >
-              {t('foodSearch.macroFat', { value: roundToDecimalPlaces((food.fat * amount) / 100) })}
+              {t('foodSearch.macroFat', {
+                value: formatRoundedDecimal((food.fat * amount) / 100, 2),
+              })}
             </Text>
           </View>
         </View>
@@ -187,6 +190,7 @@ function FoodResultCard({
           <StepperInput
             label={t('food.addFoodItemToMeal.amount')}
             value={amount}
+            maxFractionDigits={0}
             onChangeValue={onAmountChange}
             onIncrement={() => onAmountChange(amount + 1)}
             onDecrement={() => onAmountChange(Math.max(0, amount - 1))}

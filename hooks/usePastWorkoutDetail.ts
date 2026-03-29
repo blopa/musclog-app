@@ -34,7 +34,8 @@ export interface UsePastWorkoutDetailParams {
 }
 
 export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetailParams) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const appNumberLocale = i18n.resolvedLanguage ?? i18n.language;
   const { units } = useSettings();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
@@ -121,7 +122,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
               t,
               units,
               dateFnsLocale,
-              theme
+              theme,
+              appNumberLocale
             )
           ).pipe(
             map((transformed) => ({
@@ -153,7 +155,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       });
 
     return () => subscription.unsubscribe();
-  }, [visible, workoutId, t, units, dateFnsLocale]);
+  }, [visible, workoutId, t, units, dateFnsLocale, appNumberLocale]);
 
   const reload = () => {
     if (!workoutId) {
@@ -167,7 +169,16 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .then(({ workoutLog: log, sets: s, exercises: ex }) => {
         setRawSets(s);
         setExternalId(log.externalId ?? null);
-        return transformWorkoutToDetailData(log, s, ex, t, units, dateFnsLocale, theme);
+        return transformWorkoutToDetailData(
+          log,
+          s,
+          ex,
+          t,
+          units,
+          dateFnsLocale,
+          theme,
+          appNumberLocale
+        );
       })
       .then(setWorkout)
       .catch((err) => {

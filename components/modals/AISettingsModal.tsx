@@ -155,22 +155,23 @@ function AIIntegrationCard({
           </View>
 
           {/* Model Selector */}
-          <Pressable
-            onPress={onModelPress}
-            className="flex-row items-center justify-between p-4 active:bg-bg-overlay"
-          >
-            <View className="min-w-0 flex-1">
-              <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
-              <Text
-                className="text-xs text-accent-primary"
-                style={{
-                  marginTop: theme.spacing.padding.xsHalf,
-                }}
-              >
-                {modelValue || modelFallbackText}
-              </Text>
+          <Pressable onPress={onModelPress} className="overflow-hidden active:bg-bg-overlay">
+            <View className="flex-row items-center justify-between p-4">
+              <View className="min-w-0 flex-1">
+                <Text className="text-sm font-medium text-text-primary">{modelLabel}</Text>
+                <Text
+                  className="text-xs text-accent-primary"
+                  style={{
+                    marginTop: theme.spacing.padding.xsHalf,
+                  }}
+                >
+                  {modelValue || modelFallbackText}
+                </Text>
+              </View>
+              <View className="shrink-0 justify-center pl-2">
+                <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              </View>
             </View>
-            <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
           </Pressable>
         </View>
       ) : null}
@@ -554,35 +555,39 @@ export function AISettingsModal({
           </Text>
           <Pressable
             onPress={() => setIsCustomPromptsVisible(true)}
-            className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4 active:bg-bg-overlay"
+            className="overflow-hidden rounded-lg border bg-bg-card active:bg-bg-overlay"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,
             }}
           >
-            <View className="flex-row items-center gap-3">
-              <View
-                style={{
-                  width: theme.size['8'],
-                  height: theme.size['8'],
-                  borderRadius: theme.borderRadius.full / 2,
-                  backgroundColor: theme.colors.accent.primary20,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            <View className="flex-row items-center justify-between p-4">
+              <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                <View
+                  style={{
+                    width: theme.size['8'],
+                    height: theme.size['8'],
+                    borderRadius: theme.borderRadius.full / 2,
+                    backgroundColor: theme.colors.accent.primary20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                </View>
+                <View>
+                  <Text className="text-sm font-medium text-text-primary">
+                    {t('settings.aiSettings.manageCustomPrompts')}
+                  </Text>
+                  <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
+                    {t('settings.aiSettings.customPromptsSubtitle')}
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text className="text-sm font-medium text-text-primary">
-                  {t('settings.aiSettings.manageCustomPrompts')}
-                </Text>
-                <Text className="text-xs text-text-secondary" style={{ marginTop: 2 }}>
-                  {t('settings.aiSettings.customPromptsSubtitle')}
-                </Text>
+              <View className="shrink-0 justify-center pl-2">
+                <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
               </View>
             </View>
-            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
           </Pressable>
         </View>
 

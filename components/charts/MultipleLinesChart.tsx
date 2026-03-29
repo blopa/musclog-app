@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { XAxisLabel } from '../../utils/chartUtils';
 
@@ -111,6 +112,8 @@ export function MultipleLinesChart({
     return () => unregisterChart(chartId);
   }, [chartId, registerChart, unregisterChart]);
 
+  const { formatRoundedDecimal } = useFormatAppNumber();
+
   if (data.length === 0 || series.length === 0) {
     return null;
   }
@@ -134,7 +137,10 @@ export function MultipleLinesChart({
     );
     const label = tooltipFormatter
       ? tooltipFormatter(nearest)
-      : series.map((s) => `${s.label}: ${Math.round((nearest[s.key] ?? 0) * 10) / 10}`).join('\n');
+      : series
+          // TODO: use a translation here, because some languages have a white space before the :, like french
+          .map((s) => `${s.label}: ${formatRoundedDecimal(nearest[s.key] ?? 0, 1)}`)
+          .join('\n');
     notifyChartActive(chartId);
     setActiveLabel(label);
   };

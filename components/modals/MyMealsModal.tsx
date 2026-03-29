@@ -5,11 +5,11 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import Meal from '../../database/models/Meal';
 import { MealService } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import i18n from '../../lang/lang';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -87,6 +87,7 @@ type MyMealsModalProps = {
 export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { isAiConfigured } = useSettings();
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -149,11 +150,11 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
               id: meal.id,
               title: meal.name ?? t('meals.untitledMeal'),
               tags,
-              calories: roundToDecimalPlaces(nutrients.calories),
+              calories: nutrients.calories,
               macros: {
-                protein: roundToDecimalPlaces(nutrients.protein) + 'g',
-                carbs: roundToDecimalPlaces(nutrients.carbs) + 'g',
-                fat: roundToDecimalPlaces(nutrients.fat) + 'g',
+                protein: `${formatRoundedDecimal(nutrients.protein, 2)}g`,
+                carbs: `${formatRoundedDecimal(nutrients.carbs, 2)}g`,
+                fat: `${formatRoundedDecimal(nutrients.fat, 2)}g`,
               },
               image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
             };
@@ -168,7 +169,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     };
 
     transformMeals();
-  }, [meals, t]);
+  }, [meals, t, formatRoundedDecimal]);
 
   // Filter meals based on active filter and search query
   const filteredMeals = useMemo(() => {

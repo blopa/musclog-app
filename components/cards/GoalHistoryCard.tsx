@@ -3,10 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
-import { kgToDisplay } from '../../utils/unitConversion';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { EatingPhaseBadge } from '../EatingPhaseBadge';
@@ -44,9 +45,10 @@ export function GoalHistoryCard({
 }: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
-  const weightDisplay = kgToDisplay(goal.weight, units);
+  const weightDisplay = formatDisplayWeightKg(locale, units, goal.weight);
   const [menuVisible, setMenuVisible] = useState(false);
   const wasRegenerating = useRef(false);
 
@@ -150,7 +152,7 @@ export function GoalHistoryCard({
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
                 <Text className="text-lg font-bold text-text-primary">
-                  {goal.calories.toLocaleString()}{' '}
+                  {formatInteger(goal.calories)}{' '}
                   <Text
                     className="font-normal text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xs }}
@@ -162,22 +164,23 @@ export function GoalHistoryCard({
                   className="text-text-secondary"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
-                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}
+                  {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
+                  {formatInteger(goal.carbs)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
+                  {formatInteger(goal.fat)}
                   {t('goalHistoryCard.g')}
                 </Text>
               </View>
               <View className="items-end">
                 <Text className="text-xs font-bold text-text-secondary">
-                  {weightDisplay % 1 === 0 ? weightDisplay : Math.round(weightDisplay * 10) / 10}{' '}
-                  {t(weightUnitKey)}
+                  {weightDisplay} {t(weightUnitKey)}
                 </Text>
                 <Text
                   className="text-text-secondary"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
-                  {goal.bodyFat}% {t('goalHistoryCard.bf')}
+                  {formatRoundedDecimal(goal.bodyFat, 1)}% {t('goalHistoryCard.bf')}
                 </Text>
               </View>
             </View>

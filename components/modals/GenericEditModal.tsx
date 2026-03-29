@@ -139,12 +139,14 @@ export function GenericEditModal({
         const numberField = field as NumberFieldConfig;
         const numValue = (value as number) ?? numberField.min ?? 0;
         const step = numberField.step ?? 1;
+        const maxFractionDigits = numberField.maxFractionDigits ?? (step % 1 === 0 ? 0 : 1);
         return (
           <StepperInput
             key={field.key}
             label={label}
             value={numValue}
             unit={numberField.unit}
+            maxFractionDigits={maxFractionDigits}
             onIncrement={() => {
               const max = numberField.max ?? Infinity;
               const newValue = Math.min(numValue + step, max);
@@ -235,10 +237,14 @@ export function GenericEditModal({
                 setCurrentSelectFieldKey(field.key);
                 setSelectMenuVisible(true);
               }}
-              className="flex-row items-center justify-between rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+              className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
             >
-              <Text className="text-base text-text-primary">{selectedLabel}</Text>
-              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+              <View className="flex-row items-center justify-between px-4 py-3">
+                <Text className="min-w-0 flex-1 text-base text-text-primary">{selectedLabel}</Text>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </View>
+              </View>
             </Pressable>
             <BottomPopUpMenu
               visible={selectMenuVisible ? currentSelectFieldKey === field.key : false}

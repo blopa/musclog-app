@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MoodCaloriesPoint, TimeAggregation } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { BarLineChart } from '../charts/BarLineChart';
@@ -28,6 +29,7 @@ const MOOD_KEYS: ('poor' | 'low' | 'okay' | 'good' | 'great')[] = [
 export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -83,16 +85,20 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
         lineSeriesLabel={t('progress.mood.moodScore')}
         stepsDomain={[0, maxCal * 1.1]}
         heartRateDomain={[0, 4]}
-        leftAxisLabels={['0', `${Math.round(maxCal / 2)}`, `${Math.round(maxCal)}`]}
+        leftAxisLabels={[
+          formatInteger(0),
+          formatInteger(Math.round(maxCal / 2)),
+          formatInteger(Math.round(maxCal)),
+        ]}
         rightAxisLabels={[
           t('progress.mood.poor'),
           t('progress.mood.okay'),
           t('progress.mood.great'),
         ]}
-        stepsFormatter={(v) => `${Math.round(v)} ${t('progress.kcal')}`}
+        stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${t('progress.kcal')}`}
         heartRateFormatter={(v) => {
           const key = MOOD_KEYS[Math.round(v)];
-          return key ? t(`progress.mood.${key}`) : v.toFixed(1);
+          return key ? t(`progress.mood.${key}`) : formatDecimal(v, 1);
         }}
         lineColor={theme.colors.status.indigo}
         xAxisLabels={xAxisLabels}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { ProgressInsights } from '../../database/services/ProgressService';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { GenericCard } from '../cards/GenericCard';
 
 interface ProgressInsightsSectionProps {
@@ -11,6 +12,7 @@ interface ProgressInsightsSectionProps {
 
 export function ProgressInsightsSection({ insights }: ProgressInsightsSectionProps) {
   const { t } = useTranslation();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
 
   const renderStat = (label: string, value: string, colorClass: string) => (
     <View className="flex-1 items-center justify-center p-2">
@@ -40,7 +42,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                   {t('progress.empiricalTdee')}
                 </Text>
                 <Text className="text-lg font-bold text-accent-primary">
-                  {Math.round(insights.empiricalTdee)}
+                  {formatInteger(Math.round(insights.empiricalTdee))}
                 </Text>
                 <Text className="text-center text-[8px] uppercase text-text-tertiary">
                   {t('progress.basedOnRecentActivity')}
@@ -52,7 +54,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                 {t('progress.statisticalTdee')}
               </Text>
               <Text className="text-lg font-bold text-accent-secondary">
-                {Math.round(insights.statisticalTdee)}
+                {formatInteger(Math.round(insights.statisticalTdee))}
               </Text>
               <Text className="text-center text-[8px] uppercase text-text-tertiary">
                 {t('progress.basedOnActivityLevel')}
@@ -68,21 +70,21 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
             {hasWeightChange
               ? renderStat(
                   t('progress.weeklyWeightChange'),
-                  `${insights.weightChangeWeekly > 0 ? '+' : ''}${insights.weightChangeWeekly.toFixed(2)}`,
+                  `${insights.weightChangeWeekly > 0 ? '+' : ''}${formatDecimal(insights.weightChangeWeekly, 2)}`,
                   insights.weightChangeWeekly > 0 ? 'text-red-500' : 'text-green-500'
                 )
               : null}
             {hasFatMassChange
               ? renderStat(
                   t('progress.fatMassChange'),
-                  `${insights.fatMassChange > 0 ? '+' : ''}${insights.fatMassChange.toFixed(2)}`,
+                  `${insights.fatMassChange > 0 ? '+' : ''}${formatDecimal(insights.fatMassChange, 2)}`,
                   insights.fatMassChange > 0 ? 'text-red-500' : 'text-green-500'
                 )
               : null}
             {hasLeanMassChange
               ? renderStat(
                   t('progress.leanMassChange'),
-                  `${insights.leanBodyMassChange > 0 ? '+' : ''}${insights.leanBodyMassChange.toFixed(2)}`,
+                  `${insights.leanBodyMassChange > 0 ? '+' : ''}${formatDecimal(insights.leanBodyMassChange, 2)}`,
                   insights.leanBodyMassChange > 0 ? 'text-green-500' : 'text-red-500'
                 )
               : null}
@@ -100,7 +102,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
               <View key={bf} className="flex-1 items-center justify-center p-2">
                 <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
                 <Text className="text-lg font-bold text-text-primary">
-                  {(insights.targetWeights as any)[`bf${bf}`].toFixed(1)}
+                  {formatDecimal((insights.targetWeights as any)[`bf${bf}`], 1)}
                 </Text>
               </View>
             ))}

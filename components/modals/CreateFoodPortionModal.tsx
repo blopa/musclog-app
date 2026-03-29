@@ -115,6 +115,7 @@ export function CreateFoodPortionModal({
           <StepperInput
             label={t('weightGrams')}
             value={weight}
+            maxFractionDigits={0}
             onIncrement={incrementWeight}
             onDecrement={decrementWeight}
             onChangeValue={setWeight}

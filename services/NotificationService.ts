@@ -8,7 +8,7 @@ import NutritionCheckin from '../database/models/NutritionCheckin';
 import Schedule from '../database/models/Schedule';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
-import { darkTheme } from '../theme';
+import { darkTheme } from '../theme'; // TODO: figure out how to get the current theme instead
 
 export class NotificationService {
   private static isConfigured = false;

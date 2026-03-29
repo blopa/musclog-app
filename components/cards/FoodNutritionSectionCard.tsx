@@ -2,8 +2,8 @@ import { AlertCircle, AlertTriangle, Edit3 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 
@@ -54,6 +54,7 @@ export function FoodNutritionSectionCard({
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
 
   const scaleFactor = servingSize / 100;
 
@@ -153,7 +154,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.macros.fiber')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {roundToDecimalPlaces(nutritionalData.fiber * scaleFactor)}g
+                  {formatRoundedDecimal(nutritionalData.fiber * scaleFactor, 1)}g
                 </Text>
               </View>
             ) : null}
@@ -161,7 +162,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.sugars')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {roundToDecimalPlaces((nutritionalData.sugar ?? 0) * scaleFactor)}g
+                  {formatRoundedDecimal((nutritionalData.sugar ?? 0) * scaleFactor, 1)}g
                 </Text>
               </View>
             ) : null}
@@ -171,7 +172,7 @@ export function FoodNutritionSectionCard({
                   {t('food.foodDetails.saturatedFat')}
                 </Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {roundToDecimalPlaces(nutritionalData.saturatedFat * scaleFactor)}g
+                  {formatRoundedDecimal(nutritionalData.saturatedFat * scaleFactor, 1)}g
                 </Text>
               </View>
             ) : null}
@@ -179,7 +180,7 @@ export function FoodNutritionSectionCard({
               <View className="flex-row justify-between">
                 <Text className="text-sm text-text-secondary">{t('food.foodDetails.salt')}</Text>
                 <Text className="text-sm font-medium text-text-primary">
-                  {roundToDecimalPlaces(nutritionalData.sodium * scaleFactor)}g
+                  {formatRoundedDecimal(nutritionalData.sodium * scaleFactor, 1)}g
                 </Text>
               </View>
             ) : null}

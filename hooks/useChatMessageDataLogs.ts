@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatService } from '../database/services';
+import { localDayStartFromUtcMs } from '../utils/calendarDate';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -191,7 +192,7 @@ export function useChatMessageDataLogs({
       const records = await ChatService.getAllMessages(batchSize, 0);
       const itemsWithDates = records.map((r) => ({
         item: toDisplayItem(r),
-        dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
+        dateTimestamp: localDayStartFromUtcMs(r.createdAt),
       }));
       setDayGroups(groupByDate(itemsWithDates, t, dateFnsLocale));
       setHasMore(records.length === batchSize);
@@ -221,7 +222,7 @@ export function useChatMessageDataLogs({
 
       const itemsWithDates = records.map((r) => ({
         item: toDisplayItem(r),
-        dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
+        dateTimestamp: localDayStartFromUtcMs(r.createdAt),
       }));
 
       setDayGroups((prev) => mergeIntoDayGroups(prev, itemsWithDates, t, dateFnsLocale));

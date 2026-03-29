@@ -72,11 +72,13 @@ export function DatePickerInput({
   }
 
   const showUnsetPlaceholder = Boolean(unset && unsetPlaceholder);
-  const pressableClasses = embedded
-    ? 'flex-row items-center justify-between rounded-lg bg-transparent p-0'
-    : `flex-row items-center justify-between rounded-lg border border-white/10 bg-bg-cardDark ${
-        isCompact ? 'p-3' : 'p-4'
-      }`;
+  const pressableSurfaceClasses = embedded
+    ? 'rounded-lg bg-transparent'
+    : `rounded-lg border border-white/10 bg-bg-cardDark`;
+
+  const rowClasses = embedded
+    ? 'flex-row items-center justify-between p-0'
+    : `flex-row items-center justify-between ${isCompact ? 'p-3' : 'p-4'}`;
 
   const TrailingIcon =
     trailing === 'chevron' ? (
@@ -97,40 +99,44 @@ export function DatePickerInput({
       ) : null}
       <Pressable
         accessibilityRole="button"
-        className={pressableClasses}
+        className={pressableSurfaceClasses}
         onPress={onPress}
         disabled={disabled}
       >
-        <View className={`flex-row items-center ${isCompact ? 'gap-2' : 'gap-3'}`}>
-          <View
-            className={`items-center justify-center rounded-full ${isCompact ? 'h-8 w-8' : 'h-10 w-10'}`}
-            style={{
-              backgroundColor: theme.colors.status.indigo20,
-            }}
-          >
-            <Calendar
-              size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
-              color={theme.colors.accent.primary}
-            />
+        <View className={rowClasses}>
+          <View className={`min-w-0 flex-1 flex-row items-center ${isCompact ? 'gap-2' : 'gap-3'}`}>
+            <View
+              className={`items-center justify-center rounded-full ${isCompact ? 'h-8 w-8' : 'h-10 w-10'}`}
+              style={{
+                backgroundColor: theme.colors.status.indigo20,
+              }}
+            >
+              <Calendar
+                size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
+                color={theme.colors.accent.primary}
+              />
+            </View>
+            <View className="min-w-0 flex-1">
+              {showUnsetPlaceholder ? (
+                <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
+              ) : (
+                <>
+                  <Text className="font-medium text-text-primary">
+                    {isSameDay(selectedDate, new Date())
+                      ? t('food.foodDetails.today')
+                      : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
+                  </Text>
+                  <Text className="text-xs text-text-secondary">
+                    {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
+                  </Text>
+                </>
+              )}
+            </View>
           </View>
-          <View className="min-w-0 flex-1">
-            {showUnsetPlaceholder ? (
-              <Text className="font-medium text-text-tertiary">{unsetPlaceholder}</Text>
-            ) : (
-              <>
-                <Text className="font-medium text-text-primary">
-                  {isSameDay(selectedDate, new Date())
-                    ? t('food.foodDetails.today')
-                    : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
-                </Text>
-                <Text className="text-xs text-text-secondary">
-                  {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
-                </Text>
-              </>
-            )}
-          </View>
+          {TrailingIcon ? (
+            <View className="shrink-0 justify-center pl-2">{TrailingIcon}</View>
+          ) : null}
         </View>
-        {TrailingIcon}
       </Pressable>
     </View>
   );

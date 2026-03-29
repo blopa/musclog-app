@@ -2,6 +2,7 @@
   "common": {
     "clear": "Очистить",
     "value": "Значение",
+    "name": "Имя",
     "processing": "обработка...",
     "success": "Успешно",
     "saveError": "Не удалось сохранить изменения",
@@ -26,6 +27,8 @@
     "loading": "Загрузка...",
     "saving": "Сохранение...",
     "save": "Сохранить",
+    "category": "Категория",
+    "active": "Активный",
     "edit": "Редактировать",
     "status": "Статус",
     "change": "Изменить",
@@ -64,6 +67,11 @@
     "appName": "MUSCLOG",
     "selectIcon": "Выбрать иконку",
     "selectIconLabel": "Выбрать иконку",
+    "icon": "Иконка",
+    "archived": "В архиве",
+    "descriptions": {
+      "none": "Нет"
+    },
     "days": {
       "label": "Дни",
       "letter": {

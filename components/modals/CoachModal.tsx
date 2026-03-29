@@ -615,7 +615,7 @@ type CoachModalProps = {
 
 export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -979,7 +979,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       for (const record of sorted) {
         const senderLabel = record.sender === 'user' ? youLabel : coachLabel;
-        const timestamp = new Date(record.createdAt).toLocaleString();
+        const timestamp = new Date(record.createdAt).toLocaleString(
+          i18n.resolvedLanguage ?? i18n.language
+        );
+        // TODO: use a translation here, because some languages have a white space before the :, like french
         lines.push(`${timestamp} - ${senderLabel}: ${record.message}`);
       }
 
@@ -988,7 +991,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       console.error('[CoachModal] shareHistory failed:', err);
       showSnackbar('error', t('coach.share.failed'));
     }
-  }, [conversationContext, showSnackbar, t]);
+  }, [conversationContext, i18n.resolvedLanguage, i18n.language, showSnackbar, t]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);

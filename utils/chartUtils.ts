@@ -2,6 +2,10 @@ import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
+import i18n from '../lang/lang';
+import { formatAppDecimal } from './formatAppNumber';
+import { roundToDecimalPlaces } from './roundDecimal';
+
 export interface XAxisLabel {
   label: string;
   positionPercent: number;
@@ -68,7 +72,10 @@ export function getXAxisLabels<T extends { x: number }>(
 }
 
 /**
- * Generates Y-axis labels for a given range
+ * Generates Y-axis labels for a given range.
+ *
+ * **Locale:** Prefer passing `formatFn` from `useFormatAppNumber()` for full control (units, rounding).
+ * When `formatFn` is omitted, labels use {@link formatAppDecimal} with the current i18n locale (comma/dot).
  */
 export function getYAxisLabels(
   min: number,
@@ -82,7 +89,13 @@ export function getYAxisLabels(
   const labels: YAxisLabel[] = [];
   const range = max - min;
   const step = count > 1 ? range / (count - 1) : 0;
-  const formatValue = formatFn || ((v: number) => String(Math.round(v * 10) / 10));
+  const locale = i18n.resolvedLanguage ?? i18n.language;
+  const formatValue =
+    formatFn ||
+    ((v: number) => {
+      const rounded = roundToDecimalPlaces(v, 1);
+      return formatAppDecimal(locale, rounded, 1);
+    });
 
   for (let i = 0; i < count; i++) {
     const value = min + i * step;

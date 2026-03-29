@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
@@ -14,6 +15,7 @@ type TdeeCardProps = {
 export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <GenericCard variant="card" backgroundVariant="tdee" size="default">
@@ -32,7 +34,7 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
 
         {/* Main TDEE value */}
         <Text className="text-3xl font-bold tracking-tight text-white">
-          {tdeeValue.toLocaleString()}{' '}
+          {formatInteger(tdeeValue)}{' '}
           <Text className="text-lg font-normal text-text-secondary">
             {t('progress.kcalPerDay')}
           </Text>

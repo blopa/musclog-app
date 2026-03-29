@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { subDays } from 'date-fns';
 
 import { ENCRYPTION_KEY } from '../../constants/database';
 import {
@@ -7,6 +8,7 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '../../constants/misc';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import ChatMessage from '../models/ChatMessage';
@@ -1249,19 +1251,11 @@ async function seedUserMetrics(): Promise<{ created: number }> {
     await database.write(async () => {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // Helper to create a date N days ago
-      const daysAgo = (days: number): number => {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        date.setHours(8, 30, 0, 0); // 8:30 AM for consistency
-        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime(); // Set to midnight for date tracking
-      };
+      // Local calendar day start (matches app convention / NutritionService queries)
+      const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));
 
-      // Helper to create a date in a specific month
-      const dateInMonth = (year: number, month: number, day: number): number => {
-        const date = new Date(year, month, day, 8, 30, 0, 0);
-        return new Date(date.setUTCHours(0, 0, 0, 0)).getTime();
-      };
+      const dateInMonth = (year: number, month: number, day: number): number =>
+        localDayStartMs(new Date(year, month, day));
 
       const today = new Date();
       const currentYear = today.getFullYear();
@@ -1703,12 +1697,7 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       }
     });
 
-    const daysAgo = (days: number): number => {
-      const date = new Date();
-      date.setDate(date.getDate() - days);
-      date.setHours(0, 0, 0, 0); // local midnight — matches NutritionService query logic
-      return date.getTime();
-    };
+    const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));
 
     // Each day rotates through different meal combinations
     const dailyPlans: { name: string; type: string; amount: number }[][] = [

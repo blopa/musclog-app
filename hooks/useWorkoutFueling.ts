@@ -1,8 +1,10 @@
 import convert from 'convert';
+import { addDays } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { NutritionService } from '../database/services/NutritionService';
 import { UserMetricService } from '../database/services/UserMetricService';
+import { localDayStartMs } from '../utils/calendarDate';
 
 export type FuelingStatus = 'low' | 'optimal' | 'loading';
 
@@ -33,15 +35,15 @@ export function useWorkoutFueling(workoutStartTime?: number) {
           }
         }
 
-        // 2. Resolve dates for today and yesterday
-        const today = new Date(start);
-        today.setHours(0, 0, 0, 0);
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
+        // 2. Local calendar days for the workout day and the previous day
+        const todayStart = localDayStartMs(start);
+        const yesterdayStart = localDayStartMs(addDays(start, -1));
 
         // 3. Fetch logs
-        const logsToday = await NutritionService.getNutritionLogsForDate(today);
-        const logsYesterday = await NutritionService.getNutritionLogsForDate(yesterday);
+        const logsToday = await NutritionService.getNutritionLogsForDate(new Date(todayStart));
+        const logsYesterday = await NutritionService.getNutritionLogsForDate(
+          new Date(yesterdayStart)
+        );
 
         let calculatedCarbs = 0;
         let window = 0;

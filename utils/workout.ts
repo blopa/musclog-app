@@ -7,6 +7,8 @@ import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import i18n from '../lang/lang';
+import { Theme } from '../theme';
+import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -74,7 +76,7 @@ export function isBodyweightExercise(equipmentType?: EquipmentType | string): bo
 /**
  * Get icon and colors for an exercise based on whether it's bodyweight
  */
-export function getExerciseIconConfig(theme: any, isBodyweight: boolean): ExerciseIconConfig {
+export function getExerciseIconConfig(theme: Theme, isBodyweight: boolean): ExerciseIconConfig {
   return {
     icon: isBodyweight ? User : Dumbbell,
     iconBgColor: isBodyweight ? theme.colors.background.white5 : theme.colors.accent.primary10,
@@ -83,24 +85,35 @@ export function getExerciseIconConfig(theme: any, isBodyweight: boolean): Exerci
 }
 
 /**
- * Format exercise description from sets, reps, and optionally weight
+ * Format exercise description from sets, reps, and optionally weight.
+ * @param sets
+ * @param reps
+ * @param weight
+ * @param isBodyweight
+ * @param units
+ * @param appNumberLocale — `Intl` locale for decimal separator (default: current i18n language)
  */
 export function formatExerciseDescription(
   sets: number,
   reps: number,
   weight?: number,
   isBodyweight?: boolean,
-  units?: Units
+  units?: Units,
+  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? 'en-US'
 ): string {
   if (weight !== undefined && weight > 0 && !isBodyweight && units) {
     const displayWeight = kgToDisplay(weight, units);
     const rounded = displayWeight % 1 === 0 ? displayWeight : Math.round(displayWeight * 10) / 10;
     const unit = getWeightUnit(units);
+    const weightStr =
+      rounded % 1 === 0
+        ? formatAppInteger(appNumberLocale, Math.round(rounded))
+        : formatAppDecimal(appNumberLocale, rounded, 1);
 
     return i18n.t('workouts.addExercise.exerciseDescriptionWithWeight', {
       sets,
       reps,
-      weight: rounded,
+      weight: weightStr,
       unit,
     });
   }
@@ -138,7 +151,7 @@ export interface CreateExerciseOptionParams {
  * This combines exercise info with metadata (sets/reps/weight)
  */
 export function createExerciseOption(
-  theme: any,
+  theme: Theme,
   params: CreateExerciseOptionParams
 ): SelectorOption<string> {
   const { exercise, sets, reps, weight, isBodyweight, groupId, units } = params;
@@ -149,7 +162,14 @@ export function createExerciseOption(
   return {
     id: exercise.id,
     label: exercise.name ?? '',
-    description: formatExerciseDescription(sets, reps, weight, isBodyweightType, units),
+    description: formatExerciseDescription(
+      sets,
+      reps,
+      weight,
+      isBodyweightType,
+      units,
+      i18n.resolvedLanguage ?? i18n.language
+    ),
     icon: iconConfig.icon,
     iconBgColor: iconConfig.iconBgColor,
     iconColor: iconConfig.iconColor,

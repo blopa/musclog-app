@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { MuscleGroupSets, WorkoutVolumePoint } from '../../database/services/ProgressService';
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '../../utils/exerciseTranslation';
@@ -20,6 +21,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
   const { t } = useTranslation();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <View>
@@ -41,7 +43,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               Math.min(...workoutVolumeHistory.map((p) => p.volume)) * 0.5,
               Math.max(...workoutVolumeHistory.map((p) => p.volume)) * 1.2,
             ]}
-            tooltipFormatter={(p) => `${Math.round(p.y).toLocaleString()}`}
+            tooltipFormatter={(p) => formatInteger(Math.round(p.y))}
             xAxisLabels={getXAxisLabels(
               workoutVolumeHistory.map((p) => ({ x: p.date })),
               undefined,
@@ -68,7 +70,8 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               const translatedMuscleGroup = t(
                 getMuscleGroupTranslationKey(muscleGroupSets[p.x].muscleGroup)
               );
-              return `${translatedMuscleGroup}: ${p.y}`;
+              // TODO: use a translation here, because some languages have a white space before the :, like french
+              return `${translatedMuscleGroup}: ${formatInteger(Math.round(p.y))}`;
             }}
           />
         </ProgressChartSection>

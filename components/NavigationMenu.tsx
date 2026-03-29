@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
 import {
   BarChart3,
@@ -66,7 +67,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/workout/workouts');
+                  router.navigate('/workout/workouts');
                 }
               }}
             >
@@ -96,7 +97,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/nutrition/food');
+                  router.navigate('/nutrition/food');
                 }
               }}
             >
@@ -124,7 +125,13 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="profile"
               className="flex-1 items-center justify-center gap-1"
-              onPress={() => router.push('/profile')}
+              onPressIn={() => {
+                if (!active) {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                  router.prefetch('/profile');
+                }
+              }}
+              onPress={() => router.navigate('/profile')}
             >
               <View
                 className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
@@ -188,7 +195,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/cycle');
+                  router.navigate('/cycle');
                 }
               }}
             >
@@ -218,7 +225,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/settings');
+                  router.navigate('/settings');
                 }
               }}
             >
@@ -248,7 +255,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/progress');
+                  router.navigate('/progress');
                 }
               }}
             >
@@ -278,7 +285,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.push('/nutrition/checkin-list');
+                  router.navigate('/nutrition/checkin-list');
                 }
               }}
             >
@@ -322,7 +329,7 @@ export const NavigationMenu = memo(function NavigationMenu({
             className="flex-1 items-center justify-center gap-1"
             onPress={() => {
               if (!homeActive) {
-                router.push('/');
+                router.navigate('/');
               }
             }}
           >

@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
 
 type ProgressMetricProps = {
@@ -15,9 +16,14 @@ export function ProgressMetric({
   unit,
   progress,
   bottomText,
-  formatValue = (v) => v.toString(),
+  formatValue: formatValueProp,
 }: ProgressMetricProps) {
   const theme = useTheme();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const formatValue =
+    formatValueProp ??
+    ((v: number) =>
+      v % 1 === 0 ? formatInteger(v, { useGrouping: false }) : formatRoundedDecimal(v, 2));
   return (
     <View className="flex-1">
       <View className="mb-2 flex-row items-baseline gap-1">
