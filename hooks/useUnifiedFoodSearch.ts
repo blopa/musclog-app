@@ -8,11 +8,8 @@ import {
   SearchResultProduct,
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
-import {
-  getNutrimentsWithFallback,
-  getProductName,
-  mapOpenFoodFactsProduct,
-} from '../utils/openFoodFactsMapper';
+import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
+import { getProductName } from '../utils/productName';
 import { gramsToDisplay } from '../utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '../utils/units';
 import { mapUSDAFoodToUnified } from '../utils/usdaMapper';
@@ -232,7 +229,7 @@ export function useUnifiedFoodSearch({
         }
 
         const products: SearchResultProduct[] = result.products.filter(
-          (product: SearchResultProduct) => getProductName(product)
+          (product: SearchResultProduct) => getProductName(product).found
         );
 
         return products;
