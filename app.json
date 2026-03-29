@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.5.3",
+    "version": "2.5.4",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
@@ -64,20 +64,26 @@
       [
         "rn-mlkit-ocr",
         {
-          "ocrModels": ["latin"],
+          "ocrModels": [
+            "latin"
+          ],
           "ocrUseBundled": true
         }
       ],
       [
         "expo-asset",
         {
-          "assets": ["./assets/exercises"]
+          "assets": [
+            "./assets/exercises"
+          ]
         }
       ],
       [
         "react-native-android-widget",
         {
-          "fonts": ["./assets/fonts/material.ttf"],
+          "fonts": [
+            "./assets/fonts/material.ttf"
+          ],
           "widgets": [
             {
               "name": "SmartCamera",
@@ -108,16 +114,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#0a1f1a"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "177"
+      "buildNumber": "178"
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 177,
+      "versionCode": 178,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"
