@@ -23,7 +23,7 @@
         "GRADLE_OPTS": "-Xmx4g -XX:MaxMetaspaceSize=1g"
       },
       "ios": {
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sequoia-15.4-xcode-16.3"
       }
     }
   },
