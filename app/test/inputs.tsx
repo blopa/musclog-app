@@ -16,10 +16,11 @@ import { StepperInlineInput } from '../../components/theme/StepperInlineInput';
 import { StepperInput } from '../../components/theme/StepperInput';
 import { TextInput } from '../../components/theme/TextInput';
 import { ToggleInput } from '../../components/theme/ToggleInput';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { TestSection } from './components/TestSection';
 
 export default function InputsTestScreen() {
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('alex@musclog.fit');
   const [targetWeight, setTargetWeight] = useState(85.0);

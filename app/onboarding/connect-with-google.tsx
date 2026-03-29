@@ -7,11 +7,12 @@ import { ConnectGoogleAccountBody } from '../../components/ConnectGoogleAccountB
 import { MasterLayout } from '../../components/MasterLayout';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { useScrollFade } from '../../hooks/useScrollFade';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { setCurrentOnboardingStep } from '../../utils/onboardingService';
 import { showSnackbar } from '../../utils/snackbarService';
 
 export default function ConnectWithGoogle() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { isSigningIn, promptAsync } = useGoogleAuth();

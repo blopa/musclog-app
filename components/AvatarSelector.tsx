@@ -51,13 +51,13 @@ export function AvatarSelector({
           <View
             className="h-20 w-20 items-center justify-center rounded-full border-4"
             style={{
-              borderColor: getAvatarColor(selectedColor),
-              backgroundColor: getAvatarBackgroundColor(selectedColor),
+              borderColor: getAvatarColor(theme, selectedColor),
+              backgroundColor: getAvatarBackgroundColor(theme, selectedColor),
             }}
           >
             {createElement(getAvatarIcon(selectedAvatar), {
               size: 40,
-              color: getAvatarColor(selectedColor),
+              color: getAvatarColor(theme, selectedColor),
             })}
           </View>
         </View>
@@ -84,7 +84,7 @@ export function AvatarSelector({
                 size={28}
                 color={
                   selectedAvatar === icon
-                    ? getAvatarColor(selectedColor)
+                    ? getAvatarColor(theme, selectedColor)
                     : theme.colors.text.tertiary
                 }
               />
@@ -117,7 +117,7 @@ export function AvatarSelector({
                   className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
                     selectedColor === color ? 'border-white/50' : 'border-transparent'
                   }`}
-                  style={{ backgroundColor: getAvatarColor(color) }}
+                  style={{ backgroundColor: getAvatarColor(theme, color) }}
                   onPress={() => onColorSelect?.(color)}
                 >
                   {selectedColor === color ? (

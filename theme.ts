@@ -2,6 +2,9 @@
  * Theme configuration for the app
  * Centralizes colors, typography, spacing, and other design tokens
  */
+import { Appearance } from 'react-native';
+
+import { SettingsService } from './database/services/SettingsService';
 
 const kineticDepthLight = {
   // --- Core Surfaces — Luminous Analyst palette ---
@@ -1065,6 +1068,31 @@ export function addOpacityToHex(hexColor: string, opacity: number): string {
 // TODO: implement option to pick dark and light theme
 export const darkTheme = theme;
 export const lightTheme = theme;
+
+/**
+ * Asynchronously get the active theme based on user preference and system settings.
+ * Use this in non-React parts (like services or background tasks).
+ * This will not dynamically update if the theme is changed while the code is running.
+ */
+export async function getTheme(): Promise<Theme> {
+  try {
+    const preference = await SettingsService.getThemePreference();
+    const systemColorScheme = Appearance.getColorScheme();
+
+    let effectiveTheme: 'dark' | 'light' = 'dark';
+
+    if (preference === 'system') {
+      effectiveTheme = systemColorScheme === 'light' ? 'light' : 'dark';
+    } else {
+      effectiveTheme = preference === 'light' ? 'light' : 'dark';
+    }
+
+    return effectiveTheme === 'dark' ? darkTheme : lightTheme;
+  } catch (error) {
+    console.error('[Theme] Error fetching theme preference, defaulting to dark:', error);
+    return darkTheme;
+  }
+}
 
 /**
  * Usage Examples:

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, Text, View } from 'react-native';
 
 import packageJson from '../../package.json';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 const buildNumber =
@@ -16,6 +16,7 @@ interface LegalLinksCardProps {
 
 export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%', ...containerStyle }}>

@@ -15,7 +15,7 @@ import { TEMP_GOOGLE_USER_NAME } from '../../constants/misc';
 import { useSnackbar } from '../../context/SnackbarContext';
 import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
@@ -28,6 +28,7 @@ function formatDateOfBirth(timestamp: number): string {
 }
 
 export default function PersonalInfo() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();

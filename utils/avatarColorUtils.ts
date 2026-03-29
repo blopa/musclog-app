@@ -1,7 +1,6 @@
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { AvatarColor } from '../types/AvatarColor';
 
-export function getAvatarColor(avatarColor?: AvatarColor | null) {
+export function getAvatarColor(theme: any, avatarColor?: AvatarColor | null) {
   if (!avatarColor) {
     return theme.colors.accent.primary;
   }
@@ -20,7 +19,7 @@ export function getAvatarColor(avatarColor?: AvatarColor | null) {
   return colorMap[avatarColor] || theme.colors.accent.primary;
 }
 
-export function getAvatarBackgroundColor(avatarColor?: AvatarColor | null) {
+export function getAvatarBackgroundColor(theme: any, avatarColor?: AvatarColor | null) {
   if (!avatarColor) {
     return theme.colors.accent.primary20;
   }

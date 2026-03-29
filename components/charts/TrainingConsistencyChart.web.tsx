@@ -5,15 +5,11 @@ import { Text, View } from 'react-native';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
   style?: ViewProps['style'] & { cursor?: string; boxShadow?: string };
 };
-
-const DEFAULT_NEON = appTheme.colors.status.emeraldLight;
-const DEFAULT_BORDER = appTheme.colors.border.dark;
 
 const OPACITIES: Record<number, number> = {
   0: 0,
@@ -37,7 +33,7 @@ export function TrainingConsistencyChart({
   data,
   rowsPerColumn = 7,
   columns = 12,
-  accentColor = DEFAULT_NEON,
+  accentColor,
   emptyColor,
   showGlowOnMax = true,
   gridHeight = 128,
@@ -45,6 +41,10 @@ export function TrainingConsistencyChart({
   className,
 }: import('./TrainingConsistencyChart').TrainingConsistencyChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_NEON = theme.colors.status.emeraldLight;
+  const DEFAULT_BORDER = theme.colors.border.dark;
+  const accentColorResolved = accentColor ?? DEFAULT_NEON;
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);
@@ -129,7 +129,7 @@ export function TrainingConsistencyChart({
               style={{
                 fontSize: theme.typography?.fontSize?.xl ?? 20,
                 fontWeight: '700',
-                color: accentColor,
+                color: accentColorResolved,
               }}
             >
               {percentage}%
@@ -187,12 +187,12 @@ export function TrainingConsistencyChart({
                       height: cellHeight,
                       width: '100%',
                       borderRadius: 4,
-                      backgroundColor: isEmpty ? borderColor : accentColor,
+                      backgroundColor: isEmpty ? borderColor : accentColorResolved,
                       opacity: isEmpty ? 1 : opacity,
                       cursor: 'pointer',
                       ...(showGlowOnMax && isMax && !isEmpty
                         ? {
-                            boxShadow: `0 0 ${8}px ${accentColor}66`,
+                            boxShadow: `0 0 ${8}px ${accentColorResolved}66`,
                           }
                         : {}),
                     },
@@ -241,7 +241,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.3,
             }}
           />
@@ -250,7 +250,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
               opacity: 0.6,
             }}
           />
@@ -259,7 +259,7 @@ export function TrainingConsistencyChart({
               width: 8,
               height: 8,
               borderRadius: 2,
-              backgroundColor: accentColor,
+              backgroundColor: accentColorResolved,
             }}
           />
         </View>

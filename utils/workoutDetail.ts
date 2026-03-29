@@ -174,7 +174,8 @@ export async function transformWorkoutToDetailData(
   exercises: Exercise[],
   t: TFunction,
   units: Units,
-  locale: Locale
+  locale: Locale,
+  theme: any
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -213,7 +214,7 @@ export async function transformWorkoutToDetailData(
 
       const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
 
-      const iconData = getWorkoutIcon(exercise.name ?? '');
+      const iconData = getWorkoutIcon(theme, exercise.name ?? '');
       const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
       const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
