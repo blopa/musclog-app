@@ -1,9 +1,9 @@
 import { formatAppDecimal, formatAppInteger, formatAppRoundedDecimal } from '../formatAppNumber';
 
 describe('formatAppNumber', () => {
-  it('formats integers with locale grouping', () => {
-    expect(formatAppInteger('en-US', 1234)).toBe('1,234');
-    expect(formatAppInteger('de-DE', 1234)).toMatch(/1/);
+  it('formats integers without thousands separators', () => {
+    expect(formatAppInteger('en-US', 1234)).toBe('1234');
+    expect(formatAppInteger('de-DE', 1234)).toBe('1234');
   });
 
   it('formats decimals with locale decimal separator', () => {

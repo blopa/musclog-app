@@ -13,8 +13,8 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { showSnackbar } from '../../utils/snackbarService';
-import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
 
@@ -89,10 +89,8 @@ export default function WorkoutSummaryScreen() {
         const weightUnit = t(weightUnitKey);
         let volumeStr = `0 ${weightUnit}`;
         if (completedWorkout.totalVolume) {
-          const displayVolume = kgToDisplay(completedWorkout.totalVolume, units);
-          const formattedVolume = displayVolume.toLocaleString(i18n.language, {
-            maximumFractionDigits: 0,
-          });
+          const locale = i18n.resolvedLanguage ?? i18n.language;
+          const formattedVolume = formatDisplayWeightKg(locale, units, completedWorkout.totalVolume);
           volumeStr = `${formattedVolume} ${weightUnit}`;
           setVolume(volumeStr);
         }
@@ -152,7 +150,7 @@ export default function WorkoutSummaryScreen() {
     };
 
     loadWorkoutData();
-  }, [i18n.language, setUnreadCount, t, units, workoutLogId]);
+  }, [i18n.language, i18n.resolvedLanguage, setUnreadCount, t, units, workoutLogId]);
 
   const handleGoHome = () => {
     router.replace('/');

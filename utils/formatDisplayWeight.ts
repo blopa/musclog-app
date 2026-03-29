@@ -5,6 +5,9 @@ import { kgToDisplay } from './unitConversion';
 
 /**
  * Locale-aware string for a weight stored in kg (workout UI: rest timer, transitions, etc.).
+ *
+ * **Do not** print `kgToDisplay(kg, units)` raw — always wrap with this helper (or `formatAppDecimal`
+ * on the display number). See `formatAppNumber.ts` for the full display-number playbook.
  */
 export function formatDisplayWeightKg(locale: string, units: Units, kg: number): string {
   const d = kgToDisplay(kg, units);
