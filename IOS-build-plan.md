@@ -35,17 +35,14 @@ Some plugins like `react-native-android-widget` are Android-only. While Expo usu
 
 ## 2. Dependency Management (`package.json`)
 
-The current health integration relies on `react-native-health-connect`, which is Android-only.
+The current health integration relies on `react-native-health-connect`, which is Android-only. The files for Health Connect must probably contain *.android.ts(x) extensions and then have the `@kingstinct/react-native-healthkit` (https://kingstinct.com/react-native-healthkit/) extension installed and create the same files with *.ios.ts(x) extensions using the ios package.
 
 ### 2.1. Add iOS Health Library
 
 We need to add a library for iOS HealthKit.
 
-- **Recommended**: `react-native-health` (Community standard for HealthKit)
-- **Alternative**: `expo-health-connect` does not support iOS.
-
 ```bash
-npx expo install react-native-health
+npx expo install @kingstinct/react-native-healthkit
 ```
 
 ## 3. Code Architecture & Platform Abstraction
@@ -57,7 +54,7 @@ To support both platforms cleanly, we should abstract platform-specific logic.
 Currently, `services/healthConnect.ts` is Android-specific. We should:
 
 1. Rename `services/healthConnect.ts` to `services/healthConnect.android.ts`.
-2. Create `services/healthKit.ios.ts` to implement the same interface for Apple Health.
+2. Create `services/healthConnect.ios.ts` to implement the same interface for Apple Health.
 3. Create a unified `services/healthService.ts` that exports the correct implementation based on the platform.
 
 ### 3.2. UI Adjustments
@@ -105,4 +102,3 @@ const healthDataLabel = Platform.select({
 ---
 
 **Plan Status**: Draft
-**Target Version**: 2.6.0
