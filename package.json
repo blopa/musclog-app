@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "scripts": {
     "playwright": "node tests/run-tests.js",
     "typecheck": "tsc --noEmit --skipLibCheck",
@@ -34,7 +34,15 @@
     "build-android-web": "expo export --platform web",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
-    "build-android-preview-local": "eas build -p android --profile preview --local"
+    "build-android-preview-local": "eas build -p android --profile preview --local",
+    "build-ios": "eas build -p ios --profile production --clear-cache",
+    "build-ios-nowait": "eas build -p ios --profile production --clear-cache --no-wait",
+    "build-ios-dev": "eas build -p ios --profile development --clear-cache",
+    "build-ios-preview": "eas build -p ios --profile preview --clear-cache",
+    "submit-ios": "eas submit --platform ios",
+    "prebuild-ios": "expo prebuild -p ios --clean",
+    "run-ios": "expo run:ios",
+    "run-ios-device": "expo run:ios --device"
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "7.29.0",
@@ -44,6 +52,7 @@
     "@ericblade/quagga2": "^1.12.1",
     "@expo/vector-icons": "15.1.1",
     "@google/generative-ai": "0.24.1",
+    "@kingstinct/react-native-healthkit": "^13.4.0",
     "@nozbe/watermelondb": "0.28.0",
     "@openfoodfacts/openfoodfacts-nodejs": "2.0.0-alpha.29",
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -117,6 +126,7 @@
     "react-native-health-connect": "3.5.0",
     "react-native-keyboard-controller": "1.18.5",
     "react-native-markdown-display": "7.0.2",
+    "react-native-nitro-modules": "^0.35.2",
     "react-native-pager-view": "6.9.1",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",

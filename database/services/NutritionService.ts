@@ -154,36 +154,36 @@ export class NutritionService {
       });
     });
 
-    // Write to Health Connect (Android only, user-entered records only — HC-sourced records
-    // already have externalId set and must not be written back to avoid an echo loop).
     if (Platform.OS === 'android') {
       await triggerWidgetUpdate();
+    }
 
-      if (!externalId) {
-        const [nutrients, snapshot] = await Promise.all([
-          log.getNutrients(),
-          log.getDecryptedSnapshot(),
-        ]);
+    // Health Connect / Apple Health (user-entered only — health-sourced records
+    // already have externalId set and must not be written back to avoid an echo loop).
+    if ((Platform.OS === 'android' || Platform.OS === 'ios') && !externalId) {
+      const [nutrients, snapshot] = await Promise.all([
+        log.getNutrients(),
+        log.getDecryptedSnapshot(),
+      ]);
 
-        const hcId = await writeNutritionLogToHealthConnect({
-          logId: log.id,
-          date: dateTimestamp,
-          mealType,
-          foodName: snapshot.loggedFoodName ?? '',
-          calories: nutrients.calories,
-          protein: nutrients.protein,
-          carbs: nutrients.carbs,
-          fat: nutrients.fat,
-          fiber: nutrients.fiber,
-        }).catch(() => undefined);
+      const hcId = await writeNutritionLogToHealthConnect({
+        logId: log.id,
+        date: dateTimestamp,
+        mealType,
+        foodName: snapshot.loggedFoodName ?? '',
+        calories: nutrients.calories,
+        protein: nutrients.protein,
+        carbs: nutrients.carbs,
+        fat: nutrients.fat,
+        fiber: nutrients.fiber,
+      }).catch(() => undefined);
 
-        if (hcId) {
-          await database.write(async () => {
-            await log.update((record) => {
-              record.externalId = hcId;
-            });
+      if (hcId) {
+        await database.write(async () => {
+          await log.update((record) => {
+            record.externalId = hcId;
           });
-        }
+        });
       }
     }
 
@@ -990,10 +990,11 @@ export class NutritionService {
       });
     });
 
-    // Write to Health Connect (Android only)
     if (Platform.OS === 'android') {
       await triggerWidgetUpdate();
+    }
 
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
       const [nutrients, snapshot] = await Promise.all([
         log.getNutrients(),
         log.getDecryptedSnapshot(),
@@ -1009,7 +1010,7 @@ export class NutritionService {
         carbs: nutrients.carbs,
         fat: nutrients.fat,
         fiber: nutrients.fiber,
-      }).catch(() => undefined); // Silently ignore Health Connect errors
+      }).catch(() => undefined);
     }
 
     return log;
@@ -1170,10 +1171,11 @@ export class NutritionService {
       return createdLogs;
     });
 
-    // Update widgets and Health Connect
     if (Platform.OS === 'android') {
       await triggerWidgetUpdate();
+    }
 
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
       for (const log of logs) {
         try {
           const [nutrients, snapshot] = await Promise.all([
@@ -1193,7 +1195,7 @@ export class NutritionService {
             fiber: nutrients.fiber,
           }).catch(() => undefined);
         } catch (error) {
-          console.error('Error syncing log to Health Connect:', error);
+          console.error('Error syncing log to health platform:', error);
         }
       }
     }

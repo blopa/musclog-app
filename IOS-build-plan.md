@@ -28,27 +28,27 @@ This document is a **technical runbook** for shipping the Musclog app on iOS. It
 
 ### 1.1 Already in Place
 
-| Area | Status | Notes |
-|------|--------|-------|
-| Expo / RN stack | ✅ Ready | `expo` 54, `expo-router`, Hermes, NativeWind, WatermelonDB — all platform-agnostic |
-| `app.json` → `ios` | ✅ Configured | `bundleIdentifier: "com.werules.logger"`, `buildNumber: "178"`, `supportsTablet: true` |
-| `npm run ios` | ✅ Wired | `expo run:ios` is configured in `package.json` |
-| EAS | ✅ Ready | `eas.json` exists with `development` / `preview` / `production` profiles |
-| Sentry | ✅ Ready | `@sentry/react-native` + `metro.config.js` uses `getSentryExpoConfig` |
-| Native modules with iOS code | ✅ Ready | `rn-mlkit-ocr` ships an `ios/` tree with Expo config plugin |
-| Android-only config plugins | ⚠️ Verified | `expo-health-connect` and `react-native-android-widget` are Android-scoped and won't block iOS builds |
+| Area                         | Status        | Notes                                                                                                 |
+| ---------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| Expo / RN stack              | ✅ Ready      | `expo` 54, `expo-router`, Hermes, NativeWind, WatermelonDB — all platform-agnostic                    |
+| `app.json` → `ios`           | ✅ Configured | `bundleIdentifier: "com.werules.logger"`, `buildNumber: "178"`, `supportsTablet: true`                |
+| `npm run ios`                | ✅ Wired      | `expo run:ios` is configured in `package.json`                                                        |
+| EAS                          | ✅ Ready      | `eas.json` exists with `development` / `preview` / `production` profiles                              |
+| Sentry                       | ✅ Ready      | `@sentry/react-native` + `metro.config.js` uses `getSentryExpoConfig`                                 |
+| Native modules with iOS code | ✅ Ready      | `rn-mlkit-ocr` ships an `ios/` tree with Expo config plugin                                           |
+| Android-only config plugins  | ⚠️ Verified   | `expo-health-connect` and `react-native-android-widget` are Android-scoped and won't block iOS builds |
 
 ### 1.2 Gaps to Address for iOS Release
 
-| Priority | Item | Complexity | Effort |
-|----------|------|------------|--------|
-| 🔴 Critical | **HealthKit Implementation** | High | 3-5 days |
-| 🔴 Critical | **Notification boot path fix** | Low | 2-4 hours |
-| 🟡 High | **iOS-specific UI copy & translations** | Medium | 1-2 days |
-| 🟡 High | **Info.plist privacy descriptions** | Low | 2-3 hours |
-| 🟢 Medium | **iOS build scripts in package.json** | Low | 30 min |
-| 🟢 Medium | **Advanced settings iOS implementation** | Low | 2-3 hours |
-| 🔵 Low | **iOS Widgets (WidgetKit)** | High | 1-2 weeks |
+| Priority    | Item                                     | Complexity | Effort    |
+| ----------- | ---------------------------------------- | ---------- | --------- |
+| 🔴 Critical | **HealthKit Implementation**             | High       | 3-5 days  |
+| 🔴 Critical | **Notification boot path fix**           | Low        | 2-4 hours |
+| 🟡 High     | **iOS-specific UI copy & translations**  | Medium     | 1-2 days  |
+| 🟡 High     | **Info.plist privacy descriptions**      | Low        | 2-3 hours |
+| 🟢 Medium   | **iOS build scripts in package.json**    | Low        | 30 min    |
+| 🟢 Medium   | **Advanced settings iOS implementation** | Low        | 2-3 hours |
+| 🔵 Low      | **iOS Widgets (WidgetKit)**              | High       | 1-2 weeks |
 
 ---
 
@@ -56,23 +56,25 @@ This document is a **technical runbook** for shipping the Musclog app on iOS. It
 
 ### 2.1 Development Environment Requirements
 
-| Tool | Minimum Version | Recommended | Notes |
-|------|-----------------|-------------|-------|
-| Node.js | 20.19.4 | 22.x | Expo SDK 54 requirement |
-| Xcode | 16.1 | 16.2+ | For local builds only |
-| EAS CLI | 18.1.0+ | Latest | `npm install -g eas-cli` |
-| iOS Deployment Target | 15.1 | 16.0 | Your choice: iOS 16+ |
+| Tool                  | Minimum Version | Recommended | Notes                    |
+| --------------------- | --------------- | ----------- | ------------------------ |
+| Node.js               | 20.19.4         | 22.x        | Expo SDK 54 requirement  |
+| Xcode                 | 16.1            | 16.2+       | For local builds only    |
+| EAS CLI               | 18.1.0+         | Latest      | `npm install -g eas-cli` |
+| iOS Deployment Target | 15.1            | 16.0        | Your choice: iOS 16+     |
 
 ### 2.2 Apple Developer Program
 
 **Status:** ✅ You confirmed enrollment is ready
 
 **Required Capabilities to Enable:**
+
 - [ ] HealthKit (for health data sync)
 - [ ] Push Notifications (for workout/nutrition reminders)
 - [ ] App Groups (if adding widgets later)
 
 **Steps:**
+
 1. Log into [Apple Developer Portal](https://developer.apple.com/account/)
 2. Navigate to **Certificates, Identifiers & Profiles**
 3. Find/Create App ID: `com.werules.logger`
@@ -125,20 +127,20 @@ Metro automatically resolves `.ios.ts` and `.android.ts` files:
 
 ```typescript
 // services/health/index.ts
-export * from './healthConnect';  // Resolves to .android.ts or .ios.ts
+export * from './healthConnect'; // Resolves to .android.ts or .ios.ts
 ```
 
 ### 3.3 Files Requiring Platform Guards
 
 Current files with `Platform.OS === 'android'` checks:
 
-| File | Line(s) | Action Required |
-|------|---------|-----------------|
-| `app/_layout.tsx` | 117-146 | Extend to include iOS for notifications and health sync |
-| `services/healthConnect.ts` | 102-104 | Rename to `.android.ts`, create iOS version |
-| `services/healthConnectWorkout.ts` | 124 | Rename to `.android.ts`, create iOS version |
-| `hooks/useHealthConnectPermissions.ts` | 64-67, 207-209 | Update to handle both platforms |
-| `components/modals/AdvancedSettingsModal.tsx` | 124-134 | Implement iOS settings path |
+| File                                          | Line(s)        | Action Required                                         |
+| --------------------------------------------- | -------------- | ------------------------------------------------------- |
+| `app/_layout.tsx`                             | 117-146        | Extend to include iOS for notifications and health sync |
+| `services/healthConnect.ts`                   | 102-104        | Rename to `.android.ts`, create iOS version             |
+| `services/healthConnectWorkout.ts`            | 124            | Rename to `.android.ts`, create iOS version             |
+| `hooks/useHealthConnectPermissions.ts`        | 64-67, 207-209 | Update to handle both platforms                         |
+| `components/modals/AdvancedSettingsModal.tsx` | 124-134        | Implement iOS settings path                             |
 
 ---
 
@@ -231,10 +233,7 @@ npx expo install react-native-nitro-modules
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSMicrophoneUsageDescription": "Allow Musclog to access your microphone for voice features (if applicable).",
         "NSUserNotificationUsageDescription": "Allow Musclog to send you workout reminders, nutrition check-ins, and rest timer alerts.",
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },
     "plugins": [
@@ -361,7 +360,7 @@ export interface HealthPermission {
 
 export interface TimeRangeFilter {
   startTime: number; // Unix timestamp
-  endTime: number;   // Unix timestamp
+  endTime: number; // Unix timestamp
 }
 
 export interface SyncResult {
@@ -430,10 +429,10 @@ class HealthKitService {
 
     try {
       this.status = HealthPlatformStatus.INITIALIZING;
-      
+
       // Check if HealthKit is available
       const authStatus = await getAuthorizationStatus('HKQuantityTypeIdentifierBodyMass');
-      
+
       this.status = HealthPlatformStatus.AVAILABLE;
       return true;
     } catch (error) {
@@ -443,7 +442,9 @@ class HealthKitService {
     }
   }
 
-  async requestPermissions(permissions: HealthPermission[]): Promise<{ granted: HealthPermission[]; denied: HealthPermission[] }> {
+  async requestPermissions(
+    permissions: HealthPermission[]
+  ): Promise<{ granted: HealthPermission[]; denied: HealthPermission[] }> {
     // Map generic permissions to HealthKit identifiers
     const toRead: HKQuantityTypeIdentifier[] = [];
     const toWrite: HKQuantityTypeIdentifier[] = [];
@@ -461,7 +462,7 @@ class HealthKitService {
 
     try {
       await requestAuthorization(toRead, toWrite);
-      
+
       // Check actual granted permissions
       const granted: HealthPermission[] = [];
       const denied: HealthPermission[] = [];
@@ -485,14 +486,16 @@ class HealthKitService {
     }
   }
 
-  async readWeight(timeRange: TimeRangeFilter): Promise<Array<{ value: number; date: number; unit: string }>> {
+  async readWeight(
+    timeRange: TimeRangeFilter
+  ): Promise<Array<{ value: number; date: number; unit: string }>> {
     try {
       const samples = await readQuantitySamples('HKQuantityTypeIdentifierBodyMass', {
         from: new Date(timeRange.startTime),
         to: new Date(timeRange.endTime),
       });
 
-      return samples.map(sample => ({
+      return samples.map((sample) => ({
         value: sample.quantity, // in kg
         date: sample.startDate.getTime(),
         unit: 'kg',
@@ -517,12 +520,12 @@ class HealthKitService {
 
   private mapToHealthKitType(resourceType: string): HKQuantityTypeIdentifier | null {
     const mapping: Record<string, HKQuantityTypeIdentifier> = {
-      'weight': 'HKQuantityTypeIdentifierBodyMass',
-      'height': 'HKQuantityTypeIdentifierHeight',
-      'body_fat': 'HKQuantityTypeIdentifierBodyFatPercentage',
-      'lean_body_mass': 'HKQuantityTypeIdentifierLeanBodyMass',
-      'calories_active': 'HKQuantityTypeIdentifierActiveEnergyBurned',
-      'calories_basal': 'HKQuantityTypeIdentifierBasalEnergyBurned',
+      weight: 'HKQuantityTypeIdentifierBodyMass',
+      height: 'HKQuantityTypeIdentifierHeight',
+      body_fat: 'HKQuantityTypeIdentifierBodyFatPercentage',
+      lean_body_mass: 'HKQuantityTypeIdentifierLeanBodyMass',
+      calories_active: 'HKQuantityTypeIdentifierActiveEnergyBurned',
+      calories_basal: 'HKQuantityTypeIdentifierBasalEnergyBurned',
     };
     return mapping[resourceType] || null;
   }
@@ -561,7 +564,10 @@ export async function initializeHealth(): Promise<boolean> {
 }
 
 export async function requestHealthPermissions(permissions: HealthPermission[]) {
-  return healthPlatformService?.requestPermissions(permissions) ?? Promise.resolve({ granted: [], denied: permissions });
+  return (
+    healthPlatformService?.requestPermissions(permissions) ??
+    Promise.resolve({ granted: [], denied: permissions })
+  );
 }
 
 export async function readWeight(timeRange: TimeRangeFilter) {
@@ -575,7 +581,7 @@ export async function writeWeight(value: number, date: number) {
 // ... other unified functions
 ```
 
-#### 4.3.4 Update app/_layout.tsx
+#### 4.3.4 Update app/\_layout.tsx
 
 ```typescript
 // app/_layout.tsx - Update the boot-time effect
@@ -617,9 +623,7 @@ useEffect(() => {
 
   Promise.all([
     healthSync,
-    configureDailyTasks().catch((err) =>
-      console.warn('[configureDailyTasks] Startup error:', err)
-    ),
+    configureDailyTasks().catch((err) => console.warn('[configureDailyTasks] Startup error:', err)),
     notificationInit,
   ]);
 }, []);
@@ -707,21 +711,21 @@ const handleOpenAppSettings = useCallback(async () => {
 
 ### 5.1 Info.plist Privacy Descriptions
 
-| Key | Description | Current Status |
-|-----|-------------|----------------|
-| `NSHealthShareUsageDescription` | Why we read health data | ⚠️ Needs to be added |
-| `NSHealthUpdateUsageDescription` | Why we write health data | ⚠️ Needs to be added |
-| `NSCameraUsageDescription` | Camera access for barcode/food photos | ✅ Already in expo-camera plugin |
-| `NSPhotoLibraryUsageDescription` | Photo library access | ⚠️ Verify in generated Info.plist |
-| `NSUserNotificationUsageDescription` | Push notification permission | ⚠️ Add for iOS clarity |
+| Key                                  | Description                           | Current Status                    |
+| ------------------------------------ | ------------------------------------- | --------------------------------- |
+| `NSHealthShareUsageDescription`      | Why we read health data               | ⚠️ Needs to be added              |
+| `NSHealthUpdateUsageDescription`     | Why we write health data              | ⚠️ Needs to be added              |
+| `NSCameraUsageDescription`           | Camera access for barcode/food photos | ✅ Already in expo-camera plugin  |
+| `NSPhotoLibraryUsageDescription`     | Photo library access                  | ⚠️ Verify in generated Info.plist |
+| `NSUserNotificationUsageDescription` | Push notification permission          | ⚠️ Add for iOS clarity            |
 
 ### 5.2 Required iOS Capabilities
 
-| Capability | Purpose | Configuration |
-|------------|---------|---------------|
-| HealthKit | Read/write health data | Via `@kingstinct/react-native-healthkit` plugin |
-| Push Notifications | Workout/nutrition reminders | Via `expo-notifications` plugin |
-| Background Modes | Background fetch for sync | Add to Info.plist |
+| Capability         | Purpose                     | Configuration                                   |
+| ------------------ | --------------------------- | ----------------------------------------------- |
+| HealthKit          | Read/write health data      | Via `@kingstinct/react-native-healthkit` plugin |
+| Push Notifications | Workout/nutrition reminders | Via `expo-notifications` plugin                 |
+| Background Modes   | Background fetch for sync   | Add to Info.plist                               |
 
 ### 5.3 App Icon & Assets
 
@@ -738,6 +742,7 @@ assets/
 ```
 
 **iOS-specific icon requirements:**
+
 - App Store: 1024x1024px PNG
 - iPhone: 180x180px (60pt @3x), 120x120px (60pt @2x)
 - iPad: 167x167px (83.5pt @2x), 152x152px (76pt @2x)
@@ -750,16 +755,16 @@ Expo handles generation via `expo prebuild`.
 
 ### 6.1 Data Type Mapping
 
-| Musclog Metric | Health Connect (Android) | HealthKit (iOS) |
-|----------------|--------------------------|-----------------|
-| Weight | `Weight` | `HKQuantityTypeIdentifierBodyMass` |
-| Height | `Height` | `HKQuantityTypeIdentifierHeight` |
-| Body Fat % | `BodyFat` | `HKQuantityTypeIdentifierBodyFatPercentage` |
-| Lean Body Mass | `LeanBodyMass` | `HKQuantityTypeIdentifierLeanBodyMass` |
-| Active Calories | `ActiveCaloriesBurned` | `HKQuantityTypeIdentifierActiveEnergyBurned` |
-| Basal Calories | `BasalMetabolicRate` | `HKQuantityTypeIdentifierBasalEnergyBurned` |
-| Nutrition | `Nutrition` | `HKQuantityTypeIdentifierDietaryEnergyConsumed` + macros |
-| Workout | `ExerciseSession` | `HKWorkoutType` |
+| Musclog Metric  | Health Connect (Android) | HealthKit (iOS)                                          |
+| --------------- | ------------------------ | -------------------------------------------------------- |
+| Weight          | `Weight`                 | `HKQuantityTypeIdentifierBodyMass`                       |
+| Height          | `Height`                 | `HKQuantityTypeIdentifierHeight`                         |
+| Body Fat %      | `BodyFat`                | `HKQuantityTypeIdentifierBodyFatPercentage`              |
+| Lean Body Mass  | `LeanBodyMass`           | `HKQuantityTypeIdentifierLeanBodyMass`                   |
+| Active Calories | `ActiveCaloriesBurned`   | `HKQuantityTypeIdentifierActiveEnergyBurned`             |
+| Basal Calories  | `BasalMetabolicRate`     | `HKQuantityTypeIdentifierBasalEnergyBurned`              |
+| Nutrition       | `Nutrition`              | `HKQuantityTypeIdentifierDietaryEnergyConsumed` + macros |
+| Workout         | `ExerciseSession`        | `HKWorkoutType`                                          |
 
 ### 6.2 Permission Requirements
 
@@ -767,18 +772,18 @@ Expo handles generation via `expo prebuild`.
 // Required HealthKit permissions for full parity
 const REQUIRED_HEALTHKIT_PERMISSIONS = {
   read: [
-    'HKQuantityTypeIdentifierBodyMass',           // Weight
-    'HKQuantityTypeIdentifierHeight',             // Height
-    'HKQuantityTypeIdentifierBodyFatPercentage',  // Body Fat
-    'HKQuantityTypeIdentifierLeanBodyMass',       // Lean Body Mass
+    'HKQuantityTypeIdentifierBodyMass', // Weight
+    'HKQuantityTypeIdentifierHeight', // Height
+    'HKQuantityTypeIdentifierBodyFatPercentage', // Body Fat
+    'HKQuantityTypeIdentifierLeanBodyMass', // Lean Body Mass
     'HKQuantityTypeIdentifierActiveEnergyBurned', // Active Calories
-    'HKQuantityTypeIdentifierBasalEnergyBurned',  // Basal Calories
+    'HKQuantityTypeIdentifierBasalEnergyBurned', // Basal Calories
     'HKQuantityTypeIdentifierDietaryEnergyConsumed', // Nutrition - Calories
-    'HKQuantityTypeIdentifierDietaryProtein',     // Nutrition - Protein
+    'HKQuantityTypeIdentifierDietaryProtein', // Nutrition - Protein
     'HKQuantityTypeIdentifierDietaryCarbohydrates', // Nutrition - Carbs
-    'HKQuantityTypeIdentifierDietaryFatTotal',    // Nutrition - Fat
-    'HKQuantityTypeIdentifierDietaryFiber',       // Nutrition - Fiber
-    'HKWorkoutType',                              // Workouts
+    'HKQuantityTypeIdentifierDietaryFatTotal', // Nutrition - Fat
+    'HKQuantityTypeIdentifierDietaryFiber', // Nutrition - Fiber
+    'HKWorkoutType', // Workouts
   ],
   write: [
     'HKQuantityTypeIdentifierBodyMass',
@@ -797,12 +802,12 @@ const REQUIRED_HEALTHKIT_PERMISSIONS = {
 
 ### 6.3 Sync Strategy
 
-| Direction | Android Health Connect | iOS HealthKit |
-|-----------|------------------------|---------------|
-| Read (Import) | Full sync on boot + background | Full sync on boot + background fetch |
-| Write (Export) | Real-time on save | Real-time on save |
-| Conflict Resolution | External ID-based | UUID-based with timestamp |
-| Deletion | Soft delete in DB, remove from Health | Soft delete in DB, remove from Health |
+| Direction           | Android Health Connect                | iOS HealthKit                         |
+| ------------------- | ------------------------------------- | ------------------------------------- |
+| Read (Import)       | Full sync on boot + background        | Full sync on boot + background fetch  |
+| Write (Export)      | Real-time on save                     | Real-time on save                     |
+| Conflict Resolution | External ID-based                     | UUID-based with timestamp             |
+| Deletion            | Soft delete in DB, remove from Health | Soft delete in DB, remove from Health |
 
 ---
 
@@ -858,13 +863,13 @@ eas credentials
 
 ### 7.5 Build Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| `ITMS-90725: SDK version issue` | Ensure `eas.json` uses Xcode 16+ image |
-| `Provisioning profile expired` | Run `eas credentials` and regenerate |
-| `HealthKit capability not enabled` | Enable in Apple Developer Portal, rebuild |
-| `Pod install fails` | Delete `ios/` directory, run `expo prebuild -p ios --clean` |
-| `Metro bundler errors` | Run `npm run start-clear` to clear cache |
+| Issue                              | Solution                                                    |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `ITMS-90725: SDK version issue`    | Ensure `eas.json` uses Xcode 16+ image                      |
+| `Provisioning profile expired`     | Run `eas credentials` and regenerate                        |
+| `HealthKit capability not enabled` | Enable in Apple Developer Portal, rebuild                   |
+| `Pod install fails`                | Delete `ios/` directory, run `expo prebuild -p ios --clean` |
+| `Metro bundler errors`             | Run `npm run start-clear` to clear cache                    |
 
 ---
 
@@ -881,6 +886,7 @@ expo run:ios --simulator="iPhone 16 Pro"
 ```
 
 **Limitations:**
+
 - HealthKit does NOT work on simulator
 - Camera/barcode scanning requires physical device
 - Push notifications have limited functionality
@@ -888,6 +894,7 @@ expo run:ios --simulator="iPhone 16 Pro"
 ### 8.2 Physical Device Testing
 
 **Required for:**
+
 - HealthKit integration
 - Camera/OCR features
 - Barcode scanning
@@ -895,6 +902,7 @@ expo run:ios --simulator="iPhone 16 Pro"
 - Performance testing
 
 **Steps:**
+
 1. Register device UDID in Apple Developer Portal
 2. Create development provisioning profile
 3. Build with development profile
@@ -903,12 +911,14 @@ expo run:ios --simulator="iPhone 16 Pro"
 ### 8.3 QA Checklist
 
 #### Pre-Build Checks
+
 - [ ] `npx expo-doctor` passes
 - [ ] `npm run typecheck` passes
 - [ ] `npm run lint:all` passes
 - [ ] `npm run check-translations` passes
 
 #### Core Functionality
+
 - [ ] App launches without crashes
 - [ ] Onboarding flow completes
 - [ ] Theme switching works
@@ -916,6 +926,7 @@ expo run:ios --simulator="iPhone 16 Pro"
 - [ ] Unit conversion (metric/imperial) works
 
 #### Health Integration
+
 - [ ] HealthKit permission request shows
 - [ ] Weight sync (read/write) works
 - [ ] Height sync works
@@ -925,6 +936,7 @@ expo run:ios --simulator="iPhone 16 Pro"
 - [ ] Sync status indicators show correctly
 
 #### Notifications
+
 - [ ] Permission request shows
 - [ ] Workout reminders schedule
 - [ ] Nutrition overview schedules
@@ -932,11 +944,13 @@ expo run:ios --simulator="iPhone 16 Pro"
 - [ ] Active workout notification works
 
 #### Data Management
+
 - [ ] Database export works
 - [ ] Database import works
 - [ ] Settings persist across launches
 
 #### Edge Cases
+
 - [ ] Deny HealthKit permissions - app works gracefully
 - [ ] Deny notification permissions - app works gracefully
 - [ ] Offline mode - app works
@@ -962,41 +976,41 @@ expo run:ios --simulator="iPhone 16 Pro"
 
 ### 9.2 App Information
 
-| Field | Value |
-|-------|-------|
-| **Name** | Musclog - Lift, Log, Repeat |
-| **Subtitle** | Track workouts & nutrition |
-| **Category** | Health & Fitness |
-| **Secondary Category** | Lifestyle |
-| **Content Rights** | Does not contain third-party content |
-| **Age Rating** | 12+ (Infrequent/Mild Medical/Treatment Information) |
+| Field                  | Value                                               |
+| ---------------------- | --------------------------------------------------- |
+| **Name**               | Musclog - Lift, Log, Repeat                         |
+| **Subtitle**           | Track workouts & nutrition                          |
+| **Category**           | Health & Fitness                                    |
+| **Secondary Category** | Lifestyle                                           |
+| **Content Rights**     | Does not contain third-party content                |
+| **Age Rating**         | 12+ (Infrequent/Mild Medical/Treatment Information) |
 
 ### 9.3 Pricing and Availability
 
-| Setting | Value |
-|---------|-------|
-| **Price** | Free |
+| Setting          | Value                 |
+| ---------------- | --------------------- |
+| **Price**        | Free                  |
 | **Availability** | All countries/regions |
-| **Pre-orders** | No |
+| **Pre-orders**   | No                    |
 
 ### 9.4 Privacy Nutrition Labels
 
 **Data Types to Declare:**
 
-| Data Type | Usage | Linked to Identity |
-|-----------|-------|-------------------|
-| Health & Fitness | App functionality | No |
-| Photos | App functionality | No |
-| Crash Data | Analytics | No |
-| Performance Data | Analytics | No |
-| User ID | App functionality | Yes |
+| Data Type        | Usage             | Linked to Identity |
+| ---------------- | ----------------- | ------------------ |
+| Health & Fitness | App functionality | No                 |
+| Photos           | App functionality | No                 |
+| Crash Data       | Analytics         | No                 |
+| Performance Data | Analytics         | No                 |
+| User ID          | App functionality | Yes                |
 
 ### 9.5 App Review Information
 
-| Field | Value |
-|-------|-------|
-| **Sign-in required?** | No |
-| **Demo account** | N/A |
+| Field                  | Value                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Sign-in required?**  | No                                                                                                                  |
+| **Demo account**       | N/A                                                                                                                 |
 | **Notes for reviewer** | HealthKit integration requires physical device testing. The app syncs workout and nutrition data with Apple Health. |
 
 ### 9.6 Submission via EAS Submit
@@ -1012,6 +1026,7 @@ npm run submit-ios
 ### 9.7 App Review Guidelines Compliance
 
 **HealthKit-specific requirements:**
+
 - [ ] App provides health/fitness functionality (✅ Yes - workout tracking)
 - [ ] Privacy policy explains health data usage (✅ Already in app)
 - [ ] HealthKit data is not used for advertising (✅ No ads in app)
@@ -1024,11 +1039,11 @@ npm run submit-ios
 
 ### 10.1 Monitoring
 
-| Tool | Purpose |
-|------|---------|
-| Sentry | Crash reporting and error tracking |
+| Tool              | Purpose                            |
+| ----------------- | ---------------------------------- |
+| Sentry            | Crash reporting and error tracking |
 | App Store Connect | Download metrics, ratings, reviews |
-| EAS Dashboard | Build status, updates |
+| EAS Dashboard     | Build status, updates              |
 
 ### 10.2 OTA Updates
 
@@ -1041,11 +1056,11 @@ npm run submit-ios
 
 ### 10.3 Version Management
 
-| Scenario | Action |
-|----------|--------|
-| JS-only bug fix | `eas update` |
-| New native feature | Increment `version` in app.json, rebuild |
-| iOS-specific fix | Increment `buildNumber` in app.json, rebuild |
+| Scenario           | Action                                       |
+| ------------------ | -------------------------------------------- |
+| JS-only bug fix    | `eas update`                                 |
+| New native feature | Increment `version` in app.json, rebuild     |
+| iOS-specific fix   | Increment `buildNumber` in app.json, rebuild |
 
 ---
 
@@ -1054,18 +1069,21 @@ npm run submit-ios
 ### 11.1 Common Build Errors
 
 **Error: `No signing certificate "iOS Distribution" found`**
+
 ```bash
 # Solution: Let EAS manage credentials
 eas build -p ios --clear-credentials
 ```
 
 **Error: `HealthKit is not enabled`**
+
 ```bash
 # Solution: Enable in Apple Developer Portal, then:
 eas build -p ios --clear-cache
 ```
 
 **Error: `ITMS-90683: Missing Purpose String in Info.plist`**
+
 ```bash
 # Solution: Add NSHealthShareUsageDescription to app.json plugins
 # See Section 4.2.1 for configuration
@@ -1074,11 +1092,13 @@ eas build -p ios --clear-cache
 ### 11.2 HealthKit Issues
 
 **Issue: HealthKit permissions not showing**
+
 - Ensure testing on physical device (simulator doesn't support HealthKit)
 - Verify `NSHealthShareUsageDescription` is in Info.plist
 - Check Apple Developer Portal has HealthKit capability enabled
 
 **Issue: HealthKit data not syncing**
+
 - Check authorization status with `getAuthorizationStatus()`
 - Verify time range filters are correct (HealthKit uses Date objects)
 - Check for errors in Sentry
@@ -1086,6 +1106,7 @@ eas build -p ios --clear-cache
 ### 11.3 Notification Issues
 
 **Issue: Notifications not showing on iOS**
+
 - Request permissions with `Notifications.requestPermissionsAsync()`
 - Check notification settings in iOS Settings app
 - Verify `enableBackgroundRemoteNotifications` is set correctly
@@ -1093,6 +1114,7 @@ eas build -p ios --clear-cache
 ### 11.4 Performance Issues
 
 **Issue: Slow app startup**
+
 - Profile with React Native DevTools (press 'j' in terminal)
 - Check for unnecessary re-renders
 - Verify WatermelonDB queries are optimized
@@ -1101,17 +1123,17 @@ eas build -p ios --clear-cache
 
 ## Quick Command Reference
 
-| Command | Purpose |
-|---------|---------|
-| `npm run ios` | Local dev build (needs Mac) |
-| `npm run build-ios` | Production EAS build |
-| `npm run build-ios-preview` | TestFlight preview build |
-| `npm run submit-ios` | Submit to App Store |
-| `npx expo prebuild -p ios` | Generate native iOS project |
-| `eas credentials` | Manage signing certificates |
-| `eas build:list` | View build history |
-| `npx expo-doctor` | Check project health |
-| `npm run lint:all` | Full linting suite |
+| Command                     | Purpose                     |
+| --------------------------- | --------------------------- |
+| `npm run ios`               | Local dev build (needs Mac) |
+| `npm run build-ios`         | Production EAS build        |
+| `npm run build-ios-preview` | TestFlight preview build    |
+| `npm run submit-ios`        | Submit to App Store         |
+| `npx expo prebuild -p ios`  | Generate native iOS project |
+| `eas credentials`           | Manage signing certificates |
+| `eas build:list`            | View build history          |
+| `npx expo-doctor`           | Check project health        |
+| `npm run lint:all`          | Full linting suite          |
 
 ---
 
@@ -1128,6 +1150,7 @@ eas build -p ios --clear-cache
 **Plan Status:** Ready for implementation
 
 **Next Steps:**
+
 1. ✅ Prerequisites confirmed (Apple Developer account ready)
 2. ⏳ Install HealthKit dependencies
 3. ⏳ Implement platform abstraction

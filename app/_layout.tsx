@@ -113,9 +113,9 @@ function RootLayout() {
     );
   }, []);
 
-  // Boot-time tasks (Android only, all run in parallel)
+  // Boot-time tasks (native: Android + iOS, all run in parallel)
   useEffect(() => {
-    if (Platform.OS !== 'android') {
+    if (Platform.OS === 'web') {
       return;
     }
 
@@ -136,8 +136,8 @@ function RootLayout() {
 
     Promise.all([
       healthDataSyncService
-        .syncFromHealthConnect({ lookbackDays: 7 })
-        .catch((err) => console.warn('[boot sync] Health Connect sync error:', err)),
+        .syncFromHealthPlatform({ lookbackDays: 7 })
+        .catch((err) => console.warn('[boot sync] Health platform sync error:', err)),
       configureDailyTasks().catch((err) =>
         console.warn('[configureDailyTasks] Startup error:', err)
       ),

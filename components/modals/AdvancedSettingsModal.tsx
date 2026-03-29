@@ -1,6 +1,5 @@
 import {
   Activity,
-  AlignHorizontalJustifyEnd,
   AlignHorizontalJustifyStart,
   Apple,
   Bug,
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import { useDebouncedSettings } from '../../hooks/useDebouncedSettings';
@@ -121,16 +120,11 @@ export function AdvancedSettingsModal({
   }, [decryptionPhrase, t, showSnackbar]);
 
   const handleOpenAppSettings = useCallback(async () => {
-    if (Platform.OS === 'android') {
-      try {
-        await Linking.openSettings();
-      } catch (err) {
-        console.error('Failed to open settings:', err);
-        showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
-      }
-    } else {
-      // TODO: Implement clear app data functionality for iOS
-      console.log('Clear app data settings - only available on Android');
+    try {
+      await Linking.openSettings();
+    } catch (err) {
+      console.error('Failed to open settings:', err);
+      showSnackbar('error', t('settings.advancedSettings.openSettingsFailedMessage'));
     }
   }, [t, showSnackbar]);
 

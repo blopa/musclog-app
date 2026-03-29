@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
+import type { Permission } from 'react-native-health-connect';
 
 import { useSnackbar } from '../context/SnackbarContext';
 import { healthConnectService, HealthConnectStatus } from '../services/healthConnect';
@@ -60,8 +61,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
    * Initialize Health Connect
    */
   const initialize = useCallback(async (): Promise<boolean> => {
-    // Android only
-    if (Platform.OS !== 'android') {
+    if (Platform.OS === 'web') {
       setStatus(HealthConnectStatus.NOT_SUPPORTED);
       return false;
     }
@@ -153,14 +153,14 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
       // Check if mandatory READ permissions are granted: Nutrition, BodyFat, Weight
       const mandatoryPermissions = ['Nutrition', 'BodyFat', 'Weight'];
       const deniedMandatory = result.denied.filter(
-        (p) => p.accessType === 'read' && mandatoryPermissions.includes(p.recordType)
+        (p: Permission) => p.accessType === 'read' && mandatoryPermissions.includes(p.recordType)
       );
 
       const hasMandatoryPermissions = deniedMandatory.length === 0;
       setHasAllPermissions(hasMandatoryPermissions);
 
       if (!hasMandatoryPermissions) {
-        const deniedTypes = deniedMandatory.map((p) => p.recordType).join(', ');
+        const deniedTypes = deniedMandatory.map((p: Permission) => p.recordType).join(', ');
         showSnackbar('error', t('healthConnect.permissionsDenied', { types: deniedTypes }), {
           action: t('healthConnect.openSettings'),
           onAction: () => openSettings(),
@@ -202,9 +202,9 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
     setError(null);
   }, []);
 
-  // Auto-initialize on mount (Android only)
+  // Auto-initialize on mount (iOS + Android)
   useEffect(() => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
       initialize();
     }
   }, [initialize]);

@@ -175,9 +175,9 @@ class HealthDataSyncService {
   }
 
   /**
-   * Full sync from Health Connect to local database
+   * Full sync from the platform health store (Health Connect on Android, HealthKit on iOS).
    */
-  async syncFromHealthConnect(config: SyncConfig = {}): Promise<SyncResult> {
+  async syncFromHealthPlatform(config: SyncConfig = {}): Promise<SyncResult> {
     // Prevent concurrent syncs
     if (this.syncInProgress) {
       throw HealthConnectErrorFactory.syncInProgress();
@@ -281,6 +281,11 @@ class HealthDataSyncService {
     }
 
     return result;
+  }
+
+  /** @alias syncFromHealthPlatform — retained for existing call sites */
+  syncFromHealthConnect(config: SyncConfig = {}): Promise<SyncResult> {
+    return this.syncFromHealthPlatform(config);
   }
 }
 
