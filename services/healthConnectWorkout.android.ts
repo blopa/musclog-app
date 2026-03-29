@@ -111,10 +111,11 @@ function formatSegmentBreakdown(
         })
         .join(', ');
 
-      // TODO: use a translation here, because some languages have a white space before the :, like french
-      return setStr
-        ? `${item.exerciseName}: ${setStr}`
-        : `${item.exerciseName}: ${formatAppInteger(locale, item.totalReps)} reps`;
+      const valueStr = setStr ? setStr : `${formatAppInteger(locale, item.totalReps)} reps`;
+      return i18n.t('common.labelColonValue', {
+        label: item.exerciseName,
+        value: valueStr,
+      });
     })
     .join('; ');
 }

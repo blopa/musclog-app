@@ -982,8 +982,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         const timestamp = new Date(record.createdAt).toLocaleString(
           i18n.resolvedLanguage ?? i18n.language
         );
-        // TODO: use a translation here, because some languages have a white space before the :, like french
-        lines.push(`${timestamp} - ${senderLabel}: ${record.message}`);
+        lines.push(
+          t('coach.share.historyLine', {
+            timestamp,
+            sender: senderLabel,
+            message: record.message,
+          })
+        );
       }
 
       await Share.share({ message: lines.join('\n') });

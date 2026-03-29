@@ -59,6 +59,8 @@
     "loadMultiplier": "Множитель нагрузки",
     "deleteSuccess": "Успешно удалено",
     "notFound": "Не найдено",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Ежедневно",
       "weekly": "Еженедельно",

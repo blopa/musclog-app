@@ -117,9 +117,11 @@ export function ImportNutritionModal({
               <Text className="text-xs text-text-secondary">{t('nutrition.importFormatInfo')}</Text>
             </View>
             {/* Character Count */}
-            {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
             <Text className="mb-4 text-xs text-text-tertiary">
-              {t('nutrition.characters')}: {rawText.length}
+              {t('common.labelColonValue', {
+                label: t('nutrition.characters'),
+                value: String(rawText.length),
+              })}
             </Text>
           </View>
         </ScrollView>

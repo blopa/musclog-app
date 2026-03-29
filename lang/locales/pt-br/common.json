@@ -59,6 +59,8 @@
     "loadMultiplier": "Multiplicador de Carga",
     "deleteSuccess": "Excluído com sucesso",
     "notFound": "Não encontrado",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Diário",
       "weekly": "Semanal",

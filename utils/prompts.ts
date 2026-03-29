@@ -17,6 +17,7 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '../database/services';
+import i18n from '../lang/lang';
 import {
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
@@ -536,9 +537,15 @@ export const getMealCritiquePrompt = async (
     ].join('\n');
   }
 
-  // TODO: use a translation here, because some languages have a white space before the :, like french
   const foodList = foods
-    .map((f) => `- ${f.name}: ${formatAppInteger(language, Math.round(f.gramWeight))}g`)
+    .map((f) => {
+      const line = i18n.t('common.labelColonValue', {
+        lng: language,
+        label: f.name,
+        value: `${formatAppInteger(language, Math.round(f.gramWeight))}g`,
+      });
+      return `- ${line}`;
+    })
     .join('\n');
 
   return [

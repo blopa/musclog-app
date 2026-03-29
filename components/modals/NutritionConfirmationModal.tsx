@@ -101,25 +101,33 @@ export function NutritionConfirmationModal({
           <Text className="mb-3 font-semibold text-text-primary">{t('nutrition.dailyTotals')}</Text>
           <View className="space-y-2">
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.calories')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.calories') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
                 {formatRoundedDecimal(totals.totalCalories, 2)} kcal
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.protein')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.protein') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
                 {formatRoundedDecimal(totals.totalProtein, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.carbs')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.carbs') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
                 {formatRoundedDecimal(totals.totalCarbs, 2)}g
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="text-sm text-text-secondary">{t('nutrition.fat')}:</Text>
+              <Text className="text-sm text-text-secondary">
+                {t('common.labelWithColon', { label: t('nutrition.fat') })}
+              </Text>
               <Text className="text-sm font-semibold text-text-primary">
                 {formatRoundedDecimal(totals.totalFat, 2)}g
               </Text>
@@ -128,9 +136,11 @@ export function NutritionConfirmationModal({
         </View>
 
         {/* Entry Count */}
-        {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
         <Text className="mb-4 text-xs text-text-secondary">
-          {t('nutrition.entriesCount')}: {entries.length}
+          {t('common.labelColonValue', {
+            label: t('nutrition.entriesCount'),
+            value: String(entries.length),
+          })}
         </Text>
 
         {/* Entry List */}

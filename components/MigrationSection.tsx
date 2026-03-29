@@ -64,51 +64,80 @@ export const MigrationSection = () => {
           </Text>
         </Pressable>
       </View>
-      {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
       {migrationSummary ? (
         <View className="rounded-lg border border-border-light bg-bg-primary p-3">
           <Text className="mb-2 text-sm font-bold text-text-primary">
             {t('settings.migration.summary')}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.fitnessGoals')}:{' '}
-            {migrationSummary.fitnessGoalsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.fitnessGoals'),
+              value: `${migrationSummary.fitnessGoalsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.userMetrics')}:{' '}
-            {migrationSummary.userMetricsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.userMetrics'),
+              value: `${migrationSummary.userMetricsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.users')}: {migrationSummary.usersCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.users'),
+              value: `${migrationSummary.usersCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.foods')}: {migrationSummary.foodsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.foods'),
+              value: `${migrationSummary.foodsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.nutritionLogs')}:{' '}
-            {migrationSummary.nutritionLogsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.nutritionLogs'),
+              value: `${migrationSummary.nutritionLogsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.exercises')}: {migrationSummary.exercisesCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.exercises'),
+              value: `${migrationSummary.exercisesCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.workouts')}: {migrationSummary.workoutsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.workouts'),
+              value: `${migrationSummary.workoutsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.workoutLogs')}:{' '}
-            {migrationSummary.workoutLogsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.workoutLogs'),
+              value: `${migrationSummary.workoutLogsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.templateSets')}:{' '}
-            {migrationSummary.templateSetsCount} {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.templateSets'),
+              value: `${migrationSummary.templateSetsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
-            • {t('settings.migration.summaryItems.logSets')}: {migrationSummary.logSetsCount}{' '}
-            {t('settings.migration.records')}
+            •{' '}
+            {t('common.labelColonValue', {
+              label: t('settings.migration.summaryItems.logSets'),
+              value: `${migrationSummary.logSetsCount} ${t('settings.migration.records')}`,
+            })}
           </Text>
           <Text className="text-sm text-text-secondary">
             • {t('settings.migration.tablesFound')} {migrationSummary.tables.join(', ')}

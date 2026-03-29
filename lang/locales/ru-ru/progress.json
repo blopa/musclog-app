@@ -1,5 +1,11 @@
 {
   "progress": {
+    "averageIntakeTitle": "Среднесуточное потребление",
+    "averageIntakeSubtitle": "{{count}} дн. с записями",
+    "averageIntakeProtein": "Белки",
+    "averageIntakeCarbs": "Углеводы",
+    "averageIntakeFat": "Жиры",
+    "averageIntakeFiber": "Клетчатка",
     "metabolicSummary": "Метаболическая сводка",
     "currentTdee": "Текущий TDEE",
     "basedOnRecentActivity": "НА ОСНОВЕ НЕДАВНЕЙ АКТИВНОСТИ И ПИТАНИЯ",
