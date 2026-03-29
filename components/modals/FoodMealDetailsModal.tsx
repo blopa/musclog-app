@@ -393,7 +393,7 @@ export function FoodMealDetailsModal({
 
   // Fetch detailed product data only when barcode is provided, no local food, no preloaded search product, and we've checked local DB
   const barcodeForHook =
-    barcode && !food && !meal && !productFromSearch && !localFood && hasCheckedLocalFood
+    barcode && !food && !meal && !productFromSearch && (!localFood || !localFood.name?.trim()) && hasCheckedLocalFood
       ? barcode
       : null;
 
@@ -1020,9 +1020,12 @@ export function FoodMealDetailsModal({
       return meal.name || t('meals.history.unknownMeal');
     }
 
-    if (food || localFood) {
-      const foodData = food || localFood;
-      return foodData!.name || t('food.unknownFood');
+    if (food) {
+      return food.name || t('food.unknownFood');
+    }
+
+    if (localFood?.name?.trim()) {
+      return localFood.name;
     }
 
     if (foodLogDecrypted?.loggedFoodName?.trim()) {
@@ -1341,6 +1344,19 @@ export function FoodMealDetailsModal({
       // Handle local food
       if (food || localFood) {
         const foodData = food || localFood;
+
+        // If localFood has no name but we have API product details, update it before logging
+        // so NutritionService.logFood reads the correct name from the food record
+        const effectivePdForName = refetchedProductDetails ?? productDetails;
+        if (localFood && !localFood.name?.trim() && isSuccessFoodDetailProductState(effectivePdForName)) {
+          const correctName = getProductName(effectivePdForName.product);
+          if (correctName && correctName !== t('food.unknownFood')) {
+            await localFood.update((record: any) => {
+              record.name = correctName;
+            });
+          }
+        }
+
         // Create nutrition log with local food
         const logFoodPromise = NutritionService.logFood(
           foodData!.id,
