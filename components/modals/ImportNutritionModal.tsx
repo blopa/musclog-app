@@ -92,7 +92,6 @@ export function ImportNutritionModal({
             <Text className="mb-4 text-sm text-text-secondary">
               {t('nutrition.importInstructions')}
             </Text>
-
             {/* Text Input */}
             <TextInput
               value={rawText}
@@ -110,7 +109,6 @@ export function ImportNutritionModal({
               }}
               editable={!isProcessing}
             />
-
             {/* Format Info */}
             <View className="mb-6 rounded-lg bg-amber-500/10 p-4">
               <Text className="mb-2 text-xs font-semibold text-amber-600">
@@ -118,8 +116,8 @@ export function ImportNutritionModal({
               </Text>
               <Text className="text-xs text-text-secondary">{t('nutrition.importFormatInfo')}</Text>
             </View>
-
             {/* Character Count */}
+            {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
             <Text className="mb-4 text-xs text-text-tertiary">
               {t('nutrition.characters')}: {rawText.length}
             </Text>

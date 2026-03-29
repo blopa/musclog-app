@@ -14,6 +14,7 @@ import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
+import { formatAppInteger } from '../../utils/formatAppNumber';
 import { showSnackbar } from '../../utils/snackbarService';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
@@ -157,12 +158,13 @@ export default function WorkoutSummaryScreen() {
   };
 
   const handleShareSummary = async () => {
+    const locale = i18n.resolvedLanguage ?? i18n.language;
     const lines = [
       t('workoutSummary.shareText'),
       '',
       `⏱ ${totalTime}`,
       `🏋️ ${volume}`,
-      ...(caloriesBurned > 0 ? [`🔥 ${caloriesBurned} kcal`] : []),
+      ...(caloriesBurned > 0 ? [`🔥 ${formatAppInteger(locale, caloriesBurned)} kcal`] : []),
       ...(personalRecords > 0 ? [`🏆 ${personalRecords} PR${personalRecords > 1 ? 's' : ''}`] : []),
     ];
 

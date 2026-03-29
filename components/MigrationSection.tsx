@@ -25,7 +25,6 @@ export const MigrationSection = () => {
         <Text className="text-lg font-bold text-text-primary">{t('settings.migration.title')}</Text>
       </View>
       <Text className="text-sm text-text-secondary">{t('settings.migration.description')}</Text>
-
       <View className="flex-row gap-2">
         <Pressable
           className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
@@ -65,7 +64,7 @@ export const MigrationSection = () => {
           </Text>
         </Pressable>
       </View>
-
+      {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
       {migrationSummary ? (
         <View className="rounded-lg border border-border-light bg-bg-primary p-3">
           <Text className="mb-2 text-sm font-bold text-text-primary">
@@ -116,7 +115,6 @@ export const MigrationSection = () => {
           </Text>
         </View>
       ) : null}
-
       {migrationResult ? (
         <View
           className={`rounded-lg border p-3 ${
@@ -185,13 +183,11 @@ export const MigrationSection = () => {
           )}
         </View>
       ) : null}
-
       {!migrationSummary && !checkingOldDatabase ? (
         <Text className="py-2 text-sm text-text-tertiary">
           {t('settings.migration.clickToCheck')}
         </Text>
       ) : null}
-
       {migrationResult ? (
         <Pressable
           className="mt-2 self-center rounded-lg border border-border-light bg-bg-primary px-4 py-2"

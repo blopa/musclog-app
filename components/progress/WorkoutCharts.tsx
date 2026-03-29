@@ -71,7 +71,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
                 getMuscleGroupTranslationKey(muscleGroupSets[p.x].muscleGroup)
               );
               // TODO: use a translation here, because some languages have a white space before the :, like french
-              return `${translatedMuscleGroup}: ${p.y}`;
+              return `${translatedMuscleGroup}: ${formatInteger(Math.round(p.y))}`;
             }}
           />
         </ProgressChartSection>

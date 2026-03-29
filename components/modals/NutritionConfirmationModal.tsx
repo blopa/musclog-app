@@ -128,6 +128,7 @@ export function NutritionConfirmationModal({
         </View>
 
         {/* Entry Count */}
+        {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
         <Text className="mb-4 text-xs text-text-secondary">
           {t('nutrition.entriesCount')}: {entries.length}
         </Text>

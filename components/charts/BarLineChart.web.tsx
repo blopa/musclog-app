@@ -58,13 +58,15 @@ export function BarLineChart({
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
   stepsFormatter,
-  heartRateFormatter = (v) => String(Math.round(v)),
+  heartRateFormatter,
   interactive = true,
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const resolvedStepsFormatter = stepsFormatter ?? ((v: number) => formatInteger(Math.round(v)));
+  const resolvedHeartRateFormatter =
+    heartRateFormatter ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -377,7 +379,7 @@ export function BarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {heartRateFormatter(activeDatum.heartRate)}
+                  {resolvedHeartRateFormatter(activeDatum.heartRate)}
                 </Text>
               </View>
             </View>

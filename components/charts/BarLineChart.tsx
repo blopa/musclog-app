@@ -80,7 +80,7 @@ export function BarLineChart({
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const stepsFormatter = stepsFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
-  const heartRateFormatter = heartRateFormatterProp ?? ((v: number) => String(Math.round(v)));
+  const heartRateFormatter = heartRateFormatterProp ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [activeLabel, setActiveLabel] = useState<string | null>(null);

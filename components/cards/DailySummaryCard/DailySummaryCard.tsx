@@ -138,7 +138,7 @@ export function DailySummaryCard({
               className="text-left text-xs"
               style={{ color: theme.colors.overlay.onColorful70 }}
             >
-              {Math.round(calorieProgress)}%
+              {formatInteger(Math.round(calorieProgress))}%
             </Text>
           </View>
         </View>
@@ -200,7 +200,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {Math.round(proteinProgress)}%
+                {formatInteger(Math.round(proteinProgress))}%
               </Text>
             </View>
 
@@ -258,7 +258,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {Math.round(carbsProgress)}%
+                {formatInteger(Math.round(carbsProgress))}%
               </Text>
             </View>
 
@@ -314,7 +314,7 @@ export function DailySummaryCard({
                 className="text-left text-xs"
                 style={{ color: theme.colors.overlay.onColorful70 }}
               >
-                {Math.round(fatsProgress)}%
+                {formatInteger(Math.round(fatsProgress))}%
               </Text>
             </View>
           </View>

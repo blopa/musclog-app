@@ -127,7 +127,9 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
                     }}
                   />
                   <Text className="text-[10px] text-text-secondary">
-                    {t(getMuscleGroupTranslationKey(mg))}: {Math.round(maxVol)} {weightLabel}
+                    {/*TODO: use a translation here, because some languages have a white space before the :, like french*/}
+                    {t(getMuscleGroupTranslationKey(mg))}: {formatInteger(Math.round(maxVol))}{' '}
+                    {weightLabel}
                   </Text>
                 </View>
               );

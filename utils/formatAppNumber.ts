@@ -70,6 +70,72 @@
  * - **`DataLogModal`:** `Number(x.toFixed(n))` — coercion for export payloads, not labels.
  * - **`utils/nutritionCalculator.ts`:** float math, not UI.
  * - **Debug / test screens** (`app/test/*`): may show raw numbers.
+ *
+ * ---
+ * ## Deep audit (locale display) — 2026
+ *
+ * **Primitives:** `formatAppInteger` / `formatAppDecimal` / `formatAppRoundedDecimal` / `formatAppNumber`
+ * via `Intl.NumberFormat(locale, { useGrouping: false })`. **Weights in kg** → `formatDisplayWeightKg(locale, units, kg)`.
+ *
+ * **Verified using `useFormatAppNumber` or `formatApp*` in UI:** profile stats, nutrition goals / onboarding
+ * results, `DailySummaryCard`, `FoodInfoCard`, `FoodNutritionSectionCard`, `MealSection`, `LogMealModal`,
+ * `NutritionConfirmationModal`, `AddFoodItemToMealModal` (kcal strings), `CheckinDetailsModal`, `BodyMetricsHistoryModal`,
+ * `PastWorkoutDetailModal`, `FreeSessionExerciseCompleteModal` (volume), charts under `components/progress/` and
+ * `components/charts/` (tooltips / formatFn), `ServingSizeSelector`, `SmartCameraModal`, `MyMealsModal`, `FoodSearchModal`,
+ * `CreateMealModal`, `workout-session` (previous-set weight), `NutritionGoalsBody`, `EditPhysicalStatsBody` (initial weight display),
+ * `FoodItemCard` / `MacroItem`, widgets (`NutritionWidget`), `healthDataTransform`, `foodDisplay` (`getFoodServingDisplay`,
+ * `getSimpleServingDisplay`), `workoutHistory.formatVolume`, chart `chartUtils` defaults.
+ *
+ * **Workout summary share text:** `app/workout/workout-summary.tsx` — calories in shared message use `formatAppInteger`;
+ * volume string uses `formatDisplayWeightKg` (already).
+ *
+ * **Typed input (comma vs dot) is separate:** `utils/localizedDecimalInput.ts` — pair with `formatApp*` for any read-only
+ * label that mirrors the same field.
+ *
+ * ### Follow-ups (lower priority)
+ *
+ * - **`StepperInput` / `StepperInlineInput`:** free typing uses ASCII `.` in the validation regex; display paths use
+ *   `useFormatAppNumber`. Full locale parity for *typing* is optional (see `localizedDecimalInput` + hooks).
+ * - **`ProgressMetric`:** default `formatValue` is `toString()` — component is **unused**; if you ship it, pass
+ *   `formatValue` from `useFormatAppNumber` or remove the default.
+ * - **Third-party / HTML:** any future web-only numeric display outside React should call `formatApp*` with `i18n.language`.
+ *
+ * ---
+ * ## Automated sweep (March 2026)
+ *
+ * **Findings:** Product UI is largely consistent. `grep` for `\\.toFixed\\(` under `*.tsx` only hits
+ * `DataLogModal` (numeric coercion for export payloads, not labels — intentional). Math pipelines
+ * (`utils/nutritionCalculator.ts`, etc.) use `toFixed`/`parseFloat` for **computation**, not display.
+ *
+ * **Weights:** `kgToDisplay` returns a number — UI must not interpolate it raw; use
+ * `formatDisplayWeightKg` or `formatAppDecimal` on the display value (several modals already do).
+ *
+ * **Small gaps fixed in the same sweep:** `ChatWorkoutCard`, `SameAsYesterdayCard`, and
+ * `MealEstimationScreen` previously interpolated raw calorie/count numbers; they now use
+ * `useFormatAppNumber().formatInteger` for display strings.
+ *
+ * **Ongoing grep hygiene (when adding UI):** avoid `` `{numericVariable}` `` in `<Text>` for
+ * user-visible quantities; prefer `formatInteger` / `formatRoundedDecimal` / `formatDisplayWeightKg`.
+ *
+ * ---
+ * ## Audit — locale display (March 2026, follow-up)
+ *
+ * **Sweep:** `grep` for `.toFixed(` under `*.tsx` → only `DataLogModal` (numeric coercion for export
+ * payloads, not user-facing labels). `grep` for `toLocaleString` on numbers → none in product UI
+ * (dates only). `formatApp*` / `useFormatAppNumber` / `formatDisplayWeightKg` coverage matches the
+ * lists above; `FoodMealDetailsModal` edit form seeds macro strings with `formatAppRoundedDecimal(locale, …)`.
+ *
+ * **`ProgressMetric`:** default display now uses `useFormatAppNumber` (integers vs 2-decimal) so a
+ * future adoption is locale-safe without passing `formatValue`.
+ *
+ * **Deep audit (March 2026, second pass):** Product UI was already largely correct. Gaps fixed:
+ * `VolumeCaloriesChart` (axis + formatters used raw `Math.round` → `formatInteger`), `MacroMuscleChart`
+ * muscle-group overlay, `WorkoutCharts` muscle-group tooltip, `NutritionCharts` `computeLeftAxisLabels`
+ * (compact `k` labels now use `formatDecimal` + `formatInteger`), `DailySummaryCard` progress `%` lines
+ * (`formatInteger`), `BarLineChart` / `BarLineChart.web` default `heartRateFormatter` (`formatInteger`).
+ * **Still intentional:** `app/profile.tsx` edit form seeds may use `toString()` for controlled inputs;
+ * **debug/test** screens may show raw numbers; **NumericInput** in tests has no central formatter;
+ * **DataLogModal** `toFixed` is coercion not labels.
  */
 
 import { roundToDecimalPlaces } from './roundDecimal';
