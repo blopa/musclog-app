@@ -611,90 +611,108 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* User Menu Modal */}
-      <UserMenuModal
-        visible={isUserMenuVisible}
-        onClose={handleCloseUserMenu}
-        user={{
-          name: dbUser?.fullName || 'Guest',
-          avatarIcon: dbUser?.avatarIcon,
-          avatarColor: dbUser?.avatarColor,
-        }}
-        onCoachPress={openCoach}
-        onCyclePress={() => router.push('/cycle')}
-        {...(__DEV__ && {
-          onDebugMenuPress: () => router.push('/test/debug'),
-        })}
-      />
+      {isUserMenuVisible ? (
+        <UserMenuModal
+          visible={isUserMenuVisible}
+          onClose={handleCloseUserMenu}
+          user={{
+            name: dbUser?.fullName || 'Guest',
+            avatarIcon: dbUser?.avatarIcon,
+            avatarColor: dbUser?.avatarColor,
+          }}
+          onCoachPress={openCoach}
+          onCyclePress={() => router.push('/cycle')}
+          {...(__DEV__ && {
+            onDebugMenuPress: () => router.push('/test/debug'),
+          })}
+        />
+      ) : null}
 
       {/* Notifications Modal */}
-      <NotificationsModal
-        visible={isNotificationsVisible}
-        onClose={handleCloseNotifications}
-        onClearAll={() => {
-          // TODO: Implement clear all notifications once we have notifications in the app
-          console.log('Clear all notifications');
-        }}
-      />
+      {isNotificationsVisible ? (
+        <NotificationsModal
+          visible={isNotificationsVisible}
+          onClose={handleCloseNotifications}
+          onClearAll={() => {
+            // TODO: Implement clear all notifications once we have notifications in the app
+            console.log('Clear all notifications');
+          }}
+        />
+      ) : null}
 
       {/* Workout History Modal */}
-      <PastWorkoutsHistoryModal
-        visible={isWorkoutHistoryVisible}
-        onClose={handleCloseWorkoutHistory}
-      />
+      {isWorkoutHistoryVisible ? (
+        <PastWorkoutsHistoryModal
+          visible={isWorkoutHistoryVisible}
+          onClose={handleCloseWorkoutHistory}
+        />
+      ) : null}
 
       {/* Workout Detail Modal */}
-      <PastWorkoutDetailModal
-        visible={!!selectedWorkoutId}
-        onClose={handleCloseWorkoutDetail}
-        workoutId={selectedWorkoutId || ''}
-      />
+      {!!selectedWorkoutId ? (
+        <PastWorkoutDetailModal
+          visible={!!selectedWorkoutId}
+          onClose={handleCloseWorkoutDetail}
+          workoutId={selectedWorkoutId || ''}
+        />
+      ) : null}
 
       {/* Add Food Modal */}
-      <AddFoodModal
-        visible={isAddFoodVisible}
-        onClose={handleCloseAddFood}
-        onMealTypeSelect={handleMealTypeSelect}
-        onAiCameraPress={handleAiCameraPress}
-        onScanBarcodePress={handleScanBarcodePress}
-        onSearchFoodPress={handleSearchFoodPress}
-        onCreateCustomFoodPress={handleCreateCustomFoodPress}
-        onTrackCustomMealPress={handleTrackCustomMealPress}
-        isAiEnabled={isAiConfigured}
-      />
+      {isAddFoodVisible ? (
+        <AddFoodModal
+          visible={isAddFoodVisible}
+          onClose={handleCloseAddFood}
+          onMealTypeSelect={handleMealTypeSelect}
+          onAiCameraPress={handleAiCameraPress}
+          onScanBarcodePress={handleScanBarcodePress}
+          onSearchFoodPress={handleSearchFoodPress}
+          onCreateCustomFoodPress={handleCreateCustomFoodPress}
+          onTrackCustomMealPress={handleTrackCustomMealPress}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
 
       {/* Nutrition Goals Modal */}
-      <NutritionGoalsModal
-        visible={isNutritionGoalsVisible}
-        onClose={handleCloseNutritionGoals}
-        onSave={handleSaveNutritionGoals}
-      />
+      {isNutritionGoalsVisible ? (
+        <NutritionGoalsModal
+          visible={isNutritionGoalsVisible}
+          onClose={handleCloseNutritionGoals}
+          onSave={handleSaveNutritionGoals}
+        />
+      ) : null}
 
       {/* Food Search Modal */}
-      <FoodSearchModal
-        visible={isFoodSearchVisible}
-        onClose={handleCloseFoodSearch}
-        mealType={selectedMealType}
-        onCreatePress={handleFoodSearchCreatePress}
-        onBarcodeScanPress={handleFoodSearchBarcodePress}
-        isAiEnabled={isAiConfigured}
-      />
+      {isFoodSearchVisible ? (
+        <FoodSearchModal
+          visible={isFoodSearchVisible}
+          onClose={handleCloseFoodSearch}
+          mealType={selectedMealType}
+          onCreatePress={handleFoodSearchCreatePress}
+          onBarcodeScanPress={handleFoodSearchBarcodePress}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
 
       {/* My Meals Modal */}
-      <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />
+      {isMyMealsVisible ? <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} /> : null}
 
       {/* Goals Management Modal */}
-      <GoalsManagementModal
-        visible={isGoalsManagementModalVisible}
-        onClose={handleCloseGoalsManagement}
-      />
+      {isGoalsManagementModalVisible ? (
+        <GoalsManagementModal
+          visible={isGoalsManagementModalVisible}
+          onClose={handleCloseGoalsManagement}
+        />
+      ) : null}
 
       {/* Create Custom Food Modal */}
-      <CreateCustomFoodModal
-        visible={isCreateCustomFoodVisible}
-        onClose={handleCloseCreateCustomFood}
-        onSave={handleSaveCustomFood}
-        isAiEnabled={isAiConfigured}
-      />
+      {isCreateCustomFoodVisible ? (
+        <CreateCustomFoodModal
+          visible={isCreateCustomFoodVisible}
+          onClose={handleCloseCreateCustomFood}
+          onSave={handleSaveCustomFood}
+          isAiEnabled={isAiConfigured}
+        />
+      ) : null}
     </MasterLayout>
   );
 }

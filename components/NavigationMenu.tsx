@@ -57,6 +57,16 @@ export const NavigationMenu = memo(function NavigationMenu({
 
   const renderNavSlot = useCallback(
     (slotKey: NavItemKey) => {
+      const pressableStyle = ({ pressed }: { pressed: boolean }) => ({
+        opacity: pressed ? 0.7 : 1,
+      });
+
+      const androidRipple = {
+        color: addOpacityToHex(theme.colors.accent.primary, 0.2),
+        borderless: true,
+        radius: 40,
+      };
+
       switch (slotKey) {
         case 'workouts': {
           const active = isPathActive('/workout');
@@ -64,6 +74,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="workouts"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/workout/workouts');
@@ -94,6 +106,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="food"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/nutrition/food');
@@ -124,6 +138,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="profile"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => router.push('/profile')}
             >
               <View
@@ -149,6 +165,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="coach"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={onCoachPress}
             >
               <View className="h-10 w-16 items-center justify-center rounded-lg">
@@ -186,6 +204,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="cycle"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/cycle');
@@ -216,6 +236,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="settings"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/settings');
@@ -246,6 +268,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="progress"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/progress');
@@ -276,6 +300,8 @@ export const NavigationMenu = memo(function NavigationMenu({
             <Pressable
               key="checkin"
               className="flex-1 items-center justify-center gap-1"
+              android_ripple={androidRipple}
+              style={pressableStyle}
               onPress={() => {
                 if (!active) {
                   router.push('/nutrition/checkin-list');
@@ -320,6 +346,14 @@ export const NavigationMenu = memo(function NavigationMenu({
           {/* Home - always fixed */}
           <Pressable
             className="flex-1 items-center justify-center gap-1"
+            android_ripple={{
+              color: addOpacityToHex(theme.colors.accent.primary, 0.2),
+              borderless: true,
+              radius: 40,
+            }}
+            style={({ pressed }) => ({
+              opacity: pressed ? 0.7 : 1,
+            })}
             onPress={() => {
               if (!homeActive) {
                 router.push('/');
@@ -348,7 +382,15 @@ export const NavigationMenu = memo(function NavigationMenu({
           {/* Camera - always fixed */}
           <Pressable
             className="z-10 items-center justify-center gap-1"
-            style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
+            style={({ pressed }) => [
+              isSmallScreen ? { width: '20%' } : { flex: 1 },
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+            android_ripple={{
+              color: addOpacityToHex(theme.colors.background.secondaryDark, 0.3),
+              borderless: true,
+              radius: 40,
+            }}
             onPress={onCameraPress}
           >
             <View
