@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import type { MealType } from '../../database/models';
 import Food from '../../database/models/Food';
 import Meal from '../../database/models/Meal';
@@ -29,7 +30,6 @@ import { MealService, NutritionService } from '../../database/services';
 import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMealIngredients';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
@@ -177,6 +177,7 @@ const MealMacrosSummary = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
 
   // Calculate progress percentages (simple estimation)
@@ -249,7 +250,7 @@ const MealMacrosSummary = ({
                 color: theme.colors.text.secondary,
               }}
             >
-              {roundToDecimalPlaces(calories)} {t('common.kcal')}
+              {formatRoundedDecimal(calories, 2)} {t('common.kcal')}
             </Text>
           </View>
           <View
@@ -279,19 +280,19 @@ const MealMacrosSummary = ({
         <View style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
-            value={`${roundToDecimalPlaces(macros.protein)}g`}
+            value={`${formatRoundedDecimal(macros.protein, 2)}g`}
             progress={proteinProgress}
             color={theme.colors.accent.primary}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
-            value={`${roundToDecimalPlaces(macros.carbs)}g`}
+            value={`${formatRoundedDecimal(macros.carbs, 2)}g`}
             progress={carbsProgress}
             color={theme.colors.status.indigo}
           />
           <MacroCard
             label={windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
-            value={`${roundToDecimalPlaces(macros.fat)}g`}
+            value={`${formatRoundedDecimal(macros.fat, 2)}g`}
             progress={fatProgress}
             color={theme.colors.status.amber}
           />
@@ -313,6 +314,7 @@ export function CreateMealModal({
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const [mealName, setMealName] = useState('');
   const [isAddFoodVisible, setIsAddFoodVisible] = useState(false);
@@ -713,7 +715,7 @@ export function CreateMealModal({
                           color: theme.colors.text.secondary,
                         }}
                       >
-                        {roundToDecimalPlaces(item.calories)} {t('common.kcal')}
+                        {formatRoundedDecimal(item.calories, 2)} {t('common.kcal')}
                       </Text>
                     </View>
                   </View>

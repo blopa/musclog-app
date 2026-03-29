@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryScatter } from 'victory';
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
@@ -56,12 +57,15 @@ export function BarLineChart({
   leftAxisLabels = DEFAULT_LEFT_LABELS,
   rightAxisLabels = DEFAULT_RIGHT_LABELS,
   xAxisLabels,
-  stepsFormatter = (v) => v.toLocaleString(),
+  stepsFormatter,
   heartRateFormatter = (v) => String(Math.round(v)),
   interactive = true,
   className,
 }: BarLineChartProps) {
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
+  const resolvedStepsFormatter =
+    stepsFormatter ?? ((v: number) => formatInteger(Math.round(v)));
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -352,7 +356,7 @@ export function BarLineChart({
                     fontWeight: '700',
                   }}
                 >
-                  {stepsFormatter(activeDatum.steps)}
+                  {resolvedStepsFormatter(activeDatum.steps)}
                 </Text>
               </View>
               <View

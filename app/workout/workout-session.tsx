@@ -68,6 +68,8 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
+import i18n from '../../lang/lang';
+import { formatAppDecimal } from '../../utils/formatAppNumber';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -87,7 +89,11 @@ const getHormonalInsightText = (
     default:
       return t('workoutSession.phaseInsight', {
         phase: currentPhase || 'unknown',
-        multiplier: intensityMultiplier.toFixed(2),
+        multiplier: formatAppDecimal(
+          i18n.resolvedLanguage ?? i18n.language,
+          intensityMultiplier,
+          2
+        ),
       });
   }
 };

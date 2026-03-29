@@ -75,7 +75,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
     { x: xMax, y: slope * xMax + intercept },
   ];
 
-  const yAxisLabels = getYAxisLabels(yMin - 0.5, yMax + 0.5, 3, (v) => `${v.toFixed(1)}`);
+  const yAxisLabels = getYAxisLabels(yMin - 0.5, yMax + 0.5, 3, (v) => formatDecimal(v, 1));
 
   return (
     <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>

@@ -32,6 +32,7 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '../../utils/nutritionCalculator';
+import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
@@ -109,8 +110,9 @@ export default function NutritionGoalsResults() {
   // Resolve display data: prefer parsedPlan (AI), fall back to savedGoal (manual)
   const displayData = useMemo(() => {
     if (parsedPlan) {
-      const weightChange = parseFloat(
-        (parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg).toFixed(1)
+      const weightChange = roundToDecimalPlaces(
+        parsedPlan.projectedWeightKg - parsedPlan.currentWeightKg,
+        1
       );
       return {
         targetCalories: parsedPlan.targetCalories,
@@ -175,7 +177,7 @@ export default function NutritionGoalsResults() {
       return {
         marker: `${formatDecimal(weightDisplay, 1)} ${t(weightUnitKey)}`,
         x: i,
-        y: parseFloat(weightKg.toFixed(1)),
+        y: roundToDecimalPlaces(weightKg, 1),
       };
     });
   }, [displayData, units, t, weightUnitKey, formatDecimal]);

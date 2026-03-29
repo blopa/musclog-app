@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type EatingPhaseUI } from '../../types/EatingPhaseUI';
@@ -44,6 +45,7 @@ export function GoalHistoryCard({
 }: GoalHistoryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const weightDisplay = kgToDisplay(goal.weight, units);
@@ -150,7 +152,7 @@ export function GoalHistoryCard({
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
                 <Text className="text-lg font-bold text-text-primary">
-                  {goal.calories.toLocaleString()}{' '}
+                  {formatInteger(goal.calories)}{' '}
                   <Text
                     className="font-normal text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xs }}
@@ -162,9 +164,11 @@ export function GoalHistoryCard({
                   className="text-text-secondary"
                   style={{ fontSize: theme.typography.fontSize.xs }}
                 >
-                  {t('goalHistoryCard.proteinPrefix')}:{goal.protein}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:{goal.carbs}
-                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:{goal.fat}
+                  {t('goalHistoryCard.proteinPrefix')}:{formatInteger(goal.protein)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.carbsPrefix')}:
+                  {formatInteger(goal.carbs)}
+                  {t('goalHistoryCard.g')} • {t('goalHistoryCard.fatPrefix')}:
+                  {formatInteger(goal.fat)}
                   {t('goalHistoryCard.g')}
                 </Text>
               </View>

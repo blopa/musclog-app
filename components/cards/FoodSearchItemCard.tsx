@@ -2,10 +2,10 @@ import { type LucideIcon, Plus, UtensilsCrossed } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult } from '../../hooks/useUnifiedFoodSearch';
 import { addOpacityToHex } from '../../theme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 
 type FoodItem = UnifiedFoodResult & {
   icon?: string; // Emoji
@@ -26,10 +26,11 @@ type FoodSearchItemCardProps = {
 export function FoodSearchItemCard({ food, onAddPress }: FoodSearchItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const macroLine = t('food.manageFoodLibrary.macrosFormat', {
-    protein: roundToDecimalPlaces(food.protein ?? 0),
-    carbs: roundToDecimalPlaces(food.carbs ?? 0),
-    fat: roundToDecimalPlaces(food.fat ?? 0),
+    protein: formatRoundedDecimal(food.protein ?? 0, 2),
+    carbs: formatRoundedDecimal(food.carbs ?? 0, 2),
+    fat: formatRoundedDecimal(food.fat ?? 0, 2),
   });
 
   return (

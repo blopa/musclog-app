@@ -14,6 +14,7 @@ import type { ObjectTypeIdentifier } from '@kingstinct/react-native-healthkit/ty
 import type { Units } from '../constants/settings';
 import { SettingsService } from '../database/services/SettingsService';
 import i18n from '../lang/lang';
+import { formatAppInteger } from '../utils/formatAppNumber';
 import { kgToDisplay } from '../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../utils/units';
 
@@ -103,7 +104,7 @@ export async function writeWorkoutToHealthConnect(
     if (payload.totalVolume != null && payload.totalVolume > 0) {
       noteParts.push(
         i18n.t('healthConnect.workoutVolumeNote', {
-          volume: payload.totalVolume.toLocaleString(),
+          volume: formatAppInteger(i18n.resolvedLanguage ?? i18n.language, payload.totalVolume),
           unit: unitLabel,
         })
       );

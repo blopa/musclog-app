@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { GenericCard } from './GenericCard';
 
 export type MealNutritionHighlightCardProps = {
@@ -33,6 +33,7 @@ export function MealNutritionHighlightCard({
 }: MealNutritionHighlightCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: windowWidth } = useWindowDimensions();
 
   const narrow = windowWidth < 380;
@@ -74,7 +75,7 @@ export function MealNutritionHighlightCard({
                 {t('food.calories')}
               </Text>
               <Text className="text-lg font-bold" style={{ color: theme.colors.text.primary }}>
-                {roundToDecimalPlaces(calories)}
+                {formatRoundedDecimal(calories, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 {t('food.common.kcal')}
@@ -95,7 +96,7 @@ export function MealNutritionHighlightCard({
                 {narrow ? t('food.macros.proteinShort') : t('food.macros.protein')}
               </Text>
               <Text className="text-lg font-bold" style={{ color: theme.colors.accent.primary }}>
-                {roundToDecimalPlaces(protein)}
+                {formatRoundedDecimal(protein, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -116,7 +117,7 @@ export function MealNutritionHighlightCard({
                 {narrow ? t('food.macros.carbsShort') : t('food.macros.carbs')}
               </Text>
               <Text className="text-lg font-bold" style={{ color: theme.colors.status.info }}>
-                {roundToDecimalPlaces(carbs)}
+                {formatRoundedDecimal(carbs, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -137,7 +138,7 @@ export function MealNutritionHighlightCard({
                 {narrow ? t('food.macros.fatShort') : t('food.macros.fat')}
               </Text>
               <Text className="text-lg font-bold" style={{ color: theme.colors.status.amber }}>
-                {roundToDecimalPlaces(fat)}
+                {formatRoundedDecimal(fat, 2)}
               </Text>
               <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
                 g
@@ -151,7 +152,7 @@ export function MealNutritionHighlightCard({
               style={{ color: theme.colors.text.secondary }}
             >
               {t('food.macroValueFormat', {
-                value: roundToDecimalPlaces(fiber, 1),
+                value: formatRoundedDecimal(fiber, 1),
                 unit: t('common.units.g'),
                 label: t('food.macros.fiber'),
               })}

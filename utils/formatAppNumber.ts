@@ -3,6 +3,8 @@
  * Use for display only — keep roundToDecimalPlaces / DB math separate.
  */
 
+import { roundToDecimalPlaces } from './roundDecimal';
+
 const formatterCache = new Map<string, Intl.NumberFormat>();
 
 function cacheKey(locale: string, options: Intl.NumberFormatOptions): string {
@@ -56,4 +58,21 @@ export function formatAppNumber(
   options: Intl.NumberFormatOptions
 ): string {
   return getAppNumberFormatter(locale, options).format(value);
+}
+
+/**
+ * Round with `roundToDecimalPlaces`, then format for display (common for nutrition macros).
+ */
+export function formatAppRoundedDecimal(
+  locale: string,
+  value: number,
+  fractionDigits: number,
+  options?: Intl.NumberFormatOptions
+): string {
+  return formatAppDecimal(
+    locale,
+    roundToDecimalPlaces(value, fractionDigits),
+    fractionDigits,
+    options
+  );
 }

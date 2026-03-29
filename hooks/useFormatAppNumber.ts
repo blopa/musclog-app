@@ -1,7 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatAppDecimal, formatAppInteger, formatAppNumber } from '../utils/formatAppNumber';
+import {
+  formatAppDecimal,
+  formatAppInteger,
+  formatAppNumber,
+  formatAppRoundedDecimal,
+} from '../utils/formatAppNumber';
 
 /**
  * Stable formatters keyed to i18n locale for user-visible numbers.
@@ -29,5 +34,11 @@ export function useFormatAppNumber() {
     [locale]
   );
 
-  return { locale, formatInteger, formatDecimal, formatNumber };
+  const formatRoundedDecimal = useCallback(
+    (value: number, fractionDigits: number, options?: Intl.NumberFormatOptions) =>
+      formatAppRoundedDecimal(locale, value, fractionDigits, options),
+    [locale]
+  );
+
+  return { locale, formatInteger, formatDecimal, formatNumber, formatRoundedDecimal };
 }

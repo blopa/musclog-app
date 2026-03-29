@@ -7,6 +7,7 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database } from '../../database';
 import { encryptUserMetricFields } from '../../database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { localDayStartMs } from '../../utils/calendarDate';
@@ -59,6 +60,7 @@ export default function AddUserMetricEntryModal({
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { units } = useSettings();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
   const pagerRef = useRef<PagerViewRef>(null);
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('weight');
   const [weight, setWeight] = useState(DEFAULT_WEIGHT_KG);
@@ -320,7 +322,7 @@ export default function AddUserMetricEntryModal({
 
             <View className="flex-1 items-center">
               <Text className="text-center text-6xl font-extrabold text-text-primary">
-                {config.step < 1 ? value.toFixed(1) : Math.round(value)}
+                {config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value))}
               </Text>
             </View>
 
@@ -350,7 +352,10 @@ export default function AddUserMetricEntryModal({
                 }}
               >
                 <Text className="text-[10px] font-bold text-accent-primary">
-                  +{increment % 1 === 0 ? increment : increment.toFixed(1)}
+                  +
+                  {increment % 1 === 0
+                    ? formatInteger(increment, { useGrouping: false })
+                    : formatDecimal(increment, 1)}
                 </Text>
               </Pressable>
             ))}

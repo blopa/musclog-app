@@ -3,8 +3,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
-import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { Button } from '../theme/Button';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
@@ -26,7 +26,11 @@ type ChatMealCardProps = {
 export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const totalCalories = roundToDecimalPlaces(meals.reduce((s, m) => s + m.calories, 0));
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const totalCalories = formatRoundedDecimal(
+    meals.reduce((s, m) => s + m.calories, 0),
+    2
+  );
 
   const getMealLabel = useCallback(
     (mealType: MealType): string => {
@@ -88,7 +92,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 {getMealLabel(meal.mealType)}
               </Text>
               <Text className="text-sm font-semibold" style={{ color: theme.colors.text.primary }}>
-                {roundToDecimalPlaces(meal.calories)} {t('common.kcal')}
+                {formatRoundedDecimal(meal.calories, 2)} {t('common.kcal')}
               </Text>
             </View>
 
@@ -105,7 +109,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   P
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
-                  {roundToDecimalPlaces(meal.protein)}g
+                  {formatRoundedDecimal(meal.protein, 2)}g
                 </Text>
               </View>
 
@@ -119,7 +123,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   C
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.indigo }}>
-                  {roundToDecimalPlaces(meal.carbs)}g
+                  {formatRoundedDecimal(meal.carbs, 2)}g
                 </Text>
               </View>
 
@@ -133,7 +137,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                   F
                 </Text>
                 <Text className="text-xs font-bold" style={{ color: theme.colors.status.warning }}>
-                  {roundToDecimalPlaces(meal.fats)}g
+                  {formatRoundedDecimal(meal.fats, 2)}g
                 </Text>
               </View>
             </View>

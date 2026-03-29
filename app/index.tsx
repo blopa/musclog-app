@@ -44,7 +44,6 @@ import packageJson from '../package.json';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
-import { roundToDecimalPlaces } from '../utils/roundDecimal';
 import { captureException } from '../utils/sentry';
 import { showSnackbar } from '../utils/snackbarService';
 
@@ -407,21 +406,21 @@ export default function HomeScreen() {
           ) : nutritionGoal ? (
             <DailySummaryCard
               calories={{
-                consumed: roundToDecimalPlaces(dailyCalories.consumed),
-                remaining: roundToDecimalPlaces(dailyCalories.remaining),
+                consumed: dailyCalories.consumed,
+                remaining: dailyCalories.remaining,
                 goal: dailyCalories.goal,
               }}
               macros={{
                 protein: {
-                  value: roundToDecimalPlaces(dailyMacros.protein.value),
+                  value: dailyMacros.protein.value,
                   goal: dailyMacros.protein.goal,
                 },
                 carbs: {
-                  value: roundToDecimalPlaces(dailyMacros.carbs.value),
+                  value: dailyMacros.carbs.value,
                   goal: dailyMacros.carbs.goal,
                 },
                 fats: {
-                  value: roundToDecimalPlaces(dailyMacros.fat.value),
+                  value: dailyMacros.fat.value,
                   goal: dailyMacros.fat.goal,
                 },
               }}
