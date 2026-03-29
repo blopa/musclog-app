@@ -77,6 +77,7 @@ import { RecentNutritionHistoryModal } from '../../components/modals/RecentNutri
 import { ReplaceExerciseModal } from '../../components/modals/ReplaceExerciseModal';
 import { RetrospectiveNutritionModal } from '../../components/modals/RetrospectiveNutritionModal';
 import { ScannedFoodDetailsModal } from '../../components/modals/ScannedFoodDetailsModal';
+import { SelectModal } from '../../components/modals/SelectModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
 import { TimePickerInput } from '../../components/modals/TimePickerInput';
@@ -296,6 +297,10 @@ export default function ModalsTestScreen() {
   // Generic Edit Modal
   const [isGenericEditVisible, setIsGenericEditVisible] = useState(false);
 
+  // Select Modal (option rows — native padding QA)
+  const [isSelectModalTestVisible, setIsSelectModalTestVisible] = useState(false);
+  const [selectModalTestValue, setSelectModalTestValue] = useState('a');
+
   // Move Copy Meal Modal
   const [isMoveCopyMealVisible, setIsMoveCopyMealVisible] = useState(false);
   const [moveCopyMode, setMoveCopyMode] = useState<'move' | 'copy' | 'split'>('move');
@@ -337,6 +342,27 @@ export default function ModalsTestScreen() {
             <Text className="mb-2 text-3xl font-bold text-text-primary">Modals Test</Text>
             <Text className="text-base text-text-secondary">
               Test various modal components in the app
+            </Text>
+          </View>
+
+          {/* Native row padding QA — Pressable + flex rows (verify trailing icons on device) */}
+          <View className="mb-6 rounded-xl border border-accent-primary/30 bg-bg-card p-4">
+            <Text className="mb-1 text-lg font-bold text-text-primary">
+              Native row padding (device QA)
+            </Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Use these on a phone to confirm trailing chevrons/checkmarks are not flush to the
+              right edge. Includes SelectModal list rows, compact date/time (food details style),
+              and Generic Edit with a select field.
+            </Text>
+            <Button
+              label="Open Select Modal (list rows)"
+              variant="accent"
+              width="full"
+              onPress={() => setIsSelectModalTestVisible(true)}
+            />
+            <Text className="mt-2 text-xs text-text-tertiary">
+              Selected: {selectModalTestValue}
             </Text>
           </View>
 
@@ -404,7 +430,7 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">AI Settings Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Configure AI integrations like Google Gemini and OpenAI.
+              Configure AI integrations — model row & custom prompts row (native padding QA).
             </Text>
             <Button
               label="Open AI Settings Modal"
@@ -806,19 +832,37 @@ export default function ModalsTestScreen() {
           {/* Date Picker Modal */}
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Date Picker Modal</Text>
-            <Text className="mb-4 text-sm text-text-secondary">Modal for selecting dates.</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              Default and compact variants (compact matches food details).
+            </Text>
             <DatePickerInput
-              label="Date"
+              label="Date (default)"
               selectedDate={testDatePickerSelection}
               onPress={() => setIsDatePickerVisible(true)}
               variant="default"
             />
             <View className="mt-3">
               <TimePickerInput
-                label="Time"
+                label="Time (default)"
                 selectedTime={selectedTime}
                 onPress={() => setIsTimePickerVisible(true)}
                 variant="default"
+              />
+            </View>
+            <View className="mt-4">
+              <DatePickerInput
+                label="Date (compact)"
+                selectedDate={testDatePickerSelection}
+                onPress={() => setIsDatePickerVisible(true)}
+                variant="compact"
+              />
+            </View>
+            <View className="mt-3">
+              <TimePickerInput
+                label="Time (compact)"
+                selectedTime={selectedTime}
+                onPress={() => setIsTimePickerVisible(true)}
+                variant="compact"
               />
             </View>
           </View>
@@ -883,7 +927,7 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">New Custom Food Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Modal for creating a new custom food item with detailed nutritional information.
+              Custom food form — scroll to Portion sizes for the chevron row (native padding QA).
             </Text>
             <Button
               label="Open New Custom Food Modal"
@@ -1393,7 +1437,7 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Generic Edit Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
-              Reusable modal for editing various data types with configurable fields.
+              Includes a select field (chevron row). Reusable modal for editing various data types.
             </Text>
             <Button
               label="Open Generic Edit Modal"
@@ -2188,13 +2232,39 @@ export default function ModalsTestScreen() {
         title="Generic Edit Modal"
         fields={[
           { key: 'name', label: 'Name', type: 'text', required: true },
+          {
+            key: 'category',
+            label: 'Category',
+            type: 'select',
+            options: [
+              { value: 'a', label: 'Option A' },
+              { value: 'b', label: 'Option B' },
+              { value: 'c', label: 'Option C' },
+            ],
+          },
           { key: 'amount', label: 'Amount', type: 'number', required: true },
           { key: 'active', label: 'Active', type: 'boolean' },
         ]}
-        initialValues={{ name: 'Test', amount: 100, active: true }}
+        initialValues={{ name: 'Test', category: 'a', amount: 100, active: true }}
         onSave={async (values) => {
           console.log('Generic edit saved:', values);
           setIsGenericEditVisible(false);
+        }}
+      />
+
+      <SelectModal
+        visible={isSelectModalTestVisible}
+        onClose={() => setIsSelectModalTestVisible(false)}
+        title="Select modal (QA)"
+        options={[
+          { value: 'a', label: 'First option' },
+          { value: 'b', label: 'Second option' },
+          { value: 'c', label: 'Third option with a longer label' },
+        ]}
+        selectedValue={selectModalTestValue}
+        onSelect={(val) => {
+          setSelectModalTestValue(val);
+          setIsSelectModalTestVisible(false);
         }}
       />
 

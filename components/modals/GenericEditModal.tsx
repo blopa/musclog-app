@@ -235,10 +235,14 @@ export function GenericEditModal({
                 setCurrentSelectFieldKey(field.key);
                 setSelectMenuVisible(true);
               }}
-              className="flex-row items-center justify-between rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+              className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
             >
-              <Text className="text-base text-text-primary">{selectedLabel}</Text>
-              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+              <View className="flex-row items-center justify-between px-4 py-3">
+                <Text className="min-w-0 flex-1 text-base text-text-primary">{selectedLabel}</Text>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                </View>
+              </View>
             </Pressable>
             <BottomPopUpMenu
               visible={selectMenuVisible ? currentSelectFieldKey === field.key : false}

@@ -27,13 +27,17 @@ export function DateTimeSelectorCard({
     <View className="flex-col gap-2">
       <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
       <Pressable
-        className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+        className="h-14 w-full overflow-hidden rounded-lg border-2 border-white/10 bg-bg-card active:opacity-80"
         onPress={onEdit}
       >
-        <View className="ml-3 flex-1">
-          <Text className="text-base text-text-primary">{formattedValue}</Text>
+        <View className="h-14 flex-row items-center justify-between px-4">
+          <View className="min-w-0 flex-1 pr-2">
+            <Text className="text-base text-text-primary">{formattedValue}</Text>
+          </View>
+          <View className="shrink-0 justify-center">
+            <Icon size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+          </View>
         </View>
-        <Icon size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
       </Pressable>
     </View>
   );

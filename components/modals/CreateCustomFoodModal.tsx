@@ -650,7 +650,7 @@ export default function CreateCustomFoodModal({
               {t('food.newCustomFood.portionSizes')}
             </Text>
             <Pressable
-              className="min-h-12 flex-row items-center justify-between rounded-lg border p-3"
+              className="min-h-12 overflow-hidden rounded-lg border"
               style={{
                 backgroundColor: theme.colors.background.secondary,
                 borderColor: theme.colors.background.white20,
@@ -659,34 +659,38 @@ export default function CreateCustomFoodModal({
               onPress={() => setShowPortionPicker(true)}
               disabled={isLoadingPortions}
             >
-              <View className="flex-1 flex-row flex-wrap items-center gap-2">
-                {isLoadingPortions ? (
-                  <SkeletonLoader width="80%" height={20} borderRadius={10} />
-                ) : selectedPortionIds.length > 0 ? (
-                  selectedPortionIds.map((id) => {
-                    const portion = portions.find((p) => p.id === id);
-                    return portion ? (
-                      <View
-                        key={id}
-                        className="rounded-full px-3 py-1.5"
-                        style={{ backgroundColor: theme.colors.status.emerald }}
-                      >
-                        <Text
-                          className="text-sm font-medium"
-                          style={{ color: theme.colors.text.white }}
+              <View className="min-h-12 flex-row items-center justify-between p-3">
+                <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
+                  {isLoadingPortions ? (
+                    <SkeletonLoader width="80%" height={20} borderRadius={10} />
+                  ) : selectedPortionIds.length > 0 ? (
+                    selectedPortionIds.map((id) => {
+                      const portion = portions.find((p) => p.id === id);
+                      return portion ? (
+                        <View
+                          key={id}
+                          className="rounded-full px-3 py-1.5"
+                          style={{ backgroundColor: theme.colors.status.emerald }}
                         >
-                          {portion.name} ({portion.gramWeight}g)
-                        </Text>
-                      </View>
-                    ) : null;
-                  })
-                ) : (
-                  <Text className="text-text-tertiary">
-                    {t('food.newCustomFood.selectPortionSizes')}
-                  </Text>
-                )}
+                          <Text
+                            className="text-sm font-medium"
+                            style={{ color: theme.colors.text.white }}
+                          >
+                            {portion.name} ({portion.gramWeight}g)
+                          </Text>
+                        </View>
+                      ) : null;
+                    })
+                  ) : (
+                    <Text className="text-text-tertiary">
+                      {t('food.newCustomFood.selectPortionSizes')}
+                    </Text>
+                  )}
+                </View>
+                <View className="shrink-0 justify-center pl-2">
+                  <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+                </View>
               </View>
-              <ChevronDown size={theme.iconSize.md} color={theme.colors.text.tertiary} />
             </Pressable>
           </View>
 

@@ -568,7 +568,10 @@ export default function CardsTestScreen() {
           </View>
         </TestSection>
 
-        <TestSection title="Date/Time Selector" subtitle="Date and time input cards">
+        <TestSection
+          title="Date/Time Selector"
+          subtitle="Date and time input cards (trailing icon row — native padding QA)"
+        >
           <DateTimeSelectorCard
             type="date"
             value={new Date()}

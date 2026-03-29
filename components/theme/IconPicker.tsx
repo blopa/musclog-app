@@ -55,24 +55,28 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
       {label ? <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text> : null}
       <Pressable
         onPress={() => setModalVisible(true)}
-        className="flex-row items-center justify-between rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
+        className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
       >
-        <View className="flex-row items-center gap-3">
-          <View
-            className="h-10 w-10 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          >
-            <MaterialIcons
-              name={selectedIcon as any}
-              size={theme.iconSize.md}
-              color={theme.colors.accent.primary}
-            />
+        <View className="flex-row items-center justify-between px-4 py-3">
+          <View className="min-w-0 flex-1 flex-row items-center gap-3">
+            <View
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.accent.primary10 }}
+            >
+              <MaterialIcons
+                name={selectedIcon as any}
+                size={theme.iconSize.md}
+                color={theme.colors.accent.primary}
+              />
+            </View>
+            <Text className="text-base text-text-primary">
+              {selectedIcon || t('common.selectIcon')}
+            </Text>
           </View>
-          <Text className="text-base text-text-primary">
-            {selectedIcon || t('common.selectIcon')}
-          </Text>
+          <View className="shrink-0 justify-center pl-2">
+            <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
+          </View>
         </View>
-        <ChevronDown size={theme.iconSize.md} color={theme.colors.text.secondary} />
       </Pressable>
 
       <BottomPopUp
