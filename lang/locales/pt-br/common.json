@@ -2,6 +2,7 @@
   "common": {
     "clear": "Limpar",
     "value": "Valor",
+    "name": "Nome",
     "processing": "processando...",
     "success": "Sucesso",
     "saveError": "Falha ao salvar alterações",

@@ -2,6 +2,7 @@
   "common": {
     "clear": "Clear",
     "value": "Value",
+    "name": "Name",
     "processing": "processing...",
     "success": "Success",
     "saveError": "Failed to save changes",
