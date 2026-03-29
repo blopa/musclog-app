@@ -1600,6 +1600,7 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    refetchedProductDetails,
     barcode,
   ]);
 

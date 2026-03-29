@@ -258,13 +258,14 @@ export function useWorkoutHistory({
     }
   }, [
     visible,
-    initialLimit,
-    workoutFilters,
     groupByMonth,
-    skipPRDetection,
+    workoutFilters,
+    initialLimit,
     t,
     units,
+    theme,
     dateFnsLocale,
+    skipPRDetection,
   ]);
 
   // Load more workouts (pagination)
@@ -337,14 +338,15 @@ export function useWorkoutHistory({
     isLoadingMore,
     hasMore,
     visible,
-    currentOffset,
-    batchSize,
     workoutFilters,
+    batchSize,
+    currentOffset,
     groupByMonth,
-    skipPRDetection,
     t,
     units,
+    theme,
     dateFnsLocale,
+    skipPRDetection,
   ]);
 
   // Handle filter changes
