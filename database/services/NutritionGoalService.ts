@@ -2,10 +2,18 @@ import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 import { Platform } from 'react-native';
 
-import { requestNutritionWidgetUpdate } from '../../widgets/widget-update-helpers';
 import { database } from '../index';
 import NutritionGoal, { type EatingPhase } from '../models/NutritionGoal';
 import { NutritionCheckinService } from './NutritionCheckinService';
+
+async function triggerWidgetUpdate(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+
+  const { requestNutritionWidgetUpdate } = await import('../../widgets/widget-update-helpers');
+  await requestNutritionWidgetUpdate();
+}
 
 export interface NutritionGoalInput {
   totalCalories: number;
@@ -101,9 +109,7 @@ export class NutritionGoalService {
         r.updatedAt = now;
       });
 
-      if (Platform.OS === 'android') {
-        await requestNutritionWidgetUpdate();
-      }
+      await triggerWidgetUpdate();
 
       return goal;
     });
@@ -207,9 +213,7 @@ export class NutritionGoalService {
         record.updatedAt = Date.now();
       });
 
-      if (Platform.OS === 'android') {
-        await requestNutritionWidgetUpdate();
-      }
+      await triggerWidgetUpdate();
 
       return goal;
     });
@@ -399,9 +403,7 @@ export class NutritionGoalService {
 
       await goal.markAsDeleted();
 
-      if (Platform.OS === 'android') {
-        await requestNutritionWidgetUpdate();
-      }
+      await triggerWidgetUpdate();
     });
   }
 }

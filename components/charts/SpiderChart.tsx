@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import { Line, Polygon, Svg, Text as SvgText } from 'react-native-svg';
 
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 
 export type SpiderChartProps = {
   /** Chart title */
@@ -33,9 +32,6 @@ export type SpiderChartProps = {
   /** Custom className */
   className?: string;
 };
-
-const DEFAULT_DATA_COLOR = appTheme.colors.status.emeraldLight;
-const DEFAULT_GRID_COLOR = appTheme.colors.border.dark;
 
 /** Angle in degrees for vertex i (0 at top, then clockwise). */
 function vertexAngle(i: number, count: number): number {
@@ -67,7 +63,7 @@ export function SpiderChart({
   subtitle,
   axes,
   values,
-  dataColor = DEFAULT_DATA_COLOR,
+  dataColor,
   dataFillOpacity = 0.15,
   centerScore,
   centerScoreLabel = 'PTS',
@@ -78,6 +74,9 @@ export function SpiderChart({
   className,
 }: SpiderChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_DATA_COLOR = theme.colors.status.emeraldLight;
+  const DEFAULT_GRID_COLOR = theme.colors.border.dark;
   const n = Math.min(axes.length, values.length, 12);
   if (n === 0) {
     return null;

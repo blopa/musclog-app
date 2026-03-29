@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 
@@ -13,6 +13,7 @@ type DateNavigatorProps = {
 
 export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps) {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const theme = useTheme();
 
   const goToPreviousDay = () => {
     const prev = new Date(selectedDate);

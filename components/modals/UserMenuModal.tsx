@@ -134,20 +134,23 @@ export function UserMenuModal({
                     className="h-14 w-14 overflow-hidden rounded-full border-2"
                     style={{
                       borderColor: user.avatarIcon
-                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color
+                        ? getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor).color
                         : theme.colors.accent.primary,
                       backgroundColor: user.avatarIcon
-                        ? getAvatarDisplayProps(user.avatarIcon, user.avatarColor).backgroundColor
+                        ? getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                            .backgroundColor
                         : theme.colors.background.imageLight,
                     }}
                   >
                     {user.avatarIcon ? (
                       <View className="h-full w-full items-center justify-center rounded-full">
                         {createElement(
-                          getAvatarDisplayProps(user.avatarIcon, user.avatarColor).IconComponent,
+                          getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                            .IconComponent,
                           {
                             size: 24,
-                            color: getAvatarDisplayProps(user.avatarIcon, user.avatarColor).color,
+                            color: getAvatarDisplayProps(theme, user.avatarIcon, user.avatarColor)
+                              .color,
                           }
                         )}
                       </View>

@@ -16,9 +16,10 @@ import { VisualSettingsModal } from '../components/modals/VisualSettingsModal';
 import { SettingsService } from '../database/services/SettingsService';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { useSettings } from '../hooks/useSettings';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../hooks/useTheme';
 
 export default function SettingsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { googleGeminiApiKey, googleGeminiModel, openAiApiKey, openAiModel } = useSettings();

@@ -13,7 +13,6 @@ import {
 
 import { useChartTooltip } from '../../context/ChartTooltipContext';
 import { useTheme } from '../../hooks/useTheme';
-import { theme as appTheme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { X_AXIS_LABEL_OFFSET, X_AXIS_LABEL_WIDTH, XAxisLabel } from '../../utils/chartUtils';
 
 export type StackedBarLineChartDatum = {
@@ -48,12 +47,6 @@ export type StackedBarLineChartProps = {
   className?: string;
 };
 
-const DEFAULT_STACK_COLORS = [
-  appTheme.colors.status.info,
-  appTheme.colors.status.error,
-  appTheme.colors.status.yellow,
-  appTheme.colors.accent.primary,
-];
 const DEFAULT_LEFT_LABELS = ['0', '5', '10', '15', '20'];
 const DEFAULT_RIGHT_LABELS = ['60', '80', '100', '120', '140'];
 
@@ -83,6 +76,13 @@ export function StackedBarLineChart({
   className,
 }: StackedBarLineChartProps) {
   const theme = useTheme();
+
+  const DEFAULT_STACK_COLORS = [
+    theme.colors.status.info,
+    theme.colors.status.error,
+    theme.colors.status.yellow,
+    theme.colors.accent.primary,
+  ];
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

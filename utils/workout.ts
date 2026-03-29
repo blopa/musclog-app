@@ -7,7 +7,6 @@ import Exercise, { type EquipmentType } from '../database/models/Exercise';
 import Schedule, { type DayOfWeek } from '../database/models/Schedule';
 import type { ExerciseInWorkout } from '../database/services/WorkoutTemplateService';
 import i18n from '../lang/lang';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 
@@ -75,7 +74,7 @@ export function isBodyweightExercise(equipmentType?: EquipmentType | string): bo
 /**
  * Get icon and colors for an exercise based on whether it's bodyweight
  */
-export function getExerciseIconConfig(isBodyweight: boolean): ExerciseIconConfig {
+export function getExerciseIconConfig(theme: any, isBodyweight: boolean): ExerciseIconConfig {
   return {
     icon: isBodyweight ? User : Dumbbell,
     iconBgColor: isBodyweight ? theme.colors.background.white5 : theme.colors.accent.primary10,
@@ -138,11 +137,14 @@ export interface CreateExerciseOptionParams {
  * Create a SelectorOption from exercise data
  * This combines exercise info with metadata (sets/reps/weight)
  */
-export function createExerciseOption(params: CreateExerciseOptionParams): SelectorOption<string> {
+export function createExerciseOption(
+  theme: any,
+  params: CreateExerciseOptionParams
+): SelectorOption<string> {
   const { exercise, sets, reps, weight, isBodyweight, groupId, units } = params;
 
   const isBodyweightType = isBodyweightExercise(exercise.equipmentType) || isBodyweight;
-  const iconConfig = getExerciseIconConfig(isBodyweightType);
+  const iconConfig = getExerciseIconConfig(theme, isBodyweightType);
 
   return {
     id: exercise.id,

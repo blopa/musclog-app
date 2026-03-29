@@ -13,7 +13,7 @@ import { Button } from '../../components/theme/Button';
 import { useHealthConnectPermissions } from '../../hooks/useHealthConnectPermissions';
 import { useScrollFade } from '../../hooks/useScrollFade';
 import { useSyncTracking } from '../../hooks/useSyncTracking';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { useTheme } from '../../hooks/useTheme';
 
 /**
  * Health Connect Onboarding Screen
@@ -36,6 +36,7 @@ import { theme } from '../../theme'; // TODO: figure out a way to use useTheme i
  * - Data validation and deduplication
  */
 export default function HealthConnectScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);

@@ -1,7 +1,7 @@
 import { type ColorProp, FlexWidget, TextWidget } from 'react-native-android-widget';
 
 import i18n from '../lang/lang';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { darkTheme } from '../theme';
 
 interface NutritionWidgetProps {
   calories: number;
@@ -26,6 +26,10 @@ export function NutritionWidget({
   targetFat,
   width,
 }: NutritionWidgetProps) {
+  // Use dark theme colors for widget as per requirements.
+  // this will not dynamically update if the theme is changed.
+  const theme = darkTheme;
+
   const caloriePercentage = Math.min(Math.round((calories / (targetCalories || 1)) * 100), 100);
   const proteinPercentage = Math.min(Math.round((protein / (targetProtein || 1)) * 100), 100);
   const carbsPercentage = Math.min(Math.round((carbs / (targetCarbs || 1)) * 100), 100);

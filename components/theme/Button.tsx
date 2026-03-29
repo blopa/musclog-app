@@ -470,7 +470,7 @@ export function Button({
       {iconPosition === 'left' ? iconRowChild : null}
       <View
         style={{
-          ...(Icon ? { flex: 1 } : {}),
+          ...(Icon && width && width !== 'auto' ? { flex: 1 } : {}),
           flexShrink: 1,
           minWidth: 0,
           maxWidth: '100%',

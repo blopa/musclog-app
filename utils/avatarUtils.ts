@@ -60,12 +60,13 @@ export function getAvatarIcon(avatarIcon?: AvatarIcon | null) {
 }
 
 export function getAvatarDisplayProps(
+  theme: any,
   avatarIcon?: AvatarIcon | null,
   avatarColor?: AvatarColor | null
 ) {
   const IconComponent = getAvatarIcon(avatarIcon);
-  const color = getAvatarColor(avatarColor);
-  const backgroundColor = getAvatarBackgroundColor(avatarColor);
+  const color = getAvatarColor(theme, avatarColor);
+  const backgroundColor = getAvatarBackgroundColor(theme, avatarColor);
 
   return {
     IconComponent,

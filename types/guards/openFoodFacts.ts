@@ -1,4 +1,4 @@
-import { getProductName } from '../../utils/openFoodFactsMapper';
+import { getProductName } from '../../utils/productName';
 import { MappedNutriments, SuccessFoodProductState } from '../openFoodFacts';
 
 /** Type guard for nutriments shaped by mapOpenFoodFactsProduct (has macronutrients, minerals, other). */
@@ -27,6 +27,6 @@ export const isSuccessFoodDetailProductState = (state: any): state is SuccessFoo
   return (
     isSuccessStatus(status) &&
     (product.product_type === 'food' || product.product_type === undefined) &&
-    (hasNutritionData(product) || getProductName(product) != null)
+    (hasNutritionData(product) || getProductName(product).found)
   );
 };

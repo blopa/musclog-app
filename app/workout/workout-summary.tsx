@@ -10,8 +10,8 @@ import { useUnreadChat } from '../../context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '../../database/models/ChatMessage';
 import { ChatService, WorkoutAnalytics, WorkoutService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getRecentWorkoutInsights } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { kgToDisplay } from '../../utils/unitConversion';
@@ -19,6 +19,7 @@ import { getWeightUnitI18nKey } from '../../utils/units';
 import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '../../utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
+  const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string }>();

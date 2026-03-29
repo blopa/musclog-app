@@ -9,7 +9,6 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -21,6 +20,7 @@ import {
 } from '../utils/workoutHistory';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
+import { useTheme } from './useTheme';
 
 // Types for simple workout format (home screen)
 export type ProcessedRecentWorkout = {
@@ -104,6 +104,7 @@ async function processWorkoutSimple(
   workout: WorkoutLog,
   t: TFunction,
   locale: Locale,
+  theme: any,
   skipPRDetection: boolean = false
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration
@@ -155,6 +156,7 @@ export function useWorkoutHistory({
 }: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
   const { t } = useTranslation();
   const { units } = useSettings();
+  const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
 
   // State for flat array (home screen)
@@ -219,14 +221,14 @@ export function useWorkoutHistory({
 
       if (groupByMonth && workoutFilters) {
         // Process with filters and group by month
-        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units);
+        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units, theme);
         const groupedSections = groupWorkoutsByMonth(validWorkouts);
         setSections(groupedSections);
       } else {
         // Simple processing for home screen
         const processedWorkouts = await Promise.all(
           workoutLogs.map((workout) =>
-            processWorkoutSimple(workout, t, dateFnsLocale, skipPRDetection)
+            processWorkoutSimple(workout, t, dateFnsLocale, theme, skipPRDetection)
           )
         );
         setWorkouts(processedWorkouts);
@@ -296,7 +298,7 @@ export function useWorkoutHistory({
 
       if (groupByMonth && workoutFilters) {
         // Process with filters
-        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units);
+        const validWorkouts = await processWorkouts(workoutLogs, workoutFilters, t, units, theme);
 
         if (validWorkouts.length > 0) {
           // Merge with existing sections
@@ -306,7 +308,7 @@ export function useWorkoutHistory({
         // Simple processing
         const processedWorkouts = await Promise.all(
           workoutLogs.map((workout) =>
-            processWorkoutSimple(workout, t, dateFnsLocale, skipPRDetection)
+            processWorkoutSimple(workout, t, dateFnsLocale, theme, skipPRDetection)
           )
         );
         // Append to existing workouts

@@ -45,9 +45,9 @@ import {
   getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
-  getProductName,
   mapOpenFoodFactsProduct,
 } from '../../utils/openFoodFactsMapper';
+import { getProductName } from '../../utils/productName';
 import { roundToDecimalPlaces } from '../../utils/roundDecimal';
 import { captureException } from '../../utils/sentry';
 import { getMassUnitLabel, gramsToDisplay } from '../../utils/unitConversion';
@@ -393,7 +393,12 @@ export function FoodMealDetailsModal({
 
   // Fetch detailed product data only when barcode is provided, no local food, no preloaded search product, and we've checked local DB
   const barcodeForHook =
-    barcode && !food && !meal && !productFromSearch && !localFood && hasCheckedLocalFood
+    barcode &&
+    !food &&
+    !meal &&
+    !productFromSearch &&
+    (!localFood || !localFood.name?.trim()) &&
+    hasCheckedLocalFood
       ? barcode
       : null;
 
@@ -564,7 +569,7 @@ export function FoodMealDetailsModal({
     const isUSDASearchResult = productFromSearch?.source === 'usda';
 
     // Use preloaded search result (no network fetch) – fixes Android modal not opening
-    if (getProductName(productFromSearch) && (nutriments || isUSDASearchResult)) {
+    if (getProductName(productFromSearch).found && (nutriments || isUSDASearchResult)) {
       setIsFoodDetailsModalVisible(true);
       const loadDefaultSize = async () => {
         const defaultG = await getDefaultServingSize();
@@ -1020,32 +1025,25 @@ export function FoodMealDetailsModal({
       return meal.name || t('meals.history.unknownMeal');
     }
 
-    if (food || localFood) {
-      const foodData = food || localFood;
-      return foodData!.name || t('food.unknownFood');
+    if (food) {
+      return food.name || t('food.unknownFood');
+    }
+
+    if (localFood?.name?.trim()) {
+      return localFood.name;
     }
 
     if (foodLogDecrypted?.loggedFoodName?.trim()) {
       return foodLogDecrypted.loggedFoodName.trim();
     }
 
-    // Barcode lookup (V3 API): pass inner product so getProductName reads product_name_en etc. directly
     const effectiveProductDetails = refetchedProductDetails ?? productDetails;
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-      if ((effectiveProductDetails as any).source === 'musclog') {
-        return (effectiveProductDetails.product as any).name;
-      }
-      if ((effectiveProductDetails as any).source === 'usda') {
-        return (effectiveProductDetails.product as any).description;
-      }
-      return getProductName(effectiveProductDetails.product);
+      return getProductName(effectiveProductDetails).name;
     }
 
     if (productFromSearch) {
-      if ((productFromSearch as any).description && (productFromSearch as any).fdcId) {
-        return (productFromSearch as any).description;
-      }
-      return getProductName(productFromSearch);
+      return getProductName(productFromSearch).name;
     }
 
     return t('food.unknownFood');
@@ -1341,6 +1339,23 @@ export function FoodMealDetailsModal({
       // Handle local food
       if (food || localFood) {
         const foodData = food || localFood;
+
+        // If localFood has no name but we have API product details, update it before logging
+        // so NutritionService.logFood reads the correct name from the food record
+        const effectivePdForName = refetchedProductDetails ?? productDetails;
+        if (
+          localFood &&
+          !localFood.name?.trim() &&
+          isSuccessFoodDetailProductState(effectivePdForName)
+        ) {
+          const { name: correctName, found } = getProductName(effectivePdForName);
+          if (found) {
+            await localFood.update((record: any) => {
+              record.name = correctName;
+            });
+          }
+        }
+
         // Create nutrition log with local food
         const logFoodPromise = NutritionService.logFood(
           foodData!.id,
@@ -1396,11 +1411,10 @@ export function FoodMealDetailsModal({
           };
         } else {
           const codeFromProduct = (productToSave as { code?: string }).code;
+          const fallbackName = getProductName(productToSave).name;
           productToSave = {
             ...productToSave,
-            product_name:
-              (editedOverrides.name?.trim() || getProductName(productToSave)).trim() ||
-              getProductName(productToSave),
+            product_name: (editedOverrides.name?.trim() || fallbackName).trim() || fallbackName,
             code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
             ingredients_text: editedOverrides.description?.trim() || productToSave.ingredients_text,
           } as typeof productToSave;

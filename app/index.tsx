@@ -37,10 +37,10 @@ import { useDailyNutritionSummary } from '../hooks/useDailyNutritionSummary';
 import { exchangeCodeForToken } from '../hooks/useGoogleAuth';
 import { useNutritionLogs } from '../hooks/useNutritionLogs';
 import { useSettings } from '../hooks/useSettings';
+import { useTheme } from '../hooks/useTheme';
 import { useUser } from '../hooks/useUser';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 import packageJson from '../package.json';
-import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { getGoogleRedirectUri, handleGoogleSignIn } from '../utils/googleAuth';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '../utils/onboardingService';
@@ -57,6 +57,7 @@ declare global {
 const SHOW_NOTIFICATIONS = false;
 
 export default function HomeScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -334,10 +335,10 @@ export default function HomeScreen() {
                     className="h-14 w-14 overflow-hidden rounded-full border-4"
                     style={{
                       borderColor: dbUser
-                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor).color
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
                         : theme.colors.accent.primary,
                       backgroundColor: dbUser
-                        ? getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
                             .backgroundColor
                         : theme.colors.accent.primary20,
                     }}
@@ -345,12 +346,15 @@ export default function HomeScreen() {
                     {dbUser?.avatarIcon ? (
                       <View className="h-full w-full items-center justify-center rounded-full">
                         {createElement(
-                          getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
+                          getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
                             .IconComponent,
                           {
                             size: 24,
-                            color: getAvatarDisplayProps(dbUser.avatarIcon, dbUser.avatarColor)
-                              .color,
+                            color: getAvatarDisplayProps(
+                              theme,
+                              dbUser.avatarIcon,
+                              dbUser.avatarColor
+                            ).color,
                           }
                         )}
                       </View>

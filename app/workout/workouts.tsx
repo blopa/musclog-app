@@ -28,13 +28,14 @@ import { useSnackbar } from '../../context/SnackbarContext';
 import { database, WorkoutTemplate } from '../../database';
 import { WorkoutService, WorkoutTemplateService } from '../../database/services';
 import { useSettings } from '../../hooks/useSettings';
+import { useTheme } from '../../hooks/useTheme';
 import { useWorkoutTemplateDetails } from '../../hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '../../hooks/useWorkoutTemplates';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { clearActiveWorkoutLogId } from '../../utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 
 export default function WorkoutsScreen() {
+  const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();

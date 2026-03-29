@@ -13,6 +13,7 @@ import { EnrichedWorkoutLogSet, WorkoutService } from '../database/services';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '../utils/workoutDetail';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
+import { useTheme } from './useTheme';
 
 const WORKOUT_LOG_SET_COLUMNS = [
   'reps',
@@ -35,6 +36,7 @@ export interface UsePastWorkoutDetailParams {
 export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetailParams) {
   const { t } = useTranslation();
   const { units } = useSettings();
+  const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [workout, setWorkout] = useState<WorkoutDetailData | null>(null);
@@ -112,7 +114,15 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           }));
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
           return from(
-            transformWorkoutToDetailData(log, enrichedSets, exercises, t, units, dateFnsLocale)
+            transformWorkoutToDetailData(
+              log,
+              enrichedSets,
+              exercises,
+              t,
+              units,
+              dateFnsLocale,
+              theme
+            )
           ).pipe(
             map((transformed) => ({
               transformed,
@@ -157,7 +167,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .then(({ workoutLog: log, sets: s, exercises: ex }) => {
         setRawSets(s);
         setExternalId(log.externalId ?? null);
-        return transformWorkoutToDetailData(log, s, ex, t, units, dateFnsLocale);
+        return transformWorkoutToDetailData(log, s, ex, t, units, dateFnsLocale, theme);
       })
       .then(setWorkout)
       .catch((err) => {
