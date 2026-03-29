@@ -9,13 +9,13 @@ import { GenericCard } from './GenericCard';
 type MoodSelectorCardProps = {
   value: number; // 0-4: Poor, Low, Okay, Good, Great
   onChange: (value: number) => void;
-  // TODO: implement 'default' variant, which we should hide the slider
-  variant: 'default' | 'enhanced';
+  /** `default` shows emoji mood chips only; `enhanced` adds the slider above them. */
+  variant?: 'default' | 'enhanced';
 };
 
 const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
 
-export function MoodSelectorCard({ value, onChange, variant = 'enhanced' }: MoodSelectorCardProps) {
+export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -43,23 +43,23 @@ export function MoodSelectorCard({ value, onChange, variant = 'enhanced' }: Mood
           </View>
         </View>
 
-        {/* Slider */}
         <View className="relative px-2">
-          <Slider
-            value={value}
-            min={0}
-            max={4}
-            step={1}
-            onChange={onChange}
-            variant="solid"
-            trackColor={theme.colors.background.cardElevated}
-            solidColor={theme.colors.accent.primary}
-            thumbColor={theme.colors.accent.primary}
-            useGradient={false}
-          />
+          {variant === 'enhanced' ? (
+            <Slider
+              value={value}
+              min={0}
+              max={4}
+              step={1}
+              onChange={onChange}
+              variant="solid"
+              trackColor={theme.colors.background.cardElevated}
+              solidColor={theme.colors.accent.primary}
+              thumbColor={theme.colors.accent.primary}
+              useGradient={false}
+            />
+          ) : null}
 
-          {/* Mood Labels */}
-          <View className="mt-4 flex-row justify-between px-1">
+          <View className={`flex-row justify-between px-1 ${variant === 'enhanced' ? 'mt-4' : ''}`}>
             {[0, 1, 2, 3, 4].map((moodValue) => {
               const isSelected = value === moodValue;
               return (
