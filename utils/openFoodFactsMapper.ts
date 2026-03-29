@@ -477,8 +477,18 @@ export type GetProductNameInput =
 export function getProductName(data: GetProductNameInput | null | undefined): string {
   // OFF API: single product has .product, search has .products[], or payload is the product itself
   type WithOptional = { product?: unknown; products?: unknown[] };
+  const rawNested = (data as WithOptional)?.product;
+  // OFF product objects sometimes contain an empty nested `product: {}` field — skip it
+  const nestedProduct =
+    rawNested &&
+    typeof rawNested === 'object' &&
+    !Array.isArray(rawNested) &&
+    Object.keys(rawNested as object).length > 0
+      ? rawNested
+      : undefined;
+
   const product =
-    (data as WithOptional)?.product ||
+    nestedProduct ||
     (Array.isArray((data as WithOptional)?.products) ? (data as WithOptional).products?.[0] : data);
 
   if (!product) {
