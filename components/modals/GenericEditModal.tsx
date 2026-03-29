@@ -12,6 +12,7 @@ import { SegmentedControl } from '../theme/SegmentedControl';
 import { StepperInput } from '../theme/StepperInput';
 import { TextInput } from '../theme/TextInput';
 import { ToggleInput } from '../theme/ToggleInput';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 import type {
@@ -257,26 +258,16 @@ export function GenericEditModal({
         const timestamp = (value as number) ?? Date.now();
         const dateValue = new Date(timestamp);
 
-        const formatDate = (date: Date) => {
-          return date.toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          });
-        };
-
         return (
           <View key={field.key} className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
-            <Pressable
+            <DatePickerInput
+              label={label}
+              selectedDate={dateValue}
               onPress={() => {
                 setCurrentDateFieldKey(field.key);
                 setDatePickerVisible(true);
               }}
-              className="rounded-lg border border-border-default bg-bg-overlay px-4 py-3 active:opacity-70"
-            >
-              <Text className="text-base text-text-primary">{formatDate(dateValue)}</Text>
-            </Pressable>
+            />
             <DatePickerModal
               visible={datePickerVisible ? currentDateFieldKey === field.key : false}
               onClose={() => {

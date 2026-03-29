@@ -1,5 +1,5 @@
 import { subYears } from 'date-fns';
-import { Calendar, Check, Mail, User } from 'lucide-react-native';
+import { Check, Mail, User } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -10,6 +10,7 @@ import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
 import { AvatarSelector } from './AvatarSelector';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -175,17 +176,13 @@ export function EditPersonalInfoBody({
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
               </View>
             </Text>
-            <Pressable
-              className="h-14 w-full flex-row items-center rounded-lg border-2 border-white/10 bg-bg-card px-4 active:opacity-80"
+            <DatePickerInput
+              hideLabel
+              unset={!dob}
+              unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
+              selectedDate={currentDate}
               onPress={() => setIsDatePickerVisible(true)}
-            >
-              <View className="ml-3 flex-1">
-                <Text className={`text-base ${dob ? 'text-text-primary' : 'text-text-tertiary'}`}>
-                  {dob || t('editPersonalInfo.dateOfBirthPlaceholder')}
-                </Text>
-              </View>
-              <Calendar size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-            </Pressable>
+            />
           </View>
         ) : null}
 

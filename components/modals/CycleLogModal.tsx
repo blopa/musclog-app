@@ -1,14 +1,11 @@
-import { format, isSameDay } from 'date-fns';
-import { CalendarDays, ChevronDown } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
-import { theme } from '../../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
 type CycleLogModalProps = {
@@ -19,7 +16,6 @@ type CycleLogModalProps = {
 
 export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalProps) {
   const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
   const [flow, setFlow] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -156,11 +152,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     }
   };
 
-  const selectedIsToday = isSameDay(selectedDate, new Date());
-  const dateLabel = selectedIsToday
-    ? t('datePicker.today')
-    : format(selectedDate, 'MMM d, yyyy', { locale: dateFnsLocale });
-
   return (
     <>
       <CenteredModal
@@ -181,15 +172,15 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         }
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Date Selector */}
-          <Pressable
-            onPress={() => setIsDatePickerVisible(true)}
-            className="mb-6 flex-row items-center gap-3 rounded-xl border-2 border-white/10 px-4 py-3"
-          >
-            <CalendarDays size={18} color={theme.colors.accent.primary} />
-            <Text className="flex-1 font-semibold text-text-primary">{dateLabel}</Text>
-            <ChevronDown size={16} color={theme.colors.text.secondary} />
-          </Pressable>
+          <View className="mb-6">
+            <DatePickerInput
+              hideLabel
+              selectedDate={selectedDate}
+              onPress={() => setIsDatePickerVisible(true)}
+              variant="compact"
+              trailing="chevron"
+            />
+          </View>
 
           {/* Flow Intensity */}
           <View className="mb-6">

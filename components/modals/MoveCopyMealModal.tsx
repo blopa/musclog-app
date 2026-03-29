@@ -1,17 +1,15 @@
-import { format } from 'date-fns';
-import { Calendar } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
-import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
 import { Button } from '../theme/Button';
 import { Slider } from '../theme/Slider';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
 type MoveCopyMealModalProps = {
@@ -43,7 +41,6 @@ export function MoveCopyMealModal({
 }: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
   const [targetDate, setTargetDate] = useState(sourceDate);
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -129,31 +126,13 @@ export function MoveCopyMealModal({
           style={{ opacity: isBusy ? 0.65 : 1 }}
         >
           {/* Target Date */}
-          <View className="gap-2">
-            <Text
-              className="text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
-              {t('food.actions.targetDate')}
-            </Text>
-            <Pressable
-              className="flex-row items-center gap-3 rounded-xl border p-3"
-              style={{
-                borderColor: theme.colors.background.white10,
-                backgroundColor: theme.colors.background.white5,
-              }}
-              onPress={() => setIsDatePickerVisible(true)}
-              disabled={isBusy}
-            >
-              <Calendar size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-              <Text
-                className="flex-1 font-medium text-text-primary"
-                style={{ fontSize: theme.typography.fontSize.sm }}
-              >
-                {format(targetDate, 'EEEE, MMM d, yyyy', { locale: dateFnsLocale })}
-              </Text>
-            </Pressable>
-          </View>
+          <DatePickerInput
+            label={t('food.actions.targetDate')}
+            selectedDate={targetDate}
+            onPress={() => setIsDatePickerVisible(true)}
+            disabled={isBusy}
+            variant="compact"
+          />
 
           {/* Split Percentage (only for split mode) */}
           {mode === 'split' ? (

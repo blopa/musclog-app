@@ -1,24 +1,24 @@
-import { format, isSameDay, isToday, isYesterday } from 'date-fns';
-import { Calendar, ChevronDown, Edit } from 'lucide-react-native';
+import { format, isSameMinute } from 'date-fns';
+import { ChevronDown, Clock, Edit } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useTheme } from '../../hooks/useTheme';
 
-export type DatePickerInputProps = {
-  selectedDate: Date;
+export type TimePickerInputProps = {
+  selectedTime: Date;
   onPress: () => void;
-  /** When omitted, the label uses `food.foodDetails.date`. Ignored if `hideLabel` is true. */
+  /** When omitted, the label uses `food.foodDetails.time`. Ignored if `hideLabel` is true. */
   label?: string;
   hideLabel?: boolean;
   /**
    * `default` — full padding and icon sizes (e.g. food log details).
    * `compact` — tighter row (e.g. nested / secondary fields).
-   * `inlineNav` — single-line label + small calendar (e.g. day navigator bar).
+   * `inlineNav` — single-line value + small clock (e.g. day navigator bar).
    */
   variant?: 'default' | 'compact' | 'inlineNav';
-  /** When true, show placeholder text instead of a real date (e.g. unset DOB). */
+  /** When true, show placeholder text instead of a real time (e.g. unset). */
   unset?: boolean;
   unsetPlaceholder?: string;
   disabled?: boolean;
@@ -32,8 +32,8 @@ export type DatePickerInputProps = {
   trailing?: 'edit' | 'chevron' | 'none';
 };
 
-export function DatePickerInput({
-  selectedDate,
+export function TimePickerInput({
+  selectedTime,
   onPress,
   label,
   hideLabel = false,
@@ -44,18 +44,16 @@ export function DatePickerInput({
   className,
   embedded = false,
   trailing = 'edit',
-}: DatePickerInputProps) {
+}: TimePickerInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const isCompact = variant === 'compact';
+  const now = new Date();
+  const matchesNow = isSameMinute(selectedTime, now);
 
   if (variant === 'inlineNav') {
-    const display = isToday(selectedDate)
-      ? t('datePicker.today')
-      : isYesterday(selectedDate)
-        ? t('datePicker.yesterday')
-        : format(selectedDate, 'MMM d, yyyy', { locale: dateFnsLocale });
+    const display = format(selectedTime, 'p', { locale: dateFnsLocale });
 
     return (
       <Pressable
@@ -66,7 +64,7 @@ export function DatePickerInput({
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
         <Text className="text-xl font-semibold text-text-primary">{display}</Text>
-        <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+        <Clock size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
       </Pressable>
     );
   }
@@ -92,7 +90,7 @@ export function DatePickerInput({
     <View className={className}>
       {!hideLabel ? (
         <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
-          {label ?? t('food.foodDetails.date')}
+          {label ?? t('food.foodDetails.time')}
         </Text>
       ) : null}
       <Pressable
@@ -108,7 +106,7 @@ export function DatePickerInput({
               backgroundColor: theme.colors.status.indigo20,
             }}
           >
-            <Calendar
+            <Clock
               size={isCompact ? theme.iconSize.sm : theme.iconSize.md}
               color={theme.colors.accent.primary}
             />
@@ -119,12 +117,14 @@ export function DatePickerInput({
             ) : (
               <>
                 <Text className="font-medium text-text-primary">
-                  {isSameDay(selectedDate, new Date())
-                    ? t('food.foodDetails.today')
-                    : format(selectedDate, 'EEEE', { locale: dateFnsLocale })}
+                  {matchesNow
+                    ? t('timePicker.now')
+                    : format(selectedTime, 'p', { locale: dateFnsLocale })}
                 </Text>
                 <Text className="text-xs text-text-secondary">
-                  {format(selectedDate, 'MMMM d, yyyy', { locale: dateFnsLocale })}
+                  {matchesNow
+                    ? format(selectedTime, 'p', { locale: dateFnsLocale })
+                    : format(selectedTime, 'zzzz', { locale: dateFnsLocale })}
                 </Text>
               </>
             )}

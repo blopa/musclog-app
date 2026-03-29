@@ -1,4 +1,4 @@
-import { Check, Coffee, Info } from 'lucide-react-native';
+import { Check, Info } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
@@ -11,6 +11,7 @@ import { FilterTabs } from '../FilterTabs';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -95,10 +96,6 @@ export function LogMealModal({
     }),
     [meal.calories, meal.carbs, meal.fat, meal.protein, portionScale]
   );
-
-  const formatDate = useCallback((date: Date) => {
-    return date.toISOString().split('T')[0];
-  }, []);
 
   const handlePortionGramsChange = useCallback((g: number) => {
     setPortionGrams(clampPortionGrams(g));
@@ -196,34 +193,12 @@ export function LogMealModal({
 
           <ServingSizeSelector value={portionGrams} onChange={handlePortionGramsChange} />
 
-          {/* Date Picker */}
-          <View>
-            <Text
-              className="mb-3 ml-1 text-sm font-semibold"
-              style={{ color: theme.colors.text.primary }}
-            >
-              {t('food.foodDetails.date')}
-            </Text>
-            <Pressable
-              className="flex-row items-center justify-between rounded-xl p-4"
-              style={{
-                backgroundColor: theme.colors.background.card,
-                borderColor: theme.colors.border.light,
-                borderWidth: theme.borderWidth.thin,
-              }}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <View className="flex-row items-center gap-3">
-                <Coffee size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                <Text
-                  className="text-base font-medium"
-                  style={{ color: theme.colors.text.primary }}
-                >
-                  {formatDate(selectedDate)}
-                </Text>
-              </View>
-            </Pressable>
-          </View>
+          <DatePickerInput
+            selectedDate={selectedDate}
+            onPress={() => setShowDatePicker(true)}
+            label={t('food.foodDetails.date')}
+            variant="default"
+          />
 
           {/* Meal Type Selector */}
           <View>
