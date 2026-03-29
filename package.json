@@ -39,6 +39,7 @@
     "build-ios-nowait": "eas build -p ios --profile production --clear-cache --no-wait",
     "build-ios-dev": "eas build -p ios --profile development --clear-cache",
     "build-ios-preview": "eas build -p ios --profile preview --clear-cache",
+    "build-ios-preview-nowait": "eas build -p ios --profile preview --clear-cache --no-wait",
     "submit-ios": "eas submit --platform ios",
     "prebuild-ios": "expo prebuild -p ios --clean",
     "run-ios": "expo run:ios",
