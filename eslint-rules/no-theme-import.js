@@ -17,7 +17,6 @@ module.exports = {
     if (
       filename.endsWith('hooks/useTheme.ts') ||
       filename.endsWith('theme.ts') ||
-      filename.endsWith('tailwind.config.js') ||
       filename.endsWith('widgets/SmartCameraWidget.tsx') ||
       filename.endsWith('widgets/NutritionWidget.tsx') ||
       filename.endsWith('services/NotificationService.ts')
