@@ -1260,7 +1260,12 @@ export default function FoodScreen() {
         }}
         onBarcodeScanPress={() => {
           setIsFoodSearchModalVisible(false);
-          openCamera({ mode: 'barcode-scan', hideCameraModePicker: true, logDate: selectedDate });
+          openCamera({
+            mode: 'barcode-scan',
+            hideCameraModePicker: true,
+            logDate: selectedDate,
+            mealType: selectedMealType,
+          });
         }}
         isAiEnabled={isAiConfigured}
       />

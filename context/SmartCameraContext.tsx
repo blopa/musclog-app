@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 import SmartCameraModal, { type CameraMode } from '../components/modals/SmartCameraModal';
+import type { MealType } from '../database/models';
 import { useSettings } from '../hooks/useSettings';
 
 export type { CameraMode };
@@ -9,6 +10,7 @@ type OpenCameraOptions = {
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
   logDate?: Date;
+  mealType?: MealType;
 };
 
 type SmartCameraContextType = {
@@ -24,12 +26,19 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
   const [logDate, setLogDate] = useState<Date | undefined>(undefined);
+  const [mealTypeForLog, setMealTypeForLog] = useState<MealType | undefined>(undefined);
 
   const openCamera = useCallback((options?: OpenCameraOptions) => {
     setCameraMode(options?.mode ?? 'barcode-scan');
     setHideCameraModePicker(options?.hideCameraModePicker ?? false);
     setLogDate(options?.logDate);
+    setMealTypeForLog(options?.mealType);
     setIsVisible(true);
+  }, []);
+
+  const handleCameraModalClose = useCallback(() => {
+    setIsVisible(false);
+    setMealTypeForLog(undefined);
   }, []);
 
   const setCurrentDate = useCallback((date: Date | undefined) => {
@@ -42,12 +51,13 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
       {isVisible ? (
         <SmartCameraModal
           visible={isVisible}
-          onClose={() => setIsVisible(false)}
+          onClose={handleCameraModalClose}
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={isAiConfigured}
           useOcrBeforeAi={useOcrBeforeAi}
           logDate={logDate}
+          mealTypeForLog={mealTypeForLog}
         />
       ) : null}
     </SmartCameraContext.Provider>

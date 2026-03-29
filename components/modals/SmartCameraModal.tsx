@@ -69,6 +69,7 @@ type CameraModalProps = {
   isAiEnabled?: boolean;
   useOcrBeforeAi?: boolean;
   logDate?: Date;
+  mealTypeForLog?: MealType;
 };
 
 export default function SmartCameraModal({
@@ -79,6 +80,7 @@ export default function SmartCameraModal({
   isAiEnabled = true,
   useOcrBeforeAi = false,
   logDate,
+  mealTypeForLog,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -1027,6 +1029,7 @@ export default function SmartCameraModal({
             isAiEnabled={isAiEnabled}
             canEdit={!!productFromAiLabel}
             initialDate={logDate}
+            initialMealType={mealTypeForLog}
           />
         ) : null}
 

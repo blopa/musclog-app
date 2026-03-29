@@ -206,8 +206,8 @@ export default function HomeScreen() {
 
   const handleFoodSearchBarcodePress = useCallback(() => {
     setIsFoodSearchVisible(false);
-    openCamera({ mode: 'barcode-scan' });
-  }, [openCamera]);
+    openCamera({ mode: 'barcode-scan', mealType: selectedMealType });
+  }, [openCamera, selectedMealType]);
 
   // Handle widget action stored by +native-intent.tsx on cold start (camera only —
   // screen-based actions like open-nutrition are routed directly by redirectSystemPath)
