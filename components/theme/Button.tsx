@@ -443,6 +443,20 @@ export function Button({
     </Text>
   );
 
+  /** Keeps Lucide/SVG icons from shrinking when the label is long (e.g. long translations). */
+  const iconRowChild =
+    iconElement != null ? (
+      <View
+        style={{
+          flexShrink: 0,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {iconElement}
+      </View>
+    ) : null;
+
   const buttonContent = (
     <View
       style={{
@@ -453,9 +467,10 @@ export function Button({
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}
     >
-      {iconPosition === 'left' ? iconElement : null}
+      {iconPosition === 'left' ? iconRowChild : null}
       <View
         style={{
+          ...(Icon ? { flex: 1 } : {}),
           flexShrink: 1,
           minWidth: 0,
           maxWidth: '100%',
@@ -465,7 +480,7 @@ export function Button({
       >
         {textElement}
       </View>
-      {iconPosition === 'right' ? iconElement : null}
+      {iconPosition === 'right' ? iconRowChild : null}
     </View>
   );
 

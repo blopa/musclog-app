@@ -1,0 +1,15 @@
+{
+  "datePicker": {
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "month": "Месяц",
+    "nextMonday": "Следующий понедельник",
+    "selectDate": "Выбрать дату",
+    "selectMonthYear": "Выбрать месяц и год",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "year": "Год",
+    "xYearsAgo": "{{count}} лет назад",
+    "yesterday": "Вчера"
+  }
+}

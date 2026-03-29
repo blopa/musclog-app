@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type WorkoutLogDataDisplayItem = {
@@ -25,7 +27,7 @@ export type WorkoutLogDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -34,9 +36,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function workoutLogToDisplayItem(
@@ -57,7 +59,8 @@ function workoutLogToDisplayItem(
 
 function groupWorkoutLogsByDate(
   items: { item: WorkoutLogDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): WorkoutLogDataDayGroup[] {
   const groupMap = new Map<number, WorkoutLogDataDisplayItem[]>();
 
@@ -70,7 +73,7 @@ function groupWorkoutLogsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -80,7 +83,8 @@ function groupWorkoutLogsByDate(
 function mergeIntoDayGroups(
   existing: WorkoutLogDataDayGroup[],
   newItemsWithDates: { item: WorkoutLogDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): WorkoutLogDataDayGroup[] {
   const groupMap = new Map<number, WorkoutLogDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -104,7 +108,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.id.localeCompare(b.id)),
     }))
@@ -151,6 +155,7 @@ export function useWorkoutLogDataLogs({
 }: UseWorkoutLogDataLogsParams = {}): UseWorkoutLogDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({ color: theme.colors.accent.primary, bg: theme.colors.accent.primary10 }),
     [theme]
@@ -176,7 +181,7 @@ export function useWorkoutLogDataLogs({
         item: workoutLogToDisplayItem(log, t, iconColors),
         dateTimestamp: log.startedAt,
       }));
-      const groups = groupWorkoutLogsByDate(validResults, t);
+      const groups = groupWorkoutLogsByDate(validResults, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(logs.length === batchSize);
       setOffset(logs.length);
@@ -187,7 +192,7 @@ export function useWorkoutLogDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -209,7 +214,7 @@ export function useWorkoutLogDataLogs({
         dateTimestamp: log.startedAt,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t, dateFnsLocale));
       setHasMore(logs.length === batchSize);
       setOffset((prev) => prev + logs.length);
     } catch (err) {
@@ -218,7 +223,7 @@ export function useWorkoutLogDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

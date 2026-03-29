@@ -8,12 +8,14 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { CheckinDetailsModal } from '../../components/modals/CheckinDetailsModal';
 import { SelectModal } from '../../components/modals/SelectModal';
 import { useCurrentNutritionGoal } from '../../hooks/useCurrentNutritionGoal';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useNutritionCheckins } from '../../hooks/useNutritionCheckins';
 import { useTheme } from '../../hooks/useTheme';
 
 export default function CheckinListScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { checkins } = useNutritionCheckins({
     nutritionGoalId: currentGoal?.id,
@@ -108,7 +110,7 @@ export default function CheckinListScreen() {
                     {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
                   </Text>
                   <Text className="text-sm text-text-secondary">
-                    {format(c.checkinDate, 'MMM d, yyyy')}
+                    {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-3">
@@ -160,7 +162,7 @@ export default function CheckinListScreen() {
                       {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
                     </Text>
                     <Text className="text-xs text-text-secondary">
-                      {format(c.checkinDate, 'MMM d, yyyy')}
+                      {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
                     </Text>
                   </View>
                   <View className="flex-row items-center gap-2">

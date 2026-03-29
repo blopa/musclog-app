@@ -1,0 +1,32 @@
+{
+  "home": {
+    "greeting": {
+      "goodEvening": "Добрый вечер"
+    },
+    "actions": {
+      "startWorkout": "Начать\nтренировку",
+      "trackFood": "Записать\nпитание"
+    },
+    "sections": {
+      "recentWorkouts": "Последние тренировки",
+      "recentFoods": "Последние продукты",
+      "dailySummary": "Дневная сводка"
+    },
+    "activityRings": {
+      "move": "Движение",
+      "steps": "Шаги",
+      "rest": "Отдых",
+      "score": "Оценка"
+    },
+    "navigation": {
+      "home": "Главная",
+      "profile": "Профиль",
+      "workouts": "Тренировки",
+      "food": "Питание",
+      "coach": "Чат",
+      "focus": "Фокус",
+      "cycle": "Цикл",
+      "checkin": "Отметки"
+    }
+  }
+}

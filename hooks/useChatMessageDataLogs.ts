@@ -1,9 +1,11 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type ChatMessageDataDisplayItem = {
@@ -25,7 +27,7 @@ export type ChatMessageDataDayGroup = {
 const BATCH_SIZE = 30;
 const PREVIEW_LENGTH = 80;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -34,9 +36,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -48,7 +50,8 @@ function truncate(text: string, maxLength: number): string {
 
 function groupByDate(
   items: { item: ChatMessageDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): ChatMessageDataDayGroup[] {
   const groupMap = new Map<number, ChatMessageDataDisplayItem[]>();
 
@@ -61,7 +64,7 @@ function groupByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, groupItems]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: groupItems,
     }))
@@ -71,7 +74,8 @@ function groupByDate(
 function mergeIntoDayGroups(
   existing: ChatMessageDataDayGroup[],
   newItemsWithDates: { item: ChatMessageDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): ChatMessageDataDayGroup[] {
   const groupMap = new Map<number, ChatMessageDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -94,7 +98,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, groupItems]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: groupItems,
     }))
@@ -141,6 +145,7 @@ export function useChatMessageDataLogs({
 }: UseChatMessageDataLogsParams = {}): UseChatMessageDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
 
   const userColor = useMemo(
     () => ({ color: theme.colors.accent.primary, bg: theme.colors.accent.primary10 }),
@@ -188,7 +193,7 @@ export function useChatMessageDataLogs({
         item: toDisplayItem(r),
         dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
       }));
-      setDayGroups(groupByDate(itemsWithDates, t));
+      setDayGroups(groupByDate(itemsWithDates, t, dateFnsLocale));
       setHasMore(records.length === batchSize);
       setOffset(records.length);
     } catch (err) {
@@ -198,7 +203,7 @@ export function useChatMessageDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, toDisplayItem]);
+  }, [visible, batchSize, t, toDisplayItem, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -219,7 +224,7 @@ export function useChatMessageDataLogs({
         dateTimestamp: new Date(r.createdAt).setUTCHours(0, 0, 0, 0),
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, itemsWithDates, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, itemsWithDates, t, dateFnsLocale));
       setHasMore(records.length === batchSize);
       setOffset((prev) => prev + records.length);
     } catch (err) {
@@ -228,7 +233,7 @@ export function useChatMessageDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, toDisplayItem]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, toDisplayItem, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

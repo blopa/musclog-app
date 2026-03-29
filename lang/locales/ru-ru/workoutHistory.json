@@ -1,0 +1,15 @@
+{
+  "workoutHistory": {
+    "title": "История сессий",
+    "previewTitle": "Предпросмотр тренировки",
+    "workoutInProgress": "ТРЕНИРОВКА В ПРОЦЕССЕ",
+    "previewSubtitle": "ПРЕДПРОСМОТР",
+    "duration": "Длительность",
+    "volume": "Объём",
+    "setsDone": "Подходов выполнено",
+    "startThisWorkout": "Начать эту тренировку",
+    "noExercisesYet": "Упражнений пока нет",
+    "exercise": "Упражнение {{number}}",
+    "set": "Подход {{number}}"
+  }
+}

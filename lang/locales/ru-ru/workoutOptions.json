@@ -1,0 +1,15 @@
+{
+  "workoutOptions": {
+    "title": "Параметры тренировки",
+    "cancelWorkout": "Отменить тренировку",
+    "cancelWorkoutDesc": "Отменить тренировку и вернуться к списку",
+    "finishWorkout": "Завершить тренировку",
+    "finishWorkoutDesc": "Завершить тренировку и просмотреть итоги",
+    "previewWorkout": "Предпросмотр тренировки",
+    "previewWorkoutDesc": "Посмотреть все упражнения в плане",
+    "workoutSettings": "Настройки тренировки",
+    "workoutSettingsDesc": "Таймеры, звук и предпочтения",
+    "endWorkout": "Завершить тренировку",
+    "endWorkoutDesc": "Завершить и сохранить прогресс"
+  }
+}

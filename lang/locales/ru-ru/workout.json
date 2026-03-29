@@ -1,0 +1,81 @@
+{
+  "workout": {
+    "import": {
+      "characters": "Символы",
+      "emptyData": "Пожалуйста, вставьте или введите данные тренировки.",
+      "formatInfo": "Вставьте или введите журнал тренировки (например, из заметок или приложения). ИИ разберёт его и создаст сессии.",
+      "import": "Импортировать",
+      "importWorkouts": "Импорт тренировок",
+      "instructions": "Вставьте данные тренировки ниже. Поддерживается: свободный текст, маркированные списки или структурированные журналы.",
+      "pasteWorkoutDataPlaceholder": "Вставьте данные тренировки сюда...",
+      "processing": "Обработка...",
+      "processingData": "Тренировки успешно импортированы.",
+      "processingFailed": "Не удалось обработать данные. Проверьте формат и попробуйте снова.",
+      "supportedFormats": "Поддерживаемые форматы"
+    },
+    "sessionOverview": "Обзор сессии",
+    "startWorkout": "Начать тренировку",
+    "resumeSession": "Возобновить сессию",
+    "workout": "Тренировка",
+    "inProgress": "В процессе",
+    "type": {
+      "strength": "Силовая",
+      "cardio": "Кардио",
+      "flexibility": "Гибкость",
+      "calisthenics": "Калистеника",
+      "other": "Другое",
+      "free": "Свободная"
+    },
+    "exercises": "{{count}} упражнений",
+    "workoutSequence": "Последовательность тренировки",
+    "skipped": "ПРОПУЩЕНО",
+    "startFromExercise": {
+      "title": "Начать с упражнения",
+      "message": "Хотите начать тренировку с {{exerciseName}}?",
+      "confirm": "Начать отсюда",
+      "cancel": "Отмена"
+    },
+    "summary": {
+      "failedToLoad": "Не удалось загрузить",
+      "noWorkoutId": "Нет ID тренировки",
+      "unableToLoad": "Не удалось загрузить",
+      "feedbackReceived": "Отзыв о тренировке успешно отправлен.",
+      "failedToGetFeedback": "Не удалось получить отзыв. Пожалуйста, попробуйте снова."
+    },
+    "muscleGroups": {
+      "chest": "Грудь",
+      "back": "Спина",
+      "legs": "Ноги",
+      "shoulders": "Плечи",
+      "arms": "Руки",
+      "core": "Кор",
+      "abdomen": "Живот",
+      "glutes": "Ягодицы",
+      "fullBody": "Всё тело",
+      "biceps": "Бицепс",
+      "triceps": "Трицепс",
+      "forearms": "Предплечья",
+      "abs": "Пресс",
+      "quads": "Квадрицепс",
+      "hamstrings": "Бицепс бедра",
+      "calves": "Икры",
+      "full_body": "Всё тело",
+      "cardio": "Кардио",
+      "other": "Другое"
+    },
+    "exerciseTypes": {
+      "compound": "Базовое",
+      "isolation": "Изолированное",
+      "bodyweight": "Вес тела",
+      "machine": "Тренажёр",
+      "dumbbell": "Гантель",
+      "barbell": "Штанга",
+      "cable": "Блочный тренажёр",
+      "kettlebell": "Гиря",
+      "resistance_band": "Эластичная лента",
+      "medicine_ball": "Медбол",
+      "smith_machine": "Тренажёр Смита",
+      "other": "Другое"
+    }
+  }
+}

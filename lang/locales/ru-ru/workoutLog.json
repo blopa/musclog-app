@@ -1,0 +1,24 @@
+{
+  "workoutLog": {
+    "manageWorkoutLogData": {
+      "deleteLogWarning": "Вы уверены, что хотите удалить этот журнал тренировки? Это действие нельзя отменить.",
+      "title": "Управление данными журнала тренировок",
+      "searchPlaceholder": "Поиск тренировочных сессий...",
+      "noWorkoutLogs": "Журналов тренировок пока нет",
+      "noWorkoutLogsDesc": "Завершайте тренировки, чтобы они появились здесь",
+      "endOfHistory": "Конец истории тренировок",
+      "workoutLogOptions": "Параметры тренировки",
+      "editWorkoutLog": "Редактировать тренировку",
+      "editWorkoutLogDesc": "Изменить детали тренировки",
+      "duplicateWorkoutLog": "Дублировать тренировку",
+      "duplicateWorkoutLogDesc": "Создать копию этой тренировки",
+      "deleteWorkoutLog": "Удалить тренировку",
+      "deleteWorkoutLogDesc": "Удалить этот журнал тренировки",
+      "detailFormat": "{{status}} • {{volume}}",
+      "statusCompleted": "Завершена",
+      "statusInProgress": "В процессе",
+      "volumeFormat": "{{volume}} {{unit}}",
+      "unknownWorkout": "Неизвестная тренировка"
+    }
+  }
+}

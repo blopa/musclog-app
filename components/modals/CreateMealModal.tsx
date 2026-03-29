@@ -1,8 +1,6 @@
-import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 import {
   Apple,
-  Calendar,
   Check,
   CheckCircle2,
   Coffee,
@@ -39,6 +37,7 @@ import { MenuButton } from '../theme/MenuButton';
 import { TextInput } from '../theme/TextInput';
 import { AddFoodItemToMealModal } from './AddFoodItemToMealModal';
 import { ConfirmationModal } from './ConfirmationModal';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -408,15 +407,11 @@ export function CreateMealModal({
 
   const handleTrack = async () => {
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'));
       return;
     }
     if (saveToMyMeals && !mealName.trim()) {
-      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'));
       return;
     }
 
@@ -441,14 +436,10 @@ export function CreateMealModal({
       }
       onTracked?.();
       onClose();
-      showSnackbar('success', t('food.quickTrackMeal.successMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
       console.error('Error tracking quick meal:', error);
-      showSnackbar('error', t('food.quickTrackMeal.errorMessage'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('food.quickTrackMeal.errorMessage'));
     } finally {
       setIsSaving(false);
     }
@@ -457,17 +448,13 @@ export function CreateMealModal({
   const handleSave = async () => {
     // Validate meal name
     if (!mealName.trim()) {
-      showSnackbar('error', t('food.createMeal.mealNameRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.mealNameRequired'));
       return;
     }
 
     // Validate ingredients
     if (ingredients.length === 0) {
-      showSnackbar('error', t('food.createMeal.ingredientsRequired'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.ingredientsRequired'));
       return;
     }
 
@@ -502,9 +489,7 @@ export function CreateMealModal({
       onClose();
     } catch (error) {
       console.error('Error saving meal:', error);
-      showSnackbar('error', t('food.createMeal.saveFailed'), {
-        action: t('common.ok'),
-      });
+      showSnackbar('error', t('food.createMeal.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -776,43 +761,12 @@ export function CreateMealModal({
               />
             </View>
             <View className="mb-6">
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: theme.colors.text.secondary,
-                  textTransform: 'uppercase',
-                  letterSpacing: theme.typography.letterSpacing.extraWide,
-                  marginLeft: theme.spacing.margin.xs,
-                  marginBottom: theme.spacing.padding.sm,
-                }}
-              >
-                {t('food.quickTrackMeal.date')}
-              </Text>
-              <Pressable
+              <DatePickerInput
+                label={t('food.quickTrackMeal.date')}
+                selectedDate={selectedDate}
                 onPress={() => setShowDatePicker(true)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: theme.spacing.gap.sm,
-                  padding: theme.spacing.padding.base,
-                  backgroundColor: theme.colors.background.card,
-                  borderRadius: theme.borderRadius.lg,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.border.light,
-                }}
-              >
-                <Calendar size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.base,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    color: theme.colors.text.primary,
-                  }}
-                >
-                  {format(selectedDate, 'yyyy-MM-dd')}
-                </Text>
-              </Pressable>
+                variant="default"
+              />
             </View>
 
             <View className="mb-6">

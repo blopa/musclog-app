@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import WorkoutTemplate from '../database/models/WorkoutTemplate';
 import { WorkoutTemplateService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type WorkoutTemplateDataDisplayItem = {
@@ -24,7 +26,7 @@ export type WorkoutTemplateDataDayGroup = {
 
 const BATCH_SIZE = 20;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -33,9 +35,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function templateToDisplayItem(
@@ -55,7 +57,8 @@ function templateToDisplayItem(
 
 function groupTemplatesByDate(
   items: { item: WorkoutTemplateDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): WorkoutTemplateDataDayGroup[] {
   const groupMap = new Map<number, WorkoutTemplateDataDisplayItem[]>();
 
@@ -68,7 +71,7 @@ function groupTemplatesByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -78,7 +81,8 @@ function groupTemplatesByDate(
 function mergeIntoDayGroups(
   existing: WorkoutTemplateDataDayGroup[],
   newItemsWithDates: { item: WorkoutTemplateDataDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): WorkoutTemplateDataDayGroup[] {
   const groupMap = new Map<number, WorkoutTemplateDataDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -102,7 +106,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.id.localeCompare(b.id)),
     }))
@@ -152,6 +156,7 @@ export function useWorkoutTemplateDataLogs({
 }: UseWorkoutTemplateDataLogsParams = {}): UseWorkoutTemplateDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColor = useMemo(
     () => ({ color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 }),
     [theme]
@@ -177,7 +182,7 @@ export function useWorkoutTemplateDataLogs({
         item: templateToDisplayItem(template, t, iconColor),
         dateTimestamp: template.createdAt,
       }));
-      const groups = groupTemplatesByDate(validResults, t);
+      const groups = groupTemplatesByDate(validResults, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(templates.length === batchSize);
       setOffset(templates.length);
@@ -188,7 +193,7 @@ export function useWorkoutTemplateDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColor]);
+  }, [visible, batchSize, t, iconColor, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -213,7 +218,7 @@ export function useWorkoutTemplateDataLogs({
         dateTimestamp: template.createdAt,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, validResults, t, dateFnsLocale));
       setHasMore(templates.length === batchSize);
       setOffset((prev) => prev + templates.length);
     } catch (err) {
@@ -222,7 +227,7 @@ export function useWorkoutTemplateDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColor]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColor, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

@@ -9,6 +9,7 @@ import { database } from '../../database';
 import Exercise from '../../database/models/Exercise';
 import WorkoutLog from '../../database/models/WorkoutLog';
 import { EnrichedWorkoutLogSet, WorkoutService } from '../../database/services';
+import { useDateFnsLocale } from '../../hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '../../hooks/useEditWorkoutSets';
 import { usePastWorkoutDetail } from '../../hooks/usePastWorkoutDetail';
 import { useSettings } from '../../hooks/useSettings';
@@ -380,6 +381,7 @@ export default function PastWorkoutDetailModal({
 }: PastWorkoutDetailModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -489,7 +491,7 @@ export default function PastWorkoutDetailModal({
   };
 
   const formatDate = (date: Date) => {
-    return format(date, 'EEEE, MMM d • hh:mm a');
+    return format(date, 'EEEE, MMM d • hh:mm a', { locale: dateFnsLocale });
   };
 
   const headerRight = (

@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import FoodPortion from '../database/models/FoodPortion';
 import { FoodPortionService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type FoodPortionDisplayItem = {
@@ -24,7 +26,7 @@ export type FoodPortionDayGroup = {
 
 const BATCH_SIZE = 20;
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -33,9 +35,9 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d');
+  return format(date, 'MMM d', { locale });
 }
 
 function mapPortionIconToMaterial(icon?: string): string {
@@ -70,7 +72,8 @@ function portionToDisplayItem(
 
 function groupPortionsByDate(
   items: { item: FoodPortionDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): FoodPortionDayGroup[] {
   const groupMap = new Map<number, FoodPortionDisplayItem[]>();
 
@@ -83,7 +86,7 @@ function groupPortionsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -93,7 +96,8 @@ function groupPortionsByDate(
 function mergeIntoDayGroups(
   existing: FoodPortionDayGroup[],
   newItemsWithDates: { item: FoodPortionDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): FoodPortionDayGroup[] {
   const groupMap = new Map<number, FoodPortionDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -117,7 +121,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => a.name.localeCompare(b.name)),
     }))
@@ -164,6 +168,7 @@ export function useFoodPortionDataLogs({
 }: UseFoodPortionDataLogsParams = {}): UseFoodPortionDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
       scale: { color: theme.colors.text.secondary, bg: theme.colors.status.gray10 },
@@ -198,7 +203,7 @@ export function useFoodPortionDataLogs({
         item: portionToDisplayItem(portion, iconColors),
         dateTimestamp: portion.createdAt,
       }));
-      const groups = groupPortionsByDate(results, t);
+      const groups = groupPortionsByDate(results, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(portions.length === batchSize);
       setOffset(portions.length);
@@ -209,7 +214,7 @@ export function useFoodPortionDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -231,7 +236,7 @@ export function useFoodPortionDataLogs({
         dateTimestamp: portion.createdAt,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t, dateFnsLocale));
       setHasMore(portions.length === batchSize);
       setOffset((prev) => prev + portions.length);
     } catch (err) {
@@ -240,7 +245,7 @@ export function useFoodPortionDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

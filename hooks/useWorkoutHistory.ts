@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -18,6 +19,7 @@ import {
   type WorkoutFilters,
   type WorkoutHistorySection,
 } from '../utils/workoutHistory';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 
 // Types for simple workout format (home screen)
@@ -71,19 +73,21 @@ export type UseWorkoutHistoryResultGrouped = {
 export type UseWorkoutHistoryResult = UseWorkoutHistoryResultFlat | UseWorkoutHistoryResultGrouped;
 
 // Format relative date for simple display (home screen)
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
-    return format(date, 'EEEE'); // Day name like "Monday"
+    return format(date, 'EEEE', { locale });
   }
-  // For older dates, show formatted date
-  return format(date, 'MMM d'); // "Jan 15"
+
+  return format(date, 'MMM d', { locale });
 }
 
 function formatDuration(minutes: number): string {
@@ -99,6 +103,7 @@ function formatDuration(minutes: number): string {
 async function processWorkoutSimple(
   workout: WorkoutLog,
   t: TFunction,
+  locale: Locale,
   skipPRDetection: boolean = false
 ): Promise<ProcessedRecentWorkout> {
   // Calculate duration
@@ -116,7 +121,7 @@ async function processWorkoutSimple(
 
   // Format date
   const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
-  const dateStr = formatRelativeDate(dateTimestamp, t);
+  const dateStr = formatRelativeDate(dateTimestamp, t, locale);
 
   return {
     id: workout.id,
@@ -150,6 +155,7 @@ export function useWorkoutHistory({
 }: UseWorkoutHistoryParams = {}): UseWorkoutHistoryResult {
   const { t } = useTranslation();
   const { units } = useSettings();
+  const dateFnsLocale = useDateFnsLocale();
 
   // State for flat array (home screen)
   const [workouts, setWorkouts] = useState<ProcessedRecentWorkout[]>([]);
@@ -219,7 +225,9 @@ export function useWorkoutHistory({
       } else {
         // Simple processing for home screen
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
+          workoutLogs.map((workout) =>
+            processWorkoutSimple(workout, t, dateFnsLocale, skipPRDetection)
+          )
         );
         setWorkouts(processedWorkouts);
       }
@@ -245,7 +253,16 @@ export function useWorkoutHistory({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, initialLimit, workoutFilters, groupByMonth, skipPRDetection, t, units]);
+  }, [
+    visible,
+    initialLimit,
+    workoutFilters,
+    groupByMonth,
+    skipPRDetection,
+    t,
+    units,
+    dateFnsLocale,
+  ]);
 
   // Load more workouts (pagination)
   const loadMore = useCallback(async () => {
@@ -288,7 +305,9 @@ export function useWorkoutHistory({
       } else {
         // Simple processing
         const processedWorkouts = await Promise.all(
-          workoutLogs.map((workout) => processWorkoutSimple(workout, t, skipPRDetection))
+          workoutLogs.map((workout) =>
+            processWorkoutSimple(workout, t, dateFnsLocale, skipPRDetection)
+          )
         );
         // Append to existing workouts
         setWorkouts((prev) => [...prev, ...processedWorkouts]);
@@ -322,6 +341,7 @@ export function useWorkoutHistory({
     skipPRDetection,
     t,
     units,
+    dateFnsLocale,
   ]);
 
   // Handle filter changes

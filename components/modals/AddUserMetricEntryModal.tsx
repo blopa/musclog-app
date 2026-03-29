@@ -1,4 +1,3 @@
-import { format } from 'date-fns';
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,15 +10,16 @@ import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
-import { DateTimeSelectorCard } from '../cards/DateTimeSelectorCard';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '../PagerView/PagerView';
 import { Button } from '../theme/Button';
 import { SegmentedControl } from '../theme/SegmentedControl';
 import { TextInput } from '../theme/TextInput';
+import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+import { TimePickerInput } from './TimePickerInput';
 import { TimePickerModal } from './TimePickerModal';
 
 // UI metric type - subset of UserMetricType for this modal
@@ -119,14 +119,6 @@ export default function AddUserMetricEntryModal({
       setNote(''); // Reset note when modal opens
     }
   }, [visible, units]);
-
-  const formatDate = (date: Date) => {
-    return format(date, 'MMM d, yyyy');
-  };
-
-  const formatTime = (date: Date) => {
-    return format(date, 'hh:mm a');
-  };
 
   // Sync PagerView when selectedMetric changes
   useEffect(() => {
@@ -379,21 +371,15 @@ export default function AddUserMetricEntryModal({
 
         {/* Date and Time Sections */}
         <View className="space-y-3 pb-4">
-          <DateTimeSelectorCard
-            type="date"
-            value={selectedDate}
-            onEdit={handleDateEdit}
+          <DatePickerInput
+            selectedDate={selectedDate}
+            onPress={handleDateEdit}
             label={t('bodyMetrics.addEntry.date')}
-            formattedValue={formatDate(selectedDate)}
-            noCard={true}
           />
-          <DateTimeSelectorCard
-            type="time"
-            value={selectedTime}
-            onEdit={handleTimeEdit}
+          <TimePickerInput
+            selectedTime={selectedTime}
+            onPress={handleTimeEdit}
             label={t('bodyMetrics.addEntry.time')}
-            formattedValue={formatTime(selectedTime)}
-            noCard={true}
           />
 
           {/* Note Section */}

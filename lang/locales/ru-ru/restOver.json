@@ -1,0 +1,13 @@
+{
+  "restOver": {
+    "startNextSet": "Начать следующий подход",
+    "upNext": "Следующий",
+    "weight": "Вес",
+    "weightWithUnit": "{{value}} {{unit}}",
+    "reps": "Повторения",
+    "set": "Подход",
+    "restTimeIs": "Время отдыха",
+    "over": "завершено!",
+    "timeToGo": "Пора начинать! Следующий подход."
+  }
+}

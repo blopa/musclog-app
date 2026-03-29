@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, isThisWeek, isToday, isYesterday } from 'date-fns';
 import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -5,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type NutritionCheckin from '../database/models/NutritionCheckin';
 import { NutritionCheckinService } from '../database/services';
+import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
 export type NutritionCheckinDisplayItem = {
@@ -28,7 +30,7 @@ const BATCH_SIZE = 20;
 
 const ICON = 'event-note';
 
-function formatRelativeDate(timestamp: number, t: TFunction): string {
+function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
@@ -37,16 +39,17 @@ function formatRelativeDate(timestamp: number, t: TFunction): string {
     return t('common.yesterday');
   }
   if (isThisWeek(date)) {
-    return format(date, 'EEEE');
+    return format(date, 'EEEE', { locale });
   }
-  return format(date, 'MMM d, yyyy');
+  return format(date, 'MMM d, yyyy', { locale });
 }
 
 function checkinToDisplayItem(
   checkin: NutritionCheckin,
-  iconColors: { color: string; bg: string }
+  iconColors: { color: string; bg: string },
+  locale: Locale
 ): NutritionCheckinDisplayItem {
-  const dateLabel = format(new Date(checkin.checkinDate), 'MMM d, yyyy');
+  const dateLabel = format(new Date(checkin.checkinDate), 'MMM d, yyyy', { locale });
   return {
     id: checkin.id,
     name: `Check-in • ${dateLabel}`,
@@ -61,7 +64,8 @@ function checkinToDisplayItem(
 
 function groupCheckinsByDate(
   items: { item: NutritionCheckinDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): NutritionCheckinDayGroup[] {
   const groupMap = new Map<number, NutritionCheckinDisplayItem[]>();
 
@@ -74,7 +78,7 @@ function groupCheckinsByDate(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items,
     }))
@@ -84,7 +88,8 @@ function groupCheckinsByDate(
 function mergeIntoDayGroups(
   existing: NutritionCheckinDayGroup[],
   newItemsWithDates: { item: NutritionCheckinDisplayItem; dateTimestamp: number }[],
-  t: TFunction
+  t: TFunction,
+  locale: Locale
 ): NutritionCheckinDayGroup[] {
   const groupMap = new Map<number, NutritionCheckinDisplayItem[]>();
   const existingIds = new Set<string>();
@@ -108,7 +113,7 @@ function mergeIntoDayGroups(
 
   return Array.from(groupMap.entries())
     .map(([dateTimestamp, items]) => ({
-      date: formatRelativeDate(dateTimestamp, t),
+      date: formatRelativeDate(dateTimestamp, t, locale),
       dateTimestamp,
       items: items.sort((a, b) => b.id.localeCompare(a.id)),
     }))
@@ -154,6 +159,7 @@ export function useNutritionCheckinDataLogs({
 }: UseNutritionCheckinDataLogsParams = {}): UseNutritionCheckinDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({ color: theme.colors.status.info, bg: theme.colors.status.info10 }),
     [theme]
@@ -176,10 +182,10 @@ export function useNutritionCheckinDataLogs({
     try {
       const checkins = await NutritionCheckinService.getHistory(batchSize, 0);
       const results = checkins.map((checkin) => ({
-        item: checkinToDisplayItem(checkin, iconColors),
+        item: checkinToDisplayItem(checkin, iconColors, dateFnsLocale),
         dateTimestamp: checkin.checkinDate,
       }));
-      const groups = groupCheckinsByDate(results, t);
+      const groups = groupCheckinsByDate(results, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(checkins.length === batchSize);
       setOffset(checkins.length);
@@ -190,7 +196,7 @@ export function useNutritionCheckinDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors]);
+  }, [visible, batchSize, t, iconColors, dateFnsLocale]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -208,11 +214,11 @@ export function useNutritionCheckinDataLogs({
       }
 
       const results = checkins.map((checkin) => ({
-        item: checkinToDisplayItem(checkin, iconColors),
+        item: checkinToDisplayItem(checkin, iconColors, dateFnsLocale),
         dateTimestamp: checkin.checkinDate,
       }));
 
-      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t));
+      setDayGroups((prev) => mergeIntoDayGroups(prev, results, t, dateFnsLocale));
       setHasMore(checkins.length === batchSize);
       setOffset((prev) => prev + checkins.length);
     } catch (err) {
@@ -221,7 +227,7 @@ export function useNutritionCheckinDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors]);
+  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

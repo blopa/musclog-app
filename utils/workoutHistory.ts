@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
 import type { Units } from '../constants/settings';
@@ -8,7 +8,9 @@ import Exercise from '../database/models/Exercise';
 import WorkoutLog from '../database/models/WorkoutLog';
 import WorkoutLogExercise from '../database/models/WorkoutLogExercise';
 import { WorkoutAnalytics } from '../database/services';
+import i18n from '../lang/lang';
 import { theme } from '../theme'; // TODO: figure out a way to use useTheme instead or dynamically use dark or light theme based on configuration
+import { getDateFnsLocale } from './dateFnsLocale';
 import { getWeightUnitI18nKey } from './units';
 
 // Type definitions
@@ -45,6 +47,9 @@ export type WorkoutHistoryItem = {
 };
 
 export type WorkoutHistorySection = {
+  /** Stable `yyyy-MM` for grouping, merging, and React keys */
+  monthKey: string;
+  /** Localized month heading for display */
   month: string;
   workouts: WorkoutHistoryItem[];
 };
@@ -198,6 +203,7 @@ export async function processWorkouts(
   t: TranslationFunction,
   units: Units
 ): Promise<WorkoutHistoryItem[]> {
+  const locale = getDateFnsLocale(i18n.language);
   const processedWorkouts: (WorkoutHistoryItem | null)[] = await Promise.all(
     workouts.map(async (workout) => {
       // Calculate duration
@@ -244,7 +250,7 @@ export async function processWorkouts(
       // Format date
       const dateTimestamp = workout.startedAt || workout.completedAt || Date.now();
       const workoutDate = new Date(dateTimestamp);
-      const dateStr = format(workoutDate, 'MMM d • hh:mm a');
+      const dateStr = format(workoutDate, 'MMM d • hh:mm a', { locale });
 
       // Get icon and colors
       const iconData = getWorkoutIcon(workout.workoutName ?? '');
@@ -295,11 +301,12 @@ export async function processWorkouts(
  * Group workouts by month
  */
 export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHistorySection[] {
+  const locale = getDateFnsLocale(i18n.language);
   const groupedByMonth = new Map<string, WorkoutHistoryItem[]>();
 
   workouts.forEach((workout) => {
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'MMMM yyyy');
+    const monthKey = format(date, 'yyyy-MM');
 
     if (!groupedByMonth.has(monthKey)) {
       groupedByMonth.set(monthKey, []);
@@ -308,15 +315,12 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
   });
 
   return Array.from(groupedByMonth.entries())
-    .map(([month, workouts]) => ({
-      month,
-      workouts,
+    .map(([monthKey, monthWorkouts]) => ({
+      monthKey,
+      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
+      workouts: monthWorkouts,
     }))
-    .sort((a, b) => {
-      const dateA = new Date(a.month);
-      const dateB = new Date(b.month);
-      return dateB.getTime() - dateA.getTime();
-    });
+    .sort((a, b) => b.monthKey.localeCompare(a.monthKey));
 }
 
 /**
@@ -326,12 +330,13 @@ export function mergeWorkoutSections(
   existing: WorkoutHistorySection[],
   newWorkouts: WorkoutHistoryItem[]
 ): WorkoutHistorySection[] {
+  const locale = getDateFnsLocale(i18n.language);
   // Create a map of existing sections and track existing workout IDs to avoid duplicates
   const sectionMap = new Map<string, WorkoutHistoryItem[]>();
   const existingWorkoutIds = new Set<string>();
 
   existing.forEach((section) => {
-    sectionMap.set(section.month, [...section.workouts]);
+    sectionMap.set(section.monthKey, [...section.workouts]);
     section.workouts.forEach((workout) => {
       existingWorkoutIds.add(workout.id);
     });
@@ -345,7 +350,7 @@ export function mergeWorkoutSections(
     }
 
     const date = new Date(workout.dateTimestamp);
-    const monthKey = format(date, 'MMMM yyyy');
+    const monthKey = format(date, 'yyyy-MM');
 
     if (!sectionMap.has(monthKey)) {
       sectionMap.set(monthKey, []);
@@ -356,15 +361,12 @@ export function mergeWorkoutSections(
 
   // Convert back to array and sort
   return Array.from(sectionMap.entries())
-    .map(([month, workouts]) => ({
-      month,
+    .map(([monthKey, workouts]) => ({
+      monthKey,
+      month: format(parseISO(`${monthKey}-01`), 'MMMM yyyy', { locale }),
       workouts: workouts.sort((a, b) => b.dateTimestamp - a.dateTimestamp), // Sort within month (newest first)
     }))
-    .sort((a, b) => {
-      const dateA = new Date(a.month);
-      const dateB = new Date(b.month);
-      return dateB.getTime() - dateA.getTime();
-    });
+    .sort((a, b) => b.monthKey.localeCompare(a.monthKey));
 }
 
 /**

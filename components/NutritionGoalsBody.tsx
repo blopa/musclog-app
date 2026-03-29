@@ -1,5 +1,4 @@
 import convert from 'convert';
-import { format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
@@ -27,6 +26,7 @@ import {
   ffmiFromWeightHeightAndBodyFat,
 } from '../utils/nutritionCalculator';
 import { displayToKg, kgToDisplay, storedHeightToCm } from '../utils/unitConversion';
+import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
@@ -491,11 +491,8 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <Pressable
-            onPress={() => setIsGoalStartDatePickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
-          >
-            <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className="flex-row items-stretch justify-between gap-3 rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 items-center justify-center rounded-lg"
@@ -504,7 +501,7 @@ export function NutritionGoalsBody({
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
               ) : null}
-              <View className="flex-1">
+              <View className="min-w-0 flex-1">
                 <Text className="font-semibold text-white">
                   {t('nutritionGoals.goalStartDate')}
                 </Text>
@@ -513,27 +510,28 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="flex-shrink flex-row items-center gap-2">
-              <Text className="text-text-secondary" numberOfLines={1}>
-                {goalStartDate != null
-                  ? format(new Date(goalStartDate), 'MMM d, yyyy')
-                  : t('nutritionGoals.goalStartDateToday')}
-              </Text>
+            <View className="min-w-0 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 max-w-[200px]">
+                <DatePickerInput
+                  embedded
+                  hideLabel
+                  trailing="none"
+                  variant="compact"
+                  selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
+                  unset={goalStartDate == null}
+                  unsetPlaceholder={t('nutritionGoals.goalStartDateToday')}
+                  onPress={() => setIsGoalStartDatePickerVisible(true)}
+                />
+              </View>
               {goalStartDate != null ? (
-                <Pressable
-                  hitSlop={8}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setGoalStartDate(null);
-                  }}
-                >
+                <Pressable hitSlop={8} onPress={() => setGoalStartDate(null)}>
                   <Text className="text-xs text-accent-primary">
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
                 </Pressable>
               ) : null}
             </View>
-          </Pressable>
+          </View>
         ) : null}
 
         {isGoalStartDatePickerVisible ? (
@@ -813,11 +811,8 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <Pressable
-            onPress={() => setIsTargetDatePickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl border border-emerald-900/20 bg-bg-card p-5"
-          >
-            <View className="flex-1 flex-row items-center gap-3 pr-3">
+          <View className="flex-row items-stretch justify-between gap-3 rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 items-center justify-center rounded-lg"
@@ -826,34 +821,35 @@ export function NutritionGoalsBody({
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
                 </View>
               ) : null}
-              <View className="flex-1">
+              <View className="min-w-0 flex-1">
                 <Text className="font-semibold text-white">{t('nutritionGoals.targetDate')}</Text>
                 <Text className="text-xs text-gray-500" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
               </View>
             </View>
-            <View className="flex-shrink flex-row items-center gap-2">
-              <Text className="text-text-secondary" numberOfLines={1}>
-                {targetDate != null
-                  ? format(new Date(targetDate), 'MMM d, yyyy')
-                  : t('nutritionGoals.targetDateNotSet')}
-              </Text>
+            <View className="min-w-0 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 max-w-[200px]">
+                <DatePickerInput
+                  embedded
+                  hideLabel
+                  trailing="none"
+                  variant="compact"
+                  selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
+                  unset={targetDate == null}
+                  unsetPlaceholder={t('nutritionGoals.targetDateNotSet')}
+                  onPress={() => setIsTargetDatePickerVisible(true)}
+                />
+              </View>
               {targetDate != null ? (
-                <Pressable
-                  hitSlop={8}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setTargetDate(null);
-                  }}
-                >
+                <Pressable hitSlop={8} onPress={() => setTargetDate(null)}>
                   <Text className="text-xs text-accent-primary">
                     {t('nutritionGoals.targetDateClear')}
                   </Text>
                 </Pressable>
               ) : null}
             </View>
-          </Pressable>
+          </View>
         </View>
 
         {isTargetDatePickerVisible ? (

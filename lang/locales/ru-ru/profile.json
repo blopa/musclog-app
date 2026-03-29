@@ -1,0 +1,36 @@
+{
+  "profile": {
+    "header": {
+      "title": "Профиль"
+    },
+    "goal": "Цель",
+    "currentStats": "Текущие показатели",
+    "history": "История",
+    "management": "Управление",
+    "loading": "Загрузка...",
+    "syncing": {
+      "healthKit": "Синхронизация с HealthKit..."
+    },
+    "gender": {
+      "male": "Мужской",
+      "female": "Женский",
+      "other": "Другой"
+    },
+    "managementItems": {
+      "editPersonal": "Редактировать личные данные",
+      "editPersonalDesc": "Обновить имя, аватар и личные данные",
+      "editFitness": "Редактировать данные о фитнесе",
+      "editFitnessDesc": "Обновить фитнес-цели и предпочтения",
+      "appPreferences": "Настройки приложения",
+      "appPreferencesDesc": "Настроить параметры приложения"
+    },
+    "stats": {
+      "weight": "Вес",
+      "height": "Рост",
+      "bodyFat": "Жировая масса",
+      "bmi": "ИМТ",
+      "age": "Возраст",
+      "gender": "Пол"
+    }
+  }
+}

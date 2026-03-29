@@ -1,0 +1,20 @@
+{
+  "workoutSummary": {
+    "totalTime": "Общее время",
+    "volume": "Объём",
+    "duration": "Длительность",
+    "personalRecords": "Личные рекорды",
+    "newPRs": "Новые ЛР",
+    "goHome": "На главную",
+    "youCrushedIt": "Отличная работа!",
+    "feedbackSubmitted": "Отзыв о тренировке успешно отправлен.",
+    "shareText": "Я только что отлично потренировался!",
+    "shareSummary": "Поделиться итогами",
+    "workoutCompleted": "Тренировка завершена!",
+    "viewDetails": "Подробности",
+    "getFeedback": "Получить отзыв ИИ",
+    "gettingFeedback": "Получение отзыва...",
+    "completedMessage": "Вы завершили тренировку {{workoutName}}",
+    "completedSummary": "Тренировка завершена: {{workoutName}}"
+  }
+}

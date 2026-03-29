@@ -41,7 +41,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
                 borderRadius: theme.borderRadius.sm,
               },
             ]}
-            onPress={() => Linking.openURL('https://werules.com/musclog/terms')}
+            onPress={() => Linking.openURL('https://musclog.app/en-us/terms')}
           >
             <Text
               style={{
@@ -89,7 +89,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
                 borderRadius: theme.borderRadius.sm,
               },
             ]}
-            onPress={() => Linking.openURL('https://werules.com/musclog/privacy')}
+            onPress={() => Linking.openURL('https://musclog.app/en-us/privacy')}
           >
             <Text
               style={{

@@ -799,14 +799,10 @@ export function FoodSearchModal({
       onFoodSelect?.({} as FoodItem);
       onFoodTracked?.();
       onClose();
-      showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
       console.error('Error logging same as yesterday:', err);
-      showSnackbar('error', t('foodSearch.sameAsYesterdayError'), {
-        action: t('snackbar.ok'),
-      });
+      showSnackbar('error', t('foodSearch.sameAsYesterdayError'));
     } finally {
       setIsAddingSameAsYesterday(false);
     }

@@ -41,6 +41,7 @@ import {
   WorkoutLogDataModal,
   WorkoutTemplateDataModal,
 } from '../../components/modals/DataLogModal';
+import { DatePickerInput } from '../../components/modals/DatePickerInput';
 import { DatePickerModal } from '../../components/modals/DatePickerModal';
 import { EditFitnessDetailsModal } from '../../components/modals/EditFitnessDetailsModal';
 import EditPastWorkoutDataModal from '../../components/modals/EditPastWorkoutDataModal';
@@ -78,6 +79,7 @@ import { RetrospectiveNutritionModal } from '../../components/modals/Retrospecti
 import { ScannedFoodDetailsModal } from '../../components/modals/ScannedFoodDetailsModal';
 import { SessionFeedbackModal } from '../../components/modals/SessionFeedbackModal';
 import SmartCameraModal from '../../components/modals/SmartCameraModal';
+import { TimePickerInput } from '../../components/modals/TimePickerInput';
 import { TimePickerModal } from '../../components/modals/TimePickerModal';
 import { UserMenuModal } from '../../components/modals/UserMenuModal';
 import ViewExerciseModal from '../../components/modals/ViewExerciseModal';
@@ -178,6 +180,7 @@ export default function ModalsTestScreen() {
 
   // Date Picker Modal
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [testDatePickerSelection, setTestDatePickerSelection] = useState(() => new Date());
 
   // Add Exercise Modal
   const [isAddExerciseVisible, setIsAddExerciseVisible] = useState(false);
@@ -804,12 +807,20 @@ export default function ModalsTestScreen() {
           <View className="mb-6">
             <Text className="mb-2 text-lg font-bold text-text-primary">Date Picker Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">Modal for selecting dates.</Text>
-            <Button
-              label="Open Date Picker Modal"
-              variant="accent"
-              width="full"
+            <DatePickerInput
+              label="Date"
+              selectedDate={testDatePickerSelection}
               onPress={() => setIsDatePickerVisible(true)}
+              variant="default"
             />
+            <View className="mt-3">
+              <TimePickerInput
+                label="Time"
+                selectedTime={selectedTime}
+                onPress={() => setIsTimePickerVisible(true)}
+                variant="default"
+              />
+            </View>
           </View>
 
           {/* Add Food Item to Meal Modal */}
@@ -1848,8 +1859,9 @@ export default function ModalsTestScreen() {
         onClose={() => setIsDatePickerVisible(false)}
         onDateSelect={(date) => {
           console.log('Date selected:', date);
+          setTestDatePickerSelection(date);
         }}
-        selectedDate={new Date()}
+        selectedDate={testDatePickerSelection}
       />
 
       <AddExerciseModal

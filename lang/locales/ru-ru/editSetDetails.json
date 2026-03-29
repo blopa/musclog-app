@@ -1,0 +1,10 @@
+{
+  "editSetDetails": {
+    "title": "Редактировать детали подхода",
+    "subtitle": "Изменить цели для {{setLabel}}",
+    "partialReps": "ЧАСТИЧНЫЕ ПОВТОРЕНИЯ",
+    "cancel": "ОТМЕНА",
+    "saveChanges": "СОХРАНИТЬ ИЗМЕНЕНИЯ",
+    "repsInReserve": "Повторения в запасе"
+  }
+}

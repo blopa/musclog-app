@@ -1,0 +1,165 @@
+{
+  "workouts": {
+    "title": "Мои тренировки",
+    "filters": {
+      "all": "Все",
+      "strength": "Силовые",
+      "cardio": "Кардио",
+      "flexibility": "Гибкость",
+      "archived": "Архив"
+    },
+    "archive": "Архивировать",
+    "archiveSuccess": "Тренировка успешно архивирована",
+    "archiveError": "Не удалось архивировать тренировку",
+    "duplicateSuccess": "Тренировка успешно дублирована",
+    "duplicateError": "Не удалось дублировать тренировку",
+    "delete": "Удалить",
+    "deleteSuccess": "Тренировка успешно удалена",
+    "deleteError": "Не удалось удалить тренировку",
+    "deleteConfirmation": {
+      "title": "Удалить тренировку",
+      "message": "Вы уверены, что хотите удалить «{{name}}»? Это действие нельзя отменить."
+    },
+    "searchPlaceholder": "Поиск тренировок...",
+    "noSearchResults": "Тренировки не найдены",
+    "noSearchResultsDescription": "Нет тренировок по запросу «{{query}}»",
+    "noSearchResultsButtonLabel": "Очистить поиск",
+    "exercises": "Упражнения",
+    "addExercise": {
+      "title": "Добавить упражнение",
+      "targetMuscle": "Целевая мышца",
+      "searchPlaceholder": "Поиск упражнений для {{muscle}}...",
+      "createSet": "Создать подход",
+      "bodyweight": "С весом тела",
+      "sets": "Подходы",
+      "reps": "Повторения",
+      "weight": "Вес",
+      "addToWorkout": "Добавить в тренировку",
+      "restTime": "Время отдыха",
+      "seconds": "сек",
+      "dropSet": "Дроп-сет",
+      "notes": "Заметки",
+      "notesPlaceholder": "Настройки тренажёра, варианты хвата и т.д.",
+      "muscleGroups": {
+        "all": "Все",
+        "chest": "Грудь",
+        "back": "Спина",
+        "legs": "Ноги",
+        "arms": "Руки"
+      },
+      "searchPlaceholderAll": "Поиск упражнений...",
+      "noExercisesFound": "Упражнений по запросу «{{query}}» не найдено",
+      "noExercisesAvailable": "Нет доступных упражнений для {{muscle}}",
+      "exerciseDescription": "{{sets}} подх. × {{reps}} повт.",
+      "exerciseDescriptionWithWeight": "{{sets}} подх. × {{reps}} повт. @ {{weight}}{{unit}}"
+    },
+    "filterWorkouts": {
+      "title": "Фильтр тренировок",
+      "clear": "Очистить",
+      "clearFilters": "Очистить фильтры",
+      "applyFilters": "Применить фильтры",
+      "workoutType": "Тип тренировки",
+      "targetMuscles": "ЦЕЛЕВЫЕ МЫШЦЫ",
+      "duration": "ДЛИТЕЛЬНОСТЬ",
+      "upTo": "До {{duration}}",
+      "workoutTypes": {
+        "strength": "Силовые",
+        "strengthDescription": "Отягощения, с весом тела",
+        "cardio": "Кардио",
+        "cardioDescription": "Бег, езда на велосипеде, HIIT",
+        "flexibility": "Гибкость",
+        "flexibilityDescription": "Йога, растяжка"
+      },
+      "muscleGroups": {
+        "fullBody": "Всё тело",
+        "chest": "Грудь",
+        "back": "Спина",
+        "legs": "Ноги",
+        "shoulders": "Плечи",
+        "arms": "Руки",
+        "core": "Кор"
+      }
+    },
+    "createWorkoutOptions": {
+      "generateWithAi": "Создать с помощью ИИ",
+      "generateWithAiSubtitle": "Пусть Musclog построит персональную программу на основе ваших целей и оборудования.",
+      "createFromEmptyTemplate": "Создать с нуля",
+      "createFromEmptyTemplateSubtitle": "Разработайте свою программу с нуля, упражнение за упражнением.",
+      "browseTemplates": "Просмотр шаблонов",
+      "browseTemplatesSubtitle": "Изучите программы от экспертов и популярные варианты."
+    },
+    "browseTemplatesModal": {
+      "title": "Просмотр шаблонов",
+      "searchPlaceholder": "Поиск программ от экспертов...",
+      "templateName": "Шаблон {{number}}",
+      "tabs": {
+        "all": "Все",
+        "beginner": "Начинающий",
+        "intermediate": "Средний",
+        "advanced": "Продвинутый",
+        "strength": "Силовые",
+        "hypertrophy": "Гипертрофия",
+        "cardio": "Кардио"
+      },
+      "stats": {
+        "duration": "Длительность",
+        "exercises": "Упражнения",
+        "exercisesQty": "{{count}} упражнение",
+        "exercisesQty_one": "{{count}} упражнение",
+        "exercisesQty_other": "{{count}} упражнений",
+        "sets": "Подходы",
+        "setsQty": "{{count}} подход",
+        "setsQty_one": "{{count}} подход",
+        "setsQty_other": "{{count}} подходов"
+      }
+    },
+    "manageWorkoutTemplateData": {
+      "deleteTemplateWarning": "Вы уверены, что хотите удалить этот шаблон? Это действие нельзя отменить.",
+      "title": "Управление шаблонами тренировок",
+      "searchPlaceholder": "Поиск шаблонов...",
+      "noTemplates": "Шаблонов тренировок пока нет",
+      "noTemplatesDesc": "Создайте шаблоны тренировок, чтобы они отображались здесь",
+      "endOfHistory": "Конец истории шаблонов",
+      "templateOptions": "Параметры шаблона",
+      "editTemplate": "Редактировать шаблон",
+      "editTemplateDesc": "Изменить название и упражнения шаблона",
+      "duplicateTemplate": "Дублировать шаблон",
+      "duplicateTemplateDesc": "Создать копию этого шаблона",
+      "deleteTemplate": "Удалить шаблон",
+      "deleteTemplateDesc": "Навсегда удалить этот шаблон",
+      "noDescription": "Нет описания",
+      "unknownTemplate": "Неизвестный шаблон"
+    },
+    "createTemplate": {
+      "title": "Создать шаблон тренировки",
+      "description": "Создайте многоразовую программу тренировок"
+    },
+    "createWorkoutOptionsModal": {
+      "header": "Создать тренировку",
+      "title": "Как вы хотите создать программу?",
+      "subtitle": "Выберите способ создания программы на сегодня."
+    },
+    "createFromTemplate": {
+      "title": "Создать тренировки из шаблона",
+      "message": "Будут созданы отдельные шаблоны тренировок для каждого дня программы. Каждая тренировка будет включать упражнения, подходы и повторения, указанные для этого дня.",
+      "confirm": "Создать тренировки",
+      "cancel": "Отмена",
+      "successMessage": "Тренировки успешно созданы"
+    },
+    "aiGeneration": {
+      "comingSoon": "Генерация тренировок с помощью ИИ скоро появится!",
+      "title": "Создать с помощью ИИ",
+      "subtitle": "Расскажите о своих целях, и мы составим персональный план тренировок",
+      "preferencesLabel": "Ваши предпочтения",
+      "preferencesPlaceholder": "Например: хочу набрать мышцы, могу тренироваться 4 дня в неделю, есть доступ в полноценный зал, уровень — средний...",
+      "generateButton": "Создать план",
+      "successMessage": "Ваш план тренировок готов! Добавлено {{count}} тренировок.",
+      "errorMessage": "Не удалось создать план. Пожалуйста, попробуйте снова.",
+      "aiNotConfigured": "Функции ИИ не настроены. Пожалуйста, добавьте API-ключ Gemini или OpenAI в Настройках."
+    },
+    "templateBrowser": {
+      "comingSoon": "Просмотр шаблонов скоро появится!"
+    },
+    "unnamed": "Без названия"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "restTimer": {
+    "resting": "Отдых...",
+    "minus5s": "- 5с",
+    "plus5s": "+ 5с",
+    "skipRest": "ПРОПУСТИТЬ ОТДЫХ",
+    "done": "Готово",
+    "reps": "повт.",
+    "repsWithCount": "{{count}} повт.",
+    "upNext": "СЛЕДУЮЩИЙ",
+    "missingWorkoutData": "Данные тренировки отсутствуют",
+    "completedSetNotFound": "Завершённый подход не найден"
+  }
+}

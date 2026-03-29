@@ -1,0 +1,23 @@
+{
+  "exerciseTransition": {
+    "totalTime": "ОБЩЕЕ ВРЕМЯ",
+    "completeSuffix": "Завершено!",
+    "completedMessage": "Отличная работа. Переведите дыхание.",
+    "upNext": "СЛЕДУЮЩЕЕ",
+    "target": "ЦЕЛЬ",
+    "weightSingle": "{{value}} {{unit}}",
+    "weightRange": "{{min}}~{{max}} {{unit}}",
+    "sets": "Подходы",
+    "reps": "Повторения",
+    "rest": "ОТДЫХ",
+    "sec": "сек",
+    "equipment": "СНАРЯЖЕНИЕ",
+    "startNextExercise": "Начать следующее упражнение",
+    "loadingNextExercise": "Загрузка следующего упражнения...",
+    "errorTitle": "Тренировка не найдена",
+    "errorDescription": "Не удалось загрузить экран перехода между упражнениями. Пожалуйста, попробуйте снова.",
+    "goBack": "Назад",
+    "noWorkoutId": "ID тренировки не указан",
+    "loadFailed": "Не удалось загрузить данные тренировки"
+  }
+}

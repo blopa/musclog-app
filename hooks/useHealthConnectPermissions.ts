@@ -79,15 +79,12 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
 
       // Show user-friendly error
       if (hcError.code === 'SDK_NOT_AVAILABLE') {
-        showSnackbar('error', hcError.getUserMessage(), {
-          action: t('common.install'),
-          duration: 0, // Don't auto-dismiss
-        });
+        showSnackbar('error', hcError.getUserMessage());
       }
 
       return false;
     }
-  }, [showSnackbar, t]);
+  }, [showSnackbar]);
 
   /**
    * Check current permissions status
@@ -167,7 +164,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
         showSnackbar('error', t('healthConnect.permissionsDenied', { types: deniedTypes }), {
           action: t('healthConnect.openSettings'),
           onAction: () => openSettings(),
-          duration: 1000,
+          duration: 2000,
         });
       }
 
