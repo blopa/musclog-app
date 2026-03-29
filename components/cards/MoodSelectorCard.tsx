@@ -9,11 +9,13 @@ import { GenericCard } from './GenericCard';
 type MoodSelectorCardProps = {
   value: number; // 0-4: Poor, Low, Okay, Good, Great
   onChange: (value: number) => void;
+  // TODO: implement 'default' variant, which we should hide the slider
+  variant: 'default' | 'enhanced';
 };
 
 const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
 
-export function MoodSelectorCard({ value, onChange }: MoodSelectorCardProps) {
+export function MoodSelectorCard({ value, onChange, variant = 'enhanced' }: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
