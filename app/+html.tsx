@@ -22,7 +22,9 @@ export default function Root({ children }: PropsWithChildren) {
         />
         <ScrollViewStyleReset />
       </head>
-      <body>{children}</body>
+      <body className="expo-web-body">
+        <div className="expo-web-app-shell">{children}</div>
+      </body>
     </html>
   );
 }

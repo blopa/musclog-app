@@ -6,3 +6,66 @@
 input:focus, textarea:focus {
 	outline: none;
 }
+
+/* Web: center app in a phone-sized frame on desktop (see app/+html.tsx shell) */
+html,
+body {
+	height: 100%;
+}
+
+/* Default: full-bleed (phones, tablets, Chrome device toolbar — narrow viewports). */
+.expo-web-body {
+	margin: 0;
+	min-height: 100%;
+	min-height: 100dvh;
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+	background-color: #000;
+}
+
+.expo-web-app-shell {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 100%;
+	min-height: 100dvh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.expo-web-app-shell > * {
+	flex: 1;
+	min-height: 0;
+	width: 100%;
+}
+
+/*
+ * Desktop-only: dot grid + centered phone frame. Uses min-width (not UA) so Chrome
+ * device emulation (~430px) stays full-bleed like a real phone.
+ */
+@media (min-width: 1024px) {
+	.expo-web-body {
+		align-items: center;
+		background-color: #0a0a0a;
+		background-image: radial-gradient(
+			circle at 1px 1px,
+			rgb(255 255 255 / 0.055) 1px,
+			transparent 0
+		);
+		background-size: 24px 24px;
+	}
+
+	/*
+	 * 390/844 frame: ~70% viewport height, never full screen.
+	 * Floor when the viewport is short: at least min(360px, 100dvh) so it stays usable.
+	 */
+	.expo-web-app-shell {
+		--shell-h: min(100dvh, max(min(360px, 100dvh), 70dvh));
+		aspect-ratio: 390 / 844;
+		width: min(100vw, calc(var(--shell-h) * 390 / 844));
+		height: auto;
+		min-height: 0;
+		max-height: var(--shell-h);
+	}
+}
