@@ -27,6 +27,8 @@ module.exports = defineConfig([
       'local/prefer-react-lazy': 'off',
       // Disallow React.lazy and convert back to regular imports (fixable)
       'local/no-react-lazy': 'off',
+      // Disallow direct imports from theme.ts
+      'local/no-theme-import': 'warn',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
