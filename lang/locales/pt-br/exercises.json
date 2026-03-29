@@ -21,7 +21,23 @@
       "calves": "Panturrilhas",
       "full_body": "Corpo Inteiro",
       "cardio": "Cardio",
-      "other": "Outro"
+      "other": "Outro",
+      "descriptions": {
+        "chest": "Músculos do peito",
+        "back": "Músculos das costas",
+        "shoulders": "Músculos dos ombros",
+        "biceps": "Músculos do bíceps",
+        "triceps": "Músculos do tríceps",
+        "forearms": "Músculos dos antebraços",
+        "abs": "Músculos abdominais",
+        "quads": "Músculos do quadríceps",
+        "hamstrings": "Músculos do isquiotibial",
+        "glutes": "Músculos do glúteo",
+        "calves": "Músculos da panturrilha",
+        "full_body": "Treino de corpo inteiro",
+        "cardio": "Exercício cardiovascular",
+        "other": "Outros grupos musculares"
+      }
     },
     "typeTags": {
       "bodyweight": "PESO CORPORAL",
@@ -129,7 +145,17 @@
       "cable": "Cabo",
       "kettlebell": "Kettlebell",
       "resistance_band": "Faixa de Resistência",
-      "other": "Outro"
+      "other": "Outro",
+      "descriptions": {
+        "dumbbell": "Pesos livres com cabo",
+        "barbell": "Barra longa com pesos",
+        "bodyweight": "Nenhum equipamento necessário",
+        "machine": "Máquina de exercícios",
+        "cable": "Sistema de polia",
+        "kettlebell": "Peso em forma de bola com cabo",
+        "resistance_band": "Faixas elásticas de resistência",
+        "other": "Outro equipamento"
+      }
     },
     "mechanicTypes": {
       "compound": "Composto",

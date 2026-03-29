@@ -10,6 +10,19 @@
       "tipFeatures": "Depois de configurar, suas mensagens são enviadas ao modelo que você escolher.",
       "openSettings": "Abrir configurações de IA",
       "notNow": "Agora não"
+    },
+    "icons": {
+      "Dumbbell": "Haltere",
+      "Target": "Alvo",
+      "Zap": "Raio",
+      "Trophy": "Troféu",
+      "Activity": "Atividade",
+      "Heart": "Coração",
+      "Flame": "Chama"
+    },
+    "chat": {
+      "message": "Mensagem",
+      "typeYourMessage": "Digite sua mensagem..."
     }
   }
 }

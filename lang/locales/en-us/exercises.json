@@ -21,7 +21,23 @@
       "calves": "Calves",
       "full_body": "Full Body",
       "cardio": "Cardio",
-      "other": "Other"
+      "other": "Other",
+      "descriptions": {
+        "chest": "Chest muscles",
+        "back": "Back muscles",
+        "shoulders": "Shoulder muscles",
+        "biceps": "Biceps muscles",
+        "triceps": "Triceps muscles",
+        "forearms": "Forearm muscles",
+        "abs": "Abdominal muscles",
+        "quads": "Quadriceps muscles",
+        "hamstrings": "Hamstring muscles",
+        "glutes": "Glute muscles",
+        "calves": "Calf muscles",
+        "full_body": "Full body workout",
+        "cardio": "Cardiovascular exercise",
+        "other": "Other muscle groups"
+      }
     },
     "typeTags": {
       "bodyweight": "BODYWEIGHT",
@@ -129,7 +145,17 @@
       "cable": "Cable",
       "kettlebell": "Kettlebell",
       "resistance_band": "Resistance Band",
-      "other": "Other"
+      "other": "Other",
+      "descriptions": {
+        "dumbbell": "Free weights with a handle",
+        "barbell": "Long bar with weights",
+        "bodyweight": "No equipment needed",
+        "machine": "Gym exercise machine",
+        "cable": "Cable pulley system",
+        "kettlebell": "Ball-shaped weight with handle",
+        "resistance_band": "Elastic resistance bands",
+        "other": "Other equipment"
+      }
     },
     "mechanicTypes": {
       "compound": "Compound",

@@ -27,6 +27,8 @@
     "loading": "Carregando...",
     "saving": "Salvando...",
     "save": "Salvar",
+    "category": "Categoria",
+    "active": "Ativo",
     "edit": "Editar",
     "status": "Status",
     "change": "Alterar",
@@ -65,6 +67,11 @@
     "appName": "MUSCLOG",
     "selectIcon": "Selecionar ícone",
     "selectIconLabel": "Selecionar Ícone",
+    "icon": "Ícone",
+    "archived": "Arquivado",
+    "descriptions": {
+      "none": "Nenhum"
+    },
     "days": {
       "label": "Dias",
       "letter": {

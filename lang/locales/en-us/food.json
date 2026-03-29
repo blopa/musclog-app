@@ -197,6 +197,7 @@
         "lunch": "Midday meal",
         "dinner": "Evening meal",
         "snack": "Light bite",
+        "snacks": "Light bite",
         "other": "Other"
       }
     },
