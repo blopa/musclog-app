@@ -74,6 +74,8 @@ function AppContent() {
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background.primary },
           freezeOnBlur: true,
+          animation: 'fade',
+          animationDuration: 200,
         }}
       />
     </>
