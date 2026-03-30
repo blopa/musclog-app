@@ -5,6 +5,8 @@ import { Pressable, Text, View } from 'react-native';
 import { type Gender } from '../database/models';
 import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useTheme } from '../hooks/useTheme';
+import { localCalendarDayDate } from '../utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
 import { getHeightUnit, getWeightUnit } from '../utils/units';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -25,17 +27,6 @@ type EditPhysicalStatsBodyProps = {
   units?: 'imperial' | 'metric';
   onFormChange?: (data: PhysicalStats) => void;
 };
-
-function parseDobToDate(dobString: string): Date {
-  if (!dobString) {
-    return new Date();
-  }
-  const parts = dobString.split('/');
-  if (parts.length === 3) {
-    return new Date(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10));
-  }
-  return new Date();
-}
 
 function formatDateToDob(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -64,7 +55,7 @@ export function EditPhysicalStatsBody({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const handleDateSelect = useCallback((date: Date) => {
-    setDob(formatDateToDob(date));
+    setDob(formatDateToDob(localCalendarDayDate(date)));
   }, []);
 
   useEffect(() => {
@@ -89,7 +80,7 @@ export function EditPhysicalStatsBody({
             hideLabel
             unset={!dob}
             unsetPlaceholder={t('editPersonalInfo.dateOfBirthPlaceholder')}
-            selectedDate={parseDobToDate(dob)}
+            selectedDate={parseDobDisplayStringToPickerDate(dob)}
             onPress={() => setIsDatePickerVisible(true)}
           />
         </View>
@@ -196,7 +187,7 @@ export function EditPhysicalStatsBody({
       <DatePickerModal
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={parseDobToDate(dob)}
+        selectedDate={parseDobDisplayStringToPickerDate(dob)}
         onDateSelect={handleDateSelect}
         minYear={1900}
         maxYear={new Date().getFullYear()}

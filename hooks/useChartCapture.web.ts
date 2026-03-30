@@ -2,6 +2,7 @@ import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
+import { formatLocalCalendarDayIso } from '../utils/calendarDate';
 import { showSnackbar } from '../utils/snackbarService';
 import { useTheme } from './useTheme';
 
@@ -37,7 +38,7 @@ export function useChartCapture() {
           pixelRatio: 2,
         });
 
-        const date = new Date().toISOString().slice(0, 10);
+        const date = formatLocalCalendarDayIso(new Date());
         const filename = `musclog-${sanitizeFilename(title)}-${date}.png`;
 
         const a = document.createElement('a');

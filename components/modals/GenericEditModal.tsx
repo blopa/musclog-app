@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
@@ -282,8 +283,7 @@ export function GenericEditModal({
               }}
               selectedDate={dateValue}
               onDateSelect={(date) => {
-                // Convert Date to timestamp (milliseconds)
-                handleFieldChange(field.key, date.getTime());
+                handleFieldChange(field.key, localDayStartMs(date));
                 setDatePickerVisible(false);
                 setCurrentDateFieldKey(null);
               }}

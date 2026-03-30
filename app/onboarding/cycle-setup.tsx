@@ -9,6 +9,7 @@ import { MasterLayout } from '../../components/MasterLayout';
 import { Button } from '../../components/theme/Button';
 import { MenstrualCycleRepository } from '../../database/repositories/MenstrualCycleRepository';
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 const DEFAULT_CYCLE_DATA: CycleSetupData = {
@@ -32,7 +33,7 @@ export default function CycleSetup() {
     setIsSaving(true);
     try {
       await MenstrualCycleRepository.createNewCycle({
-        lastPeriodStartDate: data.lastPeriodStartDate.getTime(),
+        lastPeriodStartDate: localDayStartMs(data.lastPeriodStartDate),
         useHormonalBirthControl: data.birthControlType !== 'none',
         birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
         avgCycleLength: data.cycleLength,

@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { MealType } from '../../database/models';
 import { useTheme } from '../../hooks/useTheme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { BottomPopUp } from '../BottomPopUp';
 import { FilterTabs } from '../FilterTabs';
@@ -41,7 +42,7 @@ export function MoveCopyMealModal({
 }: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [targetDate, setTargetDate] = useState(sourceDate);
+  const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
   const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
@@ -51,7 +52,7 @@ export function MoveCopyMealModal({
 
   useEffect(() => {
     if (visible) {
-      setTargetDate(sourceDate);
+      setTargetDate(localCalendarDayDate(sourceDate));
       setTargetMealType(sourceMealType);
       setSplitPercentage(50);
     } else {
@@ -228,7 +229,7 @@ export function MoveCopyMealModal({
           onClose={() => setIsDatePickerVisible(false)}
           selectedDate={targetDate}
           onDateSelect={(date) => {
-            setTargetDate(date);
+            setTargetDate(localCalendarDayDate(date));
             setIsDatePickerVisible(false);
           }}
         />

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { subYears } from 'date-fns';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +18,7 @@ import { type Gender } from '../../database/models';
 import { UserService } from '../../database/services';
 import { useTheme } from '../../hooks/useTheme';
 import { localDayStartMs } from '../../utils/calendarDate';
+import { parseMmDdYyyyDateOfBirthToLocalDayStartMs } from '../../utils/fitnessProfilePersistence';
 import { setOnboardingCompleted } from '../../utils/onboardingService';
 
 // Helper function to format date of birth timestamp to MM/DD/YYYY
@@ -76,36 +78,27 @@ export default function PersonalInfo() {
   const handleSave = async (data: PersonalInfoType) => {
     setIsSaving(true);
     try {
-      // Convert DOB string (MM/DD/YYYY) to Unix timestamp
-      const dobParts = data.dob.split('/');
-      if (dobParts.length !== 3) {
-        throw new Error('Invalid date format. Please use MM/DD/YYYY');
-      }
-
-      const month = parseInt(dobParts[0], 10) - 1; // Month is 0-indexed
-      const day = parseInt(dobParts[1], 10);
-      const year = parseInt(dobParts[2], 10);
-      const dateOfBirth = localDayStartMs(new Date(year, month, day));
+      // Date of birth is collected on the fitness step; optional here if the field is hidden.
+      const dateOfBirthFromForm = data.dob?.trim()
+        ? parseMmDdYyyyDateOfBirthToLocalDayStartMs(data.dob)
+        : undefined;
 
       // Check if user already exists
       const existingUser = await UserService.getCurrentUser();
 
       if (existingUser) {
-        // Update existing user
         await UserService.updateUserProfile({
           fullName: data.fullName,
           email: data.email || null,
-          dateOfBirth,
+          ...(dateOfBirthFromForm !== undefined ? { dateOfBirth: dateOfBirthFromForm } : {}),
           gender: data.gender as Gender,
           avatarIcon: data.avatarIcon || null,
           avatarColor: data.avatarColor || null,
         });
       } else {
-        // Create new user with minimal required fields
-        // We'll update fitness info in the next step
         await UserService.initializeUser({
           fullName: data.fullName,
-          dateOfBirth,
+          dateOfBirth: dateOfBirthFromForm ?? localDayStartMs(subYears(new Date(), 25)),
           gender: data.gender as Gender,
           email: data.email,
           avatarIcon: data.avatarIcon,

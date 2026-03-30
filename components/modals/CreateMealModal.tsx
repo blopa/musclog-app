@@ -30,6 +30,7 @@ import { type Ingredient, useEditMealIngredients } from '../../hooks/useEditMeal
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import type { Theme } from '../../theme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { OptionsSelector, type SelectorOption } from '../OptionsSelector';
 import { ServingSizeSelector } from '../ServingSizeSelector';
 import { Button } from '../theme/Button';
@@ -854,7 +855,7 @@ export function CreateMealModal({
           onClose={() => setShowDatePicker(false)}
           selectedDate={selectedDate}
           onDateSelect={(date) => {
-            setSelectedDate(date);
+            setSelectedDate(localCalendarDayDate(date));
             setShowDatePicker(false);
           }}
         />

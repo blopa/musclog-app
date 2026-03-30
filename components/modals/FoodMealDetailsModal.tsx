@@ -41,7 +41,7 @@ import {
   isSuccessFoodDetailProductState,
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import { localDayStartMs } from '../../utils/calendarDate';
+import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import {
   getDecimalSeparator,
@@ -1937,7 +1937,7 @@ export function FoodMealDetailsModal({
             onClose={() => setIsDatePickerVisible(false)}
             selectedDate={selectedDate}
             onDateSelect={(date) => {
-              setSelectedDate(date);
+              setSelectedDate(localCalendarDayDate(date));
               setIsDatePickerVisible(false);
             }}
           />

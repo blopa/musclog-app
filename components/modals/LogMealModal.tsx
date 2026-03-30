@@ -5,6 +5,7 @@ import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'r
 
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { MealNutritionHighlightCard } from '../cards/MealNutritionHighlightCard';
 import { FilterTabs } from '../FilterTabs';
@@ -232,7 +233,7 @@ export function LogMealModal({
         onClose={() => setShowDatePicker(false)}
         selectedDate={selectedDate}
         onDateSelect={(date) => {
-          setSelectedDate(date);
+          setSelectedDate(localCalendarDayDate(date));
           setShowDatePicker(false);
         }}
       />

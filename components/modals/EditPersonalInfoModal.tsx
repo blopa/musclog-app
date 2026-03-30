@@ -11,6 +11,8 @@ type EditPersonalInfoModalProps = {
   onClose: () => void;
   onSave?: (data: PersonalInfo & { photoUri?: string }) => void;
   initialData?: PersonalInfo & { photoUri?: string };
+  /** When true, date of birth is edited under Fitness details instead. */
+  hideDob?: boolean;
 };
 
 export function EditPersonalInfoModal({
@@ -18,6 +20,7 @@ export function EditPersonalInfoModal({
   onClose,
   onSave,
   initialData,
+  hideDob = false,
 }: EditPersonalInfoModalProps) {
   const { t } = useTranslation();
   const [currentFormData, setCurrentFormData] = useState<
@@ -72,6 +75,7 @@ export function EditPersonalInfoModal({
         onSave={handleSave}
         onFormChange={setCurrentFormData}
         hideSaveButton
+        hideDob={hideDob}
       />
     </FullScreenModal>
   );

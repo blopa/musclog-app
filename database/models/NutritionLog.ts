@@ -1,6 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import { formatLocalCalendarDayIso } from '../../utils/calendarDate';
 import { decryptJson, decryptNumber, decryptOptionalString } from '../encryptionHelpers';
 import type { MicrosData } from './Food';
 import Food from './Food';
@@ -206,8 +207,7 @@ export default class NutritionLog extends Model {
 
   // Helper method to get formatted date string
   getDateString(): string {
-    const date = new Date(this.date);
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    return formatLocalCalendarDayIso(new Date(this.date));
   }
 
   // Helper method to get readable meal type

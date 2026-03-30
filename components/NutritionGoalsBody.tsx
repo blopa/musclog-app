@@ -22,6 +22,7 @@ import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useTheme } from '../hooks/useTheme';
 import i18n from '../lang/lang';
+import { localDayStartMs } from '../utils/calendarDate';
 import {
   bmiFromWeightAndHeightM,
   ffmiFromWeightHeightAndBodyFat,
@@ -494,11 +495,11 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-stretch justify-between gap-3 rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
                   style={{ backgroundColor: theme.colors.status.emerald20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
@@ -513,13 +514,16 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="min-w-0 flex-row items-center justify-end gap-2">
-              <View className="min-w-0 max-w-[200px]">
+            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 flex-1 overflow-hidden">
                 <DatePickerInput
+                  className="min-w-0 flex-1"
                   embedded
                   hideLabel
                   trailing="none"
                   variant="compact"
+                  dateDisplay="single-line"
+                  showLeadingIcon={!showIcons}
                   selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
                   unset={goalStartDate == null}
                   unsetPlaceholder={t('nutritionGoals.goalStartDateToday')}
@@ -543,7 +547,7 @@ export function NutritionGoalsBody({
             onClose={() => setIsGoalStartDatePickerVisible(false)}
             selectedDate={goalStartDate != null ? new Date(goalStartDate) : new Date()}
             onDateSelect={(date) => {
-              setGoalStartDate(date.getTime());
+              setGoalStartDate(localDayStartMs(date));
               setIsGoalStartDatePickerVisible(false);
             }}
           />
@@ -822,11 +826,11 @@ export function NutritionGoalsBody({
           </View>
 
           {/* Target date for body metrics */}
-          <View className="flex-row items-stretch justify-between gap-3 rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
                   style={{ backgroundColor: theme.colors.status.emerald20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
@@ -839,13 +843,16 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="min-w-0 flex-row items-center justify-end gap-2">
-              <View className="min-w-0 max-w-[200px]">
+            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+              <View className="min-w-0 flex-1 overflow-hidden">
                 <DatePickerInput
+                  className="min-w-0 flex-1"
                   embedded
                   hideLabel
                   trailing="none"
                   variant="compact"
+                  dateDisplay="single-line"
+                  showLeadingIcon={!showIcons}
                   selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
                   unset={targetDate == null}
                   unsetPlaceholder={t('nutritionGoals.targetDateNotSet')}
@@ -869,7 +876,7 @@ export function NutritionGoalsBody({
             onClose={() => setIsTargetDatePickerVisible(false)}
             selectedDate={targetDate != null ? new Date(targetDate) : new Date()}
             onDateSelect={(date) => {
-              setTargetDate(date.getTime());
+              setTargetDate(localDayStartMs(date));
               setIsTargetDatePickerVisible(false);
             }}
           />

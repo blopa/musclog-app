@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
+import { localCalendarDayDate, localCalendarDayPlusDays } from '../utils/calendarDate';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 
@@ -16,15 +17,11 @@ export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps
   const theme = useTheme();
 
   const goToPreviousDay = () => {
-    const prev = new Date(selectedDate);
-    prev.setDate(prev.getDate() - 1);
-    onDateChange(prev);
+    onDateChange(localCalendarDayPlusDays(selectedDate, -1));
   };
 
   const goToNextDay = () => {
-    const next = new Date(selectedDate);
-    next.setDate(next.getDate() + 1);
-    onDateChange(next);
+    onDateChange(localCalendarDayPlusDays(selectedDate, 1));
   };
 
   return (
@@ -57,7 +54,9 @@ export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
-        onDateSelect={onDateChange}
+        onDateSelect={(date) => {
+          void onDateChange(localCalendarDayDate(date));
+        }}
       />
     </>
   );

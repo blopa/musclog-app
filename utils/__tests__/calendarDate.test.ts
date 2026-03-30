@@ -1,7 +1,10 @@
 import { addDays } from 'date-fns';
 
 import {
+  formatLocalCalendarDayIso,
   isSameLocalCalendarDay,
+  localCalendarDayDate,
+  localCalendarDayPlusDays,
   localDayClosedRangeMaxMs,
   localDayHalfOpenRange,
   localDayKeyPlusCalendarDays,
@@ -26,6 +29,14 @@ describe('calendarDate', () => {
     const base = new Date(2026, 2, 15, 14, 30, 0);
     const morning = new Date(2026, 2, 15, 8, 0, 0);
     expect(localDayStartMs(base)).toBe(localDayStartMs(morning));
+  });
+
+  it('localCalendarDayDate matches localDayStartMs as Date', () => {
+    const withTime = new Date(2026, 4, 20, 15, 45, 30);
+    const normalized = localCalendarDayDate(withTime);
+    expect(normalized.getTime()).toBe(localDayStartMs(withTime));
+    expect(normalized.getHours()).toBe(0);
+    expect(normalized.getMinutes()).toBe(0);
   });
 
   it('localDayStartFromUtcMs normalizes instants to local day start', () => {
@@ -75,5 +86,19 @@ describe('calendarDate', () => {
     expect(isSameLocalCalendarDay(noon, evening)).toBe(true);
     expect(isSameLocalCalendarDay(noon.getTime(), evening.getTime())).toBe(true);
     expect(isSameLocalCalendarDay(noon, new Date(2026, 5, 11, 1, 0, 0))).toBe(false);
+  });
+
+  it('formatLocalCalendarDayIso: yyyy-MM-dd in local calendar', () => {
+    expect(formatLocalCalendarDayIso(new Date(2026, 6, 3, 15, 0, 0))).toBe('2026-07-03');
+  });
+
+  it('localCalendarDayPlusDays matches addDays + local start', () => {
+    const d = new Date(2026, 0, 15, 22, 0, 0);
+    expect(localCalendarDayPlusDays(d, -1).getTime()).toBe(
+      localDayStartMs(new Date(2026, 0, 14, 12, 0, 0))
+    );
+    expect(localCalendarDayPlusDays(d, 1).getTime()).toBe(
+      localDayStartMs(new Date(2026, 0, 16, 12, 0, 0))
+    );
   });
 });

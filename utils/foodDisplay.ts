@@ -1,13 +1,14 @@
 import type { Units } from '../constants/settings';
 import Food from '../database/models/Food';
-import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
-import { getMassUnitLabel, gramsToDisplay } from './unitConversion';
+import { formatDisplayGrams } from './formatDisplayWeight';
+import { getMassUnitLabel } from './unitConversion';
 
 /**
  * Get a display string for the serving size of a food
  * Based on the food's default portion.
  * @param food
  * @param units - When 'imperial', amount is shown in oz; otherwise g.
+ * @param locale
  */
 export async function getFoodServingDisplay(
   food: Food,
@@ -17,22 +18,15 @@ export async function getFoodServingDisplay(
   try {
     const defaultPortion = await food.getDefaultPortionAsync();
     if (defaultPortion) {
-      const display = gramsToDisplay(defaultPortion.gramWeight, units);
-      const rounded = display % 1 === 0 ? display : Math.round(display * 10) / 10;
       const unit = getMassUnitLabel(units);
-      const amount =
-        rounded % 1 === 0
-          ? formatAppInteger(locale, rounded)
-          : formatAppDecimal(locale, rounded, 1);
+      const amount = formatDisplayGrams(locale, units, defaultPortion.gramWeight);
       return `${amount} ${unit} ${defaultPortion.name}`;
     }
   } catch (error) {
     console.error('Error getting serving display:', error);
   }
   const unit = getMassUnitLabel(units);
-  return units === 'imperial'
-    ? `${formatAppDecimal(locale, gramsToDisplay(100, units), 1)} ${unit}`
-    : `100 ${unit}`;
+  return `${formatDisplayGrams(locale, units, 100)} ${unit}`;
 }
 
 /**
@@ -43,10 +37,6 @@ export function getSimpleServingDisplay(
   units: Units = 'metric',
   locale: string = 'en-US'
 ): string {
-  const display = gramsToDisplay(gramWeight, units);
-  const rounded = display % 1 === 0 ? display : Math.round(display * 10) / 10;
   const unit = getMassUnitLabel(units);
-  const amount =
-    rounded % 1 === 0 ? formatAppInteger(locale, rounded) : formatAppDecimal(locale, rounded, 1);
-  return `${amount} ${unit}`;
+  return `${formatDisplayGrams(locale, units, gramWeight)} ${unit}`;
 }

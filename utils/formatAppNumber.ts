@@ -1,5 +1,20 @@
 import { roundToDecimalPlaces } from './roundDecimal';
 
+/**
+ * **Display-only** number formatting (comma vs dot, etc.) via `Intl.NumberFormat`.
+ * Storage stays `number`; never persist these strings.
+ *
+ * **Use in UI**
+ * - Prefer `useFormatAppNumber()` so `locale` tracks `i18n.resolvedLanguage ?? i18n.language`.
+ * - **Integers** (kcal counts, reps): `formatInteger` / `formatAppInteger`.
+ * - **Decimals** (macros g, 1–2 dp): `formatDecimal`, `formatRoundedDecimal`, or `formatAppRoundedDecimal`.
+ * - **Weight in kg** → user units (kg/lb): `formatDisplayWeightKg` in `formatDisplayWeight.ts`.
+ * - **Mass in grams** → g/oz display amount only: `formatDisplayGrams` in `formatDisplayWeight.ts`;
+ *   food copy like “12 g serving”: `getSimpleServingDisplay` / `getFoodServingDisplay` in `foodDisplay.ts`.
+ *
+ * **Avoid** interpolating raw `number` or `toFixed()` in `Text` for user-visible values.
+ */
+
 const formatterCache = new Map<string, Intl.NumberFormat>();
 
 function cacheKey(locale: string, options: Intl.NumberFormatOptions): string {

@@ -230,13 +230,27 @@ export default function EditPastWorkoutDataModal({
       scrollable={false}
       headerRight={headerRight}
     >
-      <View className="p-4">
+      <View className="flex-1 p-4">
         <DraggableFlatList
           data={sets}
-          scrollEnabled={false}
+          style={{ flex: 1 }}
+          scrollEnabled
           activationDistance={10}
           keyExtractor={(item) => item.id}
           onDragEnd={({ data }) => setSets(data)}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            <View style={{ marginTop: theme.spacing.gap.base }}>
+              <DashedButton
+                label={t('workoutDetail.addSet')}
+                onPress={handleAdd}
+                size="sm"
+                icon={
+                  <PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />
+                }
+              />
+            </View>
+          }
           renderItem={({ item, drag, isActive, getIndex }: RenderItemParams<SetItem>) => {
             const index = (typeof getIndex === 'function' ? getIndex() : undefined) ?? 0;
             return (
@@ -251,14 +265,6 @@ export default function EditPastWorkoutDataModal({
             );
           }}
         />
-        <View style={{ marginTop: theme.spacing.gap.base }}>
-          <DashedButton
-            label={t('workoutDetail.addSet')}
-            onPress={handleAdd}
-            size="sm"
-            icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
-          />
-        </View>
       </View>
     </FullScreenModal>
   );

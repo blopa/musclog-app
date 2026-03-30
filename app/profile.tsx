@@ -31,7 +31,6 @@ import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { type Gender } from '../database/models';
 import { UserService } from '../database/services';
-import { SettingsService } from '../database/services/SettingsService';
 import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
@@ -40,7 +39,10 @@ import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
-import { localDayStartMs } from '../utils/calendarDate';
+import {
+  formatDateOfBirthFromTimestamp,
+  persistFitnessDetails,
+} from '../utils/fitnessProfilePersistence';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -238,22 +240,9 @@ export default function ProfileScreen() {
 
   const handleSavePersonalInfo = async (data: PersonalInfo) => {
     try {
-      const dobParts = data.dob.split('/');
-      const dateOfBirth =
-        dobParts.length === 3
-          ? localDayStartMs(
-              new Date(
-                parseInt(dobParts[2], 10),
-                parseInt(dobParts[0], 10) - 1,
-                parseInt(dobParts[1], 10)
-              )
-            )
-          : localDayStartMs(new Date(data.dob));
-
       await UserService.updateUserProfile({
         fullName: data.fullName,
         email: data.email,
-        dateOfBirth,
         gender: data.gender as Gender,
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
@@ -265,15 +254,7 @@ export default function ProfileScreen() {
 
   const handleSaveFitnessDetails = async (data: FitnessDetails) => {
     try {
-      // Update units setting
-      await SettingsService.setUnits(data.units);
-
-      // Update user fitness details
-      await UserService.updateUserProfile({
-        fitnessGoal: data.fitnessGoal,
-        activityLevel: data.activityLevel,
-        liftingExperience: data.experience,
-      });
+      await persistFitnessDetails(data);
     } catch (err) {
       console.error('Failed to save fitness details:', err);
     }
@@ -434,12 +415,13 @@ export default function ProfileScreen() {
         visible={isEditPersonalVisible}
         onClose={() => setIsEditPersonalVisible(false)}
         onSave={handleSavePersonalInfo}
+        hideDob
         initialData={
           dbUser
             ? {
                 fullName: dbUser.fullName,
                 email: dbUser.email || '',
-                dob: new Date(dbUser.dateOfBirth).toISOString().split('T')[0],
+                dob: '',
                 gender: dbUser.gender,
                 avatarIcon: dbUser.avatarIcon,
                 avatarColor: dbUser.avatarColor,
@@ -455,9 +437,12 @@ export default function ProfileScreen() {
         initialData={
           dbUser && metrics
             ? {
+                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth),
+                gender: dbUser.gender,
                 units,
                 weight: metrics.weight?.toString() || '',
                 height: metrics.height?.toString() || '',
+                fatPercentage: metrics.bodyFat,
                 weightGoal: dbUser.weightGoal ?? 'maintain',
                 fitnessGoal: dbUser.fitnessGoal,
                 activityLevel: dbUser.activityLevel,
