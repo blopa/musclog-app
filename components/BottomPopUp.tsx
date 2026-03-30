@@ -49,6 +49,22 @@ export function BottomPopUp({
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  /**
+   * Android: `Modal` + edge-to-edge often reports `insets.bottom === 0` while the sheet is still laid out
+   * to the physical screen bottom behind the system nav bar. Padding inside ScrollView does not move the
+   * sheet — use bottom margin on the sheet so the whole panel sits above the nav bar.
+   */
+  const androidSheetBottomMargin =
+    Platform.OS === 'android'
+      ? Math.max(insets.bottom - 16, theme.spacing.padding['2xl'])
+      : 0;
+
+  /** Insets for scroll/footer padding (iOS home indicator; Android handled by sheet margin). */
+  const contentBottomPadding =
+    Platform.OS === 'android'
+      ? theme.spacing.padding.base
+      : Math.max(insets.bottom, theme.spacing.padding.base);
+
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
   /** Lifts the sheet when the keyboard opens so focused inputs stay visible (half keyboard height). */
   const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
@@ -160,7 +176,7 @@ export function BottomPopUp({
                 borderTopRightRadius: theme.borderRadius['3xl'],
                 maxHeight: effectiveMaxHeight,
                 width: '100%',
-                marginBottom: keyboardBottomLift,
+                marginBottom: androidSheetBottomMargin + keyboardBottomLift,
               },
               sheetHeightStyle,
             ]}
@@ -203,11 +219,7 @@ export function BottomPopUp({
               scrollable ? (
                 <ScrollView
                   className="p-6"
-                  style={
-                    !footer
-                      ? { paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl) }
-                      : undefined
-                  }
+                  style={!footer ? { paddingBottom: contentBottomPadding } : undefined}
                   scrollEnabled={true}
                   nestedScrollEnabled={true}
                   keyboardShouldPersistTaps="handled"
@@ -220,6 +232,7 @@ export function BottomPopUp({
                     flex: 1,
                     paddingHorizontal: theme.spacing.padding.xl,
                     paddingTop: theme.spacing.padding.xl,
+                    paddingBottom: contentBottomPadding,
                   }}
                 >
                   {children}
@@ -232,7 +245,7 @@ export function BottomPopUp({
               <View
                 className="border-t border-border-dark px-6 pt-2"
                 style={{
-                  paddingBottom: Math.max(insets.bottom, theme.spacing.padding.xl),
+                  paddingBottom: contentBottomPadding,
                 }}
               >
                 {footer}
