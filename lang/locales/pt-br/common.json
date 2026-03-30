@@ -3,6 +3,7 @@
     "clear": "Limpar",
     "value": "Valor",
     "name": "Nome",
+    "context": "Context",
     "processing": "processando...",
     "success": "Sucesso",
     "saveError": "Falha ao salvar alterações",

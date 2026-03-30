@@ -22,18 +22,22 @@ import type { EditFieldConfig, EditFormValues } from './types';
 export type SaveRecordContext = { units: Units };
 
 // Muscle groups for Exercise
+// Cover all persisted muscle_group values (create flow uses arms/legs/core too).
 const MUSCLE_GROUPS = [
   'chest',
   'back',
   'shoulders',
+  'arms',
   'biceps',
   'triceps',
   'forearms',
   'abs',
+  'core',
   'quads',
   'hamstrings',
   'glutes',
   'calves',
+  'legs',
   'full_body',
   'cardio',
   'other',
