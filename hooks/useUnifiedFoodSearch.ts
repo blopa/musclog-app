@@ -8,6 +8,7 @@ import {
   SearchResultProduct,
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
+import { resolveRoundedPer100gCaloriesForDisplay } from '../utils/inferCaloriesFromMacros';
 import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
 import { getProductName } from '../utils/productName';
 import { gramsToDisplay } from '../utils/unitConversion';
@@ -336,19 +337,27 @@ export function useUnifiedFoodSearch({
       const massUnit = getMassUnit(units);
       const displayAmount = units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100;
 
+      const displayCalories = resolveRoundedPer100gCaloriesForDisplay({
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+      });
+
       return {
         id: food.id,
         name: food.name,
         description: t('food.descriptionFormat', {
           brand: food.brand || t('food.customFood'),
-          calories: Math.round(food.calories || 0),
+          calories: displayCalories,
           amount: displayAmount,
           unit: t(getMassUnitI18nKey(units)),
         }),
         brand: food.brand,
         imageUrl: food.imageUrl, // Include image URL from local database
         serving_size: `100 ${massUnit}`, // Display standard serving with appropriate unit
-        calories: food.calories,
+        calories: displayCalories > 0 ? displayCalories : food.calories,
         protein: food.protein,
         carbs: food.carbs,
         fat: food.fat,

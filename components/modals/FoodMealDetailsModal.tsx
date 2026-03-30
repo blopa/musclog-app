@@ -44,6 +44,10 @@ import {
 import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import {
+  applyInferredCaloriesFromMacrosIfNeeded,
+  toFiniteMacro,
+} from '../../utils/inferCaloriesFromMacros';
+import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
@@ -72,12 +76,6 @@ import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
 
-/** Coerce API / DB values that may be strings (e.g. "0") into finite numbers for macro comparisons. */
-function toFiniteMacro(value: unknown): number {
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : 0;
-}
-
 function areCoreMacrosEffectivelyZero(data: {
   calories?: unknown;
   protein?: unknown;
@@ -91,67 +89,6 @@ function areCoreMacrosEffectivelyZero(data: {
     Math.abs(toFiniteMacro(data.carbs)) < eps &&
     Math.abs(toFiniteMacro(data.fat)) < eps
   );
-}
-
-/** True if any of protein, carbs, fat, or fiber is non-zero (per 100g). */
-function hasAnyMacroValue(data: {
-  protein?: unknown;
-  carbs?: unknown;
-  fat?: unknown;
-  fiber?: unknown;
-}): boolean {
-  return (
-    Math.abs(toFiniteMacro(data.protein)) > 0 ||
-    Math.abs(toFiniteMacro(data.carbs)) > 0 ||
-    Math.abs(toFiniteMacro(data.fat)) > 0 ||
-    Math.abs(toFiniteMacro(data.fiber)) > 0
-  );
-}
-
-/**
- * US-style energy from macros (per 100g): total carbohydrate includes fiber; fiber is counted at 2 kcal/g.
- * digestible carbs = max(0, carbs − fiber).
- */
-function inferCaloriesFromMacrosPer100g(
-  protein: unknown,
-  carbs: unknown,
-  fat: unknown,
-  fiber: unknown
-): number {
-  const p = Math.max(0, toFiniteMacro(protein));
-  const c = Math.max(0, toFiniteMacro(carbs));
-  const f = Math.max(0, toFiniteMacro(fat));
-  const fib = Math.max(0, toFiniteMacro(fiber));
-  const digestibleCarbs = Math.max(0, c - fib);
-  return 4 * p + 4 * digestibleCarbs + 9 * f + 2 * fib;
-}
-
-type NutritionalDataShape = {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber: number;
-  sugar: number;
-  saturatedFat: number;
-  sodium: number;
-};
-
-function applyInferredCaloriesFromMacrosIfNeeded(data: NutritionalDataShape): NutritionalDataShape {
-  const cal = toFiniteMacro(data.calories);
-  if (cal > 0 || !hasAnyMacroValue(data)) {
-    return data;
-  }
-
-  const inferred = inferCaloriesFromMacrosPer100g(data.protein, data.carbs, data.fat, data.fiber);
-  if (!Number.isFinite(inferred) || inferred <= 0) {
-    return data;
-  }
-
-  return {
-    ...data,
-    calories: roundToDecimalPlaces(inferred, 2),
-  };
 }
 
 /**

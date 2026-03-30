@@ -367,7 +367,9 @@ export class FoodPortionService {
       throw new Error('Cannot duplicate deleted portion');
     }
 
-    const existingSameGrams = await this.findExistingPortionByGramWeight(originalPortion.gramWeight);
+    const existingSameGrams = await this.findExistingPortionByGramWeight(
+      originalPortion.gramWeight
+    );
     if (existingSameGrams) {
       return existingSameGrams;
     }

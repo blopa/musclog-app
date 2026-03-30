@@ -48,6 +48,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '../../hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '../../hooks/useYesterdayMealData';
+import { resolveRoundedPer100gCaloriesForDisplay } from '../../utils/inferCaloriesFromMacros';
 import { FoodSearchItemCard } from '../cards/FoodSearchItemCard';
 import { SameAsYesterdayCard } from '../cards/SameAsYesterdayCard';
 import { Button } from '../theme/Button';
@@ -552,7 +553,15 @@ export function FoodSearchModal({
               name: f.name ?? '',
               description: t('foodSearch.foodDescriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: formatInteger(Math.round(f.calories ?? 0)),
+                calories: formatInteger(
+                  resolveRoundedPer100gCaloriesForDisplay({
+                    calories: f.calories,
+                    protein: f.protein,
+                    carbs: f.carbs,
+                    fat: f.fat,
+                    fiber: f.fiber,
+                  })
+                ),
               }),
               brand: (f as any).brand,
               serving_size: portion100gName,
@@ -610,7 +619,15 @@ export function FoodSearchModal({
           name: f.name ?? '',
           description: t('foodSearch.foodDescriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: formatInteger(Math.round(f.calories ?? 0)),
+            calories: formatInteger(
+              resolveRoundedPer100gCaloriesForDisplay({
+                calories: f.calories,
+                protein: f.protein,
+                carbs: f.carbs,
+                fat: f.fat,
+                fiber: f.fiber,
+              })
+            ),
           }),
           brand: f.brand,
           serving_size: portion100gName,
@@ -1368,7 +1385,15 @@ export function FoodSearchModal({
                               name: food.name ?? '',
                               description: t('foodSearch.foodDescriptionPer100g', {
                                 brand: food.brand || t('foodSearch.customFoodLabel'),
-                                calories: formatInteger(Math.round(food.calories ?? 0)),
+                                calories: formatInteger(
+                                  resolveRoundedPer100gCaloriesForDisplay({
+                                    calories: food.calories,
+                                    protein: food.protein,
+                                    carbs: food.carbs,
+                                    fat: food.fat,
+                                    fiber: food.fiber,
+                                  })
+                                ),
                               }),
                               brand: food.brand,
                               serving_size: portion100gName,
