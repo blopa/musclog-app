@@ -414,6 +414,7 @@ export function FoodSearchModal({
     retryAPI,
     retryUSDA,
     cancelSearch,
+    triggerNow,
   } = useUnifiedFoodSearch({
     searchTerm: searchQuery,
     enabled: visible,
@@ -422,7 +423,7 @@ export function FoodSearchModal({
     localLimit: 10,
     apiLimit: openFoodLimit,
     usdaLimit,
-    debounceMs: 300,
+    debounceMs: 600,
   });
 
   const [showCancelSearch, setShowCancelSearch] = useState(false);
@@ -869,6 +870,8 @@ export function FoodSearchModal({
                 placeholderTextColor={theme.colors.text.secondary}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                onSubmitEditing={triggerNow}
+                returnKeyType="search"
                 className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,

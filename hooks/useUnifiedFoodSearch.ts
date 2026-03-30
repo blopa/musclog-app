@@ -65,6 +65,7 @@ export function useUnifiedFoodSearch({
   const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const prevDebouncedRef = useRef(searchTerm.trim());
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // API pagination states
   const [apiOffset, setApiOffset] = useState(0);
@@ -84,6 +85,10 @@ export function useUnifiedFoodSearch({
 
   // Debounce search term
   useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
     if (!searchTerm || searchTerm.trim().length < 2) {
       prevDebouncedRef.current = '';
       setDebouncedSearchTerm('');
@@ -97,7 +102,7 @@ export function useUnifiedFoodSearch({
       return;
     }
 
-    const timer = setTimeout(() => {
+    debounceTimerRef.current = setTimeout(() => {
       const trimmed = searchTerm.trim();
       const didChange = trimmed !== prevDebouncedRef.current;
       prevDebouncedRef.current = trimmed;
@@ -114,8 +119,37 @@ export function useUnifiedFoodSearch({
       }
     }, debounceMs);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [searchTerm, debounceMs]);
+
+  const triggerNow = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    const trimmed = searchTerm.trim();
+    if (!trimmed || trimmed.length < 2) {
+      return;
+    }
+
+    const didChange = trimmed !== prevDebouncedRef.current;
+    prevDebouncedRef.current = trimmed;
+    setDebouncedSearchTerm(trimmed);
+    if (didChange) {
+      setApiCompleted(false);
+      setUsdaCompleted(false);
+      setFirstResolvedApi(null);
+      setApiOffset(0);
+      setUsdaOffset(0);
+      setAccumulatedApiResults([]);
+      setAccumulatedUsdaResults([]);
+    }
+  }, [searchTerm]);
 
   // Local database search - using built-in pagination from useFoods
   const {
@@ -528,5 +562,6 @@ export function useUnifiedFoodSearch({
     retryAPI,
     retryUSDA,
     cancelSearch,
+    triggerNow,
   };
 }
