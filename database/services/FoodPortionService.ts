@@ -7,7 +7,19 @@ import FoodPortion from '../models/FoodPortion';
 
 export class FoodPortionService {
   /**
-   * Create a new global portion (not tied to any specific food)
+   * Non-deleted portion with this exact gram_weight, if any (at most one should exist after dedupe).
+   */
+  static async findExistingPortionByGramWeight(gramWeight: number): Promise<FoodPortion | null> {
+    const rows = await database
+      .get<FoodPortion>('food_portions')
+      .query(Q.where('gram_weight', gramWeight), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    return rows.length > 0 ? rows[0] : null;
+  }
+
+  /**
+   * Create a new global portion (not tied to any specific food).
+   * If a non-deleted portion with the same gram_weight already exists, returns it and does not create.
    */
   static async createFoodPortion(
     name: string,
@@ -15,6 +27,11 @@ export class FoodPortionService {
     icon?: string,
     isDefault = false
   ): Promise<FoodPortion> {
+    const duplicate = await this.findExistingPortionByGramWeight(gramWeight);
+    if (duplicate) {
+      return duplicate;
+    }
+
     return await database.write(async () => {
       const now = Date.now();
 
@@ -32,8 +49,7 @@ export class FoodPortionService {
   }
 
   /**
-   * Get or create a portion by name and gram weight
-   * Returns existing portion if found, creates new one if not
+   * Same as {@link createFoodPortion} — uniqueness is by gram_weight only.
    */
   static async getOrCreatePortion(
     name: string,
@@ -41,21 +57,6 @@ export class FoodPortionService {
     icon?: string,
     isDefault = false
   ): Promise<FoodPortion> {
-    // Try to find existing portion with same name and gram weight
-    const existing = await database
-      .get<FoodPortion>('food_portions')
-      .query(
-        Q.where('name', name),
-        Q.where('gram_weight', gramWeight),
-        Q.where('deleted_at', Q.eq(null))
-      )
-      .fetch();
-
-    if (existing.length > 0) {
-      return existing[0];
-    }
-
-    // Create new portion
     return this.createFoodPortion(name, gramWeight, icon, isDefault);
   }
 
@@ -227,36 +228,17 @@ export class FoodPortionService {
       { name: i18n.t('food.portions.250g'), gramWeight: 250, icon: 'scale' },
     ];
 
-    return await database.write(async () => {
-      const now = Date.now();
+    for (const portion of commonPortions) {
+      const created = await this.createFoodPortion(
+        portion.name,
+        portion.gramWeight,
+        portion.icon,
+        portion.name === i18n.t('food.portions.100g')
+      );
+      portions.push(created);
+    }
 
-      for (const portion of commonPortions) {
-        // Check if portion already exists
-        const existing = await database
-          .get<FoodPortion>('food_portions')
-          .query(Q.where('name', portion.name), Q.where('gram_weight', portion.gramWeight))
-          .fetch();
-
-        if (existing.length === 0) {
-          const newPortion = await database.get<FoodPortion>('food_portions').create((p) => {
-            p.name = portion.name;
-            p.gramWeight = portion.gramWeight;
-            p.isDefault = portion.name === i18n.t('food.portions.100g'); // Set 100g as default
-            if (portion.icon) {
-              p.icon = portion.icon;
-            }
-            p.createdAt = now;
-            p.updatedAt = now;
-          });
-
-          portions.push(newPortion);
-        } else {
-          portions.push(existing[0]);
-        }
-      }
-
-      return portions;
-    });
+    return portions;
   }
 
   /**
@@ -379,16 +361,20 @@ export class FoodPortionService {
    * Duplicate portion (create a copy)
    */
   static async duplicatePortion(id: string): Promise<FoodPortion> {
+    const originalPortion = await database.get<FoodPortion>('food_portions').find(id);
+
+    if (originalPortion.deletedAt) {
+      throw new Error('Cannot duplicate deleted portion');
+    }
+
+    const existingSameGrams = await this.findExistingPortionByGramWeight(originalPortion.gramWeight);
+    if (existingSameGrams) {
+      return existingSameGrams;
+    }
+
     return await database.write(async () => {
-      const originalPortion = await database.get<FoodPortion>('food_portions').find(id);
-
-      if (originalPortion.deletedAt) {
-        throw new Error('Cannot duplicate deleted portion');
-      }
-
       const now = Date.now();
 
-      // Create new portion with "(Copy)" suffix
       return await database.get<FoodPortion>('food_portions').create((portion) => {
         portion.name = `${originalPortion.name} (Copy)`;
         portion.gramWeight = originalPortion.gramWeight;
