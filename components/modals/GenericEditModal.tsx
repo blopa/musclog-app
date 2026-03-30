@@ -39,7 +39,7 @@ export function GenericEditModal({
   loadError,
   submitLabel,
 }: GenericEditModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [formValues, setFormValues] = useState<EditFormValues>(initialValues);
   const [isSaving, setIsSaving] = useState(false);
@@ -94,16 +94,18 @@ export function GenericEditModal({
       ];
       const colorScheme = colorSchemes[index % colorSchemes.length];
 
-      // Try to get a description from translation keys
+      // Optional longer subtitle: e.g. food.meals.* → food.meals.descriptions.*
+      // (keys like ai.icons.Dumbbell have no parallel *.descriptions.* — skip if absent)
       const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
-      const description = t(descriptionKey);
+      const title = t(option.label, option.label);
+      const description = i18n.exists(descriptionKey) ? t(descriptionKey) : title;
 
       return {
         icon: Circle,
         iconColor: colorScheme.color,
         iconBgColor: colorScheme.bg,
-        title: t(option.label, option.label),
-        description: description || t(option.label, option.label),
+        title,
+        description,
         onPress: () => onSelect(option.value),
       };
     });
