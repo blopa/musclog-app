@@ -93,6 +93,67 @@ function areCoreMacrosEffectivelyZero(data: {
   );
 }
 
+/** True if any of protein, carbs, fat, or fiber is non-zero (per 100g). */
+function hasAnyMacroValue(data: {
+  protein?: unknown;
+  carbs?: unknown;
+  fat?: unknown;
+  fiber?: unknown;
+}): boolean {
+  return (
+    Math.abs(toFiniteMacro(data.protein)) > 0 ||
+    Math.abs(toFiniteMacro(data.carbs)) > 0 ||
+    Math.abs(toFiniteMacro(data.fat)) > 0 ||
+    Math.abs(toFiniteMacro(data.fiber)) > 0
+  );
+}
+
+/**
+ * US-style energy from macros (per 100g): total carbohydrate includes fiber; fiber is counted at 2 kcal/g.
+ * digestible carbs = max(0, carbs − fiber).
+ */
+function inferCaloriesFromMacrosPer100g(
+  protein: unknown,
+  carbs: unknown,
+  fat: unknown,
+  fiber: unknown
+): number {
+  const p = Math.max(0, toFiniteMacro(protein));
+  const c = Math.max(0, toFiniteMacro(carbs));
+  const f = Math.max(0, toFiniteMacro(fat));
+  const fib = Math.max(0, toFiniteMacro(fiber));
+  const digestibleCarbs = Math.max(0, c - fib);
+  return 4 * p + 4 * digestibleCarbs + 9 * f + 2 * fib;
+}
+
+type NutritionalDataShape = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  sugar: number;
+  saturatedFat: number;
+  sodium: number;
+};
+
+function applyInferredCaloriesFromMacrosIfNeeded(data: NutritionalDataShape): NutritionalDataShape {
+  const cal = toFiniteMacro(data.calories);
+  if (cal > 0 || !hasAnyMacroValue(data)) {
+    return data;
+  }
+
+  const inferred = inferCaloriesFromMacrosPer100g(data.protein, data.carbs, data.fat, data.fiber);
+  if (!Number.isFinite(inferred) || inferred <= 0) {
+    return data;
+  }
+
+  return {
+    ...data,
+    calories: roundToDecimalPlaces(inferred, 2),
+  };
+}
+
 /**
  * OFF barcode responses from `useFoodProductDetails` omit `source`; treat that as Open Food Facts
  * so we do not redundantly refetch OFF when trying alternate providers.
@@ -972,7 +1033,7 @@ export function FoodMealDetailsModal({
     mealNutrients,
   ]);
 
-  const baseNutritionalData = getNutritionalData();
+  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(getNutritionalData());
   const nutritionalData =
     editedOverrides &&
     (editedOverrides.calories != null ||
@@ -1357,6 +1418,16 @@ export function FoodMealDetailsModal({
               record.name = correctName;
             });
           }
+        }
+
+        // Persist inferred per-100g calories so logFood snapshot matches the modal (Food row was 0 kcal).
+        if (
+          toFiniteMacro(foodData!.calories) <= 0 &&
+          toFiniteMacro(nutritionalData.calories) > 0
+        ) {
+          await foodData!.update((record: any) => {
+            record.calories = nutritionalData.calories;
+          });
         }
 
         // Create nutrition log with local food
