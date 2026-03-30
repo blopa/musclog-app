@@ -26,31 +26,31 @@ export async function handleNotificationResponse(response: Notifications.Notific
   switch (type) {
     case 'workout-reminder':
       if (data.templateId) {
-        router.push(`/workouts/start?templateId=${data.templateId}`);
+        router.navigate(`/workouts/start?templateId=${data.templateId}`);
       } else {
-        router.push('/workouts');
+        router.navigate('/workouts');
       }
       break;
 
     case 'nutrition-overview':
-      router.push('/food');
+      router.navigate('/food');
       break;
 
     case 'nutrition-checkin':
-      router.push('/nutrition/checkin-list');
+      router.navigate('/nutrition/checkin-list');
       break;
 
     case 'active-workout':
       // Notification persists while workout is active, tapping it should return to the session
-      router.push('/workouts/session');
+      router.navigate('/workouts/session');
       break;
 
     case 'rest-timer-alert':
-      router.push('/workouts/session');
+      router.navigate('/workouts/session');
       break;
 
     case 'menstrual-cycle':
-      router.push('/cycle');
+      router.navigate('/cycle');
       break;
 
     default:

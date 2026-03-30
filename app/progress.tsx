@@ -128,7 +128,7 @@ export default function ProgressScreen() {
       description: t('progress.manageMetricsDescription'),
       icon: Scale,
       onPress: () => {
-        router.push('/settings');
+        router.navigate('/settings');
       },
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,
@@ -149,7 +149,7 @@ export default function ProgressScreen() {
       description: t('progress.listMeasurementsDescription'),
       icon: Ruler,
       onPress: () => {
-        router.push('/profile');
+        router.navigate('/profile');
       },
       iconColor: theme.colors.accent.secondary,
       iconBgColor: theme.colors.background.iconDarker,

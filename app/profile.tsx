@@ -274,7 +274,7 @@ export default function ProfileScreen() {
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
           <Pressable
             className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.push('/settings')}
+            onPress={() => router.navigate('/settings')}
           >
             <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
@@ -392,7 +392,7 @@ export default function ProfileScreen() {
                   } else if (item.id === 'fitness') {
                     setIsEditFitnessVisible(true);
                   } else if (item.id === 'preferences') {
-                    router.push('/settings');
+                    router.navigate('/settings');
                   }
                 }}
               />

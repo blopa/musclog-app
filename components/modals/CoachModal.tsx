@@ -865,7 +865,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const handleGoToSettings = useCallback(() => {
     onClose();
-    router.push('/settings');
+    router.navigate('/settings');
   }, [onClose, router]);
 
   const handleSeeAllMeals = useCallback(() => {

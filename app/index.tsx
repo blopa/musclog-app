@@ -234,7 +234,7 @@ export default function HomeScreen() {
       if (queryParams?.action === 'open-camera') {
         openCamera({ mode: 'barcode-scan' });
       } else if (queryParams?.action === 'open-nutrition') {
-        router.push('/nutrition/food');
+        router.navigate('/nutrition/food');
       }
     };
 
@@ -447,7 +447,7 @@ export default function HomeScreen() {
           <ActionButton
             variant="workout"
             label={t('home.actions.startWorkout')}
-            onPress={() => router.push('/workout/workouts')}
+            onPress={() => router.navigate('/workout/workouts')}
           />
           <ActionButton
             variant="food"
@@ -461,7 +461,7 @@ export default function HomeScreen() {
               {t('home.sections.recentFoods')}
             </Text>
             <ShowMoreButton
-              onPress={() => router.push('/nutrition/food')}
+              onPress={() => router.navigate('/nutrition/food')}
               label={t('common.seeAll')}
             />
           </View>
@@ -570,7 +570,7 @@ export default function HomeScreen() {
           ) : recentWorkouts.length === 0 ? (
             <WorkoutFoodEmptyState
               type="workout"
-              onButtonPress={() => router.push('/workout/workouts')}
+              onButtonPress={() => router.navigate('/workout/workouts')}
             />
           ) : (
             <View className="gap-3">
@@ -596,7 +596,7 @@ export default function HomeScreen() {
               {recentWorkouts.length > 0 ? (
                 <DashedButton
                   label={t('startWorkout.label')}
-                  onPress={() => router.push('/workout/workouts')}
+                  onPress={() => router.navigate('/workout/workouts')}
                   size="sm"
                   icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                 />
@@ -619,7 +619,7 @@ export default function HomeScreen() {
           avatarColor: dbUser?.avatarColor,
         }}
         onCoachPress={openCoach}
-        onCyclePress={() => router.push('/cycle')}
+        onCyclePress={() => router.navigate('/cycle')}
         {...(__DEV__ && {
           onDebugMenuPress: () => router.push('/test/debug'),
         })}

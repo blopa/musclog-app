@@ -183,7 +183,7 @@ export default function ViewExerciseModal({
 
   const handleWorkoutPress = (workoutId: string) => {
     onClose();
-    router.push(`/workout/workouts?previewTemplateId=${workoutId}`);
+    router.navigate(`/workout/workouts?previewTemplateId=${workoutId}`);
   };
 
   const checkExerciseDependencies = async (id: string): Promise<string | null> => {
