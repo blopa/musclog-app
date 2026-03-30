@@ -1,6 +1,6 @@
 import { FunctionDeclaration } from '@google/generative-ai';
 import convert, { Unit } from 'convert';
-import { differenceInCalendarDays, format } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 
 import type { Units } from '../constants/settings';
@@ -19,6 +19,7 @@ import {
 } from '../database/services';
 import i18n from '../lang/lang';
 import {
+  formatLocalCalendarDayIso,
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
@@ -413,9 +414,8 @@ export const getNutritionInsightsPrompt = async (
     for (const log of logs) {
       try {
         const nutrients = await log.getNutrients();
-        const dateKey = format(
-          new Date(localDayStartFromUtcMs(log.date ?? Date.now())),
-          'yyyy-MM-dd'
+        const dateKey = formatLocalCalendarDayIso(
+          new Date(localDayStartFromUtcMs(log.date ?? Date.now()))
         );
 
         const existing = dailyNutritionMap.get(dateKey) || {
@@ -462,13 +462,13 @@ export const getNutritionInsightsPrompt = async (
     const byDate = new Map<string, { weight?: number; fatPercentage?: number }>();
     for (const m of weightMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
+      const dateKey = formatLocalCalendarDayIso(new Date(localDayStartFromUtcMs(m.date)));
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, weight: value });
     }
     for (const m of bodyFatMetrics) {
       const { value } = await m.getDecrypted();
-      const dateKey = format(new Date(localDayStartFromUtcMs(m.date)), 'yyyy-MM-dd');
+      const dateKey = formatLocalCalendarDayIso(new Date(localDayStartFromUtcMs(m.date)));
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, fatPercentage: value });
     }

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { format, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import {
@@ -10,7 +10,12 @@ import {
 } from '../database/services';
 import i18n from '../lang/lang';
 import AiService from '../services/AiService';
-import { isSameLocalCalendarDay, localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
+import {
+  formatLocalCalendarDayIso,
+  isSameLocalCalendarDay,
+  localDayClosedRangeMaxMs,
+  localDayStartMs,
+} from './calendarDate';
 import { getNutritionInsights, getRecentWorkoutsInsights } from './coachAI';
 
 const DAILY_TASKS_TIMESTAMP_KEY = 'daily_tasks_last_run';
@@ -78,8 +83,8 @@ export async function configureDailyTasks(onInsightsGenerated?: () => void): Pro
     // Calculate date range (last 7 calendar days including today)
     const today = new Date();
     const startCal = subDays(today, 7);
-    const startDateStr = format(startCal, 'yyyy-MM-dd');
-    const endDateStr = format(today, 'yyyy-MM-dd');
+    const startDateStr = formatLocalCalendarDayIso(startCal);
+    const endDateStr = formatLocalCalendarDayIso(today);
 
     const [workoutInsightsEnabled, nutritionInsightsEnabled] = await Promise.all([
       SettingsService.getWorkoutInsights(),

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { type MuscleGroup } from '../../database/models';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { OptionsSelector, SelectorOption } from '../OptionsSelector';
 import { Button } from '../theme/Button';
@@ -40,6 +41,7 @@ export function FilterWorkoutsModal({
 }: FilterWorkoutsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const [selectedWorkoutType, setSelectedWorkoutType] = useState<WorkoutType | undefined>(
     'strength'
   );
@@ -133,13 +135,16 @@ export function FilterWorkoutsModal({
   const activeFilterCount =
     (selectedWorkoutType ? 1 : 0) + selectedMuscles.length + (duration !== 90 ? 1 : 0);
 
-  const formatDuration = (minutes: number) => {
+  const formatDurationLabel = (minutes: number) => {
     if (minutes >= 60) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
-      return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+      return mins > 0
+        ? `${formatInteger(hours)}h ${formatInteger(mins)}m`
+        : `${formatInteger(hours)}h`;
     }
-    return `${minutes}m`;
+
+    return `${formatInteger(minutes)}m`;
   };
 
   return (
@@ -320,7 +325,7 @@ export function FilterWorkoutsModal({
                 fontFamily: 'monospace',
               }}
             >
-              {t('workouts.filterWorkouts.upTo', { duration: formatDuration(duration) })}
+              {t('workouts.filterWorkouts.upTo', { duration: formatDurationLabel(duration) })}
             </Text>
           </View>
           <View
@@ -360,7 +365,7 @@ export function FilterWorkoutsModal({
                     color: theme.colors.text.tertiary,
                   }}
                 >
-                  {formatDuration(value)}
+                  {formatDurationLabel(value)}
                 </Text>
               ))}
             </View>

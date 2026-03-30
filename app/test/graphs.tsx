@@ -26,11 +26,13 @@ import {
 import { TrainingConsistencyChart } from '../../components/charts/TrainingConsistencyChart';
 import { Button } from '../../components/theme/Button';
 import { MacrosPizzaChart } from '../../components/theme/MacrosPizzaChart';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useTheme } from '../../hooks/useTheme';
 import { getXAxisLabels } from '../../utils/chartUtils';
 
 export default function GraphsTestScreen() {
   const theme = useTheme();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   // Sample data for LineChart
   const [lineChartData, setLineChartData] = useState<LineChartDataPoint[]>([
     { x: 0, y: 20 },
@@ -516,7 +518,7 @@ export default function GraphsTestScreen() {
                   { label: '50', yDomainValue: 50 },
                   { label: '0', yDomainValue: 0 },
                 ]}
-                tooltipFormatter={(point) => `${Math.round(point.y)}g`}
+                tooltipFormatter={(point) => `${formatRoundedDecimal(point.y, 0)}g`}
               />
             </View>
           </View>

@@ -61,15 +61,19 @@ export type TranslationFunction = (key: string) => string;
 // Formatting Functions
 
 /**
- * Format duration in minutes to readable format
+ * Format duration in minutes for display. Pass `locale` (i18n) so digits/separators match the app.
  */
-export function formatDuration(minutes: number, t: TranslationFunction): string {
+export function formatDuration(minutes: number, t: TranslationFunction, locale: string): string {
   if (minutes < 60) {
-    return `${minutes} ${t('common.min')}`;
+    return `${formatAppInteger(locale, minutes)} ${t('common.min')}`;
   }
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}${t('common.min')}` : `${hours}h`;
+
+  return mins > 0
+    ? `${formatAppInteger(locale, hours)}h ${formatAppInteger(locale, mins)}${t('common.min')}`
+    : `${formatAppInteger(locale, hours)}h`;
 }
 
 /**
@@ -270,7 +274,7 @@ export async function processWorkouts(
       const stats: { label: string; value: string }[] = [
         {
           label: t('pastWorkoutHistory.stats.duration'),
-          value: formatDuration(durationMinutes, t),
+          value: formatDuration(durationMinutes, t, appLocale),
         },
       ];
 

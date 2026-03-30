@@ -12,18 +12,24 @@ import { PhaseWheel } from '../components/PhaseWheel';
 import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { UserMetricService } from '../database/services';
 import { MenstrualService } from '../database/services/MenstrualService';
+import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '../hooks/useMenstrualCycle';
 import { useTheme } from '../hooks/useTheme';
-import { localDayClosedRangeMaxMs, localDayStartMs } from '../utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localDayClosedRangeMaxMs,
+  localDayStartMs,
+} from '../utils/calendarDate';
 
 export default function CycleScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
@@ -180,7 +186,7 @@ export default function CycleScreen() {
                         </Text>
                         <Text className="text-lg font-black text-text-primary">
                           {metric.type === 'period_flow'
-                            ? `${metric.value}/5`
+                            ? `${formatInteger(Number(metric.value))}/5`
                             : metric.note || '--'}
                         </Text>
                       </View>

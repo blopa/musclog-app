@@ -54,6 +54,7 @@ import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { getMealCritique } from '../../utils/coachAI';
 import { flushLoadingPaint } from '../../utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '../../utils/foodDisplay';
@@ -113,7 +114,7 @@ export default function FoodScreen() {
   const [isDeleteFoodLoading, setIsDeleteFoodLoading] = useState(false);
   const [isDuplicateMode, setIsDuplicateMode] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Add date state
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
   // (which has no logDate) also opens FoodMealDetailsModal on the right date.

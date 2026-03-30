@@ -614,7 +614,7 @@ export class ProgressService {
         ? (convert(initialWeight || 70, 'lb').to('kg') as number)
         : initialWeight || 70) ||
       70;
-    const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
+    const dob = user?.dateOfBirth || localDayStartMs(new Date(1990, 0, 1));
     const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
 
     const bmr = isValidBodyFat(finalFat)

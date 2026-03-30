@@ -1925,7 +1925,7 @@ async function seedUser(): Promise<boolean> {
 
     await UserService.initializeUser({
       fullName: 'Alex Johnson',
-      dateOfBirth: new Date(1990, 3, 15).getTime(), // April 15, 1990
+      dateOfBirth: localDayStartMs(new Date(1990, 3, 15)), // April 15, 1990 (local calendar day)
       gender: 'male',
       fitnessGoal: 'hypertrophy',
       weightGoal: 'maintain',

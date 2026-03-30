@@ -11,6 +11,10 @@
  * Do **not** use these helpers for wall-clock events (workout start time,
  * notifications). Use real instants (Date.now(), etc.) instead.
  *
+ * Other date uses (birthday pickers, chart month labels, cycle math in ms) may
+ * still use `Date`/`date-fns` directly — those are not "calendar day keys" in the
+ * nutrition diary sense.
+ *
  * For "was this goal created before end of calendar day D?" style queries, use
  * `endOfDay` from date-fns on the Date — that semantic is different from a day key.
  */
