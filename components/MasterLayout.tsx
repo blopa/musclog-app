@@ -23,7 +23,14 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const handleCameraPress = useCallback(() => openCamera(), [openCamera]);
 
   return (
-    <View className="flex-1 bg-bg-primary" style={{ paddingTop: insets.top }}>
+    <View
+      className="flex-1 bg-bg-primary"
+      style={{
+        paddingTop: insets.top,
+        // Full-height screens (no app nav) still render edge-to-edge; pad the system nav / home indicator.
+        ...(!showNavigationMenu ? { paddingBottom: insets.bottom } : null),
+      }}
+    >
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <>
