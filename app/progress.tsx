@@ -24,6 +24,7 @@ import { ProgressInsightsSection } from '../components/progress/ProgressInsights
 import { RecoveryTrainingChart } from '../components/progress/RecoveryTrainingChart';
 import { VolumeCaloriesChart } from '../components/progress/VolumeCaloriesChart';
 import { WorkoutCharts } from '../components/progress/WorkoutCharts';
+import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { MenuButton } from '../components/theme/MenuButton';
 import { ChartTooltipProvider, useChartTooltip } from '../context/ChartTooltipContext';
 import { useAiEnabled } from '../hooks/useAiEnabled';
@@ -252,147 +253,152 @@ function ProgressScreenContent({
           contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
           onScrollBeginDrag={dismissAll}
         >
-          <View className="px-4">
-            {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
+          <AnimatedContent>
+            <View className="px-4">
+              {data?.insights ? <ProgressInsightsSection insights={data.insights} /> : null}
 
-            {/* Phase 1: primary chart — renders immediately on load */}
-            {chartPhase >= 1 ? (
-              <BodyMetricsCharts
-                weightHistory={data?.weightHistory || []}
-                fatHistory={data?.fatHistory || []}
-                ffmiHistory={data?.ffmiHistory || []}
-                units={units}
-              />
-            ) : null}
-
-            {/* Phase 2: secondary charts — rendered after interactions complete */}
-            {chartPhase >= 2 ? (
-              <>
-                <NutritionCharts
-                  nutritionHistory={data?.nutritionHistory || []}
+              {/* Phase 1: primary chart — renders immediately on load */}
+              {chartPhase >= 1 ? (
+                <BodyMetricsCharts
                   weightHistory={data?.weightHistory || []}
+                  fatHistory={data?.fatHistory || []}
+                  ffmiHistory={data?.ffmiHistory || []}
                   units={units}
                 />
+              ) : null}
 
-                <WorkoutCharts
-                  workoutVolumeHistory={data?.workoutVolumeHistory || []}
-                  muscleGroupSets={data?.muscleGroupSets || []}
-                />
-              </>
-            ) : null}
-
-            {/* Phase 3: remaining charts — rendered 400ms after interactions */}
-            {chartPhase >= 3 && data ? (
-              <>
-                {hasAnyAggregationData((d: any) => d.correlationHistory) ? (
-                  <VolumeCaloriesChart
-                    allData={{
-                      daily: allAggregationData.daily?.correlationHistory ?? [],
-                      weekly: allAggregationData.weekly?.correlationHistory ?? [],
-                      monthly: allAggregationData.monthly?.correlationHistory ?? [],
-                    }}
+              {/* Phase 2: secondary charts — rendered after interactions complete */}
+              {chartPhase >= 2 ? (
+                <>
+                  <NutritionCharts
+                    nutritionHistory={data?.nutritionHistory || []}
+                    weightHistory={data?.weightHistory || []}
                     units={units}
                   />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.bodyCompProteinHistory) ? (
-                  <BodyCompProteinChart
-                    allData={{
-                      daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
-                      weekly: allAggregationData.weekly?.bodyCompProteinHistory ?? [],
-                      monthly: allAggregationData.monthly?.bodyCompProteinHistory ?? [],
-                    }}
-                    units={units}
-                  />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
-                  <MenstrualPerformanceChart
-                    allData={{
-                      daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
-                      weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
-                      monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
-                    }}
-                  />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.recoveryTrainingHistory) ? (
-                  <RecoveryTrainingChart
-                    allData={{
-                      daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
-                      weekly: allAggregationData.weekly?.recoveryTrainingHistory ?? [],
-                      monthly: allAggregationData.monthly?.recoveryTrainingHistory ?? [],
-                    }}
-                  />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.macroMuscleHistory) ? (
-                  <MacroMuscleChart
-                    allData={{
-                      daily: allAggregationData.daily?.macroMuscleHistory ?? [],
-                      weekly: allAggregationData.weekly?.macroMuscleHistory ?? [],
-                      monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
-                    }}
-                    units={units}
-                  />
-                ) : null}
 
-                {hasAnyAggregationData((d: any) => d.moodHistory) ? (
-                  <MoodHistoryChart
-                    allData={{
-                      daily: allAggregationData.daily?.moodHistory ?? [],
-                      weekly: allAggregationData.weekly?.moodHistory ?? [],
-                      monthly: allAggregationData.monthly?.moodHistory ?? [],
-                    }}
+                  <WorkoutCharts
+                    workoutVolumeHistory={data?.workoutVolumeHistory || []}
+                    muscleGroupSets={data?.muscleGroupSets || []}
                   />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.moodCaloriesHistory) ? (
-                  <MoodCaloriesChart
-                    allData={{
-                      daily: allAggregationData.daily?.moodCaloriesHistory ?? [],
-                      weekly: allAggregationData.weekly?.moodCaloriesHistory ?? [],
-                      monthly: allAggregationData.monthly?.moodCaloriesHistory ?? [],
-                    }}
-                  />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.moodVolumeHistory) ? (
-                  <MoodVolumeChart
-                    allData={{
-                      daily: allAggregationData.daily?.moodVolumeHistory ?? [],
-                      weekly: allAggregationData.weekly?.moodVolumeHistory ?? [],
-                      monthly: allAggregationData.monthly?.moodVolumeHistory ?? [],
-                    }}
-                    units={units}
-                  />
-                ) : null}
-                {hasAnyAggregationData((d: any) => d.moodMacrosHistory) ? (
-                  <MoodMacrosChart
-                    allData={{
-                      daily: allAggregationData.daily?.moodMacrosHistory ?? [],
-                      weekly: allAggregationData.weekly?.moodMacrosHistory ?? [],
-                      monthly: allAggregationData.monthly?.moodMacrosHistory ?? [],
-                    }}
-                  />
-                ) : null}
+                </>
+              ) : null}
 
-                {data.measurementsHistory
-                  ? Object.entries(data.measurementsHistory).map(
-                      ([type, history]: [string, any]) => (
-                        <ProgressChartSection key={type} title={t(`progress.measurement.${type}`)}>
-                          <LineChart
-                            data={history.map((p: any) => ({ x: p.date, y: p.value }))}
-                            height={150}
-                            xDomain={[history[0].date, history[history.length - 1].date]}
-                            yDomain={[
-                              Math.min(...history.map((p: any) => p.value)) * 0.95,
-                              Math.max(...history.map((p: any) => p.value)) * 1.05,
-                            ]}
-                            tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
-                          />
-                        </ProgressChartSection>
+              {/* Phase 3: remaining charts — rendered 400ms after interactions */}
+              {chartPhase >= 3 && data ? (
+                <>
+                  {hasAnyAggregationData((d: any) => d.correlationHistory) ? (
+                    <VolumeCaloriesChart
+                      allData={{
+                        daily: allAggregationData.daily?.correlationHistory ?? [],
+                        weekly: allAggregationData.weekly?.correlationHistory ?? [],
+                        monthly: allAggregationData.monthly?.correlationHistory ?? [],
+                      }}
+                      units={units}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.bodyCompProteinHistory) ? (
+                    <BodyCompProteinChart
+                      allData={{
+                        daily: allAggregationData.daily?.bodyCompProteinHistory ?? [],
+                        weekly: allAggregationData.weekly?.bodyCompProteinHistory ?? [],
+                        monthly: allAggregationData.monthly?.bodyCompProteinHistory ?? [],
+                      }}
+                      units={units}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
+                    <MenstrualPerformanceChart
+                      allData={{
+                        daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
+                        weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
+                        monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
+                      }}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.recoveryTrainingHistory) ? (
+                    <RecoveryTrainingChart
+                      allData={{
+                        daily: allAggregationData.daily?.recoveryTrainingHistory ?? [],
+                        weekly: allAggregationData.weekly?.recoveryTrainingHistory ?? [],
+                        monthly: allAggregationData.monthly?.recoveryTrainingHistory ?? [],
+                      }}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.macroMuscleHistory) ? (
+                    <MacroMuscleChart
+                      allData={{
+                        daily: allAggregationData.daily?.macroMuscleHistory ?? [],
+                        weekly: allAggregationData.weekly?.macroMuscleHistory ?? [],
+                        monthly: allAggregationData.monthly?.macroMuscleHistory ?? [],
+                      }}
+                      units={units}
+                    />
+                  ) : null}
+
+                  {hasAnyAggregationData((d: any) => d.moodHistory) ? (
+                    <MoodHistoryChart
+                      allData={{
+                        daily: allAggregationData.daily?.moodHistory ?? [],
+                        weekly: allAggregationData.weekly?.moodHistory ?? [],
+                        monthly: allAggregationData.monthly?.moodHistory ?? [],
+                      }}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.moodCaloriesHistory) ? (
+                    <MoodCaloriesChart
+                      allData={{
+                        daily: allAggregationData.daily?.moodCaloriesHistory ?? [],
+                        weekly: allAggregationData.weekly?.moodCaloriesHistory ?? [],
+                        monthly: allAggregationData.monthly?.moodCaloriesHistory ?? [],
+                      }}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.moodVolumeHistory) ? (
+                    <MoodVolumeChart
+                      allData={{
+                        daily: allAggregationData.daily?.moodVolumeHistory ?? [],
+                        weekly: allAggregationData.weekly?.moodVolumeHistory ?? [],
+                        monthly: allAggregationData.monthly?.moodVolumeHistory ?? [],
+                      }}
+                      units={units}
+                    />
+                  ) : null}
+                  {hasAnyAggregationData((d: any) => d.moodMacrosHistory) ? (
+                    <MoodMacrosChart
+                      allData={{
+                        daily: allAggregationData.daily?.moodMacrosHistory ?? [],
+                        weekly: allAggregationData.weekly?.moodMacrosHistory ?? [],
+                        monthly: allAggregationData.monthly?.moodMacrosHistory ?? [],
+                      }}
+                    />
+                  ) : null}
+
+                  {data.measurementsHistory
+                    ? Object.entries(data.measurementsHistory).map(
+                        ([type, history]: [string, any]) => (
+                          <ProgressChartSection
+                            key={type}
+                            title={t(`progress.measurement.${type}`)}
+                          >
+                            <LineChart
+                              data={history.map((p: any) => ({ x: p.date, y: p.value }))}
+                              height={150}
+                              xDomain={[history[0].date, history[history.length - 1].date]}
+                              yDomain={[
+                                Math.min(...history.map((p: any) => p.value)) * 0.95,
+                                Math.max(...history.map((p: any) => p.value)) * 1.05,
+                              ]}
+                              tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
+                            />
+                          </ProgressChartSection>
+                        )
                       )
-                    )
-                  : null}
-              </>
-            ) : null}
-          </View>
-          <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
+                    : null}
+                </>
+              ) : null}
+            </View>
+            <View pointerEvents="none" style={{ height: theme.spacing.margin['3xl'] }} />
+          </AnimatedContent>
         </ScrollView>
       )}
 

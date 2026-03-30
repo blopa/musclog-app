@@ -42,7 +42,7 @@ export default function CycleSetup() {
       });
 
       await setOnboardingCompleted();
-      router.push('/');
+      router.navigate('/');
     } catch (error) {
       console.error('Error saving cycle setup:', error);
     } finally {

@@ -49,10 +49,10 @@ export default function ConnectWithGoogle() {
           </View>
           <ConnectGoogleAccountBody
             onMaybeLater={() => {
-              router.push('/onboarding/fitness-info');
+              router.navigate('/onboarding/fitness-info');
             }}
             onConnect={handleConnect}
-            onContinue={() => router.push('/onboarding/fitness-info')}
+            onContinue={() => router.navigate('/onboarding/fitness-info')}
             onClose={() => {}}
             isSigningIn={isSigningIn || params?.loading === 'true'}
           />

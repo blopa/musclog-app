@@ -669,7 +669,7 @@ export default function DebugTestScreen() {
                     <Pressable
                       key={screen.route}
                       className="flex-row items-center justify-between rounded-lg border border-border-light bg-bg-primary p-3"
-                      onPress={() => router.push(screen.route as any)}
+                      onPress={() => router.navigate(screen.route as any)}
                     >
                       <Text className="flex-1 text-base font-medium text-text-primary">
                         {screen.name}

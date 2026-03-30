@@ -64,7 +64,7 @@ export default function LandingScreen() {
         if (shouldSeedDevData()) {
           await seedDevData();
 
-          router.push('/');
+          router.navigate('/');
         }
       } catch (error) {
         console.error('Error initializing app:', error);
@@ -268,7 +268,7 @@ export default function LandingScreen() {
                   label={t('onboarding.landing.getStarted')}
                   onPress={() => {
                     // Navigate to home or onboarding
-                    router.push('/onboarding/onboarding');
+                    router.navigate('/onboarding/onboarding');
                   }}
                   icon={ArrowRight}
                   iconPosition="right"

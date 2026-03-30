@@ -97,7 +97,7 @@ export const NavigationMenu = memo(function NavigationMenu({
               className="flex-1 items-center justify-center gap-1"
               onPress={() => {
                 if (!active) {
-                  router.navigate('/nutrition/food');
+                  router.replace('/nutrition/food');
                 }
               }}
             >

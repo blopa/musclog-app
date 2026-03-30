@@ -464,7 +464,7 @@ export default function SetGoals() {
         return;
       }
 
-      router.push({
+      router.navigate({
         pathname: '/onboarding/nutrition-goals-results',
         params: { aiGenerated: 'true' },
       });
@@ -480,7 +480,7 @@ export default function SetGoals() {
     setIsCalculating(true);
     try {
       await calculateAndStorePlan();
-      router.push('/onboarding/nutrition-goals');
+      router.navigate('/onboarding/nutrition-goals');
     } catch (error) {
       console.error('Error calculating nutrition plan:', error);
       showSnackbar('error', t('onboarding.setGoals.missingData'));
@@ -611,7 +611,7 @@ export default function SetGoals() {
 
         <MaybeLaterButton
           onPress={() => {
-            router.push('/onboarding/personal-info');
+            router.navigate('/onboarding/personal-info');
           }}
           text={t('onboarding.healthConnect.maybeLater')}
         />

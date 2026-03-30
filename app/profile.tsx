@@ -27,6 +27,7 @@ import {
 } from '../components/modals/EditFitnessDetailsModal';
 import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { type Gender } from '../database/models';
@@ -288,54 +289,59 @@ export default function ProfileScreen() {
               <SkeletonLoader width={200} height={28} borderRadius={8} />
             </View>
           ) : (
-            <>
-              <View className="relative mb-4">
-                <View
-                  className="h-32 w-32 overflow-hidden rounded-full border-4"
-                  style={{
-                    borderColor: dbUser
-                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
-                      : theme.colors.accent.primary,
-                    backgroundColor: dbUser
-                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                          .backgroundColor
-                      : theme.colors.accent.primary20,
-                  }}
-                >
-                  {dbUser?.avatarIcon ? (
-                    <View className="h-full w-full items-center justify-center rounded-full">
-                      {createElement(
-                        getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                          .IconComponent,
-                        {
-                          size: 40,
-                          color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                            .color,
-                        }
-                      )}
-                    </View>
-                  ) : null}
+            <AnimatedContent style={{ alignItems: 'center' }}>
+              <>
+                <View className="relative mb-4">
+                  <View
+                    className="h-32 w-32 overflow-hidden rounded-full border-4"
+                    style={{
+                      borderColor: dbUser
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
+                        : theme.colors.accent.primary,
+                      backgroundColor: dbUser
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                            .backgroundColor
+                        : theme.colors.accent.primary20,
+                    }}
+                  >
+                    {dbUser?.avatarIcon ? (
+                      <View className="h-full w-full items-center justify-center rounded-full">
+                        {createElement(
+                          getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                            .IconComponent,
+                          {
+                            size: 40,
+                            color: getAvatarDisplayProps(
+                              theme,
+                              dbUser.avatarIcon,
+                              dbUser.avatarColor
+                            ).color,
+                          }
+                        )}
+                      </View>
+                    ) : null}
+                  </View>
+                  <Pressable
+                    className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
+                    style={{ backgroundColor: theme.colors.accent.primary }}
+                    onPress={() => setIsEditPersonalVisible(true)}
+                  >
+                    <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
+                  </Pressable>
                 </View>
-                <Pressable
-                  className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
-                  style={{ backgroundColor: theme.colors.accent.primary }}
-                  onPress={() => setIsEditPersonalVisible(true)}
-                >
-                  <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
-                </Pressable>
-              </View>
-              <Text className="mb-3 text-3xl font-bold text-text-primary">
-                {dbUser?.fullName || t('profile.loading')}
-              </Text>
-              {dbUser?.fitnessGoal ? (
-                <Text className="text-base text-text-primary">
-                  {t('profile.goal')}:{' '}
-                  {t(
-                    `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
-                  )}
+                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
+                  {dbUser?.fullName || t('profile.loading')}
                 </Text>
-              ) : null}
-            </>
+                {dbUser?.fitnessGoal ? (
+                  <Text className="text-center text-base text-text-primary">
+                    {t('profile.goal')}:{' '}
+                    {t(
+                      `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
+                    )}
+                  </Text>
+                ) : null}
+              </>
+            </AnimatedContent>
           )}
         </View>
 
@@ -351,13 +357,22 @@ export default function ProfileScreen() {
             />
           </View>
           <View className="-mx-2 flex-row flex-wrap">
-            {isLoadingMetrics || isLoadingUser
-              ? [1, 2, 3, 4].map((i) => (
-                  <View key={i} className="mb-4 w-1/2 px-2">
-                    <SkeletonLoader height={80} borderRadius={12} />
-                  </View>
-                ))
-              : stats.map((stat) => (
+            {isLoadingMetrics || isLoadingUser ? (
+              [1, 2, 3, 4].map((i) => (
+                <View key={i} className="mb-4 w-1/2 px-2">
+                  <SkeletonLoader height={80} borderRadius={12} />
+                </View>
+              ))
+            ) : (
+              <AnimatedContent
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  width: '100%',
+                  marginHorizontal: -8,
+                }}
+              >
+                {stats.map((stat) => (
                   <View key={stat.id} className="mb-4 w-1/2 px-2">
                     <StatCard
                       title={t(stat.titleKey)}
@@ -370,6 +385,8 @@ export default function ProfileScreen() {
                     />
                   </View>
                 ))}
+              </AnimatedContent>
+            )}
           </View>
         </View>
 

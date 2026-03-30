@@ -406,7 +406,7 @@ export default function RestTimerScreen() {
             setIsWorkoutOverviewModalVisible(true);
           }}
           // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.push('/workout-settings')}
+          // onWorkoutSettings={() => router.navigate('/workout-settings')}
           onEndWorkout={handleEndWorkout}
         />
       ) : null}

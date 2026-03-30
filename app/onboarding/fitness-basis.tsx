@@ -29,7 +29,7 @@ export default function FitnessBasis() {
     const data = getMergedFitnessData();
     const result = await saveFitnessData(data);
 
-    router.push({
+    router.navigate({
       pathname: '/onboarding/set-goals',
       params: {
         weightMetricId: result.weightMetricId || params.weightMetricId,
@@ -42,7 +42,7 @@ export default function FitnessBasis() {
     const data = getMergedFitnessData();
     const result = await saveFitnessData(data);
 
-    router.push({
+    router.navigate({
       pathname: '/onboarding/set-goals',
       params: {
         weightMetricId: result.weightMetricId || params.weightMetricId,

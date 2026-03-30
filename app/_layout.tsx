@@ -73,7 +73,6 @@ function AppContent() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background.primary },
-          freezeOnBlur: true,
           animation: 'fade',
           animationDuration: 200,
         }}

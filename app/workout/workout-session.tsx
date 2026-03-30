@@ -44,6 +44,7 @@ import { WorkoutOptionsModal } from '../../components/modals/WorkoutOptionsModal
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
 import ShowMoreButton from '../../components/ShowMoreButton';
+import { AnimatedContent } from '../../components/theme/AnimatedContent';
 import { Button } from '../../components/theme/Button';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutActionButton } from '../../components/WorkoutActionButton';
@@ -1008,220 +1009,222 @@ export default function WorkoutSessionScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      {content}
+      <AnimatedContent style={{ flex: 1 }}>
+        {content}
 
-      {/* Workout Options Modal */}
-      {isOptionsModalVisible ? (
-        <WorkoutOptionsModal
-          visible={isOptionsModalVisible}
-          onClose={() => setIsOptionsModalVisible(false)}
-          onPreviewWorkout={() => setIsWorkoutOverviewModalVisible(true)}
-          // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.push('/workout-settings')}
-          onEndWorkout={() => {
-            setIsOptionsModalVisible(false);
-            setIsEndWorkoutModalVisible(true);
-          }}
-          onAddExercise={
-            workoutLog && !workoutLog.templateId
-              ? () => {
-                  setIsOptionsModalVisible(false);
-                  setIsAddExerciseToSessionModalVisible(true);
-                }
-              : undefined
-          }
-        />
-      ) : null}
-
-      {/* End Workout Confirmation Modal */}
-      {isEndWorkoutModalVisible ? (
-        <EndWorkoutModal
-          visible={isEndWorkoutModalVisible}
-          onClose={() => setIsEndWorkoutModalVisible(false)}
-          onFinishAndSave={handleFinishWorkout}
-          onFinishAndDiscard={async () => {
-            // Clear active workout from storage when discarding
-            if (workoutLog) {
-              await clearActiveWorkoutLogId();
+        {/* Workout Options Modal -- Note: closing tag for AnimatedContent is after all modals */}
+        {isOptionsModalVisible ? (
+          <WorkoutOptionsModal
+            visible={isOptionsModalVisible}
+            onClose={() => setIsOptionsModalVisible(false)}
+            onPreviewWorkout={() => setIsWorkoutOverviewModalVisible(true)}
+            // TODO: uncomment once we have workout settings
+            // onWorkoutSettings={() => router.navigate('/workout-settings')}
+            onEndWorkout={() => {
+              setIsOptionsModalVisible(false);
+              setIsEndWorkoutModalVisible(true);
+            }}
+            onAddExercise={
+              workoutLog && !workoutLog.templateId
+                ? () => {
+                    setIsOptionsModalVisible(false);
+                    setIsAddExerciseToSessionModalVisible(true);
+                  }
+                : undefined
             }
+          />
+        ) : null}
 
-            // navigate to workout screen
-            router.replace('/workout/workouts');
-          }}
-        />
-      ) : null}
+        {/* End Workout Confirmation Modal */}
+        {isEndWorkoutModalVisible ? (
+          <EndWorkoutModal
+            visible={isEndWorkoutModalVisible}
+            onClose={() => setIsEndWorkoutModalVisible(false)}
+            onFinishAndSave={handleFinishWorkout}
+            onFinishAndDiscard={async () => {
+              // Clear active workout from storage when discarding
+              if (workoutLog) {
+                await clearActiveWorkoutLogId();
+              }
 
-      {/* Session Feedback Modal */}
-      {isSessionFeedbackModalVisible && workoutLog ? (
-        <SessionFeedbackModal
-          visible={isSessionFeedbackModalVisible}
-          onClose={() => {
-            setIsSessionFeedbackModalVisible(false);
-            router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-          }}
-          onSubmit={async (data) => {
-            try {
-              await submitFeedback(workoutLog.id, data);
-            } catch (err) {
-              console.error('Error saving workout feedback:', err);
-            } finally {
+              // navigate to workout screen
+              router.replace('/workout/workouts');
+            }}
+          />
+        ) : null}
+
+        {/* Session Feedback Modal */}
+        {isSessionFeedbackModalVisible && workoutLog ? (
+          <SessionFeedbackModal
+            visible={isSessionFeedbackModalVisible}
+            onClose={() => {
+              setIsSessionFeedbackModalVisible(false);
               router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-            }
-          }}
-        />
-      ) : null}
+            }}
+            onSubmit={async (data) => {
+              try {
+                await submitFeedback(workoutLog.id, data);
+              } catch (err) {
+                console.error('Error saving workout feedback:', err);
+              } finally {
+                router.replace(`/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+              }
+            }}
+          />
+        ) : null}
 
-      {/* Log Set Performance Modal */}
-      {isLogSetModalVisible && currentSetData ? (
-        <LogSetPerformanceModal
-          visible={isLogSetModalVisible}
-          onClose={() => setIsLogSetModalVisible(false)}
-          exerciseName={currentSetData.exercise.name ?? ''}
-          setLabel={t('workoutSession.setOf', {
-            current: currentSetData.setNumber,
-            total: currentSetData.totalSetsInExercise,
-          })}
-          weight={weight}
-          reps={reps}
-          partials={partials}
-          repsInReserve={repsInReserve}
-          initialRpe={8}
-          onConfirm={(data) => {
-            handleCompleteSet(data.rpe);
-          }}
-          isSaving={isSaving}
-          onEditSetDetails={(data) => {
-            setWeight(data.weight);
-            setReps(data.reps);
-            setPartials(data.partials);
-            setRepsInReserve(data.repsInReserve);
-          }}
-        />
-      ) : null}
+        {/* Log Set Performance Modal */}
+        {isLogSetModalVisible && currentSetData ? (
+          <LogSetPerformanceModal
+            visible={isLogSetModalVisible}
+            onClose={() => setIsLogSetModalVisible(false)}
+            exerciseName={currentSetData.exercise.name ?? ''}
+            setLabel={t('workoutSession.setOf', {
+              current: currentSetData.setNumber,
+              total: currentSetData.totalSetsInExercise,
+            })}
+            weight={weight}
+            reps={reps}
+            partials={partials}
+            repsInReserve={repsInReserve}
+            initialRpe={8}
+            onConfirm={(data) => {
+              handleCompleteSet(data.rpe);
+            }}
+            isSaving={isSaving}
+            onEditSetDetails={(data) => {
+              setWeight(data.weight);
+              setReps(data.reps);
+              setPartials(data.partials);
+              setRepsInReserve(data.repsInReserve);
+            }}
+          />
+        ) : null}
 
-      {/* Edit Set Details Modal */}
-      {isEditSetModalVisible && currentSetData ? (
-        <EditSetDetailsModal
-          visible={isEditSetModalVisible}
-          onClose={() => setIsEditSetModalVisible(false)}
-          onSave={handleEditSet}
-          setLabel={t('workoutSession.setOf', {
-            current: currentSetData.setNumber,
-            total: currentSetData.totalSetsInExercise,
-          })}
-          initialWeight={weight}
-          initialReps={reps}
-          initialPartials={partials}
-          initialRepsInReserve={repsInReserve}
-        />
-      ) : null}
+        {/* Edit Set Details Modal */}
+        {isEditSetModalVisible && currentSetData ? (
+          <EditSetDetailsModal
+            visible={isEditSetModalVisible}
+            onClose={() => setIsEditSetModalVisible(false)}
+            onSave={handleEditSet}
+            setLabel={t('workoutSession.setOf', {
+              current: currentSetData.setNumber,
+              total: currentSetData.totalSetsInExercise,
+            })}
+            initialWeight={weight}
+            initialReps={reps}
+            initialPartials={partials}
+            initialRepsInReserve={repsInReserve}
+          />
+        ) : null}
 
-      {/* Skip Set Confirmation Modal */}
-      {isSkipSetModalVisible ? (
-        <ConfirmationModal
-          visible={isSkipSetModalVisible}
-          onClose={() => setIsSkipSetModalVisible(false)}
-          onConfirm={handleSkipSet}
-          title={t('workoutSession.skipSet.title')}
-          message={t('workoutSession.skipSet.message')}
-          confirmLabel={t('workoutSession.skipSet.confirm')}
-          cancelLabel={t('workoutSession.skipSet.cancel')}
-          variant="destructive"
-          isLoading={isSaving}
-        />
-      ) : null}
+        {/* Skip Set Confirmation Modal */}
+        {isSkipSetModalVisible ? (
+          <ConfirmationModal
+            visible={isSkipSetModalVisible}
+            onClose={() => setIsSkipSetModalVisible(false)}
+            onConfirm={handleSkipSet}
+            title={t('workoutSession.skipSet.title')}
+            message={t('workoutSession.skipSet.message')}
+            confirmLabel={t('workoutSession.skipSet.confirm')}
+            cancelLabel={t('workoutSession.skipSet.cancel')}
+            variant="destructive"
+            isLoading={isSaving}
+          />
+        ) : null}
 
-      {/* Replace Exercise Modal */}
-      {isReplaceExerciseModalVisible && currentSetData ? (
-        <ReplaceExerciseModal
-          visible={isReplaceExerciseModalVisible}
-          onClose={() => setIsReplaceExerciseModalVisible(false)}
-          onReplace={handleReplaceExercise}
-          currentExercise={currentSetData.exercise.name}
-        />
-      ) : null}
+        {/* Replace Exercise Modal */}
+        {isReplaceExerciseModalVisible && currentSetData ? (
+          <ReplaceExerciseModal
+            visible={isReplaceExerciseModalVisible}
+            onClose={() => setIsReplaceExerciseModalVisible(false)}
+            onReplace={handleReplaceExercise}
+            currentExercise={currentSetData.exercise.name}
+          />
+        ) : null}
 
-      {/* Workout History Modal */}
-      {isHistoryModalVisible && workoutLog ? (
-        <WorkoutSessionHistoryModal
-          visible={isHistoryModalVisible}
-          onClose={() => setIsHistoryModalVisible(false)}
-          workoutLog={workoutLog}
-          sets={sets}
-          exercises={exercises}
-          currentSetOrder={progress.currentSetOrder}
-        />
-      ) : null}
+        {/* Workout History Modal */}
+        {isHistoryModalVisible && workoutLog ? (
+          <WorkoutSessionHistoryModal
+            visible={isHistoryModalVisible}
+            onClose={() => setIsHistoryModalVisible(false)}
+            workoutLog={workoutLog}
+            sets={sets}
+            exercises={exercises}
+            currentSetOrder={progress.currentSetOrder}
+          />
+        ) : null}
 
-      {/* Workout Session Overview Modal */}
-      {isWorkoutOverviewModalVisible && workoutLog ? (
-        <WorkoutSessionOverviewModal
-          visible={isWorkoutOverviewModalVisible}
-          onClose={() => setIsWorkoutOverviewModalVisible(false)}
-          workoutLogId={workoutLog.id}
-          onResumeSession={() => {
-            setIsWorkoutOverviewModalVisible(false);
-            // Stay on current screen - already on workout session
-          }}
-          onSelectExercise={async (exerciseId) => {
-            setIsWorkoutOverviewModalVisible(false);
-            // Set the current exercise to jump to that exercise's first unlogged set
-            setCurrentExercise(exerciseId);
-          }}
-          onCancelWorkout={() => {
-            setIsWorkoutOverviewModalVisible(false);
-            setIsEndWorkoutModalVisible(true);
-          }}
-          onFinishWorkout={() => {
-            // Don't close overview first — handleFinishWorkout shows feedback modal; closing first would flash the session screen
-            handleFinishWorkout();
-          }}
-        />
-      ) : null}
+        {/* Workout Session Overview Modal */}
+        {isWorkoutOverviewModalVisible && workoutLog ? (
+          <WorkoutSessionOverviewModal
+            visible={isWorkoutOverviewModalVisible}
+            onClose={() => setIsWorkoutOverviewModalVisible(false)}
+            workoutLogId={workoutLog.id}
+            onResumeSession={() => {
+              setIsWorkoutOverviewModalVisible(false);
+              // Stay on current screen - already on workout session
+            }}
+            onSelectExercise={async (exerciseId) => {
+              setIsWorkoutOverviewModalVisible(false);
+              // Set the current exercise to jump to that exercise's first unlogged set
+              setCurrentExercise(exerciseId);
+            }}
+            onCancelWorkout={() => {
+              setIsWorkoutOverviewModalVisible(false);
+              setIsEndWorkoutModalVisible(true);
+            }}
+            onFinishWorkout={() => {
+              // Don't close overview first — handleFinishWorkout shows feedback modal; closing first would flash the session screen
+              handleFinishWorkout();
+            }}
+          />
+        ) : null}
 
-      {workoutLog ? (
-        <AddExerciseToSessionModal
-          visible={isAddExerciseToSessionModalVisible}
-          onClose={() => {
-            setIsAddExerciseToSessionModalVisible(false);
-            setIsAddExerciseButtonLoading(false);
-            // Re-show completion modal if we're still in that state and cancelled adding
-            if (completedExerciseForModal && isWorkoutComplete()) {
-              setIsFreeSessionCompleteModalVisible(true);
-            }
-          }}
-          onShow={() => setIsAddExerciseButtonLoading(false)}
-          workoutLogId={workoutLog.id}
-          onAdded={() => refresh()}
-        />
-      ) : null}
+        {workoutLog ? (
+          <AddExerciseToSessionModal
+            visible={isAddExerciseToSessionModalVisible}
+            onClose={() => {
+              setIsAddExerciseToSessionModalVisible(false);
+              setIsAddExerciseButtonLoading(false);
+              // Re-show completion modal if we're still in that state and cancelled adding
+              if (completedExerciseForModal && isWorkoutComplete()) {
+                setIsFreeSessionCompleteModalVisible(true);
+              }
+            }}
+            onShow={() => setIsAddExerciseButtonLoading(false)}
+            workoutLogId={workoutLog.id}
+            onAdded={() => refresh()}
+          />
+        ) : null}
 
-      {completedExerciseForModal ? (
-        <FreeSessionExerciseCompleteModal
-          visible={isFreeSessionCompleteModalVisible}
-          onClose={() => {
-            setIsFreeSessionCompleteModalVisible(false);
-            setCompletedExerciseForModal(null);
-          }}
-          exerciseName={completedExerciseForModal.exerciseName}
-          sets={sets}
-          exerciseId={completedExerciseForModal.exerciseId}
-          units={units}
-          exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
-          equipmentType={completedExerciseForModal.equipmentType}
-          onAddNextExercise={() => {
-            setIsFreeSessionCompleteModalVisible(false);
-            // Keep completedExerciseForModal so we can return to it if adding is cancelled
-            setIsAddExerciseToSessionModalVisible(true);
-          }}
-          onFinishWorkout={() => {
-            setIsFreeSessionCompleteModalVisible(false);
-            setCompletedExerciseForModal(null);
-            handleFinishWorkout();
-          }}
-          isFinishing={isSaving}
-        />
-      ) : null}
+        {completedExerciseForModal ? (
+          <FreeSessionExerciseCompleteModal
+            visible={isFreeSessionCompleteModalVisible}
+            onClose={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              setCompletedExerciseForModal(null);
+            }}
+            exerciseName={completedExerciseForModal.exerciseName}
+            sets={sets}
+            exerciseId={completedExerciseForModal.exerciseId}
+            units={units}
+            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
+            equipmentType={completedExerciseForModal.equipmentType}
+            onAddNextExercise={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              // Keep completedExerciseForModal so we can return to it if adding is cancelled
+              setIsAddExerciseToSessionModalVisible(true);
+            }}
+            onFinishWorkout={() => {
+              setIsFreeSessionCompleteModalVisible(false);
+              setCompletedExerciseForModal(null);
+              handleFinishWorkout();
+            }}
+            isFinishing={isSaving}
+          />
+        ) : null}
+      </AnimatedContent>
     </MasterLayout>
   );
 }

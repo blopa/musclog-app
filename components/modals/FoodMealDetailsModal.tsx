@@ -1358,10 +1358,7 @@ export function FoodMealDetailsModal({
         }
 
         // Persist inferred per-100g calories so logFood snapshot matches the modal (Food row was 0 kcal).
-        if (
-          toFiniteMacro(foodData!.calories) <= 0 &&
-          toFiniteMacro(nutritionalData.calories) > 0
-        ) {
+        if (toFiniteMacro(foodData!.calories) <= 0 && toFiniteMacro(nutritionalData.calories) > 0) {
           await foodData!.update((record: any) => {
             record.calories = nutritionalData.calories;
           });

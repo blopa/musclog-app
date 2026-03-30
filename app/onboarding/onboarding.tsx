@@ -1,4 +1,3 @@
-import { focusManager } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, ArrowRight, LucideIcon } from 'lucide-react-native';
@@ -514,9 +513,9 @@ export default function OnboardingScreen() {
     } else {
       // Navigate to home when on last step
       if (!__DEV__ && Platform.OS === 'web') {
-        router.push('/onboarding/connect-with-google');
+        router.navigate('/onboarding/connect-with-google');
       } else {
-        router.push('/onboarding/health-connect');
+        router.navigate('/onboarding/health-connect');
       }
     }
   };
@@ -541,9 +540,9 @@ export default function OnboardingScreen() {
             onPress={() => {
               // Navigate to home or skip onboarding
               if (!__DEV__ && Platform.OS === 'web') {
-                router.push('/onboarding/connect-with-google');
+                router.navigate('/onboarding/connect-with-google');
               } else {
-                router.push('/onboarding/health-connect');
+                router.navigate('/onboarding/health-connect');
               }
             }}
             text={t('onboarding.skip')}

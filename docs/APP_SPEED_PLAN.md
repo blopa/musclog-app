@@ -7,7 +7,7 @@ Root causes identified:
 
 1. **`useEffect` + `observe().subscribe()` timing gap** — WatermelonDB subscriptions fire _after_ the first render is committed to screen, so every screen always starts with one blank `isLoading: true` frame before data can appear
 2. **Sequential DB queries in `useNutritionLogs`** — `getNutritionLogsForDate`, `getDailyNutrients`, and `fetchCount` are awaited one-by-one (~150ms compound delay)
-3. **No haptic/visual press feedback on nav buttons** — `NavigationMenu` calls `router.push()` in `onPress` only, giving zero feedback for 200–600ms
+3. **No haptic/visual press feedback on nav buttons** — `NavigationMenu` calls `router.navigate()` in `onPress` only, giving zero feedback for 200–600ms
 4. **Static `SkeletonLoader`** — no animation, looks like broken UI rather than intentional loading state
 5. **`router.prefetch()` never called** — screens only begin mounting after navigation commits; no head-start on JS parsing or hook setup
 6. **`useUser()` re-subscribes per screen** — each screen that calls `useUser()` (`app/index.tsx`, `app/profile.tsx`, `hooks/useEmpiricalTDEE.ts`) starts fresh with `isLoading: true`; user data is stable and could be initialized once at app boot

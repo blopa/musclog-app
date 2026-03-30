@@ -111,11 +111,11 @@ export default function PersonalInfo() {
       }
 
       if (data.trackCycle) {
-        router.push('/onboarding/cycle-setup');
+        router.navigate('/onboarding/cycle-setup');
       } else {
         // Mark onboarding as completed and navigate to home
         await setOnboardingCompleted();
-        router.push('/');
+        router.navigate('/');
       }
     } catch (error) {
       console.error('Error saving personal info:', error);
