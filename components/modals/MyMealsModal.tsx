@@ -212,12 +212,6 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     console.log('Generate Meal with AI pressed');
   };
 
-  const handleManageCategories = () => {
-    setAddMealModalVisible(false);
-    // TODO: Implement manage categories logic
-    console.log('Manage Categories pressed');
-  };
-
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
   };
@@ -412,7 +406,6 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
             onClose={() => setAddMealModalVisible(false)}
             onCreateMeal={handleCreateMeal}
             onGenerateMealAI={handleGenerateMealAI}
-            onManageCategories={handleManageCategories}
             isAiEnabled={isAiConfigured}
           />
         ) : null}
