@@ -177,6 +177,12 @@ export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
  */
 export const SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE = 'show_daily_mood_prompt';
 
+/**
+ * Setting type for always allowing food editing in FoodMealDetailsModal.
+ * value: 'true' | 'false'.
+ */
+export const ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE = 'always_allow_food_editing';
+
 export type NavItemKey =
   | 'workouts'
   | 'food'
@@ -206,4 +212,5 @@ export type UseSettingsResult = {
   notificationsWorkoutDuration: boolean;
   foodSearchSource: FoodSearchSource;
   chartTooltipPosition: ChartTooltipPosition;
+  alwaysAllowFoodEditing: boolean;
 };

@@ -242,7 +242,7 @@ export function FoodMealDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
-  const { units } = useSettings();
+  const { units, alwaysAllowFoodEditing } = useSettings();
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
@@ -355,10 +355,14 @@ export function FoodMealDetailsModal({
 
   const mode = getMode();
 
-  // Sync localCanEdit when the canEdit prop changes.
+  // Sync localCanEdit when the canEdit prop changes or alwaysAllowFoodEditing changes.
   useEffect(() => {
-    setLocalCanEdit(canEdit);
-  }, [canEdit]);
+    if (alwaysAllowFoodEditing && mode !== 'meal') {
+      setLocalCanEdit(true);
+    } else {
+      setLocalCanEdit(canEdit);
+    }
+  }, [canEdit, alwaysAllowFoodEditing, mode]);
 
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {

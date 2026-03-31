@@ -197,6 +197,7 @@ const colors = {
   yellowAlpha10: addOpacityToHex(kineticDepth.yellow500, 0.1),
   yellowAlpha20: addOpacityToHex(kineticDepth.yellow500, 0.2),
   amberAlpha10: addOpacityToHex(kineticDepth.amber400, 0.1),
+  amberAlpha20: addOpacityToHex(kineticDepth.amber400, 0.2),
   orangeAlpha10: addOpacityToHex(kineticDepth.orange500, 0.1),
   orangeAlpha20: addOpacityToHex(kineticDepth.orange500, 0.2),
   orangeAlpha50: addOpacityToHex(kineticDepth.orange500, 0.5),
@@ -393,6 +394,7 @@ const themeColors = {
     purple13: colors.purpleAlpha13, // Purple with 13% opacity (hex '22')
     purple10: colors.purpleAlpha10, // Purple with 10% opacity
     amber10: colors.amberAlpha10, // Amber with 10% opacity
+    amber20: colors.amberAlpha20, // Amber with 20% opacity
     warning10: colors.orangeAlpha10, // Warning with 10% opacity
     emerald10: colors.emeraldAlpha10, // Emerald with 10% opacity
     emerald20: colors.emeraldAlpha20, // Emerald with 20% opacity
