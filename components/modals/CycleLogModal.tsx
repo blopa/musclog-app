@@ -183,7 +183,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
               selectedDate={selectedDate}
               onPress={() => setIsDatePickerVisible(true)}
               variant="compact"
-              trailing="chevron"
             />
           </View>
 

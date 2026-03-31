@@ -1,5 +1,5 @@
 import { format, isSameDay, isToday, isYesterday } from 'date-fns';
-import { Calendar, ChevronDown, Edit } from 'lucide-react-native';
+import { Calendar, Edit } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -29,7 +29,6 @@ export type DatePickerInputProps = {
    * (e.g. nutrition goals row).
    */
   embedded?: boolean;
-  trailing?: 'edit' | 'chevron' | 'none';
   /** When false, the left calendar chip is omitted (parent row already shows a calendar). */
   showLeadingIcon?: boolean;
   /**
@@ -50,7 +49,6 @@ export function DatePickerInput({
   disabled = false,
   className,
   embedded = false,
-  trailing = 'edit',
   showLeadingIcon = true,
   dateDisplay = 'stacked',
 }: DatePickerInputProps) {
@@ -76,7 +74,7 @@ export function DatePickerInput({
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
         <Text className="text-xl font-semibold text-text-primary">{display}</Text>
-        <Calendar size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+        <Edit size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
       </Pressable>
     );
   }
@@ -90,15 +88,12 @@ export function DatePickerInput({
     ? 'min-w-0 flex-1 flex-row items-center justify-between overflow-hidden p-0'
     : `flex-row items-center justify-between ${isCompact ? 'p-3' : 'p-4'}`;
 
-  const TrailingIcon =
-    trailing === 'chevron' ? (
-      <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-    ) : trailing === 'edit' ? (
-      <Edit
-        size={isCompact ? theme.iconSize.xs : theme.iconSize.sm}
-        color={theme.colors.text.secondary}
-      />
-    ) : null;
+  const TrailingIcon = (
+    <Edit
+      size={isCompact ? theme.iconSize.xs : theme.iconSize.sm}
+      color={theme.colors.text.secondary}
+    />
+  );
 
   return (
     <View className={`min-w-0 ${className ?? ''}`}>
