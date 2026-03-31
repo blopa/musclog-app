@@ -45,10 +45,14 @@ export default function WorkoutSummaryScreen() {
         return;
       }
 
-      // Prevent processing the same workout multiple times
+      // Prevent processing the same workout multiple times.
+      // Must be set before the first await to prevent re-runs triggered by
+      // dependency changes (e.g. units/i18n loading) from racing past this guard.
       if (processedWorkoutRef.current === workoutLogId) {
         return;
       }
+
+      processedWorkoutRef.current = workoutLogId;
 
       try {
         setIsLoading(true);
@@ -142,8 +146,6 @@ export default function WorkoutSummaryScreen() {
           payloadJson: JSON.stringify(workoutCompletedPayload),
         });
 
-        // Mark this workout as processed to prevent duplicate messages
-        processedWorkoutRef.current = workoutLogId;
         setUnreadCount((prev) => prev + 1);
 
         setIsLoading(false);
