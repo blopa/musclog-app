@@ -103,18 +103,23 @@ function inferBarcodeNutritionSource(
   if (explicit === 'usda') {
     return 'usda';
   }
+
   if (explicit === 'musclog') {
     return 'musclog';
   }
+
   if (explicit === 'openfood') {
     return 'openfood';
   }
+
   if (details && isSuccessFoodDetailProductState(details)) {
     return 'openfood';
   }
+
   if (productFromSearch?.source === 'openfood') {
     return 'openfood';
   }
+
   return null;
 }
 
@@ -1614,19 +1619,34 @@ export function FoodMealDetailsModal({
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
+    // TODO: move this to a helper function to avoid nested ternary
     const productCode =
       (productFromSearch && 'code' in productFromSearch
         ? (productFromSearch as { code?: string }).code
-        : undefined) ?? '';
+        : undefined) ??
+      (productFromSearch && 'gtinUpc' in productFromSearch
+        ? (productFromSearch as { gtinUpc?: string }).gtinUpc
+        : undefined) ??
+      '';
+
+    const currentBarcode =
+      editedOverrides?.barcode ??
+      food?.barcode ??
+      localFood?.barcode ??
+      barcode ??
+      productCode ??
+      '';
+
     const currentDescription =
       editedOverrides?.description ??
       food?.description ??
       (productFromSearch as any)?.ingredients_text ??
       (productFromSearch as any)?.ingredients ??
       '';
+
     setEditForm({
       name: getFoodMealName(),
-      barcode: barcode ?? productCode ?? '',
+      barcode: currentBarcode,
       description: currentDescription,
       calories: formatAppRoundedDecimal(locale, baseNutritionalData.calories, 2),
       protein: formatAppRoundedDecimal(locale, baseNutritionalData.protein, 2),
@@ -1643,6 +1663,7 @@ export function FoodMealDetailsModal({
     barcode,
     productFromSearch,
     food,
+    localFood,
     editedOverrides,
     locale,
   ]);
