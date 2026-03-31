@@ -18,6 +18,7 @@ type ServingSizeSelectorProps = {
   quickSizes?: { label: string; value: number }[];
   food?: Food;
   onFocus?: () => void;
+  productServingSize?: number;
 };
 
 const STEP_GRAMS = 10;
@@ -29,6 +30,7 @@ export function ServingSizeSelector({
   quickSizes,
   food,
   onFocus,
+  productServingSize,
 }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -65,7 +67,28 @@ export function ServingSizeSelector({
     });
   }, [portions, units, massUnit, t, formatInteger, formatDecimal]);
 
-  const effectiveQuickSizes = quickSizes || databaseQuickSizes;
+  const productServingQuickSize = useMemo(() => {
+    if (!productServingSize || productServingSize <= 0) return null;
+    const display = gramsToDisplay(productServingSize, units);
+    const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
+    const valueLabel =
+      labelVal % 1 === 0 ? formatInteger(Math.round(labelVal)) : formatDecimal(labelVal, 1);
+    return {
+      label: t('portionSizes.portionWithValueUnit', {
+        name: t('food.foodDetails.serving'),
+        value: valueLabel,
+        unit: massUnit === 'g' ? t('common.units.g') : t('common.units.oz'),
+      }),
+      value: productServingSize,
+    };
+  }, [productServingSize, units, massUnit, t, formatInteger, formatDecimal]);
+
+  const effectiveQuickSizes = useMemo(() => {
+    const base = quickSizes || databaseQuickSizes;
+    if (!productServingQuickSize) return base;
+    if (base.some((s) => s.value === productServingQuickSize.value)) return base;
+    return [productServingQuickSize, ...base];
+  }, [quickSizes, databaseQuickSizes, productServingQuickSize]);
 
   const handleDecrease = () => onChange(Math.max(0, value - stepAmount));
   const handleIncrease = () => onChange(value + stepAmount);

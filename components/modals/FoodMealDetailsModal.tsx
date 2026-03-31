@@ -1177,6 +1177,22 @@ export function FoodMealDetailsModal({
     }
   }, [productFromSearch, productDetails, getDefaultServingSize]);
 
+  const parsedProductServingSize = useMemo(() => {
+    const servingStr = productFromSearch?.serving_size;
+    if (!servingStr) return undefined;
+    const match = String(servingStr).match(/\((\d+)\s*g\)/);
+    if (match) {
+      const g = parseInt(match[1], 10);
+      if (g > 0) return g;
+    }
+    const num = String(servingStr).match(/(\d+)/);
+    if (num) {
+      const g = parseInt(num[1], 10);
+      if (g > 0) return g;
+    }
+    return undefined;
+  }, [productFromSearch?.serving_size]);
+
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
   const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
   const mealScaleFactor =
@@ -1918,6 +1934,7 @@ export function FoodMealDetailsModal({
                 value={servingSize}
                 onChange={setServingSize}
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                productServingSize={parsedProductServingSize}
               />
             ) : (
               <ServingSizeSelector
