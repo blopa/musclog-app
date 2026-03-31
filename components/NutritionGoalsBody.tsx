@@ -904,6 +904,7 @@ export function NutritionGoalsBody({
           </View>
         ) : null}
       </View>
+      <View pointerEvents="none" style={{ height: theme.spacing.padding['80'] }} />
     </ScrollView>
   );
 }

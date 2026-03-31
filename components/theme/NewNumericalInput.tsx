@@ -80,11 +80,7 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Minus
-            size={isCompact ? 16 : 20}
-            color={theme.colors.accent.secondary}
-            strokeWidth={3}
-          />
+          <Minus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
         <TextInput
           ref={inputRef}
@@ -102,11 +98,7 @@ export default function NewNumericalInput({
           className="flex-shrink-0"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Plus
-            size={isCompact ? 16 : 20}
-            color={theme.colors.accent.secondary}
-            strokeWidth={3}
-          />
+          <Plus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
       </View>
     </View>
