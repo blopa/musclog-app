@@ -2,7 +2,7 @@ import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts
-  version: 2,
+  version: 3,
   tables: [
     // 1. Master List of Exercises
     tableSchema({
@@ -183,7 +183,7 @@ export const schema = appSchema({
         { name: 'gram_weight', type: 'number' }, // How many grams is this portion?
         { name: 'is_default', type: 'boolean' },
         { name: 'icon', type: 'string', isOptional: true }, // e.g., 'droplet', 'scale', 'egg', 'cup'
-        // { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user' // TODO: implement this - foods created on the prod.ts (so 100g or createCommonPortions) get source='app', any other portion created is 'user'. Then we should not allow foods source='app' to ever be deleted
+        // { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user' // TODO: implement this (include this into the existing migration version 3) - foods created on the prod.ts (so 100g or createCommonPortions) get source='app', any other portion created is 'user'. Then we should not allow foods source='app' to ever be deleted
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
