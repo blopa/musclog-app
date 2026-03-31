@@ -31,6 +31,7 @@ export function ChatWorkoutCompletedCard({
         backgroundColor: theme.colors.background.card,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
+        minWidth: theme.size['240'],
       }}
     >
       {/* Header */}
