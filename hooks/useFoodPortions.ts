@@ -51,6 +51,7 @@ export interface UseFoodPortionsParams {
 // Return type for all mode
 export type UseFoodPortionsResultAll = {
   portions: FoodPortion[];
+  allGlobalPortions: FoodPortion[];
   isLoading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
@@ -292,6 +293,7 @@ export function useFoodPortions({
 
     return {
       portions: effectivePortions,
+      allGlobalPortions: allPortions,
       isLoading: isLoadingAll || isLoadingFood,
       error: errorAll,
       refresh: refreshAll,
