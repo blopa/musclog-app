@@ -30,6 +30,7 @@ import {
   READ_HEALTH_DATA_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
+  ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   THEME_SETTING_TYPE,
   UNITS_SETTING_TYPE,
   USE_OCR_BEFORE_AI_SETTING_TYPE,
@@ -441,6 +442,20 @@ export class SettingsService {
    */
   static async setShowDailyMoodPrompt(value: boolean) {
     await SettingsService.setBooleanSetting(SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE, value);
+  }
+
+  /**
+   * Upsert the always allow food editing setting
+   */
+  static async setAlwaysAllowFoodEditing(value: boolean) {
+    await SettingsService.setBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the always allow food editing setting
+   */
+  static async getAlwaysAllowFoodEditing(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE, false);
   }
 
   /**

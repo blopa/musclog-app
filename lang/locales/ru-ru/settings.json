@@ -86,6 +86,8 @@
       "anonymousBugReportSubtitle": "Помогите улучшить Musclog, отправляя журналы сбоев",
       "dailyMoodPrompt": "Ежедневный запрос настроения",
       "dailyMoodPromptSubtitle": "Показывать выбор настроения на главном экране, если оно ещё не записано сегодня",
+      "alwaysAllowFoodEditing": "Всегда разрешать редактирование продуктов",
+      "alwaysAllowFoodEditingSubtitle": "Принудительно разрешать редактирование деталей продуктов, даже если они получены из API",
       "charts": "ГРАФИКИ",
       "chartTooltipLeft": "Подсказки слева",
       "chartTooltipLeftSubtitle": "Показывать подсказки графиков в левом верхнем углу вместо правого",

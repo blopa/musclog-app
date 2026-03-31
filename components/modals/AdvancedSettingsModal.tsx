@@ -1,6 +1,7 @@
 import {
   Activity,
   AlignHorizontalJustifyStart,
+  AlignLeft,
   Apple,
   Bug,
   CalendarCheck,
@@ -74,6 +75,8 @@ export function AdvancedSettingsModal({
     handleChartTooltipPositionChange,
     showDailyMoodPrompt: debouncedShowDailyMoodPrompt,
     handleShowDailyMoodPromptChange,
+    alwaysAllowFoodEditing: debouncedAlwaysAllowFoodEditing,
+    handleAlwaysAllowFoodEditingChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -185,6 +188,27 @@ export function AdvancedSettingsModal({
       ),
       value: debouncedShowDailyMoodPrompt,
       onValueChange: handleShowDailyMoodPromptChange,
+    },
+    {
+      key: 'always-allow-food-editing',
+      label: t('settings.advancedSettings.alwaysAllowFoodEditing'),
+      subtitle: t('settings.advancedSettings.alwaysAllowFoodEditingSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.amber20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <AlignLeft size={theme.iconSize.xl} color={theme.colors.status.amber} />
+        </View>
+      ),
+      value: debouncedAlwaysAllowFoodEditing,
+      onValueChange: handleAlwaysAllowFoodEditingChange,
     },
   ];
 

@@ -86,6 +86,8 @@
       "anonymousBugReportSubtitle": "Help improve Musclog by sending crash logs",
       "dailyMoodPrompt": "Daily Mood Prompt",
       "dailyMoodPromptSubtitle": "Show a mood selector on the home screen if not yet recorded for today",
+      "alwaysAllowFoodEditing": "Always Allow Food Editing",
+      "alwaysAllowFoodEditingSubtitle": "Force food details to be editable even when sourced from the API",
       "charts": "CHARTS",
       "chartTooltipLeft": "Tooltip on Left",
       "chartTooltipLeftSubtitle": "Show chart data tooltips on the top-left instead of top-right",
