@@ -5,7 +5,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { useSnackbar } from '../../context/SnackbarContext';
 import Meal from '../../database/models/Meal';
-import { FoodService, MealService } from '../../database/services';
+import { FoodService, MealService, NutritionService } from '../../database/services';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
@@ -246,10 +246,18 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
           return;
         }
 
-        // Merge all ingredients across returned meal types into one meal template
+        // Merge all ingredients across returned meal types into one meal template.
+        // Normalize first: for ingredients matched to foundation foods (foodId present),
+        // the LLM returns 0 macros and expects us to look up the real values from the DB.
         const allIngredients = result.meals.flatMap((m) => m.ingredients);
+        const normalized = await NutritionService.normalizeAiMealIngredients(allIngredients);
         const foodItems = await Promise.all(
-          allIngredients.map(async (ingredient) => {
+          normalized.map(async (ingredient) => {
+            // Reuse the existing food when the LLM matched one; create custom otherwise
+            if (ingredient.foodId) {
+              return { foodId: ingredient.foodId, amount: ingredient.grams };
+            }
+
             const food = await FoodService.createCustomFood(ingredient.name, {
               calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
               protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),

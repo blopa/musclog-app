@@ -913,12 +913,14 @@ export const getGenerateMealPlanPrompt = async (
   language: string = 'en-US',
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   eatingPhase?: string,
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  includeFoundationFoods: boolean = false
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
+  const foundationPrompt = includeFoundationFoods ? await getFoundationFoodsPrompt() : '';
 
   const macroContext = macroTargets
     ? `The user's daily nutrition targets are: ${macroTargets.calories} kcal, ${macroTargets.protein}g protein, ${macroTargets.carbs}g carbs, ${macroTargets.fat}g fat, ${macroTargets.fiber}g fiber.`
@@ -931,8 +933,11 @@ export const getGenerateMealPlanPrompt = async (
     'For each meal, provide a name, a brief description, and a list of ingredients with their macronutrients.',
     macroContext,
     userDetails,
+    foundationPrompt,
     `Your response must be in ${language}.`,
-  ].join('\n');
+  ]
+    .filter(Boolean)
+    .join('\n');
 };
 
 export const getTrackMealPrompt = async (
@@ -1405,9 +1410,26 @@ export const getParseRetrospectiveNutritionFunctions = ():
 /**
  * Function schema for meal plan generation
  */
-export const getGenerateMealPlanFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+export const getGenerateMealPlanFunctions = (
+  includeFoundationFoods: boolean = false
+): FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  const ingredientProperties: any = {
+    name: { type: 'string' },
+    kcal: { type: 'number' },
+    carbs: { type: 'number' },
+    fat: { type: 'number' },
+    protein: { type: 'number' },
+    fiber: { type: 'number' },
+    grams: { type: 'number' },
+  };
+
+  if (includeFoundationFoods) {
+    ingredientProperties.foodId = {
+      type: 'string',
+      description: 'The local ID of the matched foundation food from the provided list.',
+    };
+  }
+
   return [
     {
       name: 'generateMealPlan',
@@ -1436,15 +1458,7 @@ export const getGenerateMealPlanFunctions = ():
                   type: 'array',
                   items: {
                     type: 'object',
-                    properties: {
-                      name: { type: 'string' },
-                      kcal: { type: 'number' },
-                      carbs: { type: 'number' },
-                      fat: { type: 'number' },
-                      protein: { type: 'number' },
-                      fiber: { type: 'number' },
-                      grams: { type: 'number' },
-                    },
+                    properties: ingredientProperties,
                     required: ['name', 'kcal', 'carbs', 'fat', 'protein', 'fiber', 'grams'],
                   },
                 },
