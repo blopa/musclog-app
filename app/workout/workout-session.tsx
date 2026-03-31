@@ -757,6 +757,10 @@ export default function WorkoutSessionScreen() {
         />
       </View>
     );
+  } else if (!error && workoutLog && !workoutLog.templateId && progress.isComplete) {
+    // Free session just completed: brief transition frame while completedExerciseForModal is being
+    // set after refresh(). Show a blank background to avoid flashing the error state.
+    content = <View className="flex-1 bg-bg-primary" />;
   } else if (error || !currentSetData || !workoutLog) {
     content = (
       <View className="flex-1 items-center justify-center px-6">
