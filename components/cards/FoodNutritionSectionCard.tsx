@@ -37,6 +37,10 @@ type FoodNutritionSectionProps = {
   isRefetchingSource?: boolean;
   /** After alternate sources were tried with no usable data — show edit-only message, no "try another" link. */
   alternateSourceNotFound?: boolean;
+  caloriesTooLowWarning?: {
+    inferredCalories: number;
+    onAccept: () => void;
+  };
 };
 
 export function FoodNutritionSectionCard({
@@ -51,6 +55,7 @@ export function FoodNutritionSectionCard({
   onTryAnotherSource,
   isRefetchingSource = false,
   alternateSourceNotFound = false,
+  caloriesTooLowWarning,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -142,6 +147,28 @@ export function FoodNutritionSectionCard({
             </Pressable>
           </View>
         )
+      ) : null}
+
+      {caloriesTooLowWarning ? (
+        <View className="mt-3 gap-2">
+          <InfoCard
+            variant="warning"
+            icon={AlertCircle}
+            label={t('food.foodDetails.caloriesTooLowTitle')}
+            message={t('food.foodDetails.caloriesTooLowBody', {
+              inferred: formatRoundedDecimal(caloriesTooLowWarning.inferredCalories, 1),
+            })}
+            expandable={false}
+            size="sm"
+          />
+          <Pressable onPress={caloriesTooLowWarning.onAccept} hitSlop={8} className="self-start">
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.status.warning }}>
+              {t('food.foodDetails.caloriesTooLowAction', {
+                inferred: formatRoundedDecimal(caloriesTooLowWarning.inferredCalories, 1),
+              })}
+            </Text>
+          </Pressable>
+        </View>
       ) : null}
 
       {showAdditionalNutrition ? (

@@ -45,6 +45,7 @@ import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate'
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
+  inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
 } from '../../utils/inferCaloriesFromMacros';
 import {
@@ -988,7 +989,36 @@ export function FoodMealDetailsModal({
     mealNutrients,
   ]);
 
-  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(getNutritionalData());
+  // Split raw data from inferred data
+  const rawNutritionalData = getNutritionalData();
+  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(rawNutritionalData);
+
+  // Compute inferred calories from macros for warning display
+  const inferredCaloriesPer100g = useMemo(() => {
+    return inferCaloriesFromMacrosPer100g(
+      rawNutritionalData.protein,
+      rawNutritionalData.carbs,
+      rawNutritionalData.fat,
+      rawNutritionalData.fiber
+    );
+  }, [
+    rawNutritionalData.protein,
+    rawNutritionalData.carbs,
+    rawNutritionalData.fat,
+    rawNutritionalData.fiber,
+  ]);
+
+  const showCaloriesTooLowWarning = useMemo(() => {
+    const rawCal = toFiniteMacro(rawNutritionalData.calories);
+    return (
+      mode === 'barcode' &&
+      rawCal > 0 &&
+      inferredCaloriesPer100g > 0 &&
+      rawCal < inferredCaloriesPer100g / 2 &&
+      editedOverrides?.calories == null
+    );
+  }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
+
   const nutritionalData =
     editedOverrides &&
     (editedOverrides.calories != null ||
@@ -1758,6 +1788,13 @@ export function FoodMealDetailsModal({
     setIsEditPopUpVisible(false);
   }, [editForm, decimalSeparator]);
 
+  const handleAcceptInferredCalories = useCallback(() => {
+    setEditedOverrides((prev) => ({
+      ...prev,
+      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+    }));
+  }, [inferredCaloriesPer100g]);
+
   const handleEditFormNumericChange = useCallback(
     (field: 'calories' | 'protein' | 'carbs' | 'fat') => (value: string) => {
       const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
@@ -1976,6 +2013,14 @@ export function FoodMealDetailsModal({
             }
             isRefetchingSource={isRefetchingSource}
             alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+            caloriesTooLowWarning={
+              showCaloriesTooLowWarning
+                ? {
+                    inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+                    onAccept: handleAcceptInferredCalories,
+                  }
+                : undefined
+            }
           />
 
           {/* Form Sections */}
