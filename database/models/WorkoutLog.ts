@@ -70,20 +70,29 @@ export default class WorkoutLog extends Model {
         : [];
     const exerciseById = new Map(exercises.map((e) => [e.id, e]));
 
-    const parts: ExerciseWithSets[] = [];
+    // Fetch all sets in a single query (getAllSets already filters deleted)
+    const allSets = await this.getAllSets();
+    const setsByLogExId = new Map<string, WorkoutLogSet[]>();
+    for (const set of allSets) {
+      const id = set.logExerciseId;
+      if (!setsByLogExId.has(id)) {
+        setsByLogExId.set(id, []);
+      }
+      setsByLogExId.get(id)!.push(set);
+    }
 
-    for (const le of active) {
+    const parts: ExerciseWithSets[] = active.map((le) => {
       const ex = exerciseById.get(le.exerciseId);
-      const sets = await le.sets.extend(Q.where('deleted_at', Q.eq(null))).fetch();
-      parts.push({
+      const sets = setsByLogExId.get(le.id) ?? [];
+      return {
         exercise: { equipmentType: ex?.equipmentType },
         sets: sets.map((s: WorkoutLogSet) => ({
           weight: s.weight,
           reps: s.reps,
           repsInReserve: s.repsInReserve,
         })),
-      });
-    }
+      };
+    });
 
     return calculateWorkoutVolume(parts, bodyWeightKg);
   }

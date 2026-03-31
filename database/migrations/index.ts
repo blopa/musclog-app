@@ -1,6 +1,5 @@
 import {
   addColumns,
-  createTable,
   schemaMigrations,
   unsafeExecuteSql,
 } from '@nozbe/watermelondb/Schema/migrations';
@@ -30,6 +29,18 @@ export const migrations = schemaMigrations({
           "UPDATE exercises SET source = 'app' WHERE rowid IN (SELECT rowid FROM exercises ORDER BY created_at ASC LIMIT 105);"
         ),
       ],
+    },
+
+    // Version 3: Reset totalVolume for all existing workout logs.
+    // The volume formula changed from simple reps×weight to average-1RM across
+    // seven published formulas (accounting for RIR and bodyweight exercises).
+    // Old values are ~7.5× smaller than new ones, so keeping them would produce
+    // false trends in the volume chart. Resetting to NULL is safer: the trend
+    // chart already filters out null-volume workouts, so old sessions simply
+    // drop out of the chart rather than distorting it.
+    {
+      toVersion: 3,
+      steps: [unsafeExecuteSql('UPDATE workout_logs SET total_volume = NULL;')],
     },
   ],
 });

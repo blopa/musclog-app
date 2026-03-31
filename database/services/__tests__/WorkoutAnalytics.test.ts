@@ -303,68 +303,6 @@ describe('WorkoutAnalytics', () => {
       expect(repsPR?.previousBest.reps).toBe(12);
     });
 
-    it('should detect estimated1RM PR when current > historical', async () => {
-      const workoutLog = createMockWorkoutLog({
-        id: 'workout-1',
-        startedAt: Date.now(),
-      });
-
-      const currentSet = createMockWorkoutLogSet({
-        exerciseId: 'ex-1',
-        weight: 100,
-        reps: 12,
-        workoutLogId: 'workout-1',
-      });
-
-      const historicalSet = createMockWorkoutLogSet({
-        exerciseId: 'ex-1',
-        weight: 100,
-        reps: 10,
-        workoutLogId: 'workout-2',
-      });
-
-      const exercise = createMockExercise({
-        id: 'ex-1',
-        name: 'Bench Press',
-      });
-
-      const historicalWorkout = createMockWorkoutLog({
-        id: 'workout-2',
-        startedAt: Date.now() - 1000,
-        completedAt: Date.now() - 500,
-      });
-
-      workoutLog.logSets.fetch = jest.fn().mockResolvedValue([currentSet]);
-
-      const mockQuery = {
-        fetch: jest
-          .fn()
-          .mockResolvedValueOnce([historicalSet])
-          .mockResolvedValueOnce([historicalWorkout]),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(exercise),
-        } as any)
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(historicalWorkout),
-        } as any);
-
-      const records = await WorkoutAnalytics.detectPersonalRecords(workoutLog as any);
-
-      const oneRMPR = records.find((r) => r.type === 'estimated1RM');
-      expect(oneRMPR).toBeDefined();
-      expect(oneRMPR?.newRecord.weight).toBe(100);
-      expect(oneRMPR?.newRecord.reps).toBe(12);
-    });
-
     it('should return PR for first-time exercise (no historical data)', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'workout-1',

@@ -917,4 +917,40 @@ export class WorkoutService {
       return newLog;
     });
   }
+
+  /**
+   * Backfill totalVolume for all completed workout logs that have a NULL volume.
+   * This runs after the v3 migration which wiped old reps×weight values so they
+   * can be replaced with the accurate average-1RM formula.
+   */
+  static async backfillNullTotalVolumes(): Promise<void> {
+    const logs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('total_volume', Q.eq(null)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (logs.length === 0) {
+      return;
+    }
+
+    const entries = await Promise.all(
+      logs.map(async (log) => ({ log, volume: await log.calculateVolume() }))
+    );
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...entries.map(({ log, volume }) =>
+          log.prepareUpdate((l) => {
+            l.totalVolume = volume;
+            l.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
 }

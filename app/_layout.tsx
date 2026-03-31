@@ -22,7 +22,7 @@ import { SmartCameraProvider } from '../context/SmartCameraContext';
 import { SnackbarProvider } from '../context/SnackbarContext';
 import { ThemeProvider, useThemeContext } from '../context/ThemeContext';
 import { UnreadChatProvider } from '../context/UnreadChatContext';
-import { ExerciseService } from '../database/services';
+import { ExerciseService, WorkoutService } from '../database/services';
 import { healthDataSyncService } from '../services/healthDataSync';
 import { NotificationService } from '../services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '../utils/activeWorkoutStorage';
@@ -112,6 +112,14 @@ function RootLayout() {
   useEffect(() => {
     ExerciseService.syncAppExercises().catch((err) =>
       console.warn('[ExerciseService] syncAppExercises error:', err)
+    );
+  }, []);
+
+  // Backfill totalVolume for workout logs that have NULL after the v3 migration.
+  // Runs once per boot but exits immediately when there is nothing to do.
+  useEffect(() => {
+    WorkoutService.backfillNullTotalVolumes().catch((err) =>
+      console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
     );
   }, []);
 

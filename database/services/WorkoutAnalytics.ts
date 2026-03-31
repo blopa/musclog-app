@@ -31,7 +31,7 @@ export interface PersonalRecord {
     reps: number;
     volume: number;
   };
-  type: 'weight' | 'reps' | 'volume' | 'estimated1RM';
+  type: 'weight' | 'reps' | 'volume';
 }
 
 export interface ProgressiveOverloadDataPoint {
@@ -155,9 +155,12 @@ export class WorkoutAnalytics {
   /**
    * Detect personal records in a completed workout log
    */
-  static async detectPersonalRecords(workoutLog: WorkoutLog): Promise<PersonalRecord[]> {
+  static async detectPersonalRecords(
+    workoutLog: WorkoutLog,
+    bodyWeightKg?: number
+  ): Promise<PersonalRecord[]> {
     const records: PersonalRecord[] = [];
-    const bodyWeightKg = await getUserBodyWeightKgForVolume();
+    const bwKg = bodyWeightKg ?? (await getUserBodyWeightKgForVolume());
     const sets = await this.getEnrichedSetsForWorkout(workoutLog);
 
     const exerciseSets = new Map<string, EnrichedSet[]>();
@@ -183,7 +186,7 @@ export class WorkoutAnalytics {
           s.reps ?? 0,
           s.repsInReserve,
           exercise.equipmentType,
-          bodyWeightKg
+          bwKg
         );
 
       const bestSet = logSets.reduce((best, current) =>

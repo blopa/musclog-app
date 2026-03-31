@@ -206,7 +206,7 @@ export async function transformWorkoutToDetailData(
     setsByExercise.get(exerciseId)!.push(set);
   });
 
-  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog);
+  const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
     sets.forEach((set) => {
@@ -222,7 +222,7 @@ export async function transformWorkoutToDetailData(
         if (
           (pr.type === 'weight' && set.weight === pr.newRecord.weight) ||
           (pr.type === 'reps' && set.reps === pr.newRecord.reps) ||
-          (pr.type === 'volume' && Math.abs(setVol - pr.newRecord.volume) < 0)
+          (pr.type === 'volume' && Math.abs(setVol - pr.newRecord.volume) < 0.01)
         ) {
           prSetIds.add(set.id);
         }
