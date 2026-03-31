@@ -2026,7 +2026,25 @@ export default function ModalsTestScreen() {
         }}
         workoutId={'test-workout-id'}
         exerciseId={'test-exercise-id'}
-        initialSets={[]}
+        initialSets={[
+          {
+            id: '1',
+            weight: 100,
+            reps: 10,
+            partialReps: 0,
+            rest: 60,
+            repsInReserve: 2,
+            isPR: true,
+          },
+          {
+            id: '2',
+            weight: 100,
+            reps: 8,
+            partialReps: 0,
+            rest: 60,
+            repsInReserve: 1,
+          },
+        ]}
       />
 
       <PastWorkoutDetailModal
