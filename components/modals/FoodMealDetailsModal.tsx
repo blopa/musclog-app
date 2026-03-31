@@ -123,6 +123,15 @@ function inferBarcodeNutritionSource(
   return null;
 }
 
+function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string {
+  if (!productFromSearch || typeof productFromSearch !== 'object') {
+    return '';
+  }
+
+  const product = productFromSearch as { code?: string; gtinUpc?: string };
+  return product.code ?? product.gtinUpc ?? '';
+}
+
 /** Per-100g core macros from a successful product-details payload (used to pick a non-empty alternate source). */
 function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryData): {
   calories: number;
@@ -1619,15 +1628,7 @@ export function FoodMealDetailsModal({
   ]);
 
   const handleOpenEditPopUp = useCallback(() => {
-    // TODO: move this to a helper function to avoid nested ternary
-    const productCode =
-      (productFromSearch && 'code' in productFromSearch
-        ? (productFromSearch as { code?: string }).code
-        : undefined) ??
-      (productFromSearch && 'gtinUpc' in productFromSearch
-        ? (productFromSearch as { gtinUpc?: string }).gtinUpc
-        : undefined) ??
-      '';
+    const productCode = getProductBarcodeFromSearchProduct(productFromSearch);
 
     const currentBarcode =
       editedOverrides?.barcode ??
