@@ -25,7 +25,8 @@ export class FoodPortionService {
     name: string,
     gramWeight: number,
     icon?: string,
-    isDefault = false
+    isDefault = false,
+    source: 'app' | 'user' = 'user'
   ): Promise<FoodPortion> {
     const duplicate = await this.findExistingPortionByGramWeight(gramWeight);
     if (duplicate) {
@@ -42,6 +43,7 @@ export class FoodPortionService {
         if (icon) {
           portion.icon = icon;
         }
+        portion.source = source;
         portion.createdAt = now;
         portion.updatedAt = now;
       });
@@ -55,9 +57,10 @@ export class FoodPortionService {
     name: string,
     gramWeight: number,
     icon?: string,
-    isDefault = false
+    isDefault = false,
+    source: 'app' | 'user' = 'user'
   ): Promise<FoodPortion> {
-    return this.createFoodPortion(name, gramWeight, icon, isDefault);
+    return this.createFoodPortion(name, gramWeight, icon, isDefault, source);
   }
 
   /**
@@ -199,12 +202,45 @@ export class FoodPortionService {
   }
 
   /**
-   * Delete food portion
+   * Delete food portion. Throws if the portion is a built-in app portion (source='app').
    */
   static async deleteFoodPortion(id: string): Promise<void> {
     const portion = await database.get<FoodPortion>('food_portions').find(id);
+    if (portion.source === 'app') {
+      throw new Error('Cannot delete a built-in app food portion.');
+    }
+
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await portion.markAsDeleted();
+  }
+
+  /**
+   * Backfills the `source` field for food portions that predate the column addition.
+   * Portions with no source are ordered by creation date (oldest first); the first
+   * `appPortionCount` are assumed to be app-seeded and get 'app', the rest get 'user'.
+   * Safe to call on every app start — it's a no-op when all portions already have a source.
+   * Used as the web (LokiJS) fallback since unsafeExecuteSql is ignored by that adapter.
+   */
+  static async backfillPortionSources(appPortionCount: number = 9): Promise<void> {
+    const unsourced = await database
+      .get<FoodPortion>('food_portions')
+      .query(Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))), Q.sortBy('created_at', Q.asc))
+      .fetch();
+
+    if (unsourced.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      for (let i = 0; i < unsourced.length; i++) {
+        const portion = unsourced[i];
+        const source: 'app' | 'user' = i < appPortionCount ? 'app' : 'user';
+        await portion.update((record) => {
+          record.source = source;
+          record.updatedAt = Date.now();
+        });
+      }
+    });
   }
 
   /**
@@ -233,7 +269,8 @@ export class FoodPortionService {
         portion.name,
         portion.gramWeight,
         portion.icon,
-        portion.name === i18n.t('food.portions.100g')
+        portion.name === i18n.t('food.portions.100g'),
+        'app'
       );
       portions.push(created);
     }
