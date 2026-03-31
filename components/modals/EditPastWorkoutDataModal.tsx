@@ -198,15 +198,23 @@ export default function EditPastWorkoutDataModal({
   };
 
   const handleAdd = () => {
-    const next: SetItem = {
-      id: String(Date.now()),
-      weight: 0,
-      reps: 0,
-      partialReps: 0,
-      rest: 0,
-      repsInReserve: 0,
-    };
-    setSets((s) => [...s, next]);
+    setSets((s) => {
+      const previousSet = s[s.length - 1];
+      const next: SetItem = previousSet
+        ? {
+            ...previousSet,
+            id: String(Date.now()),
+          }
+        : {
+            id: String(Date.now()),
+            weight: 0,
+            reps: 0,
+            partialReps: 0,
+            rest: 0,
+            repsInReserve: 0,
+          };
+      return [...s, next];
+    });
   };
 
   const handleSave = async () => {
