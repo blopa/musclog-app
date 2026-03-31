@@ -1178,20 +1178,66 @@ export function FoodMealDetailsModal({
   }, [productFromSearch, productDetails, getDefaultServingSize]);
 
   const parsedProductServingSize = useMemo(() => {
+    if (productFromSearch?.source === 'usda') {
+      return undefined;
+    }
+
     const servingStr = productFromSearch?.serving_size;
-    if (!servingStr) return undefined;
+    if (!servingStr) {
+      return undefined;
+    }
+
     const match = String(servingStr).match(/\((\d+)\s*g\)/);
     if (match) {
       const g = parseInt(match[1], 10);
-      if (g > 0) return g;
+      if (g > 0) {
+        return g;
+      }
     }
+
     const num = String(servingStr).match(/(\d+)/);
     if (num) {
       const g = parseInt(num[1], 10);
-      if (g > 0) return g;
+      if (g > 0) {
+        return g;
+      }
     }
+
     return undefined;
-  }, [productFromSearch?.serving_size]);
+  }, [productFromSearch?.source, productFromSearch?.serving_size]);
+
+  const parsedProductMeasures = useMemo(() => {
+    const result: { name: string; gramWeight: number }[] = [];
+
+    // foodMeasures from search results (Survey FNDDS foods)
+    if (productFromSearch?.source === 'usda') {
+      const measures: { disseminationText?: string; gramWeight?: number }[] =
+        (productFromSearch as any)._raw?.foodMeasures ?? [];
+      for (const m of measures) {
+        if (m.gramWeight && m.gramWeight > 0 && m.disseminationText) {
+          result.push({ name: m.disseminationText, gramWeight: m.gramWeight });
+        }
+      }
+    }
+
+    // foodPortions from detailed food response (Foundation / Survey FNDDS)
+    const detailProduct =
+      (productDetails as any)?.source === 'usda' ? (productDetails as any).product : null;
+    if (detailProduct?.foodPortions) {
+      const portions: { gramWeight?: number; portionDescription?: string; modifier?: string }[] =
+        detailProduct.foodPortions;
+      for (const p of portions) {
+        if (!p.gramWeight || p.gramWeight <= 0) continue;
+        const name = p.portionDescription || p.modifier;
+        if (!name) continue;
+        if (!result.some((r) => r.gramWeight === p.gramWeight)) {
+          result.push({ name, gramWeight: p.gramWeight });
+        }
+      }
+    }
+
+    return result.length > 0 ? result : undefined;
+  }, [productFromSearch, productDetails]);
 
   // For meals: scale factor = (amount to log in g) / (total meal weight in g). Min 1g to avoid zero.
   const effectiveMealAmountGrams = Math.max(1, mealAmountGrams);
@@ -1935,6 +1981,7 @@ export function FoodMealDetailsModal({
                 onChange={setServingSize}
                 onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 productServingSize={parsedProductServingSize}
+                productMeasures={parsedProductMeasures}
               />
             ) : (
               <ServingSizeSelector

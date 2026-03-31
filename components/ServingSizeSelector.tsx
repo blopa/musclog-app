@@ -19,6 +19,7 @@ type ServingSizeSelectorProps = {
   food?: Food;
   onFocus?: () => void;
   productServingSize?: number;
+  productMeasures?: { name: string; gramWeight: number }[];
 };
 
 const STEP_GRAMS = 10;
@@ -31,6 +32,7 @@ export function ServingSizeSelector({
   food,
   onFocus,
   productServingSize,
+  productMeasures,
 }: ServingSizeSelectorProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -68,7 +70,10 @@ export function ServingSizeSelector({
   }, [portions, units, massUnit, t, formatInteger, formatDecimal]);
 
   const productServingQuickSize = useMemo(() => {
-    if (!productServingSize || productServingSize <= 0) return null;
+    if (!productServingSize || productServingSize <= 0) {
+      return null;
+    }
+
     const display = gramsToDisplay(productServingSize, units);
     const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
     const valueLabel =
@@ -83,12 +88,45 @@ export function ServingSizeSelector({
     };
   }, [productServingSize, units, massUnit, t, formatInteger, formatDecimal]);
 
+  const productMeasureQuickSizes = useMemo(() => {
+    if (!productMeasures || productMeasures.length === 0) {
+      return [];
+    }
+
+    return productMeasures
+      .filter((m) => m.gramWeight > 0)
+      .map((m) => {
+        const display = gramsToDisplay(m.gramWeight, units);
+        const labelVal = display % 1 === 0 ? display : Math.round(display * 10) / 10;
+        const valueLabel =
+          labelVal % 1 === 0 ? formatInteger(Math.round(labelVal)) : formatDecimal(labelVal, 1);
+
+        return {
+          label: t('portionSizes.portionWithValueUnit', {
+            name: m.name,
+            value: valueLabel,
+            unit: massUnit === 'g' ? t('common.units.g') : t('common.units.oz'),
+          }),
+          value: m.gramWeight,
+        };
+      });
+  }, [productMeasures, units, massUnit, t, formatInteger, formatDecimal]);
+
   const effectiveQuickSizes = useMemo(() => {
     const base = quickSizes || databaseQuickSizes;
-    if (!productServingQuickSize) return base;
-    if (base.some((s) => s.value === productServingQuickSize.value)) return base;
-    return [productServingQuickSize, ...base];
-  }, [quickSizes, databaseQuickSizes, productServingQuickSize]);
+    const extras: { label: string; value: number }[] = [];
+    if (productServingQuickSize && !base.some((s) => s.value === productServingQuickSize.value)) {
+      extras.push(productServingQuickSize);
+    }
+
+    for (const m of productMeasureQuickSizes) {
+      if (!base.some((s) => s.value === m.value) && !extras.some((s) => s.value === m.value)) {
+        extras.push(m);
+      }
+    }
+
+    return extras.length > 0 ? [...extras, ...base] : base;
+  }, [quickSizes, databaseQuickSizes, productServingQuickSize, productMeasureQuickSizes]);
 
   const handleDecrease = () => onChange(Math.max(0, value - stepAmount));
   const handleIncrease = () => onChange(value + stepAmount);
