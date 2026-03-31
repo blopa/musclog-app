@@ -50,15 +50,22 @@ function SetCard({
   return (
     <View className="mb-4">
       <GenericCard variant="card" containerStyle={accentStyle}>
-        <Pressable onLongPress={drag} delayLongPress={150} disabled={!drag} style={{ flex: 1 }}>
-          <View className="p-4">
-            {/* Header with grip, title, and remove */}
-            <View className="mb-4 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
-                {/* Grip icon - larger hit target */}
-                <View style={{ marginRight: theme.spacing.gap.sm }}>
-                  <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </View>
+        <View className="p-4">
+          {/* Header with grip, title, and remove */}
+          <View className="mb-4 flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2" style={{ flex: 1 }}>
+              {/* Grip icon - larger hit target */}
+              <Pressable
+                onLongPress={drag}
+                delayLongPress={150}
+                disabled={!drag}
+                style={{
+                  marginRight: theme.spacing.gap.sm,
+                  padding: theme.spacing.padding.xs,
+                }}
+              >
+                <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
+              </Pressable>
                 <Text
                   className="text-xs font-bold uppercase tracking-widest"
                   style={{
@@ -96,51 +103,58 @@ function SetCard({
             </View>
 
             {/* Inputs */}
-            <View className="mb-4 grid grid-cols-2 gap-4">
-              <NewNumericalInput
-                label={t(weightLabelKey)}
-                value={item.weight}
-                onChange={(v) => onChange(item.id, { weight: v })}
-                min={0}
-                step={1}
-              />
-              <NewNumericalInput
-                label={t('workoutDetail.reps')}
-                value={item.reps}
-                onChange={(v) => onChange(item.id, { reps: v })}
-                min={0}
-                step={1}
-              />
+            <View className="mb-4 flex-row gap-4">
+              <View className="flex-1">
+                <NewNumericalInput
+                  label={t(weightLabelKey)}
+                  value={item.weight}
+                  onChange={(v) => onChange(item.id, { weight: v })}
+                  min={0}
+                  step={1}
+                />
+              </View>
+              <View className="flex-1">
+                <NewNumericalInput
+                  label={t('workoutDetail.reps')}
+                  value={item.reps}
+                  onChange={(v) => onChange(item.id, { reps: v })}
+                  min={0}
+                  step={1}
+                />
+              </View>
             </View>
 
-            <View className="grid grid-cols-2 gap-4">
-              <NewNumericalInput
-                label={t('workoutDetail.partial')}
-                value={item.partialReps}
-                onChange={(v) => onChange(item.id, { partialReps: v })}
-                min={0}
-                step={1}
-              />
-              <NewNumericalInput
-                label={t('workoutDetail.inputs.restSec')}
-                value={item.rest}
-                onChange={(v) => onChange(item.id, { rest: v })}
-                min={0}
-                step={5}
-              />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <NewNumericalInput
+                  label={t('workoutDetail.partial')}
+                  value={item.partialReps}
+                  onChange={(v) => onChange(item.id, { partialReps: v })}
+                  min={0}
+                  step={1}
+                />
+              </View>
+              <View className="flex-1">
+                <NewNumericalInput
+                  label={t('workoutDetail.inputs.restSec')}
+                  value={item.rest}
+                  onChange={(v) => onChange(item.id, { rest: v })}
+                  min={0}
+                  step={5}
+                />
+              </View>
             </View>
 
-            <View className="mt-4">
-              <NewNumericalInput
-                label={t('workoutDetail.rir')}
-                value={item.repsInReserve}
-                onChange={(v) => onChange(item.id, { repsInReserve: v })}
-                min={0}
-                step={1}
-              />
-            </View>
+          <View className="mt-4">
+            <NewNumericalInput
+              label={t('workoutDetail.rir')}
+              value={item.repsInReserve}
+              onChange={(v) => onChange(item.id, { repsInReserve: v })}
+              min={0}
+              step={1}
+            />
           </View>
-        </Pressable>
+        </View>
       </GenericCard>
     </View>
   );
@@ -233,6 +247,7 @@ export default function EditPastWorkoutDataModal({
       <View className="flex-1 p-4">
         <DraggableFlatList
           data={sets}
+          containerStyle={{ flex: 1 }}
           style={{ flex: 1 }}
           scrollEnabled
           activationDistance={10}
