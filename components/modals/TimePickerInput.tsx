@@ -1,5 +1,5 @@
 import { format, isSameMinute } from 'date-fns';
-import { ChevronDown, Clock, Edit } from 'lucide-react-native';
+import { Clock, Edit } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -29,7 +29,6 @@ export type TimePickerInputProps = {
    * (e.g. nutrition goals row).
    */
   embedded?: boolean;
-  trailing?: 'edit' | 'chevron' | 'none';
 };
 
 export function TimePickerInput({
@@ -43,7 +42,6 @@ export function TimePickerInput({
   disabled = false,
   className,
   embedded = false,
-  trailing = 'edit',
 }: TimePickerInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -64,7 +62,7 @@ export function TimePickerInput({
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
         <Text className="text-xl font-semibold text-text-primary">{display}</Text>
-        <Clock size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+        <Edit size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
       </Pressable>
     );
   }
@@ -78,15 +76,12 @@ export function TimePickerInput({
     ? 'flex-row items-center justify-between p-0'
     : `flex-row items-center justify-between ${isCompact ? 'p-3' : 'p-4'}`;
 
-  const TrailingIcon =
-    trailing === 'chevron' ? (
-      <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-    ) : trailing === 'edit' ? (
-      <Edit
-        size={isCompact ? theme.iconSize.xs : theme.iconSize.sm}
-        color={theme.colors.text.secondary}
-      />
-    ) : null;
+  const TrailingIcon = (
+    <Edit
+      size={isCompact ? theme.iconSize.xs : theme.iconSize.sm}
+      color={theme.colors.text.secondary}
+    />
+  );
 
   return (
     <View className={className}>
