@@ -224,7 +224,10 @@ export class FoodPortionService {
   static async backfillPortionSources(appPortionCount: number = 9): Promise<void> {
     const unsourced = await database
       .get<FoodPortion>('food_portions')
-      .query(Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))), Q.sortBy('created_at', Q.asc))
+      .query(
+        Q.or(Q.where('source', Q.eq(null)), Q.where('source', Q.eq(''))),
+        Q.sortBy('created_at', Q.asc)
+      )
       .fetch();
 
     if (unsourced.length === 0) {

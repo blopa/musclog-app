@@ -345,6 +345,24 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
   if (dbData._exportVersion < 3) {
     await FoodPortionService.backfillPortionSources();
+
+    // Backups before export version 4 stored totalVolume using the old reps×weight
+    // formula. Reset all values to NULL so the boot-time backfill in _layout.tsx
+    // recalculates everything with the new average-1RM formula after the app reloads.
+    const workoutLogs = await database.get('workout_logs').query().fetch();
+    if (workoutLogs.length > 0) {
+      const now = Date.now();
+      await database.write(async () => {
+        await database.batch(
+          ...workoutLogs.map((log: any) =>
+            log.prepareUpdate((l: any) => {
+              l.totalVolume = null;
+              l.updatedAt = now;
+            })
+          )
+        );
+      });
+    }
   }
 
   // Restore AsyncStorage values from the backup (only if async storage data was included in import)
