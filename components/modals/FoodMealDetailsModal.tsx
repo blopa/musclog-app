@@ -1227,9 +1227,15 @@ export function FoodMealDetailsModal({
       const portions: { gramWeight?: number; portionDescription?: string; modifier?: string }[] =
         detailProduct.foodPortions;
       for (const p of portions) {
-        if (!p.gramWeight || p.gramWeight <= 0) continue;
+        if (!p.gramWeight || p.gramWeight <= 0) {
+          continue;
+        }
+
         const name = p.portionDescription || p.modifier;
-        if (!name) continue;
+        if (!name) {
+          continue;
+        }
+
         if (!result.some((r) => r.gramWeight === p.gramWeight)) {
           result.push({ name, gramWeight: p.gramWeight });
         }
