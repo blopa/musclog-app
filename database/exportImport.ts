@@ -191,12 +191,11 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   return jsonString;
 }
 
-type IdMap = Record<string, string>;
-
 /**
  * Restore the database from a dump string (full replace).
  * Decrypts with optional phrase, then clears and repopulates tables in dependency order.
  * Re-encrypts user_metrics and nutrition_logs using the current device key.
+ * Original record IDs from the backup are preserved exactly.
  */
 export async function restoreDatabase(dump: string, decryptionPhrase?: string): Promise<void> {
   let jsonString = dump;
@@ -221,18 +220,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       await AsyncStorage.multiSet(toRestore);
     }
   }
-
-  const idMaps: Record<string, IdMap> = {};
-  for (const tableName of RESTORE_ORDER) {
-    idMaps[tableName] = {};
-  }
-
-  const mapId = (table: string, oldId: string | undefined): string | undefined => {
-    if (!oldId) {
-      return undefined;
-    }
-    return idMaps[table]?.[oldId];
-  };
 
   const parseMicrosJson = (microsJson: string): any | undefined => {
     try {
@@ -268,7 +255,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
           const date = Number(raw.date);
           const timezone = raw.timezone != null ? String(raw.timezone) : '';
           const encrypted = await encryptUserMetricFields({ value, unit: unit ?? '', date });
-          const created = await collection.create((rec: any) => {
+          await collection.create((rec: any) => {
+            rec._raw.id = oldId;
             rec.type = raw.type;
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
@@ -280,16 +268,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               rec.deletedAt = Number(raw.deleted_at);
             }
           });
-          idMaps[tableName][oldId] = created.id;
           continue;
         }
 
         if (tableName === 'nutrition_logs') {
-          const foodId = mapId('foods', raw.food_id as string) ?? (raw.food_id as string);
-          const portionId =
-            raw.portion_id != null
-              ? (mapId('food_portions', raw.portion_id as string) ?? raw.portion_id)
-              : undefined;
+          const foodId = raw.food_id as string;
+          const portionId = raw.portion_id != null ? (raw.portion_id as string) : undefined;
           const snapshot = {
             loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
             loggedCalories: Number(raw.logged_calories ?? 0),
@@ -303,7 +287,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
                 : undefined,
           };
           const encrypted = await encryptNutritionLogSnapshot(snapshot);
-          const created = await collection.create((rec: any) => {
+          await collection.create((rec: any) => {
+            rec._raw.id = oldId;
             rec.foodId = foodId;
             rec.type = raw.type;
             rec.amount = Number(raw.amount);
@@ -322,11 +307,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               rec.deletedAt = Number(raw.deleted_at);
             }
           });
-          idMaps[tableName][oldId] = created.id;
           continue;
         }
 
-        const created = await collection.create((rec: any) => {
+        await collection.create((rec: any) => {
+          rec._raw.id = oldId;
+
           if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
             rec.completed = false;
           }
@@ -340,81 +326,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               continue;
             }
             const camel = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
-            if (
-              key === 'template_id' &&
-              (tableName === 'schedules' || tableName === 'workout_logs')
-            ) {
-              const mapped = mapId('workout_templates', value as string);
-              if (mapped != null) {
-                (rec as any).templateId = mapped;
-              } else {
-                (rec as any).templateId = value;
-              }
-            } else if (key === 'template_exercise_id') {
-              const mapped = mapId('workout_template_exercises', value as string);
-              if (mapped != null) {
-                (rec as any).templateExerciseId = mapped;
-              } else {
-                (rec as any).templateExerciseId = value;
-              }
-            } else if (key === 'exercise_id') {
-              const mapped = mapId('exercises', value as string);
-              if (mapped != null) {
-                (rec as any).exerciseId = mapped;
-              } else {
-                (rec as any).exerciseId = value;
-              }
-            } else if (key === 'workout_log_id') {
-              const mapped = mapId('workout_logs', value as string);
-              if (mapped != null) {
-                (rec as any).workoutLogId = mapped;
-              } else {
-                (rec as any).workoutLogId = value;
-              }
-            } else if (key === 'food_id') {
-              const mapped = mapId('foods', value as string);
-              if (mapped != null) {
-                (rec as any).foodId = mapped;
-              } else {
-                (rec as any).foodId = value;
-              }
-            } else if (key === 'food_portion_id') {
-              const mapped = mapId('food_portions', value as string);
-              if (mapped != null) {
-                (rec as any).foodPortionId = mapped;
-              } else {
-                (rec as any).foodPortionId = value;
-              }
-            } else if (key === 'meal_id') {
-              const mapped = mapId('meals', value as string);
-              if (mapped != null) {
-                (rec as any).mealId = mapped;
-              } else {
-                (rec as any).mealId = value;
-              }
-            } else if (key === 'nutrition_goal_id') {
-              const mapped = mapId('nutrition_goals', value as string);
-              if (mapped != null) {
-                (rec as any).nutritionGoalId = mapped;
-              } else {
-                (rec as any).nutritionGoalId = value;
-              }
-            } else if (key === 'user_metric_id') {
-              const mapped = mapId('user_metrics', value as string);
-              if (mapped != null) {
-                (rec as any).userMetricId = mapped;
-              } else {
-                (rec as any).userMetricId = value;
-              }
-            } else if (key === 'portion_id') {
-              const mapped = mapId('food_portions', value as string);
-              (rec as any).portionId = mapped ?? value;
-            } else {
-              (rec as any)[camel] = value;
-            }
+            (rec as any)[camel] = value;
           }
         });
-        idMaps[tableName][oldId] = created.id;
       }
     });
   }

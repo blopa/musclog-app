@@ -66,84 +66,88 @@ function SetCard({
               >
                 <GripVertical size={theme.iconSize.md} color={theme.colors.text.secondary} />
               </Pressable>
-                <Text
-                  className="text-xs font-bold uppercase tracking-widest"
-                  style={{
-                    color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
-                  }}
+              <Text
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{
+                  color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
+                }}
+              >
+                {t('workoutDetail.setLabel', { index: displayIndex })}
+              </Text>
+              {item.isPR ? (
+                <View
+                  style={{ backgroundColor: theme.colors.accent.primary10 }}
+                  className="flex-row items-center rounded px-2 py-0.5"
                 >
-                  {t('workoutDetail.setLabel', { index: displayIndex })}
-                </Text>
-                {item.isPR ? (
-                  <View
-                    style={{ backgroundColor: theme.colors.accent.primary10 }}
-                    className="flex-row items-center rounded px-2 py-0.5"
+                  <Text
+                    style={{
+                      color: theme.colors.accent.primary,
+                      fontWeight: theme.typography.fontWeight.extrabold,
+                    }}
+                    className="text-[10px]"
                   >
-                    <Text
-                      style={{
-                        color: theme.colors.accent.primary,
-                        fontWeight: theme.typography.fontWeight.extrabold,
-                      }}
-                      className="text-[10px]"
-                    >
-                      PR
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
-              <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
-                <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
-                <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{ color: theme.colors.status.errorSolid }}
-                >
-                  {t('workoutDetail.remove')}
-                </Text>
-              </Pressable>
+                    PR
+                  </Text>
+                </View>
+              ) : null}
             </View>
+            <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
+              <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
+              <Text
+                className="text-xs font-bold uppercase tracking-wider"
+                style={{ color: theme.colors.status.errorSolid }}
+              >
+                {t('workoutDetail.remove')}
+              </Text>
+            </Pressable>
+          </View>
 
-            {/* Inputs */}
-            <View className="mb-4 flex-row gap-4">
-              <View className="flex-1">
-                <NewNumericalInput
-                  label={t(weightLabelKey)}
-                  value={item.weight}
-                  onChange={(v) => onChange(item.id, { weight: v })}
-                  min={0}
-                  step={1}
-                />
-              </View>
-              <View className="flex-1">
-                <NewNumericalInput
-                  label={t('workoutDetail.reps')}
-                  value={item.reps}
-                  onChange={(v) => onChange(item.id, { reps: v })}
-                  min={0}
-                  step={1}
-                />
-              </View>
+          {/* Inputs */}
+          <View className="mb-4 flex-row gap-4">
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t(weightLabelKey)}
+                value={item.weight}
+                onChange={(v) => onChange(item.id, { weight: v })}
+                min={0}
+                step={1}
+                variant="compact"
+              />
             </View>
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('workoutDetail.reps')}
+                value={item.reps}
+                onChange={(v) => onChange(item.id, { reps: v })}
+                min={0}
+                step={1}
+                variant="compact"
+              />
+            </View>
+          </View>
 
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <NewNumericalInput
-                  label={t('workoutDetail.partial')}
-                  value={item.partialReps}
-                  onChange={(v) => onChange(item.id, { partialReps: v })}
-                  min={0}
-                  step={1}
-                />
-              </View>
-              <View className="flex-1">
-                <NewNumericalInput
-                  label={t('workoutDetail.inputs.restSec')}
-                  value={item.rest}
-                  onChange={(v) => onChange(item.id, { rest: v })}
-                  min={0}
-                  step={5}
-                />
-              </View>
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('workoutDetail.partial')}
+                value={item.partialReps}
+                onChange={(v) => onChange(item.id, { partialReps: v })}
+                min={0}
+                step={1}
+                variant="compact"
+              />
             </View>
+            <View className="flex-1">
+              <NewNumericalInput
+                label={t('workoutDetail.inputs.restSec')}
+                value={item.rest}
+                onChange={(v) => onChange(item.id, { rest: v })}
+                min={0}
+                step={5}
+                variant="compact"
+              />
+            </View>
+          </View>
 
           <View className="mt-4">
             <NewNumericalInput
@@ -152,6 +156,7 @@ function SetCard({
               onChange={(v) => onChange(item.id, { repsInReserve: v })}
               min={0}
               step={1}
+              variant="compact"
             />
           </View>
         </View>
