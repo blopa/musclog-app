@@ -10,6 +10,7 @@ import { useMeals, type UseMealsResultBasic } from '../../hooks/useMeals';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import i18n from '../../lang/lang';
+import AiService from '../../services/AiService';
 import { BottomPopUpMenu } from '../BottomPopUpMenu';
 import { MealItemCard } from '../cards/MealItemCard';
 import { FilterTabs } from '../FilterTabs';
@@ -21,6 +22,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { CreateMealModal } from './CreateMealModal';
 import { FoodMealDetailsModal } from './FoodMealDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
+import { useSnackbar } from '../../context/SnackbarContext';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -86,6 +88,7 @@ type MyMealsModalProps = {
 
 export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { isAiConfigured } = useSettings();
@@ -106,6 +109,7 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
   const [editMealId, setEditMealId] = useState<string | null>(null);
   const [deleteMealId, setDeleteMealId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
 
   // Load only 10 meals initially with pagination
   const { meals, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useMeals({
@@ -206,11 +210,21 @@ export default function MyMealsModal({ visible, onClose }: MyMealsModalProps) {
     setTimeout(() => setCreateMealModalVisible(true), 300); // Wait for modal close animation
   };
 
-  const handleGenerateMealAI = () => {
-    setAddMealModalVisible(false);
+  const handleGenerateMealAI = useCallback(() => {
     // TODO: Implement generate meal with AI logic
-    console.log('Generate Meal with AI pressed');
-  };
+    if (isGeneratingMealAI) {
+      return;
+    }
+
+    setAddMealModalVisible(false);
+  }, [isGeneratingMealAI]);
+
+  const handleGenerateMealAIWithContext = useCallback(
+    async (context: { description: string; tags: string[] }) => {
+      // TODO: Implement generate meal with AI logic
+    },
+    []
+  );
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);
