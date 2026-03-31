@@ -155,7 +155,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       });
 
     return () => subscription.unsubscribe();
-  }, [visible, workoutId, t, units, dateFnsLocale, appNumberLocale]);
+  }, [visible, workoutId, t, units, dateFnsLocale, appNumberLocale, theme]);
 
   const reload = () => {
     if (!workoutId) {

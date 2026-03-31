@@ -1,6 +1,7 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
 import i18n from '../lang/lang';
 import { components } from '../types/usda-types';
+import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 
 type USDAFood = components['schemas']['SearchResultFood'];
 
@@ -21,11 +22,20 @@ export function mapUSDANutritient(
 export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
   const nutrients = food.foodNutrients;
 
-  const calories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
+  const rawCalories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
   const protein = mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203');
   const carbs = mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205');
   const fat = mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204');
   const fiber = mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291');
+
+  const roundedCalories = resolveRoundedPer100gCaloriesForDisplay({
+    calories: rawCalories,
+    protein,
+    carbs,
+    fat,
+    fiber,
+  });
+  const calories = roundedCalories > 0 ? roundedCalories : undefined;
 
   // Brand can be brandOwner or brandName
   const brand = food.brandOwner || (food as any).brandName;
@@ -38,7 +48,7 @@ export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
     calories !== undefined
       ? i18n.t('food.descriptionFormat', {
           brand: brand || food.dataType || i18n.t('food.generic'),
-          calories: Math.round(calories),
+          calories,
           amount: servingSize,
           unit: '',
         })
@@ -50,7 +60,7 @@ export function mapUSDAFoodToUnified(food: USDAFood): UnifiedFoodResult {
     description,
     brand,
     serving_size: servingSize,
-    calories: calories !== undefined ? Math.round(calories) : undefined,
+    calories,
     protein,
     carbs,
     fat,

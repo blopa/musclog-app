@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from 'react';
 import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSmartCamera } from '../context/SmartCameraContext';
 import { useTheme } from '../hooks/useTheme';
@@ -16,15 +16,20 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const theme = useTheme();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
+  const insets = useSafeAreaInsets();
 
   // Stable reference so NavigationMenu (wrapped in memo) does not re-render
   // when this layout re-renders due to screen state changes.
   const handleCameraPress = useCallback(() => openCamera(), [openCamera]);
 
   return (
-    <SafeAreaView
+    <View
       className="flex-1 bg-bg-primary"
-      edges={showNavigationMenu ? ['top'] : ['top', 'bottom']}
+      style={{
+        paddingTop: insets.top,
+        // Full-height screens (no app nav) still render edge-to-edge; pad the system nav / home indicator.
+        ...(!showNavigationMenu ? { paddingBottom: insets.bottom } : null),
+      }}
     >
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
@@ -33,6 +38,6 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
           <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
         </>
       ) : null}
-    </SafeAreaView>
+    </View>
   );
 }

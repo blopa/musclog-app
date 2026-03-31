@@ -91,7 +91,8 @@
     "share": {
       "title": "Chat com o Loggy",
       "noMessages": "Ainda não há histórico de chat para compartilhar.",
-      "failed": "Falha ao compartilhar histórico do chat. Por favor, tente novamente."
+      "failed": "Falha ao compartilhar histórico do chat. Por favor, tente novamente.",
+      "historyLine": "{{timestamp}} - {{sender}}: {{message}}"
     },
     "message": {
       "menuTitle": "Ações da mensagem",

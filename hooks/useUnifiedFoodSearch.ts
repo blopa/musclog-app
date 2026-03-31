@@ -8,6 +8,7 @@ import {
   SearchResultProduct,
   SuccessFoodProductState,
 } from '../types/openFoodFacts';
+import { resolveRoundedPer100gCaloriesForDisplay } from '../utils/inferCaloriesFromMacros';
 import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '../utils/openFoodFactsMapper';
 import { getProductName } from '../utils/productName';
 import { gramsToDisplay } from '../utils/unitConversion';
@@ -64,6 +65,7 @@ export function useUnifiedFoodSearch({
   const [firstResolvedApi, setFirstResolvedApi] = useState<'openfood' | 'usda' | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const prevDebouncedRef = useRef(searchTerm.trim());
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // API pagination states
   const [apiOffset, setApiOffset] = useState(0);
@@ -83,6 +85,10 @@ export function useUnifiedFoodSearch({
 
   // Debounce search term
   useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
     if (!searchTerm || searchTerm.trim().length < 2) {
       prevDebouncedRef.current = '';
       setDebouncedSearchTerm('');
@@ -96,7 +102,7 @@ export function useUnifiedFoodSearch({
       return;
     }
 
-    const timer = setTimeout(() => {
+    debounceTimerRef.current = setTimeout(() => {
       const trimmed = searchTerm.trim();
       const didChange = trimmed !== prevDebouncedRef.current;
       prevDebouncedRef.current = trimmed;
@@ -113,8 +119,37 @@ export function useUnifiedFoodSearch({
       }
     }, debounceMs);
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [searchTerm, debounceMs]);
+
+  const triggerNow = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    const trimmed = searchTerm.trim();
+    if (!trimmed || trimmed.length < 2) {
+      return;
+    }
+
+    const didChange = trimmed !== prevDebouncedRef.current;
+    prevDebouncedRef.current = trimmed;
+    setDebouncedSearchTerm(trimmed);
+    if (didChange) {
+      setApiCompleted(false);
+      setUsdaCompleted(false);
+      setFirstResolvedApi(null);
+      setApiOffset(0);
+      setUsdaOffset(0);
+      setAccumulatedApiResults([]);
+      setAccumulatedUsdaResults([]);
+    }
+  }, [searchTerm]);
 
   // Local database search - using built-in pagination from useFoods
   const {
@@ -336,19 +371,27 @@ export function useUnifiedFoodSearch({
       const massUnit = getMassUnit(units);
       const displayAmount = units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100;
 
+      const displayCalories = resolveRoundedPer100gCaloriesForDisplay({
+        calories: food.calories,
+        protein: food.protein,
+        carbs: food.carbs,
+        fat: food.fat,
+        fiber: food.fiber,
+      });
+
       return {
         id: food.id,
         name: food.name,
         description: t('food.descriptionFormat', {
           brand: food.brand || t('food.customFood'),
-          calories: Math.round(food.calories || 0),
+          calories: displayCalories,
           amount: displayAmount,
           unit: t(getMassUnitI18nKey(units)),
         }),
         brand: food.brand,
         imageUrl: food.imageUrl, // Include image URL from local database
         serving_size: `100 ${massUnit}`, // Display standard serving with appropriate unit
-        calories: food.calories,
+        calories: displayCalories > 0 ? displayCalories : food.calories,
         protein: food.protein,
         carbs: food.carbs,
         fat: food.fat,
@@ -519,5 +562,6 @@ export function useUnifiedFoodSearch({
     retryAPI,
     retryUSDA,
     cancelSearch,
+    triggerNow,
   };
 }

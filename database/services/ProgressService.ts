@@ -48,6 +48,16 @@ export interface MuscleGroupSets {
   sets: number;
 }
 
+/** Per-day averages: sum of logged intake divided by number of days with nutrition logs. */
+export interface AverageIntakeForPeriod {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  dayCount: number;
+}
+
 export interface ProgressInsights {
   tdee: number;
   empiricalTdee: number;
@@ -67,6 +77,7 @@ export interface ProgressInsights {
     bf15: number;
     bf20: number;
   };
+  averageIntake: AverageIntakeForPeriod | null;
 }
 
 export interface CorrelationPoint {
@@ -603,7 +614,7 @@ export class ProgressService {
         ? (convert(initialWeight || 70, 'lb').to('kg') as number)
         : initialWeight || 70) ||
       70;
-    const dob = user?.dateOfBirth || new Date(1990, 0, 1).getTime();
+    const dob = user?.dateOfBirth || localDayStartMs(new Date(1990, 0, 1));
     const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
 
     const bmr = isValidBodyFat(finalFat)
@@ -687,6 +698,30 @@ export class ProgressService {
     const weightTrend =
       Math.abs(weightChangeWeekly) < 0.05 ? 'stable' : weightChangeWeekly > 0 ? 'up' : 'down';
 
+    const intakeDayCount = nutritionDaily.length;
+    let averageIntake: AverageIntakeForPeriod | null = null;
+    if (intakeDayCount > 0) {
+      const totals = nutritionDaily.reduce(
+        (acc, n) => ({
+          calories: acc.calories + n.calories,
+          protein: acc.protein + n.protein,
+          carbs: acc.carbs + n.carbs,
+          fat: acc.fat + n.fat,
+          fiber: acc.fiber + n.fiber,
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
+      );
+      const d = intakeDayCount;
+      averageIntake = {
+        calories: totals.calories / d,
+        protein: totals.protein / d,
+        carbs: totals.carbs / d,
+        fat: totals.fat / d,
+        fiber: totals.fiber / d,
+        dayCount: d,
+      };
+    }
+
     return {
       tdee,
       empiricalTdee,
@@ -701,6 +736,7 @@ export class ProgressService {
       weightTrend,
       eatingPhase,
       targetWeights,
+      averageIntake,
     };
   }
 

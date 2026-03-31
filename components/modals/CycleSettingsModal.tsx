@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import type MenstrualCycle from '../../database/models/MenstrualCycle';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { type CycleSetupData, EditCycleSetupData } from '../EditCycleSetupData';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -36,7 +37,7 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
     setIsSaving(true);
     try {
       await cycle.updateCycle({
-        lastPeriodStartDate: data.lastPeriodStartDate.getTime(),
+        lastPeriodStartDate: localDayStartMs(data.lastPeriodStartDate),
         useHormonalBirthControl: data.birthControlType !== 'none',
         birthControlType: data.birthControlType !== 'none' ? data.birthControlType : null,
         avgCycleLength: data.cycleLength,

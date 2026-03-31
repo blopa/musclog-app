@@ -27,11 +27,11 @@ import {
 } from '../components/modals/EditFitnessDetailsModal';
 import { EditPersonalInfoModal } from '../components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '../components/ShowMoreButton';
+import { AnimatedContent } from '../components/theme/AnimatedContent';
 import { ProgressIndicator } from '../components/theme/ProgressIndicator';
 import { SkeletonLoader } from '../components/theme/SkeletonLoader';
 import { type Gender } from '../database/models';
 import { UserService } from '../database/services';
-import { SettingsService } from '../database/services/SettingsService';
 import { useFormatAppNumber } from '../hooks/useFormatAppNumber';
 import { useSettings } from '../hooks/useSettings';
 import { useSyncTracking } from '../hooks/useSyncTracking';
@@ -40,7 +40,10 @@ import { useUser } from '../hooks/useUser';
 import { useUserMetrics } from '../hooks/useUserMetrics';
 import { getAvatarDisplayProps } from '../utils/avatarUtils';
 import { calculateBMIWithStatus } from '../utils/bmiHelper';
-import { localDayStartMs } from '../utils/calendarDate';
+import {
+  formatDateOfBirthFromTimestamp,
+  persistFitnessDetails,
+} from '../utils/fitnessProfilePersistence';
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -238,22 +241,9 @@ export default function ProfileScreen() {
 
   const handleSavePersonalInfo = async (data: PersonalInfo) => {
     try {
-      const dobParts = data.dob.split('/');
-      const dateOfBirth =
-        dobParts.length === 3
-          ? localDayStartMs(
-              new Date(
-                parseInt(dobParts[2], 10),
-                parseInt(dobParts[0], 10) - 1,
-                parseInt(dobParts[1], 10)
-              )
-            )
-          : localDayStartMs(new Date(data.dob));
-
       await UserService.updateUserProfile({
         fullName: data.fullName,
         email: data.email,
-        dateOfBirth,
         gender: data.gender as Gender,
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
@@ -265,15 +255,7 @@ export default function ProfileScreen() {
 
   const handleSaveFitnessDetails = async (data: FitnessDetails) => {
     try {
-      // Update units setting
-      await SettingsService.setUnits(data.units);
-
-      // Update user fitness details
-      await UserService.updateUserProfile({
-        fitnessGoal: data.fitnessGoal,
-        activityLevel: data.activityLevel,
-        liftingExperience: data.experience,
-      });
+      await persistFitnessDetails(data);
     } catch (err) {
       console.error('Failed to save fitness details:', err);
     }
@@ -293,7 +275,7 @@ export default function ProfileScreen() {
           <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
           <Pressable
             className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.push('/settings')}
+            onPress={() => router.navigate('/settings')}
           >
             <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
           </Pressable>
@@ -307,54 +289,59 @@ export default function ProfileScreen() {
               <SkeletonLoader width={200} height={28} borderRadius={8} />
             </View>
           ) : (
-            <>
-              <View className="relative mb-4">
-                <View
-                  className="h-32 w-32 overflow-hidden rounded-full border-4"
-                  style={{
-                    borderColor: dbUser
-                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
-                      : theme.colors.accent.primary,
-                    backgroundColor: dbUser
-                      ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                          .backgroundColor
-                      : theme.colors.accent.primary20,
-                  }}
-                >
-                  {dbUser?.avatarIcon ? (
-                    <View className="h-full w-full items-center justify-center rounded-full">
-                      {createElement(
-                        getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                          .IconComponent,
-                        {
-                          size: 40,
-                          color: getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                            .color,
-                        }
-                      )}
-                    </View>
-                  ) : null}
+            <AnimatedContent style={{ alignItems: 'center' }}>
+              <>
+                <View className="relative mb-4">
+                  <View
+                    className="h-32 w-32 overflow-hidden rounded-full border-4"
+                    style={{
+                      borderColor: dbUser
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
+                        : theme.colors.accent.primary,
+                      backgroundColor: dbUser
+                        ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                            .backgroundColor
+                        : theme.colors.accent.primary20,
+                    }}
+                  >
+                    {dbUser?.avatarIcon ? (
+                      <View className="h-full w-full items-center justify-center rounded-full">
+                        {createElement(
+                          getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+                            .IconComponent,
+                          {
+                            size: 40,
+                            color: getAvatarDisplayProps(
+                              theme,
+                              dbUser.avatarIcon,
+                              dbUser.avatarColor
+                            ).color,
+                          }
+                        )}
+                      </View>
+                    ) : null}
+                  </View>
+                  <Pressable
+                    className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
+                    style={{ backgroundColor: theme.colors.accent.primary }}
+                    onPress={() => setIsEditPersonalVisible(true)}
+                  >
+                    <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
+                  </Pressable>
                 </View>
-                <Pressable
-                  className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
-                  style={{ backgroundColor: theme.colors.accent.primary }}
-                  onPress={() => setIsEditPersonalVisible(true)}
-                >
-                  <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
-                </Pressable>
-              </View>
-              <Text className="mb-3 text-3xl font-bold text-text-primary">
-                {dbUser?.fullName || t('profile.loading')}
-              </Text>
-              {dbUser?.fitnessGoal ? (
-                <Text className="text-base text-text-primary">
-                  {t('profile.goal')}:{' '}
-                  {t(
-                    `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
-                  )}
+                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
+                  {dbUser?.fullName || t('profile.loading')}
                 </Text>
-              ) : null}
-            </>
+                {dbUser?.fitnessGoal ? (
+                  <Text className="text-center text-base text-text-primary">
+                    {t('profile.goal')}:{' '}
+                    {t(
+                      `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
+                    )}
+                  </Text>
+                ) : null}
+              </>
+            </AnimatedContent>
           )}
         </View>
 
@@ -370,13 +357,22 @@ export default function ProfileScreen() {
             />
           </View>
           <View className="-mx-2 flex-row flex-wrap">
-            {isLoadingMetrics || isLoadingUser
-              ? [1, 2, 3, 4].map((i) => (
-                  <View key={i} className="mb-4 w-1/2 px-2">
-                    <SkeletonLoader height={80} borderRadius={12} />
-                  </View>
-                ))
-              : stats.map((stat) => (
+            {isLoadingMetrics || isLoadingUser ? (
+              [1, 2, 3, 4].map((i) => (
+                <View key={i} className="mb-4 w-1/2 px-2">
+                  <SkeletonLoader height={80} borderRadius={12} />
+                </View>
+              ))
+            ) : (
+              <AnimatedContent
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  width: '100%',
+                  marginHorizontal: -8,
+                }}
+              >
+                {stats.map((stat) => (
                   <View key={stat.id} className="mb-4 w-1/2 px-2">
                     <StatCard
                       title={t(stat.titleKey)}
@@ -389,6 +385,8 @@ export default function ProfileScreen() {
                     />
                   </View>
                 ))}
+              </AnimatedContent>
+            )}
           </View>
         </View>
 
@@ -411,7 +409,7 @@ export default function ProfileScreen() {
                   } else if (item.id === 'fitness') {
                     setIsEditFitnessVisible(true);
                   } else if (item.id === 'preferences') {
-                    router.push('/settings');
+                    router.navigate('/settings');
                   }
                 }}
               />
@@ -434,12 +432,13 @@ export default function ProfileScreen() {
         visible={isEditPersonalVisible}
         onClose={() => setIsEditPersonalVisible(false)}
         onSave={handleSavePersonalInfo}
+        hideDob
         initialData={
           dbUser
             ? {
                 fullName: dbUser.fullName,
                 email: dbUser.email || '',
-                dob: new Date(dbUser.dateOfBirth).toISOString().split('T')[0],
+                dob: '',
                 gender: dbUser.gender,
                 avatarIcon: dbUser.avatarIcon,
                 avatarColor: dbUser.avatarColor,
@@ -455,9 +454,12 @@ export default function ProfileScreen() {
         initialData={
           dbUser && metrics
             ? {
+                dob: formatDateOfBirthFromTimestamp(dbUser.dateOfBirth),
+                gender: dbUser.gender,
                 units,
                 weight: metrics.weight?.toString() || '',
                 height: metrics.height?.toString() || '',
+                fatPercentage: metrics.bodyFat,
                 weightGoal: dbUser.weightGoal ?? 'maintain',
                 fitnessGoal: dbUser.fitnessGoal,
                 activityLevel: dbUser.activityLevel,

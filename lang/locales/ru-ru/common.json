@@ -3,6 +3,7 @@
     "clear": "Очистить",
     "value": "Значение",
     "name": "Имя",
+    "context": "Контекст",
     "processing": "обработка...",
     "success": "Успешно",
     "saveError": "Не удалось сохранить изменения",
@@ -59,6 +60,8 @@
     "loadMultiplier": "Множитель нагрузки",
     "deleteSuccess": "Успешно удалено",
     "notFound": "Не найдено",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Ежедневно",
       "weekly": "Еженедельно",

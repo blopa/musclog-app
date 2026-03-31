@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { DateRangePreset } from '../../hooks/useProgressData';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { FilterTabs } from '../FilterTabs';
 import { DatePickerInput } from '../modals/DatePickerInput';
 import { DatePickerModal } from '../modals/DatePickerModal';
@@ -31,8 +32,12 @@ export function ProgressDateFilter({
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
-  const [tempStartDate, setTempStartDate] = useState(appliedRange?.startDate || new Date());
-  const [tempEndDate, setTempEndDate] = useState(appliedRange?.endDate || new Date());
+  const [tempStartDate, setTempStartDate] = useState(() =>
+    localCalendarDayDate(appliedRange?.startDate || new Date())
+  );
+  const [tempEndDate, setTempEndDate] = useState(() =>
+    localCalendarDayDate(appliedRange?.endDate || new Date())
+  );
   const [showCustomUI, setShowCustomUI] = useState(activePreset === 'custom');
 
   const presets = [
@@ -46,16 +51,18 @@ export function ProgressDateFilter({
   ];
 
   const handleStartDateSelect = (date: Date) => {
-    setTempStartDate(date);
-    if (date > tempEndDate) {
-      setTempEndDate(date);
+    const d = localCalendarDayDate(date);
+    setTempStartDate(d);
+    if (d > tempEndDate) {
+      setTempEndDate(d);
     }
   };
 
   const handleEndDateSelect = (date: Date) => {
-    setTempEndDate(date);
-    if (date < tempStartDate) {
-      setTempStartDate(date);
+    const d = localCalendarDayDate(date);
+    setTempEndDate(d);
+    if (d < tempStartDate) {
+      setTempStartDate(d);
     }
   };
 

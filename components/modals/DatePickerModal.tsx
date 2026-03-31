@@ -23,6 +23,7 @@ import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
 import i18n, { LanguageKeys, LOCALE_MAP } from '../../lang/lang';
+import { localCalendarDayDate } from '../../utils/calendarDate';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
 
@@ -252,9 +253,15 @@ export function DatePickerModal({
             >
               {(
                 quickDates ?? [
-                  { label: t('datePicker.yesterday'), date: subDays(new Date(), 1) },
-                  { label: t('datePicker.today'), date: new Date() },
-                  { label: t('datePicker.tomorrow'), date: addDays(new Date(), 1) },
+                  {
+                    label: t('datePicker.yesterday'),
+                    date: localCalendarDayDate(subDays(new Date(), 1)),
+                  },
+                  { label: t('datePicker.today'), date: localCalendarDayDate(new Date()) },
+                  {
+                    label: t('datePicker.tomorrow'),
+                    date: localCalendarDayDate(addDays(new Date(), 1)),
+                  },
                 ]
               ).map((option, index) => {
                 const isQuickPickActive = isSameDay(tempSelectedDate, option.date);

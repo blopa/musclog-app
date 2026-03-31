@@ -3,6 +3,7 @@
     "clear": "Clear",
     "value": "Value",
     "name": "Name",
+    "context": "Context",
     "processing": "processing...",
     "success": "Success",
     "saveError": "Failed to save changes",
@@ -59,6 +60,8 @@
     "loadMultiplier": "Load Multiplier",
     "deleteSuccess": "Deleted successfully",
     "notFound": "Not found",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Daily",
       "weekly": "Weekly",

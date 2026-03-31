@@ -3,6 +3,7 @@
     "clear": "Limpar",
     "value": "Valor",
     "name": "Nome",
+    "context": "Context",
     "processing": "processando...",
     "success": "Sucesso",
     "saveError": "Falha ao salvar alterações",
@@ -59,6 +60,8 @@
     "loadMultiplier": "Multiplicador de Carga",
     "deleteSuccess": "Excluído com sucesso",
     "notFound": "Não encontrado",
+    "labelColonValue": "{{label}}: {{value}}",
+    "labelWithColon": "{{label}}:",
     "time": {
       "daily": "Diário",
       "weekly": "Semanal",

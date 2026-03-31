@@ -28,7 +28,7 @@ Here’s a concise comparison and what’s still missing in **musclog-new**.
 ### 1. **Progress screen (missing route)**
 
 - **musclog-app**: No dedicated “progress” screen in the drawer; dashboard and user metrics charts cover progress.
-- **musclog-new**: `UserMenuModal` has `onProgressPress={() => router.push('/progress')}` but there is **no** `app/progress.tsx`, so the link leads to a missing route.
+- **musclog-new**: `UserMenuModal` has `onProgressPress={() => router.navigate('/progress')}` but there is **no** `app/progress.tsx`, so the link leads to a missing route.
 
 **Suggestion:** Add `app/progress.tsx` (e.g. weight/body metrics over time, workout volume, nutrition summary) or point “Progress” to an existing screen (e.g. profile/body metrics).
 

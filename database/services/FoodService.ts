@@ -7,6 +7,7 @@ import { database } from '../index';
 import Food, { type MicrosData } from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
 import FoodPortion from '../models/FoodPortion';
+import { FoodPortionService } from './FoodPortionService';
 
 export class FoodService {
   /**
@@ -29,31 +30,11 @@ export class FoodService {
     customPortion?: FoodPortion | null,
     externalId?: string
   ): Promise<Food> {
+    const defaultPortion =
+      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+
     return await database.write(async () => {
       const now = Date.now();
-
-      // Use custom portion if provided, otherwise find or create "100g" portion
-      let defaultPortion: FoodPortion;
-
-      if (customPortion) {
-        defaultPortion = customPortion;
-      } else {
-        // Find or create a "100g" portion (global, reusable)
-        const existingPortion = await database
-          .get<FoodPortion>('food_portions')
-          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-          .fetch();
-
-        defaultPortion =
-          existingPortion.length > 0
-            ? existingPortion[0]
-            : await database.get<FoodPortion>('food_portions').create((portion) => {
-                portion.name = '100g';
-                portion.gramWeight = 100;
-                portion.createdAt = now;
-                portion.updatedAt = now;
-              });
-      }
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
@@ -121,31 +102,11 @@ export class FoodService {
     customPortion?: FoodPortion | null,
     externalId?: string
   ): Promise<Food> {
+    const defaultPortion =
+      customPortion ?? (await FoodPortionService.createFoodPortion('100g', 100));
+
     return await database.write(async () => {
       const now = Date.now();
-
-      // Use custom portion if provided, otherwise find or create "100g" portion
-      let defaultPortion: FoodPortion;
-
-      if (customPortion) {
-        defaultPortion = customPortion;
-      } else {
-        // Find or create a "100g" portion (global, reusable)
-        const existingPortion = await database
-          .get<FoodPortion>('food_portions')
-          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-          .fetch();
-
-        defaultPortion =
-          existingPortion.length > 0
-            ? existingPortion[0]
-            : await database.get<FoodPortion>('food_portions').create((portion) => {
-                portion.name = '100g';
-                portion.gramWeight = 100;
-                portion.createdAt = now;
-                portion.updatedAt = now;
-              });
-      }
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
@@ -207,23 +168,10 @@ export class FoodService {
     },
     barcode?: string
   ): Promise<Food> {
+    const defaultPortion = await FoodPortionService.createFoodPortion('100g', 100);
+
     return await database.write(async () => {
       const now = Date.now();
-
-      const existingPortion = await database
-        .get<FoodPortion>('food_portions')
-        .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-        .fetch();
-
-      const defaultPortion =
-        existingPortion.length > 0
-          ? existingPortion[0]
-          : await database.get<FoodPortion>('food_portions').create((portion) => {
-              portion.name = '100g';
-              portion.gramWeight = 100;
-              portion.createdAt = now;
-              portion.updatedAt = now;
-            });
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;
@@ -276,29 +224,21 @@ export class FoodService {
     servingUnit: string = 'g',
     description?: string
   ): Promise<Food> {
+    // Convert serving amount to grams
+    let gramWeight = servingAmount;
+    if (servingUnit === 'oz') {
+      gramWeight = convert(servingAmount, 'oz').to('g');
+    } else if (servingUnit === 'ml') {
+      // For ml, assume 1:1 with grams
+      gramWeight = servingAmount;
+    }
+    // For 'g' or other units, assume gramWeight = servingAmount
+
+    const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
+    const portion = await FoodPortionService.createFoodPortion(portionName, gramWeight);
+
     return await database.write(async () => {
       const now = Date.now();
-
-      // Convert serving amount to grams
-      let gramWeight = servingAmount;
-      if (servingUnit === 'oz') {
-        gramWeight = convert(servingAmount, 'oz').to('g');
-      } else if (servingUnit === 'ml') {
-        // For ml, assume 1:1 with grams
-        gramWeight = servingAmount;
-      }
-      // For 'g' or other units, assume gramWeight = servingAmount
-
-      // Create portion label
-      const portionName = servingAmount === 100 && servingUnit === 'g' ? '100g' : 'Default';
-
-      // Create a new portion for this food's serving amount (global, can be reused)
-      const portion = await database.get<FoodPortion>('food_portions').create((p) => {
-        p.name = portionName;
-        p.gramWeight = gramWeight;
-        p.createdAt = now;
-        p.updatedAt = now;
-      });
 
       const food = await database.get<Food>('foods').create((food) => {
         food.isAiGenerated = false;

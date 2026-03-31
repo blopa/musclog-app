@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../hooks/useTheme';
 import AiService from '../../services/AiService';
+import { formatLocalCalendarDayIso } from '../../utils/calendarDate';
 import { parseRetrospectiveNutrition } from '../../utils/coachAI';
 import { showSnackbar } from '../../utils/snackbarService';
 import { FullScreenModal } from './FullScreenModal';
@@ -53,7 +54,7 @@ export function RetrospectiveNutritionModal({
         return;
       }
 
-      const targetDateStr = targetDate.toISOString().split('T')[0];
+      const targetDateStr = formatLocalCalendarDayIso(targetDate);
       const parsed = await parseRetrospectiveNutrition(aiConfig, description.trim(), targetDateStr);
       if (!parsed || parsed.length === 0) {
         showSnackbar('error', t('nutrition.processingFailed'));

@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { UserMetricService } from '../../database/services';
-import { localDayClosedRangeMaxMs, localDayStartMs } from '../../utils/calendarDate';
+import {
+  localCalendarDayDate,
+  localDayClosedRangeMaxMs,
+  localDayStartMs,
+} from '../../utils/calendarDate';
 import { Button } from '../theme/Button';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
@@ -20,7 +24,9 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const [flow, setFlow] = useState<number | null>(null);
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(initialDate || new Date());
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(initialDate || new Date())
+  );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [existingFlowId, setExistingFlowId] = useState<string | null>(null);
   const [existingSymptomId, setExistingSymptomId] = useState<string | null>(null);
@@ -43,7 +49,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   // Reset to initial date or today whenever the modal opens
   useEffect(() => {
     if (visible) {
-      setSelectedDate(initialDate || new Date());
+      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
       resetForm(); // Reset form fields when modal opens
     }
   }, [visible, initialDate]);
@@ -243,7 +249,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
-        onDateSelect={setSelectedDate}
+        onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
         maxYear={new Date().getFullYear()}
       />
     </>

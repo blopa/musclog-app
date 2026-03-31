@@ -1,7 +1,9 @@
 import { UnifiedFoodResult } from '../hooks/useUnifiedFoodSearch';
 import i18n from '../lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '../types/openFoodFacts';
+import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
+
 export type { ProductNameResult } from './productName';
 
 // All possible Open Food Facts nutriment properties
@@ -285,13 +287,14 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   const valueField = nutriments[`${baseName}_value`];
 
   const raw = value100g ?? valueServing ?? baseValue ?? valueField;
-  const num = typeof raw === 'number' && !Number.isNaN(raw) ? raw : undefined;
-  return num;
-}
+  const num =
+    typeof raw === 'number'
+      ? raw
+      : typeof raw === 'string'
+        ? Number.parseFloat(raw.replace(',', '.'))
+        : Number.NaN;
 
-// Helper function to get nutriment unit
-function getNutrimentUnit(nutriments: any, baseName: string): string | undefined {
-  return nutriments[`${baseName}_unit`];
+  return Number.isFinite(num) ? num : undefined;
 }
 
 // Map all nutriments to a comprehensive object
@@ -316,7 +319,6 @@ function mapAllNutriments(nutriments: any): Record<string, any> {
 export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const kcal = nutriments?.['energy-kcal'];
-  const calories = kcal ? Math.round(kcal) : undefined;
 
   // Map all comprehensive nutriments
   const allNutriments = mapAllNutriments(nutriments);
@@ -342,6 +344,16 @@ export function mapOpenFoodFactsProduct(product: SearchResultProduct): UnifiedFo
       fiber = Math.max(0, calculatedFiber); // Clamp to minimum 0 to prevent negative values
     }
   }
+
+  const roundedCalories = resolveRoundedPer100gCaloriesForDisplay({
+    calories: kcal,
+    protein,
+    carbs,
+    fat,
+    fiber,
+  });
+
+  const calories = roundedCalories > 0 ? roundedCalories : undefined;
 
   const sugars = getNutrimentValue(nutriments, 'sugars');
   const saturatedFat = getNutrimentValue(nutriments, 'saturated-fat');

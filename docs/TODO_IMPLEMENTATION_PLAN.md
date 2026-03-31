@@ -89,9 +89,9 @@ Effort: **S** = small (≈0.5–1 day), **M** = medium (≈1–3 days), **L** = 
 
 ## 9. Workout settings & navigation
 
-| TODO                                         | Location                                                 | Plan                                                                                                                                                                                                | Effort |
-| -------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| Uncomment workout settings once route exists | `workout-session.tsx`, `rest-over.tsx`, `rest-timer.tsx` | Add a `/workout-settings` (or equivalent) screen: rest duration, default units, sound/haptics, etc. Then uncomment `onWorkoutSettings={() => router.push('/workout-settings')}` in all three files. | M      |
+| TODO                                         | Location                                                 | Plan                                                                                                                                                                                                    | Effort |
+| -------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Uncomment workout settings once route exists | `workout-session.tsx`, `rest-over.tsx`, `rest-timer.tsx` | Add a `/workout-settings` (or equivalent) screen: rest duration, default units, sound/haptics, etc. Then uncomment `onWorkoutSettings={() => router.navigate('/workout-settings')}` in all three files. | M      |
 
 ---
 

@@ -14,6 +14,7 @@ import {
 } from '../constants/misc';
 import { GoogleAuthService } from '../database/services';
 import i18n from '../lang/lang';
+import { formatLocalCalendarDayIso } from './calendarDate';
 import { captureException, setSentryUser } from './sentry';
 import { showSnackbar } from './snackbarService';
 
@@ -70,7 +71,7 @@ const handleGoogleAuthError = async () => {
   }
 
   const lastTimeRun = await AsyncStorage.getItem(LAST_TIME_GOOGLE_AUTH_ERROR_WAS_SHOWN);
-  const today = new Date().toISOString().split('T')[0];
+  const today = formatLocalCalendarDayIso(new Date());
 
   if (lastTimeRun === today) {
     console.log('Error already shown today.');

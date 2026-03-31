@@ -70,8 +70,10 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
               const translatedMuscleGroup = t(
                 getMuscleGroupTranslationKey(muscleGroupSets[p.x].muscleGroup)
               );
-              // TODO: use a translation here, because some languages have a white space before the :, like french
-              return `${translatedMuscleGroup}: ${formatInteger(Math.round(p.y))}`;
+              return t('common.labelColonValue', {
+                label: translatedMuscleGroup,
+                value: formatInteger(Math.round(p.y)),
+              });
             }}
           />
         </ProgressChartSection>

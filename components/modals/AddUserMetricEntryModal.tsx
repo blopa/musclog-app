@@ -10,7 +10,7 @@ import UserMetric, { UserMetricType } from '../../database/models/UserMetric';
 import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
 import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
-import { localDayStartMs } from '../../utils/calendarDate';
+import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '../../utils/unitConversion';
 import { GenericCard } from '../cards/GenericCard';
 import { MoodSelectorCard } from '../cards/MoodSelectorCard';
@@ -149,7 +149,7 @@ export default function AddUserMetricEntryModal({
   };
 
   const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
+    setSelectedDate(localCalendarDayDate(date));
   };
 
   const handleTimeSelect = (time: Date) => {
@@ -372,17 +372,19 @@ export default function AddUserMetricEntryModal({
         />
 
         {/* Date and Time Sections */}
-        <View className="space-y-3 pb-4">
-          <DatePickerInput
-            selectedDate={selectedDate}
-            onPress={handleDateEdit}
-            label={t('bodyMetrics.addEntry.date')}
-          />
-          <TimePickerInput
-            selectedTime={selectedTime}
-            onPress={handleTimeEdit}
-            label={t('bodyMetrics.addEntry.time')}
-          />
+        <View className="pb-4">
+          <View style={{ gap: theme.spacing.gap.base }}>
+            <DatePickerInput
+              selectedDate={selectedDate}
+              onPress={handleDateEdit}
+              label={t('bodyMetrics.addEntry.date')}
+            />
+            <TimePickerInput
+              selectedTime={selectedTime}
+              onPress={handleTimeEdit}
+              label={t('bodyMetrics.addEntry.time')}
+            />
+          </View>
 
           {/* Note Section */}
           <View className="mt-3">

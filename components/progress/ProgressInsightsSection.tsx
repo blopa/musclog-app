@@ -28,8 +28,53 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
     insights.leanBodyMassChange != null && insights.leanBodyMassChange !== 0;
   const hasAnyWeeklyChange = hasWeightChange || hasFatMassChange || hasLeanMassChange;
 
+  const avg = insights.averageIntake;
+
   return (
     <View className="mb-4">
+      {avg ? (
+        <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+          <View className="p-2">
+            <Text className="mb-1 ml-2 mt-2 text-sm font-bold text-text-primary">
+              {t('progress.averageIntakeTitle')}
+            </Text>
+            <Text className="mb-2 ml-2 text-[10px] uppercase tracking-wider text-text-tertiary">
+              {t('progress.averageIntakeSubtitle', { count: avg.dayCount })}
+            </Text>
+            <View className="border-b border-border-light py-3">
+              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
+                {t('progress.nutritionView.calories')}
+              </Text>
+              <Text className="text-center text-xl font-bold text-accent-primary">
+                {formatInteger(Math.round(avg.calories))} {t('progress.kcal')}
+              </Text>
+            </View>
+            <View className="flex-row flex-wrap">
+              {renderStat(
+                t('progress.averageIntakeProtein'),
+                `${formatDecimal(avg.protein, 1)} g`,
+                'text-text-primary'
+              )}
+              {renderStat(
+                t('progress.averageIntakeCarbs'),
+                `${formatDecimal(avg.carbs, 1)} g`,
+                'text-text-primary'
+              )}
+              {renderStat(
+                t('progress.averageIntakeFat'),
+                `${formatDecimal(avg.fat, 1)} g`,
+                'text-text-primary'
+              )}
+              {renderStat(
+                t('progress.averageIntakeFiber'),
+                `${formatDecimal(avg.fiber, 1)} g`,
+                'text-text-primary'
+              )}
+            </View>
+          </View>
+        </GenericCard>
+      ) : null}
+
       <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
           <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">

@@ -41,8 +41,12 @@ import {
   isSuccessFoodDetailProductState,
   isSuccessStatus,
 } from '../../types/guards/openFoodFacts';
-import { localDayStartMs } from '../../utils/calendarDate';
+import { localCalendarDayDate, localDayStartMs } from '../../utils/calendarDate';
 import { formatAppRoundedDecimal } from '../../utils/formatAppNumber';
+import {
+  applyInferredCaloriesFromMacrosIfNeeded,
+  toFiniteMacro,
+} from '../../utils/inferCaloriesFromMacros';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
@@ -71,12 +75,6 @@ import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
-
-/** Coerce API / DB values that may be strings (e.g. "0") into finite numbers for macro comparisons. */
-function toFiniteMacro(value: unknown): number {
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : 0;
-}
 
 function areCoreMacrosEffectivelyZero(data: {
   calories?: unknown;
@@ -972,7 +970,7 @@ export function FoodMealDetailsModal({
     mealNutrients,
   ]);
 
-  const baseNutritionalData = getNutritionalData();
+  const baseNutritionalData = applyInferredCaloriesFromMacrosIfNeeded(getNutritionalData());
   const nutritionalData =
     editedOverrides &&
     (editedOverrides.calories != null ||
@@ -1359,6 +1357,13 @@ export function FoodMealDetailsModal({
           }
         }
 
+        // Persist inferred per-100g calories so logFood snapshot matches the modal (Food row was 0 kcal).
+        if (toFiniteMacro(foodData!.calories) <= 0 && toFiniteMacro(nutritionalData.calories) > 0) {
+          await foodData!.update((record: any) => {
+            record.calories = nutritionalData.calories;
+          });
+        }
+
         // Create nutrition log with local food
         const logFoodPromise = NutritionService.logFood(
           foodData!.id,
@@ -1600,6 +1605,7 @@ export function FoodMealDetailsModal({
     t,
     onLogMeal,
     mealScaleFactor,
+    refetchedProductDetails,
     barcode,
   ]);
 
@@ -1936,7 +1942,7 @@ export function FoodMealDetailsModal({
             onClose={() => setIsDatePickerVisible(false)}
             selectedDate={selectedDate}
             onDateSelect={(date) => {
-              setSelectedDate(date);
+              setSelectedDate(localCalendarDayDate(date));
               setIsDatePickerVisible(false);
             }}
           />

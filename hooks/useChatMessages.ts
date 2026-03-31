@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addDays } from 'date-fns';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
@@ -34,6 +35,7 @@ import {
   UserService,
 } from '../database/services';
 import AiService from '../services/AiService';
+import { formatLocalCalendarDayIso, localCalendarDayDate } from '../utils/calendarDate';
 import {
   AiCreditsError,
   type ChatHistoryEntry,
@@ -636,11 +638,10 @@ export function useChatMessages(
             return;
           }
         } else if (pendingIntention === ANALYZE_PROGRESS) {
-          const end = new Date();
-          const start = new Date();
-          start.setDate(start.getDate() - 7);
-          const startDate = start.toISOString().split('T')[0];
-          const endDate = end.toISOString().split('T')[0];
+          const end = localCalendarDayDate(new Date());
+          const start = localCalendarDayDate(addDays(end, -7));
+          const startDate = formatLocalCalendarDayIso(start);
+          const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
           const result = await getRecentWorkoutsInsights(
             aiConfig,
@@ -666,11 +667,10 @@ export function useChatMessages(
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
           setPendingIntention(null);
         } else if (pendingIntention === NUTRITION_CHECK) {
-          const end = new Date();
-          const start = new Date();
-          start.setDate(start.getDate() - 7);
-          const startDate = start.toISOString().split('T')[0];
-          const endDate = end.toISOString().split('T')[0];
+          const end = localCalendarDayDate(new Date());
+          const start = localCalendarDayDate(addDays(end, -7));
+          const startDate = formatLocalCalendarDayIso(start);
+          const endDate = formatLocalCalendarDayIso(end);
           const recentConversation = historyEntries.slice(-3);
           const result = await getNutritionInsights(
             aiConfig,

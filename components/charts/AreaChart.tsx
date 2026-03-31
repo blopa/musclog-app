@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { Area, CartesianChart, Line, Scatter } from 'victory-native';
 
@@ -92,6 +93,7 @@ export function AreaChart({
   interactive = true,
   tooltipFormatter,
 }: AreaChartProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const chartId = useId();
   const { registerChart, unregisterChart, notifyChartActive, tooltipPosition } = useChartTooltip();
@@ -139,8 +141,12 @@ export function AreaChart({
     const label = tooltipFormatter
       ? tooltipFormatter(nearest)
       : series
-          // TODO: use a translation here, because some languages have a white space before the :, like french
-          .map((s) => `${s.label}: ${formatRoundedDecimal(nearest[s.key] ?? 0, 1)}`)
+          .map((s) =>
+            t('common.labelColonValue', {
+              label: s.label,
+              value: formatRoundedDecimal(nearest[s.key] ?? 0, 1),
+            })
+          )
           .join('\n');
     notifyChartActive(chartId);
     setActiveLabel(label);

@@ -1,5 +1,5 @@
 // This file intercepts native deep link intents before Expo Router processes them.
-// On cold start, imperative router.push() before the Root Layout mounts causes:
+// On cold start, imperative router.navigate() before the Root Layout mounts causes:
 // "Attempted to navigate before mounting the Root Layout component"
 //
 // Strategy per action:

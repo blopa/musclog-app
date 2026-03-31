@@ -18,6 +18,7 @@ import { CreateWorkoutOptionsModal } from '../../components/modals/CreateWorkout
 import { GenerateWorkoutWithAiModal } from '../../components/modals/GenerateWorkoutWithAiModal';
 import { WorkoutSessionHistoryModal } from '../../components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '../../components/modals/WorkoutSessionOverviewModal';
+import { AnimatedContent } from '../../components/theme/AnimatedContent';
 import DashedButton from '../../components/theme/DashedButton';
 import { EmptyStateCard } from '../../components/theme/EmptyStateCard';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
@@ -448,59 +449,63 @@ export default function WorkoutsScreen() {
 
             {/* Normal State - Featured Workout */}
             {!isLoading && !error && filteredFeaturedWorkout ? (
-              <WorkoutCard
-                name={filteredFeaturedWorkout.name}
-                lastCompleted={filteredFeaturedWorkout.lastCompleted}
-                lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
-                exerciseCount={filteredFeaturedWorkout.exerciseCount}
-                duration={filteredFeaturedWorkout.duration}
-                icon={filteredFeaturedWorkout.icon}
-                onStart={async () => {
-                  if (filteredFeaturedWorkout.id) {
-                    await handleStartWorkout(filteredFeaturedWorkout.id);
-                  }
-                }}
-                onMore={() => {
-                  setSelectedWorkoutName(filteredFeaturedWorkout.name);
-                  setSelectedWorkoutId(filteredFeaturedWorkout.id);
-                  setIsMenuVisible(true);
-                }}
-              />
+              <AnimatedContent>
+                <WorkoutCard
+                  name={filteredFeaturedWorkout.name}
+                  lastCompleted={filteredFeaturedWorkout.lastCompleted}
+                  lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
+                  exerciseCount={filteredFeaturedWorkout.exerciseCount}
+                  duration={filteredFeaturedWorkout.duration}
+                  icon={filteredFeaturedWorkout.icon}
+                  onStart={async () => {
+                    if (filteredFeaturedWorkout.id) {
+                      await handleStartWorkout(filteredFeaturedWorkout.id);
+                    }
+                  }}
+                  onMore={() => {
+                    setSelectedWorkoutName(filteredFeaturedWorkout.name);
+                    setSelectedWorkoutId(filteredFeaturedWorkout.id);
+                    setIsMenuVisible(true);
+                  }}
+                />
+              </AnimatedContent>
             ) : null}
 
             {/* Normal State - Regular Workouts */}
             {!isLoading && !error && filteredWorkouts.length > 0 ? (
-              <>
-                {filteredWorkouts.map((workout) => (
-                  <WorkoutCard
-                    key={workout.id}
-                    name={workout.name}
-                    lastCompleted={workout.lastCompleted}
-                    lastCompletedTimestamp={workout.lastCompletedTimestamp}
-                    exerciseCount={workout.exerciseCount}
-                    duration={workout.duration}
-                    icon={workout.icon}
-                    variant="standard"
-                    onStart={async () => {
-                      await handleStartWorkout(workout.id);
-                    }}
-                    onArchive={async () => {
-                      try {
-                        await WorkoutTemplateService.archiveTemplate(workout.id);
-                        showSnackbar('success', t('workouts.archiveSuccess'));
-                      } catch (err) {
-                        console.error('Error archiving workout:', err);
-                        showSnackbar('error', t('workouts.archiveError'));
-                      }
-                    }}
-                    onMore={() => {
-                      setSelectedWorkoutName(workout.name);
-                      setSelectedWorkoutId(workout.id);
-                      setIsMenuVisible(true);
-                    }}
-                  />
-                ))}
-              </>
+              <AnimatedContent>
+                <>
+                  {filteredWorkouts.map((workout, index) => (
+                    <WorkoutCard
+                      key={workout.id}
+                      name={workout.name}
+                      lastCompleted={workout.lastCompleted}
+                      lastCompletedTimestamp={workout.lastCompletedTimestamp}
+                      exerciseCount={workout.exerciseCount}
+                      duration={workout.duration}
+                      icon={workout.icon}
+                      variant="standard"
+                      onStart={async () => {
+                        await handleStartWorkout(workout.id);
+                      }}
+                      onArchive={async () => {
+                        try {
+                          await WorkoutTemplateService.archiveTemplate(workout.id);
+                          showSnackbar('success', t('workouts.archiveSuccess'));
+                        } catch (err) {
+                          console.error('Error archiving workout:', err);
+                          showSnackbar('error', t('workouts.archiveError'));
+                        }
+                      }}
+                      onMore={() => {
+                        setSelectedWorkoutName(workout.name);
+                        setSelectedWorkoutId(workout.id);
+                        setIsMenuVisible(true);
+                      }}
+                    />
+                  ))}
+                </>
+              </AnimatedContent>
             ) : null}
 
             {/* Create Template Button - Only show when there are workouts */}
@@ -581,7 +586,7 @@ export default function WorkoutsScreen() {
           try {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
-            router.push(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            router.navigate(`/workout/workout-session?workoutLogId=${workoutLog.id}`);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
@@ -683,16 +688,16 @@ export default function WorkoutsScreen() {
         workoutLogId={selectedWorkoutLogId}
         onStartWorkout={() => {
           setIsWorkoutOverviewVisible(false);
-          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onResumeSession={() => {
           setIsWorkoutOverviewVisible(false);
-          router.push(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
         }}
         onSelectExercise={(exerciseId) => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout session with selected exercise
-          router.push(
+          router.navigate(
             `/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
           );
         }}
@@ -713,7 +718,7 @@ export default function WorkoutsScreen() {
         onFinishWorkout={() => {
           setIsWorkoutOverviewVisible(false);
           // Navigate to workout summary
-          router.push(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
+          router.navigate(`/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
         }}
       />
 

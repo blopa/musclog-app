@@ -19,7 +19,6 @@ import Exercise, {
 } from '../models/Exercise';
 import Food from '../models/Food';
 import FoodFoodPortion from '../models/FoodFoodPortion';
-import FoodPortion from '../models/FoodPortion';
 import Meal from '../models/Meal';
 import MenstrualCycle from '../models/MenstrualCycle';
 import Setting from '../models/Setting';
@@ -30,7 +29,13 @@ import WorkoutLogSet from '../models/WorkoutLogSet';
 import WorkoutTemplate from '../models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '../models/WorkoutTemplateSet';
-import { ExerciseService, MealService, SettingsService, UserService } from '../services';
+import {
+  ExerciseService,
+  FoodPortionService,
+  MealService,
+  SettingsService,
+  UserService,
+} from '../services';
 
 /**
  * Seeds the exercises database if it's empty
@@ -1439,6 +1444,8 @@ async function seedFoods(): Promise<{ created: number }> {
       return { created: 0 };
     }
 
+    const shared100gPortion = await FoodPortionService.createFoodPortion('100g', 100);
+
     await database.write(async () => {
       // Simple foods for easy testing
       const simpleFoods = [
@@ -1578,26 +1585,10 @@ async function seedFoods(): Promise<{ created: number }> {
           food.updatedAt = now;
         });
 
-        // Create or find the default 100g portion (global, reusable)
-        const existingPortion = await database
-          .get<FoodPortion>('food_portions')
-          .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-          .fetch();
-
-        const defaultPortion =
-          existingPortion.length > 0
-            ? existingPortion[0]
-            : await database.get<FoodPortion>('food_portions').create((portion) => {
-                portion.name = '100g';
-                portion.gramWeight = 100;
-                portion.createdAt = now;
-                portion.updatedAt = now;
-              });
-
         // Link food to portion via junction table
         await database.get<FoodFoodPortion>('food_food_portions').create((ffp) => {
           ffp.foodId = food.id;
-          ffp.foodPortionId = defaultPortion.id;
+          ffp.foodPortionId = shared100gPortion.id;
           ffp.isDefault = true;
           ffp.createdAt = now;
           ffp.updatedAt = now;
@@ -1642,25 +1633,11 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       { name: 'Sweet Potato', calories: 86, protein: 1.6, carbs: 20, fat: 0.1, fiber: 3 },
     ];
 
-    // Get or create the 100g portion needed to link foods
-    const existing100g = await database
-      .get<FoodPortion>('food_portions')
-      .query(Q.where('name', '100g'), Q.where('gram_weight', 100))
-      .fetch();
+    const portion100g = await FoodPortionService.createFoodPortion('100g', 100);
 
     const devFoods = new Map<string, Food>();
 
     await database.write(async () => {
-      const portion100g =
-        existing100g.length > 0
-          ? existing100g[0]
-          : await database.get<FoodPortion>('food_portions').create((p) => {
-              p.name = '100g';
-              p.gramWeight = 100;
-              p.createdAt = now;
-              p.updatedAt = now;
-            });
-
       for (const def of devFoodDefs) {
         // Check by exact name (case-insensitive)
         const existing = await database.get<Food>('foods').query(Q.where('name', def.name)).fetch();
@@ -1948,7 +1925,7 @@ async function seedUser(): Promise<boolean> {
 
     await UserService.initializeUser({
       fullName: 'Alex Johnson',
-      dateOfBirth: new Date(1990, 3, 15).getTime(), // April 15, 1990
+      dateOfBirth: localDayStartMs(new Date(1990, 3, 15)), // April 15, 1990 (local calendar day)
       gender: 'male',
       fitnessGoal: 'hypertrophy',
       weightGoal: 'maintain',

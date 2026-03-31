@@ -2,28 +2,18 @@ import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '../../database/models';
+import type { FitnessDetails } from '../../types/fitnessDetails';
 import { EditFitnessDetailsBody } from '../EditFitnessDetailsBody';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
+
+export type { FitnessDetails } from '../../types/fitnessDetails';
 
 type EditFitnessDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: (data: FitnessDetails) => void;
   initialData?: Partial<FitnessDetails>;
-};
-
-export type FitnessDetails = {
-  units: 'imperial' | 'metric';
-  weight: string;
-  height: string;
-  fatPercentage?: number;
-  weightGoal: WeightGoal;
-  fitnessGoal: FitnessGoal;
-  activityLevel: number;
-  gender: Gender;
-  experience: LiftingExperience;
 };
 
 export function EditFitnessDetailsModal({
@@ -37,28 +27,8 @@ export function EditFitnessDetailsModal({
     undefined
   );
 
-  const handleSave = ({
-    units,
-    weight,
-    height,
-    fatPercentage,
-    weightGoal,
-    fitnessGoal,
-    activityLevel,
-    gender,
-    experience,
-  }: FitnessDetails) => {
-    onSave?.({
-      units,
-      weight,
-      height,
-      fatPercentage,
-      weightGoal,
-      fitnessGoal,
-      activityLevel,
-      gender,
-      experience,
-    });
+  const handleSave = (data: FitnessDetails) => {
+    onSave?.(data);
     onClose();
   };
 
@@ -69,9 +39,9 @@ export function EditFitnessDetailsModal({
       currentFormData.weight &&
       currentFormData.height &&
       currentFormData.gender &&
-      currentFormData.weightGoal &&
+      currentFormData.weightGoal != null &&
       currentFormData.fitnessGoal &&
-      currentFormData.activityLevel &&
+      currentFormData.activityLevel != null &&
       currentFormData.experience
     ) {
       handleSave(currentFormData as FitnessDetails);

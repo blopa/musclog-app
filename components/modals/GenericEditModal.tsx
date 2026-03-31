@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useTheme } from '../../hooks/useTheme';
+import { localDayStartMs } from '../../utils/calendarDate';
 import { showSnackbar } from '../../utils/snackbarService';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { Button } from '../theme/Button';
@@ -38,7 +39,7 @@ export function GenericEditModal({
   loadError,
   submitLabel,
 }: GenericEditModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [formValues, setFormValues] = useState<EditFormValues>(initialValues);
   const [isSaving, setIsSaving] = useState(false);
@@ -93,16 +94,18 @@ export function GenericEditModal({
       ];
       const colorScheme = colorSchemes[index % colorSchemes.length];
 
-      // Try to get a description from translation keys
+      // Optional longer subtitle: e.g. food.meals.* → food.meals.descriptions.*
+      // (keys like ai.icons.Dumbbell have no parallel *.descriptions.* — skip if absent)
       const descriptionKey = option.label.replace(/\.([^.]+)$/, '.descriptions.$1');
-      const description = t(descriptionKey);
+      const title = t(option.label, option.label);
+      const description = i18n.exists(descriptionKey) ? t(descriptionKey) : title;
 
       return {
         icon: Circle,
         iconColor: colorScheme.color,
         iconBgColor: colorScheme.bg,
-        title: t(option.label, option.label),
-        description: description || t(option.label, option.label),
+        title,
+        description,
         onPress: () => onSelect(option.value),
       };
     });
@@ -282,8 +285,7 @@ export function GenericEditModal({
               }}
               selectedDate={dateValue}
               onDateSelect={(date) => {
-                // Convert Date to timestamp (milliseconds)
-                handleFieldChange(field.key, date.getTime());
+                handleFieldChange(field.key, localDayStartMs(date));
                 setDatePickerVisible(false);
                 setCurrentDateFieldKey(null);
               }}

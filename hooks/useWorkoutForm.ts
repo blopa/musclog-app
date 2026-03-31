@@ -157,7 +157,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         showSnackbar('error', t('createWorkout.addExerciseError'));
       }
     },
-    [units, showSnackbar, t]
+    [theme, units, showSnackbar, t]
   );
 
   const handleSave = useCallback(async () => {

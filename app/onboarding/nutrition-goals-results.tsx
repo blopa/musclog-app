@@ -365,7 +365,7 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
-      router.push('/onboarding/personal-info');
+      router.navigate('/onboarding/personal-info');
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -1161,7 +1161,7 @@ export default function NutritionGoalsResults() {
               width="full"
               size="sm"
               onPress={() => {
-                router.push({
+                router.navigate({
                   pathname: '/onboarding/nutrition-goals',
                   params: { isAdjusting: 'true' },
                 });

@@ -12,12 +12,15 @@ import type ExerciseModel from '../../database/models/Exercise';
 import WorkoutTemplate from '../../database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '../../database/models/WorkoutTemplateExercise';
 import { ExerciseService, WorkoutAnalytics } from '../../database/services';
+import { useFormatAppNumber } from '../../hooks/useFormatAppNumber';
+import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '../../utils/exerciseImage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '../../utils/exerciseTranslation';
+import { formatDisplayWeightKg } from '../../utils/formatDisplayWeight';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '../BottomPopUpMenu';
 import { GenericCard } from '../cards/GenericCard';
 import { SettingsCard } from '../cards/SettingsCard';
@@ -54,6 +57,8 @@ export default function ViewExerciseModal({
 }: ViewExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { units } = useSettings();
+  const { locale, formatRoundedDecimal } = useFormatAppNumber();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -183,7 +188,7 @@ export default function ViewExerciseModal({
 
   const handleWorkoutPress = (workoutId: string) => {
     onClose();
-    router.push(`/workout/workouts?previewTemplateId=${workoutId}`);
+    router.navigate(`/workout/workouts?previewTemplateId=${workoutId}`);
   };
 
   const checkExerciseDependencies = async (id: string): Promise<string | null> => {
@@ -510,7 +515,9 @@ export default function ViewExerciseModal({
                       className="text-5xl font-bold"
                       style={{ color: theme.colors.accent.secondary }}
                     >
-                      {personalBest != null ? personalBest.value : '—'}
+                      {personalBest != null
+                        ? formatDisplayWeightKg(locale, units, personalBest.value)
+                        : '—'}
                     </Text>
                     <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
                       {personalBest
@@ -533,10 +540,12 @@ export default function ViewExerciseModal({
                       className="text-5xl font-bold"
                       style={{ color: theme.colors.status.indigoLight }}
                     >
-                      {avgFrequency.value}
+                      {formatRoundedDecimal(avgFrequency.value, 1)}
                     </Text>
                     <Text className="text-xl" style={{ color: theme.colors.text.secondary }}>
-                      {t(`exercises.frequency.${avgFrequency.unit}`, { value: avgFrequency.value })}
+                      {t(`exercises.frequency.${avgFrequency.unit}`, {
+                        value: formatRoundedDecimal(avgFrequency.value, 1),
+                      })}
                     </Text>
                   </View>
                 </View>

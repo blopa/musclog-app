@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Share, View } from 'react-native';
 
+import { AnimatedContent } from '../../components/theme/AnimatedContent';
 import { ErrorStateCard } from '../../components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '../../components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '../../context/UnreadChatContext';
@@ -235,14 +236,16 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-    <WorkoutSummaryCelebration
-      onGoHome={handleGoHome}
-      onShareSummary={handleShareSummary}
-      onGetFeedback={handleGetFeedback}
-      isGetFeedbackLoading={isFeedbackLoading}
-      totalTime={totalTime}
-      volume={volume}
-      personalRecords={personalRecords}
-    />
+    <AnimatedContent>
+      <WorkoutSummaryCelebration
+        onGoHome={handleGoHome}
+        onShareSummary={handleShareSummary}
+        onGetFeedback={handleGetFeedback}
+        isGetFeedbackLoading={isFeedbackLoading}
+        totalTime={totalTime}
+        volume={volume}
+        personalRecords={personalRecords}
+      />
+    </AnimatedContent>
   );
 }

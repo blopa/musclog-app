@@ -73,6 +73,8 @@ function AppContent() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.colors.background.primary },
+          animation: 'fade',
+          animationDuration: 200,
         }}
       />
     </>

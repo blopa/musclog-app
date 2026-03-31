@@ -9,6 +9,8 @@ import { useTheme } from '../hooks/useTheme';
 import { AvatarColor } from '../types/AvatarColor';
 import { AvatarIcon } from '../types/AvatarIcon';
 import { getAvatarIcon } from '../utils/avatarUtils';
+import { localCalendarDayDate } from '../utils/calendarDate';
+import { parseDobDisplayStringToPickerDate } from '../utils/fitnessProfilePersistence';
 import { AvatarSelector } from './AvatarSelector';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -73,22 +75,6 @@ export function EditPersonalInfoBody({
   const [trackCycle, setTrackCycle] = useState(initialData?.trackCycle ?? false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  // Helper function to convert DOB string to Date object
-  const parseDobToDate = (dobString: string): Date => {
-    if (!dobString) {
-      return new Date();
-    }
-    const parts = dobString.split('/');
-    if (parts.length === 3) {
-      const month = parseInt(parts[0], 10) - 1; // Month is 0-indexed
-      const day = parseInt(parts[1], 10);
-      const year = parseInt(parts[2], 10);
-      return new Date(year, month, day);
-    }
-
-    return new Date();
-  };
-
   // Helper function to convert Date object to DOB string
   const formatDateToDob = (date: Date): string => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -97,12 +83,11 @@ export function EditPersonalInfoBody({
     return `${month}/${day}/${year}`;
   };
 
-  // Get current date as Date object for picker
-  const currentDate = parseDobToDate(dob);
+  const currentDate = parseDobDisplayStringToPickerDate(dob);
 
   // Handle date selection from picker
   const handleDateSelect = (date: Date) => {
-    const newDob = formatDateToDob(date);
+    const newDob = formatDateToDob(localCalendarDayDate(date));
     setDob(newDob);
   };
 

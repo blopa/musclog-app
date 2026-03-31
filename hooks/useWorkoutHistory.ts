@@ -9,7 +9,9 @@ import { DEFAULT_BATCH_SIZE } from '../constants/database';
 import { database } from '../database';
 import WorkoutLog from '../database/models/WorkoutLog';
 import { WorkoutAnalytics, WorkoutService } from '../database/services';
+import i18n from '../lang/lang';
 import { type Theme } from '../theme';
+import { formatAppInteger } from '../utils/formatAppNumber';
 import {
   calculateDateRange,
   filterWorkoutsBySearch,
@@ -91,13 +93,18 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   return format(date, 'MMM d', { locale });
 }
 
-function formatDuration(minutes: number): string {
+/** Recent-workout card duration — locale-aware digits (e.g. Arabic numerals when applicable). */
+function formatDurationForRecentWorkout(minutes: number): string {
+  const loc = i18n.resolvedLanguage ?? i18n.language;
   if (minutes < 60) {
-    return `${minutes}m`;
+    return `${formatAppInteger(loc, minutes)}m`;
   }
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+  return mins > 0
+    ? `${formatAppInteger(loc, hours)}h ${formatAppInteger(loc, mins)}m`
+    : `${formatAppInteger(loc, hours)}h`;
 }
 
 // Process workout for simple display (home screen)
@@ -129,7 +136,7 @@ async function processWorkoutSimple(
     id: workout.id,
     name: workout.workoutName ?? '',
     date: dateStr,
-    duration: formatDuration(durationMinutes),
+    duration: formatDurationForRecentWorkout(durationMinutes),
     calories: workout.caloriesBurned || 0,
     prs: prCount,
     image: require('../assets/icon.png'), // Default image
@@ -258,13 +265,14 @@ export function useWorkoutHistory({
     }
   }, [
     visible,
-    initialLimit,
-    workoutFilters,
     groupByMonth,
-    skipPRDetection,
+    workoutFilters,
+    initialLimit,
     t,
     units,
+    theme,
     dateFnsLocale,
+    skipPRDetection,
   ]);
 
   // Load more workouts (pagination)
@@ -337,14 +345,15 @@ export function useWorkoutHistory({
     isLoadingMore,
     hasMore,
     visible,
-    currentOffset,
-    batchSize,
     workoutFilters,
+    batchSize,
+    currentOffset,
     groupByMonth,
-    skipPRDetection,
     t,
     units,
+    theme,
     dateFnsLocale,
+    skipPRDetection,
   ]);
 
   // Handle filter changes
