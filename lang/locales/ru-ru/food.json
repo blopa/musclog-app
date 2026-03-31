@@ -295,7 +295,7 @@
       "tryAnotherSourceNotFound": "Данные о питании из других источников не найдены.",
       "caloriesTooLowTitle": "Калории могут быть занижены",
       "caloriesTooLowBody": "Указанные калории кажутся слишком низкими по сравнению с макросами. Вычисленное значение: {{inferred}} ккал / 100г.",
-      "caloriesTooLowAction": "Обновить до {{inferred}} ккал"
+      "caloriesTooLowAction": "Обновить до {{inferred}} ккал >"
     },
     "addFoodItemToMeal": {
       "title": "Добавить продукт",

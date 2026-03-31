@@ -295,7 +295,7 @@
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
       "caloriesTooLowTitle": "Calories may be too low",
       "caloriesTooLowBody": "The reported calories seem too low compared to the macros. Inferred value: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Update to {{inferred}} kcal"
+      "caloriesTooLowAction": "Update to {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {
       "title": "Add Food",

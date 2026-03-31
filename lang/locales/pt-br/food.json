@@ -295,7 +295,7 @@
       "tryAnotherSourceNotFound": "Nenhum dado nutricional encontrado em outras fontes.",
       "caloriesTooLowTitle": "Calorias podem estar muito baixas",
       "caloriesTooLowBody": "As calorias reportadas parecem muito baixas comparadas aos macros. Valor inferido: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Atualizar para {{inferred}} kcal"
+      "caloriesTooLowAction": "Atualizar para {{inferred}} kcal >"
     },
     "addFoodItemToMeal": {
       "title": "Adicionar Alimento",

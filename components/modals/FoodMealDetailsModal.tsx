@@ -1014,7 +1014,7 @@ export function FoodMealDetailsModal({
       mode === 'barcode' &&
       rawCal > 0 &&
       inferredCaloriesPer100g > 0 &&
-      rawCal < inferredCaloriesPer100g / 2 &&
+      rawCal < inferredCaloriesPer100g * 0.7 &&
       editedOverrides?.calories == null
     );
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
