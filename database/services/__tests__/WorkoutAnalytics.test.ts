@@ -1,3 +1,4 @@
+import { calculate1RM } from '../../../utils/workoutCalculator';
 import { database } from '../../index';
 import { WorkoutAnalytics } from '../WorkoutAnalytics';
 import { createMockExercise, createMockWorkoutLog, createMockWorkoutLogSet } from './helpers';
@@ -66,22 +67,22 @@ describe('WorkoutAnalytics', () => {
     mockDatabase.get.mockReturnValue(createMockCollection() as any);
   });
 
-  describe('calculateEstimated1RM', () => {
+  describe('calculate1RM (Epley)', () => {
     it('should calculate correctly using Epley formula', () => {
-      const result = WorkoutAnalytics.calculateEstimated1RM(100, 10);
+      const result = calculate1RM(100, 10, 'Epley', 0);
       // Epley: weight × (1 + reps/30) = 100 × (1 + 10/30) = 100 × 1.333 = 133.33
       expect(result).toBeCloseTo(133.33, 2);
     });
 
-    it('should return 0 when reps is 0', () => {
-      const result = WorkoutAnalytics.calculateEstimated1RM(100, 0);
-      expect(result).toBe(0);
+    it('should return weight when reps is 0 (Epley: 1 + 0/30)', () => {
+      const result = calculate1RM(100, 0, 'Epley', 0);
+      expect(result).toBeCloseTo(100, 2);
     });
 
     it('should handle various weight/reps combinations', () => {
-      expect(WorkoutAnalytics.calculateEstimated1RM(50, 5)).toBeCloseTo(58.33, 2);
-      expect(WorkoutAnalytics.calculateEstimated1RM(200, 1)).toBeCloseTo(206.67, 2);
-      expect(WorkoutAnalytics.calculateEstimated1RM(80, 12)).toBeCloseTo(112, 2);
+      expect(calculate1RM(50, 5, 'Epley', 0)).toBeCloseTo(58.33, 2);
+      expect(calculate1RM(200, 1, 'Epley', 0)).toBeCloseTo(206.67, 2);
+      expect(calculate1RM(80, 12, 'Epley', 0)).toBeCloseTo(112, 2);
     });
   });
 

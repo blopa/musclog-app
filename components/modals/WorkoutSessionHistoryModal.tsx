@@ -1,5 +1,5 @@
 import { Dumbbell, Share2, Weight } from 'lucide-react-native';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -14,6 +14,11 @@ import { useSettings } from '../../hooks/useSettings';
 import { useTheme } from '../../hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '../../hooks/useWorkoutTemplateDetails';
 import { getWeightUnitI18nKey } from '../../utils/units';
+import {
+  calculatePreviewVolumeFromTemplateSets,
+  calculateSessionVolumeFromSets,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { Button } from '../theme/Button';
 import { ExerciseData, ExerciseItem } from '../WorkoutHistoryExerciseItem';
 import { FullScreenModal } from './FullScreenModal';
@@ -54,6 +59,11 @@ export function WorkoutSessionHistoryModal({
   const { units } = useSettings();
   const { formatInteger } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  useEffect(() => {
+    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+  }, []);
 
   const sessionTime = useSessionTotalTime({ startTime: workoutLog?.startedAt });
 
@@ -218,23 +228,15 @@ export function WorkoutSessionHistoryModal({
     }
   }, [isPreview, workoutTemplate, workoutLog, templateSets, sets, exercises, currentSetOrder]);
 
-  // Calculate total volume
   const totalVolume = useMemo(() => {
+    const exerciseById = new Map(exercises.map((e) => [e.id, e]));
     if (isPreview) {
-      // Preview mode: calculate planned volume from template sets
-      return templateSets.reduce((sum, set) => {
-        return sum + (set.targetReps ?? 0) * (set.targetWeight ?? 0);
-      }, 0);
-    } else {
-      // Session mode: only count completed sets
-      return sets.reduce((sum, set) => {
-        if ((set.difficultyLevel ?? 0) > 0) {
-          return sum + (set.reps ?? 0) * (set.weight ?? 0);
-        }
-        return sum;
-      }, 0);
+      return calculatePreviewVolumeFromTemplateSets(templateSets, exerciseById, bodyWeightKg);
     }
-  }, [isPreview, templateSets, sets]);
+    return calculateSessionVolumeFromSets(sets, exerciseById, bodyWeightKg, {
+      onlyCompletedSets: true,
+    });
+  }, [isPreview, templateSets, sets, exercises, bodyWeightKg]);
 
   // Count completed sets (only for session mode)
   const completedSetsCount = useMemo(() => {

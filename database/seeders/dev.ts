@@ -9,6 +9,7 @@ import {
   ONBOARDING_VERSION,
 } from '../../constants/misc';
 import { localDayStartMs } from '../../utils/calendarDate';
+import { calculateWorkoutVolume } from '../../utils/workoutCalculator';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '../encryptionHelpers';
 import { database } from '../index';
 import ChatMessage from '../models/ChatMessage';
@@ -36,6 +37,9 @@ import {
   SettingsService,
   UserService,
 } from '../services';
+
+/** Assumed user body weight (kg) for seeded workout volume (bodyweight exercises). */
+const SEED_USER_BODY_WEIGHT_KG = 70;
 
 /**
  * Seeds the exercises database if it's empty
@@ -440,8 +444,14 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             log.updatedAt = now;
           });
 
-          // Create log exercises and their sets, and calculate total volume
-          let totalVolume = 0;
+          const totalVolume = calculateWorkoutVolume(
+            exerciseSets.map((ed) => ({
+              exercise: { equipmentType: ed.exercise.equipmentType },
+              sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+            })),
+            SEED_USER_BODY_WEIGHT_KG
+          );
+
           let setOrder = 1;
           let exerciseOrder = 1;
 
@@ -459,9 +469,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
               });
 
             for (const set of exerciseData.sets) {
-              const setVolume = set.weight * set.reps;
-              totalVolume += setVolume;
-
               await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
                 logSet.logExerciseId = logExercise.id;
                 logSet.reps = set.reps;
@@ -737,7 +744,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           log.updatedAt = now;
         });
 
-        let totalVolume = 0;
         let setOrder = 1;
         let exerciseOrder = 1;
         const pushDaySets = [
@@ -768,6 +774,14 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
           },
         ];
 
+        const totalVolume = calculateWorkoutVolume(
+          pushDaySets.map((ed) => ({
+            exercise: { equipmentType: ed.exercise.equipmentType },
+            sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+          })),
+          SEED_USER_BODY_WEIGHT_KG
+        );
+
         for (const exerciseData of pushDaySets) {
           // Create log exercise block first
           const logExercise = await database
@@ -782,7 +796,6 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             });
 
           for (const set of exerciseData.sets) {
-            totalVolume += set.weight * set.reps;
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
               logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;
@@ -887,8 +900,14 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
           log.updatedAt = now;
         });
 
-        // Create log exercises and their sets, and calculate total volume
-        let totalVolume = 0;
+        const totalVolume = calculateWorkoutVolume(
+          exerciseSets.map((ed) => ({
+            exercise: { equipmentType: ed.exercise.equipmentType },
+            sets: ed.sets.map((s) => ({ weight: s.weight, reps: s.reps, repsInReserve: 0 })),
+          })),
+          SEED_USER_BODY_WEIGHT_KG
+        );
+
         let setOrder = 1;
         let exerciseOrder = 1;
 
@@ -906,9 +925,6 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             });
 
           for (const set of exerciseData.sets) {
-            const setVolume = set.weight * set.reps;
-            totalVolume += setVolume;
-
             await database.get<WorkoutLogSet>('workout_log_sets').create((logSet) => {
               logSet.logExerciseId = logExercise.id;
               logSet.reps = set.reps;

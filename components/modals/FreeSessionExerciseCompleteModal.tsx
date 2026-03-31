@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
-import { createElement, useMemo } from 'react';
+import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
@@ -11,6 +11,10 @@ import { useTheme } from '../../hooks/useTheme';
 import { kgToDisplay } from '../../utils/unitConversion';
 import { getWeightUnitI18nKey } from '../../utils/units';
 import { getExerciseIconConfig, isBodyweightExercise } from '../../utils/workout';
+import {
+  calculateExerciseVolume,
+  getUserBodyWeightKgForVolume,
+} from '../../utils/workoutCalculator';
 import { GenericCard } from '../cards/GenericCard';
 import { Button } from '../theme/Button';
 import { FullScreenModal } from './FullScreenModal';
@@ -60,14 +64,29 @@ export function FreeSessionExerciseCompleteModal({
   );
   const showImage = Boolean(exerciseImageUrl?.trim());
 
+  const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  useEffect(() => {
+    void getUserBodyWeightKgForVolume().then(setBodyWeightKg);
+  }, []);
+
   const { setsCompleted, totalVolumeKg } = useMemo(() => {
     const exerciseSets = sets.filter((s) => s.exerciseId === exerciseId);
     const completed = exerciseSets.filter(
       (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
     ).length;
-    const volume = exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0) * (s.weight ?? 0), 0);
+
+    const volume = calculateExerciseVolume(
+      exerciseSets.map((s) => ({
+        weight: s.weight ?? 0,
+        reps: s.reps ?? 0,
+        repsInReserve: s.repsInReserve ?? 0,
+      })),
+      { equipmentType: equipmentType ?? undefined },
+      bodyWeightKg
+    );
+
     return { setsCompleted: completed, totalVolumeKg: volume };
-  }, [sets, exerciseId]);
+  }, [sets, exerciseId, equipmentType, bodyWeightKg]);
 
   const displayVolume = kgToDisplay(totalVolumeKg, units);
   const displayVolumeStr =

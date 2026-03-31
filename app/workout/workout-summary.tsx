@@ -237,14 +237,14 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-      <WorkoutSummaryCelebration
-        onGoHome={handleGoHome}
-        onShareSummary={handleShareSummary}
-        onGetFeedback={handleGetFeedback}
-        isGetFeedbackLoading={isFeedbackLoading}
-        totalTime={totalTime}
-        volume={volume}
-        personalRecords={personalRecords}
-      />
+    <WorkoutSummaryCelebration
+      onGoHome={handleGoHome}
+      onShareSummary={handleShareSummary}
+      onGetFeedback={handleGetFeedback}
+      isGetFeedbackLoading={isFeedbackLoading}
+      totalTime={totalTime}
+      volume={volume}
+      personalRecords={personalRecords}
+    />
   );
 }
