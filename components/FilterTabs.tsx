@@ -16,6 +16,8 @@ type FilterTabsProps = {
   scrollViewContentContainerStyle?: ViewStyle;
   showContainer?: boolean;
   withCheckmark?: boolean;
+  inactiveTextColor?: string;
+  inactiveBackgroundColor?: string;
 };
 
 export function FilterTabs({
@@ -26,6 +28,8 @@ export function FilterTabs({
   scrollViewContentContainerStyle,
   showContainer = true,
   withCheckmark = false,
+  inactiveTextColor,
+  inactiveBackgroundColor,
 }: FilterTabsProps) {
   const theme = useTheme();
   const content = (
@@ -46,14 +50,21 @@ export function FilterTabs({
             className={`flex-row items-center rounded-full px-6 py-2.5 ${
               isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
             }`}
-            style={{ marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0 }}
+            style={{
+              marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0,
+              ...(isActive || !inactiveBackgroundColor
+                ? undefined
+                : { backgroundColor: inactiveBackgroundColor }),
+            }}
             onPress={() => onTabChange(tab.id)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             <Text
               className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
               style={{
-                color: isActive ? theme.colors.text.black : theme.colors.text.gray300,
+                color: isActive
+                  ? theme.colors.text.black
+                  : (inactiveTextColor ?? theme.colors.text.gray300),
               }}
             >
               {tab.label}

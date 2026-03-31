@@ -96,6 +96,7 @@ export function ServingSizeSelector({
             activeTab={String(value)}
             onTabChange={(id) => onChange(Number(id))}
             showContainer={false}
+            inactiveBackgroundColor={theme.colors.background.secondaryDark}
             scrollViewContentContainerStyle={{
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.sm,
