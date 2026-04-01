@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -15,6 +15,15 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  const isUngroup = allSelectedInSameGroup;
+  const backgroundColor = isUngroup
+    ? theme.colors.status.errorSolid
+    : theme.colors.status.emeraldSolid;
+  const borderColor = isUngroup
+    ? theme.colors.status.redDark
+    : theme.colors.status.emeraldDark;
+
   // Custom icon to match the image (4 dots with a horizontal line)
   const ActionIcon = ({ color }: { color: string }) => (
     <View
@@ -80,53 +89,51 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
   return (
     <View
       style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: theme.spacing.padding.md,
-        zIndex: theme.zIndex.max,
-        width: '100%',
+        alignSelf: 'stretch',
+        borderRadius: theme.borderRadius.lg,
+        overflow: 'hidden',
+        backgroundColor,
+        borderWidth: theme.borderWidth.medium,
+        borderColor,
+        shadowColor: theme.colors.text.black,
+        shadowOffset: theme.shadowOffset.md,
+        shadowOpacity: theme.colors.opacity.subtle,
+        shadowRadius: theme.shadows.radius3.shadowRadius,
+        elevation: theme.elevation.md,
       }}
     >
-      <Pressable
+      <TouchableOpacity
+        activeOpacity={0.88}
         onPress={onPress}
-        style={({ pressed }) => [
-          {
+        style={{
+          alignSelf: 'stretch',
+          paddingVertical: theme.spacing.padding.sm,
+          paddingHorizontal: theme.spacing.padding.md,
+        }}
+      >
+        <View
+          style={{
+            width: '100%',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             gap: theme.spacing.gap.sm,
-            width: '100%',
-            paddingVertical: theme.spacing.padding.sm,
-            borderRadius: theme.borderRadius.xs,
-            borderWidth: theme.borderWidth.medium,
-            borderColor: allSelectedInSameGroup
-              ? theme.colors.status.redDark
-              : theme.colors.status.emeraldDark,
-            backgroundColor: allSelectedInSameGroup
-              ? theme.colors.status.errorSolid
-              : theme.colors.status.emeraldSolid,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-            shadowColor: theme.colors.text.black,
-            shadowOffset: theme.shadowOffset.md,
-            shadowOpacity: theme.colors.opacity.subtle,
-            shadowRadius: theme.shadows.radius3.shadowRadius,
-            elevation: theme.elevation.md,
-          },
-        ]}
-      >
-        <ActionIcon color={theme.colors.text.white} />
-        <Text
-          style={{
-            color: theme.colors.text.white,
-            fontWeight: theme.typography.fontWeight.black,
-            fontSize: theme.typography.fontSize.sm,
-            textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}
         >
-          {allSelectedInSameGroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}
-        </Text>
-      </Pressable>
+          <ActionIcon color={theme.colors.text.white} />
+          <Text
+            style={{
+              color: theme.colors.text.white,
+              fontWeight: theme.typography.fontWeight.black,
+              fontSize: theme.typography.fontSize.sm,
+              textTransform: 'uppercase',
+              letterSpacing: theme.typography.letterSpacing.extraWide,
+            }}
+          >
+            {isUngroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}
+          </Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
